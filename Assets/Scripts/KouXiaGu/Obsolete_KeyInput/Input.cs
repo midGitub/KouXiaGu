@@ -10,7 +10,7 @@ namespace KouXiaGu
     /// 对Unity.Input进行包装,加入优先级 与 功能按键;
     /// 按键根据Key枚举内的数据进行注册;
     /// </summary>
-    [DisallowMultipleComponent]
+    [DisallowMultipleComponent, Obsolete]
     public class Input : MonoBehaviour
     {
 

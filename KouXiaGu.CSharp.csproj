@@ -74,18 +74,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\KouXiaGu\Following2D.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\KeyInput\FunctionKey.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\KeyInput\Input.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexagonConvert.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Obsolete_KeyInput\FunctionKey.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Obsolete_KeyInput\Input.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookForward2D.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Beehive.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexDictionary.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexDirection.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IntVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\LocationType.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\MapController.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\Test.cs" />
     <Compile Include="Assets\Scripts\XGame\Aspect.cs" />
     <Compile Include="Assets\Scripts\XGame\CallOrder.cs" />
@@ -251,6 +251,5 @@
     <None Include="Assets\Plugins\protobuf-net\Web\TODO.txt" />
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -9,8 +9,7 @@ namespace KouXiaGu.Map
     /// <summary>
     /// 整数形式的向量;
     /// </summary>
-    [Serializable]
-    [ProtoContract]
+    [Serializable, ProtoContract]
     public struct IntVector2 : IEquatable<IntVector2>
     {
 
@@ -40,7 +39,20 @@ namespace KouXiaGu.Map
         /// <returns></returns>
         public static float Distance(IntVector2 v1, IntVector2 v2)
         {
-            return Vector2.Distance((Vector2)v1, (Vector2)v2);
+            float distance = (float)Math.Sqrt(Math.Pow((v1.x - v2.x), 2) + Math.Pow((v1.y - v2.y), 2));
+            return distance;
+        }
+
+        /// <summary>
+        /// 获取这两个点的曼哈顿距离;
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
+        public static int ManhattanDistance(IntVector2 v1, IntVector2 v2)
+        {
+            int distance = Math.Abs(v1.x - v2.x) + Math.Abs(v1.y - v2.y);
+            return distance;
         }
 
 

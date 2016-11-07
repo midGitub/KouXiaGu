@@ -7,7 +7,7 @@ namespace KouXiaGu
 {
 
 
-    [Flags]
+    [Flags, Obsolete]
     public enum FunctionKey : int
     {
         Unknown = 0,
