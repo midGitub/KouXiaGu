@@ -1,4 +1,4 @@
-﻿using KouXiaGu.Map.HexMap;
+﻿using KouXiaGu.Map;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;

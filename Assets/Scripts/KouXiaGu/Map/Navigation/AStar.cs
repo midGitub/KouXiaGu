@@ -8,7 +8,8 @@ namespace KouXiaGu.Map.Navigation
     /// <summary>
     /// A*寻路;
     /// </summary>
-    public sealed class AStar<TMover>
+    public sealed class AStar<TNode, TMover>
+        where TNode : INavNode<TMover>
     {
 
         /// <summary>
@@ -19,7 +20,7 @@ namespace KouXiaGu.Map.Navigation
         /// <param name="current"></param>
         /// <param name="target"></param>
         /// <param name="maxTime">需要大于或等于2</param>
-        public AStar(TMover Mover, INavigationMap<TMover> map, IntVector2 current, IntVector2 target, uint maxTime = uint.MaxValue)
+        public AStar(TMover Mover, INavMap<TNode, TMover> map, IntVector2 current, IntVector2 target, uint maxTime = uint.MaxValue)
         {
             this.map = map;
             this.Current = current;
@@ -29,7 +30,7 @@ namespace KouXiaGu.Map.Navigation
             IsDone = false;
         }
 
-        private INavigationMap<TMover> map;
+        private INavMap<TNode, TMover> map;
         private Dictionary<IntVector2, PathNode> openPoints;
         private HashSet<IntVector2> closePoints;
         private PathNode currentNode;
@@ -75,9 +76,9 @@ namespace KouXiaGu.Map.Navigation
                 {
                     currentNode = GetMinPathNode();
                     var around = map.GetAround(currentNode.Position).
-                        Where(pair => !closePoints.Contains(pair.Key));
+                        Where(pair => !closePoints.Contains(pair.Key) && pair.Value.IsOpenNode(Mover));
 
-                    foreach (KeyValuePair<IntVector2, INavigationNode<TMover>> info in around)
+                    foreach (KeyValuePair<IntVector2, TNode> info in around)
                     {
                         AddToOpenPoints(info.Key, currentNode, info.Value);
                     }
@@ -98,11 +99,11 @@ namespace KouXiaGu.Map.Navigation
 
         private void AddToOpenPoints(IntVector2 position, PathNode previous)
         {
-            INavigationNode<TMover> node = map.GetAt(position);
+            INavNode<TMover> node = map.GetAt(position);
             AddToOpenPoints(position, previous, node);
         }
 
-        private void AddToOpenPoints(IntVector2 position, PathNode previous, INavigationNode<TMover> node)
+        private void AddToOpenPoints(IntVector2 position, PathNode previous, INavNode<TMover> node)
         {
             PathNode beforeNode;
             PathNode newNode;
@@ -169,7 +170,7 @@ namespace KouXiaGu.Map.Navigation
         {
             public PathNode() { }
 
-            public PathNode(IntVector2 position, PathNode previous, INavigationNode<TMover> node, TMover mover, IntVector2 target)
+            public PathNode(IntVector2 position, PathNode previous, INavNode<TMover> node, TMover mover, IntVector2 target)
             {
                 nodeCost = GetNodeCost(position, node, mover, target);
                 this.Position = position;
@@ -201,7 +202,7 @@ namespace KouXiaGu.Map.Navigation
                 }
             }
 
-            private float GetNodeCost(IntVector2 position, INavigationNode<TMover> node, TMover mover, IntVector2 target)
+            private float GetNodeCost(IntVector2 position, INavNode<TMover> node, TMover mover, IntVector2 target)
             {
                 float nodeCost = node.GetCost(mover);
                 return nodeCost;
