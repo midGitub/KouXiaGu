@@ -5,7 +5,7 @@ using System.Text;
 using ProtoBuf;
 using UnityEngine;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu.Map.HexMap
 {
 
     /// <summary>

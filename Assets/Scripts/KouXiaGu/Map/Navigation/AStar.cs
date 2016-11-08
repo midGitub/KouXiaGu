@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu.Map.Navigation
 {
 
     /// <summary>
-    /// 地图上每个区域的类型;
+    /// A*寻路;
     /// </summary>
-    public enum LocationType
+    public static class AStar
     {
-        Road,
 
 
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using ProtoBuf;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu.Map.HexMap
 {
 
     /// <summary>
@@ -11,33 +11,15 @@ namespace KouXiaGu.Map
     public struct Hexagon
     {
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="innerDiameter">内径</param>
-        /// <param name="isRotate">是否旋转90度后的六边形</param>
-        public Hexagon(float innerDiameter, bool isRotate = false)
+        public Hexagon(float innerDiameter)
         {
             this.innerDiameter = innerDiameter;
-            this.isRotate = isRotate;
         }
 
         private static readonly float cos30 = (float)Math.Cos(30 * (Math.PI / 180));
 
         [ProtoMember(1)]
-        private bool isRotate;
-
-        [ProtoMember(2)]
         private float innerDiameter;
-
-        /// <summary>
-        /// 是否为旋转90度后的正六边形;
-        /// </summary>
-        public bool IsRotate
-        {
-            get { return isRotate; }
-            set { isRotate = value; }
-        }
 
         public float InnerDiameter
         {
@@ -64,7 +46,7 @@ namespace KouXiaGu.Map
         /// </summary>
         public float DistanceX
         {
-            get{ return isRotate ? innerDiameter : innerDiameter * cos30; }
+            get{ return innerDiameter * cos30; }
         }
 
         /// <summary>
@@ -72,7 +54,7 @@ namespace KouXiaGu.Map
         /// </summary>
         public float DistanceY
         {
-            get { return isRotate ? innerDiameter * cos30 : innerDiameter; }
+            get { return innerDiameter; }
         }
 
         public override string ToString()
@@ -86,6 +68,19 @@ namespace KouXiaGu.Map
                 "\ny轴距离 :" + DistanceY;
 
             return str;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Hexagon))
+                return false;
+            Hexagon hexagon = (Hexagon)obj;
+            return hexagon.innerDiameter == innerDiameter;
+        }
+
+        public override int GetHashCode()
+        {
+            return innerDiameter.GetHashCode();
         }
 
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ProtoBuf;
 using UnityEngine;
 
@@ -17,12 +16,6 @@ namespace KouXiaGu.Map
         {
             this.x = x;
             this.y = y;
-        }
-
-        public IntVector2(int x, int y)
-        {
-            this.x = (short)x;
-            this.y = (short)y;
         }
 
         [ProtoMember(1)]
@@ -87,7 +80,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 转换成int,x放在前16位,y放在后16位;
         /// </summary>
-        private static int GetHashCode(short x, short y)
+        private int GetHashCode(short x, short y)
         {
             int hashCode;
 
