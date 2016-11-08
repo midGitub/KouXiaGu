@@ -17,7 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.4.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -167,6 +168,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\AStar.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\INavigationMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\INavigationNode.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\Path.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
   </ItemGroup>
