@@ -6,8 +6,10 @@ using System.Text;
 namespace KouXiaGu.Map.Navigation
 {
 
-
-    public class Path
+    /// <summary>
+    /// 路径;
+    /// </summary>
+    public class Path : LinkedList<IntVector2>
     {
 
 

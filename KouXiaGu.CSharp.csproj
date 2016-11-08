@@ -73,8 +73,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Obsolete_Scripts\Obsolete_KeyInput\FunctionKey.cs" />
-    <Compile Include="Assets\Obsolete_Scripts\Obsolete_KeyInput\Input.cs" />
     <Compile Include="Assets\Obsolete_Scripts\XGame\Aspect.cs" />
     <Compile Include="Assets\Obsolete_Scripts\XGame\CallOrder.cs" />
     <Compile Include="Assets\Obsolete_Scripts\XGame\Controller.cs" />
@@ -155,7 +153,10 @@
     <Compile Include="Assets\Obsolete_Scripts\XGame\XmlModule\IXmlModule.cs" />
     <Compile Include="Assets\Obsolete_Scripts\XGame\XmlModule\PrefabCreater.cs" />
     <Compile Include="Assets\Obsolete_Scripts\XGame\XmlModule\XmlSpriteRenderer.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\AttributeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Following2D.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionKey.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookForward2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\HexDirection.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\INavigationMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\INavigationNode.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\Path.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\PathNotFoundException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
   </ItemGroup>
@@ -255,5 +257,6 @@
     <None Include="Assets\Plugins\protobuf-net\Web\TODO.txt" />
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

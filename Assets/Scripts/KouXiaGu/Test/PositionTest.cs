@@ -86,7 +86,7 @@ namespace KouXiaGu.Test
             }
             else
             {
-                Debug.Log("坐标无法确定!");
+                //Debug.Log("坐标无法确定!");
                 return raycastHit.point;
             }
         }
