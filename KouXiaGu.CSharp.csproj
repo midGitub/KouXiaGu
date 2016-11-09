@@ -154,9 +154,13 @@
     <Compile Include="Assets\Obsolete_Scripts\XGame\XmlModule\PrefabCreater.cs" />
     <Compile Include="Assets\Obsolete_Scripts\XGame\XmlModule\XmlSpriteRenderer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\AttributeHelper.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Camera2DFollow.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\CameraController.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Following2D.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initialization\Archive.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initialization\ResCapital.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initialization\LoadGameInterface.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionKey.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookForward2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexDirection.cs" />

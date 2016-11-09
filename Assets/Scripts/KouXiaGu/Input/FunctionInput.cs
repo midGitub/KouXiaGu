@@ -2,27 +2,38 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using System.Linq;
+using UnityEditor;
 
 namespace KouXiaGu
 {
 
+    public enum FunctionKey
+    {
+        Mark,
+        Mouse_Confirm,
+        Mouse_Cancel,
+    }
+
     /// <summary>
     /// 提供按键转换功能;
     /// </summary>
-    public sealed class FunctionInput : MonoBehaviour
+    public class FunctionInput : MonoBehaviour
     {
         static FunctionInput()
         {
             DefaultKeyDictionary = AttributeHelper.GetFieldInfosFormField<int, FunctionKeyAttribute>(
                 typeof(FunctionInput), BindingFlags.NonPublic | BindingFlags.Instance, attribute => (int)attribute.FunctionKey);
+
+            functionKeys = Enum.GetValues(typeof(FunctionKey)).Cast<FunctionKey>().ToArray();
         }
 
         private FunctionInput() { }
 
         #region 设置默认按键(添加按键仅增加这里);
 
-        [FunctionKey(FunctionKey.Unknown)]
-        private KeyCode Unknown;
+        [SerializeField, HideInInspector, FunctionKey(FunctionKey.Mark)]
+        private KeyCode Mark;
 
         [Header("默认的按键")]
         [SerializeField, FunctionKey(FunctionKey.Mouse_Confirm)]
@@ -40,6 +51,8 @@ namespace KouXiaGu
 
         private static FunctionInput instance;
 
+        private static readonly FunctionKey[] functionKeys;
+
         private static readonly Dictionary<int, FieldInfo> DefaultKeyDictionary;
 
         /// <summary>
@@ -50,7 +63,7 @@ namespace KouXiaGu
         /// <summary>
         /// 是否已经存在按键信息文件;
         /// </summary>
-        private bool isSave { get { return PlayerPrefs.HasKey(GetSaveName(FunctionKey.Unknown)); } }
+        private bool isSave { get { return PlayerPrefs.HasKey(GetSaveName(FunctionKey.Mark)); } }
         public FunctionInput GetInstance { get { return instance; } }
 
         private void Awake()
@@ -58,6 +71,18 @@ namespace KouXiaGu
             SetInstance();
             InitialiseKey();
         }
+
+        //private void Update()
+        //{
+        //    if (Input.GetKeyDown(GetKey(FunctionKey.Mouse_Confirm)))
+        //    {
+        //        Debug.Log("按下确认!");
+        //    }
+        //    else if (Input.GetKeyDown(GetKey(FunctionKey.Mouse_Cancel)))
+        //    {
+        //        Debug.Log("按下取消!");
+        //    }
+        //}
 
         private void SetInstance()
         {
@@ -86,7 +111,7 @@ namespace KouXiaGu
         [ContextMenu("保存所有到文件")]
         public void SaveAll()
         {
-            foreach (FunctionKey item in Enum.GetValues(typeof(FunctionKey)))
+            foreach (FunctionKey item in functionKeys)
             {
                 Save(item);
             }
@@ -98,7 +123,7 @@ namespace KouXiaGu
         [ContextMenu("从按键文件恢复")]
         public void RecoveryAll()
         {
-            foreach (FunctionKey item in Enum.GetValues(typeof(FunctionKey)))
+            foreach (FunctionKey item in functionKeys)
             {
                 Recovery(item);
             }
@@ -110,7 +135,7 @@ namespace KouXiaGu
         [ContextMenu("从默认按键恢复")]
         public void RecoveryAllFromDefaltKey()
         {
-            foreach (FunctionKey item in Enum.GetValues(typeof(FunctionKey)))
+            foreach (FunctionKey item in functionKeys)
             {
                 RecoveryFromDefaltKey(item);
             }
@@ -149,7 +174,7 @@ namespace KouXiaGu
         /// </summary>
         private static string GetSaveName(FunctionKey key)
         {
-            return SavePrefix + key.ToString();
+            return string.Concat(SavePrefix, key.ToString());
         }
 
         /// <summary>
@@ -172,7 +197,6 @@ namespace KouXiaGu
             KeyDictionary[(int)key] = unityKey;
             Save(key);
         }
-
 
         #region 鼠标位置;
 
@@ -199,7 +223,7 @@ namespace KouXiaGu
             string str = base.ToString() + "\n正在使用的按键:\n";
             foreach (var item in KeyDictionary)
             {
-                str += string.Concat("FunctionKey:", (FunctionKey)item.Key, "  UnityKeyCode:", item.Value, "\n");
+                str += string.Concat("FunctionKey:", ((FunctionKey)item.Key).ToString(), "  UnityKeyCode:", item.Value.ToString(), "\n");
             }
             return str;
         }
@@ -216,7 +240,7 @@ namespace KouXiaGu
         private void Test_SaveFile()
         {
             string str = "保存的按键:\n";
-            foreach (FunctionKey item in Enum.GetValues(typeof(FunctionKey)))
+            foreach (FunctionKey item in functionKeys)
             {
                 string saveName = GetSaveName(item);
                 int key = PlayerPrefs.GetInt(saveName);
@@ -239,5 +263,60 @@ namespace KouXiaGu
         }
 
     }
+
+
+    //[CustomEditor(typeof(FunctionInput))]
+    //public class ObstacleKeyEditor : Editor
+    //{
+
+    //    static ObstacleKeyEditor()
+    //    {
+    //        functionKeys = Enum.GetValues(typeof(FunctionKey)).
+    //            Cast<FunctionKey>().
+    //            ToArray();
+    //    }
+
+    //    private static readonly FunctionKey[] functionKeys;
+
+    //    public override void OnInspectorGUI()
+    //    {
+    //        FunctionInput functionInput = target as FunctionInput;
+
+    //        base.OnInspectorGUI();
+    //        ShowKeys(functionInput);
+    //    }
+
+    //    private void ShowKeys(FunctionInput functionInput)
+    //    {
+    //        InitializeDictionary(functionInput);
+
+    //        foreach (FunctionKey item in functionKeys)
+    //        {
+    //            KeyCode key;
+    //            if (functionInput.DefaultKey.TryGetValue((int)item, out key))
+    //            {
+    //                key = (KeyCode)EditorGUILayout.EnumPopup(item.ToString(), key);
+    //                functionInput.DefaultKey[(int)item] = key;
+    //            }
+    //            else
+    //            {
+    //                functionInput.DefaultKey.Add((int)item, KeyCode.None);
+    //            }
+    //        }
+    //    }
+
+    //    private void InitializeDictionary(FunctionInput functionInput)
+    //    {
+    //        if (functionInput.DefaultKey != null)
+    //            return;
+    //        functionInput.DefaultKey = new Dictionary<int, KeyCode>();
+
+    //        foreach (var item in functionKeys)
+    //        {
+    //            functionInput.DefaultKey.Add((int)item, KeyCode.None);
+    //        }
+    //    }
+
+    //}
 
 }
