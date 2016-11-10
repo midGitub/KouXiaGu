@@ -80,6 +80,12 @@ namespace KouXiaGu
         /// <returns>任意返回值</returns>
         IEnumerator Load(ILoadRes resLoad, Action<Exception> onError, Action loadingDoneCallBreak);
 
+        /// <summary>
+        /// 开始读取游戏;
+        /// </summary>
+        /// <param name="resLoad"></param>
+        /// <returns>任意返回值</returns>
+        IEnumerator Load(ILoadRes resLoad);
     }
 
     /// <summary>
@@ -94,6 +100,13 @@ namespace KouXiaGu
         /// </summary>
         /// <param name="resLoad"></param>
         void Load(ILoadRes resLoad, Action<Exception> onError, Action loadingDoneCallBreak);
+
+        /// <summary>
+        /// 开始读取游戏;
+        /// </summary>
+        /// <param name="resLoad"></param>
+        /// <returns>任意返回值</returns>
+        void Load(ILoadRes resLoad);
 
     }
 

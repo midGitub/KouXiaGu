@@ -316,6 +316,15 @@ namespace UniRx
         }
 
         /// <summary>
+        /// 口虾蛄修改的方法;
+        /// </summary>
+        [KouXiaGu]
+        public static IObservable<Unit> FromMicroCoroutine(IEnumerator coroutine, bool publishEveryYield = false, FrameCountType frameCountType = FrameCountType.Update)
+        {
+            return FromMicroCoroutine<Unit>((observer, cancellationToken) => WrapEnumerator(coroutine, observer, cancellationToken, publishEveryYield), frameCountType);
+        }
+
+        /// <summary>
         /// MicroCoroutine is lightweight, fast coroutine dispatcher.
         /// IEnumerator supports only yield return null.
         /// If publishEveryYield = true then publish OnNext every yield return else return once on enumeration completed.

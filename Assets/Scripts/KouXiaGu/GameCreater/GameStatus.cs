@@ -31,6 +31,11 @@ namespace KouXiaGu
         /// </summary>
         Saving,
 
+        /// <summary>
+        /// 退出游戏;
+        /// </summary>
+        Quitting,
+
     }
 
 }
