@@ -14,6 +14,25 @@ namespace KouXiaGu
     public class Archive
     {
 
+        /// <summary>
+        /// 存档名;
+        /// </summary>
+        [ProtoMember(1)]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 存档的描述;
+        /// </summary>
+        [ProtoMember(2)]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// 这个游戏存档保存的真实时间;
+        /// </summary>
+        [ProtoMember(3)]
+        public long SavedTime { get; set; }
+
+
     }
 
     /// <summary>

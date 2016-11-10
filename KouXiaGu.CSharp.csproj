@@ -156,10 +156,12 @@
     <Compile Include="Assets\Scripts\KouXiaGu\AttributeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Camera2DFollow.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\CameraController.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Following2D.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initialization\Archive.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initialization\ResCapital.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initialization\LoadGameInterface.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameCreater\Archive.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameCreater\GameCreater.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameCreater\GameStatus.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameCreater\GameCreaterInterface.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\LookForward2D.cs" />
