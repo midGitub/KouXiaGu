@@ -159,7 +159,7 @@ namespace UniRx
 
             public void OnNext(T value)
             {
-                if (isStopped == 0)
+                if (isStopped == 0 && onNext != null)
                 {
                     onNext(value);
                 }
