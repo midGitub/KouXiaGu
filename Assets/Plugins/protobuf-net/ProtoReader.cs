@@ -206,7 +206,7 @@ namespace ProtoBuf
                     if (available < 4) Ensure(4, true);
                     position += 4;
                     available -= 4;
-                    return ((uint)ioBuffer[ioIndex++])
+                    return ioBuffer[ioIndex++]
                         | (((uint)ioBuffer[ioIndex++]) << 8)
                         | (((uint)ioBuffer[ioIndex++]) << 16)
                         | (((uint)ioBuffer[ioIndex++]) << 24);
@@ -302,10 +302,10 @@ namespace ProtoBuf
                     if (available < 4) Ensure(4, true);
                     position += 4;
                     available -= 4;
-                    return ((int)ioBuffer[ioIndex++])
-                        | (((int)ioBuffer[ioIndex++]) << 8)
-                        | (((int)ioBuffer[ioIndex++]) << 16)
-                        | (((int)ioBuffer[ioIndex++]) << 24);
+                    return ioBuffer[ioIndex++]
+                        | ioBuffer[ioIndex++] << 8
+                        | ioBuffer[ioIndex++] << 16
+                        | ioBuffer[ioIndex++] << 24;
                 case WireType.Fixed64:
                     long l = ReadInt64();
                     checked { return (int)l; }
@@ -316,7 +316,7 @@ namespace ProtoBuf
             }
         }
         private const long Int64Msb = ((long)1) << 63;
-        private const int Int32Msb = ((int)1) << 31;
+        private const int Int32Msb = 1 << 31;
         private static int Zag(uint ziggedValue)
         {
             int value = (int)ziggedValue;
@@ -344,7 +344,7 @@ namespace ProtoBuf
                     position += 8;
                     available -= 8;
 
-                    return ((long)ioBuffer[ioIndex++])
+                    return ioBuffer[ioIndex++]
                         | (((long)ioBuffer[ioIndex++]) << 8)
                         | (((long)ioBuffer[ioIndex++]) << 16)
                         | (((long)ioBuffer[ioIndex++]) << 24)
@@ -819,7 +819,7 @@ namespace ProtoBuf
                     position += 8;
                     available -= 8;
 
-                    return ((ulong)ioBuffer[ioIndex++])
+                    return ioBuffer[ioIndex++]
                         | (((ulong)ioBuffer[ioIndex++]) << 8)
                         | (((ulong)ioBuffer[ioIndex++]) << 16)
                         | (((ulong)ioBuffer[ioIndex++]) << 24)

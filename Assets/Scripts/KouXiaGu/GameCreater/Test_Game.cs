@@ -17,7 +17,7 @@ namespace KouXiaGu
         [SerializeField]
         private int j;
 
-        void IThreadInitialize<ILoadRes>.Initialize(ILoadRes item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
+        void IThreadInitialize<ICreateGameResource>.Initialize(ICreateGameResource item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
             while (i < j)
             {
@@ -30,7 +30,7 @@ namespace KouXiaGu
             runningDoneCallBreak();
         }
 
-        IEnumerator ICoroutineInitialize<ILoadRes>.Initialize(ILoadRes item, ICancelable cancelable, Action<Exception> onError)
+        IEnumerator ICoroutineInitialize<ICreateGameResource>.Initialize(ICreateGameResource item, ICancelable cancelable, Action<Exception> onError)
         {
             while (i < j)
             {

@@ -150,7 +150,7 @@ namespace ProtoBuf.Meta
                 case ProtoTypeCode.Boolean: ProtoWriter.WriteBoolean((bool)value, writer); return true;
                 case ProtoTypeCode.SByte: ProtoWriter.WriteSByte((sbyte)value, writer); return true;
                 case ProtoTypeCode.Byte: ProtoWriter.WriteByte((byte)value, writer); return true;
-                case ProtoTypeCode.Char: ProtoWriter.WriteUInt16((ushort)(char)value, writer); return true;
+                case ProtoTypeCode.Char: ProtoWriter.WriteUInt16((char)value, writer); return true;
                 case ProtoTypeCode.Double: ProtoWriter.WriteDouble((double)value, writer); return true;
                 case ProtoTypeCode.Single: ProtoWriter.WriteSingle((float)value, writer); return true;
                 case ProtoTypeCode.DateTime:

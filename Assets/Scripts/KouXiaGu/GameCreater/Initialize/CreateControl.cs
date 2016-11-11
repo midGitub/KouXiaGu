@@ -8,10 +8,39 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    [Serializable]
+    internal class CreateControl : IResourceInitialize<ICreateGameResource>
+    {
+
+
+        #region IResourceInitialize;
+
+        [SerializeField]
+        private CreateInitialize initialize;
+
+        public bool IsDisposed
+        {
+            get { return ((IResourceInitialize<ICreateGameResource>)this.initialize).IsDisposed;}
+        }
+
+        public void Dispose()
+        {
+            ((IResourceInitialize<ICreateGameResource>)this.initialize).Dispose();
+        }
+
+        public IEnumerator Start(ICreateGameResource item, Action<Exception> onError, Action onInitialized, Action<Exception> onFail)
+        {
+            return ((IResourceInitialize<ICreateGameResource>)this.initialize).Start(item, onError, onInitialized, onFail);
+        }
+
+        #endregion
+
+    }
+
     /// <summary>
     /// 在协程中准备游戏资源;
     /// </summary>
-    public interface ICreateInCoroutine : ICoroutineInitialize<ILoadRes>
+    public interface ICreateInCoroutine : ICoroutineInitialize<ICreateGameResource>
     {
 
     }
@@ -19,18 +48,19 @@ namespace KouXiaGu
     /// <summary>
     /// 多线程准备游戏资源;
     /// </summary>
-    public interface ICreateInThread : IThreadInitialize<ILoadRes>
+    public interface ICreateInThread : IThreadInitialize<ICreateGameResource>
     {
         
     }
 
 
     [Serializable]
-    internal class CreateControl : InitializeBase<ICreateInCoroutine, ICreateInThread, ILoadRes>
+    internal class CreateInitialize : ResourceInitialize<ICreateInCoroutine, ICreateInThread, ICreateGameResource>,
+        IResourceInitialize<ICreateGameResource>
     {
-        public CreateControl() : base()
+        public CreateInitialize() : base()
         {
-
+            
         }
 
         [SerializeField]
@@ -40,11 +70,13 @@ namespace KouXiaGu
         {
             get { return BaseComponents.GetComponentsInChildren<ICreateInCoroutine>(); }
         }
+
         protected override IEnumerable<ICreateInThread> LoadInThreadComponents
         {
             get { return BaseComponents.GetComponentsInChildren<ICreateInThread>(); }
         }
 
     }
+
 
 }

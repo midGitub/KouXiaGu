@@ -387,11 +387,11 @@ namespace ProtoBuf
             switch(style)
             {
                 case PrefixStyle.Fixed32:
-                    len = (int)((writer.ioIndex - value) - 4);
+                    len = (writer.ioIndex - value) - 4;
                     ProtoWriter.WriteInt32ToBuffer(len, writer.ioBuffer, value);
                     break;
                 case PrefixStyle.Fixed32BigEndian:
-                    len = (int)((writer.ioIndex - value) - 4);
+                    len = (writer.ioIndex - value) - 4;
                     byte[] buffer = writer.ioBuffer;
                     ProtoWriter.WriteInt32ToBuffer(len, buffer, value);
                     // and swap the byte order
@@ -406,7 +406,7 @@ namespace ProtoBuf
                     // string - complicated because we only reserved one byte;
                     // if the prefix turns out to need more than this then
                     // we need to shuffle the existing data
-                    len = (int)((writer.ioIndex - value) - 1);
+                    len = (writer.ioIndex - value) - 1;
                     int offset = 0;
                     uint tmp = (uint)len;
                     while ((tmp >>= 7) != 0) offset++;
@@ -798,8 +798,8 @@ namespace ProtoBuf
                         buffer[index + 3] = (byte)((value >> 21) | 0x80);
                         buffer[index + 4] = (byte)((value >> 28) | 0x80);
                         buffer[index + 5] = buffer[index + 6] =
-                            buffer[index + 7] = buffer[index + 8] = (byte)0xFF;
-                        buffer[index + 9] = (byte)0x01;
+                            buffer[index + 7] = buffer[index + 8] = 0xFF;
+                        buffer[index + 9] = 0x01;
                         IncrementedAndReset(10, writer);
                     }
                     return;
@@ -861,7 +861,7 @@ namespace ProtoBuf
 #endif
                     return;
                 case WireType.Fixed64:
-                    ProtoWriter.WriteDouble((double)value, writer);
+                    ProtoWriter.WriteDouble(value, writer);
                     return;
                 default:
                     throw CreateException(writer);
@@ -888,7 +888,7 @@ namespace ProtoBuf
         /// </summary>
         public static void WriteBoolean(bool value, ProtoWriter writer)
         {
-            ProtoWriter.WriteUInt32(value ? (uint)1 : (uint)0, writer);
+            ProtoWriter.WriteUInt32(value ? 1 : (uint)0, writer);
         }
 
         /// <summary>

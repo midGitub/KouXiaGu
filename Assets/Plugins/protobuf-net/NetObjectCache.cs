@@ -47,7 +47,7 @@ namespace ProtoBuf
             if (key-- == Root)
             {
                 if (value == null) throw new ArgumentNullException("value");
-                if (rootObject != null && ((object)rootObject != (object)value)) throw new ProtoException("The root object cannot be reassigned");
+                if (rootObject != null && rootObject != value) throw new ProtoException("The root object cannot be reassigned");
                 rootObject = value;
             }
             else
@@ -77,7 +77,7 @@ namespace ProtoBuf
         {
             if (value == null) throw new ArgumentNullException("value");
 
-            if ((object)value == (object)rootObject) // (object) here is no-op, but should be
+            if (value == rootObject) // (object) here is no-op, but should be
             {                                        // preserved even if this was typed - needs ref-check
                 existing = true;
                 return Root;

@@ -211,7 +211,7 @@ namespace UniRx
                 var multilineAttr = GetMultilineAttribute();
                 if (multilineAttr != null)
                 {
-                    return ((!EditorGUIUtility.wideMode) ? 16f : 0f) + 16f + (float)((multilineAttr.Lines - 1) * 13);
+                    return ((!EditorGUIUtility.wideMode) ? 16f : 0f) + 16f + (multilineAttr.Lines - 1) * 13;
                 };
             }
 

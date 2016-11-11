@@ -72,12 +72,12 @@ namespace ProtoBuf.Serializers
             {
                 switch (GetTypeCode())
                 { // unbox then convert to int
-                    case ProtoTypeCode.Byte: return (int)(byte)value;
-                    case ProtoTypeCode.SByte: return (int)(sbyte)value;
-                    case ProtoTypeCode.Int16: return (int)(short)value;
+                    case ProtoTypeCode.Byte: return (byte)value;
+                    case ProtoTypeCode.SByte: return (sbyte)value;
+                    case ProtoTypeCode.Int16: return (short)value;
                     case ProtoTypeCode.Int32: return (int)value;
                     case ProtoTypeCode.Int64: return (int)(long)value;
-                    case ProtoTypeCode.UInt16: return (int)(ushort)value;
+                    case ProtoTypeCode.UInt16: return (ushort)value;
                     case ProtoTypeCode.UInt32: return (int)(uint)value;
                     case ProtoTypeCode.UInt64: return (int)(ulong)value;
                     default: throw new InvalidOperationException();

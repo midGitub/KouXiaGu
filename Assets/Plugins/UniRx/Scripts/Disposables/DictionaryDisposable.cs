@@ -184,7 +184,7 @@ namespace UniRx
         {
             lock (inner)
             {
-                ((System.Runtime.Serialization.ISerializable)inner).GetObjectData(info, context);
+                inner.GetObjectData(info, context);
             }
         }
 
@@ -192,7 +192,7 @@ namespace UniRx
         {
             lock (inner)
             {
-                ((System.Runtime.Serialization.IDeserializationCallback)inner).OnDeserialization(sender);
+                inner.OnDeserialization(sender);
             }
         }
 
@@ -200,7 +200,7 @@ namespace UniRx
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            Add((TKey)item.Key, (TValue)item.Value);
+            Add(item.Key, item.Value);
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
@@ -223,7 +223,7 @@ namespace UniRx
         {
             lock (inner)
             {
-                return new List<KeyValuePair<TKey, TValue>>((ICollection<KeyValuePair<TKey, TValue>>)inner).GetEnumerator();
+                return new List<KeyValuePair<TKey, TValue>>(inner).GetEnumerator();
             }
         }
 

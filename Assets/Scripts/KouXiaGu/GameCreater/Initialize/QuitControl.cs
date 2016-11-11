@@ -16,7 +16,7 @@ namespace KouXiaGu
     }
 
     [Serializable]
-    internal class QuitControl : InitializeBase<IQuitInCoroutine, IQuitInThread, Unit>
+    internal class QuitControl : ResourceInitialize<IQuitInCoroutine, IQuitInThread, Unit>
     {
         public QuitControl() : base()
         {

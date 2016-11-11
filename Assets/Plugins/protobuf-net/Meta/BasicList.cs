@@ -148,7 +148,7 @@ namespace ProtoBuf.Meta
             {
                 for (int i = 0; i < length; i++)
                 {
-                    if ((string)value == (string)data[i]) return i;
+                    if (value == (string)data[i]) return i;
                 }
                 return -1;
             }
@@ -156,7 +156,7 @@ namespace ProtoBuf.Meta
             {
                 for (int i = 0; i < length; i++)
                 {
-                    if ((object)instance == (object)data[i]) return i;
+                    if (instance == data[i]) return i;
                 } // ^^^ (object) above should be preserved, even if this was typed; needs
                   // to be a reference check
                 return -1;

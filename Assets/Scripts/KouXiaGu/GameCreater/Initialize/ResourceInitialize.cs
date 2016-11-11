@@ -8,6 +8,11 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    public interface IResourceInitialize<T> : ICancelable
+    {
+        IEnumerator Start(T item, Action<Exception> onError, Action onInitialized, Action<Exception> onFail);
+    }
+
     public interface ICoroutineInitialize<T>
     {
         IEnumerator Initialize(T item, ICancelable cancelable, Action<Exception> onError);
@@ -19,12 +24,12 @@ namespace KouXiaGu
     }
 
     [Serializable]
-    public abstract class InitializeBase<Coroutine, Thread, T> : ICancelable
+    public abstract class ResourceInitialize<Coroutine, Thread, T> : IResourceInitialize<T>, ICancelable
         where Coroutine : ICoroutineInitialize<T>
         where Thread : IThreadInitialize<T>
     {
 
-        public InitializeBase()
+        public ResourceInitialize()
         {
             runningCoroutines = new HashSet<Coroutine>();
             runningThreads = new HashSet<Thread>();
@@ -55,7 +60,7 @@ namespace KouXiaGu
         protected abstract IEnumerable<Coroutine> LoadInCoroutineComponents { get; }
         protected abstract IEnumerable<Thread> LoadInThreadComponents { get; }
 
-        public IEnumerator Start(T item, Action<Exception> onError, Action onInitialized, Action onFail)
+        public virtual IEnumerator Start(T item, Action<Exception> onError, Action onInitialized, Action<Exception> onFail)
         {
             if (IsRunning)
                 onError(new Exception("已经在初始化中!"));
@@ -69,13 +74,21 @@ namespace KouXiaGu
             if (IsDisposed)
             {
                 needStop = false;
-                onFail(); //因为中途停止导致初始化失败!
+                onFail(new Exception("中途停止导致初始化失败!"));
                 yield break;
             }
             else
             {
                 onInitialized();
             }
+        }
+
+        /// <summary>
+        /// 提供重写,在所有初始化完成后调用;
+        /// </summary>
+        protected virtual void OnInitializedSuccess()
+        {
+            return;
         }
 
         public void Dispose()

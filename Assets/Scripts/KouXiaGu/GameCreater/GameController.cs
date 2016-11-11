@@ -41,7 +41,7 @@ namespace KouXiaGu
             Create(null);
         }
 
-        public void Create(ILoadRes loadRes)
+        public void Create(ICreateGameResource loadRes)
         {
             if (!CanCreateGame)
                 throw new Exception();
@@ -56,7 +56,7 @@ namespace KouXiaGu
             createControl.Dispose();
         }
 
-        public void Save(ISaveRes saveRes)
+        public void Save(IArchived saveRes)
         {
             if (!CanSaveGame)
                 throw new Exception();
@@ -90,7 +90,7 @@ namespace KouXiaGu
             Debug.LogError(error);
             StopCreate();
         }
-        private void OnCreatingFail()
+        private void OnCreatingFail(Exception error)
         {
             Debug.LogError("创建游戏失败!");
             State = GameStatus.Ready;
@@ -109,7 +109,7 @@ namespace KouXiaGu
         {
             Debug.LogError(error);
         }
-        private void OnSavingFail()
+        private void OnSavingFail(Exception error)
         {
             Debug.LogError("保存游戏失败!");
             State = GameStatus.Running;
@@ -128,10 +128,33 @@ namespace KouXiaGu
         {
             Debug.LogError(error);
         }
-        private void OnQuittinggFail()
+        private void OnQuittinggFail(Exception error)
         {
             Debug.LogError("退出游戏失败!");
             State = GameStatus.Running;
+        }
+
+        [ContextMenu("显示所有存档")]
+        private void Test_Archive()
+        {
+            string strLog = "存在的存档:";
+              var items = archiveControl.GetSmallArchiveds();
+            foreach (var item in items)
+            {
+                SmallArchived smallArchived = item.SmallArchived;
+
+                strLog +=
+                    "\n名称:" + smallArchived.Name +
+                    "\n路径:" + item.ArchivedPath;
+            }
+            Debug.Log(strLog);
+        }
+
+        [ContextMenu("保存存档")]
+        private void Test_SaveRandomArchive()
+        {
+            IArchived archived = archiveControl.GetNewArchived();
+            archiveControl.SaveInDisk(archived);
         }
 
     }

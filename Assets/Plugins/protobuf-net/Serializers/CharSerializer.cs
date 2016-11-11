@@ -29,7 +29,7 @@ namespace ProtoBuf.Serializers
 #if !FEAT_IKVM
         public override void Write(object value, ProtoWriter dest)
         {
-            ProtoWriter.WriteUInt16((ushort)(char)value, dest);
+            ProtoWriter.WriteUInt16((char)value, dest);
         }
         public override object Read(object value, ProtoReader source)
         {

@@ -546,7 +546,7 @@ namespace ProtoBuf.Meta
             string name = null;
             for (int i = 0; i < typeAttribs.Length; i++)
             {
-                AttributeMap item = (AttributeMap)typeAttribs[i];
+                AttributeMap item = typeAttribs[i];
                 object tmp;
                 string fullAttributeTypeName = item.AttributeType.FullName;
                 if (!isEnum && fullAttributeTypeName == "ProtoBuf.ProtoIncludeAttribute")
@@ -1120,7 +1120,7 @@ namespace ProtoBuf.Meta
                     case ProtoTypeCode.Byte: defaultValue = (byte)0; break;
                     case ProtoTypeCode.Char: defaultValue = (char)0; break;
                     case ProtoTypeCode.Int16: defaultValue = (short)0; break;
-                    case ProtoTypeCode.Int32: defaultValue = (int)0; break;
+                    case ProtoTypeCode.Int32: defaultValue = 0; break;
                     case ProtoTypeCode.Int64: defaultValue = (long)0; break;
                     case ProtoTypeCode.SByte: defaultValue = (sbyte)0; break;
                     case ProtoTypeCode.UInt16: defaultValue = (ushort)0; break;

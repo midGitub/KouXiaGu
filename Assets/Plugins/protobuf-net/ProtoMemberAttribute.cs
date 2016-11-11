@@ -34,7 +34,7 @@ namespace ProtoBuf
         public int CompareTo(ProtoMemberAttribute other)
         {
             if (other == null) return -1;
-            if ((object)this == (object)other) return 0;
+            if ((this) == (object)other) return 0;
             int result = this.tag.CompareTo(other.tag);
             if (result == 0) result = string.CompareOrdinal(this.name, other.name);
             return result;

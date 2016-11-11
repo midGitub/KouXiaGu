@@ -56,6 +56,27 @@ namespace KouXiaGu
 
         #region ProtoBuf
 
+        public static void Serialize_ProtoBuf<T>(this T t, string filePath)
+        {
+            using (Stream fStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                Serializer.Serialize(fStream, t);
+            }
+        }
+
+        public static T Deserialize_ProtoBuf<T>(this string filePath)
+        {
+            Stream fStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            T t = Serializer.Deserialize<T>(fStream);
+            fStream.Close();
+            return t;
+        }
+
+        public static T Deserialize_ProtoBuf<T>(this Stream stream)
+        {
+            return Serializer.Deserialize<T>(stream);
+        }
+
         /// <summary>
         /// 序列化;
         /// </summary>
@@ -72,25 +93,6 @@ namespace KouXiaGu
         public static void Serialize_ProtoBuf<T>(Stream stream, T t)
         {
             Serializer.Serialize(stream, t);
-        }
-
-        /// <summary>
-        /// 反序列化;
-        /// </summary>
-        public static T Deserialize_ProtoBuf<T>(string filePath)
-        {
-            Stream fStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            T t = Serializer.Deserialize<T>(fStream);
-            fStream.Close();
-            return t;
-        }
-
-        /// <summary>
-        /// 反序列化;
-        /// </summary>
-        public static T Deserialize_ProtoBuf<T>(Stream stream)
-        {
-            return Serializer.Deserialize<T>(stream);
         }
 
         #endregion
