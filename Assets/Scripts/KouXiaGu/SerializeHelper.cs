@@ -26,7 +26,7 @@ namespace KouXiaGu
         /// <summary>
         /// 序列化;
         /// </summary>
-        public static void Serialize_Xml<T>(Stream stream, T t)
+        public static void Serialize_Xml<T>(this Stream stream, T t)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));
             serializer.Serialize(stream, t);
@@ -46,7 +46,7 @@ namespace KouXiaGu
         /// <summary>
         /// 反序列化;
         /// </summary>
-        public static T Deserialize_Xml<T>(Stream stream)
+        public static T Deserialize_Xml<T>(this Stream stream)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));
             return (T)serializer.Deserialize(stream);
@@ -56,15 +56,19 @@ namespace KouXiaGu
 
         #region ProtoBuf
 
-        public static void Serialize_ProtoBuf<T>(this T t, string filePath)
+        public static void Serialize_ProtoBuf<T>(string filePath, T t)
         {
-            using (Stream fStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
-            {
-                Serializer.Serialize(fStream, t);
-            }
+            Stream fStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+            Serializer.Serialize(fStream, t);
+            fStream.Close();
         }
 
-        public static T Deserialize_ProtoBuf<T>(this string filePath)
+        public static void Serialize_ProtoBuf<T>(this Stream stream, T t)
+        {
+            Serializer.Serialize(stream, t);
+        }
+
+        public static T Deserialize_ProtoBuf<T>(string filePath)
         {
             Stream fStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             T t = Serializer.Deserialize<T>(fStream);
@@ -75,24 +79,6 @@ namespace KouXiaGu
         public static T Deserialize_ProtoBuf<T>(this Stream stream)
         {
             return Serializer.Deserialize<T>(stream);
-        }
-
-        /// <summary>
-        /// 序列化;
-        /// </summary>
-        public static void Serialize_ProtoBuf<T>(string filePath, T t)
-        {
-            Stream fStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
-            Serializer.Serialize(fStream, t);
-            fStream.Close();
-        }
-
-        /// <summary>
-        /// 序列化;
-        /// </summary>
-        public static void Serialize_ProtoBuf<T>(Stream stream, T t)
-        {
-            Serializer.Serialize(stream, t);
         }
 
         #endregion

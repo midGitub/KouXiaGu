@@ -8,10 +8,6 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    public interface IResourceInitialize<T> : ICancelable
-    {
-        IEnumerator Start(T item, Action<Exception> onError, Action onInitialized, Action<Exception> onFail);
-    }
 
     public interface ICoroutineInitialize<T>
     {
@@ -23,18 +19,22 @@ namespace KouXiaGu
         void Initialize(T item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak);
     }
 
+    /// <summary>
+    /// 初始化,当初始化过程中出现错误,则视为初始化失败;
+    /// </summary>
     [Serializable]
-    public abstract class ResourceInitialize<Coroutine, Thread, T> : IResourceInitialize<T>, ICancelable
+    public abstract class InitializeHelper<Coroutine, Thread, T> : ICancelable
         where Coroutine : ICoroutineInitialize<T>
         where Thread : IThreadInitialize<T>
     {
 
-        public ResourceInitialize()
+        public InitializeHelper()
         {
             runningCoroutines = new HashSet<Coroutine>();
             runningThreads = new HashSet<Thread>();
         }
 
+        [Header("初始化方式")]
         [SerializeField]
         private FrameCountType updateType = FrameCountType.FixedUpdate;
 
@@ -43,6 +43,7 @@ namespace KouXiaGu
 
         private HashSet<Coroutine> runningCoroutines;
         private HashSet<Thread> runningThreads;
+        private Exception stopException;
 
         public FrameCountType UpdateType
         {
@@ -60,13 +61,18 @@ namespace KouXiaGu
         protected abstract IEnumerable<Coroutine> LoadInCoroutineComponents { get; }
         protected abstract IEnumerable<Thread> LoadInThreadComponents { get; }
 
-        public virtual IEnumerator Start(T item, Action<Exception> onError, Action onInitialized, Action<Exception> onFail)
+        public virtual IEnumerator Start(T item, Action onInitialized, Action<Exception> onFail)
         {
             if (IsRunning)
-                onError(new Exception("已经在初始化中!"));
+            {
+                onFail(new Exception("已经在初始化中!"));
+                yield break;
+            }
 
-            StartAllCoroutine(item, onError);
-            StartAllThread(item, onError);
+            stopException = new Exception("初始化失败!");
+
+            StartAllCoroutine(item, OnRunningFail);
+            StartAllThread(item, OnRunningFail);
 
             while (IsRunning)
                 yield return null;
@@ -74,21 +80,14 @@ namespace KouXiaGu
             if (IsDisposed)
             {
                 needStop = false;
-                onFail(new Exception("中途停止导致初始化失败!"));
+                onFail(stopException);
                 yield break;
             }
             else
             {
                 onInitialized();
+                yield break;
             }
-        }
-
-        /// <summary>
-        /// 提供重写,在所有初始化完成后调用;
-        /// </summary>
-        protected virtual void OnInitializedSuccess()
-        {
-            return;
         }
 
         public void Dispose()
@@ -96,6 +95,19 @@ namespace KouXiaGu
             if (IsRunning)
             {
                 needStop = true;
+            }
+        }
+
+        private void OnRunningFail(Exception e)
+        {
+            Dispose();
+            try
+            {
+                stopException.Data.Add(e.Message, e);
+            }
+            catch(ArgumentException)
+            {
+                return;
             }
         }
 

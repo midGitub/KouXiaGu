@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace KouXiaGu
 {
-    public class Test_Game : MonoBehaviour, ICreateInCoroutine, ICreateInThread
+    public class Test_Game : MonoBehaviour, IBuildGameInCoroutine, IBuildGameInThread
     {
 
         [SerializeField]
@@ -17,7 +17,7 @@ namespace KouXiaGu
         [SerializeField]
         private int j;
 
-        void IThreadInitialize<ICreateGameResource>.Initialize(ICreateGameResource item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
+        void IThreadInitialize<BuildGameData>.Initialize(BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
             while (i < j)
             {
@@ -30,7 +30,7 @@ namespace KouXiaGu
             runningDoneCallBreak();
         }
 
-        IEnumerator ICoroutineInitialize<ICreateGameResource>.Initialize(ICreateGameResource item, ICancelable cancelable, Action<Exception> onError)
+        IEnumerator ICoroutineInitialize<BuildGameData>.Initialize(BuildGameData item, ICancelable cancelable, Action<Exception> onError)
         {
             while (i < j)
             {
