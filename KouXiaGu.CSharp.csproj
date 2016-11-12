@@ -160,7 +160,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Following2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookForward2D.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\BuildGame.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\BuildGame.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameStatus.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeAppend.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeHelper.cs" />
@@ -182,11 +182,10 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\Path.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\PathNotFoundException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\OuterBoundaryException.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ArchiveData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ArchivedFileData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\CoreData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ModData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\Properties.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\ArchiveData.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\ArchivedFileData.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\CoreData.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\ModData.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
@@ -275,6 +274,9 @@
     <None Include="Assets\Plugins\UniRx\ReadMe.txt" />
     <None Include="Assets\Plugins\protobuf-net\Web\TODO.txt" />
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Scripts\KouXiaGu\Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
