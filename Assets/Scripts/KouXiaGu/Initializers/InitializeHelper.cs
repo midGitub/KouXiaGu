@@ -8,6 +8,13 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    public interface IHelperInitialize<T> : ICancelable
+    {
+        bool IsRunning { get; }
+        FrameCountType UpdateType { get; set; }
+
+        IEnumerator Start(T item, Action onInitialized, Action<Exception> onFail);
+    }
 
     public interface ICoroutineInitialize<T>
     {
@@ -23,7 +30,7 @@ namespace KouXiaGu
     /// 初始化,当初始化过程中出现错误,则视为初始化失败;
     /// </summary>
     [Serializable]
-    public abstract class InitializeHelper<Coroutine, Thread, T> : ICancelable
+    public abstract class InitializeHelper<Coroutine, Thread, T> : ICancelable, IHelperInitialize<T>
         where Coroutine : ICoroutineInitialize<T>
         where Thread : IThreadInitialize<T>
     {

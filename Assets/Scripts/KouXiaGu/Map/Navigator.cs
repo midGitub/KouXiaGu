@@ -6,7 +6,9 @@ using System.Text;
 namespace KouXiaGu.Map
 {
 
-
+    /// <summary>
+    /// 被导航物体;
+    /// </summary>
     public class Navigator
     {
 

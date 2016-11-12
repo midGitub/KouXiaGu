@@ -19,33 +19,46 @@ namespace KouXiaGu
         private GameStatusReactiveProperty state = new GameStatusReactiveProperty(GameStatus.Ready);
 
         [SerializeField]
-        private FrameCountType CheckType = FrameCountType.Update;
-
-        private readonly bool publishEveryYield = false;
-
-        [SerializeField]
-        private GameInitialize buildGame;
-        [SerializeField]
-        private ArchiveInitialize archive;
-        [SerializeField]
-        private QuitInitialize quit;
+        private BuildGame buildGame;
 
         public GameStatus State { get { return state.Value; } private set { state.Value = value; } }
         public IReadOnlyReactiveProperty<GameStatus> StateReactive { get { return state; } }
 
-        public bool CanBuildGame { get { return State == GameStatus.Ready; } }
-        public bool CanSaveGame { get { return State == GameStatus.Running; } }
-        public bool CanQuitGame { get { return State == GameStatus.Running; } }
+        public bool CanBuildGame
+        {
+            get { return State == GameStatus.Ready; }
+        }
+        public bool CanSaveGame
+        {
+            get { return State == GameStatus.Running; }
+        }
+        public bool CanQuitGame
+        {
+            get { return State == GameStatus.Running; }
+        }
 
-        public IAppendComponent<IBuildGameInCoroutine, IBuildGameInThread> BuildGame { get { return buildGame; } }
-        public IAppendComponent<IArchiveInCoroutine, IArchiveInThread> Archive { get { return archive; } }
-        public IAppendComponent<IQuitInCoroutine, IQuitInThread> Quit { get { return quit; } }
+        public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
+        {
+            get { return buildGame.AppendBuildGame; }
+        }
+        public IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame
+        {
+            get { return buildGame.AppendArchiveGame; }
+        }
+        public IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame
+        {
+            get { return buildGame.AppendQuitGame; }
+        }
 
         private void Awake()
         {
             buildGame.Awake();
-            archive.Awake();
-            quit.Awake();
+        }
+
+        private void Start()
+        {
+            Action onComplete = () => Debug.Log("读取成功!");
+            Build(default(BuildGameData), onComplete);
         }
 
         public ICancelable Build(BuildGameData buildGameRes, Action onComplete = null, Action<Exception> onFail = null)
@@ -56,10 +69,8 @@ namespace KouXiaGu
             Action<Exception> onBuildingFail = e => OnBuildingFail(e, onFail);
             Action onBuiltComplete = () => OnBuiltComplete(onComplete);
 
-            Func<IEnumerator> coroutine = () => buildGame.Start(buildGameRes, onBuiltComplete, onBuildingFail);
-            Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
             OnBuilding();
-            return buildGame;
+            return buildGame.Build(buildGameRes, onBuiltComplete, onBuildingFail);
         }
 
         public ICancelable Save(ArchivedGroup archivedGroup, Action onComplete = null, Action<Exception> onFail = null)
@@ -70,10 +81,8 @@ namespace KouXiaGu
             Action<Exception> onSavingFail = e => OnSavingFail(e, onFail);
             Action onSavedComplete = () => OnSavedComplete(onComplete);
 
-            Func<IEnumerator> coroutine = () => archive.Start(archivedGroup, onSavedComplete, onSavingFail);
-            Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
             OnSaving();
-            return archive;
+            return buildGame.Save(archivedGroup, onSavedComplete, onSavingFail);
         }
 
         public ICancelable QuitToMain(Unit unit, Action onComplete = null, Action<Exception> onFail = null)
@@ -84,10 +93,8 @@ namespace KouXiaGu
             Action<Exception> onQuittingFail = e => OnQuittingFail(e, onFail);
             Action onQuitComplete = () => OnQuittedComplete(onComplete);
 
-            Func<IEnumerator> coroutine = () => quit.Start(Unit.Default, onQuitComplete, onQuittingFail);
-            Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
             OnQuitting();
-            return quit;
+            return buildGame.Quit(onQuitComplete, onQuittingFail);
         }
 
 
@@ -163,14 +170,14 @@ namespace KouXiaGu
         {
             GameObject gameController = GameObject.FindWithTag("GameController");
 
-            buildGame.FindFromGameObject = true;
-            buildGame.BaseComponents = gameController;
+            AppendBuildGame.FindFromGameObject = true;
+            AppendBuildGame.BaseGameObject = gameController;
 
-            archive.FindFromGameObject = true;
-            archive.BaseComponents = gameController;
+            AppendArchiveGame.FindFromGameObject = true;
+            AppendArchiveGame.BaseGameObject = gameController;
 
-            quit.FindFromGameObject = true;
-            quit.BaseComponents = gameController;
+            AppendQuitGame.FindFromGameObject = true;
+            AppendArchiveGame.BaseGameObject = gameController;
         }
 
 #endif

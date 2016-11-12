@@ -8,6 +8,84 @@ using System.Linq;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 初始化游戏使用的信息;
+    /// </summary>
+    public struct ModGroup
+    {
+        public ModGroup(ModInfo[] modIReadingOrder)
+        {
+            this.ModIReadingOrder = modIReadingOrder;
+        }
+
+        /// <summary>
+        /// 需要读取的模组,按读取顺序升序排列;
+        /// </summary>
+        public ModInfo[] ModIReadingOrder { get; private set; }
+
+    }
+
+    /// <summary>
+    /// 单个模组信息;
+    /// </summary>
+    public class ModInfo
+    {
+        private ModInfo() { }
+
+        private ModInfo(string modDirectoryPath, XElement modInfoElement)
+        {
+            this.ModDirectoryPath = modDirectoryPath;
+            this.ModInfoElement = modInfoElement;
+            LoadFromXML(modInfoElement);
+        }
+
+        public string ModDirectoryPath { get; private set; }
+
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public float Version { get; private set; }
+
+        public XElement ModInfoElement { get; private set; }
+
+        public static ModInfo Load(string modDirectoryPath, string modInfoFilePath)
+        {
+            XElement modInfoElement = XElement.Load(modInfoFilePath);
+            return Load(modDirectoryPath, modInfoElement);
+        }
+
+        public static ModInfo Load(string modDirectoryPath, XElement modInfoElement)
+        {
+            ModInfo modInfo = new ModInfo(modDirectoryPath, modInfoElement);
+            return modInfo;
+        }
+
+        private void LoadFromXML(XElement modInfoElement)
+        {
+            XElement Properties = modInfoElement.Element("Properties");
+
+            this.Name = (string)Properties.Element("Name");
+            this.Description = (string)Properties.Element("Description");
+            this.Version = (float)Properties.Element("Version");
+        }
+
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ModInfo))
+                return false;
+            return (obj as ModInfo).Name == Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+    }
+
+    /// <summary>
+    /// 模组信息管理;
+    /// </summary>
     [Serializable]
     public sealed class ModData
     {
@@ -199,78 +277,6 @@ namespace KouXiaGu
         }
 
         #endregion
-
-    }
-
-    /// <summary>
-    /// 模组信息;
-    /// </summary>
-    public class ModInfo
-    {
-        private ModInfo() { }
-
-        private ModInfo(string modDirectoryPath, XElement modInfoElement)
-        {
-            this.ModDirectoryPath = modDirectoryPath;
-            this.ModInfoElement = modInfoElement;
-            LoadFromXML(modInfoElement);
-        }
-
-        public string ModDirectoryPath { get; private set; }
-
-        public string Name { get; private set; }
-        public string Description { get; private set; }
-        public float Version { get; private set; }
-
-        public XElement ModInfoElement { get; private set; }
-
-        public static ModInfo Load(string modDirectoryPath, string modInfoFilePath)
-        {
-            XElement modInfoElement = XElement.Load(modInfoFilePath);
-            return Load(modDirectoryPath, modInfoElement);
-        }
-
-        public static ModInfo Load(string modDirectoryPath, XElement modInfoElement)
-        {
-            ModInfo modInfo = new ModInfo(modDirectoryPath, modInfoElement);
-            return modInfo;
-        }
-
-        private void LoadFromXML(XElement modInfoElement)
-        {
-            XElement Properties = modInfoElement.Element("Properties");
-
-            this.Name = (string)Properties.Element("Name");
-            this.Description = (string)Properties.Element("Description");
-            this.Version = (float)Properties.Element("Version");
-        }
-
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is ModInfo))
-                return false;
-            return (obj as ModInfo).Name == Name;
-        }
-
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode();
-        }
-
-    }
-
-    public struct ModGroup
-    {
-        public ModGroup(ModInfo[] modIReadingOrder)
-        {
-            this.ModIReadingOrder = modIReadingOrder;
-        }
-
-        /// <summary>
-        /// 需要读取的模组,按读取顺序升序排列;
-        /// </summary>
-        public ModInfo[] ModIReadingOrder { get; private set; }
 
     }
 

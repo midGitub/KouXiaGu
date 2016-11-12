@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.GameScene
 {
 
     /// <summary>
@@ -15,6 +15,8 @@ namespace KouXiaGu
     {
 
         public Transform target;
+        public Vector2 offset;
+
         public float damping = 1;
         public float lookAheadFactor = 3;
         public float lookAheadReturnSpeed = 0.5f;
@@ -26,8 +28,6 @@ namespace KouXiaGu
         private Vector3 m_LookAheadPos;
 
 
-
-        // Use this for initialization
         private void Start()
         {
             Vector3 cameraPoint = GetCameraPoint();
@@ -36,8 +36,6 @@ namespace KouXiaGu
             transform.parent = null;
         }
 
-
-        // Update is called once per frame
         private void Update()
         {
             Vector3 cameraPoint = GetCameraPoint();
@@ -62,11 +60,9 @@ namespace KouXiaGu
             m_LastTargetPosition = cameraPoint;
         }
 
-
         /// <summary>
         /// 获取到摄像机需要到达的位置;
         /// </summary>
-        /// <returns></returns>
         public Vector3 GetCameraPoint()
         {
             Vector3 targetPosition, camerzEulerAngles;
@@ -80,7 +76,7 @@ namespace KouXiaGu
             camerzX = targetPosition.x;
             cameraY = targetPosition.y - radius;
 
-            return new Vector2(camerzX, cameraY);
+            return new Vector2(camerzX + offset.x, cameraY + offset.y);
         }
 
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using ProtoBuf;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu.Map.HexMap
 {
 
     /// <summary>

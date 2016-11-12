@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu.Map.HexMap
 {
 
     /// <summary>
-    /// 六边形地图转换;
+    /// 六边形与地图转换;
     /// </summary>
     public static class HexMapConvert
     {

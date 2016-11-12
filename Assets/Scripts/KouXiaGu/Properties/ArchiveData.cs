@@ -2,16 +2,85 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu
 {
 
     /// <summary>
-    /// 游戏归档文件管理;
+    /// 预读存档 + 存档路径;
+    /// </summary>
+    public struct SmallArchivedGroup
+    {
+        public SmallArchivedGroup(SmallArchived archivedHead, string archivedPath)
+        {
+            this.ArchivedHead = archivedHead;
+            this.ArchivedPath = archivedPath;
+        }
+        public SmallArchived ArchivedHead { get; private set; }
+        public string ArchivedPath { get; private set; }
+    }
+
+    /// <summary>
+    /// 完整存档 + 存档路径;
+    /// </summary>
+    public struct ArchivedGroup
+    {
+        public ArchivedGroup(ArchivedExpand archived, string archivedPath)
+        {
+            this.Archived = archived;
+            this.ArchivedPath = archivedPath;
+        }
+        public ArchivedExpand Archived { get; private set; }
+        public SmallArchived SmallArchived { get { return Archived; } }
+        public string ArchivedPath { get; private set; }
+
+        public static implicit operator SmallArchivedGroup(ArchivedGroup archived)
+        {
+            return new SmallArchivedGroup(archived.Archived, archived.ArchivedPath);
+        }
+    }
+
+
+    ///// <summary>
+    ///// 存档获取方法;
+    ///// </summary>
+    //public interface IArchiveData
+    //{
+    //    /// <summary>
+    //    /// 获取到保存所有存档的文件夹路径;
+    //    /// </summary>
+    //    string GetArchivedsPath();
+
+    //    /// <summary>
+    //    /// 创建一个空存档信息,并且返回(未持久化保存);
+    //    /// </summary>
+    //    ArchivedGroup CreateArchived();
+
+    //    /// <summary>
+    //    /// 获取到所有有效的预读存档信息;
+    //    /// </summary>
+    //    IEnumerable<SmallArchivedGroup> GetSmallArchiveds();
+
+    //    /// <summary>
+    //    /// 将这个存档保存到磁盘上(持久化保存)
+    //    /// </summary>
+    //    /// <param name="archived"></param>
+    //    void SaveInDisk(ArchivedGroup archived);
+
+    //    /// <summary>
+    //    /// 将预读存档文件转换成完整存档;
+    //    /// </summary>
+    //    ArchivedGroup SmallArchivedTransfrom(SmallArchivedGroup smallArchived);
+    //}
+
+    /// <summary>
+    /// 游戏归档管理;
     /// </summary>
     [Serializable]
-    public sealed class ArchiveData
+    public sealed class ArchiveData /*IAppendInitialize<IArchiveInCoroutine, IArchiveInThread>,*/
+        //IHelperInitialize<ArchivedGroup>/*, IArchiveData*/
     {
         private ArchiveData() { }
 
@@ -30,10 +99,9 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到所有存档的预读信息;
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<ArchivedHeadGroup> GetSmallArchiveds()
+        public IEnumerable<SmallArchivedGroup> GetSmallArchiveds()
         {
-            ArchivedHeadGroup smallArchived;
+            SmallArchivedGroup smallArchived;
             ArchivedGroup archived;
 
             foreach (var archivedPath in GetAllArchivedPath())
@@ -52,9 +120,7 @@ namespace KouXiaGu
         /// <summary>
         /// 将存档预读信息转换成存档文件;
         /// </summary>
-        /// <param name="smallArchived"></param>
-        /// <returns></returns>
-        public ArchivedGroup SmallArchivedTransfrom(ArchivedHeadGroup smallArchived)
+        public ArchivedGroup SmallArchivedTransfrom(SmallArchivedGroup smallArchived)
         {
             ArchivedGroup archivedGroup;
             if (TryGetArchived(smallArchived.ArchivedPath, out archivedGroup))
@@ -70,7 +136,6 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到一个新的存档实例(未在磁盘上创建);
         /// </summary>
-        /// <returns></returns>
         public ArchivedGroup CreateArchived()
         {
             ArchivedExpand archivedExpand = new ArchivedExpand();
@@ -93,7 +158,16 @@ namespace KouXiaGu
             SetArchivedInfo(archived.Archived);
 
             SerializeHelper.Serialize_ProtoBuf(archivedFilePath, (ArchivedExpand)archived.Archived);
-            SerializeHelper.Serialize_ProtoBuf(smallArchivedFilePath, (ArchivedHead)archived.Archived);
+            SerializeHelper.Serialize_ProtoBuf(smallArchivedFilePath, (SmallArchived)archived.Archived);
+        }
+
+        /// <summary>
+        /// 获取到保存所有存档的文件夹路径;
+        /// </summary>
+        public string GetArchivedsPath()
+        {
+            string archivedsPath = Path.Combine(Application.persistentDataPath, archivedsDirectory);
+            return archivedsPath;
         }
 
         /// <summary>
@@ -110,20 +184,27 @@ namespace KouXiaGu
             }
         }
 
-        private bool TryGetSmallArchived(string archivedPath, out ArchivedHeadGroup smallArchived)
+        /// <summary>
+        /// 尝试获取到这个存档路径内的预读存档;
+        /// 若不存在完整的存档,也算不存在;
+        /// </summary>
+        private bool TryGetSmallArchived(string archivedPath, out SmallArchivedGroup smallArchived)
         {
             string smallArchivedFilePath;
 
-            if (TryGetSmallArchivedFilePath(archivedPath, out smallArchivedFilePath))
+            if (ExistArchivedFile(archivedPath) && TryGetSmallArchivedFilePath(archivedPath, out smallArchivedFilePath))
             {
-                ArchivedHead archived = SerializeHelper.Deserialize_ProtoBuf<ArchivedHead>(smallArchivedFilePath);
-                smallArchived = new ArchivedHeadGroup(archived, archivedPath);
+                SmallArchived archived = SerializeHelper.Deserialize_ProtoBuf<SmallArchived>(smallArchivedFilePath);
+                smallArchived = new SmallArchivedGroup(archived, archivedPath);
                 return true;
             }
-            smallArchived = default(ArchivedHeadGroup);
+            smallArchived = default(SmallArchivedGroup);
             return false;
         }
 
+        /// <summary>
+        /// 尝试获取到这个存档路径内的存档;
+        /// </summary>
         private bool TryGetArchived(string archivedPath, out ArchivedGroup archived)
         {
             string archivedFilePath;
@@ -158,64 +239,51 @@ namespace KouXiaGu
             archived.Version = version;
         }
 
-        private string GetArchivedsPath()
-        {
-            string archivedsPath = Path.Combine(Application.persistentDataPath, archivedsDirectory);
-            return archivedsPath;
-        }
-
+        /// <summary>
+        /// 从存档路径获取到预读的存档文件路径;
+        /// </summary>
         private string GetSmallArchivedFilePath(string archivedPath)
         {
             string mallArchivedFilePath = Path.Combine(archivedPath, smallArchivedName);
             return mallArchivedFilePath;
         }
 
+        /// <summary>
+        /// 从存档路径获取到存档文件路径;
+        /// </summary>
         private string GetArchivedFilePath(string archivedPath)
         {
             string archivedFilePath = Path.Combine(archivedPath, archivedName);
             return archivedFilePath;
         }
 
+        /// <summary>
+        /// 尝试从存档路径获取到预读的存档文件路径;
+        /// </summary>
         private bool TryGetSmallArchivedFilePath(string archivedPath, out string smallArchivedFilePath)
         {
             smallArchivedFilePath = GetSmallArchivedFilePath(archivedPath);
             return File.Exists(smallArchivedFilePath);
         }
 
+        /// <summary>
+        /// 尝试从存档路径获取到存档文件路径;
+        /// </summary>
         private bool TryGetArchivedFilePath(string archivedPath, out string archivedFilePath)
         {
             archivedFilePath = GetArchivedFilePath(archivedPath);
             return File.Exists(archivedFilePath);
         }
 
-    }
-
-    public struct ArchivedHeadGroup
-    {
-        public ArchivedHeadGroup(ArchivedHead archivedHead, string archivedPath)
+        /// <summary>
+        /// 这个路径下是否存在完整存档文件;
+        /// </summary>
+        private bool ExistArchivedFile(string archivedPath)
         {
-            this.ArchivedHead = archivedHead;
-            this.ArchivedPath = archivedPath;
+            string archivedFilePath = GetArchivedFilePath(archivedPath);
+            return File.Exists(archivedFilePath);
         }
-        public ArchivedHead ArchivedHead { get; private set; }
-        public string ArchivedPath { get; private set; }
-    }
 
-    public struct ArchivedGroup 
-    {
-        public ArchivedGroup(ArchivedExpand archived, string archivedPath)
-        {
-            this.Archived = archived;
-            this.ArchivedPath = archivedPath;
-        }
-        public ArchivedExpand Archived { get; private set; }
-        public ArchivedHead SmallArchived { get { return Archived; } }
-        public string ArchivedPath { get; private set; }
-
-        public static implicit operator ArchivedHeadGroup(ArchivedGroup archived)
-        {
-            return new ArchivedHeadGroup(archived.Archived, archived.ArchivedPath);
-        }
     }
 
 }

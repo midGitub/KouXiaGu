@@ -12,7 +12,7 @@ namespace KouXiaGu
     /// 游戏存档文件,保存内容主要为存档信息,能快速读取的信息;
     /// </summary>
     [ProtoContract, ProtoInclude(50, typeof(ArchivedExpand))]
-    public class ArchivedHead
+    public class SmallArchived
     {
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace KouXiaGu
     /// 拓展的游戏存档,主要保存地图数据或其它需要大容量的数据信息;
     /// </summary>
     [ProtoContract]
-    public class ArchivedExpand : ArchivedHead
+    public class ArchivedExpand : SmallArchived
     {
 
         /// <summary>

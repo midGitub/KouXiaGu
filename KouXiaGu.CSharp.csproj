@@ -154,29 +154,26 @@
     <Compile Include="Assets\Obsolete_Scripts\XGame\XmlModule\PrefabCreater.cs" />
     <Compile Include="Assets\Obsolete_Scripts\XGame\XmlModule\XmlSpriteRenderer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\AttributeHelper.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Camera2DFollow.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\CameraController.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Following2D.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeComponent.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ArchiveData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ArchivedFileData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\CoreData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\BuildGameData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Initializers.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameScene\CameraController.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Following2D.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookAt2D.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookForward2D.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Properties\BuildGame.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameStatus.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ModData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeType.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeAppend.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeHelper.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Initializers.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Test_Game.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\LookAt2D.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\LookForward2D.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\GameMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexDirection.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexMapConvert.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\Hexagon.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IntVector2.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigator.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\NavNode.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\NaviMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\AStar.cs" />
@@ -184,14 +181,19 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\INavNode.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\Path.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\PathNotFoundException.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigator.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\OuterBoundaryException.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ArchiveData.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ArchivedFileData.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Properties\CoreData.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Properties\ModData.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Properties\Properties.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Mods\ModReadingOrder.xml" />
+    <None Include="Assets\Mods\Test1\ModInfo.xml" />
     <None Include="Assets\Plugins\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
     <None Include="Assets\Plugins\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
     <None Include="Assets\Plugins\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
@@ -274,6 +276,5 @@
     <None Include="Assets\Plugins\protobuf-net\Web\TODO.txt" />
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

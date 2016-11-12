@@ -5,10 +5,12 @@ using System;
 namespace KouXiaGu
 {
 
-    public interface IAppendComponent<FromCoroutine, FromThread>
-    //where FromCoroutine : ICoroutineInitialize<T>
-    //where FromThread : IThreadInitialize<T>
+    public interface IAppendInitialize<FromCoroutine, FromThread>
     {
+        bool FindFromGameObject { get; set; }
+        GameObject BaseGameObject { get; set; }
+
+        void Awake();
         bool Add(FromThread item);
         bool Add(FromCoroutine item);
         bool Contains(FromThread item);
@@ -17,13 +19,13 @@ namespace KouXiaGu
         bool Remove(FromCoroutine item);
     }
 
-
-    public class InitializeComponent<FromCoroutine, FromThread, T> : InitializeHelper<FromCoroutine, FromThread, T>,
-        IAppendComponent<FromCoroutine, FromThread>
+    [Serializable]
+    public class InitializeAppend<FromCoroutine, FromThread, T> : InitializeHelper<FromCoroutine, FromThread, T>,
+        IAppendInitialize<FromCoroutine, FromThread>
         where FromCoroutine : ICoroutineInitialize<T>
         where FromThread : IThreadInitialize<T>
     {
-        protected InitializeComponent()
+        protected InitializeAppend()
         {
             coroutineComponents = new HashSet<FromCoroutine>();
             threadComponents = new HashSet<FromThread>();
@@ -43,7 +45,7 @@ namespace KouXiaGu
             get { return findFromGameObject; }
             set { findFromGameObject = value; }
         }
-        public GameObject BaseComponents
+        public GameObject BaseGameObject
         {
             get { return baseGameObject; }
             set { baseGameObject = value; }
@@ -63,8 +65,8 @@ namespace KouXiaGu
         {
             if (findFromGameObject)
             {
-                coroutineComponents.UnionWith(BaseComponents.GetComponentsInChildren<FromCoroutine>());
-                threadComponents.UnionWith(BaseComponents.GetComponentsInChildren<FromThread>());
+                coroutineComponents.UnionWith(BaseGameObject.GetComponentsInChildren<FromCoroutine>());
+                threadComponents.UnionWith(BaseGameObject.GetComponentsInChildren<FromThread>());
             }
         }
 
