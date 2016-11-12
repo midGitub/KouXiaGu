@@ -192,8 +192,6 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Mods\ModReadingOrder.xml" />
-    <None Include="Assets\Mods\Test1\ModInfo.xml" />
     <None Include="Assets\Plugins\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
     <None Include="Assets\Plugins\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
     <None Include="Assets\Plugins\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
