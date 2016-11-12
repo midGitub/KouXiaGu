@@ -182,10 +182,10 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\Path.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\PathNotFoundException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\OuterBoundaryException.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\ArchiveData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\ArchivedFileData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\CoreData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\ModData.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataArchive.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataArchivedFile.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataCore.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataMod.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
@@ -275,8 +275,6 @@
     <None Include="Assets\Plugins\protobuf-net\Web\TODO.txt" />
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Scripts\KouXiaGu\Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

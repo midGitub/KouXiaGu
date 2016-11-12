@@ -87,9 +87,9 @@ namespace KouXiaGu
     /// 模组信息管理;
     /// </summary>
     [Serializable]
-    public sealed class ModData
+    public sealed class DataMod
     {
-        private ModData() { }
+        private DataMod() { }
 
         [SerializeField, Tooltip("模组资源目录")]
         private string modsDirectory;

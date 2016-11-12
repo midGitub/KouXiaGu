@@ -9,9 +9,9 @@ namespace KouXiaGu
     /// 游戏
     /// </summary>
     [Serializable]
-    public class CoreData : ICoreDataResource
+    public class DataCore : ICoreDataResource
     {
-        private CoreData() { }
+        private DataCore() { }
 
         [SerializeField, Tooltip("核心文件目录")]
         private string coreDataDirectory;

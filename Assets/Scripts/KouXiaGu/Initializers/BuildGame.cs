@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UniRx;
 using UnityEngine;
 
@@ -39,22 +36,26 @@ namespace KouXiaGu
     }
 
 
+    /// <summary>
+    /// 游戏创建方法;
+    /// </summary>
     [Serializable]
     public class BuildGame
     {
+        private BuildGame() { }
 
         [SerializeField]
         private FrameCountType CheckType = FrameCountType.Update;
         private readonly bool publishEveryYield = false;
 
         [SerializeField]
-        private CoreData coreData;
+        private DataCore coreData;
 
         [SerializeField]
-        private ModData modData;
+        private DataMod modData;
 
         [SerializeField]
-        private ArchiveData archiveData;
+        private DataArchive archiveData;
 
 
         [SerializeField]
@@ -67,15 +68,15 @@ namespace KouXiaGu
         private QuitInitialize quitGame;
 
 
-        public CoreData CoreData
+        public DataCore CoreData
         {
             get { return coreData; }
         }
-        public ModData ModData
+        public DataMod ModData
         {
             get { return modData; }
         }
-        public ArchiveData ArchiveData
+        public DataArchive ArchiveData
         {
             get { return archiveData; }
         }
@@ -164,144 +165,6 @@ namespace KouXiaGu
                 onSavingFail(e);
             }
         }
-
-
-        //#region IAppendInitialize<T1, T2>
-
-        //public GameObject BaseGameObject
-        //{
-        //    get
-        //    {
-        //        return this.buildGame.BaseGameObject;
-        //    }
-        //    set
-        //    {
-        //        this.buildGame.BaseGameObject = value;
-        //        this.quitGame.BaseGameObject = value;
-        //        this.archiveGame.BaseGameObject = value;
-        //    }
-        //}
-
-        //public bool FindFromGameObject
-        //{
-        //    get
-        //    {
-        //        return this.buildGame.FindFromGameObject &&
-        //            this.quitGame.FindFromGameObject &&
-        //            this.archiveGame.FindFromGameObject;
-        //    }
-        //    set
-        //    {
-        //        this.buildGame.FindFromGameObject = value;
-        //        this.quitGame.FindFromGameObject = value;
-        //        this.archiveGame.FindFromGameObject = value;
-        //    }
-        //}
-
-        //public void Awake()
-        //{
-        //    this.buildGame.Awake();
-        //    this.quitGame.Awake();
-        //    this.archiveGame.Awake();
-        //}
-
-
-        //public bool Add(IBuildGameInCoroutine item)
-        //{
-        //    return this.buildGame.Add(item);
-        //}
-
-        //public bool Add(IBuildGameInThread item)
-        //{
-        //    return this.buildGame.Add(item);
-        //}
-
-        //public bool Contains(IBuildGameInCoroutine item)
-        //{
-        //    return this.buildGame.Contains(item);
-        //}
-
-        //public bool Contains(IBuildGameInThread item)
-        //{
-        //    return this.buildGame.Contains(item);
-        //}
-
-        //public bool Remove(IBuildGameInCoroutine item)
-        //{
-        //    return this.buildGame.Remove(item);
-        //}
-
-        //public bool Remove(IBuildGameInThread item)
-        //{
-        //    return this.buildGame.Remove(item);
-        //}
-
-
-
-
-        //public bool Add(IQuitInThread item)
-        //{
-        //    return this.quitGame.Add(item);
-        //}
-
-        //public bool Add(IQuitInCoroutine item)
-        //{
-        //    return this.quitGame.Add(item);
-        //}
-
-        //public bool Contains(IQuitInThread item)
-        //{
-        //    return this.quitGame.Contains(item);
-        //}
-
-        //public bool Contains(IQuitInCoroutine item)
-        //{
-        //    return this.quitGame.Contains(item);
-        //}
-
-        //public bool Remove(IQuitInThread item)
-        //{
-        //    return this.quitGame.Remove(item);
-        //}
-
-        //public bool Remove(IQuitInCoroutine item)
-        //{
-        //    return this.quitGame.Remove(item);
-        //}
-
-
-
-        //public bool Add(IArchiveInThread item)
-        //{
-        //    return this.archiveGame.Add(item);
-        //}
-
-        //public bool Add(IArchiveInCoroutine item)
-        //{
-        //    return this.archiveGame.Add(item);
-        //}
-
-        //public bool Contains(IArchiveInThread item)
-        //{
-        //    return this.archiveGame.Contains(item);
-        //}
-
-        //public bool Contains(IArchiveInCoroutine item)
-        //{
-        //    return this.archiveGame.Contains(item);
-        //}
-
-        //public bool Remove(IArchiveInThread item)
-        //{
-        //    return this.archiveGame.Remove(item);
-        //}
-
-        //public bool Remove(IArchiveInCoroutine item)
-        //{
-        //    return this.archiveGame.Remove(item);
-        //}
-
-        //#endregion
 
         /// <summary>
         /// 加载游戏;

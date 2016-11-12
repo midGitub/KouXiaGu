@@ -79,10 +79,9 @@ namespace KouXiaGu
     /// 游戏归档管理;
     /// </summary>
     [Serializable]
-    public sealed class ArchiveData /*IAppendInitialize<IArchiveInCoroutine, IArchiveInThread>,*/
-        //IHelperInitialize<ArchivedGroup>/*, IArchiveData*/
+    public sealed class DataArchive
     {
-        private ArchiveData() { }
+        private DataArchive() { }
 
         [Header("存档信息"), SerializeField, Tooltip("保存到的文件夹")]
         private string archivedsDirectory;
