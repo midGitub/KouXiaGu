@@ -6,7 +6,7 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 游戏
+    /// 游戏核心文件管理;
     /// </summary>
     [Serializable]
     public class DataCore : ICoreDataResource

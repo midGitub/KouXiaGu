@@ -37,6 +37,18 @@ namespace KouXiaGu
             get { return State == GameStatus.Running; }
         }
 
+        public DataCore CoreData
+        {
+            get { return buildGame.CoreData; }
+        }
+        public DataMod ModData
+        {
+            get { return buildGame.ModData; }
+        }
+        public DataArchive ArchiveData
+        {
+            get { return buildGame.ArchiveData; }
+        }
         public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
         {
             get { return buildGame.AppendBuildGame; }
