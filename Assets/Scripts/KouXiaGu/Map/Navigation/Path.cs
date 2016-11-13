@@ -9,7 +9,7 @@ namespace KouXiaGu.Map.Navigation
     /// <summary>
     /// 路径;
     /// </summary>
-    public class Path : LinkedList<IntVector2>
+    public class Path : LinkedList<ShortVector2>
     {
 
 

@@ -20,7 +20,7 @@ namespace KouXiaGu.Map.Navigation
         /// <param name="current"></param>
         /// <param name="target"></param>
         /// <param name="maxTime">需要大于或等于2</param>
-        public AStar(TMover Mover, INavMap<TNode, TMover> map, IntVector2 current, IntVector2 target, uint maxTime = uint.MaxValue)
+        public AStar(TMover Mover, INavMap<TNode, TMover> map, ShortVector2 current, ShortVector2 target, uint maxTime = uint.MaxValue)
         {
             this.map = map;
             this.Current = current;
@@ -31,15 +31,15 @@ namespace KouXiaGu.Map.Navigation
         }
 
         private INavMap<TNode, TMover> map;
-        private Dictionary<IntVector2, PathNode> openPoints;
-        private HashSet<IntVector2> closePoints;
+        private Dictionary<ShortVector2, PathNode> openPoints;
+        private HashSet<ShortVector2> closePoints;
         private PathNode currentNode;
 
         public TMover Mover { get; private set; }
         public uint ResidualTime { get; private set; }
         public Path WayPath { get; private set; }
-        public IntVector2 Current { get; private set; }
-        public IntVector2 Target { get; private set; }
+        public ShortVector2 Current { get; private set; }
+        public ShortVector2 Target { get; private set; }
 
         public bool IsDone { get; private set; }
         public Exception Error { get; private set; }
@@ -49,8 +49,8 @@ namespace KouXiaGu.Map.Navigation
             if (Error is PathNotFoundException)
                 return;
 
-            openPoints = new Dictionary<IntVector2, PathNode>();
-            closePoints = new HashSet<IntVector2>();
+            openPoints = new Dictionary<ShortVector2, PathNode>();
+            closePoints = new HashSet<ShortVector2>();
             AddToOpenPoints(Current, null);
             Pathfinding();
         }
@@ -62,8 +62,8 @@ namespace KouXiaGu.Map.Navigation
 
             Current = WayPath.Last.Value;
 
-            openPoints = new Dictionary<IntVector2, PathNode>();
-            closePoints = new HashSet<IntVector2>();
+            openPoints = new Dictionary<ShortVector2, PathNode>();
+            closePoints = new HashSet<ShortVector2>();
             AddToOpenPoints(Current, null);
             Pathfinding();
         }
@@ -78,7 +78,7 @@ namespace KouXiaGu.Map.Navigation
                     var around = map.GetAround(currentNode.Position).
                         Where(pair => !closePoints.Contains(pair.Key) && pair.Value.IsOpenNode(Mover));
 
-                    foreach (KeyValuePair<IntVector2, TNode> info in around)
+                    foreach (KeyValuePair<ShortVector2, TNode> info in around)
                     {
                         AddToOpenPoints(info.Key, currentNode, info.Value);
                     }
@@ -97,13 +97,13 @@ namespace KouXiaGu.Map.Navigation
             }
         }
 
-        private void AddToOpenPoints(IntVector2 position, PathNode previous)
+        private void AddToOpenPoints(ShortVector2 position, PathNode previous)
         {
             INavNode<TMover> node = map.GetAt(position);
             AddToOpenPoints(position, previous, node);
         }
 
-        private void AddToOpenPoints(IntVector2 position, PathNode previous, INavNode<TMover> node)
+        private void AddToOpenPoints(ShortVector2 position, PathNode previous, INavNode<TMover> node)
         {
             PathNode beforeNode;
             PathNode newNode;
@@ -119,7 +119,7 @@ namespace KouXiaGu.Map.Navigation
             }
         }
 
-        private void RemovePoint(IntVector2 position)
+        private void RemovePoint(ShortVector2 position)
         {
             openPoints.Remove(position);
             closePoints.Add(position);
@@ -170,7 +170,7 @@ namespace KouXiaGu.Map.Navigation
         {
             public PathNode() { }
 
-            public PathNode(IntVector2 position, PathNode previous, INavNode<TMover> node, TMover mover, IntVector2 target)
+            public PathNode(ShortVector2 position, PathNode previous, INavNode<TMover> node, TMover mover, ShortVector2 target)
             {
                 nodeCost = GetNodeCost(position, node, mover, target);
                 this.Position = position;
@@ -180,7 +180,7 @@ namespace KouXiaGu.Map.Navigation
             private float nodeCost;
 
             public float PathCost { get { return Previous.PathCost + nodeCost; } }
-            public IntVector2 Position { get; private set; }
+            public ShortVector2 Position { get; private set; }
             public PathNode Previous { get; private set; }
 
             /// <summary>
@@ -202,7 +202,7 @@ namespace KouXiaGu.Map.Navigation
                 }
             }
 
-            private float GetNodeCost(IntVector2 position, INavNode<TMover> node, TMover mover, IntVector2 target)
+            private float GetNodeCost(ShortVector2 position, INavNode<TMover> node, TMover mover, ShortVector2 target)
             {
                 float nodeCost = node.GetCost(mover);
                 return nodeCost;

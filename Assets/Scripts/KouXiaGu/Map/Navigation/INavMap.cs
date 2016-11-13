@@ -18,14 +18,14 @@ namespace KouXiaGu.Map.Navigation
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        TNode GetAt(IntVector2 position);
+        TNode GetAt(ShortVector2 position);
 
         /// <summary>
         /// 获取到周围存在的节点;
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<IntVector2, TNode>> GetAround(IntVector2 position);
+        IEnumerable<KeyValuePair<ShortVector2, TNode>> GetAround(ShortVector2 position);
 
 
 

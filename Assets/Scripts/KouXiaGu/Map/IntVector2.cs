@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using ProtoBuf;
 using UnityEngine;
 
@@ -6,11 +9,17 @@ namespace KouXiaGu.Map
 {
 
     /// <summary>
-    /// 整数形式的向量;
+    /// Int类型的向量,不作为哈希表的键;
     /// </summary>
     [Serializable, ProtoContract]
     public struct IntVector2 : IEquatable<IntVector2>
     {
+
+        public IntVector2(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
 
         public IntVector2(short x, short y)
         {
@@ -19,10 +28,11 @@ namespace KouXiaGu.Map
         }
 
         [ProtoMember(1)]
-        public short x;
+        public int x;
 
         [ProtoMember(2)]
-        public short y;
+        public int y;
+
 
         /// <summary>
         /// 获取这两个点的距离;
@@ -48,7 +58,6 @@ namespace KouXiaGu.Map
             return distance;
         }
 
-
         #region 重载,对比,转换;
 
         public override string ToString()
@@ -60,41 +69,17 @@ namespace KouXiaGu.Map
         {
             if (!(obj is IntVector2))
                 return false;
-            return GetHashCode() == obj.GetHashCode() ? true : false;
+            return Equals((IntVector2)obj);
         }
 
         public bool Equals(IntVector2 other)
         {
-            return GetHashCode() == other.GetHashCode() ? true : false;
+            return x == other.x && y == other.y;
         }
 
-        /// <summary>
-        /// 根据位置确定哈希值;
-        /// </summary>
-        /// <returns></returns>
         public override int GetHashCode()
         {
-            return GetHashCode(x, y);
-        }
-
-        /// <summary>
-        /// 转换成int,x放在前16位,y放在后16位;
-        /// </summary>
-        private int GetHashCode(short x, short y)
-        {
-            int hashCode;
-
-            byte[] shortX = BitConverter.GetBytes(x);
-            byte[] shortY = BitConverter.GetBytes(y);
-
-            byte[] hashArray = new byte[4];
-
-            shortX.CopyTo(hashArray, 0);
-            shortY.CopyTo(hashArray, 2);
-
-            hashCode = BitConverter.ToInt32(hashArray, 0);
-
-            return hashCode;
+            return base.GetHashCode();
         }
 
         /// <summary>
@@ -103,8 +88,8 @@ namespace KouXiaGu.Map
         public static explicit operator IntVector2(Vector2 vector2)
         {
             return new IntVector2(
-                (short)Math.Round(vector2.x),
-                (short)Math.Round(vector2.y));
+                (int)Math.Round(vector2.x),
+                (int)Math.Round(vector2.y));
         }
 
         /// <summary>
@@ -113,13 +98,13 @@ namespace KouXiaGu.Map
         public static explicit operator IntVector2(Vector3 vector2)
         {
             return new IntVector2(
-                (short)Math.Round(vector2.x),
-                (short)Math.Round(vector2.y));
+                (int)Math.Round(vector2.x),
+                (int)Math.Round(vector2.y));
         }
 
-        public static explicit operator Vector2(IntVector2 IntVector2)
+        public static explicit operator Vector2(IntVector2 v)
         {
-            return new Vector2(IntVector2.x, IntVector2.y);
+            return new Vector2(v.x, v.y);
         }
 
         public static explicit operator Vector3(IntVector2 v)
@@ -187,4 +172,5 @@ namespace KouXiaGu.Map
 
 
     }
+
 }

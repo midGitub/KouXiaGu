@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UniRx;
 using UnityEngine;
+using KouXiaGu.Map;
 
 namespace KouXiaGu
 {
@@ -40,6 +41,39 @@ namespace KouXiaGu
                 i++;
                 yield return null;
             }
+        }
+
+        [ContextMenu("Test")]
+        private void Test_Log()
+        {
+            Debug.Log(new ShortVector2(100,200).GetHashCode().ToString() + "  " + new ShortVector2(200, 100).GetHashCode());
+
+            Debug.Log(GetInt(100,200).ToString() + "  " + GetInt(200, 100));
+        }
+
+        [ContextMenu("Test2")]
+        private void Test_Log2()
+        {
+            int x1 = 100000;
+            int y2 = x1;
+
+            HashSet<int> set = new HashSet<int>();
+
+            for (int x = -x1; x < x1; x++)
+            {
+                for (int y = -y2; y < y2; y++)
+                {
+                    if (set.Add(new ShortVector2((short)x, (short)y).GetHashCode()))
+                    {
+                        Debug.Log("重复!" + x + "  " + y);
+                    }
+                }
+            }
+        }
+
+        private int GetInt(int x, int y)
+        {
+            return x * short.MaxValue + y;
         }
 
     }

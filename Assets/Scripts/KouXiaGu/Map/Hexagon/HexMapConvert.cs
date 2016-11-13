@@ -85,7 +85,7 @@ namespace KouXiaGu.Map.HexMap
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        private static Vector2 NumberToPosition(this Hexagon hexagon, IntVector2 mapPoint)
+        private static Vector2 NumberToPosition(this Hexagon hexagon, ShortVector2 mapPoint)
         {
             Vector2 position = new Vector2();
             position.x = hexagon.DistanceX * mapPoint.x;
@@ -101,11 +101,11 @@ namespace KouXiaGu.Map.HexMap
         {
             public PointPair(Hexagon hexagon, short mapX, short mapY)
             {
-                mapPoint = new IntVector2(mapX, mapY);
+                mapPoint = new ShortVector2(mapX, mapY);
                 worldPoint = NumberToPosition(hexagon, mapPoint);
             }
 
-            public IntVector2 mapPoint { get; private set; }
+            public ShortVector2 mapPoint { get; private set; }
             public Vector2 worldPoint { get; private set; }
 
             public override string ToString()
@@ -128,18 +128,18 @@ namespace KouXiaGu.Map.HexMap
         {
             var directionVectorSet = new Dictionary<int, DirectionVector>(DirectionNumber);
 
-            directionVectorSet.Add(HexDirection.North, new IntVector2(0, 1), new IntVector2(0, 1));
-            directionVectorSet.Add(HexDirection.Northeast, new IntVector2(1, 0), new IntVector2(1, 1));
-            directionVectorSet.Add(HexDirection.Southeast, new IntVector2(1, -1), new IntVector2(1, 0));
-            directionVectorSet.Add(HexDirection.South, new IntVector2(0, -1), new IntVector2(0, -1));
-            directionVectorSet.Add(HexDirection.Southwest, new IntVector2(-1, -1), new IntVector2(-1, 0));
-            directionVectorSet.Add(HexDirection.Northwest, new IntVector2(-1, 0), new IntVector2(-1, 1));
+            directionVectorSet.Add(HexDirection.North, new ShortVector2(0, 1), new ShortVector2(0, 1));
+            directionVectorSet.Add(HexDirection.Northeast, new ShortVector2(1, 0), new ShortVector2(1, 1));
+            directionVectorSet.Add(HexDirection.Southeast, new ShortVector2(1, -1), new ShortVector2(1, 0));
+            directionVectorSet.Add(HexDirection.South, new ShortVector2(0, -1), new ShortVector2(0, -1));
+            directionVectorSet.Add(HexDirection.Southwest, new ShortVector2(-1, -1), new ShortVector2(-1, 0));
+            directionVectorSet.Add(HexDirection.Northwest, new ShortVector2(-1, 0), new ShortVector2(-1, 1));
 
             return directionVectorSet;
         }
 
         private static void Add(this Dictionary<int, DirectionVector> directionVectorDictionary,
-            HexDirection direction, IntVector2 oddVector, IntVector2 evenVector)
+            HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
         {
             DirectionVector directionVector = new DirectionVector(direction, oddVector, evenVector);
             directionVectorDictionary.Add((int)direction, directionVector);
@@ -150,7 +150,7 @@ namespace KouXiaGu.Map.HexMap
         /// </summary>
         /// <param name="target"></param>
         /// <param name="direction"></param>
-        public static IntVector2 GetVector(IntVector2 target, HexDirection direction)
+        public static ShortVector2 GetVector(ShortVector2 target, HexDirection direction)
         {
             DirectionVector directionVector = DirectionVectorSet[(int)direction];
             if ((target.x & 1) == 1)
@@ -168,7 +168,7 @@ namespace KouXiaGu.Map.HexMap
         /// </summary>
         private struct DirectionVector
         {
-            public DirectionVector(HexDirection direction, IntVector2 oddVector, IntVector2 evenVector)
+            public DirectionVector(HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
             {
                 this.Direction = direction;
                 this.OddVector = oddVector;
@@ -176,8 +176,8 @@ namespace KouXiaGu.Map.HexMap
             }
 
             public HexDirection Direction { get; private set; }
-            public IntVector2 OddVector { get; private set; }
-            public IntVector2 EvenVector { get; private set; }
+            public ShortVector2 OddVector { get; private set; }
+            public ShortVector2 EvenVector { get; private set; }
         }
 
         #endregion
