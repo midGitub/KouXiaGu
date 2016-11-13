@@ -9,7 +9,7 @@ namespace KouXiaGu.Map
 {
 
     /// <summary>
-    /// Int类型的向量,不作为哈希表的键;
+    /// Int类型的向量,不作为哈希表的键,因为Int哈希值不够分;
     /// </summary>
     [Serializable, ProtoContract]
     public struct IntVector2 : IEquatable<IntVector2>
@@ -79,7 +79,12 @@ namespace KouXiaGu.Map
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            int hashCode = 0;
+
+            hashCode += x * ushort.MaxValue;
+            hashCode += short.MaxValue + y;
+
+            return hashCode;
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KouXiaGu.Test
+namespace KouXiaGu.TestTool
 {
 
     /// <summary>
@@ -71,7 +71,7 @@ namespace KouXiaGu.Test
             Hexagon hexagon = new Hexagon();
             hexagon.OuterDiameter = 2f;
             Vector2 worldPoint = GetWorldPoint(Camera.main, mousePosition);
-            var item = hexagon.GetClosePoint(worldPoint);
+            var item = hexagon.TransfromPoint(worldPoint);
             str += "地图坐标 :" + item;
 
             return str;

@@ -5,6 +5,36 @@ using UnityEngine;
 namespace KouXiaGu.Map.HexMap
 {
 
+
+    public struct PointPair
+    {
+        public PointPair(Hexagon hexagon, int mapX, int mapY)
+        {
+            intVector2 = new IntVector2(mapX, mapY);
+            worldPoint = hexagon.NumberToPosition(intVector2);
+        }
+
+        public IntVector2 intVector2 { get; private set; }
+        public ShortVector2 shortPoint { get { return (ShortVector2)intVector2; } }
+        public Vector2 worldPoint { get; private set; }
+
+        public override string ToString()
+        {
+            string str = string.Concat("地图坐标:", shortPoint, "  世界坐标:", worldPoint);
+            return str;
+        }
+
+        public static implicit operator IntVector2(PointPair item)
+        {
+            return item.intVector2;
+        }
+        public static implicit operator Vector2(PointPair item)
+        {
+            return item.worldPoint;
+        }
+    }
+
+
     /// <summary>
     /// 六边形与地图转换;
     /// </summary>
@@ -13,9 +43,12 @@ namespace KouXiaGu.Map.HexMap
 
         #region 世界位置转换蜂窝地图位置;
 
-        public static PointPair GetClosePoint(this Hexagon hexagon, Vector2 point)
+        /// <summary>
+        /// 将浮点类型向量转换成地图点;
+        /// </summary>
+        public static PointPair TransfromPoint(this Hexagon hexagon, Vector2 point)
         {
-            short x1, x2, y1, y2;
+            int x1, x2, y1, y2;
             var points = new PointPair[4];
 
             GetInterval(point.x, hexagon.DistanceX, out x1, out x2);
@@ -38,9 +71,9 @@ namespace KouXiaGu.Map.HexMap
         /// <param name="spacing"></param>
         /// <param name="intPoint1"></param>
         /// <param name="intPoint2"></param>
-        private static void GetInterval(float point, float spacing, out short intPoint1, out short intPoint2)
+        private static void GetInterval(float point, float spacing, out int intPoint1, out int intPoint2)
         {
-            intPoint1 = (short)(point / spacing);
+            intPoint1 = (int)(point / spacing);
             if (point > 0)
             {
                 intPoint2 = intPoint1++;
@@ -85,7 +118,7 @@ namespace KouXiaGu.Map.HexMap
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        private static Vector2 NumberToPosition(this Hexagon hexagon, ShortVector2 mapPoint)
+        public static Vector2 NumberToPosition(this Hexagon hexagon, IntVector2 mapPoint)
         {
             Vector2 position = new Vector2();
             position.x = hexagon.DistanceX * mapPoint.x;
@@ -95,24 +128,6 @@ namespace KouXiaGu.Map.HexMap
                 position.y -= (hexagon.InnerDiameter / 2);
 
             return position;
-        }
-
-        public struct PointPair
-        {
-            public PointPair(Hexagon hexagon, short mapX, short mapY)
-            {
-                mapPoint = new ShortVector2(mapX, mapY);
-                worldPoint = NumberToPosition(hexagon, mapPoint);
-            }
-
-            public ShortVector2 mapPoint { get; private set; }
-            public Vector2 worldPoint { get; private set; }
-
-            public override string ToString()
-            {
-                string str = string.Concat("地图坐标:", mapPoint, "  世界坐标:", worldPoint);
-                return str;
-            }
         }
 
         #endregion

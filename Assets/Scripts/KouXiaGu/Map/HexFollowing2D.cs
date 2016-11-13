@@ -1,24 +1,37 @@
 ﻿using System;
 using UnityEngine;
 
-namespace KouXiaGu.GameScene
+namespace KouXiaGu.Map
 {
 
     /// <summary>
     /// 根据挂在物体位置跟随目标(非平滑);
     /// </summary>
     [DisallowMultipleComponent, ExecuteInEditMode]
-    public class Following2D : MonoBehaviour
+    public class HexFollowing2D : MonoBehaviour
     {
 
         [SerializeField]
         private Transform target;
 
+        //[SerializeField]
+        //private Vector2 spans;
+
         [SerializeField]
-        private Vector2 spans;
+        private GameHexMap gameMap;
 
         private Transform current;
         private Vector3 previousPosition;
+
+        public float DistanceX
+        {
+            get { return gameMap.MapHexagon.DistanceX * 2; }
+        }
+
+        public float DistanceY
+        {
+            get { return gameMap.MapHexagon.DistanceY; }
+        }
 
         public Transform Target
         {
@@ -26,11 +39,11 @@ namespace KouXiaGu.GameScene
             set { SetTarget(value); }
         }
 
-        public Vector2 Spans
-        {
-            get { return spans; }
-            set { spans = value; }
-        }
+        //public Vector2 Spans
+        //{
+        //    get { return spans; }
+        //    set { spans = value; }
+        //}
 
         private void Awake()
         {
@@ -65,8 +78,8 @@ namespace KouXiaGu.GameScene
         {
             Vector3 currentPosition = this.current.position;
 
-            currentPosition.x = MoveTo(targetPosition.x, currentPosition.x, spans.x);
-            currentPosition.y = MoveTo(targetPosition.y, currentPosition.y, spans.y);
+            currentPosition.x = MoveTo(targetPosition.x, currentPosition.x, DistanceX);
+            currentPosition.y = MoveTo(targetPosition.y, currentPosition.y, DistanceY);
 
             this.current.position = currentPosition;
         }
@@ -82,8 +95,8 @@ namespace KouXiaGu.GameScene
         /// <returns></returns>
         private float MoveTo(float target, float current, float spans)
         {
-            float distanceX = target - current;
-            int multiple = (int)(distanceX / spans);
+            float distance = target - current;
+            int multiple = (int)(distance / spans);
 
             if (multiple >= 1 || multiple <= -1)
             {

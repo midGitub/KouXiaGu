@@ -12,13 +12,16 @@ namespace KouXiaGu.Map
     /// <summary>
     /// 地图块,分页信息;
     /// </summary>
+    [Serializable]
     public struct PagingInfo
     {
-        public PagingInfo(string dataDirectoryPath, ShortVector2 partitionSizes, ShortVector2 targetRadiationRange)
+        public PagingInfo(string dataDirectoryPath, ShortVector2 partitionSizes, 
+            ShortVector2 targetRadiationRange, string addressPrefix)
         {
             this.dataDirectoryPath = dataDirectoryPath;
             this.partitionSizes = partitionSizes;
             this.targetRadiationRange = targetRadiationRange;
+            this.addressPrefix = addressPrefix;
         }
 
         [SerializeField]
@@ -27,6 +30,8 @@ namespace KouXiaGu.Map
         private ShortVector2 partitionSizes;
         [SerializeField]
         private ShortVector2 targetRadiationRange;
+        [SerializeField]
+        private string addressPrefix;
 
         /// <summary>
         /// 地图文件路径;
@@ -58,8 +63,17 @@ namespace KouXiaGu.Map
         /// </summary>
         public string GetMapPagingFilePath(ShortVector2 address)
         {
-            throw new NotImplementedException();
+            return addressPrefix + address.GetHashCode();
         }
+
+        ///// <summary>
+        ///// 获取到若有地图块地址;
+        ///// </summary>
+        ///// <returns></returns>
+        //public IEnumerable<ShortVector2> GetAllAddress()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
     }
 
@@ -70,9 +84,10 @@ namespace KouXiaGu.Map
     /// </summary>
     public class DynamicMapDictionary<T> : IReadOnlyMap<T>
     {
-        public DynamicMapDictionary(PagingInfo dynamicMapInfo)
+        public DynamicMapDictionary(PagingInfo dynamicMapInfo, bool allowEdit = true)
         {
             this.pagingInfo = dynamicMapInfo;
+            this.allowEdit = allowEdit;
             mapCollection = new Dictionary<ShortVector2, MapPaging>();
         }
 
@@ -87,14 +102,14 @@ namespace KouXiaGu.Map
         private Dictionary<ShortVector2, MapPaging> mapCollection;
 
         /// <summary>
-        /// 上一次更新目标所在的地图块;
-        /// </summary>
-        private ShortVector2 lastUpdateTargetAddress;
-
-        /// <summary>
         /// 在卸载地图资源时进行保存;
         /// </summary>
         private bool allowEdit;
+
+        /// <summary>
+        /// 上一次更新目标所在的地图块;
+        /// </summary>
+        private ShortVector2 lastUpdateTargetAddress;
 
 
         /// <summary>
@@ -173,7 +188,10 @@ namespace KouXiaGu.Map
             if (!allowEdit)
                 throw new ReadOnlyException();
 
-            throw new NotImplementedException();
+            ShortVector2 realPosition;
+            ShortVector2 address = TransfromToAddress(position, out realPosition);
+            MapPaging mapPaging = mapCollection[address];
+            mapPaging.Add(realPosition, item);
         }
 
         /// <summary>
@@ -186,7 +204,10 @@ namespace KouXiaGu.Map
             if (!allowEdit)
                 throw new ReadOnlyException();
 
-            throw new NotImplementedException();
+            ShortVector2 realPosition;
+            ShortVector2 address = TransfromToAddress(position, out realPosition);
+            MapPaging mapPaging = mapCollection[address];
+            mapPaging.Remove(realPosition);
         }
 
         /// <summary>
@@ -394,6 +415,20 @@ namespace KouXiaGu.Map
             return address;
         }
 
+        /// <summary>
+        /// 将地图块坐标转换成 地图坐标;
+        /// </summary>
+        private IntVector2 TransformToPosition(ShortVector2 address, ShortVector2 realPosition)
+        {
+            ShortVector2 partitionSizes = PartitionSizes;
+            IntVector2 position = new IntVector2();
+
+            position.x = address.x * partitionSizes.x + realPosition.x;
+            position.y = address.y * partitionSizes.y + realPosition.y;
+
+            return position;
+        }
+
         [ProtoContract]
         private struct MapPaging : IDictionary<ShortVector2, T>
         {
@@ -507,7 +542,6 @@ namespace KouXiaGu.Map
             }
 
             #endregion
-
 
             public override string ToString()
             {

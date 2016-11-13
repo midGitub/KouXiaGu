@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace XGame.Running.Map.Guidances
+namespace KouXiaGu.Map
 {
 
-
-    public interface IKey
+    public class HexMapNode
     {
-        
+
 
     }
 
