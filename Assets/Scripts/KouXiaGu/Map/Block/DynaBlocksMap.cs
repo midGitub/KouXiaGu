@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,39 +7,72 @@ namespace KouXiaGu.Map
 {
 
     /// <summary>
-    /// 动态地图数据结构;
-    /// 因为是动态加载的,所有取值和赋值时需要检查是否在目标范围内;
+    /// 地图块,分页信息;
     /// </summary>
-    public class DynamicMapDictionary<T> : IGameMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
+    [Serializable]
+    public struct MapBlockInfo
     {
-        public DynamicMapDictionary(DynamicPagingInfo dynamicMapInfo, IDynamicMapIO<DynamicMapPaging<T>, T> dynamicMapIO)
+        public MapBlockInfo(ShortVector2 partitionSizes, ShortVector2 targetRadiationRange)
         {
-            this.pagingInfo = dynamicMapInfo;
-            this.mapCollection = new Dictionary<ShortVector2, IGameMap<ShortVector2, T>>();
-            this.dynamicMapIO = dynamicMapIO;
+            this.partitionSizes = partitionSizes;
+            this.targetRadiationRange = targetRadiationRange;
         }
 
-        public DynamicMapDictionary(DynamicPagingInfo dynamicMapInfo)
+        [SerializeField]
+        private ShortVector2 partitionSizes;
+        [SerializeField]
+        private ShortVector2 targetRadiationRange;
+
+        /// <summary>
+        /// 地图分区大小;
+        /// </summary>
+        public ShortVector2 PartitionSizes
         {
-            this.pagingInfo = dynamicMapInfo;
-            mapCollection = new Dictionary<ShortVector2, IGameMap<ShortVector2, T>>();
-            dynamicMapIO = new DynamicMapIO<T>(dynamicMapInfo);
+            get { return partitionSizes; }
+        }
+
+        /// <summary>
+        /// 目标辐射范围,既以为目标中心,需要读取的地图范围;
+        /// X,Y应该都为正数;
+        /// </summary>
+        public ShortVector2 TargetRadiationRange
+        {
+            get { return targetRadiationRange; }
+        }
+
+    }
+
+
+    /// <summary>
+    /// 动态地图数据结构;负责对地图进行动态的读取和保存;
+    /// 因为是动态加载的,所有取值和赋值时需要确保是否在目标范围内;
+    /// </summary>
+    /// <typeparam name="TMapBlock">保存的地图块</typeparam>
+    /// <typeparam name="T">地图保存的类型</typeparam>
+    public class DynaBlocksMap<TMapBlock, T> : IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
+        where TMapBlock: IMap<ShortVector2, T>
+    {
+        public DynaBlocksMap(MapBlockInfo mapBlockInfo, IMapBlockIO<TMapBlock, T> dynamicMapIO)
+        {
+            this.mapBlockInfo = mapBlockInfo;
+            this.mapCollection = new Dictionary<ShortVector2, TMapBlock>();
+            this.dynamicMapIO = dynamicMapIO;
         }
 
         /// <summary>
         /// 地图动态读取信息,地图块信息;
         /// </summary>
-        private DynamicPagingInfo pagingInfo;
+        private MapBlockInfo mapBlockInfo;
 
         /// <summary>
         /// 地图保存的数据结构;
         /// </summary>
-        private Dictionary<ShortVector2, IGameMap<ShortVector2, T>> mapCollection;
+        private Dictionary<ShortVector2, TMapBlock> mapCollection;
 
         /// <summary>
-        /// 动态地图文件输出输入;
+        /// 文件输出输入;
         /// </summary>
-        private IDynamicMapIO<DynamicMapPaging<T>, T> dynamicMapIO;
+        private IMapBlockIO<TMapBlock, T> dynamicMapIO;
 
         /// <summary>
         /// 上一次更新目标所在的地图块;
@@ -49,11 +81,19 @@ namespace KouXiaGu.Map
 
 
         /// <summary>
+        /// 文件读取保存接口;
+        /// </summary>
+        public IMapBlockIO<TMapBlock, T> DynamicMapIO
+        {
+            get { return dynamicMapIO; }
+        }
+
+        /// <summary>
         /// 地图动态读取信息,地图块信息;
         /// </summary>
-        public DynamicPagingInfo PagingInfo
+        public MapBlockInfo MapBlockInfo
         {
-            get { return pagingInfo; }
+            get { return mapBlockInfo; }
         }
 
         /// <summary>
@@ -61,7 +101,7 @@ namespace KouXiaGu.Map
         /// </summary>
         private ShortVector2 TargetRadiationRange
         {
-            get { return pagingInfo.TargetRadiationRange; }
+            get { return mapBlockInfo.TargetRadiationRange; }
         }
 
         /// <summary>
@@ -69,13 +109,13 @@ namespace KouXiaGu.Map
         /// </summary>
         private ShortVector2 PartitionSizes
         {
-            get { return pagingInfo.PartitionSizes; }
+            get { return mapBlockInfo.PartitionSizes; }
         }
 
         /// <summary>
         /// 未知是否为空!始终返回false;
         /// </summary>
-        public bool IsEmpty
+        bool IReadOnlyMap<IntVector2, T>.IsEmpty
         {
             get { return false; }
         }
@@ -89,6 +129,7 @@ namespace KouXiaGu.Map
             set { SetItem(position, value); }
         }
 
+
         /// <summary>
         /// 获取到这个位置的值;若不存在则返回异常;
         /// KeyNotFoundException : 这个点不存在,或超出读取范围;
@@ -97,7 +138,7 @@ namespace KouXiaGu.Map
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
+            IMap<ShortVector2, T> mapPaging = mapCollection[address];
             return mapPaging[realPosition];
         }
 
@@ -109,7 +150,7 @@ namespace KouXiaGu.Map
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
+            IMap<ShortVector2, T> mapPaging = mapCollection[address];
             mapPaging[realPosition] = item;
         }
 
@@ -121,7 +162,7 @@ namespace KouXiaGu.Map
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
+            IMap<ShortVector2, T> mapPaging = mapCollection[address];
             mapPaging.Add(realPosition, item);
         }
 
@@ -133,7 +174,7 @@ namespace KouXiaGu.Map
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
+            IMap<ShortVector2, T> mapPaging = mapCollection[address];
             return mapPaging.Remove(realPosition);
         }
 
@@ -142,7 +183,7 @@ namespace KouXiaGu.Map
         /// </summary>
         public bool ContainsPosition(IntVector2 position)
         {
-            IGameMap<ShortVector2, T> mapPaging;
+            TMapBlock mapPaging;
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
             if (mapCollection.TryGetValue(address, out mapPaging))
@@ -157,7 +198,7 @@ namespace KouXiaGu.Map
         /// </summary>
         public bool TryGetValue(IntVector2 position, out T item)
         {
-            IGameMap<ShortVector2, T> mapPaging;
+            TMapBlock mapPaging;
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
             if (mapCollection.TryGetValue(address, out mapPaging))
@@ -169,6 +210,11 @@ namespace KouXiaGu.Map
             }
             item = default(T);
             return false;
+        }
+
+        public void Clear()
+        {
+            mapCollection.Clear();
         }
 
         /// <summary>
@@ -228,7 +274,7 @@ namespace KouXiaGu.Map
         /// <param name="address"></param>
         private void Load(ShortVector2 address)
         {
-            IGameMap<ShortVector2, T> mapPaging;
+            TMapBlock mapPaging;
             if (dynamicMapIO.TryLoad(address, out mapPaging))
             {
                 mapCollection.Add(address, mapPaging);
@@ -243,10 +289,10 @@ namespace KouXiaGu.Map
         /// <param name="targetAddress"></param>
         private bool Unload(ShortVector2 address)
         {
-            IGameMap<ShortVector2, T> mapPaging;
+            TMapBlock mapPaging;
             if (mapCollection.TryGetValue(address, out mapPaging))
             {
-                SaveMapPaging(mapPaging);
+                SaveMapPaging(address, mapPaging);
                 return mapCollection.Remove(address);
             }
             return false;
@@ -259,16 +305,16 @@ namespace KouXiaGu.Map
         /// <param name="compulsorySave"></param>
         public void SaveMapPagingAll()
         {
-            foreach (var mapPaging in mapCollection.Values)
+            foreach (var mapPaging in mapCollection)
             {
-                SaveMapPaging(mapPaging);
+                SaveMapPaging(mapPaging.Key, mapPaging.Value);
             }
         }
 
         /// <summary>
         /// 保存这个地图块若地图块内不存在内容,则删除这个地图块;
         /// </summary>
-        private void SaveMapPaging(IGameMap<ShortVector2, T> mapPaging)
+        private void SaveMapPaging(ShortVector2 address, TMapBlock mapPaging)
         {
             if (!mapPaging.IsEmpty)
             {
@@ -276,7 +322,7 @@ namespace KouXiaGu.Map
             }
             else
             {
-                dynamicMapIO.Delete(mapPaging.Address);
+                dynamicMapIO.Delete(address);
             }
         }
 

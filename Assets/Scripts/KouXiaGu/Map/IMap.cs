@@ -9,12 +9,14 @@ namespace KouXiaGu.Map
     /// <summary>
     /// 游戏地图基本接口
     /// </summary>
-    public interface IGameMap<TPoint, T> : IReadOnlyMap<TPoint, T>
+    public interface IMap<TPoint, T> : IReadOnlyMap<TPoint, T>
     {
         new T this[TPoint position] { get; set; }
 
         void Add(TPoint position, T item);
         bool Remove(TPoint position);
+
+        void Clear();
     }
 
 

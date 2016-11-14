@@ -21,7 +21,7 @@ namespace KouXiaGu.Map
             //navHexMap = new DynamicMapDictionary<NavNode>();
         }
 
-        private DynamicMapDictionary<NavNode> navHexMap;
+        //private DynamicMapDictionary<NavNode> navHexMap;
 
         #region INavigationMap<TMover>
 

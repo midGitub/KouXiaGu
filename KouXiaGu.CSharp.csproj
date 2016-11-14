@@ -75,9 +75,13 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\KouXiaGu\AttributeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\CameraConvert.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\CollectionHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\CameraController.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlocksMapArchiver.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookAt2D.cs" />
@@ -90,15 +94,15 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Test_Game.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\BuildWorldHexMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapDictionary.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\DynaBlocksMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexDirection.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexMapConvert.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\Hexagon.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\HexMapNode.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\IMapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IntVector2.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\IGameMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\IMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapPaging.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicPagingInfo.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\ShortVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigator.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\NavNode.cs" />

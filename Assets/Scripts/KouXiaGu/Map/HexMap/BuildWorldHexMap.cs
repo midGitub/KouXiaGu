@@ -16,7 +16,7 @@ namespace KouXiaGu.Map
         private float hexOuterDiameter = 2;
 
         [SerializeField, Tooltip("预制地图分区信息")]
-        private DynamicPagingInfo mapPagingInfo;
+        private MapBlockInfo mapPagingInfo;
 
         [SerializeField]
         private Transform target;
@@ -26,7 +26,7 @@ namespace KouXiaGu.Map
         /// </summary>
         private Hexagon mapHexagon;
 
-        private DynamicMapDictionary<HexMapNode> prefabMap;
+        //private DynamicMapDictionary<HexMapNode> prefabMap;
 
         /// <summary>
         /// 当前地图所用的六边形尺寸;
@@ -36,63 +36,63 @@ namespace KouXiaGu.Map
             get { return mapHexagon; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public IReadOnlyMap<IntVector2, HexMapNode> DynamicMap
-        {
-            get { return prefabMap; }
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public IReadOnlyMap<IntVector2, HexMapNode> DynamicMap
+        //{
+        //    get { return prefabMap; }
+        //}
 
-        private void Awake()
-        {
-            mapHexagon = new Hexagon() { OuterDiameter = hexOuterDiameter };
-            prefabMap = new DynamicMapDictionary<HexMapNode>(mapPagingInfo);
-        }
+        //private void Awake()
+        //{
+        //    mapHexagon = new Hexagon() { OuterDiameter = hexOuterDiameter };
+        //    //prefabMap = new DynamicMapDictionary<HexMapNode>(mapPagingInfo);
+        //}
 
-        private void Start()
-        {
-            UpdateMap(false);
-        }
+        //private void Start()
+        //{
+        //    UpdateMap(false);
+        //}
 
-        private void Update()
-        {
-            UpdateMap();
-        }
+        //private void Update()
+        //{
+        //    UpdateMap();
+        //}
 
-        private void OnDestroy()
-        {
-            prefabMap.SaveMapPagingAll();
-        }
+        //private void OnDestroy()
+        //{
+        //    prefabMap.SaveMapPagingAll();
+        //}
 
-        public void Add(Vector2 position, HexMapNode item)
-        {
-            IntVector2 mapPosition = GetMapPosition(position);
-            prefabMap.Add(mapPosition, item);
-        }
+        //public void Add(Vector2 position, HexMapNode item)
+        //{
+        //    IntVector2 mapPosition = GetMapPosition(position);
+        //    prefabMap.Add(mapPosition, item);
+        //}
 
-        /// <summary>
-        /// 将浮点坐标转换成地图坐标;
-        /// </summary>
-        private PointPair GetMapPosition(Vector2 position)
-        {
-            return mapHexagon.TransfromPoint(position);
-        }
+        ///// <summary>
+        ///// 将浮点坐标转换成地图坐标;
+        ///// </summary>
+        //private PointPair GetMapPosition(Vector2 position)
+        //{
+        //    return mapHexagon.TransfromPoint(position);
+        //}
 
-        private void UpdateMap(bool check = true)
-        {
-            IntVector2 mapPosition = GetMapPosition(target.position);
-            prefabMap.UpdateMapData(mapPosition, check);
-        }
+        //private void UpdateMap(bool check = true)
+        //{
+        //    IntVector2 mapPosition = GetMapPosition(target.position);
+        //    prefabMap.UpdateMapData(mapPosition, check);
+        //}
 
 
-        /// <summary>
-        /// 向地图添加
-        /// </summary>
-        public void Add(IntVector2 position, HexMapNode item)
-        {
+        ///// <summary>
+        ///// 向地图添加
+        ///// </summary>
+        //public void Add(IntVector2 position, HexMapNode item)
+        //{
 
-        }
+        //}
 
 
     }

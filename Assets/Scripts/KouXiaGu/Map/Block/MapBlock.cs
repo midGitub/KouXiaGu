@@ -1,48 +1,31 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using ProtoBuf;
 
 namespace KouXiaGu.Map
 {
 
     /// <summary>
-    /// 地图分页,地图块;
+    /// 地图块;区分预制地图块和后期添加地图块的结构;
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [ProtoContract, Obsolete]
-    public struct DynamicMapPaging<T> : IMap<ShortVector2, T>
+    public class MapBlock<T> : IMap<ShortVector2, T>
     {
-        public DynamicMapPaging(ShortVector2 address)
+
+        public MapBlock(Dictionary<ShortVector2, T> prefabMap, Dictionary<ShortVector2, T> archiveMap)
         {
-            this.address = address;
-            this.mapCollection = new Dictionary<ShortVector2, T>();
+            this.mapCollection = BlendMap(prefabMap, archiveMap);
         }
 
-        public DynamicMapPaging(ShortVector2 address, Dictionary<ShortVector2, T> dictionary)
-        {
-            this.address = address;
-            this.mapCollection = dictionary;
-        }
-
-        /// <summary>
-        /// 地图块的坐标;
-        /// </summary>
-        [ProtoMember(1)]
-        private ShortVector2 address;
-
-        /// <summary>
-        /// 这个分页保存的信息;
-        /// </summary>
-        [ProtoMember(2)]
         internal Dictionary<ShortVector2, T> mapCollection;
 
         /// <summary>
-        /// 地图块的坐标;
+        /// 当前地图;
         /// </summary>
-        public ShortVector2 Address
+        public Dictionary<ShortVector2, T> MapCollection
         {
-            get { return address; }
+            get { return mapCollection; }
         }
 
         public T this[ShortVector2 key]
@@ -86,17 +69,23 @@ namespace KouXiaGu.Map
             mapCollection.Clear();
         }
 
+        /// <summary>
+        /// 混合两个词典,并且返回一个新的词典;
+        /// </summary>
+        private Dictionary<ShortVector2, T> BlendMap(
+            Dictionary<ShortVector2, T> prefabMap, Dictionary<ShortVector2, T> archiveMap)
+        {
+            Dictionary<ShortVector2, T> mapCollection = new Dictionary<ShortVector2, T>(prefabMap);
+            mapCollection.AddOrReplace(archiveMap);
+            return mapCollection;
+        }
+
         public override string ToString()
         {
             return base.ToString() +
-                "\n地图块地址:" + address.ToString() +
                 "\n元素个数:" + mapCollection.Count;
         }
 
-        public override int GetHashCode()
-        {
-            return address.GetHashCode();
-        }
-
     }
+
 }
