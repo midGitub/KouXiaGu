@@ -16,7 +16,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取鼠标所在水平面上的点;
         /// </summary>
-        public static Vector2 GetMousePosition_Level(this Camera camera)
+        public static Vector2 GetMouseMapPosition(this Camera camera)
         {
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit raycastHit;

@@ -37,30 +37,30 @@ namespace KouXiaGu
             get { return State == GameStatus.Running; }
         }
 
-        public DataCore CoreData
+        public IBuildGameData BuildGameData
         {
-            get { return buildGame.CoreData; }
+            get { return buildGame; }
         }
-        public DataMod ModData
-        {
-            get { return buildGame.ModData; }
-        }
-        public DataArchive ArchiveData
-        {
-            get { return buildGame.ArchiveData; }
-        }
-        public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
-        {
-            get { return buildGame.AppendBuildGame; }
-        }
-        public IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame
-        {
-            get { return buildGame.AppendArchiveGame; }
-        }
-        public IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame
-        {
-            get { return buildGame.AppendQuitGame; }
-        }
+        //public DataMod ModData
+        //{
+        //    get { return buildGame.ModData; }
+        //}
+        //public DataArchive ArchiveData
+        //{
+        //    get { return buildGame.ArchiveData; }
+        //}
+        //public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
+        //{
+        //    get { return buildGame.AppendBuildGame; }
+        //}
+        //public IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame
+        //{
+        //    get { return buildGame.AppendArchiveGame; }
+        //}
+        //public IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame
+        //{
+        //    get { return buildGame.AppendQuitGame; }
+        //}
 
         private void Awake()
         {
@@ -182,14 +182,14 @@ namespace KouXiaGu
         {
             GameObject gameController = GameObject.FindWithTag("GameController");
 
-            AppendBuildGame.FindFromGameObject = true;
-            AppendBuildGame.BaseGameObject = gameController;
+            BuildGameData.AppendBuildGame.FindFromGameObject = true;
+            BuildGameData.AppendBuildGame.BaseGameObject = gameController;
 
-            AppendArchiveGame.FindFromGameObject = true;
-            AppendArchiveGame.BaseGameObject = gameController;
+            BuildGameData.AppendArchiveGame.FindFromGameObject = true;
+            BuildGameData.AppendArchiveGame.BaseGameObject = gameController;
 
-            AppendQuitGame.FindFromGameObject = true;
-            AppendArchiveGame.BaseGameObject = gameController;
+            BuildGameData.AppendQuitGame.FindFromGameObject = true;
+            BuildGameData.AppendQuitGame.BaseGameObject = gameController;
         }
 
 #endif

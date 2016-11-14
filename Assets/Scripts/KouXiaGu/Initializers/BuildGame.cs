@@ -36,11 +36,22 @@ namespace KouXiaGu
     }
 
 
+    public interface IBuildGameData
+    {
+        IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame { get; }
+        IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame { get; }
+        IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame { get; }
+        DataArchive ArchiveData { get; }
+        DataCore CoreData { get; }
+        DataMod ModData { get; }
+    }
+
+
     /// <summary>
     /// 游戏创建方法;
     /// </summary>
     [Serializable]
-    public class BuildGame
+    public class BuildGame : IBuildGameData
     {
         private BuildGame() { }
 

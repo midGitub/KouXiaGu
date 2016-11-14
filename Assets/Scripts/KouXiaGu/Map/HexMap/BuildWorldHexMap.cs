@@ -9,17 +9,14 @@ namespace KouXiaGu.Map
 {
 
     [DisallowMultipleComponent]
-    public class GameHexMap : MonoBehaviour
+    public class BuildWorldHexMap : MonoBehaviour
     {
 
         [SerializeField, Tooltip("地图六边形的外径")]
         private float hexOuterDiameter = 2;
 
-        //[SerializeField]
-        //private NaviHexMap naviHexMap;
-
-        [SerializeField]
-        private PagingInfo mapPagingInfo;
+        [SerializeField, Tooltip("预制地图分区信息")]
+        private DynamicPagingInfo mapPagingInfo;
 
         [SerializeField]
         private Transform target;
@@ -29,7 +26,7 @@ namespace KouXiaGu.Map
         /// </summary>
         private Hexagon mapHexagon;
 
-        private DynamicMapDictionary<HexMapNode> map;
+        private DynamicMapDictionary<HexMapNode> prefabMap;
 
         /// <summary>
         /// 当前地图所用的六边形尺寸;
@@ -39,22 +36,39 @@ namespace KouXiaGu.Map
             get { return mapHexagon; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public IReadOnlyMap<IntVector2, HexMapNode> DynamicMap
+        {
+            get { return prefabMap; }
+        }
+
         private void Awake()
         {
             mapHexagon = new Hexagon() { OuterDiameter = hexOuterDiameter };
-            map = new DynamicMapDictionary<HexMapNode>(mapPagingInfo);
+            prefabMap = new DynamicMapDictionary<HexMapNode>(mapPagingInfo);
+        }
+
+        private void Start()
+        {
+            UpdateMap(false);
         }
 
         private void Update()
         {
-            IntVector2 mapPosition = GetMapPosition(target.position);
-            map.UpdateMapData(mapPosition);
+            UpdateMap();
+        }
+
+        private void OnDestroy()
+        {
+            prefabMap.SaveMapPagingAll();
         }
 
         public void Add(Vector2 position, HexMapNode item)
         {
             IntVector2 mapPosition = GetMapPosition(position);
-            map.Add(mapPosition, item);
+            prefabMap.Add(mapPosition, item);
         }
 
         /// <summary>
@@ -64,6 +78,22 @@ namespace KouXiaGu.Map
         {
             return mapHexagon.TransfromPoint(position);
         }
+
+        private void UpdateMap(bool check = true)
+        {
+            IntVector2 mapPosition = GetMapPosition(target.position);
+            prefabMap.UpdateMapData(mapPosition, check);
+        }
+
+
+        /// <summary>
+        /// 向地图添加
+        /// </summary>
+        public void Add(IntVector2 position, HexMapNode item)
+        {
+
+        }
+
 
     }
 

@@ -28,7 +28,7 @@ namespace KouXiaGu.TestTool
         {
             if (Input.GetKey(KeyCode.Mouse0))
             {
-                targetPosition = Camera.main.GetMousePosition_Level();
+                targetPosition = Camera.main.GetMouseMapPosition();
             }
 
             Vector2 newPosition = Vector2.MoveTowards(target.position, targetPosition, maxDistanceDelta);

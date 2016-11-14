@@ -14,11 +14,8 @@ namespace KouXiaGu.Map
         [SerializeField]
         private Transform target;
 
-        //[SerializeField]
-        //private Vector2 spans;
-
         [SerializeField]
-        private GameHexMap gameMap;
+        private BuildWorldHexMap gameMap;
 
         private Transform current;
         private Vector3 previousPosition;
@@ -38,12 +35,6 @@ namespace KouXiaGu.Map
             get { return target; }
             set { SetTarget(value); }
         }
-
-        //public Vector2 Spans
-        //{
-        //    get { return spans; }
-        //    set { spans = value; }
-        //}
 
         private void Awake()
         {

@@ -1,110 +1,46 @@
 ﻿using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ProtoBuf;
 using UnityEngine;
 
 namespace KouXiaGu.Map
 {
 
     /// <summary>
-    /// 地图块,分页信息;
-    /// </summary>
-    [Serializable]
-    public struct PagingInfo
-    {
-        public PagingInfo(string dataDirectoryPath, ShortVector2 partitionSizes, 
-            ShortVector2 targetRadiationRange, string addressPrefix)
-        {
-            this.dataDirectoryPath = dataDirectoryPath;
-            this.partitionSizes = partitionSizes;
-            this.targetRadiationRange = targetRadiationRange;
-            this.addressPrefix = addressPrefix;
-        }
-
-        [SerializeField]
-        private string dataDirectoryPath;
-        [SerializeField]
-        private ShortVector2 partitionSizes;
-        [SerializeField]
-        private ShortVector2 targetRadiationRange;
-        [SerializeField]
-        private string addressPrefix;
-
-        /// <summary>
-        /// 地图文件路径;
-        /// </summary>
-        public string DataDirectoryPath
-        {
-            get { return dataDirectoryPath; }
-        }
-
-        /// <summary>
-        /// 地图分区大小;
-        /// </summary>
-        public ShortVector2 PartitionSizes
-        {
-            get { return partitionSizes; }
-        }
-
-        /// <summary>
-        /// 目标辐射范围,既以为目标中心,需要读取的地图范围;
-        /// X,Y应该都为正数;
-        /// </summary>
-        public ShortVector2 TargetRadiationRange
-        {
-            get { return targetRadiationRange; }
-        }
-
-        /// <summary>
-        /// 获取到这个地图块的读取路径;
-        /// </summary>
-        public string GetMapPagingFilePath(ShortVector2 address)
-        {
-            return addressPrefix + address.GetHashCode();
-        }
-
-        ///// <summary>
-        ///// 获取到若有地图块地址;
-        ///// </summary>
-        ///// <returns></returns>
-        //public IEnumerable<ShortVector2> GetAllAddress()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-    }
-
-
-    /// <summary>
     /// 动态地图数据结构;
     /// 因为是动态加载的,所有取值和赋值时需要检查是否在目标范围内;
     /// </summary>
-    public class DynamicMapDictionary<T> : IReadOnlyMap<T>
+    public class DynamicMapDictionary<T> : IGameMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
     {
-        public DynamicMapDictionary(PagingInfo dynamicMapInfo, bool allowEdit = true)
+        public DynamicMapDictionary(DynamicPagingInfo dynamicMapInfo, IDynamicMapIO<DynamicMapPaging<T>, T> dynamicMapIO)
         {
             this.pagingInfo = dynamicMapInfo;
-            this.allowEdit = allowEdit;
-            mapCollection = new Dictionary<ShortVector2, MapPaging>();
+            this.mapCollection = new Dictionary<ShortVector2, IGameMap<ShortVector2, T>>();
+            this.dynamicMapIO = dynamicMapIO;
+        }
+
+        public DynamicMapDictionary(DynamicPagingInfo dynamicMapInfo)
+        {
+            this.pagingInfo = dynamicMapInfo;
+            mapCollection = new Dictionary<ShortVector2, IGameMap<ShortVector2, T>>();
+            dynamicMapIO = new DynamicMapIO<T>(dynamicMapInfo);
         }
 
         /// <summary>
         /// 地图动态读取信息,地图块信息;
         /// </summary>
-        private PagingInfo pagingInfo;
+        private DynamicPagingInfo pagingInfo;
 
         /// <summary>
         /// 地图保存的数据结构;
         /// </summary>
-        private Dictionary<ShortVector2, MapPaging> mapCollection;
+        private Dictionary<ShortVector2, IGameMap<ShortVector2, T>> mapCollection;
 
         /// <summary>
-        /// 在卸载地图资源时进行保存;
+        /// 动态地图文件输出输入;
         /// </summary>
-        private bool allowEdit;
+        private IDynamicMapIO<DynamicMapPaging<T>, T> dynamicMapIO;
 
         /// <summary>
         /// 上一次更新目标所在的地图块;
@@ -115,7 +51,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 地图动态读取信息,地图块信息;
         /// </summary>
-        public PagingInfo PagingInfo
+        public DynamicPagingInfo PagingInfo
         {
             get { return pagingInfo; }
         }
@@ -137,12 +73,11 @@ namespace KouXiaGu.Map
         }
 
         /// <summary>
-        /// 在卸载地图资源时进行保存;
+        /// 未知是否为空!始终返回false;
         /// </summary>
-        public bool AllowEdit
+        public bool IsEmpty
         {
-            get { return allowEdit; }
-            set { allowEdit = value; }
+            get { return false; }
         }
 
         /// <summary>
@@ -162,7 +97,7 @@ namespace KouXiaGu.Map
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            MapPaging mapPaging = mapCollection[address];
+            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
             return mapPaging[realPosition];
         }
 
@@ -174,40 +109,32 @@ namespace KouXiaGu.Map
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            MapPaging mapPaging = mapCollection[address];
+            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
             mapPaging[realPosition] = item;
         }
 
         /// <summary>
         /// 将这个元素加入到地图,若无法保存则返回异常;
-        /// ReadOnlyException : 这是一个不允许编辑的地图;
         /// KeyNotFoundException : 超出范围;
         /// </summary>
         public void Add(IntVector2 position, T item)
         {
-            if (!allowEdit)
-                throw new ReadOnlyException();
-
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            MapPaging mapPaging = mapCollection[address];
+            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
             mapPaging.Add(realPosition, item);
         }
 
         /// <summary>
         /// 从地图上移除这个元素;
-        /// ReadOnlyException : 这是一个不允许编辑的地图;
         /// KeyNotFoundException : 超出范围;
         /// </summary>
-        public void Remove(IntVector2 position)
+        public bool Remove(IntVector2 position)
         {
-            if (!allowEdit)
-                throw new ReadOnlyException();
-
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            MapPaging mapPaging = mapCollection[address];
-            mapPaging.Remove(realPosition);
+            IGameMap<ShortVector2, T> mapPaging = mapCollection[address];
+            return mapPaging.Remove(realPosition);
         }
 
         /// <summary>
@@ -215,12 +142,12 @@ namespace KouXiaGu.Map
         /// </summary>
         public bool ContainsPosition(IntVector2 position)
         {
-            MapPaging mapPaging;
+            IGameMap<ShortVector2, T> mapPaging;
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
             if (mapCollection.TryGetValue(address, out mapPaging))
             {
-                return mapPaging.ContainsKey(realPosition);
+                return mapPaging.ContainsPosition(realPosition);
             }
             return false;
         }
@@ -230,7 +157,7 @@ namespace KouXiaGu.Map
         /// </summary>
         public bool TryGetValue(IntVector2 position, out T item)
         {
-            MapPaging mapPaging;
+            IGameMap<ShortVector2, T> mapPaging;
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
             if (mapCollection.TryGetValue(address, out mapPaging))
@@ -265,20 +192,17 @@ namespace KouXiaGu.Map
         private void UpdateMapData(ShortVector2 targetAddress)
         {
             IEnumerable<ShortVector2> radiationAddresses = GetRadiationAddresses(targetAddress);
-            IEnumerable<ShortVector2> addRadiationAddresses = radiationAddresses.
-                Where(address => !mapCollection.ContainsKey(address));
-            IEnumerable<ShortVector2> removeRadiationAddresses = mapCollection.Keys.
-                Where(address => !radiationAddresses.Contains(address));
-
-            Unload(removeRadiationAddresses);
-            Load(addRadiationAddresses);
+            Unload(radiationAddresses);
+            Load(radiationAddresses);
         }
 
         /// <summary>
         /// 根据分页地址加入到地图;
         /// </summary>
-        private void Load(IEnumerable<ShortVector2> addRadiationAddresses)
+        private void Load(IEnumerable<ShortVector2> radiationAddresses)
         {
+            IEnumerable<ShortVector2> addRadiationAddresses = radiationAddresses.
+                Where(address => !mapCollection.ContainsKey(address));
             foreach (var address in addRadiationAddresses)
             {
                 Load(address);
@@ -288,8 +212,10 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 根据分页地址从地图内移除;
         /// </summary>
-        private void Unload(IEnumerable<ShortVector2> removeRadiationAddresses)
+        private void Unload(IEnumerable<ShortVector2> radiationAddresses)
         {
+            IEnumerable<ShortVector2> removeRadiationAddresses = mapCollection.Keys.
+                Where(address => !radiationAddresses.Contains(address));
             foreach (var address in removeRadiationAddresses)
             {
                 Unload(address);
@@ -302,61 +228,56 @@ namespace KouXiaGu.Map
         /// <param name="address"></param>
         private void Load(ShortVector2 address)
         {
-            try
+            IGameMap<ShortVector2, T> mapPaging;
+            if (dynamicMapIO.TryLoad(address, out mapPaging))
             {
-                MapPaging mapPaging = LoadMapPaging(address);
                 mapCollection.Add(address, mapPaging);
             }
-            catch (FileNotFoundException)
-            {
-                Debug.Log("不存在分页 " + address + ",跳过;");
-            }
+            return;
         }
 
         /// <summary>
-        /// 从文件读取到地图分页.若无法获取返回异常;
-        /// FileNotFoundException : 不存在此分页;
-        /// </summary>
-        private MapPaging LoadMapPaging(ShortVector2 address)
-        {
-            string mapPagingFilePath = GetMapPagingFilePath(address);
-            return SerializeHelper.Deserialize_ProtoBuf<MapPaging>(mapPagingFilePath);
-        }
-
-        /// <summary>
-        /// 移除这个地图块,不做保存的移除(除非 compulsorySave 设为true则不管怎样都会保存);
+        /// 移除这个地图块;
         /// 移除成功返回true,否则返回false;
         /// </summary>
         /// <param name="targetAddress"></param>
-        private bool Unload(ShortVector2 address, bool compulsorySave = false)
+        private bool Unload(ShortVector2 address)
         {
-            MapPaging mapPaging;
+            IGameMap<ShortVector2, T> mapPaging;
             if (mapCollection.TryGetValue(address, out mapPaging))
             {
-                SaveMapPaging(mapPaging, compulsorySave);
+                SaveMapPaging(mapPaging);
                 return mapCollection.Remove(address);
             }
             return false;
         }
 
         /// <summary>
-        /// 若允许保存,则进行保存(除非 compulsorySave 设为true则不管怎样都会保存);
+        /// 保存地图所有的地图块;
+        /// ReadOnlyException : 不允许编辑的
         /// </summary>
-        private void SaveMapPaging(MapPaging mapPaging, bool compulsorySave = false)
+        /// <param name="compulsorySave"></param>
+        public void SaveMapPagingAll()
         {
-            if (allowEdit || compulsorySave)
+            foreach (var mapPaging in mapCollection.Values)
             {
-                string mapPagingFilePath = GetMapPagingFilePath(mapPaging.Address);
-                SerializeHelper.Serialize_ProtoBuf(mapPagingFilePath, mapPaging);
+                SaveMapPaging(mapPaging);
             }
         }
 
         /// <summary>
-        /// 获取到地图块保存到的文件路径
+        /// 保存这个地图块若地图块内不存在内容,则删除这个地图块;
         /// </summary>
-        private string GetMapPagingFilePath(ShortVector2 address)
+        private void SaveMapPaging(IGameMap<ShortVector2, T> mapPaging)
         {
-            return pagingInfo.GetMapPagingFilePath(address);
+            if (!mapPaging.IsEmpty)
+            {
+                dynamicMapIO.Save(mapPaging);
+            }
+            else
+            {
+                dynamicMapIO.Delete(mapPaging.Address);
+            }
         }
 
         /// <summary>
@@ -375,9 +296,9 @@ namespace KouXiaGu.Map
         {
             ShortVector2 targetRadiationRange = TargetRadiationRange;
 
-            for (short x = (short)(-targetRadiationRange.x); x < targetRadiationRange.x; x++)
+            for (short x = (short)(-targetRadiationRange.x); x <= targetRadiationRange.x; x++)
             {
-                for (short y = (short)(-targetRadiationRange.y); y < targetRadiationRange.y; y++)
+                for (short y = (short)(-targetRadiationRange.y); y <= targetRadiationRange.y; y++)
                 {
                     ShortVector2 radiationAddresses = new ShortVector2(x, y) + address;
                     yield return radiationAddresses;
@@ -427,134 +348,6 @@ namespace KouXiaGu.Map
             position.y = address.y * partitionSizes.y + realPosition.y;
 
             return position;
-        }
-
-        [ProtoContract]
-        private struct MapPaging : IDictionary<ShortVector2, T>
-        {
-            public MapPaging(ShortVector2 address, Dictionary<ShortVector2, T> dictionary)
-            {
-                this.address = address;
-                this.dictionary = dictionary;
-            }
-
-            /// <summary>
-            /// 地图块的坐标;
-            /// </summary>
-            [ProtoMember(1)]
-            private ShortVector2 address;
-
-            /// <summary>
-            /// 这个分页保存的信息;
-            /// </summary>
-            [ProtoMember(2)]
-            private Dictionary<ShortVector2, T> dictionary;
-
-            /// <summary>
-            /// 地图块的坐标;
-            /// </summary>
-            public ShortVector2 Address
-            {
-                get { return address; }
-            }
-
-            #region IDictionary<ShortVector2, T>;
-
-            public ICollection<ShortVector2> Keys
-            {
-                get{ return ((IDictionary<ShortVector2, T>)this.dictionary).Keys; }
-            }
-
-            public ICollection<T> Values
-            {
-                get { return ((IDictionary<ShortVector2, T>)this.dictionary).Values; }
-            }
-
-            public int Count
-            {
-                get { return ((IDictionary<ShortVector2, T>)this.dictionary).Count; }
-            }
-
-            public bool IsReadOnly
-            {
-                get { return ((IDictionary<ShortVector2, T>)this.dictionary).IsReadOnly; }
-            }
-
-            public T this[ShortVector2 key]
-            {
-                get { return ((IDictionary<ShortVector2, T>)this.dictionary)[key]; }
-                set { ((IDictionary<ShortVector2, T>)this.dictionary)[key] = value; }
-            }
-
-            public void Add(ShortVector2 key, T value)
-            {
-                ((IDictionary<ShortVector2, T>)this.dictionary).Add(key, value);
-            }
-
-            public bool ContainsKey(ShortVector2 key)
-            {
-                return ((IDictionary<ShortVector2, T>)this.dictionary).ContainsKey(key);
-            }
-
-            public bool Remove(ShortVector2 key)
-            {
-                return ((IDictionary<ShortVector2, T>)this.dictionary).Remove(key);
-            }
-
-            public bool TryGetValue(ShortVector2 key, out T value)
-            {
-                return ((IDictionary<ShortVector2, T>)this.dictionary).TryGetValue(key, out value);
-            }
-
-            public void Add(KeyValuePair<ShortVector2, T> item)
-            {
-                ((IDictionary<ShortVector2, T>)this.dictionary).Add(item);
-            }
-
-            public void Clear()
-            {
-                ((IDictionary<ShortVector2, T>)this.dictionary).Clear();
-            }
-
-            public bool Contains(KeyValuePair<ShortVector2, T> item)
-            {
-                return ((IDictionary<ShortVector2, T>)this.dictionary).Contains(item);
-            }
-
-            public void CopyTo(KeyValuePair<ShortVector2, T>[] array, int arrayIndex)
-            {
-                ((IDictionary<ShortVector2, T>)this.dictionary).CopyTo(array, arrayIndex);
-            }
-
-            public bool Remove(KeyValuePair<ShortVector2, T> item)
-            {
-                return ((IDictionary<ShortVector2, T>)this.dictionary).Remove(item);
-            }
-
-            public IEnumerator<KeyValuePair<ShortVector2, T>> GetEnumerator()
-            {
-                return ((IDictionary<ShortVector2, T>)this.dictionary).GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IDictionary<ShortVector2, T>)this.dictionary).GetEnumerator();
-            }
-
-            #endregion
-
-            public override string ToString()
-            {
-                return base.ToString() +
-                    "\n地图块地址:" + address.ToString()+
-                    "\n元素个数:" + dictionary.Count;
-            }
-
-            public override int GetHashCode()
-            {
-                return address.GetHashCode();
-            }
-
         }
 
     }

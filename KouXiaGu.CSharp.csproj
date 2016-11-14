@@ -78,6 +78,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\CameraController.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookForward2D.cs" />
@@ -88,14 +89,16 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Initializers.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Test_Game.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\GameHexMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\BuildWorldHexMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapDictionary.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexDirection.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexMapConvert.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\Hexagon.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\HexMapNode.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IntVector2.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\IReadOnlyMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\IGameMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapPaging.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicPagingInfo.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\ShortVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigator.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\NavNode.cs" />
@@ -112,6 +115,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataMod.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\ReadOnlyException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Test\MapTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\MoveTo2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
