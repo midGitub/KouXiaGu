@@ -68,7 +68,7 @@ namespace KouXiaGu
         protected abstract IEnumerable<Coroutine> LoadInCoroutineComponents { get; }
         protected abstract IEnumerable<Thread> LoadInThreadComponents { get; }
 
-        public virtual IEnumerator Start(T item, Action onInitialized, Action<Exception> onFail)
+        public IEnumerator Start(T item, Action onInitialized, Action<Exception> onFail)
         {
             if (IsRunning)
             {

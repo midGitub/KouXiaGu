@@ -41,26 +41,6 @@ namespace KouXiaGu
         {
             get { return buildGame; }
         }
-        //public DataMod ModData
-        //{
-        //    get { return buildGame.ModData; }
-        //}
-        //public DataArchive ArchiveData
-        //{
-        //    get { return buildGame.ArchiveData; }
-        //}
-        //public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
-        //{
-        //    get { return buildGame.AppendBuildGame; }
-        //}
-        //public IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame
-        //{
-        //    get { return buildGame.AppendArchiveGame; }
-        //}
-        //public IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame
-        //{
-        //    get { return buildGame.AppendQuitGame; }
-        //}
 
         private void Awake()
         {
@@ -123,7 +103,10 @@ namespace KouXiaGu
         }
         private void OnBuildingFail(Exception error, Action<Exception> onFail)
         {
-            Debug.LogError("创建游戏失败!");
+            foreach (Exception item in error.Data.Values)
+            {
+                Debug.LogError("创建游戏失败!\n" + item);
+            }
 
             if (onFail != null)
                 onFail(error);

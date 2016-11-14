@@ -13,77 +13,125 @@ namespace KouXiaGu.Map
     public class MapBlock<T> : IMap<ShortVector2, T>
     {
 
+        public MapBlock(Dictionary<ShortVector2, T> prefabMap)
+        {
+            this.prefabMap = prefabMap;
+            this.archiveMap = new Dictionary<ShortVector2, T>();
+        }
+
         public MapBlock(Dictionary<ShortVector2, T> prefabMap, Dictionary<ShortVector2, T> archiveMap)
         {
-            this.mapCollection = BlendMap(prefabMap, archiveMap);
+            this.prefabMap = prefabMap;
+            this.archiveMap = archiveMap;
         }
 
-        internal Dictionary<ShortVector2, T> mapCollection;
+        private Dictionary<ShortVector2, T> prefabMap;
+        private Dictionary<ShortVector2, T> archiveMap;
 
         /// <summary>
-        /// 当前地图;
+        /// 预制地图;
         /// </summary>
-        public Dictionary<ShortVector2, T> MapCollection
+        public Dictionary<ShortVector2, T> PrefabMap
         {
-            get { return mapCollection; }
+            get { return prefabMap; }
         }
 
-        public T this[ShortVector2 key]
+        /// <summary>
+        /// 需要归档的地图;
+        /// </summary>
+        public Dictionary<ShortVector2, T> ArchiveMap
         {
-            get { return this.mapCollection[key]; }
-            set { this.mapCollection[key] = value; }
+            get { return archiveMap; }
         }
 
-        public int Count
+        /// <summary>
+        /// 设置或获取这个位置的元素;
+        /// </summary>
+        public T this[ShortVector2 position]
         {
-            get { return this.mapCollection.Count; }
+            get { return GetItem(position); }
+            set { SetItem(position, value); }
         }
 
+        /// <summary>
+        /// 归档地图是否为空?
+        /// </summary>
         public bool IsEmpty
         {
-            get { return mapCollection.Count == 0; }
-        }
-
-        public void Add(ShortVector2 position, T item)
-        {
-            this.mapCollection.Add(position, item);
-        }
-
-        public bool Remove(ShortVector2 position)
-        {
-            return this.mapCollection.Remove(position);
-        }
-
-        public bool ContainsPosition(ShortVector2 position)
-        {
-            return this.mapCollection.ContainsKey(position);
-        }
-
-        public bool TryGetValue(ShortVector2 position, out T item)
-        {
-            return this.mapCollection.TryGetValue(position, out item);
-        }
-
-        public void Clear()
-        {
-            mapCollection.Clear();
+            get { return ArchiveMap.Count == 0; }
         }
 
         /// <summary>
-        /// 混合两个词典,并且返回一个新的词典;
+        /// 获取到这个位置的元素,先从更改地图内获取,若无法获取到,则在预制物体内获取;
         /// </summary>
-        private Dictionary<ShortVector2, T> BlendMap(
-            Dictionary<ShortVector2, T> prefabMap, Dictionary<ShortVector2, T> archiveMap)
+        public T GetItem(ShortVector2 position)
         {
-            Dictionary<ShortVector2, T> mapCollection = new Dictionary<ShortVector2, T>(prefabMap);
-            mapCollection.AddOrReplace(archiveMap);
-            return mapCollection;
+            T item;
+            if (ArchiveMap.TryGetValue(position, out item))
+            {
+                return item;
+            }
+            else
+            {
+                return PrefabMap[position];
+            }
+        }
+
+        /// <summary>
+        /// 更改归档地图这个位置的元素;
+        /// </summary>
+        public void SetItem(ShortVector2 position, T item)
+        {
+            ArchiveMap[position] = item;
+        }
+
+        /// <summary>
+        /// 加入到归档地图,若超出了预制地图大小,则返回异常 OuterBoundaryException;
+        /// </summary>
+        public void Add(ShortVector2 position, T item)
+        {
+            if (!this.PrefabMap.ContainsKey(position))
+                throw new OuterBoundaryException("超出预制地图定义范围!");
+
+            this.ArchiveMap.Add(position, item);
+        }
+
+        /// <summary>
+        /// 对归档地图进行的操作;
+        /// </summary>
+        public bool Remove(ShortVector2 position)
+        {
+            return this.ArchiveMap.Remove(position);
+        }
+
+        /// <summary>
+        /// 对归档地图进行的操作;
+        /// </summary>
+        public bool ContainsPosition(ShortVector2 position)
+        {
+            return this.ArchiveMap.ContainsKey(position);
+        }
+
+        /// <summary>
+        /// 对归档地图进行的操作;
+        /// </summary>
+        public bool TryGetValue(ShortVector2 position, out T item)
+        {
+            return this.ArchiveMap.TryGetValue(position, out item);
+        }
+
+        /// <summary>
+        /// 清空归档地图内容;
+        /// </summary>
+        public void Clear()
+        {
+            this.ArchiveMap.Clear();
         }
 
         public override string ToString()
         {
             return base.ToString() +
-                "\n元素个数:" + mapCollection.Count;
+                "\n归档元素:" + ArchiveMap.Count;
         }
 
     }

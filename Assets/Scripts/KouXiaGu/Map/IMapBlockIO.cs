@@ -13,13 +13,11 @@ namespace KouXiaGu.Map
     /// <typeparam name="T">地图块保存的内容</typeparam>
     public interface IMapBlockIO<TMapBlock, T>
     {
-        string Save(TMapBlock mapPaging);
-        void SaveAsyn(TMapBlock mapPaging);
+        void Save(ShortVector2 address, TMapBlock mapBlock);
+        void SaveAsyn(ShortVector2 address, TMapBlock mapBlock, Action onComplete, Action<Exception> onFail);
 
         TMapBlock Load(ShortVector2 address);
-        bool TryLoad(ShortVector2 address, out TMapBlock mapPaging);
-
-        void Delete(ShortVector2 address);
+        bool LoadAsyn(ShortVector2 address, Action<TMapBlock> onComplete, Action<Exception> onFail);
     }
 
 

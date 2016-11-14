@@ -7,43 +7,6 @@ namespace KouXiaGu.Map
 {
 
     /// <summary>
-    /// 地图块,分页信息;
-    /// </summary>
-    [Serializable]
-    public struct MapBlockInfo
-    {
-        public MapBlockInfo(ShortVector2 partitionSizes, ShortVector2 targetRadiationRange)
-        {
-            this.partitionSizes = partitionSizes;
-            this.targetRadiationRange = targetRadiationRange;
-        }
-
-        [SerializeField]
-        private ShortVector2 partitionSizes;
-        [SerializeField]
-        private ShortVector2 targetRadiationRange;
-
-        /// <summary>
-        /// 地图分区大小;
-        /// </summary>
-        public ShortVector2 PartitionSizes
-        {
-            get { return partitionSizes; }
-        }
-
-        /// <summary>
-        /// 目标辐射范围,既以为目标中心,需要读取的地图范围;
-        /// X,Y应该都为正数;
-        /// </summary>
-        public ShortVector2 TargetRadiationRange
-        {
-            get { return targetRadiationRange; }
-        }
-
-    }
-
-
-    /// <summary>
     /// 动态地图数据结构;负责对地图进行动态的读取和保存;
     /// 因为是动态加载的,所有取值和赋值时需要确保是否在目标范围内;
     /// </summary>
@@ -52,26 +15,17 @@ namespace KouXiaGu.Map
     public class DynaBlocksMap<TMapBlock, T> : IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
         where TMapBlock: IMap<ShortVector2, T>
     {
-        public DynaBlocksMap(MapBlockInfo mapBlockInfo, IMapBlockIO<TMapBlock, T> dynamicMapIO)
+        public DynaBlocksMap(ShortVector2 partitionSizes, ShortVector2 targetRadiationRange, IMapBlockIO<TMapBlock, T> dynamicMapIO)
         {
-            this.mapBlockInfo = mapBlockInfo;
+            this.partitionSizes = partitionSizes;
+            this.targetRadiationRange = targetRadiationRange;
             this.mapCollection = new Dictionary<ShortVector2, TMapBlock>();
             this.dynamicMapIO = dynamicMapIO;
         }
 
-        /// <summary>
-        /// 地图动态读取信息,地图块信息;
-        /// </summary>
-        private MapBlockInfo mapBlockInfo;
-
-        /// <summary>
-        /// 地图保存的数据结构;
-        /// </summary>
+        private ShortVector2 partitionSizes;
+        private ShortVector2 targetRadiationRange;
         private Dictionary<ShortVector2, TMapBlock> mapCollection;
-
-        /// <summary>
-        /// 文件输出输入;
-        /// </summary>
         private IMapBlockIO<TMapBlock, T> dynamicMapIO;
 
         /// <summary>
@@ -89,19 +43,11 @@ namespace KouXiaGu.Map
         }
 
         /// <summary>
-        /// 地图动态读取信息,地图块信息;
-        /// </summary>
-        public MapBlockInfo MapBlockInfo
-        {
-            get { return mapBlockInfo; }
-        }
-
-        /// <summary>
         /// 目标辐射范围,既以为目标中心,需要读取的地图范围;
         /// </summary>
         private ShortVector2 TargetRadiationRange
         {
-            get { return mapBlockInfo.TargetRadiationRange; }
+            get { return targetRadiationRange; }
         }
 
         /// <summary>
@@ -109,7 +55,7 @@ namespace KouXiaGu.Map
         /// </summary>
         private ShortVector2 PartitionSizes
         {
-            get { return mapBlockInfo.PartitionSizes; }
+            get { return partitionSizes; }
         }
 
         /// <summary>
@@ -217,6 +163,7 @@ namespace KouXiaGu.Map
             mapCollection.Clear();
         }
 
+
         /// <summary>
         /// 根据目标所在位置更新地图数据;
         /// 若目标所在地块位置与上次更新相同,则不做更新(除非 check 为false);
@@ -274,11 +221,9 @@ namespace KouXiaGu.Map
         /// <param name="address"></param>
         private void Load(ShortVector2 address)
         {
-            TMapBlock mapPaging;
-            if (dynamicMapIO.TryLoad(address, out mapPaging))
-            {
-                mapCollection.Add(address, mapPaging);
-            }
+            Action<TMapBlock> onComplete = mapBlock => mapCollection.Add(address, mapBlock);
+            Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
+            dynamicMapIO.LoadAsyn(address, onComplete, onFail);
             return;
         }
 
@@ -314,16 +259,11 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 保存这个地图块若地图块内不存在内容,则删除这个地图块;
         /// </summary>
-        private void SaveMapPaging(ShortVector2 address, TMapBlock mapPaging)
+        private void SaveMapPaging(ShortVector2 address, TMapBlock mapBlock)
         {
-            if (!mapPaging.IsEmpty)
-            {
-                dynamicMapIO.Save(mapPaging);
-            }
-            else
-            {
-                dynamicMapIO.Delete(address);
-            }
+            Action onComplete = () => Debug.Log("保存地图成功!" + address.ToString());
+            Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
+            dynamicMapIO.SaveAsyn(address, mapBlock, onComplete, onFail);
         }
 
         /// <summary>

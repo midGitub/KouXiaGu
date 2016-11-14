@@ -13,12 +13,14 @@ namespace KouXiaGu
     /// </summary>
     public struct SmallArchivedGroup
     {
-        public SmallArchivedGroup(SmallArchived archivedHead, string archivedPath)
+        public SmallArchivedGroup(bool fromFile, SmallArchived archivedHead, string archivedPath)
         {
             this.ArchivedHead = archivedHead;
             this.ArchivedPath = archivedPath;
+            this.FromFile = fromFile;
         }
         public SmallArchived ArchivedHead { get; private set; }
+        public bool FromFile { get; private set; }
         public string ArchivedPath { get; private set; }
     }
 
@@ -27,18 +29,20 @@ namespace KouXiaGu
     /// </summary>
     public struct ArchivedGroup
     {
-        public ArchivedGroup(ArchivedExpand archived, string archivedPath)
+        public ArchivedGroup(bool fromFile, ArchivedExpand archived, string archivedPath)
         {
+            this.FromFile = fromFile;
             this.Archived = archived;
             this.ArchivedPath = archivedPath;
         }
         public ArchivedExpand Archived { get; private set; }
         public SmallArchived SmallArchived { get { return Archived; } }
+        public bool FromFile { get; private set; }
         public string ArchivedPath { get; private set; }
 
         public static implicit operator SmallArchivedGroup(ArchivedGroup archived)
         {
-            return new SmallArchivedGroup(archived.Archived, archived.ArchivedPath);
+            return new SmallArchivedGroup(archived.FromFile, archived.Archived, archived.ArchivedPath);
         }
     }
 
@@ -139,7 +143,7 @@ namespace KouXiaGu
         {
             ArchivedExpand archivedExpand = new ArchivedExpand();
             string archivedDirectoryPath = GetNewArchivedDirectoryPath();
-            ArchivedGroup archivedGroup = new ArchivedGroup(archivedExpand, archivedDirectoryPath);
+            ArchivedGroup archivedGroup = new ArchivedGroup(false, archivedExpand, archivedDirectoryPath);
             return archivedGroup;
         }
 
@@ -194,7 +198,7 @@ namespace KouXiaGu
             if (ExistArchivedFile(archivedPath) && TryGetSmallArchivedFilePath(archivedPath, out smallArchivedFilePath))
             {
                 SmallArchived archived = SerializeHelper.Deserialize_ProtoBuf<SmallArchived>(smallArchivedFilePath);
-                smallArchived = new SmallArchivedGroup(archived, archivedPath);
+                smallArchived = new SmallArchivedGroup(true, archived, archivedPath);
                 return true;
             }
             smallArchived = default(SmallArchivedGroup);
@@ -211,7 +215,7 @@ namespace KouXiaGu
             if (TryGetSmallArchivedFilePath(archivedPath, out archivedFilePath))
             {
                 ArchivedExpand archivedExpand = SerializeHelper.Deserialize_ProtoBuf<ArchivedExpand>(archivedFilePath);
-                archived = new ArchivedGroup(archivedExpand, archivedPath);
+                archived = new ArchivedGroup(true, archivedExpand, archivedPath);
                 return true;
             }
             archived = default(ArchivedGroup);

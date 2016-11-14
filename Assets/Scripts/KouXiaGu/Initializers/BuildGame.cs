@@ -23,16 +23,27 @@ namespace KouXiaGu
     {
         public BuildGameData(ICoreDataResource coreDataResource, ModGroup modRes, ArchivedGroup archivedGroup)
         {
-            this.coreDataResource = coreDataResource;
-            this.modRes = modRes;
+            this.CoreDataResource = coreDataResource;
+            this.ModRes = modRes;
             this.ArchivedGroup = archivedGroup;
         }
 
-        public ModGroup modRes { get; private set; }
+        public ModGroup ModRes { get; private set; }
 
-        public ICoreDataResource coreDataResource { get; private set; }
+        public ICoreDataResource CoreDataResource { get; private set; }
 
         public ArchivedGroup ArchivedGroup { get; private set; }
+
+
+        public static implicit operator ModGroup(BuildGameData item)
+        {
+            return item.ModRes;
+        }
+        public static implicit operator ArchivedGroup(BuildGameData item)
+        {
+            return item.ArchivedGroup;
+        }
+
     }
 
 
@@ -176,6 +187,102 @@ namespace KouXiaGu
                 onSavingFail(e);
             }
         }
+
+
+        //#region 加入到初始化事件;
+
+        //public bool Add(IBuildGameInThread item)
+        //{
+        //    return this.AppendBuildGame.Add(item);
+        //}
+
+        //public bool Add(IBuildGameInCoroutine item)
+        //{
+        //    return this.AppendBuildGame.Add(item);
+        //}
+
+        //public bool Contains(IBuildGameInThread item)
+        //{
+        //    return this.AppendBuildGame.Contains(item);
+        //}
+
+        //public bool Contains(IBuildGameInCoroutine item)
+        //{
+        //    return this.AppendBuildGame.Contains(item);
+        //}
+
+        //public bool Remove(IBuildGameInThread item)
+        //{
+        //    return this.AppendBuildGame.Remove(item);
+        //}
+
+        //public bool Remove(IBuildGameInCoroutine item)
+        //{
+        //    return this.AppendBuildGame.Remove(item);
+        //}
+
+        //public bool Add(IArchiveInThread item)
+        //{
+        //    return this.AppendArchiveGame.Add(item);
+        //}
+
+        //public bool Add(IArchiveInCoroutine item)
+        //{
+        //    return this.AppendArchiveGame.Add(item);
+        //}
+
+        //public bool Contains(IArchiveInThread item)
+        //{
+        //    return this.AppendArchiveGame.Contains(item);
+        //}
+
+        //public bool Contains(IArchiveInCoroutine item)
+        //{
+        //    return this.AppendArchiveGame.Contains(item);
+        //}
+
+        //public bool Remove(IArchiveInThread item)
+        //{
+        //    return this.AppendArchiveGame.Remove(item);
+        //}
+
+        //public bool Remove(IArchiveInCoroutine item)
+        //{
+        //    return this.AppendArchiveGame.Remove(item);
+        //}
+
+        //public bool Add(IQuitInThread item)
+        //{
+        //    return this.AppendQuitGame.Add(item);
+        //}
+
+        //public bool Add(IQuitInCoroutine item)
+        //{
+        //    return this.AppendQuitGame.Add(item);
+        //}
+
+        //public bool Contains(IQuitInThread item)
+        //{
+        //    return this.AppendQuitGame.Contains(item);
+        //}
+
+        //public bool Contains(IQuitInCoroutine item)
+        //{
+        //    return this.AppendQuitGame.Contains(item);
+        //}
+
+        //public bool Remove(IQuitInThread item)
+        //{
+        //    return this.AppendQuitGame.Remove(item);
+        //}
+
+        //public bool Remove(IQuitInCoroutine item)
+        //{
+        //    return this.AppendQuitGame.Remove(item);
+        //}
+
+        //#endregion
+
 
         /// <summary>
         /// 加载游戏;

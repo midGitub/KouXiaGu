@@ -79,9 +79,11 @@
     <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\CameraController.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlocksMapArchiver.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\DynaBlocksArchiver.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIOInfo.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookAt2D.cs" />
