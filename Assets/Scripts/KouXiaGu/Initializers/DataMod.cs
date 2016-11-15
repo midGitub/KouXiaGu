@@ -238,8 +238,14 @@ namespace KouXiaGu
         /// <returns></returns>
         private IEnumerable<string> GetModDirectoryPaths()
         {
-            string[] modDirectoryPaths = Directory.GetDirectories(GetModsDirectoryPath());
+            string modsDirectoryPath = GetModsDirectoryPath();
+            if (Directory.Exists(modsDirectoryPath))
+            {
+                Directory.CreateDirectory(modsDirectoryPath);
+                yield break;
+            }
 
+            string[] modDirectoryPaths = Directory.GetDirectories(modsDirectoryPath);
             foreach (var modDirectoryPath in modDirectoryPaths)
             {
                 yield return modDirectoryPath;

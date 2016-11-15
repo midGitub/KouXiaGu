@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
-using UniRx;
 
 namespace KouXiaGu.Map
 {
@@ -15,12 +12,12 @@ namespace KouXiaGu.Map
     /// <typeparam name="T"></typeparam>
     public class MapBlockIO<T> : IMapBlockIO<MapBlock<T>, T>
     {
-        private MapBlockIO(MapBlockIOInfo mapBlockIOInfo)
+        private MapBlockIO(IMapBlockIOInfo mapBlockIOInfo)
         {
             this.mapBlockIOInfo = mapBlockIOInfo;
         }
 
-        private MapBlockIOInfo mapBlockIOInfo;
+        private IMapBlockIOInfo mapBlockIOInfo;
 
         #region Load
 

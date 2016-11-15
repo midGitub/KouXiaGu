@@ -15,16 +15,22 @@ namespace KouXiaGu.Map
     public class DynaBlocksMap<TMapBlock, T> : IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
         where TMapBlock: IMap<ShortVector2, T>
     {
-        public DynaBlocksMap(ShortVector2 partitionSizes, ShortVector2 targetRadiationRange, IMapBlockIO<TMapBlock, T> dynamicMapIO)
+        public DynaBlocksMap(
+            ShortVector2 partitionSizes, 
+            ShortVector2 minRadiationRange,
+            ShortVector2 maxRadiationRange,
+            IMapBlockIO<TMapBlock, T> dynamicMapIO)
         {
             this.partitionSizes = partitionSizes;
-            this.targetRadiationRange = targetRadiationRange;
-            this.mapCollection = new Dictionary<ShortVector2, TMapBlock>();
+            this.minRadiationRange = minRadiationRange;
+            this.maxRadiationRange = maxRadiationRange;
             this.dynamicMapIO = dynamicMapIO;
+            this.mapCollection = new Dictionary<ShortVector2, TMapBlock>();
         }
 
         private ShortVector2 partitionSizes;
-        private ShortVector2 targetRadiationRange;
+        private ShortVector2 minRadiationRange;
+        private ShortVector2 maxRadiationRange;
         private Dictionary<ShortVector2, TMapBlock> mapCollection;
         private IMapBlockIO<TMapBlock, T> dynamicMapIO;
 
@@ -45,9 +51,14 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 目标辐射范围,既以为目标中心,需要读取的地图范围;
         /// </summary>
-        private ShortVector2 TargetRadiationRange
+        private ShortVector2 MinRadiationRange
         {
-            get { return targetRadiationRange; }
+            get { return minRadiationRange; }
+        }
+
+        private ShortVector2 MaxRadiationRange
+        {
+            get { return maxRadiationRange; }
         }
 
         /// <summary>
@@ -80,7 +91,7 @@ namespace KouXiaGu.Map
         /// 获取到这个位置的值;若不存在则返回异常;
         /// KeyNotFoundException : 这个点不存在,或超出读取范围;
         /// </summary>
-        public T GetItem(IntVector2 position)
+        private T GetItem(IntVector2 position)
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
@@ -92,7 +103,7 @@ namespace KouXiaGu.Map
         /// 设置这个值;若不存在则返回异常;
         /// KeyNotFoundException : 这个点不存在,或超出读取范围;
         /// </summary>
-        public void SetItem(IntVector2 position, T item)
+        private void SetItem(IntVector2 position, T item)
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
@@ -184,34 +195,36 @@ namespace KouXiaGu.Map
         /// </summary>
         private void UpdateMapData(ShortVector2 targetAddress)
         {
-            IEnumerable<ShortVector2> radiationAddresses = GetRadiationAddresses(targetAddress);
-            Unload(radiationAddresses);
-            Load(radiationAddresses);
+            UnloadBlock(targetAddress);
+            LoadBlocks(targetAddress);
         }
 
         /// <summary>
         /// 根据分页地址加入到地图;
         /// </summary>
-        private void Load(IEnumerable<ShortVector2> radiationAddresses)
+        private void LoadBlocks(ShortVector2 targetAddress)
         {
+            IEnumerable<ShortVector2> radiationAddresses = GetMinRadiationAddresses(targetAddress);
             IEnumerable<ShortVector2> addRadiationAddresses = radiationAddresses.
                 Where(address => !mapCollection.ContainsKey(address));
+
             foreach (var address in addRadiationAddresses)
             {
-                Load(address);
+                LoadBlock(address);
             }
         }
 
         /// <summary>
-        /// 根据分页地址从地图内移除;
+        /// 根据分页地址从地图内移除;根据最大辐射移除;
         /// </summary>
-        private void Unload(IEnumerable<ShortVector2> radiationAddresses)
+        private void UnloadBlocks(ShortVector2 targetAddress)
         {
+            IEnumerable<ShortVector2> radiationAddresses = GetMaxRadiationAddresses(targetAddress);
             IEnumerable<ShortVector2> removeRadiationAddresses = mapCollection.Keys.
                 Where(address => !radiationAddresses.Contains(address));
             foreach (var address in removeRadiationAddresses)
             {
-                Unload(address);
+                UnloadBlock(address);
             }
         }
 
@@ -219,7 +232,7 @@ namespace KouXiaGu.Map
         /// 获取到这个分页,并且加入到地图;
         /// </summary>
         /// <param name="address"></param>
-        private void Load(ShortVector2 address)
+        private void LoadBlock(ShortVector2 address)
         {
             Action<TMapBlock> onComplete = mapBlock => mapCollection.Add(address, mapBlock);
             Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
@@ -232,12 +245,12 @@ namespace KouXiaGu.Map
         /// 移除成功返回true,否则返回false;
         /// </summary>
         /// <param name="targetAddress"></param>
-        private bool Unload(ShortVector2 address)
+        private bool UnloadBlock(ShortVector2 address)
         {
             TMapBlock mapPaging;
             if (mapCollection.TryGetValue(address, out mapPaging))
             {
-                SaveMapPaging(address, mapPaging);
+                SaveBlock(address, mapPaging);
                 return mapCollection.Remove(address);
             }
             return false;
@@ -245,46 +258,50 @@ namespace KouXiaGu.Map
 
         /// <summary>
         /// 保存地图所有的地图块;
-        /// ReadOnlyException : 不允许编辑的
         /// </summary>
         /// <param name="compulsorySave"></param>
-        public void SaveMapPagingAll()
+        public void SaveBlocksAll()
         {
-            foreach (var mapPaging in mapCollection)
+            foreach (var block in mapCollection)
             {
-                SaveMapPaging(mapPaging.Key, mapPaging.Value);
+                SaveBlock(block.Key, block.Value);
             }
         }
 
         /// <summary>
         /// 保存这个地图块若地图块内不存在内容,则删除这个地图块;
         /// </summary>
-        private void SaveMapPaging(ShortVector2 address, TMapBlock mapBlock)
+        private void SaveBlock(ShortVector2 address, TMapBlock mapBlock)
         {
             Action onComplete = () => Debug.Log("保存地图成功!" + address.ToString());
             Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
             dynamicMapIO.SaveAsyn(address, mapBlock, onComplete, onFail);
         }
 
-        /// <summary>
-        /// 获取到目标辐射到的地图分页地址;
-        /// </summary>
-        private IEnumerable<ShortVector2> GetRadiationAddresses(IntVector2 targetPosition)
+
+        private IEnumerable<ShortVector2> GetMaxRadiationAddresses(ShortVector2 address)
         {
-            ShortVector2 address = TransfromToAddress(targetPosition);
-            return GetRadiationAddresses(address);
+            ShortVector2 targetRadiationRange = MaxRadiationRange;
+            return GetRadiationAddresses(address, targetRadiationRange);
         }
 
         /// <summary>
         /// 获取到目标辐射到的地图分页地址;
         /// </summary>
-        private IEnumerable<ShortVector2> GetRadiationAddresses(ShortVector2 address)
+        private IEnumerable<ShortVector2> GetMinRadiationAddresses(ShortVector2 address)
         {
-            ShortVector2 targetRadiationRange = TargetRadiationRange;
+            ShortVector2 targetRadiationRange = MinRadiationRange;
+            return GetRadiationAddresses(address, targetRadiationRange);
+        }
 
-            for (short x = (short)(-targetRadiationRange.x); x <= targetRadiationRange.x; x++)
+        /// <summary>
+        /// 获取到目标辐射地图块地址;
+        /// </summary>
+        private IEnumerable<ShortVector2> GetRadiationAddresses(ShortVector2 address, ShortVector2 radiationRange)
+        {
+            for (short x = (short)(-radiationRange.x); x <= radiationRange.x; x++)
             {
-                for (short y = (short)(-targetRadiationRange.y); y <= targetRadiationRange.y; y++)
+                for (short y = (short)(-radiationRange.y); y <= radiationRange.y; y++)
                 {
                     ShortVector2 radiationAddresses = new ShortVector2(x, y) + address;
                     yield return radiationAddresses;

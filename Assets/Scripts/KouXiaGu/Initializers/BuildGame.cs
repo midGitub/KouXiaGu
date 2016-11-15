@@ -55,6 +55,9 @@ namespace KouXiaGu
         DataArchive ArchiveData { get; }
         DataCore CoreData { get; }
         DataMod ModData { get; }
+
+        BuildGameData GetBuildGameData();
+        BuildGameData GetBuildGameData(ArchivedGroup archivedGroup);
     }
 
 

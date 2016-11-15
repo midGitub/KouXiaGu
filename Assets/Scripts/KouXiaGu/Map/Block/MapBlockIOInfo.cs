@@ -8,6 +8,15 @@ using UnityEngine;
 namespace KouXiaGu.Map
 {
 
+    public interface IMapBlockIOInfo
+    {
+        string GetBlockName(ShortVector2 address);
+        string GetFullArchiveTempDirectoryPath();
+        string GetFullArchiveTempFilePath(ShortVector2 address);
+        string GetFullPrefabMapDirectoryPath();
+        string GetFullPrefabMapFilePath(ShortVector2 address);
+    }
+
     /// <summary>
     /// 地图块信息;
     /// </summary>
@@ -31,11 +40,6 @@ namespace KouXiaGu.Map
         /// </summary>
         [SerializeField]
         public string addressPrefix;
-        ///// <summary>
-        ///// 地图块文件后缀("."之后的后缀名);
-        ///// </summary>
-        //[SerializeField]
-        //public string addressExtension;
 
         /// <summary>
         /// 保存到存档的位置;

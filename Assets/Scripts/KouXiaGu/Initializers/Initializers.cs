@@ -21,8 +21,25 @@ namespace KouXiaGu
         [SerializeField]
         private BuildGame buildGame;
 
-        public GameStatus State { get { return state.Value; } private set { state.Value = value; } }
-        public IReadOnlyReactiveProperty<GameStatus> StateReactive { get { return state; } }
+        private static IBuildGameData buildGameData;
+
+        /// <summary>
+        /// 获取到游戏创建接口;
+        /// </summary>
+        public static IBuildGameData BuildGameData
+        {
+            get { return buildGameData ?? (buildGameData = GetBuildGameDataObject()); }
+        }
+
+        public GameStatus State
+        {
+            get { return state.Value; }
+            private set { state.Value = value; }
+        }
+        public IReadOnlyReactiveProperty<GameStatus> StateReactive
+        {
+            get { return state; }
+        }
 
         public bool CanBuildGame
         {
@@ -71,10 +88,11 @@ namespace KouXiaGu
 
         #endregion
 
-        private void Start()
+        [ContextMenu("测试!开始游戏!")]
+        private void Test_Start()
         {
             Action onComplete = () => Debug.Log("读取成功!");
-            Build(default(BuildGameData), onComplete);
+            Build(GetBuildGameData(), onComplete);
         }
 
         public ICancelable Build(BuildGameData buildGameRes, Action onComplete = null, Action<Exception> onFail = null)
@@ -180,6 +198,21 @@ namespace KouXiaGu
                 onFail(error);
 
             State = GameStatus.Running;
+        }
+
+        private static IBuildGameData GetBuildGameDataObject()
+        {
+            return GameObject.FindWithTag("GameController").GetComponent<Initializers>();
+        }
+
+        public BuildGameData GetBuildGameData()
+        {
+            return this.buildGame.GetBuildGameData();
+        }
+
+        public BuildGameData GetBuildGameData(ArchivedGroup archivedGroup)
+        {
+            return this.buildGame.GetBuildGameData(archivedGroup);
         }
 
 #if UNITY_EDITOR

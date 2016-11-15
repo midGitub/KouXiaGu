@@ -51,14 +51,27 @@ namespace KouXiaGu
     [ProtoContract]
     public class ArchivedExpand : SmallArchived
     {
+        public ArchivedExpand() { }
+
+        #region pathDictionary
+
+        [ProtoMember(10)]
+        private Dictionary<int, string> pathDictionary = new Dictionary<int, string>();
 
         /// <summary>
-        /// 数据文件;
+        /// 路径信息字典;
         /// </summary>
-        [ProtoMember(1)]
-        DataDictionary dataDictionary = new DataDictionary();
-        public DataDictionary DataDictionary { get { return dataDictionary; } }
+        public Dictionary<int, string> PathDictionary
+        {
+            get { return pathDictionary; }
+        }
 
+        /// <summary>
+        /// 存档使用预制地图的路径;
+        /// </summary>
+        public const int PathPrefabMapDirectory = 10;
+
+        #endregion
 
 
     }
