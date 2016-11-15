@@ -45,7 +45,7 @@ namespace KouXiaGu.Map
 
         private void AddToInit()
         {
-            IBuildGameData buildGame = GetComponent<Initializers>().BuildGameData;
+            IBuildGameData buildGame = GameData.BuildGameData;
 
             buildGame.AppendBuildGame.Add(dynaBlocksArchiver);
             buildGame.AppendArchiveGame.Add(dynaBlocksArchiver);

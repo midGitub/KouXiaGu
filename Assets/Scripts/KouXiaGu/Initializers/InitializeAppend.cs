@@ -7,10 +7,6 @@ namespace KouXiaGu
 
     public interface IAppendInitialize<FromCoroutine, FromThread>
     {
-        bool FindFromGameObject { get; set; }
-        GameObject BaseGameObject { get; set; }
-
-        void Awake();
         bool Add(FromThread item);
         bool Add(FromCoroutine item);
         bool Contains(FromThread item);
@@ -31,25 +27,9 @@ namespace KouXiaGu
             threadComponents = new HashSet<FromThread>();
         }
 
-        [Header("组件获取")]
-        [SerializeField]
-        private bool findFromGameObject = true;
-        [SerializeField]
-        private GameObject baseGameObject;
-
         private HashSet<FromCoroutine> coroutineComponents;
         private HashSet<FromThread> threadComponents;
 
-        public bool FindFromGameObject
-        {
-            get { return findFromGameObject; }
-            set { findFromGameObject = value; }
-        }
-        public GameObject BaseGameObject
-        {
-            get { return baseGameObject; }
-            set { baseGameObject = value; }
-        }
         protected override IEnumerable<FromCoroutine> LoadInCoroutineComponents
         {
             get { return coroutineComponents; }
@@ -59,17 +39,6 @@ namespace KouXiaGu
         {
             get { return threadComponents; }
         }
-
-
-        public void Awake()
-        {
-            if (findFromGameObject)
-            {
-                coroutineComponents.UnionWith(BaseGameObject.GetComponentsInChildren<FromCoroutine>());
-                threadComponents.UnionWith(BaseGameObject.GetComponentsInChildren<FromThread>());
-            }
-        }
-
 
         public bool Add(FromCoroutine item)
         {

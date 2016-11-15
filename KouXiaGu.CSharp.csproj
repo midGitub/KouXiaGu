@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\CameraController.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameData.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\DynaBlocksArchiver.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />

@@ -11,7 +11,7 @@ namespace KouXiaGu
     /// 游戏状态控制;
     /// </summary>
     [DisallowMultipleComponent]
-    public class Initializers : MonoBehaviour
+    public class Initializers : MonoBehaviour, IBuildGameData
     {
         private Initializers() { }
 
@@ -37,15 +37,39 @@ namespace KouXiaGu
             get { return State == GameStatus.Running; }
         }
 
-        public IBuildGameData BuildGameData
+        #region IBuildGameData
+
+        public IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame
         {
-            get { return buildGame; }
+            get { return ((IBuildGameData)this.buildGame).AppendArchiveGame; }
         }
 
-        private void Awake()
+        public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
         {
-            buildGame.Awake();
+            get { return ((IBuildGameData)this.buildGame).AppendBuildGame; }
         }
+
+        public IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame
+        {
+            get { return ((IBuildGameData)this.buildGame).AppendQuitGame; }
+        }
+
+        public DataArchive ArchiveData
+        {
+            get { return ((IBuildGameData)this.buildGame).ArchiveData; }
+        }
+
+        public DataCore CoreData
+        {
+            get { return ((IBuildGameData)this.buildGame).CoreData; }
+        }
+
+        public DataMod ModData
+        {
+            get { return ((IBuildGameData)this.buildGame).ModData; }
+        }
+
+        #endregion
 
         private void Start()
         {
@@ -160,20 +184,20 @@ namespace KouXiaGu
 
 #if UNITY_EDITOR
 
-        [ContextMenu("设置所有从 GameController 获取")]
-        private void Test_SetAllFromGameController()
-        {
-            GameObject gameController = GameObject.FindWithTag("GameController");
+        //[ContextMenu("设置所有从 GameController 获取")]
+        //private void Test_SetAllFromGameController()
+        //{
+        //    GameObject gameController = GameObject.FindWithTag("GameController");
 
-            BuildGameData.AppendBuildGame.FindFromGameObject = true;
-            BuildGameData.AppendBuildGame.BaseGameObject = gameController;
+        //    AppendBuildGame.FindFromGameObject = true;
+        //    AppendBuildGame.BaseGameObject = gameController;
 
-            BuildGameData.AppendArchiveGame.FindFromGameObject = true;
-            BuildGameData.AppendArchiveGame.BaseGameObject = gameController;
+        //    AppendArchiveGame.FindFromGameObject = true;
+        //    AppendArchiveGame.BaseGameObject = gameController;
 
-            BuildGameData.AppendQuitGame.FindFromGameObject = true;
-            BuildGameData.AppendQuitGame.BaseGameObject = gameController;
-        }
+        //    AppendQuitGame.FindFromGameObject = true;
+        //    AppendQuitGame.BaseGameObject = gameController;
+        //}
 
 #endif
 

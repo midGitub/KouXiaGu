@@ -116,13 +116,6 @@ namespace KouXiaGu
             get { return quitGame; }
         }
 
-        public void Awake()
-        {
-            AppendBuildGame.Awake();
-            AppendArchiveGame.Awake();
-            AppendQuitGame.Awake();
-        }
-
         /// <summary>
         /// 开始创建游戏;
         /// </summary>

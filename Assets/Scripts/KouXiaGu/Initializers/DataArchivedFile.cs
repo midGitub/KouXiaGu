@@ -59,6 +59,8 @@ namespace KouXiaGu
         DataDictionary dataDictionary = new DataDictionary();
         public DataDictionary DataDictionary { get { return dataDictionary; } }
 
+
+
     }
 
 
