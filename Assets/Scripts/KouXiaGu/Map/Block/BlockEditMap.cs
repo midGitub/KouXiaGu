@@ -11,7 +11,8 @@ namespace KouXiaGu.Map
     /// 编辑预制地图;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class BlockEditMap<T> : MapBlockEditIO<T>, IMapBlockEditIOInfo, IBuildGameInThread, IArchiveInThread
+    public class BlockEditMap<T> : MapBlockEditIO<T>, IMapBlockEditIOInfo, 
+        IBuildGameInThread, IArchiveInThread, IQuitInThread
     {
         public BlockEditMap(string addressPrefix, BlocksMapInfo blocksMapInfo) : base(blocksMapInfo)
         {
@@ -108,6 +109,21 @@ namespace KouXiaGu.Map
         private void ArchiveData(ArchivedGroup item, ICancelable cancelable)
         {
             item.Archived.Map.PathPrefabMapDirectory = this.fullprefabMapDirectoryPath;
+        }
+
+        void IThreadInitialize<Unit>.Initialize(
+            Unit item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
+        {
+            try
+            {
+                Debug.Log(this + "开始移除!");
+                Clear();
+            }
+            catch (Exception e)
+            {
+                onError(e);
+            }
+            runningDoneCallBreak();
         }
 
     }

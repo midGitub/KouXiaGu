@@ -7,11 +7,11 @@ using UnityEngine;
 namespace KouXiaGu.Map
 {
 
-
     /// <summary>
     /// 地图初始化和归档方法;
     /// </summary>
-    public class BlockArchiverMap<T> : MapBlockIO<T>, IMapBlockIOInfo, IBuildGameInThread, IArchiveInThread
+    public class BlockArchiverMap<T> : MapBlockIO<T>, IMapBlockIOInfo, 
+        IBuildGameInThread, IArchiveInThread, IQuitInThread
     {
         public BlockArchiverMap(MapBlockIOInfo mapBlockIOInfo, BlocksMapInfo blocksMapInfo) : base(blocksMapInfo)
         {
@@ -199,6 +199,22 @@ namespace KouXiaGu.Map
         private void ArchiveData(ArchivedGroup item, ICancelable cancelable)
         {
             item.Archived.Map.PathPrefabMapDirectory = this.fullprefabMapDirectoryPath;
+        }
+
+
+        void IThreadInitialize<Unit>.Initialize(
+            Unit item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
+        {
+            try
+            {
+                Debug.Log(this + "开始移除!");
+                Clear();
+            }
+            catch (Exception e)
+            {
+                onError(e);
+            }
+            runningDoneCallBreak();
         }
 
 

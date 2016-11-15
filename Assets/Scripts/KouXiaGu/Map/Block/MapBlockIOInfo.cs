@@ -27,13 +27,20 @@ namespace KouXiaGu.Map
     [Serializable]
     public struct MapBlockIOInfo
     {
-
-        [Header("运行时")]
+        /// <summary>
+        /// 地图归档临时文件夹路径;
+        /// </summary>
         [SerializeField]
         public string archiveTempDirectoryPath;
+        /// <summary>
+        /// 地图文件前缀;
+        /// </summary>
         [SerializeField]
         public string addressPrefix;
-        [Header("存档保存"), SerializeField]
+        /// <summary>
+        /// 地图存档到的文件夹路径;
+        /// </summary>
+        [SerializeField]
         public string archivedDirectoryPath;
 
     }

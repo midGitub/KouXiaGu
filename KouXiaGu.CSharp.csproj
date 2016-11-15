@@ -17,8 +17,7 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.4.0f3</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -82,50 +81,49 @@
     <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\CameraController.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\ArchivedMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockArchiverMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockEditMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockNotFoundException.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEditIO.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIOInfo.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\CollectionHelper.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookForward2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\BuildGame.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataArchive.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataArchivedFile.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataCore.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataMod.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameData.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameStatus.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeAppend.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\InitializeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Initializers.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Test_Game.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\BuildMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\ArchivedMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockArchiverMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockEditMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockNotFoundException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\DynaBlocksMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\IMapBlockIO.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEditIO.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIOInfo.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\BuildMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\CollectionHelper.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMapNode.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexDirection.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexMapConvert.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\Hexagon.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\HexMapNode.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\IMapBlockIO.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\IntVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\ShortVector2.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigator.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\NavNode.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\NaviHexMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\IntVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\AStar.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\INavMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\INavNode.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\Path.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigation\PathNotFoundException.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigator.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\OuterBoundaryException.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataArchive.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataArchivedFile.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataCore.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataMod.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\ShortVector2.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\MapObjectTransfrom.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\ProtoBuf\ProtoVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\ReadOnlyException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
@@ -134,7 +132,6 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\Test_StartGame.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\MapObjectTransfrom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Mods\ModReadingOrder.xml" />
@@ -221,6 +218,5 @@
     <None Include="Assets\Plugins\protobuf-net\Web\TODO.txt" />
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
