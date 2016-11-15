@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KouXiaGu.Map.Navigation;
-using KouXiaGu.Map.HexMap;
 using UniRx;
 
 namespace KouXiaGu.Map

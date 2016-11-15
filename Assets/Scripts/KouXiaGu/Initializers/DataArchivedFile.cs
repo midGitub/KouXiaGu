@@ -6,6 +6,7 @@ using System.Text;
 using ProtoBuf;
 using UnityEngine;
 using KouXiaGu.Map;
+using KouXiaGu.Characters;
 
 namespace KouXiaGu
 {
@@ -59,23 +60,13 @@ namespace KouXiaGu
         /// 地图存档信息;
         /// </summary>
         [ProtoMember(50)]
-        public readonly ArchivedMap ArchivedMap = new ArchivedMap();
-
-
-        #region 主角信息 100 ~ 150;
+        public readonly ArchivedMap Map = new ArchivedMap();
 
         /// <summary>
-        /// 主角;
+        /// 主角存档信息;
         /// </summary>
         [ProtoMember(100)]
-        public MapObjectTransfrom ProtagonistTransfrom;
-
-        public Vector2 ProtagonistPosition
-        {
-            get { return ProtagonistTransfrom.Position; }
-        }
-
-        #endregion
+        public readonly ArchivedCharacter Character = new ArchivedCharacter();
 
     }
 

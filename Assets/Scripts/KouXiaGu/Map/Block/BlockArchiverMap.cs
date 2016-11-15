@@ -119,6 +119,7 @@ namespace KouXiaGu.Map
                 Debug.Log(this + "开始初始化!");
                 RecoveryFile(item, cancelable);
                 RecoveryData(item, cancelable);
+                RecoveryMap(item, cancelable);
             }
             catch (Exception e)
             {
@@ -145,7 +146,7 @@ namespace KouXiaGu.Map
         {
             try
             {
-                this.fullprefabMapDirectoryPath = item.Archived.ArchivedMap.PathPrefabMapDirectory;
+                this.fullprefabMapDirectoryPath = item.Archived.Map.PathPrefabMapDirectory;
             }
             catch (KeyNotFoundException e)
             {
@@ -155,7 +156,8 @@ namespace KouXiaGu.Map
 
         private void RecoveryMap(ArchivedGroup item, ICancelable cancelable)
         {
-            
+            IntVector2 protagonistMapPosition = item.Archived.GetProtagonistMapPosition();
+            UpdateMapData(protagonistMapPosition, false);
         }
 
         void IThreadInitialize<ArchivedGroup>.Initialize(
@@ -190,7 +192,7 @@ namespace KouXiaGu.Map
 
         private void ArchiveData(ArchivedGroup item, ICancelable cancelable)
         {
-            item.Archived.ArchivedMap.PathPrefabMapDirectory = this.fullprefabMapDirectoryPath;
+            item.Archived.Map.PathPrefabMapDirectory = this.fullprefabMapDirectoryPath;
         }
 
 

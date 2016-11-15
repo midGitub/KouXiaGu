@@ -5,7 +5,7 @@ using System.Text;
 using ProtoBuf;
 using UnityEngine;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu
 {
 
     /// <summary>
@@ -14,11 +14,10 @@ namespace KouXiaGu.Map
     [Serializable, ProtoContract]
     public struct MapObjectTransfrom
     {
-        public MapObjectTransfrom(string name, Vector2 position, IntVector2 MapPosition)
+        public MapObjectTransfrom(string name, Vector2 position)
         {
             this.Name = name;
             this.Position = position;
-            this.mapPosition = MapPosition;
         }
 
         [ProtoMember(1)]
@@ -30,11 +29,6 @@ namespace KouXiaGu.Map
         [ProtoMember(2)]
         public ProtoVector2 Position { get; private set; }
 
-        /// <summary>
-        /// 物所在的地图节点;
-        /// </summary>
-        [ProtoMember(3)]
-        public IntVector2 mapPosition { get; private set; }
     }
 
 }

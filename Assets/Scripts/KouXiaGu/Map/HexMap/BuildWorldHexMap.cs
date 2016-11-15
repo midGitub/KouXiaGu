@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using KouXiaGu.Map.HexMap;
 using UniRx;
 using System.Collections;
 
@@ -23,12 +22,18 @@ namespace KouXiaGu.Map
         [SerializeField]
         private BlocksMapInfo blocksMapInfo;
 
+        private static BuildWorldHexMap instance;
         private DynaBlocksMap<MapBlock<HexMapNode>, HexMapNode> mapCollection;
         private Hexagon mapHexagon;
 
         public IMap<IntVector2, HexMapNode> MapCollection
         {
             get { return mapCollection; }
+        }
+
+        public static BuildWorldHexMap GetInstance
+        {
+            get { return instance ?? (instance = FindInstance()); }
         }
 
         /// <summary>
@@ -41,6 +46,8 @@ namespace KouXiaGu.Map
 
         private void Awake()
         {
+            instance = FindInstance();
+
             mapHexagon = new Hexagon() { OuterDiameter = hexOuterDiameter };
             InitMap();
         }
@@ -104,6 +111,11 @@ namespace KouXiaGu.Map
             {
                 throw new Exception("坐标无法确定!检查摄像机之前地面是否存在3D碰撞模块!");
             }
+        }
+
+        private static BuildWorldHexMap FindInstance()
+        {
+            return GameObject.FindWithTag("GameController").GetComponent<BuildWorldHexMap>();
         }
 
     }

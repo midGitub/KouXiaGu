@@ -125,13 +125,20 @@ namespace KouXiaGu.Map
 
         /// <summary>
         /// 将这个元素加入到地图,若无法保存则返回异常;
-        /// KeyNotFoundException : 超出范围;
         /// </summary>
         public void Add(IntVector2 position, T item)
         {
             ShortVector2 realPosition;
             ShortVector2 address = TransfromToAddress(position, out realPosition);
-            IMap<ShortVector2, T> mapPaging = mapCollection[address];
+            IMap<ShortVector2, T> mapPaging;
+            try
+            {
+                mapPaging = mapCollection[address];
+            }
+            catch (KeyNotFoundException e)
+            {
+                throw BlockNotFoundException(address, e);
+            }
             mapPaging.Add(realPosition, item);
         }
 
@@ -186,6 +193,13 @@ namespace KouXiaGu.Map
             mapCollection.Clear();
         }
 
+        private BlockNotFoundException BlockNotFoundException(ShortVector2 address, Exception e)
+        {
+            return new BlockNotFoundException(address.ToString() + "地图块未载入!\n" +
+                mapCollection.Keys.ToString()
+                , e);
+        }
+
 
         /// <summary>
         /// 根据目标所在位置更新地图数据;
@@ -233,7 +247,7 @@ namespace KouXiaGu.Map
         private void LoadBlockAsyn(ShortVector2 address)
         {
             Action<TMapBlock> onComplete = mapBlock => mapCollection.Add(address, mapBlock);
-            Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
+            Action<Exception> onFail = e => Debug.LogWarning("不存在地图,跳过;" + address.ToString() + e);
             dynamicMapIO.LoadAsyn(address, onComplete, onFail);
             return;
         }

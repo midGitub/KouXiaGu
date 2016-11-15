@@ -8,13 +8,17 @@ using UnityEngine;
 namespace KouXiaGu.Map
 {
 
-    public interface IMapBlockIOInfo
+    public interface IMapBlockEditIOInfo
     {
         string GetBlockName(ShortVector2 address);
-        string GetFullArchiveTempDirectoryPath();
-        string GetFullArchiveTempFilePath(ShortVector2 address);
         string GetFullPrefabMapDirectoryPath();
         string GetFullPrefabMapFilePath(ShortVector2 address);
+    }
+
+    public interface IMapBlockIOInfo : IMapBlockEditIOInfo
+    {
+        string GetFullArchiveTempDirectoryPath();
+        string GetFullArchiveTempFilePath(ShortVector2 address);
     }
 
     /// <summary>

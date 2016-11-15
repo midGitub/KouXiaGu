@@ -73,8 +73,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\KouXiaGu\ArchivedConvert.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\AttributeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\CameraConvert.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Characters\ArchivedCharacter.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Characters\Protagonist.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\CollectionHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\ExtendInspectorDisplayDrawer.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
@@ -82,8 +85,10 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameData.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\ArchivedMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockArchiverMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockNotFoundException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEditIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIOInfo.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\CollectionHelper.cs" />
@@ -128,7 +133,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\Test_StartGame.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\MapObjectTransfrom.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\MapObjectTransfrom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Mods\ModReadingOrder.xml" />

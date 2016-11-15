@@ -37,7 +37,7 @@ namespace KouXiaGu.Test
             Action onComplete = () => Debug.Log("开始游戏成功!");
             BuildGameData buildGameData = Initializers.BuildGameData.GetBuildGameData();
 
-            buildGameData.ArchivedGroup.Archived.PathDictionary.Add(ArchivedExpand.PathPrefabMapDirectory, mapDir.text);
+            buildGameData.ArchivedGroup.Archived.Map.PathPrefabMapDirectory = mapDir.text;
 
             initializers.Build(buildGameData, onComplete);
         }

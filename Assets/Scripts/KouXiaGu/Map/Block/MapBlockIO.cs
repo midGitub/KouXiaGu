@@ -7,10 +7,10 @@ namespace KouXiaGu.Map
 {
 
     /// <summary>
-    /// 地图读取保存;
+    /// 预制地图读取,存档地图读取保存;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MapBlockIO<T> : DynaBlocksMap<MapBlock<T>, T>,  IMapBlockIO<MapBlock<T>, T>
+    public class MapBlockIO<T> : DynaBlocksMap<MapBlock<T>, T>, IMapBlockIO<MapBlock<T>, T>
     {
 
         protected MapBlockIO(BlocksMapInfo info) :

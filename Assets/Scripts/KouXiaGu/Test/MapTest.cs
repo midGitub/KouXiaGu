@@ -64,7 +64,6 @@ namespace KouXiaGu.Test
             Debug.Log("加入到!");
             IntVector2 mapPosition = buildWorldHexMap.GetMouseMapPosition();
             buildWorldHexMap.MapCollection.AddOrReplace(mapPosition, new HexMapNode());
-
         }
 
     }
