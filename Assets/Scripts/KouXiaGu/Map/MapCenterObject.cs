@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UniRx;
 using UnityEngine;
 
@@ -24,9 +21,9 @@ namespace KouXiaGu.Map
 
         private IDisposable updateMapDisposable;
 
-        private GameMap buildMap
+        private GameHexMap buildMap
         {
-            get { return GameMap.GetInstance; }
+            get { return GameHexMap.GetInstance; }
         }
 
         private void Awake()

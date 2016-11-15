@@ -14,8 +14,10 @@ namespace KouXiaGu.Map
         [SerializeField]
         private Transform target;
 
-        [SerializeField]
-        private GameMap gameMap;
+        private GameHexMap gameMap
+        {
+            get { return GameHexMap.GetInstance; }
+        }
 
         private Transform current;
         private Vector3 previousPosition;

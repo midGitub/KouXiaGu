@@ -41,7 +41,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 书平面坐标转换到地图坐标;
         /// </summary>
-        public static IntVector2 MouseToMapPoint(this GameMap buildMap)
+        public static IntVector2 MouseToMapPoint(this GameHexMap buildMap)
         {
             Vector2 planePoint = MouseToPlanePoint();
             return buildMap.PlaneToMapPoint(planePoint);

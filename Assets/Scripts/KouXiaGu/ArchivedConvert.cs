@@ -20,7 +20,7 @@ namespace KouXiaGu
         public static IntVector2 GetProtagonistMapPosition(this ArchivedExpand archived)
         {
             Vector2 pretagonistPosition = archived.Character.ProtagonistTransfrom.Position;
-            IntVector2 mapPosition = GameMap.GetInstance.PlaneToMapPoint(pretagonistPosition);
+            IntVector2 mapPosition = GameHexMap.GetInstance.PlaneToMapPoint(pretagonistPosition);
             return mapPosition;
         }
 

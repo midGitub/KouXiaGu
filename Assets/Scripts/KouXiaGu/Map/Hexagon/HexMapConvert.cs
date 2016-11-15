@@ -36,7 +36,8 @@ namespace KouXiaGu.Map
 
 
     /// <summary>
-    /// 六边形与地图转换;
+    /// 六边形与地图坐标转换;
+    /// 条件:六边形蜂窝结构必须是南北通的(?),且坐标(0,0)为六边形的中心点;
     /// </summary>
     public static class HexMapConvert
     {

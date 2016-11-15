@@ -13,7 +13,7 @@ namespace KouXiaGu.Map
     /// 游戏地图
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameMap : MonoBehaviour
+    public class GameHexMap : MonoBehaviour
     {
 
         [SerializeField, Tooltip("是否为编辑地图模式?")]
@@ -28,13 +28,13 @@ namespace KouXiaGu.Map
         [SerializeField]
         private BlocksMapInfo blocksMapInfo;
 
-        private static GameMap instance;
+        private static GameHexMap instance;
         private IDynaMap<IntVector2, MapNode> mapCollection;
         private Hexagon mapHexagon;
 
-        public static GameMap GetInstance
+        public static GameHexMap GetInstance
         {
-            get { return instance ?? (instance = GameController.FindInstance<GameMap>()); }
+            get { return instance ?? (instance = GameController.FindInstance<GameHexMap>()); }
         }
         public bool IsEdit
         {

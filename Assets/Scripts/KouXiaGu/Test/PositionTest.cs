@@ -58,7 +58,7 @@ namespace KouXiaGu.Test
         {
             string str = "";
 
-            str += "地图坐标 :" + GameMap.GetInstance.MouseToMapPoint();
+            str += "地图坐标 :" + GameHexMap.GetInstance.MouseToMapPoint();
 
             return str;
         }

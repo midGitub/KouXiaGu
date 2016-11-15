@@ -28,9 +28,9 @@ namespace KouXiaGu.Map
     {
         protected DynaBlocksMap(BlocksMapInfo info)
         {
-            this.partitionSizes = info.partitionSizes;
-            this.minRadiationRange = info.minRadiationRange;
-            this.maxRadiationRange = info.maxRadiationRange;
+            this.partitionSizes = ShortVector2.Abs(info.partitionSizes);
+            this.minRadiationRange = ShortVector2.Abs(info.minRadiationRange);
+            this.maxRadiationRange = ShortVector2.Abs(info.maxRadiationRange);
             this.mapCollection = new Dictionary<ShortVector2, TMapBlock>();
         }
 

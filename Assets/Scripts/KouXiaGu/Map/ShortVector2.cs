@@ -27,9 +27,6 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取这两个点的距离;
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <returns></returns>
         public static float Distance(ShortVector2 v1, ShortVector2 v2)
         {
             float distance = (float)Math.Sqrt(Math.Pow((v1.x - v2.x), 2) + Math.Pow((v1.y - v2.y), 2));
@@ -39,14 +36,22 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取这两个点的曼哈顿距离;
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <returns></returns>
         public static int ManhattanDistance(ShortVector2 v1, ShortVector2 v2)
         {
             int distance = Math.Abs(v1.x - v2.x) + Math.Abs(v1.y - v2.y);
             return distance;
         }
+
+        /// <summary>
+        /// 将x和y转换成正数;
+        /// </summary>
+        public static ShortVector2 Abs(ShortVector2 v1)
+        {
+            short x = Math.Abs(v1.x);
+            short y = Math.Abs(v1.y);
+            return new ShortVector2(x, y);
+        }
+
 
 
         #region 重载,对比,转换;
