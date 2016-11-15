@@ -243,3 +243,16 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# Unity
+*.meta
+*.xlsx
+*.db
+
+/Assets
+/Library
+/ProjectSettings
+/Temp
+/TestResults
+
+!/Assets/Scripts/KouXiaGu
