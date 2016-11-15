@@ -107,7 +107,6 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIOInfo.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\BuildMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Class1.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\CollectionHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMapNode.cs" />
