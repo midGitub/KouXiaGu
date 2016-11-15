@@ -259,3 +259,6 @@ ModelManifest.xml
 /KouXiaGu.xlsx
 /KouXiaGu.CSharp.Plugins.csproj
 /KouXiaGu.CSharp.Editor.csproj
+
+# Unity
+*.meta
