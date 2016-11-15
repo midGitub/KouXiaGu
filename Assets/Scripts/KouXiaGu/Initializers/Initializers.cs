@@ -8,7 +8,7 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 游戏状态控制;
+    /// 游戏状态控制(每个场景只存一个);
     /// </summary>
     [DisallowMultipleComponent]
     public class Initializers : MonoBehaviour
@@ -28,7 +28,7 @@ namespace KouXiaGu
         /// </summary>
         public static IBuildGameData BuildGameData
         {
-            get { return buildGameData ?? (buildGameData = GetBuildGameDataObject()); }
+            get { return buildGameData ?? (buildGameData = GameController.FindInstance<Initializers>().buildGame); }
         }
 
         public GameStatus State
@@ -54,11 +54,9 @@ namespace KouXiaGu
             get { return State == GameStatus.Running; }
         }
 
-        [ContextMenu("测试!开始游戏!")]
-        private void Test_Start()
+        private void OnDestroy()
         {
-            Action onComplete = () => Debug.Log("读取成功!");
-            Build(buildGame.GetBuildGameData(), onComplete);
+            buildGameData = null;
         }
 
         public ICancelable Build(BuildGameData buildGameRes, Action onComplete = null, Action<Exception> onFail = null)
@@ -168,30 +166,6 @@ namespace KouXiaGu
 
             State = GameStatus.Running;
         }
-
-        private static IBuildGameData GetBuildGameDataObject()
-        {
-            return GameObject.FindWithTag("GameController").GetComponent<Initializers>().buildGame;
-        }
-
-#if UNITY_EDITOR
-
-        //[ContextMenu("设置所有从 GameController 获取")]
-        //private void Test_SetAllFromGameController()
-        //{
-        //    GameObject gameController = GameObject.FindWithTag("GameController");
-
-        //    AppendBuildGame.FindFromGameObject = true;
-        //    AppendBuildGame.BaseGameObject = gameController;
-
-        //    AppendArchiveGame.FindFromGameObject = true;
-        //    AppendArchiveGame.BaseGameObject = gameController;
-
-        //    AppendQuitGame.FindFromGameObject = true;
-        //    AppendQuitGame.BaseGameObject = gameController;
-        //}
-
-#endif
 
     }
 

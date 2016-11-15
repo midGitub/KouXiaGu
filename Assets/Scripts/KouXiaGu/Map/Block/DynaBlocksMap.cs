@@ -83,9 +83,7 @@ namespace KouXiaGu.Map
         }
 
         public abstract void Save(ShortVector2 address, TMapBlock mapBlock);
-        public abstract void SaveAsyn(ShortVector2 address, TMapBlock mapBlock, Action onComplete, Action<Exception> onFail);
         public abstract TMapBlock Load(ShortVector2 address);
-        public abstract bool LoadAsyn(ShortVector2 address, Action<TMapBlock> onComplete, Action<Exception> onFail);
 
         /// <summary>
         /// 获取到这个位置的值;若不存在则返回异常;
@@ -209,7 +207,7 @@ namespace KouXiaGu.Map
         /// </summary>
         private void UpdateMapData(ShortVector2 targetAddress)
         {
-            UnloadBlock(targetAddress);
+            UnloadBlocks(targetAddress);
             LoadBlocks(targetAddress);
         }
 
@@ -224,20 +222,17 @@ namespace KouXiaGu.Map
 
             foreach (var address in addRadiationAddresses)
             {
-                LoadBlockAsyn(address);
+                LoadBlock(address);
             }
         }
 
         /// <summary>
         /// 获取到这个分页,并且加入到地图;
         /// </summary>
-        /// <param name="address"></param>
-        private void LoadBlockAsyn(ShortVector2 address)
+        private void LoadBlock(ShortVector2 address)
         {
-            Action<TMapBlock> onComplete = mapBlock => mapCollection.Add(address, mapBlock);
-            Action<Exception> onFail = e => Debug.LogWarning("不存在地图,跳过;" + address.ToString() + e);
-            LoadAsyn(address, onComplete, onFail);
-            return;
+            TMapBlock mapBlock = Load(address);
+            mapCollection.Add(address, mapBlock);
         }
 
         /// <summary>
@@ -246,38 +241,25 @@ namespace KouXiaGu.Map
         private void UnloadBlocks(ShortVector2 targetAddress)
         {
             IEnumerable<ShortVector2> radiationAddresses = GetMaxRadiationAddresses(targetAddress);
-            IEnumerable<ShortVector2> removeRadiationAddresses = mapCollection.Keys.
-                Where(address => !radiationAddresses.Contains(address));
-            foreach (var address in removeRadiationAddresses)
+            ShortVector2[] removeAddresses = mapCollection.Keys.
+                Where(address => !radiationAddresses.Contains(address)).ToArray();
+            foreach (var address in removeAddresses)
             {
-                UnloadBlock(address);
+                SaveBlock(address);
+                mapCollection.Remove(address);
             }
         }
 
         /// <summary>
-        /// 移除这个地图块;
-        /// 移除成功返回true,否则返回false;
+        /// 保存这个地图块;
         /// </summary>
-        /// <param name="targetAddress"></param>
-        private bool UnloadBlock(ShortVector2 address)
+        private void SaveBlock(ShortVector2 address)
         {
-            TMapBlock mapPaging;
-            if (mapCollection.TryGetValue(address, out mapPaging))
+            TMapBlock mapBlock;
+            if (mapCollection.TryGetValue(address, out mapBlock))
             {
-                SaveBlockAsyn(address, mapPaging);
-                return mapCollection.Remove(address);
+                Save(address, mapBlock);
             }
-            return false;
-        }
-
-        /// <summary>
-        /// 异步保存所有在缓存内的地图块;
-        /// </summary>
-        private void SaveBlockAsyn(ShortVector2 address, TMapBlock mapBlock)
-        {
-            Action onComplete = () => Debug.Log("保存地图成功!" + address.ToString());
-            Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
-            SaveAsyn(address, mapBlock, onComplete, onFail);
         }
 
         /// <summary>
@@ -288,18 +270,6 @@ namespace KouXiaGu.Map
             foreach (var block in mapCollection)
             {
                 Save(block.Key, block.Value);
-            }
-        }
-
-        /// <summary>
-        /// 保存地图所有的地图块;
-        /// </summary>
-        /// <param name="compulsorySave"></param>
-        public void SaveBlocksAsyn()
-        {
-            foreach (var block in mapCollection)
-            {
-                SaveBlockAsyn(block.Key, block.Value);
             }
         }
 

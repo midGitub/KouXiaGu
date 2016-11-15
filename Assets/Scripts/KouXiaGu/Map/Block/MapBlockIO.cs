@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace KouXiaGu.Map
@@ -22,7 +21,6 @@ namespace KouXiaGu.Map
         protected abstract string GetFullPrefabMapFilePath(ShortVector2 address);
         protected abstract string GetFullArchiveTempFilePath(ShortVector2 address);
 
-        #region Load
 
         public override MapBlock<T> Load(ShortVector2 address)
         {
@@ -79,27 +77,6 @@ namespace KouXiaGu.Map
             return false;
         }
 
-        public override bool LoadAsyn(ShortVector2 address, Action<MapBlock<T>> onComplete, Action<Exception> onFail)
-        {
-            WaitCallback waitCallback = delegate
-            {
-                MapBlock<T> mapBlock;
-                try
-                {
-                    mapBlock = Load(address);
-                    onComplete(mapBlock);
-                }
-                catch (Exception e)
-                {
-                    onFail(e);
-                }
-            };
-            return ThreadPool.QueueUserWorkItem(waitCallback);
-        }
-
-        #endregion
-
-        #region Save
 
         public override void Save(ShortVector2 address, MapBlock<T> mapBlock)
         {
@@ -115,25 +92,6 @@ namespace KouXiaGu.Map
                 Debug.Log("未改变的地图,跳过保存地图块 :" + address.ToString());
             }
         }
-
-        public override void SaveAsyn(ShortVector2 address, MapBlock<T> mapBlock, Action onComplete, Action<Exception> onFail)
-        {
-            WaitCallback waitCallback = delegate
-            {
-                try
-                {
-                    Save(address, mapBlock);
-                    onComplete();
-                }
-                catch (Exception e)
-                {
-                    onFail(e);
-                }
-            };
-            ThreadPool.QueueUserWorkItem(waitCallback);
-        }
-
-        #endregion
 
     }
 

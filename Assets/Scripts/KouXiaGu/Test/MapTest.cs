@@ -15,7 +15,7 @@ namespace KouXiaGu.Test
         private Text textObject;
 
         [SerializeField]
-        private BuildMap buildWorldHexMap;
+        private GameMap buildWorldHexMap;
 
         private void Awake()
         {
@@ -49,11 +49,11 @@ namespace KouXiaGu.Test
         /// </summary>
         private string GetMapNodeInfo()
         {
-            IntVector2 mapPosition = buildWorldHexMap.GetMouseMapPosition();
+            IntVector2 mapPosition = buildWorldHexMap.MouseToMapPoint();
 
             string str = "";
 
-            HexMapNode node = buildWorldHexMap.MapCollection.GetOrDefault(mapPosition);
+            MapNode node = buildWorldHexMap.MapCollection.GetOrDefault(mapPosition);
             str += "存在节点:" + (node != null);
 
             return str;
@@ -61,9 +61,9 @@ namespace KouXiaGu.Test
 
         private void AddMapNode(IList<long> down)
         {
-            Debug.Log("加入到!");
-            IntVector2 mapPosition = buildWorldHexMap.GetMouseMapPosition();
-            buildWorldHexMap.MapCollection.AddOrReplace(mapPosition, new HexMapNode());
+            IntVector2 mapPosition = buildWorldHexMap.MouseToMapPoint();
+            Debug.Log("加入到!" + mapPosition);
+            buildWorldHexMap.MapCollection.AddOrReplace(mapPosition, new MapNode());
         }
 
     }

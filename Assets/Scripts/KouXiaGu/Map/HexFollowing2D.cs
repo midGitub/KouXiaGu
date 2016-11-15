@@ -15,7 +15,7 @@ namespace KouXiaGu.Map
         private Transform target;
 
         [SerializeField]
-        private BuildMap gameMap;
+        private GameMap gameMap;
 
         private Transform current;
         private Vector3 previousPosition;

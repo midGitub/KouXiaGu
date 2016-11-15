@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace KouXiaGu.Map
@@ -38,24 +36,6 @@ namespace KouXiaGu.Map
             return block;
         }
 
-        public override bool LoadAsyn(ShortVector2 address, Action<MapBlockEdit<T>> onComplete, Action<Exception> onFail)
-        {
-            WaitCallback waitCallback = delegate
-            {
-                MapBlockEdit<T> mapBlock;
-                try
-                {
-                    mapBlock = Load(address);
-                    onComplete(mapBlock);
-                }
-                catch (Exception e)
-                {
-                    onFail(e);
-                }
-            };
-            return ThreadPool.QueueUserWorkItem(waitCallback);
-        }
-
         public override void Save(ShortVector2 address, MapBlockEdit<T> mapBlock)
         {
             Dictionary<ShortVector2, T> map = mapBlock.MapCollection;
@@ -69,23 +49,6 @@ namespace KouXiaGu.Map
             {
                 Debug.Log("未改变的地图,跳过保存地图块 :" + address.ToString());
             }
-        }
-
-        public override void SaveAsyn(ShortVector2 address, MapBlockEdit<T> mapBlock, Action onComplete, Action<Exception> onFail)
-        {
-            WaitCallback waitCallback = delegate
-            {
-                try
-                {
-                    Save(address, mapBlock);
-                    onComplete();
-                }
-                catch (Exception e)
-                {
-                    onFail(e);
-                }
-            };
-            ThreadPool.QueueUserWorkItem(waitCallback);
         }
 
     }

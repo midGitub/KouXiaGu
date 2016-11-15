@@ -29,7 +29,7 @@ namespace KouXiaGu.Test
         {
             if (Input.GetKey(KeyCode.Mouse0))
             {
-                targetPosition = BuildMap.GetMousePosition();
+                targetPosition = PositionConvert.MouseToPlanePoint();
             }
 
             Vector2 newPosition = Vector2.MoveTowards(target.position, targetPosition, maxDistanceDelta);

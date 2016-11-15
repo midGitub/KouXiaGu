@@ -9,7 +9,7 @@ namespace KouXiaGu.Map
 {
 
     [ProtoContract]
-    public class HexMapNode : INavNode<Navigator>
+    public class MapNode : INavNode<Navigator>
     {
         public float GetCost(Navigator mover)
         {

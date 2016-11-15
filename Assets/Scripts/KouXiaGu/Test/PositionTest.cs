@@ -50,7 +50,7 @@ namespace KouXiaGu.Test
         {
             string str = "";
 
-            str += "  世界坐标 :" + BuildMap.GetMousePosition();
+            str += "  世界坐标 :" + PositionConvert.MouseToPlanePoint();
             return str;
         }
 
@@ -58,11 +58,7 @@ namespace KouXiaGu.Test
         {
             string str = "";
 
-            Hexagon hexagon = new Hexagon();
-            hexagon.OuterDiameter = 2f;
-            Vector2 worldPoint = BuildMap.GetMousePosition();
-            var item = hexagon.TransfromPoint(worldPoint);
-            str += "地图坐标 :" + item;
+            str += "地图坐标 :" + GameMap.GetInstance.MouseToMapPoint();
 
             return str;
         }
