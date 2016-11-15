@@ -161,11 +161,6 @@ namespace KouXiaGu.Map
             return MapBlockIOInfo.GetFullArchiveTempFilePath(address);
         }
 
-        private string GetBlockName(ShortVector2 address)
-        {
-            return MapBlockIOInfo.GetBlockName(address);
-        }
-
     }
 
 }

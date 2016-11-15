@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameData.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\ArchivedMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockArchiverMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockEditMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockNotFoundException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />

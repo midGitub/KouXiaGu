@@ -11,6 +11,10 @@ namespace KouXiaGu.Map
     /// </summary>
     public class MapBlockEdit<T> : IMap<ShortVector2, T>
     {
+        public MapBlockEdit()
+        {
+            this.mapCollection = new Dictionary<ShortVector2, T>();
+        }
         public MapBlockEdit(Dictionary<ShortVector2, T> mapCollection)
         {
             this.mapCollection = mapCollection;

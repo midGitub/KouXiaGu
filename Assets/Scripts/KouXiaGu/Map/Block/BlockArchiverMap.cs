@@ -15,7 +15,7 @@ namespace KouXiaGu.Map
     {
         public BlockArchiverMap(MapBlockIOInfo mapBlockIOInfo, BlocksMapInfo blocksMapInfo) : base(blocksMapInfo)
         {
-            this.fullArchiveTempirectoryPath = GetFullArchiveTempDirectoryPath(mapBlockIOInfo.archiveTempDirectoryPath);
+            this.fullArchiveTempDirectoryPath = GetFullArchiveTempDirectoryPath(mapBlockIOInfo.archiveTempDirectoryPath);
             this.addressPrefix = mapBlockIOInfo.addressPrefix;
             this.archivedDirectoryPath = mapBlockIOInfo.archivedDirectoryPath;
 
@@ -29,7 +29,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 零时存放归档地图路径(预定义);
         /// </summary>
-        public string fullArchiveTempirectoryPath;
+        public string fullArchiveTempDirectoryPath;
         /// <summary>
         /// 地图块前缀(预定义);
         /// </summary>
@@ -70,7 +70,7 @@ namespace KouXiaGu.Map
         /// </summary>
         public string GetFullArchiveTempDirectoryPath()
         {
-            return this.fullArchiveTempirectoryPath;
+            return this.fullArchiveTempDirectoryPath;
         }
 
         /// <summary>
