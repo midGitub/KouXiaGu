@@ -249,11 +249,6 @@ ModelManifest.xml
 *.xlsx
 *.db
 
-/Assets
-/Library
-/ProjectSettings
-/Temp
-/TestResults
+/*
 
-!/Assets/Scripts/KouXiaGu
-!/Assets/Scripts
+!/Assets/Scripts/KouXiaGu/
