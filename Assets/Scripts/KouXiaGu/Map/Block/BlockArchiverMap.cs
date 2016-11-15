@@ -10,37 +10,34 @@ namespace KouXiaGu.Map
     /// <summary>
     /// 地图初始化和归档方法;
     /// </summary>
-    public class BlockArchiverMap<T> : MapBlockIO<T>, IMapBlockIOInfo, 
-        IBuildGameInThread, IArchiveInThread, IQuitInThread
+    public class BlockArchiverMap<T> : MapBlockIO<T>, IBuildGameInThread, IArchiveInThread, IQuitInThread
     {
         public BlockArchiverMap(MapBlockIOInfo mapBlockIOInfo, BlocksMapInfo blocksMapInfo) : base(blocksMapInfo)
         {
             this.fullArchiveTempDirectoryPath = GetFullArchiveTempDirectoryPath(mapBlockIOInfo.archiveTempDirectoryPath);
             this.addressPrefix = mapBlockIOInfo.addressPrefix;
             this.archivedDirectoryPath = mapBlockIOInfo.archivedDirectoryPath;
-
-            base.MapBlockIOInfo = this;
         }
 
         /// <summary>
         /// 完整的预制地图文件夹路径(存档提供);
         /// </summary>
-        public string fullprefabMapDirectoryPath;
+        private string fullprefabMapDirectoryPath;
         /// <summary>
         /// 零时存放归档地图路径(预定义);
         /// </summary>
-        public string fullArchiveTempDirectoryPath;
+        private string fullArchiveTempDirectoryPath;
         /// <summary>
         /// 地图块前缀(预定义);
         /// </summary>
-        public string addressPrefix;
+        private string addressPrefix;
         /// <summary>
         /// 保存到存档的位置(预定义);
         /// </summary>
-        public string archivedDirectoryPath;
+        private string archivedDirectoryPath;
 
 
-        public string ArchivedSearchPattern
+        protected string ArchivedSearchPattern
         {
             get{ return addressPrefix + "*"; }
         }
@@ -49,7 +46,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取到完整的预制地图文件夹路径;
         /// </summary>
-        public string GetFullPrefabMapDirectoryPath()
+        protected string GetFullPrefabMapDirectoryPath()
         {
             return this.fullprefabMapDirectoryPath;
         }
@@ -57,7 +54,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取到完整的预制地图文件路径;
         /// </summary>
-        public string GetFullPrefabMapFilePath(ShortVector2 address)
+        protected override string GetFullPrefabMapFilePath(ShortVector2 address)
         {
             string fullPrefabMapDirectoryPath = GetFullPrefabMapDirectoryPath();
             string blockName = GetBlockName(address);
@@ -68,7 +65,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取到完整的存档缓存地图文件夹路径;
         /// </summary>
-        public string GetFullArchiveTempDirectoryPath()
+        protected string GetFullArchiveTempDirectoryPath()
         {
             return this.fullArchiveTempDirectoryPath;
         }
@@ -76,7 +73,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取到完整的存档缓存地图文件夹路径;
         /// </summary>
-        private string GetFullArchiveTempDirectoryPath(string archiveTempDirectoryPath)
+        protected string GetFullArchiveTempDirectoryPath(string archiveTempDirectoryPath)
         {
             string fullArchiveTempirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryPath);
             return fullArchiveTempirectoryPath;
@@ -85,7 +82,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取到完整的存档缓存地图文件路径;
         /// </summary>
-        public string GetFullArchiveTempFilePath(ShortVector2 address)
+        protected override string GetFullArchiveTempFilePath(ShortVector2 address)
         {
             string fullArchiveTempirectoryPath = GetFullArchiveTempDirectoryPath();
             string blockName = GetBlockName(address);
@@ -96,7 +93,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取到地图块名称;
         /// </summary>
-        public string GetBlockName(ShortVector2 address)
+        protected string GetBlockName(ShortVector2 address)
         {
             return addressPrefix + address.GetHashCode();
         }
@@ -104,7 +101,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 获取到完整的归档地图文件夹路径;
         /// </summary>
-        public string GetFullArchivedDirectoryPath(ArchivedGroup item)
+        protected string GetFullArchivedDirectoryPath(ArchivedGroup item)
         {
             string fullArchivedDirectoryPath = Path.Combine(item.ArchivedPath, archivedDirectoryPath);
             return fullArchivedDirectoryPath;

@@ -1,25 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu.Map
 {
-
-    public interface IMapBlockEditIOInfo
-    {
-        string GetBlockName(ShortVector2 address);
-        string GetFullPrefabMapDirectoryPath();
-        string GetFullPrefabMapFilePath(ShortVector2 address);
-    }
-
-    public interface IMapBlockIOInfo : IMapBlockEditIOInfo
-    {
-        string GetFullArchiveTempDirectoryPath();
-        string GetFullArchiveTempFilePath(ShortVector2 address);
-    }
 
     /// <summary>
     /// 地图块信息;

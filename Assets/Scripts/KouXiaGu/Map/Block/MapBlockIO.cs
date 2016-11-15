@@ -10,27 +10,21 @@ namespace KouXiaGu.Map
     /// 预制地图读取,存档地图读取保存;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MapBlockIO<T> : DynaBlocksMap<MapBlock<T>, T>, IMapBlockIO<MapBlock<T>, T>
+    public abstract class MapBlockIO<T> : DynaBlocksMap<MapBlock<T>, T>
     {
 
         protected MapBlockIO(BlocksMapInfo info) :
             base(info)
         {
-            base.DynamicMapIO = this;
+            
         }
 
-        public MapBlockIO(BlocksMapInfo info, IMapBlockIOInfo mapBlockIOInfo) :
-            base(info)
-        {
-            base.DynamicMapIO = this;
-            this.MapBlockIOInfo = mapBlockIOInfo;
-        }
-        
-        public IMapBlockIOInfo MapBlockIOInfo { get; protected set; }
+        protected abstract string GetFullPrefabMapFilePath(ShortVector2 address);
+        protected abstract string GetFullArchiveTempFilePath(ShortVector2 address);
 
         #region Load
 
-        public MapBlock<T> Load(ShortVector2 address)
+        public override MapBlock<T> Load(ShortVector2 address)
         {
             Dictionary<ShortVector2, T> prefabMap;
             Dictionary<ShortVector2, T> archiveMap;
@@ -85,7 +79,7 @@ namespace KouXiaGu.Map
             return false;
         }
 
-        public bool LoadAsyn(ShortVector2 address, Action<MapBlock<T>> onComplete, Action<Exception> onFail)
+        public override bool LoadAsyn(ShortVector2 address, Action<MapBlock<T>> onComplete, Action<Exception> onFail)
         {
             WaitCallback waitCallback = delegate
             {
@@ -107,7 +101,7 @@ namespace KouXiaGu.Map
 
         #region Save
 
-        public void Save(ShortVector2 address, MapBlock<T> mapBlock)
+        public override void Save(ShortVector2 address, MapBlock<T> mapBlock)
         {
             Dictionary<ShortVector2, T> archiveMap = mapBlock.ArchiveMap;
 
@@ -122,7 +116,7 @@ namespace KouXiaGu.Map
             }
         }
 
-        public void SaveAsyn(ShortVector2 address, MapBlock<T> mapBlock, Action onComplete, Action<Exception> onFail)
+        public override void SaveAsyn(ShortVector2 address, MapBlock<T> mapBlock, Action onComplete, Action<Exception> onFail)
         {
             WaitCallback waitCallback = delegate
             {
@@ -140,26 +134,6 @@ namespace KouXiaGu.Map
         }
 
         #endregion
-
-        private string GetFullPrefabMapDirectoryPath()
-        {
-            return MapBlockIOInfo.GetFullPrefabMapDirectoryPath();
-        }
-
-        private string GetFullPrefabMapFilePath(ShortVector2 address)
-        {
-            return MapBlockIOInfo.GetFullPrefabMapFilePath(address);
-        }
-
-        private string GetFullArchiveTempDirectoryPath()
-        {
-            return MapBlockIOInfo.GetFullArchiveTempDirectoryPath();
-        }
-
-        private string GetFullArchiveTempFilePath(ShortVector2 address)
-        {
-            return MapBlockIOInfo.GetFullArchiveTempFilePath(address);
-        }
 
     }
 

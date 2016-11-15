@@ -23,7 +23,7 @@ namespace KouXiaGu.Map
     /// </summary>
     /// <typeparam name="TMapBlock">保存的地图块</typeparam>
     /// <typeparam name="T">地图保存的类型</typeparam>
-    public class DynaBlocksMap<TMapBlock, T> : IDynaMap<IntVector2, T>, IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
+    public abstract class DynaBlocksMap<TMapBlock, T> : IDynaMap<IntVector2, T>, IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
         where TMapBlock: IMap<ShortVector2, T>
     {
         protected DynaBlocksMap(BlocksMapInfo info)
@@ -34,31 +34,15 @@ namespace KouXiaGu.Map
             this.mapCollection = new Dictionary<ShortVector2, TMapBlock>();
         }
 
-        public DynaBlocksMap(BlocksMapInfo info, IMapBlockIO<TMapBlock, T> dynamicMapIO) : this(info)
-        {
-            this.dynamicMapIO = dynamicMapIO;
-        }
-
         private ShortVector2 partitionSizes;
         private ShortVector2 minRadiationRange;
         private ShortVector2 maxRadiationRange;
-        private IMapBlockIO<TMapBlock, T> dynamicMapIO;
         private Dictionary<ShortVector2, TMapBlock> mapCollection;
 
         /// <summary>
         /// 上一次更新目标所在的地图块;
         /// </summary>
         private ShortVector2 lastUpdateTargetAddress;
-
-
-        /// <summary>
-        /// 文件读取保存接口;
-        /// </summary>
-        public IMapBlockIO<TMapBlock, T> DynamicMapIO
-        {
-            get { return dynamicMapIO; }
-            protected set { dynamicMapIO = value; }
-        }
 
         /// <summary>
         /// 地图分区大小;
@@ -98,6 +82,10 @@ namespace KouXiaGu.Map
             set { SetItem(position, value); }
         }
 
+        public abstract void Save(ShortVector2 address, TMapBlock mapBlock);
+        public abstract void SaveAsyn(ShortVector2 address, TMapBlock mapBlock, Action onComplete, Action<Exception> onFail);
+        public abstract TMapBlock Load(ShortVector2 address);
+        public abstract bool LoadAsyn(ShortVector2 address, Action<TMapBlock> onComplete, Action<Exception> onFail);
 
         /// <summary>
         /// 获取到这个位置的值;若不存在则返回异常;
@@ -248,7 +236,7 @@ namespace KouXiaGu.Map
         {
             Action<TMapBlock> onComplete = mapBlock => mapCollection.Add(address, mapBlock);
             Action<Exception> onFail = e => Debug.LogWarning("不存在地图,跳过;" + address.ToString() + e);
-            dynamicMapIO.LoadAsyn(address, onComplete, onFail);
+            LoadAsyn(address, onComplete, onFail);
             return;
         }
 
@@ -289,7 +277,7 @@ namespace KouXiaGu.Map
         {
             Action onComplete = () => Debug.Log("保存地图成功!" + address.ToString());
             Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
-            dynamicMapIO.SaveAsyn(address, mapBlock, onComplete, onFail);
+            SaveAsyn(address, mapBlock, onComplete, onFail);
         }
 
         /// <summary>
@@ -299,7 +287,7 @@ namespace KouXiaGu.Map
         {
             foreach (var block in mapCollection)
             {
-                dynamicMapIO.Save(block.Key, block.Value);
+                Save(block.Key, block.Value);
             }
         }
 

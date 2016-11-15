@@ -11,15 +11,13 @@ namespace KouXiaGu.Map
     /// 编辑预制地图;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class BlockEditMap<T> : MapBlockEditIO<T>, IMapBlockEditIOInfo, 
-        IBuildGameInThread, IArchiveInThread, IQuitInThread
+    public class BlockEditMap<T> : MapBlockEditIO<T>, IBuildGameInThread, IArchiveInThread, IQuitInThread
     {
         public BlockEditMap(string addressPrefix, BlocksMapInfo blocksMapInfo) : base(blocksMapInfo)
         {
             this.addressPrefix = addressPrefix;
-
-            base.MapBlockIOInfo = this;
         }
+
 
         /// <summary>
         /// 完整的地图文件夹路径;
@@ -28,17 +26,12 @@ namespace KouXiaGu.Map
         private string addressPrefix;
 
 
-        public string GetBlockName(ShortVector2 address)
+        protected string GetBlockName(ShortVector2 address)
         {
             return addressPrefix + address.GetHashCode();
         }
 
-        public string GetFullPrefabMapDirectoryPath()
-        {
-            return fullprefabMapDirectoryPath;
-        }
-
-        public string GetFullPrefabMapFilePath(ShortVector2 address)
+        protected override string GetFullPrefabMapFilePath(ShortVector2 address)
         {
             string blockName = GetBlockName(address);
             string fullPrefabMapFilePath = Path.Combine(fullprefabMapDirectoryPath, blockName);

@@ -17,7 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.4.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -100,7 +101,6 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockEditMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockNotFoundException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\DynaBlocksMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\IMapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEditIO.cs" />
