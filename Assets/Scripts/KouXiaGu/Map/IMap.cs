@@ -6,6 +6,11 @@ using System.Text;
 namespace KouXiaGu.Map
 {
 
+    public interface IDynaMap<TPoint, T> : IMap<TPoint, T>
+    {
+        void UpdateMapData(IntVector2 targetMapPosition, bool check = true);
+    }
+
     /// <summary>
     /// 游戏地图基本接口
     /// </summary>

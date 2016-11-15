@@ -136,7 +136,10 @@ namespace KouXiaGu
         }
         private void OnSavingFail(Exception error, Action<Exception> onFail)
         {
-            Debug.LogError("保存游戏失败!");
+            foreach (Exception item in error.Data.Values)
+            {
+                Debug.LogError("保存游戏失败!" + item);
+            }
 
             if (onFail != null)
                 onFail(error);

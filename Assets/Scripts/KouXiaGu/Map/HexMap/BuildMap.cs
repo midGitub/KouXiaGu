@@ -12,6 +12,8 @@ namespace KouXiaGu.Map
     [DisallowMultipleComponent]
     public class BuildMap : MonoBehaviour
     {
+        [SerializeField, Tooltip("是否为编辑地图模式?")]
+        private bool isEdit;
 
         [SerializeField, Tooltip("地图六边形的外径")]
         private float hexOuterDiameter = 2;
@@ -23,26 +25,23 @@ namespace KouXiaGu.Map
         private BlocksMapInfo blocksMapInfo;
 
         private static BuildMap instance;
-        private DynaBlocksMap<MapBlock<HexMapNode>, HexMapNode> mapCollection;
+        private IDynaMap<IntVector2, HexMapNode> mapCollection;
         private Hexagon mapHexagon;
 
-        public IMap<IntVector2, HexMapNode> MapCollection
-        {
-            get { return mapCollection; }
-        }
 
         public static BuildMap GetInstance
         {
             get { return instance ?? (instance = FindInstance()); }
         }
-
-        /// <summary>
-        /// 当前地图所用的六边形尺寸;
-        /// </summary>
+        public IMap<IntVector2, HexMapNode> MapCollection
+        {
+            get { return mapCollection; }
+        }
         public Hexagon MapHexagon
         {
             get { return mapHexagon; }
         }
+
 
         private void Awake()
         {
@@ -54,20 +53,34 @@ namespace KouXiaGu.Map
 
         private void InitMap()
         {
-            BlockArchiverMap<HexMapNode> dynaBlocksArchiver = new BlockArchiverMap<HexMapNode>(
-                mapBlockIOInfo, blocksMapInfo);
-
-            AddToInit(dynaBlocksArchiver);
-
-            mapCollection = dynaBlocksArchiver;
+            if (isEdit)
+            {
+                BlockEditMap<HexMapNode> editMap = new BlockEditMap<HexMapNode>(
+                    mapBlockIOInfo.addressPrefix, blocksMapInfo);
+                AppendTo(editMap as IArchiveInThread);
+                AppendTo(editMap as IBuildGameInThread);
+                mapCollection = editMap;
+            }
+            else
+            {
+                BlockArchiverMap<HexMapNode> archiverMap = new BlockArchiverMap<HexMapNode>(
+                    mapBlockIOInfo, blocksMapInfo);
+                AppendTo(archiverMap as IArchiveInThread);
+                AppendTo(archiverMap as IBuildGameInThread);
+                mapCollection = archiverMap;
+            }
         }
 
-        private void AddToInit(BlockArchiverMap<HexMapNode> dynaBlocksArchiver)
+        private void AppendTo(IArchiveInThread item)
         {
             IBuildGameData buildGame = Initializers.BuildGameData;
+            buildGame.AppendArchiveGame.Add(item);
+        }
 
-            buildGame.AppendBuildGame.Add(dynaBlocksArchiver);
-            buildGame.AppendArchiveGame.Add(dynaBlocksArchiver);
+        private void AppendTo(IBuildGameInThread item)
+        {
+            IBuildGameData buildGame = Initializers.BuildGameData;
+            buildGame.AppendBuildGame.Add(item);
         }
 
         public void UpdateMapRes(Vector2 targetPosition)

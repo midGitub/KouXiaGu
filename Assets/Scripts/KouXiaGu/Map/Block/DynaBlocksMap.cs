@@ -23,7 +23,7 @@ namespace KouXiaGu.Map
     /// </summary>
     /// <typeparam name="TMapBlock">保存的地图块</typeparam>
     /// <typeparam name="T">地图保存的类型</typeparam>
-    public class DynaBlocksMap<TMapBlock, T> : IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
+    public class DynaBlocksMap<TMapBlock, T> : IDynaMap<IntVector2, T>, IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
         where TMapBlock: IMap<ShortVector2, T>
     {
         protected DynaBlocksMap(BlocksMapInfo info)
