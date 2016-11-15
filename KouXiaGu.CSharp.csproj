@@ -80,12 +80,13 @@
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\Camera2DFollow.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\CameraController.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\GameData.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\DynaBlocksArchiver.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\ArchivedMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\BlockArchiverMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlock.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockEdit.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIOInfo.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapIO.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\CollectionHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookAt2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\GameScene\LookForward2D.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IMapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IntVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\IMap.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\DynamicMapPaging.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\ShortVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Navigator.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\NavNode.cs" />
@@ -120,12 +120,15 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataArchivedFile.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataCore.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\DataMod.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\ProtoBuf\ProtoVector2.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\ReadOnlyException.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\SerializeHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\MapTest.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\MoveTo2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Test\PositionTest.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Test\Test_StartGame.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Unit.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\MapObjectTransfrom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Mods\ModReadingOrder.xml" />

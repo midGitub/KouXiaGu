@@ -10,14 +10,23 @@ namespace KouXiaGu.Map
     /// 地图读取保存;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MapBlockIO<T> : IMapBlockIO<MapBlock<T>, T>
+    public class MapBlockIO<T> : DynaBlocksMap<MapBlock<T>, T>,  IMapBlockIO<MapBlock<T>, T>
     {
-        private MapBlockIO(IMapBlockIOInfo mapBlockIOInfo)
+
+        protected MapBlockIO(BlocksMapInfo info) :
+            base(info)
         {
-            this.mapBlockIOInfo = mapBlockIOInfo;
+            base.DynamicMapIO = this;
         }
 
-        private IMapBlockIOInfo mapBlockIOInfo;
+        public MapBlockIO(BlocksMapInfo info, IMapBlockIOInfo mapBlockIOInfo) :
+            base(info)
+        {
+            base.DynamicMapIO = this;
+            this.MapBlockIOInfo = mapBlockIOInfo;
+        }
+        
+        public IMapBlockIOInfo MapBlockIOInfo { get; protected set; }
 
         #region Load
 
@@ -134,27 +143,27 @@ namespace KouXiaGu.Map
 
         private string GetFullPrefabMapDirectoryPath()
         {
-            return mapBlockIOInfo.GetFullPrefabMapDirectoryPath();
+            return MapBlockIOInfo.GetFullPrefabMapDirectoryPath();
         }
 
         private string GetFullPrefabMapFilePath(ShortVector2 address)
         {
-            return mapBlockIOInfo.GetFullPrefabMapFilePath(address);
+            return MapBlockIOInfo.GetFullPrefabMapFilePath(address);
         }
 
         private string GetFullArchiveTempDirectoryPath()
         {
-            return mapBlockIOInfo.GetFullArchiveTempDirectoryPath();
+            return MapBlockIOInfo.GetFullArchiveTempDirectoryPath();
         }
 
         private string GetFullArchiveTempFilePath(ShortVector2 address)
         {
-            return mapBlockIOInfo.GetFullArchiveTempFilePath(address);
+            return MapBlockIOInfo.GetFullArchiveTempFilePath(address);
         }
 
         private string GetBlockName(ShortVector2 address)
         {
-            return mapBlockIOInfo.GetBlockName(address);
+            return MapBlockIOInfo.GetBlockName(address);
         }
 
     }

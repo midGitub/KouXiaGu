@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ProtoBuf;
+using UnityEngine;
+using KouXiaGu.Map;
 
 namespace KouXiaGu
 {
@@ -53,26 +55,27 @@ namespace KouXiaGu
     {
         public ArchivedExpand() { }
 
-        #region pathDictionary
+        /// <summary>
+        /// 地图存档信息;
+        /// </summary>
+        [ProtoMember(50)]
+        public readonly ArchivedMap ArchivedMap = new ArchivedMap();
 
-        [ProtoMember(10)]
-        private Dictionary<int, string> pathDictionary = new Dictionary<int, string>();
+
+        #region 主角信息 100 ~ 150;
 
         /// <summary>
-        /// 路径信息字典;
+        /// 主角;
         /// </summary>
-        public Dictionary<int, string> PathDictionary
+        [ProtoMember(100)]
+        public MapObjectTransfrom ProtagonistTransfrom;
+
+        public Vector2 ProtagonistPosition
         {
-            get { return pathDictionary; }
+            get { return ProtagonistTransfrom.Position; }
         }
 
-        /// <summary>
-        /// 存档使用预制地图的路径;
-        /// </summary>
-        public const int PathPrefabMapDirectory = 10;
-
         #endregion
-
 
     }
 

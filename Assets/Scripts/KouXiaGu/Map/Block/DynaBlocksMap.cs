@@ -6,6 +6,17 @@ using UnityEngine;
 namespace KouXiaGu.Map
 {
 
+    [Serializable]
+    public struct BlocksMapInfo
+    {
+        /// <summary>
+        /// 地图分区大小;
+        /// </summary>
+        public ShortVector2 partitionSizes;
+        public ShortVector2 minRadiationRange;
+        public ShortVector2 maxRadiationRange;
+    }
+
     /// <summary>
     /// 动态地图数据结构;负责对地图进行动态的读取和保存;
     /// 因为是动态加载的,所有取值和赋值时需要确保是否在目标范围内;
@@ -15,24 +26,24 @@ namespace KouXiaGu.Map
     public class DynaBlocksMap<TMapBlock, T> : IMap<IntVector2, T>, IReadOnlyMap<IntVector2, T>
         where TMapBlock: IMap<ShortVector2, T>
     {
-        public DynaBlocksMap(
-            ShortVector2 partitionSizes, 
-            ShortVector2 minRadiationRange,
-            ShortVector2 maxRadiationRange,
-            IMapBlockIO<TMapBlock, T> dynamicMapIO)
+        protected DynaBlocksMap(BlocksMapInfo info)
         {
-            this.partitionSizes = partitionSizes;
-            this.minRadiationRange = minRadiationRange;
-            this.maxRadiationRange = maxRadiationRange;
-            this.dynamicMapIO = dynamicMapIO;
+            this.partitionSizes = info.partitionSizes;
+            this.minRadiationRange = info.minRadiationRange;
+            this.maxRadiationRange = info.maxRadiationRange;
             this.mapCollection = new Dictionary<ShortVector2, TMapBlock>();
+        }
+
+        public DynaBlocksMap(BlocksMapInfo info, IMapBlockIO<TMapBlock, T> dynamicMapIO) : this(info)
+        {
+            this.dynamicMapIO = dynamicMapIO;
         }
 
         private ShortVector2 partitionSizes;
         private ShortVector2 minRadiationRange;
         private ShortVector2 maxRadiationRange;
-        private Dictionary<ShortVector2, TMapBlock> mapCollection;
         private IMapBlockIO<TMapBlock, T> dynamicMapIO;
+        private Dictionary<ShortVector2, TMapBlock> mapCollection;
 
         /// <summary>
         /// 上一次更新目标所在的地图块;
@@ -46,6 +57,15 @@ namespace KouXiaGu.Map
         public IMapBlockIO<TMapBlock, T> DynamicMapIO
         {
             get { return dynamicMapIO; }
+            protected set { dynamicMapIO = value; }
+        }
+
+        /// <summary>
+        /// 地图分区大小;
+        /// </summary>
+        private ShortVector2 PartitionSizes
+        {
+            get { return partitionSizes; }
         }
 
         /// <summary>
@@ -59,14 +79,6 @@ namespace KouXiaGu.Map
         private ShortVector2 MaxRadiationRange
         {
             get { return maxRadiationRange; }
-        }
-
-        /// <summary>
-        /// 地图分区大小;
-        /// </summary>
-        private ShortVector2 PartitionSizes
-        {
-            get { return partitionSizes; }
         }
 
         /// <summary>
@@ -179,9 +191,9 @@ namespace KouXiaGu.Map
         /// 根据目标所在位置更新地图数据;
         /// 若目标所在地块位置与上次更新相同,则不做更新(除非 check 为false);
         /// </summary>
-        public void UpdateMapData(IntVector2 targetPosition, bool check = true)
+        public void UpdateMapData(IntVector2 targetMapPosition, bool check = true)
         {
-            ShortVector2 targetAddress = TransfromToAddress(targetPosition);
+            ShortVector2 targetAddress = TransfromToAddress(targetMapPosition);
 
             if (this.lastUpdateTargetAddress != targetAddress || !check)
             {
@@ -210,8 +222,20 @@ namespace KouXiaGu.Map
 
             foreach (var address in addRadiationAddresses)
             {
-                LoadBlock(address);
+                LoadBlockAsyn(address);
             }
+        }
+
+        /// <summary>
+        /// 获取到这个分页,并且加入到地图;
+        /// </summary>
+        /// <param name="address"></param>
+        private void LoadBlockAsyn(ShortVector2 address)
+        {
+            Action<TMapBlock> onComplete = mapBlock => mapCollection.Add(address, mapBlock);
+            Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
+            dynamicMapIO.LoadAsyn(address, onComplete, onFail);
+            return;
         }
 
         /// <summary>
@@ -229,18 +253,6 @@ namespace KouXiaGu.Map
         }
 
         /// <summary>
-        /// 获取到这个分页,并且加入到地图;
-        /// </summary>
-        /// <param name="address"></param>
-        private void LoadBlock(ShortVector2 address)
-        {
-            Action<TMapBlock> onComplete = mapBlock => mapCollection.Add(address, mapBlock);
-            Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
-            dynamicMapIO.LoadAsyn(address, onComplete, onFail);
-            return;
-        }
-
-        /// <summary>
         /// 移除这个地图块;
         /// 移除成功返回true,否则返回false;
         /// </summary>
@@ -250,35 +262,48 @@ namespace KouXiaGu.Map
             TMapBlock mapPaging;
             if (mapCollection.TryGetValue(address, out mapPaging))
             {
-                SaveBlock(address, mapPaging);
+                SaveBlockAsyn(address, mapPaging);
                 return mapCollection.Remove(address);
             }
             return false;
         }
 
         /// <summary>
-        /// 保存地图所有的地图块;
+        /// 异步保存所有在缓存内的地图块;
         /// </summary>
-        /// <param name="compulsorySave"></param>
-        public void SaveBlocksAll()
-        {
-            foreach (var block in mapCollection)
-            {
-                SaveBlock(block.Key, block.Value);
-            }
-        }
-
-        /// <summary>
-        /// 保存这个地图块若地图块内不存在内容,则删除这个地图块;
-        /// </summary>
-        private void SaveBlock(ShortVector2 address, TMapBlock mapBlock)
+        private void SaveBlockAsyn(ShortVector2 address, TMapBlock mapBlock)
         {
             Action onComplete = () => Debug.Log("保存地图成功!" + address.ToString());
             Action<Exception> onFail = e => Debug.LogWarning("未读取地图成功!" + address.ToString() + e);
             dynamicMapIO.SaveAsyn(address, mapBlock, onComplete, onFail);
         }
 
+        /// <summary>
+        /// 同步保存所有在缓存内的地图块;
+        /// </summary>
+        public void SaveBlocks()
+        {
+            foreach (var block in mapCollection)
+            {
+                dynamicMapIO.Save(block.Key, block.Value);
+            }
+        }
 
+        /// <summary>
+        /// 保存地图所有的地图块;
+        /// </summary>
+        /// <param name="compulsorySave"></param>
+        public void SaveBlocksAsyn()
+        {
+            foreach (var block in mapCollection)
+            {
+                SaveBlockAsyn(block.Key, block.Value);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标辐射到的最大范围;
+        /// </summary>
         private IEnumerable<ShortVector2> GetMaxRadiationAddresses(ShortVector2 address)
         {
             ShortVector2 targetRadiationRange = MaxRadiationRange;
@@ -286,7 +311,7 @@ namespace KouXiaGu.Map
         }
 
         /// <summary>
-        /// 获取到目标辐射到的地图分页地址;
+        /// 获取到目标辐射到的最小范围;
         /// </summary>
         private IEnumerable<ShortVector2> GetMinRadiationAddresses(ShortVector2 address)
         {

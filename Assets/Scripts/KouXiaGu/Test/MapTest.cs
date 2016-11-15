@@ -26,6 +26,13 @@ namespace KouXiaGu.Test
         {
             this.ObserveEveryValueChanged(_ => UnityEngine.Input.mousePosition).
                 SubscribeToText(textObject, TextUpdate);
+
+            var clickStream = Observable.EveryUpdate()
+                .Where(_ => Input.GetMouseButtonDown(0));
+
+            clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(250)))
+                .Where(xs => xs.Count >= 2)
+                .Subscribe(AddMapNode);
         }
 
         private string TextUpdate(Vector3 mousePosition)
@@ -42,11 +49,22 @@ namespace KouXiaGu.Test
         /// </summary>
         private string GetMapNodeInfo()
         {
+            IntVector2 mapPosition = buildWorldHexMap.GetMouseMapPosition();
+
             string str = "";
 
-
+            HexMapNode node = buildWorldHexMap.MapCollection.GetOrDefault(mapPosition);
+            str += "存在节点:" + (node != null);
 
             return str;
+        }
+
+        private void AddMapNode(IList<long> down)
+        {
+            Debug.Log("加入到!");
+            IntVector2 mapPosition = buildWorldHexMap.GetMouseMapPosition();
+            buildWorldHexMap.MapCollection.AddOrReplace(mapPosition, new HexMapNode());
+
         }
 
     }

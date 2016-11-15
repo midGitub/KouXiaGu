@@ -18,14 +18,18 @@ namespace KouXiaGu.Map
         private float hexOuterDiameter = 2;
 
         [SerializeField]
-        private Transform target;
-
-        [SerializeField]
         private MapBlockIOInfo mapBlockIOInfo;
 
+        [SerializeField]
+        private BlocksMapInfo blocksMapInfo;
 
-        private DynaBlocksArchiver dynaBlocksArchiver;
+        private DynaBlocksMap<MapBlock<HexMapNode>, HexMapNode> mapCollection;
         private Hexagon mapHexagon;
+
+        public IMap<IntVector2, HexMapNode> MapCollection
+        {
+            get { return mapCollection; }
+        }
 
         /// <summary>
         /// 当前地图所用的六边形尺寸;
@@ -38,19 +42,69 @@ namespace KouXiaGu.Map
         private void Awake()
         {
             mapHexagon = new Hexagon() { OuterDiameter = hexOuterDiameter };
-            dynaBlocksArchiver = new DynaBlocksArchiver(mapBlockIOInfo);
-
-            AddToInit();
+            InitMap();
         }
 
-        private void AddToInit()
+        private void InitMap()
         {
-            IBuildGameData buildGame = GameData.BuildGameData;
+            BlockArchiverMap<HexMapNode> dynaBlocksArchiver = new BlockArchiverMap<HexMapNode>(
+                mapBlockIOInfo, blocksMapInfo);
+
+            AddToInit(dynaBlocksArchiver);
+
+            mapCollection = dynaBlocksArchiver;
+        }
+
+        private void AddToInit(BlockArchiverMap<HexMapNode> dynaBlocksArchiver)
+        {
+            IBuildGameData buildGame = Initializers.BuildGameData;
 
             buildGame.AppendBuildGame.Add(dynaBlocksArchiver);
             buildGame.AppendArchiveGame.Add(dynaBlocksArchiver);
         }
 
+        public void UpdateMapRes(Vector2 targetPosition)
+        {
+            IntVector2 mapPoint = mapHexagon.TransfromPoint(targetPosition);
+            mapCollection.UpdateMapData(mapPoint);
+        }
+
+        /// <summary>
+        /// 获取到地图坐标;
+        /// </summary>
+        public IntVector2 GetMapPosition(Vector2 targetPosition)
+        {
+            IntVector2 mapPosition = mapHexagon.TransfromPoint(targetPosition);
+            return mapPosition;
+        }
+
+        /// <summary>
+        /// 获取到鼠标在地图上表示的坐标;
+        /// </summary>
+        /// <returns></returns>
+        public IntVector2 GetMouseMapPosition()
+        {
+            var mousePosition = GetMousePosition();
+            IntVector2 mapPosition = GetMapPosition(mousePosition);
+            return mapPosition;
+        }
+
+        /// <summary>
+        /// 获取鼠标所在水平面上的坐标;
+        /// </summary>
+        public static Vector2 GetMousePosition()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit raycastHit;
+            if (Physics.Raycast(ray, out raycastHit))
+            {
+                return raycastHit.point;
+            }
+            else
+            {
+                throw new Exception("坐标无法确定!检查摄像机之前地面是否存在3D碰撞模块!");
+            }
+        }
 
     }
 

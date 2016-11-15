@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Map;
 using UnityEngine;
 
-namespace KouXiaGu.TestTool
+namespace KouXiaGu.Test
 {
 
     [DisallowMultipleComponent]
@@ -28,7 +29,7 @@ namespace KouXiaGu.TestTool
         {
             if (Input.GetKey(KeyCode.Mouse0))
             {
-                targetPosition = Camera.main.GetMouseMapPosition();
+                targetPosition = BuildWorldHexMap.GetMousePosition();
             }
 
             Vector2 newPosition = Vector2.MoveTowards(target.position, targetPosition, maxDistanceDelta);

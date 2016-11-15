@@ -229,7 +229,14 @@ namespace KouXiaGu
         /// <returns></returns>
         private string GetNewArchivedDirectoryPath()
         {
+            int appendNumber = 0;
             string archivedDirectoryPath = Path.Combine(GetArchivedsPath(), DateTime.Now.Ticks.ToString());
+
+            while (Directory.Exists(archivedDirectoryPath))
+            {
+                archivedDirectoryPath += appendNumber.ToString();
+            }
+
             return archivedDirectoryPath;
         }
 

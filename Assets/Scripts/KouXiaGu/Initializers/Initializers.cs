@@ -11,7 +11,7 @@ namespace KouXiaGu
     /// 游戏状态控制;
     /// </summary>
     [DisallowMultipleComponent]
-    public class Initializers : MonoBehaviour, IBuildGameData
+    public class Initializers : MonoBehaviour
     {
         private Initializers() { }
 
@@ -54,45 +54,11 @@ namespace KouXiaGu
             get { return State == GameStatus.Running; }
         }
 
-        #region IBuildGameData
-
-        public IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame
-        {
-            get { return ((IBuildGameData)this.buildGame).AppendArchiveGame; }
-        }
-
-        public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
-        {
-            get { return ((IBuildGameData)this.buildGame).AppendBuildGame; }
-        }
-
-        public IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame
-        {
-            get { return ((IBuildGameData)this.buildGame).AppendQuitGame; }
-        }
-
-        public DataArchive ArchiveData
-        {
-            get { return ((IBuildGameData)this.buildGame).ArchiveData; }
-        }
-
-        public DataCore CoreData
-        {
-            get { return ((IBuildGameData)this.buildGame).CoreData; }
-        }
-
-        public DataMod ModData
-        {
-            get { return ((IBuildGameData)this.buildGame).ModData; }
-        }
-
-        #endregion
-
         [ContextMenu("测试!开始游戏!")]
         private void Test_Start()
         {
             Action onComplete = () => Debug.Log("读取成功!");
-            Build(GetBuildGameData(), onComplete);
+            Build(buildGame.GetBuildGameData(), onComplete);
         }
 
         public ICancelable Build(BuildGameData buildGameRes, Action onComplete = null, Action<Exception> onFail = null)
@@ -202,17 +168,7 @@ namespace KouXiaGu
 
         private static IBuildGameData GetBuildGameDataObject()
         {
-            return GameObject.FindWithTag("GameController").GetComponent<Initializers>();
-        }
-
-        public BuildGameData GetBuildGameData()
-        {
-            return this.buildGame.GetBuildGameData();
-        }
-
-        public BuildGameData GetBuildGameData(ArchivedGroup archivedGroup)
-        {
-            return this.buildGame.GetBuildGameData(archivedGroup);
+            return GameObject.FindWithTag("GameController").GetComponent<Initializers>().buildGame;
         }
 
 #if UNITY_EDITOR

@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu.Map
 {
 
-    /// <summary>
-    /// 地图块归档和初始化;
-    /// </summary>
-    public class DynaBlocksArchiver : IMapBlockIOInfo, IBuildGameInThread, IArchiveInThread
-    {
-        private DynaBlocksArchiver() { }
 
-        public DynaBlocksArchiver(MapBlockIOInfo mapBlockIOInfo)
+    /// <summary>
+    /// 地图初始化和归档方法;
+    /// </summary>
+    public class BlockArchiverMap<T> : MapBlockIO<T>, IMapBlockIOInfo, IBuildGameInThread, IArchiveInThread
+    {
+        public BlockArchiverMap(MapBlockIOInfo mapBlockIOInfo, BlocksMapInfo blocksMapInfo) : base(blocksMapInfo)
         {
-            this.archiveTempDirectoryPath = mapBlockIOInfo.archiveTempDirectoryPath;
+            this.fullArchiveTempirectoryPath = GetFullArchiveTempDirectoryPath(mapBlockIOInfo.archiveTempDirectoryPath);
             this.addressPrefix = mapBlockIOInfo.addressPrefix;
             this.archivedDirectoryPath = mapBlockIOInfo.archivedDirectoryPath;
+
+            base.MapBlockIOInfo = this;
         }
 
         /// <summary>
@@ -30,7 +29,7 @@ namespace KouXiaGu.Map
         /// <summary>
         /// 零时存放归档地图路径(预定义);
         /// </summary>
-        public string archiveTempDirectoryPath;
+        public string fullArchiveTempirectoryPath;
         /// <summary>
         /// 地图块前缀(预定义);
         /// </summary>
@@ -71,7 +70,15 @@ namespace KouXiaGu.Map
         /// </summary>
         public string GetFullArchiveTempDirectoryPath()
         {
-            string fullArchiveTempirectoryPath = Path.Combine(Application.dataPath, this.archiveTempDirectoryPath);
+            return this.fullArchiveTempirectoryPath;
+        }
+
+        /// <summary>
+        /// 获取到完整的存档缓存地图文件夹路径;
+        /// </summary>
+        private string GetFullArchiveTempDirectoryPath(string archiveTempDirectoryPath)
+        {
+            string fullArchiveTempirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryPath);
             return fullArchiveTempirectoryPath;
         }
 
@@ -138,12 +145,17 @@ namespace KouXiaGu.Map
         {
             try
             {
-                this.fullprefabMapDirectoryPath = item.Archived.PathDictionary[ArchivedExpand.PathPrefabMapDirectory];
+                this.fullprefabMapDirectoryPath = item.Archived.ArchivedMap.PathPrefabMapDirectory;
             }
             catch (KeyNotFoundException e)
             {
                 throw new KeyNotFoundException("未定义地图!", e);
             }
+        }
+
+        private void RecoveryMap(ArchivedGroup item, ICancelable cancelable)
+        {
+            
         }
 
         void IThreadInitialize<ArchivedGroup>.Initialize(
@@ -152,6 +164,7 @@ namespace KouXiaGu.Map
             try
             {
                 Debug.Log(this + "开始保存到!");
+                ArchiveMap(item, cancelable);
                 ArchiveFile(item, cancelable);
                 ArchiveData(item, cancelable);
             }
@@ -160,6 +173,11 @@ namespace KouXiaGu.Map
                 onError(e);
             }
             runningDoneCallBreak();
+        }
+
+        private void ArchiveMap(ArchivedGroup item, ICancelable cancelable)
+        {
+            SaveBlocks();
         }
 
         private void ArchiveFile(ArchivedGroup item, ICancelable cancelable)
@@ -172,7 +190,7 @@ namespace KouXiaGu.Map
 
         private void ArchiveData(ArchivedGroup item, ICancelable cancelable)
         {
-            item.Archived.PathDictionary[ArchivedExpand.PathPrefabMapDirectory] = this.fullprefabMapDirectoryPath;
+            item.Archived.ArchivedMap.PathPrefabMapDirectory = this.fullprefabMapDirectoryPath;
         }
 
 
