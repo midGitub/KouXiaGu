@@ -243,6 +243,8 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/Assets/Data
+/Assets/Mods
 /Assets/Scenes
 /Assets/Plugins
 /Assets/Materials
@@ -257,4 +259,3 @@ ModelManifest.xml
 /KouXiaGu.xlsx
 /KouXiaGu.CSharp.Plugins.csproj
 /KouXiaGu.CSharp.Editor.csproj
-/Assets/Scripts/XGame
