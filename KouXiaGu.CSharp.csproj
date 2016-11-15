@@ -17,7 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.4.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -106,6 +107,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIO.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\MapBlockIOInfo.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\BuildMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\Class1.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\CollectionHelper.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexFollowing2D.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMapNode.cs" />
