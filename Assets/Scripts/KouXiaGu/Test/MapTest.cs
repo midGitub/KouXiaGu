@@ -15,7 +15,7 @@ namespace KouXiaGu.Test
         private Text textObject;
 
         [SerializeField]
-        private BuildWorldHexMap buildWorldHexMap;
+        private BuildMap buildWorldHexMap;
 
         private void Awake()
         {

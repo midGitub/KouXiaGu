@@ -50,7 +50,7 @@ namespace KouXiaGu.Test
         {
             string str = "";
 
-            str += "  世界坐标 :" + BuildWorldHexMap.GetMousePosition();
+            str += "  世界坐标 :" + BuildMap.GetMousePosition();
             return str;
         }
 
@@ -60,7 +60,7 @@ namespace KouXiaGu.Test
 
             Hexagon hexagon = new Hexagon();
             hexagon.OuterDiameter = 2f;
-            Vector2 worldPoint = BuildWorldHexMap.GetMousePosition();
+            Vector2 worldPoint = BuildMap.GetMousePosition();
             var item = hexagon.TransfromPoint(worldPoint);
             str += "地图坐标 :" + item;
 

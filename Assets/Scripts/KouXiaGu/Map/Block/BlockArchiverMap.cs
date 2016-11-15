@@ -142,6 +142,9 @@ namespace KouXiaGu.Map
             }
         }
 
+        /// <summary>
+        /// 获取到保存预制地图路径;
+        /// </summary>
         private void RecoveryData(ArchivedGroup item, ICancelable cancelable)
         {
             try
@@ -154,6 +157,9 @@ namespace KouXiaGu.Map
             }
         }
 
+        /// <summary>
+        /// 开始更新地图,初始化第一个点;
+        /// </summary>
         private void RecoveryMap(ArchivedGroup item, ICancelable cancelable)
         {
             IntVector2 protagonistMapPosition = item.Archived.GetProtagonistMapPosition();
@@ -165,7 +171,7 @@ namespace KouXiaGu.Map
         {
             try
             {
-                Debug.Log(this + "开始保存到!");
+                Debug.Log(this + "开始归档到!");
                 ArchiveMap(item, cancelable);
                 ArchiveFile(item, cancelable);
                 ArchiveData(item, cancelable);

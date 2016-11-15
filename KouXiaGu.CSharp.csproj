@@ -103,7 +103,7 @@
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Initializers.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Initializers\Test_Game.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Input\FunctionInput.cs" />
-    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\BuildWorldHexMap.cs" />
+    <Compile Include="Assets\Scripts\KouXiaGu\Map\HexMap\BuildMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Block\DynaBlocksMap.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexDirection.cs" />
     <Compile Include="Assets\Scripts\KouXiaGu\Map\Hexagon\HexMapConvert.cs" />

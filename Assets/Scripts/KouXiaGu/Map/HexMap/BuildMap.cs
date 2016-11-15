@@ -10,7 +10,7 @@ namespace KouXiaGu.Map
 {
 
     [DisallowMultipleComponent]
-    public class BuildWorldHexMap : MonoBehaviour
+    public class BuildMap : MonoBehaviour
     {
 
         [SerializeField, Tooltip("地图六边形的外径")]
@@ -22,7 +22,7 @@ namespace KouXiaGu.Map
         [SerializeField]
         private BlocksMapInfo blocksMapInfo;
 
-        private static BuildWorldHexMap instance;
+        private static BuildMap instance;
         private DynaBlocksMap<MapBlock<HexMapNode>, HexMapNode> mapCollection;
         private Hexagon mapHexagon;
 
@@ -31,7 +31,7 @@ namespace KouXiaGu.Map
             get { return mapCollection; }
         }
 
-        public static BuildWorldHexMap GetInstance
+        public static BuildMap GetInstance
         {
             get { return instance ?? (instance = FindInstance()); }
         }
@@ -113,9 +113,9 @@ namespace KouXiaGu.Map
             }
         }
 
-        private static BuildWorldHexMap FindInstance()
+        private static BuildMap FindInstance()
         {
-            return GameObject.FindWithTag("GameController").GetComponent<BuildWorldHexMap>();
+            return GameObject.FindWithTag("GameController").GetComponent<BuildMap>();
         }
 
     }
