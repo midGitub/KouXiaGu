@@ -62,7 +62,7 @@ namespace KouXiaGu
         /// 若所有接口都保存完毕后,则将存档保存到磁盘;
         /// 若未保存成功,则也返回保存失败;
         /// </summary>
-        internal void OnSavedComplete(ArchivedGroup archivedGroup, Action onSavedComplete, Action<Exception> onSavingFail)
+        internal void OnSavedComplete(ArchivedGroup archivedGroup, Action onSavedComplete)
         {
             try
             {
@@ -71,8 +71,9 @@ namespace KouXiaGu
             }
             catch (Exception e)
             {
-                onSavingFail(e);
+                Debug.LogWarning("归档时游戏失败!" + e);
             }
+            onSavedComplete();
         }
 
     }

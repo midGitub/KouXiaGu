@@ -14,6 +14,11 @@ namespace KouXiaGu.World2D
     public abstract class BlockMap<T, TBlock> : IMap<IntVector2, T>
         where TBlock : IMap<ShortVector2, T>
     {
+        private BlockMap()
+        {
+            mapCollection = new Dictionary<ShortVector2, TBlock>();
+        }
+
         public BlockMap(
             ShortVector2 partitionSizes, 
             ShortVector2 minRadiationRange, 
@@ -22,6 +27,11 @@ namespace KouXiaGu.World2D
             this.partitionSizes = ShortVector2.Abs(partitionSizes);
             this.minRadiationRange = ShortVector2.Abs(minRadiationRange);
             this.maxRadiationRange = ShortVector2.Abs(maxRadiationRange);
+            mapCollection = new Dictionary<ShortVector2, TBlock>();
+        }
+
+        public void Awake()
+        {
             mapCollection = new Dictionary<ShortVector2, TBlock>();
         }
 

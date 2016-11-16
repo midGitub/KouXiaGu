@@ -34,25 +34,20 @@ namespace KouXiaGu.Test
 
         private void OnStartGame(UniRx.Unit unit)
         {
-            Action onComplete = () => Debug.Log("开始游戏成功!");
-            //buildGameData.ArchivedGroup.Archived.Map.PathPrefabMapDirectory = mapDir.text;
-
-            //initializers.Build(buildGameData);
+            BuildGameData buildGameData = initializers.DataGame.GetBuildGameData();
+            buildGameData.ArchivedData.Archived.World2D.PathPrefabMapDirectory = mapDir.text;
+            initializers.Build(buildGameData);
         }
 
         private void OnSaveGame(UniRx.Unit unit)
         {
-            Action onComplete = () => Debug.Log("保存游戏成功!");
-
-            //var saveGameData = Initializers.GetInstance.ArchiveData.CreateArchived();
-
-            //initializers.Save(saveGameData);
+            var saveGameData = initializers.DataGame.ArchiveData.CreateArchived();
+            initializers.Save(saveGameData);
         }
 
         private void OnQuit(UniRx.Unit unit)
         {
-            Action onComplete = () => Debug.Log("退出游戏成功!");
-            //initializers.QuitToMain();
+            initializers.Quit();
         }
 
     }

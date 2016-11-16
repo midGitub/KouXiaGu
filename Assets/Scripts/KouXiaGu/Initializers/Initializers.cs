@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu
 {
 
-    public interface IBuildGameInCoroutine : ICoroutineInitialize<BuildGameData> { }
-    public interface IBuildGameInThread : IThreadInitialize<BuildGameData> { }
+    public interface IBuildInCoroutine : ICoroutineInit<BuildGameData> { }
+    public interface IBuildInThread : IThreadInit<BuildGameData> { }
 
-    public interface IQuitInCoroutine : ICoroutineInitialize<Unit> { }
-    public interface IQuitInThread : IThreadInitialize<Unit> { }
+    public interface IQuitInCoroutine : ICoroutineInit<Unit> { }
+    public interface IQuitInThread : IThreadInit<Unit> { }
 
-    public interface IArchiveInCoroutine : ICoroutineInitialize<ArchivedGroup> { }
-    public interface IArchiveInThread : IThreadInitialize<ArchivedGroup> { }
+    public interface IArchiveInCoroutine : ICoroutineInit<ArchivedGroup> { }
+    public interface IArchiveInThread : IThreadInit<ArchivedGroup> { }
 
 
     public class Initializers : MonoBehaviour
@@ -42,6 +40,10 @@ namespace KouXiaGu
         [SerializeField]
         private QuitInitialize quitInitializers;
 
+        /// <summary>
+        /// 当前事件执行完成后调用,调用完后清空;
+        /// </summary>
+        public event Action OnComplete;
 
         public GameStatus State
         {
@@ -53,7 +55,11 @@ namespace KouXiaGu
             get { return state; }
         }
 
-        public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
+        public DataGame DataGame
+        {
+            get { return dataGame; }
+        }
+        public IAppendInitialize<IBuildInCoroutine, IBuildInThread> AppendBuildGame
         {
             get { return buildInitializers; }
         }
@@ -66,29 +72,40 @@ namespace KouXiaGu
             get { return quitInitializers; }
         }
 
-        public ICancelable Build(BuildGameData buildGameRes)
+
+        private void Awake()
+        {
+            AddendInGameObejct();
+        }
+
+
+        public ICancelable Build(BuildGameData buildGameRes, Action onComplete = null)
         {
             CheckBuild();
+            OnComplete += onComplete;
             OnBuilding();
+
             Func<IEnumerator> coroutine = () => buildInitializers.Start(buildGameRes, OnBuiltComplete, OnBuildingFail);
             Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
             return buildInitializers;
         }
 
-        public ICancelable Save(ArchivedGroup archivedGroup)
+        public ICancelable Save(ArchivedGroup archivedGroup, Action onComplete = null)
         {
             CheckSave();
+            OnComplete += onComplete;
             OnSaving();
 
-            Action onComplete = () => dataGame.OnSavedComplete(archivedGroup, OnSavedComplete, OnSavingFail);
-            Func<IEnumerator> coroutine = () => archiveInitializers.Start(archivedGroup, onComplete, OnSavingFail);
+            Action coroutineComplete = () => dataGame.OnSavedComplete(archivedGroup, OnSavedComplete);
+            Func<IEnumerator> coroutine = () => archiveInitializers.Start(archivedGroup, coroutineComplete, OnSavingFail);
             Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
             return archiveInitializers;
         }
 
-        public ICancelable Quit()
+        public ICancelable Quit(Action onComplete = null)
         {
             CheckQuit();
+            OnComplete += onComplete;
             OnQuitting();
 
             Func<IEnumerator> coroutine = () => quitInitializers.Start(Unit.Default, OnQuittedComplete, OnQuittingFail);
@@ -112,6 +129,15 @@ namespace KouXiaGu
                 throw new Exception("当前状态无法退出游戏!");
         }
 
+        private void OnEventComplete()
+        {
+            if (OnComplete != null)
+            {
+                OnComplete.Invoke();
+                OnComplete = null;
+            }
+        }
+
         private void OnBuilding()
         {
             State = GameStatus.Creating;
@@ -119,14 +145,12 @@ namespace KouXiaGu
         private void OnBuiltComplete()
         {
             State = GameStatus.Running;
+            OnEventComplete();
         }
-        private void OnBuildingFail(Exception error)
+        private void OnBuildingFail(List<Exception> errorList)
         {
-            foreach (Exception item in error.Data.Values)
-            {
-                Debug.LogError("创建游戏失败!\n" + item);
-            }
             State = GameStatus.Ready;
+            OnEventComplete();
         }
 
 
@@ -137,14 +161,12 @@ namespace KouXiaGu
         private void OnSavedComplete()
         {
             State = GameStatus.Running;
+            OnEventComplete();
         }
-        private void OnSavingFail(Exception error)
+        private void OnSavingFail(List<Exception> errorList)
         {
-            foreach (Exception item in error.Data.Values)
-            {
-                Debug.LogError("保存游戏失败!" + item);
-            }
             State = GameStatus.Running;
+            OnEventComplete();
         }
 
 
@@ -155,29 +177,75 @@ namespace KouXiaGu
         private void OnQuittedComplete()
         {
             State = GameStatus.Ready;
+            OnEventComplete();
         }
-        private void OnQuittingFail(Exception error)
+        private void OnQuittingFail(List<Exception> errorList)
         {
-            Debug.LogError("退出游戏失败!");
-
             State = GameStatus.Running;
+            OnEventComplete();
         }
 
+
+        /// <summary>
+        /// 将本GameObejct上所有的子物体,包括本身都获取到初始化接口(不包括未激活的脚本);
+        /// </summary>
+        private void AddendInGameObejct()
+        {
+            AddendBuild();
+            AddendArchive();
+            AddQuit();
+        }
+
+        private void AddendBuild()
+        {
+            Addend(buildInitializers);
+        }
+
+        private void AddendArchive()
+        {
+            Addend(archiveInitializers);
+        }
+
+        private void AddQuit()
+        {
+            Addend(quitInitializers);
+        }
+
+        private void Addend<T, T2>(IAppendInitialize<T, T2> appendInitialize)
+        {
+            T[] TArray = GetInitInterface<T>();
+            T2[] T2Array = GetInitInterface<T2>();
+
+            foreach (var item in TArray)
+            {
+                appendInitialize.Add(item);
+            }
+            foreach (var item in T2Array)
+            {
+                appendInitialize.Add(item);
+            }
+        }
+
+        private T[] GetInitInterface<T>()
+        {
+            return GetComponentsInChildren<T>();
+
+        }
 
         [Serializable]
-        private class GameInitialize : InitializeAppend<IBuildGameInCoroutine, IBuildGameInThread, BuildGameData>
+        private class GameInitialize : InitHelper<IBuildInCoroutine, IBuildInThread, BuildGameData>
         {
             private GameInitialize() : base() { }
         }
 
         [Serializable]
-        private class QuitInitialize : InitializeAppend<IQuitInCoroutine, IQuitInThread, Unit>
+        private class QuitInitialize : InitHelper<IQuitInCoroutine, IQuitInThread, Unit>
         {
             public QuitInitialize() : base() { }
         }
 
         [Serializable]
-        private sealed class ArchiveInitialize : InitializeAppend<IArchiveInCoroutine, IArchiveInThread, ArchivedGroup>
+        private sealed class ArchiveInitialize : InitHelper<IArchiveInCoroutine, IArchiveInThread, ArchivedGroup>
         {
             private ArchiveInitialize() : base() { }
         }

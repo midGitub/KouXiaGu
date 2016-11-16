@@ -10,7 +10,7 @@ namespace KouXiaGu.World2D
     /// 游戏中使用的地图结构;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap : MonoBehaviour, IBuildGameInThread, IArchiveInThread, IQuitInThread
+    public class WorldMap : MonoBehaviour, IBuildInThread, IArchiveInThread, IQuitInThread
     {
 
         /// <summary>
@@ -66,6 +66,7 @@ namespace KouXiaGu.World2D
 
         private void Awake()
         {
+            worldMap.Awake();
             worldMap.AddressPrefix = addressPrefix;
             FullArchiveTempDirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryName);
         }
@@ -91,12 +92,12 @@ namespace KouXiaGu.World2D
 
         #region BuildGame
 
-        void IThreadInitialize<BuildGameData>.Initialize(
+        void IThreadInit<BuildGameData>.Initialize(
             BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
             try
             {
-                Debug.Log(this + "开始初始化!");
+                Debug.Log("WorldMap 开始初始化!");
                 RecoveryLoadArchived(item, cancelable);
                 RecoveryCopyData(item, cancelable);
             }
@@ -133,12 +134,12 @@ namespace KouXiaGu.World2D
 
         #region Archived
 
-        void IThreadInitialize<ArchivedGroup>.Initialize(
+        void IThreadInit<ArchivedGroup>.Initialize(
             ArchivedGroup item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
             try
             {
-                Debug.Log(this + "开始归档!");
+                Debug.Log("WorldMap 开始归档!");
                 ArchiveSaveMap(item, cancelable);
                 ArchiveCopyData(item, cancelable);
                 ArchiveOutput(item, cancelable);
@@ -170,12 +171,12 @@ namespace KouXiaGu.World2D
 
         #region Quit
 
-        void IThreadInitialize<Unit>.Initialize(
+        void IThreadInit<Unit>.Initialize(
             Unit item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
             try
             {
-                Debug.Log(this + "开始退出!");
+                Debug.Log("WorldMap 开始退出!");
                 worldMap.Clear();
             }
             catch (Exception e)
