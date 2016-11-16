@@ -1,16 +1,24 @@
 ﻿using System;
-using UnityEngine;
-using UniRx;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UniRx;
+using UnityEngine;
 
 namespace KouXiaGu
 {
 
-    /// <summary>
-    /// 游戏状态控制(每个场景只存一个);
-    /// </summary>
-    [DisallowMultipleComponent]
+    public interface IBuildGameInCoroutine : ICoroutineInitialize<BuildGameData> { }
+    public interface IBuildGameInThread : IThreadInitialize<BuildGameData> { }
+
+    public interface IQuitInCoroutine : ICoroutineInitialize<Unit> { }
+    public interface IQuitInThread : IThreadInitialize<Unit> { }
+
+    public interface IArchiveInCoroutine : ICoroutineInitialize<ArchivedGroup> { }
+    public interface IArchiveInThread : IThreadInitialize<ArchivedGroup> { }
+
+
     public class Initializers : MonoBehaviour
     {
         private Initializers() { }
@@ -19,17 +27,21 @@ namespace KouXiaGu
         private GameStatusReactiveProperty state = new GameStatusReactiveProperty(GameStatus.Ready);
 
         [SerializeField]
-        private BuildGame buildGame;
+        private FrameCountType CheckType = FrameCountType.Update;
+        private readonly bool publishEveryYield = false;
 
-        private static IBuildGameData buildGameData;
+        [SerializeField]
+        private DataGame dataGame;
 
-        /// <summary>
-        /// 获取到游戏创建接口;
-        /// </summary>
-        public static IBuildGameData BuildGameData
-        {
-            get { return buildGameData ?? (buildGameData = GameController.FindInstance<Initializers>().buildGame); }
-        }
+        [SerializeField]
+        private GameInitialize buildInitializers;
+
+        [SerializeField]
+        private ArchiveInitialize archiveInitializers;
+
+        [SerializeField]
+        private QuitInitialize quitInitializers;
+
 
         public GameStatus State
         {
@@ -41,82 +53,79 @@ namespace KouXiaGu
             get { return state; }
         }
 
-        public bool CanBuildGame
+        public IAppendInitialize<IBuildGameInCoroutine, IBuildGameInThread> AppendBuildGame
         {
-            get { return State == GameStatus.Ready; }
+            get { return buildInitializers; }
         }
-        public bool CanSaveGame
+        public IAppendInitialize<IArchiveInCoroutine, IArchiveInThread> AppendArchiveGame
         {
-            get { return State == GameStatus.Running; }
+            get { return archiveInitializers; }
         }
-        public bool CanQuitGame
+        public IAppendInitialize<IQuitInCoroutine, IQuitInThread> AppendQuitGame
         {
-            get { return State == GameStatus.Running; }
-        }
-
-        private void OnDestroy()
-        {
-            buildGameData = null;
+            get { return quitInitializers; }
         }
 
-        public ICancelable Build(BuildGameData buildGameRes, Action onComplete = null, Action<Exception> onFail = null)
+        public ICancelable Build(BuildGameData buildGameRes)
         {
-            if (!CanBuildGame)
-                throw new Exception("当前状态无法开始游戏!");
-
-            Action<Exception> onBuildingFail = e => OnBuildingFail(e, onFail);
-            Action onBuiltComplete = () => OnBuiltComplete(onComplete);
-
+            CheckBuild();
             OnBuilding();
-            return buildGame.Build(buildGameRes, onBuiltComplete, onBuildingFail);
+            Func<IEnumerator> coroutine = () => buildInitializers.Start(buildGameRes, OnBuiltComplete, OnBuildingFail);
+            Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
+            return buildInitializers;
         }
 
-        public ICancelable Save(ArchivedGroup archivedGroup, Action onComplete = null, Action<Exception> onFail = null)
+        public ICancelable Save(ArchivedGroup archivedGroup)
         {
-            if (!CanSaveGame)
-                throw new Exception("当前状态无法保存游戏!");
-
-            Action<Exception> onSavingFail = e => OnSavingFail(e, onFail);
-            Action onSavedComplete = () => OnSavedComplete(onComplete);
-
+            CheckSave();
             OnSaving();
-            return buildGame.Save(archivedGroup, onSavedComplete, onSavingFail);
+
+            Action onComplete = () => dataGame.OnSavedComplete(archivedGroup, OnSavedComplete, OnSavingFail);
+            Func<IEnumerator> coroutine = () => archiveInitializers.Start(archivedGroup, onComplete, OnSavingFail);
+            Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
+            return archiveInitializers;
         }
 
-        public ICancelable QuitToMain(Unit unit, Action onComplete = null, Action<Exception> onFail = null)
+        public ICancelable Quit()
         {
-            if (!CanQuitGame)
-                throw new Exception("当前状态无法退出游戏!");
-
-            Action<Exception> onQuittingFail = e => OnQuittingFail(e, onFail);
-            Action onQuitComplete = () => OnQuittedComplete(onComplete);
-
+            CheckQuit();
             OnQuitting();
-            return buildGame.Quit(onQuitComplete, onQuittingFail);
+
+            Func<IEnumerator> coroutine = () => quitInitializers.Start(Unit.Default, OnQuittedComplete, OnQuittingFail);
+            Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
+            return quitInitializers;
         }
 
+        public void CheckBuild()
+        {
+            if (State != GameStatus.Ready)
+                throw new Exception("当前状态无法开始游戏!");
+        }
+        public void CheckSave()
+        {
+            if (State != GameStatus.Running)
+                throw new Exception("当前状态无法保存游戏!");
+        }
+        public void CheckQuit()
+        {
+            if (State != GameStatus.Running)
+                throw new Exception("当前状态无法退出游戏!");
+        }
 
         private void OnBuilding()
         {
             State = GameStatus.Creating;
         }
-        private void OnBuiltComplete(Action onComplete)
+        private void OnBuiltComplete()
         {
             State = GameStatus.Running;
-
-            if (onComplete != null)
-                onComplete();
         }
-        private void OnBuildingFail(Exception error, Action<Exception> onFail)
+        private void OnBuildingFail(Exception error)
         {
             foreach (Exception item in error.Data.Values)
             {
                 Debug.LogError("创建游戏失败!\n" + item);
             }
-
-            if (onFail != null)
-                onFail(error);
-
             State = GameStatus.Ready;
         }
 
@@ -125,23 +134,16 @@ namespace KouXiaGu
         {
             State = GameStatus.Saving;
         }
-        private void OnSavedComplete(Action onComplete)
+        private void OnSavedComplete()
         {
             State = GameStatus.Running;
-
-            if (onComplete != null)
-                onComplete();
         }
-        private void OnSavingFail(Exception error, Action<Exception> onFail)
+        private void OnSavingFail(Exception error)
         {
             foreach (Exception item in error.Data.Values)
             {
                 Debug.LogError("保存游戏失败!" + item);
             }
-
-            if (onFail != null)
-                onFail(error);
-
             State = GameStatus.Running;
         }
 
@@ -150,21 +152,34 @@ namespace KouXiaGu
         {
             State = GameStatus.Quitting;
         }
-        private void OnQuittedComplete(Action onComplete)
+        private void OnQuittedComplete()
         {
             State = GameStatus.Ready;
-
-            if (onComplete != null)
-                onComplete();
         }
-        private void OnQuittingFail(Exception error, Action<Exception> onFail)
+        private void OnQuittingFail(Exception error)
         {
             Debug.LogError("退出游戏失败!");
 
-            if (onFail != null)
-                onFail(error);
-
             State = GameStatus.Running;
+        }
+
+
+        [Serializable]
+        private class GameInitialize : InitializeAppend<IBuildGameInCoroutine, IBuildGameInThread, BuildGameData>
+        {
+            private GameInitialize() : base() { }
+        }
+
+        [Serializable]
+        private class QuitInitialize : InitializeAppend<IQuitInCoroutine, IQuitInThread, Unit>
+        {
+            public QuitInitialize() : base() { }
+        }
+
+        [Serializable]
+        private sealed class ArchiveInitialize : InitializeAppend<IArchiveInCoroutine, IArchiveInThread, ArchivedGroup>
+        {
+            private ArchiveInitialize() : base() { }
         }
 
     }

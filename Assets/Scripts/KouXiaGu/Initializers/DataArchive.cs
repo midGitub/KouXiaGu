@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -45,39 +44,6 @@ namespace KouXiaGu
             return new SmallArchivedGroup(archived.FromFile, archived.Archived, archived.ArchivedPath);
         }
     }
-
-
-    ///// <summary>
-    ///// 存档获取方法;
-    ///// </summary>
-    //public interface IArchiveData
-    //{
-    //    /// <summary>
-    //    /// 获取到保存所有存档的文件夹路径;
-    //    /// </summary>
-    //    string GetArchivedsPath();
-
-    //    /// <summary>
-    //    /// 创建一个空存档信息,并且返回(未持久化保存);
-    //    /// </summary>
-    //    ArchivedGroup CreateArchived();
-
-    //    /// <summary>
-    //    /// 获取到所有有效的预读存档信息;
-    //    /// </summary>
-    //    IEnumerable<SmallArchivedGroup> GetSmallArchiveds();
-
-    //    /// <summary>
-    //    /// 将这个存档保存到磁盘上(持久化保存)
-    //    /// </summary>
-    //    /// <param name="archived"></param>
-    //    void SaveInDisk(ArchivedGroup archived);
-
-    //    /// <summary>
-    //    /// 将预读存档文件转换成完整存档;
-    //    /// </summary>
-    //    ArchivedGroup SmallArchivedTransfrom(SmallArchivedGroup smallArchived);
-    //}
 
     /// <summary>
     /// 游戏归档管理;

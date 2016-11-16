@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using ProtoBuf;
 using UnityEngine;
-using KouXiaGu.Map;
 using KouXiaGu.Characters;
 using KouXiaGu.World2D;
 
@@ -56,12 +55,6 @@ namespace KouXiaGu
     public class ArchivedExpand : SmallArchived
     {
         public ArchivedExpand() { }
-
-        /// <summary>
-        /// 地图存档信息;
-        /// </summary>
-        [ProtoMember(50)]
-        public readonly ArchivedMap Map = new ArchivedMap();
 
         /// <summary>
         /// 主角存档信息;

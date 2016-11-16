@@ -9,7 +9,7 @@ namespace KouXiaGu
     /// 游戏核心文件管理;
     /// </summary>
     [Serializable]
-    public class DataCore : ICoreDataResource
+    public class DataCore
     {
         private DataCore() { }
 
@@ -22,17 +22,6 @@ namespace KouXiaGu
             return coreDataDirectoryPath;
         }
 
-    }
-
-    /// <summary>
-    /// 新游戏创建资源;
-    /// </summary>
-    public interface ICoreDataResource
-    {
-        /// <summary>
-        /// 存放游戏核心内容的目录;
-        /// </summary>
-        string GetCoreDataDirectoryPath();
     }
 
 }
