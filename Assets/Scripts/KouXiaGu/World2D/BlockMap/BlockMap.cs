@@ -11,7 +11,7 @@ namespace KouXiaGu.World2D
     /// 根据块加载的地图;
     /// </summary>
     [Serializable]
-    public abstract class BlockMap<T, TBlock> : IBlockMap<IntVector2, T>
+    public abstract class BlockMap<T, TBlock> : IMap<IntVector2, T>
         where TBlock : IMap<ShortVector2, T>
     {
         public BlockMap(

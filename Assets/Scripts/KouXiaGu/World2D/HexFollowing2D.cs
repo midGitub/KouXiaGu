@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu.World2D
 {
 
     /// <summary>
@@ -14,22 +14,17 @@ namespace KouXiaGu.Map
         [SerializeField]
         private Transform target;
 
-        private GameHexMap gameMap
-        {
-            get { return GameHexMap.GetInstance; }
-        }
-
         private Transform current;
         private Vector3 previousPosition;
 
         public float DistanceX
         {
-            get { return gameMap.MapHexagon.DistanceX * 2; }
+            get { return WorldConvert.MapHexagon.DistanceX * 2; }
         }
 
         public float DistanceY
         {
-            get { return gameMap.MapHexagon.DistanceY; }
+            get { return WorldConvert.MapHexagon.DistanceY; }
         }
 
         public Transform Target

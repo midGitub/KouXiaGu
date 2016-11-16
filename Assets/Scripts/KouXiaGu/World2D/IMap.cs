@@ -30,12 +30,4 @@ namespace KouXiaGu.World2D
         void Clear();
     }
 
-    /// <summary>
-    /// 使用块加载的地图;
-    /// </summary>
-    public interface IBlockMap<TPoint, T> : IMap<TPoint, T>
-    {
-        void UpdateBlock(IntVector2 position, bool check = true);
-    }
-
 }

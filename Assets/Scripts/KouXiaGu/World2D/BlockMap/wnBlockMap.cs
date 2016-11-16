@@ -10,28 +10,32 @@ namespace KouXiaGu.World2D
     /// 可以对地图进行分块存档的地图;
     /// </summary>
     [Serializable]
-    public class WNodeBlockMap : BlockMap<WorldNode, WNodeBlockMap.MapBlock>, IReadOnlyMap<IntVector2, IReadOnlyWorldNode>
+    public class wnBlockMap : BlockMap<WorldNode, wnBlockMap.MapBlock>, IReadOnlyMap<IntVector2, IReadOnlyWorldNode>
     {
-        public WNodeBlockMap(
+        public wnBlockMap(
             string fullArchiveTempDirectoryPath,
-            string fullMapDirectoryPath,
+            string fullPrefabMapDirectoryPath,
             ShortVector2 partitionSizes,
             ShortVector2 minRadiationRange,
             ShortVector2 maxRadiationRange) 
             : base(partitionSizes, minRadiationRange, maxRadiationRange)
         {
             this.fullArchiveTempDirectoryPath = fullArchiveTempDirectoryPath;
-            this.fullMapDirectoryPath = fullMapDirectoryPath;
+            this.fullPrefabMapDirectoryPath = fullPrefabMapDirectoryPath;
         }
 
         private string addressPrefix;
         private string fullArchiveTempDirectoryPath;
-        private string fullMapDirectoryPath;
+        private string fullPrefabMapDirectoryPath;
 
         public string AddressPrefix
         {
             get { return addressPrefix; }
             set { addressPrefix = value; }
+        }
+        protected string ArchivedSearchPattern
+        {
+            get { return addressPrefix + "*"; }
         }
 
         /// <summary>
@@ -48,8 +52,8 @@ namespace KouXiaGu.World2D
         /// </summary>
         public string FullPrefabMapDirectoryPath
         {
-            get { return fullMapDirectoryPath; }
-            set { fullMapDirectoryPath = value; }
+            get { return fullPrefabMapDirectoryPath; }
+            set { fullPrefabMapDirectoryPath = value; }
         }
 
 
@@ -82,7 +86,7 @@ namespace KouXiaGu.World2D
         private string GetFullPrefabMapFilePath(ShortVector2 address)
         {
             string blockName = GetBlockName(address);
-            string fullPrefabMapFilePath = Path.Combine(fullMapDirectoryPath, blockName);
+            string fullPrefabMapFilePath = Path.Combine(fullPrefabMapDirectoryPath, blockName);
             return fullPrefabMapFilePath;
         }
 
@@ -92,6 +96,7 @@ namespace KouXiaGu.World2D
             string fullArchiveTempFilePath = Path.Combine(fullArchiveTempDirectoryPath, blockName);
             return fullArchiveTempFilePath;
         }
+
 
         /// <summary>
         /// 强制保存加载到游戏内的所有地图块;
@@ -103,6 +108,60 @@ namespace KouXiaGu.World2D
                 SaveArchiveMap(blockPair.Key, blockPair.Value);
             }
         }
+
+        /// <summary>
+        /// 将缓存的存档地图添加保存到预制地图内;
+        /// </summary>
+        /// <param name="deleteArchivedTemp">保存完毕后是否删除缓存的存档地图</param>
+        public void CombineToPrefabMap(bool deleteArchivedTemp = false)
+        {
+            string[] archiveMapFilePaths = Directory.GetFiles(fullArchiveTempDirectoryPath, ArchivedSearchPattern);
+
+            foreach (var archiveMapFilePath in archiveMapFilePaths)
+            {
+                CombineToPrefabMap(archiveMapFilePath);
+            }
+
+            if (deleteArchivedTemp)
+                DeleteMapFileAll(fullArchiveTempDirectoryPath);
+        }
+
+        /// <summary>
+        /// 根据这个路径在预制地图文件夹内寻找相同名的地图文件,进行合并;
+        /// </summary>
+        private void CombineToPrefabMap(string fullArchiveMapFilePath)
+        {
+            string fileName = Path.GetFileName(fullArchiveMapFilePath);
+            string prefabMapFilePath = Path.Combine(fullPrefabMapDirectoryPath, fileName);
+            CombineMap(fullArchiveMapFilePath, prefabMapFilePath);
+        }
+
+        /// <summary>
+        /// 读取预制和缓存地图,进行合并后覆盖保存预制地图;
+        /// </summary>
+        private void CombineMap(string fullArchiveMapFilePath, string fullPrefabMapFilePath)
+        {
+            Dictionary<ShortVector2, WorldNode> archiveMap = LoadMapBlock(fullArchiveMapFilePath);
+            Dictionary<ShortVector2, WorldNode> prefabMap = LoadMapBlock(fullPrefabMapFilePath);
+
+            prefabMap.AddOrReplace(archiveMap);
+
+            Save(fullPrefabMapFilePath, prefabMap);
+        }
+
+        /// <summary>
+        /// 删除路径文件夹内的所有地图文件;
+        /// </summary>
+        /// <param name="fullDirectoryPath"></param>
+        private void DeleteMapFileAll(string fullDirectoryPath)
+        {
+            string[] mapFilePaths = Directory.GetFileSystemEntries(fullDirectoryPath, ArchivedSearchPattern);
+            foreach (var mapFilePath in mapFilePaths)
+            {
+                File.Delete(mapFilePath);
+            }
+        }
+
 
         protected override MapBlock GetBlock(ShortVector2 blockAddress)
         {
@@ -133,14 +192,15 @@ namespace KouXiaGu.World2D
         private Dictionary<ShortVector2, WorldNode> LoadPrefabMapBlock(ShortVector2 blockAddress)
         {
             string fullPrefabMapFilePath = GetFullPrefabMapFilePath(blockAddress);
-            return LoadMapBlock(blockAddress, fullPrefabMapFilePath);
+            return LoadMapBlock(fullPrefabMapFilePath);
         }
 
-        private bool TryLoadMapBlock(ShortVector2 blockAddress, string fullFilePath, out Dictionary<ShortVector2, WorldNode> dictionary)
+        private bool TryLoadMapBlock(
+            ShortVector2 blockAddress, string fullFilePath, out Dictionary<ShortVector2, WorldNode> dictionary)
         {
             try
             {
-                dictionary = LoadMapBlock(blockAddress, fullFilePath);
+                dictionary = LoadMapBlock(fullFilePath);
                 return true;
             }
             catch (Exception e)
@@ -152,7 +212,7 @@ namespace KouXiaGu.World2D
             return false;
         }
 
-        private Dictionary<ShortVector2, WorldNode> LoadMapBlock(ShortVector2 blockAddress, string fullFilePath)
+        private Dictionary<ShortVector2, WorldNode> LoadMapBlock(string fullFilePath)
         {
             var dictionary = SerializeHelper.Deserialize_ProtoBuf<Dictionary<ShortVector2, WorldNode>>(fullFilePath);
             return dictionary;

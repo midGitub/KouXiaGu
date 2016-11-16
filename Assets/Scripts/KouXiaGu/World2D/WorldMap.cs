@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UniRx;
 using UnityEngine;
 
@@ -35,14 +32,17 @@ namespace KouXiaGu.World2D
         /// 游戏地图;
         /// </summary>
         [SerializeField]
-        private WNodeBlockMap worldMap;
+        private wnBlockMap worldMap;
 
 
         protected string ArchivedSearchPattern
         {
             get { return addressPrefix + "*"; }
         }
-
+        internal wnBlockMap wnWorldMap
+        {
+            get { return worldMap; }
+        }
         public IMap<IntVector2, WorldNode> Map
         {
             get { return worldMap; }
@@ -68,6 +68,15 @@ namespace KouXiaGu.World2D
         {
             worldMap.AddressPrefix = addressPrefix;
             FullArchiveTempDirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryName);
+        }
+
+        /// <summary>
+        /// 根据目标位置更新地图数据;
+        /// </summary>
+        internal void UpdateMap(Vector2 planePoint, bool cheak = true)
+        {
+            IntVector2 mapPoint = WorldConvert.PlaneToMapPoint(planePoint);
+            worldMap.UpdateBlock(mapPoint, cheak);
         }
 
         /// <summary>
