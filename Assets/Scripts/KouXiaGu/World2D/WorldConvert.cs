@@ -19,23 +19,14 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 地图以外径为2的正六边形排列;
         /// </summary>
-        private static readonly Hexagon mapHexagon = new Hexagon() { OuterDiameter = 2 };
+        private static readonly Hexagon hexagon = new Hexagon() { OuterDiameter = 2 };
 
         /// <summary>
         /// 地图所使用的六边形;
         /// </summary>
         public static Hexagon MapHexagon
         {
-            get { return mapHexagon; }
-        }
-
-        /// <summary>
-        /// 获取到地图坐标;
-        /// </summary>
-        public static IntVector2 PlaneToMapPoint(Vector2 planePoint)
-        {
-            IntVector2 mapPosition = mapHexagon.TransfromPoint(planePoint);
-            return mapPosition;
+            get { return hexagon; }
         }
 
         #endregion
@@ -46,20 +37,20 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将浮点类型向量转换成地图点;
         /// </summary>
-        public static PointPair TransfromPoint(this Hexagon hexagon, Vector2 point)
+        public static PointPair PlaneToHexPair(Vector2 planePoint)
         {
             int x1, x2, y1, y2;
             var points = new PointPair[4];
 
-            GetInterval(point.x, hexagon.DistanceX, out x1, out x2);
-            GetInterval(point.y, hexagon.DistanceY, out y1, out y2);
+            GetInterval(planePoint.x, hexagon.DistanceX, out x1, out x2);
+            GetInterval(planePoint.y, hexagon.InnerDiameter, out y1, out y2);
 
             points[0] = new PointPair(hexagon, x1, y1);
             points[1] = new PointPair(hexagon, x1, y2);
             points[2] = new PointPair(hexagon, x2, y1);
             points[3] = new PointPair(hexagon, x2, y2);
 
-            PointPair pointPair = Nearest(point, points);
+            PointPair pointPair = Nearest(planePoint, points);
             return pointPair;
         }
 
@@ -96,12 +87,12 @@ namespace KouXiaGu.World2D
         /// <returns></returns>
         private static PointPair Nearest(Vector2 target, params PointPair[] points)
         {
-            float minDistance = Vector2.Distance(target, points[0].worldPoint);
+            float minDistance = Vector2.Distance(target, points[0].HexPoint);
             PointPair minPointPair = points[0];
 
             for (int i = 1; i < points.Length; i++)
             {
-                float distance = Vector2.Distance(target, points[i].worldPoint);
+                float distance = Vector2.Distance(target, points[i].HexPoint);
                 if (distance < minDistance)
                 {
                     minPointPair = points[i];
@@ -115,14 +106,11 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将 六边形编号 转换成 六边形中心点;
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
-        public static Vector2 NumberToPosition(this Hexagon hexagon, IntVector2 mapPoint)
+        public static Vector2 MapToHex(IntVector2 mapPoint)
         {
             Vector2 position = new Vector2();
             position.x = hexagon.DistanceX * mapPoint.x;
-            position.y = hexagon.DistanceY * mapPoint.y;
+            position.y = hexagon.InnerDiameter * mapPoint.y;
 
             if ((mapPoint.x & 1) == 1)
                 position.y -= (hexagon.InnerDiameter / 2);
@@ -130,31 +118,42 @@ namespace KouXiaGu.World2D
             return position;
         }
 
+        /// <summary>
+        /// 平面坐标 转换成 六边形中心点(任意的中心点);
+        /// </summary>
+        public static Vector2 PlaneToHex(Vector2 planePoint)
+        {
+            float distanceX2 = (hexagon.DistanceX * 2);
+            planePoint.x = ((int)(planePoint.x / distanceX2)) * distanceX2;
+            planePoint.y = ((int)(planePoint.y / hexagon.InnerDiameter)) * hexagon.InnerDiameter;
+            return planePoint;
+        }
+
         public struct PointPair
         {
             public PointPair(Hexagon hexagon, int mapX, int mapY)
             {
-                intVector2 = new IntVector2(mapX, mapY);
-                worldPoint = hexagon.NumberToPosition(intVector2);
+                MapPoint = new IntVector2(mapX, mapY);
+                HexPoint = MapToHex(MapPoint);
             }
 
-            public IntVector2 intVector2 { get; private set; }
-            public ShortVector2 shortPoint { get { return (ShortVector2)intVector2; } }
-            public Vector2 worldPoint { get; private set; }
+            public IntVector2 MapPoint { get; private set; }
+            public ShortVector2 ShortMapPoint { get { return (ShortVector2)MapPoint; } }
+            public Vector2 HexPoint { get; private set; }
 
             public override string ToString()
             {
-                string str = string.Concat("地图坐标:", shortPoint, "  世界坐标:", worldPoint);
+                string str = string.Concat("地图坐标:", MapPoint, "六边形坐标:", HexPoint);
                 return str;
             }
 
             public static implicit operator IntVector2(PointPair item)
             {
-                return item.intVector2;
+                return item.MapPoint;
             }
             public static implicit operator Vector2(PointPair item)
             {
-                return item.worldPoint;
+                return item.HexPoint;
             }
         }
 
@@ -231,7 +230,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取视窗鼠标所在水平面上的坐标;
         /// </summary>
-        public static Vector2 MouseToPlanePoint(this Camera camera)
+        public static Vector2 MouseToPlane(this Camera camera)
         {
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit raycastHit;
@@ -248,19 +247,18 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取主摄像机视窗鼠标所在水平面上的坐标;
         /// </summary>
-        public static Vector2 MouseToPlanePoint()
+        public static Vector2 MouseToPlane()
         {
-            return MouseToPlanePoint(Camera.main);
+            return MouseToPlane(Camera.main);
         }
 
         /// <summary>
-        /// 鼠标位置到地图坐标;
+        /// 获取到地图坐标;
         /// </summary>
-        /// <returns></returns>
-        public static IntVector2 MouseToMapPoint()
+        public static PointPair MouseToHexPair()
         {
-            Vector2 planePoint = MouseToPlanePoint();
-            return PlaneToMapPoint(planePoint);
+            Vector2 planePoint = MouseToPlane();
+            return PlaneToHexPair(planePoint);
         }
 
         #endregion

@@ -75,7 +75,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         internal void UpdateMap(Vector2 planePoint, bool cheak = true)
         {
-            IntVector2 mapPoint = WorldConvert.PlaneToMapPoint(planePoint);
+            IntVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             worldMap.UpdateBlock(mapPoint, cheak);
         }
 

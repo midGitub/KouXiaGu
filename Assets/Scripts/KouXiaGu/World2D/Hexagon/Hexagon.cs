@@ -56,7 +56,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         public float DistanceY
         {
-            get { return innerDiameter; }
+            get { return innerDiameter / 2; }
         }
 
         public override string ToString()
@@ -66,7 +66,7 @@ namespace KouXiaGu.World2D
             str = "内径 :" + innerDiameter +
                 "\n外径 :" + OuterDiameter + 
                 "\n边长 :" + Length + 
-                "\nx轴距离 :" + DistanceX + 
+                "\nx轴距离 :" + DistanceX +
                 "\ny轴距离 :" + DistanceY;
 
             return str;

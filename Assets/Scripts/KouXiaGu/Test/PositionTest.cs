@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.Map;
+using KouXiaGu.World2D;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,8 +32,7 @@ namespace KouXiaGu.Test
             string str = "";
 
             str += GetScreenPoint(mousePosition);
-            str += GetWorldPoint(mousePosition);
-            str += GetMapPoint(mousePosition);
+            str += GetPlanePoint(mousePosition);
 
             return str;
         }
@@ -41,25 +41,18 @@ namespace KouXiaGu.Test
         {
             string str = "";
 
-            str += "  视窗坐标 :" + mousePosition;
+            str += "视窗坐标 :" + mousePosition;
 
             return str;
         }
 
-        private string GetWorldPoint(Vector3 mousePosition)
+        private string GetPlanePoint(Vector3 mousePosition)
         {
             string str = "";
 
-            str += "  世界坐标 :" + PositionConvert.MouseToPlanePoint();
-            return str;
-        }
-
-        private string GetMapPoint(Vector3 mousePosition)
-        {
-            string str = "";
-
-            str += "地图坐标 :" + GameHexMap.GetInstance.MouseToMapPoint();
-
+            str += "平面坐标 :" + WorldConvert.MouseToHexPair().HexPoint +
+                "地图坐标 :" + WorldConvert.MouseToHexPair().MapPoint + 
+                "平面坐标 :" + WorldConvert.MouseToPlane();
             return str;
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Map;
+using KouXiaGu.World2D;
 using UnityEngine;
 
 namespace KouXiaGu.Test
@@ -29,7 +30,7 @@ namespace KouXiaGu.Test
         {
             if (Input.GetKey(KeyCode.Mouse0))
             {
-                targetPosition = PositionConvert.MouseToPlanePoint();
+                targetPosition = WorldConvert.MouseToPlane();
             }
 
             Vector2 newPosition = Vector2.MoveTowards(target.position, targetPosition, maxDistanceDelta);
