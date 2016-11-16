@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using UniRx;
 using System.Collections;
+using KouXiaGu.Map.Navigation;
+using System.Runtime.Serialization;
 
 namespace KouXiaGu.Map
 {
@@ -101,8 +103,6 @@ namespace KouXiaGu.Map
             mapCollection.UpdateMapData(mapPoint);
         }
 
-        #region 坐标转换;
-
         /// <summary>
         /// 获取到地图坐标;
         /// </summary>
@@ -111,8 +111,6 @@ namespace KouXiaGu.Map
             IntVector2 mapPosition = mapHexagon.TransfromPoint(planePoint);
             return mapPosition;
         }
-
-        #endregion
 
     }
 

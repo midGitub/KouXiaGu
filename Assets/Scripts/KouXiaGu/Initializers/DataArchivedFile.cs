@@ -7,6 +7,7 @@ using ProtoBuf;
 using UnityEngine;
 using KouXiaGu.Map;
 using KouXiaGu.Characters;
+using KouXiaGu.World2D;
 
 namespace KouXiaGu
 {
@@ -67,6 +68,9 @@ namespace KouXiaGu
         /// </summary>
         [ProtoMember(100)]
         public readonly ArchivedCharacter Character = new ArchivedCharacter();
+
+        [ProtoMember(150)]
+        public readonly ArchivedWorld2D World2D = new ArchivedWorld2D();
 
     }
 

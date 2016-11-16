@@ -4,24 +4,18 @@ using System.Linq;
 using System.Text;
 using ProtoBuf;
 
-namespace KouXiaGu.Map
+namespace KouXiaGu.World2D
 {
 
     [ProtoContract]
-    public class MapNode
+    public class ArchivedWorld2D
     {
-        public MapNode()
-        {
-
-        }
 
         /// <summary>
-        /// 地貌;
+        /// 存档使用预制地图的路径;
         /// </summary>
-        [ProtoMember(1)]
-        public int landform { get; set; }
-
-
+        [ProtoMember(10)]
+        public string PathPrefabMapDirectory;
 
     }
 
