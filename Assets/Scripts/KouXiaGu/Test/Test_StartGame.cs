@@ -13,6 +13,8 @@ namespace KouXiaGu.Test
     public class Test_StartGame : MonoBehaviour
     {
         [SerializeField]
+        private Button continueGame;
+        [SerializeField]
         private Button startGame;
         [SerializeField]
         private Button saveGame;
@@ -27,9 +29,17 @@ namespace KouXiaGu.Test
 
         private void Start()
         {
+            continueGame.onClick.AsObservable().Subscribe(OnContinueGame);
             startGame.onClick.AsObservable().Subscribe(OnStartGame);
             saveGame.onClick.AsObservable().Subscribe(OnSaveGame);
             quitGame.onClick.AsObservable().Subscribe(OnQuit);
+        }
+
+        private void OnContinueGame(UniRx.Unit unit)
+        {
+            BuildGameData buildGameData = initializers.DataGame.GetRecentBuildGameData();
+            buildGameData.ArchivedData.Archived.World2D.PathPrefabMapDirectory = mapDir.text;
+            initializers.Build(buildGameData);
         }
 
         private void OnStartGame(UniRx.Unit unit)

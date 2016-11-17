@@ -48,6 +48,18 @@ namespace KouXiaGu
         }
 
         /// <summary>
+        /// 根据最新的存档获取到构建游戏资源;
+        /// </summary>
+        public BuildGameData GetRecentBuildGameData()
+        {
+            DataCore coreDataResource = coreData;
+            ModGroup modRes = modData.GetModGroup();
+            ArchivedGroup archivedGroup = archiveData.GetRecentArchivedGroup();
+            BuildGameData buildGameData = new BuildGameData(coreDataResource, modRes, archivedGroup);
+            return buildGameData;
+        }
+
+        /// <summary>
         /// 根据这个存档获取到创建游戏所需的资源信息;
         /// </summary>
         public BuildGameData GetBuildGameData(ArchivedGroup archivedGroup)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -84,6 +85,31 @@ namespace KouXiaGu
                     yield return archived;
                 }
             }
+        }
+
+        /// <summary>
+        /// 获取到最近保存的存档;
+        /// 若不存在存档则返回异常 InvalidOperationException;
+        /// </summary>
+        public ArchivedGroup GetRecentArchivedGroup()
+        {
+            SmallArchivedGroup smallArchivedGroup = GetRecentSmallArchivedGroup();
+            return SmallArchivedTransfrom(smallArchivedGroup);
+        }
+
+        /// <summary>
+        /// 获取到最近保存的存档;
+        /// 若不存在存档则返回异常 InvalidOperationException;
+        /// </summary>
+        public SmallArchivedGroup GetRecentSmallArchivedGroup()
+        {
+            SmallArchivedGroup smallArchivedGroup = GetSmallArchiveds().
+                OrderByDescending(value => value.ArchivedHead.SavedTime).
+                First();
+
+            Debug.Log(smallArchivedGroup.ArchivedPath);
+
+            return smallArchivedGroup;
         }
 
         /// <summary>

@@ -114,7 +114,6 @@ namespace KouXiaGu.World2D
         {
             try
             {
-                Debug.Log("WorldMap 开始初始化!");
                 RecoveryLoadArchived(item, cancelable);
                 RecoveryCopyData(item, cancelable);
                 RecoveryFristPointUpdate(item, cancelable);
@@ -166,7 +165,6 @@ namespace KouXiaGu.World2D
         {
             try
             {
-                Debug.Log("WorldMap 开始归档!");
                 ArchiveSaveMap(item, cancelable);
                 ArchiveCopyData(item, cancelable);
                 ArchiveOutput(item, cancelable);
@@ -203,7 +201,6 @@ namespace KouXiaGu.World2D
         {
             try
             {
-                Debug.Log("WorldMap 开始退出!");
                 worldMap.Clear();
             }
             catch (Exception e)

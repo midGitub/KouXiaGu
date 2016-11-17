@@ -127,20 +127,6 @@ namespace KouXiaGu
             return runningCoroutines.Count !=0 || runningThreads.Count != 0;
         }
 
-        //private bool IsRunning<T1>(Dictionary<T1, bool> dictionary)
-        //{
-        //    try
-        //    {
-        //        dictionary.First(pair => pair.Value == true);
-        //        return true;
-        //    }
-        //    catch (InvalidOperationException)
-        //    {
-        //        return false;
-        //    }
-        //}
-
-
         private void Start(T item , Action<Exception> onError)
         {
             StartThreads(item, onError);
@@ -158,8 +144,20 @@ namespace KouXiaGu
 
         protected void StartCoroutine(Coroutine coroutine, T item, Action<Exception> onError)
         {
+            Action onComplete;
             runningCoroutines.Add(coroutine);
-            Action onComplete = () => runningCoroutines.Remove(coroutine);
+
+#if DETAILED_DEBUG
+            string coroutineName = coroutine.ToString();
+            Debug.Log(coroutineName + "在协程开始初始化;");
+            onComplete = delegate
+            {
+                runningCoroutines.Remove(coroutine);
+                Debug.Log(coroutineName + "在协程初始化完成;");
+            };
+#else
+            onComplete = () => runningCoroutines.Remove(coroutine);
+#endif
             Func<IEnumerator> coroutineMethod =() => GetCoroutine(coroutine, item, this, onError, onComplete);
 
             Observable.FromMicroCoroutine(coroutineMethod, false, UpdateType).Subscribe(null, onError, onComplete);
@@ -176,8 +174,20 @@ namespace KouXiaGu
 
         protected void StartThread(Thread thread, T item, Action<Exception> onError)
         {
+            Action onComplete;
             runningThreads.Add(thread);
-            Action onComplete = () => runningThreads.Remove(thread);
+
+#if DETAILED_DEBUG
+            string threadName = thread.ToString();
+            Debug.Log(threadName + "在线程开始初始化;");
+            onComplete = delegate
+            {
+                runningThreads.Remove(thread);
+                Debug.Log(threadName + "在线程初始化完成;");
+            };
+#else
+            onComplete = () => runningThreads.Remove(thread);
+#endif
             WaitCallback waitCallback = GetThreadThread(thread, item, this, onError, onComplete);
 
             ThreadPool.QueueUserWorkItem(waitCallback);
