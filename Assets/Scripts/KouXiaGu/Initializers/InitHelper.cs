@@ -107,8 +107,8 @@ namespace KouXiaGu
 #endif
                 onComplete();
             }
-            coroutines.Clear();
-            threads.Clear();
+            runningCoroutines.Clear();
+            runningThreads.Clear();
         }
 
         public void Dispose()
@@ -149,7 +149,7 @@ namespace KouXiaGu
             runningCoroutines.Add(coroutine);
 
 #if DETAILED_DEBUG
-            string coroutineName = coroutine.ToString();
+            string coroutineName = coroutine.GetType().FullName;
             Debug.Log(coroutineName + "在协程开始初始化;");
             onComplete = delegate
             {
@@ -179,7 +179,7 @@ namespace KouXiaGu
             runningThreads.Add(thread);
 
 #if DETAILED_DEBUG
-            string threadName = thread.ToString();
+            string threadName = thread.GetType().FullName;
             Debug.Log(threadName + "在线程开始初始化;");
             onComplete = delegate
             {

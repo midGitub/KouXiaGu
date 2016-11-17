@@ -304,7 +304,7 @@ namespace KouXiaGu.World2D
 
             foreach (var pair in mapCollection)
             {
-                str += "地址:" + pair.Key + "块信息:" + pair.Value;
+                str += "地址:" + pair.Key + "块信息:" + pair.Value + "\n";
             }
             return str;
         }

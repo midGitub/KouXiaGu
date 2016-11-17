@@ -11,7 +11,7 @@ namespace KouXiaGu.World2D
     /// 游戏中使用的地图结构;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap : MonoBehaviour, IBuildInThread, IArchiveInThread, IQuitInThread, IBuildInCoroutine
+    public class WorldMap : MonoBehaviour, IBuildInThread, IArchiveInThread, IQuitInThread, IBuildInCoroutine, IQuitInCoroutine
     {
         /// <summary>
         /// 地图块前缀;
@@ -34,7 +34,7 @@ namespace KouXiaGu.World2D
         [SerializeField]
         private wnBlockMap worldMap;
         [SerializeField]
-        private FollowTargetPosition followToUpdate;
+        private BlockMapUpdater followToUpdate;
 
         protected string ArchivedSearchPattern
         {
@@ -70,20 +70,8 @@ namespace KouXiaGu.World2D
             worldMap.Awake();
             worldMap.AddressPrefix = addressPrefix;
             FullArchiveTempDirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryName);
-        }
 
-        private void UpdateMap1(Vector2 planePoint)
-        {
-            UpdateMap2(planePoint);
-        }
-
-        /// <summary>
-        /// 根据目标位置更新地图数据;
-        /// </summary>
-        internal void UpdateMap2(Vector2 planePoint, bool cheak = true)
-        {
-            IntVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
-            worldMap.UpdateBlock(mapPoint, cheak);
+            followToUpdate.Awake(worldMap);
         }
 
         /// <summary>
@@ -102,7 +90,7 @@ namespace KouXiaGu.World2D
         }
 
 
-        #region BuildGame
+        #region 线程初始化;
 
         void IThreadInit<BuildGameData>.Initialize(
             BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
@@ -143,9 +131,6 @@ namespace KouXiaGu.World2D
                 throw new FileNotFoundException("地图丢失!" + FullPrefabMapDirectoryPath);
         }
 
-        #endregion
-
-        #region Archived
 
         void IThreadInit<ArchivedGroup>.Initialize(
             ArchivedGroup item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
@@ -165,7 +150,7 @@ namespace KouXiaGu.World2D
 
         private void ArchiveSaveMap(ArchivedGroup item, ICancelable cancelable)
         {
-            worldMap.SaveAllBlock();
+            followToUpdate.Save();
         }
 
         private void ArchiveCopyData(ArchivedGroup item, ICancelable cancelable)
@@ -180,9 +165,6 @@ namespace KouXiaGu.World2D
             item.Archived.World2D.PathPrefabMapDirectory = FullPrefabMapDirectoryPath;
         }
 
-        #endregion
-
-        #region Quit
 
         void IThreadInit<Unit>.Initialize(
             Unit item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
@@ -201,12 +183,48 @@ namespace KouXiaGu.World2D
         #endregion
 
 
+        #region 协程初始化;
+
         IEnumerator ICoroutineInit<BuildGameData>.Initialize(
             BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
-            followToUpdate.StartAsyn(UpdateMap1);
+            followToUpdate.StartLoad();
+
+            for (int waitingTime = 8; waitingTime > 0; waitingTime --)
+                yield return null;
+
+            while (followToUpdate.StateForNow != MapState.None)
+                yield return null;
+
             yield break;
         }
+
+        IEnumerator ICoroutineInit<Unit>.Initialize(
+            Unit item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
+        {
+            followToUpdate.StopLoad();
+            yield break;
+        }
+
+        #endregion
+
+
+        public override string ToString()
+        {
+            string str = base.ToString();
+
+            str += "\n worldMap :\n" + worldMap.ToString();
+
+            return str;
+        }
+
+#if UNITY_EDITOR
+        [ContextMenu("ToString")]
+        private void Test_DebugToString()
+        {
+            Debug.Log(this.ToString());
+        }
+#endif
 
     }
 
