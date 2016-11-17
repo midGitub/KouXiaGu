@@ -227,6 +227,10 @@ namespace KouXiaGu.World2D
 
         #region 鼠标
 
+        private static readonly int SceneAssistMask = LayerMask.GetMask("SceneAssist");
+
+        private const float RayMaxDistance = 50;
+
         /// <summary>
         /// 获取视窗鼠标所在水平面上的坐标;
         /// </summary>
@@ -234,7 +238,7 @@ namespace KouXiaGu.World2D
         {
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit raycastHit;
-            if (Physics.Raycast(ray, out raycastHit))
+            if (Physics.Raycast(ray, out raycastHit, RayMaxDistance, SceneAssistMask, QueryTriggerInteraction.Collide))
             {
                 return raycastHit.point;
             }
@@ -252,14 +256,14 @@ namespace KouXiaGu.World2D
             return MouseToPlane(Camera.main);
         }
 
-        /// <summary>
-        /// 获取到地图坐标;
-        /// </summary>
-        public static PointPair MouseToHexPair()
-        {
-            Vector2 planePoint = MouseToPlane();
-            return PlaneToHexPair(planePoint);
-        }
+        ///// <summary>
+        ///// 获取到地图坐标;
+        ///// </summary>
+        //public static PointPair MouseToHexPair()
+        //{
+        //    Vector2 planePoint = MouseToPlane();
+        //    return PlaneToHexPair(planePoint);
+        //}
 
         #endregion
 

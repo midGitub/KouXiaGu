@@ -9,7 +9,8 @@ namespace KouXiaGu.World2D
 
     public interface IReadOnlyWorldNode
     {
-        
+        int Landform { get; }
+        bool Road { get; }
     }
 
     /// <summary>
@@ -22,13 +23,13 @@ namespace KouXiaGu.World2D
         /// 地貌;
         /// </summary>
         [ProtoMember(1)]
-        private int landform;
+        public int Landform { get; set; }
 
         /// <summary>
-        /// 存在道路的;
+        /// 是否存在道路;
         /// </summary>
         [ProtoMember(2)]
-        private bool Road;
+        public bool Road { get; set; }
 
     }
 

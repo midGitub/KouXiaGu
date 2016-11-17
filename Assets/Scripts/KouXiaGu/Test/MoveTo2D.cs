@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.World2D;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace KouXiaGu.Test
 {
@@ -27,7 +28,7 @@ namespace KouXiaGu.Test
 
         private void Update()
         {
-            if (Input.GetKey(KeyCode.Mouse0))
+            if (Input.GetKey(KeyCode.Mouse0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 targetPosition = WorldConvert.MouseToPlane();
             }

@@ -96,7 +96,7 @@ namespace KouXiaGu
             OnComplete += onComplete;
             OnSaving();
 
-            Action coroutineComplete = () => dataGame.OnSavedComplete(archivedGroup, OnSavedComplete);
+            Action coroutineComplete = () => OnSavedComplete(archivedGroup);
             Func<IEnumerator> coroutine = () => archiveInitializers.Start(archivedGroup, coroutineComplete, OnSavingFail);
             Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).Subscribe();
             return archiveInitializers;
@@ -157,6 +157,21 @@ namespace KouXiaGu
         private void OnSaving()
         {
             State = GameStatus.Saving;
+        }
+        /// <summary>
+        /// 若所有接口都保存完毕后,则将存档保存到磁盘;
+        /// </summary>
+        private void OnSavedComplete(ArchivedGroup archivedGroup)
+        {
+            try
+            {
+                dataGame.ArchiveData.SaveInDisk(archivedGroup);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("归档时游戏失败!" + e);
+            }
+            OnSavedComplete();
         }
         private void OnSavedComplete()
         {
