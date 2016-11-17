@@ -168,7 +168,7 @@ namespace KouXiaGu.World2D
         {
             ShortVector2 targetAddress = GetAddress(position);
 
-            if (this.lastUpdateCenterAddress != targetAddress || !check)
+            if (this.lastUpdateCenterAddress != targetAddress || !check || mapCollection.Count == 0)
             {
                 UpdateBlocks(targetAddress);
                 this.lastUpdateCenterAddress = targetAddress;
@@ -260,7 +260,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将地图坐标转换成地图块的坐标;
         /// </summary>
-        protected ShortVector2 GetAddress(IntVector2 position)
+        public ShortVector2 GetAddress(IntVector2 position)
         {
             ShortVector2 address = new ShortVector2();
 
@@ -273,7 +273,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将地图坐标转换成地图块的坐标 和 地图块内的坐标;
         /// </summary>
-        protected ShortVector2 GetAddress(IntVector2 position, out ShortVector2 realPosition)
+        public ShortVector2 GetAddress(IntVector2 position, out ShortVector2 realPosition)
         {
             ShortVector2 address = new ShortVector2();
             int realPositionX, realPositionY;

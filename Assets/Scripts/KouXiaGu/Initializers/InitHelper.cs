@@ -1,6 +1,6 @@
 ﻿
+///define DETAILED_DEBUG
 #define DETAILED_DEBUG
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace KouXiaGu
 {
+
     public interface ICoroutineInit<T>
     {
         IEnumerator Initialize(T item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak);

@@ -81,7 +81,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到地图块名称;
         /// </summary>
-        private string GetBlockName(ShortVector2 address)
+        internal string GetBlockName(ShortVector2 address)
         {
             return addressPrefix + address.GetHashCode();
         }
@@ -158,11 +158,7 @@ namespace KouXiaGu.World2D
         /// <param name="fullDirectoryPath"></param>
         private void DeleteMapFileAll(string fullDirectoryPath)
         {
-            string[] mapFilePaths = Directory.GetFileSystemEntries(fullDirectoryPath, ArchivedSearchPattern);
-            foreach (var mapFilePath in mapFilePaths)
-            {
-                File.Delete(mapFilePath);
-            }
+            FileHelper.DeleteFileInDirectory(fullDirectoryPath, ArchivedSearchPattern);
         }
 
 

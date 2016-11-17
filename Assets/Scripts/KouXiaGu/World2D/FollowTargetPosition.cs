@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UniRx;
+using System.Threading;
 
 namespace KouXiaGu.World2D
 {
@@ -11,43 +12,61 @@ namespace KouXiaGu.World2D
     {
         private FollowTargetPosition() { }
 
+        /// <summary>
+        /// 正在读取;
+        /// </summary>
+        [SerializeField]
+        private bool loading = false;
+        [SerializeField, Tooltip("更新的目标")]
+        private Transform followTarget;
         [SerializeField, Tooltip("当目标位置变化时更新")]
         private bool onMoveUpdate;
 
-        [SerializeField, Tooltip("更新的目标")]
-        private Transform target;
+        private Vector2 targetPosition;
+        private IDisposable disposble;
+        Action<Vector2> onUpdate;
 
-        public Transform Target
+        public void StartAsyn(Action<Vector2> onUpdate)
         {
-            get { return target; }
-            set { target = value; }
-        }
+            this.onUpdate = onUpdate;
 
-        public void Start(Action<Vector2> onUpdate)
-        {
             if (onMoveUpdate)
-            {
-                OnMoveUpdate(onUpdate);
-            }
+                OnMoveUpdate();
             else
-            {
-                AlwaysUpdate(onUpdate);
-            }
+                AlwaysUpdate();
         }
 
-        private void OnMoveUpdate(Action<Vector2> onUpdate)
+        public void Stop()
         {
-            Observable.EveryUpdate().
-                Where(_ => target != null).
-                ObserveEveryValueChanged(_ => target.position).
-                Subscribe(_ => onUpdate(target.position), err => Debug.Log(err));
+            disposble.Dispose();
         }
 
-        private void AlwaysUpdate(Action<Vector2> onUpdate)
+        private void OnMoveUpdate()
         {
-            Observable.EveryUpdate().
-                Where(_ => target != null).
-                Subscribe(_ => onUpdate(target.position), err => Debug.Log(err));
+            disposble = Observable.EveryUpdate().
+                Where(_ => followTarget != null && !loading).
+                 ObserveEveryValueChanged(_ => (Vector2)followTarget.position).
+                 Subscribe(_ => UpdateInThreah());
+        }
+
+        private void AlwaysUpdate()
+        {
+            disposble = Observable.EveryUpdate().
+                Where(_ => followTarget != null && !loading).
+                Subscribe(_ => UpdateInThreah());
+        }
+
+        private void UpdateInThreah()
+        {
+            targetPosition = followTarget.position;
+            loading = true;
+            ThreadPool.QueueUserWorkItem(Update);
+        }
+
+        private void Update(object state)
+        {
+            onUpdate(targetPosition);
+            loading = false;
         }
 
     }

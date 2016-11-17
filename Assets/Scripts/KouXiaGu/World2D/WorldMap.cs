@@ -13,7 +13,6 @@ namespace KouXiaGu.World2D
     [DisallowMultipleComponent]
     public class WorldMap : MonoBehaviour, IBuildInThread, IArchiveInThread, IQuitInThread, IBuildInCoroutine
     {
-
         /// <summary>
         /// 地图块前缀;
         /// </summary>
@@ -34,12 +33,8 @@ namespace KouXiaGu.World2D
         /// </summary>
         [SerializeField]
         private wnBlockMap worldMap;
-        /// <summary>
-        /// 更随目标更新地图;
-        /// </summary>
         [SerializeField]
         private FollowTargetPosition followToUpdate;
-
 
         protected string ArchivedSearchPattern
         {
@@ -115,8 +110,7 @@ namespace KouXiaGu.World2D
             try
             {
                 RecoveryLoadArchived(item, cancelable);
-                RecoveryCopyData(item, cancelable);
-                RecoveryFristPointUpdate(item, cancelable);
+                RecoveryTempData(item, cancelable);
             }
             catch (Exception e)
             {
@@ -128,22 +122,15 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将存档的归档地图拷贝到缓存地图文件夹下;
         /// </summary>
-        private void RecoveryCopyData(ArchivedGroup item, ICancelable cancelable)
+        private void RecoveryTempData(ArchivedGroup item, ICancelable cancelable)
         {
+            FileHelper.DeleteFileInDirectory(FullArchiveTempDirectoryPath, ArchivedSearchPattern);
             if (item.FromFile)
             {
                 string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-                CopyDirectory(cancelable, fullArchivedDirectoryPath, FullArchiveTempDirectoryPath, ArchivedSearchPattern);
+                FileHelper.CopyDirectory(cancelable,
+                    fullArchivedDirectoryPath, FullArchiveTempDirectoryPath, ArchivedSearchPattern, true);
             }
-        }
-
-        /// <summary>
-        /// 从主角的位置初始化地图;
-        /// </summary>
-        private void RecoveryFristPointUpdate(ArchivedGroup item, ICancelable cancelable)
-        {
-            Vector2 planePoint = item.Archived.Character.ProtagonistPosition;
-            UpdateMap2(planePoint, false);
         }
 
         /// <summary>
@@ -184,7 +171,8 @@ namespace KouXiaGu.World2D
         private void ArchiveCopyData(ArchivedGroup item, ICancelable cancelable)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-            CopyDirectory(cancelable, FullArchiveTempDirectoryPath, fullArchivedDirectoryPath, ArchivedSearchPattern);
+            FileHelper.CopyDirectory(cancelable,
+                FullArchiveTempDirectoryPath, fullArchivedDirectoryPath, ArchivedSearchPattern, true);
         }
 
         private void ArchiveOutput(ArchivedGroup item, ICancelable cancelable)
@@ -216,32 +204,8 @@ namespace KouXiaGu.World2D
         IEnumerator ICoroutineInit<BuildGameData>.Initialize(
             BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
-            followToUpdate.Start(UpdateMap1);
+            followToUpdate.StartAsyn(UpdateMap1);
             yield break;
-        }
-
-
-        private void CopyDirectory(ICancelable cancelable, string sourceDirectoryName, string destDirectoryName,
-         string fileSearchPattern)
-        {
-            if (!Directory.Exists(sourceDirectoryName))
-                return;
-            if (!Directory.Exists(destDirectoryName))
-                Directory.CreateDirectory(destDirectoryName);
-
-            string[] filePaths = Directory.GetFileSystemEntries(sourceDirectoryName, fileSearchPattern);
-
-            foreach (var filePath in filePaths)
-            {
-                if (cancelable.IsDisposed)
-                    return;
-
-                string fileName = Path.GetFileName(filePath);
-                string sourceFilePath = Path.Combine(sourceDirectoryName, fileName);
-                string destFilePath = Path.Combine(destDirectoryName, fileName);
-
-                File.Copy(sourceFilePath, destFilePath, true);
-            }
         }
 
     }

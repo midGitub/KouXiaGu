@@ -43,22 +43,31 @@ namespace KouXiaGu.Test
         {
             IntVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             WorldNode node;
+
+            string LandformType;
+            ShortVector2 mapBlockAddress = worldMap.wnWorldMap.GetAddress(mapPoint);
+            string mapBlockName = worldMap.wnWorldMap.GetBlockName(mapBlockAddress);
             try
             {
                 node = worldMap.Map[mapPoint];
+                LandformType = node.Landform.ToString();
             }
             catch (BlockNotFoundException)
             {
                 node = new WorldNode();
+                LandformType = "不存在";
             }
             catch (KeyNotFoundException)
             {
                 node = new WorldNode();
+                LandformType = "不存在";
             }
 
             string str = "";
 
-            str += "地图类型" + node.Landform.ToString();
+            str += "地图类型:" + LandformType
+                + ";地图块:" + mapBlockAddress
+                + ";地图块编号:" + mapBlockName;
 
             return str;
         }
