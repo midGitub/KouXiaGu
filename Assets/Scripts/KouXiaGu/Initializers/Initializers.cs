@@ -244,8 +244,8 @@ namespace KouXiaGu
         private T[] GetInitInterface<T>()
         {
             return GetComponentsInChildren<T>();
-
         }
+
 
         [Serializable]
         private class GameInitialize : InitHelper<IBuildInCoroutine, IBuildInThread, BuildGameData>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using UniRx;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace KouXiaGu.World2D
     /// 游戏中使用的地图结构;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap : MonoBehaviour, IBuildInThread, IArchiveInThread, IQuitInThread
+    public class WorldMap : MonoBehaviour, IBuildInThread, IArchiveInThread, IQuitInThread, IBuildInCoroutine
     {
 
         /// <summary>
@@ -33,6 +34,11 @@ namespace KouXiaGu.World2D
         /// </summary>
         [SerializeField]
         private wnBlockMap worldMap;
+        /// <summary>
+        /// 更随目标更新地图;
+        /// </summary>
+        [SerializeField]
+        private FollowTargetPosition followToUpdate;
 
 
         protected string ArchivedSearchPattern
@@ -71,10 +77,15 @@ namespace KouXiaGu.World2D
             FullArchiveTempDirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryName);
         }
 
+        private void UpdateMap1(Vector2 planePoint)
+        {
+            UpdateMap2(planePoint);
+        }
+
         /// <summary>
         /// 根据目标位置更新地图数据;
         /// </summary>
-        internal void UpdateMap(Vector2 planePoint, bool cheak = true)
+        internal void UpdateMap2(Vector2 planePoint, bool cheak = true)
         {
             IntVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             worldMap.UpdateBlock(mapPoint, cheak);
@@ -89,6 +100,12 @@ namespace KouXiaGu.World2D
             return fullArchivedDirectoryPath;
         }
 
+        [ContextMenu("存档合并到预制")]
+        public void CombineToPrefabMap()
+        {
+            worldMap.CombineToPrefabMap();
+        }
+
 
         #region BuildGame
 
@@ -100,6 +117,7 @@ namespace KouXiaGu.World2D
                 Debug.Log("WorldMap 开始初始化!");
                 RecoveryLoadArchived(item, cancelable);
                 RecoveryCopyData(item, cancelable);
+                RecoveryFristPointUpdate(item, cancelable);
             }
             catch (Exception e)
             {
@@ -118,6 +136,15 @@ namespace KouXiaGu.World2D
                 string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
                 CopyDirectory(cancelable, fullArchivedDirectoryPath, FullArchiveTempDirectoryPath, ArchivedSearchPattern);
             }
+        }
+
+        /// <summary>
+        /// 从主角的位置初始化地图;
+        /// </summary>
+        private void RecoveryFristPointUpdate(ArchivedGroup item, ICancelable cancelable)
+        {
+            Vector2 planePoint = item.Archived.Character.ProtagonistPosition;
+            UpdateMap2(planePoint, false);
         }
 
         /// <summary>
@@ -187,6 +214,14 @@ namespace KouXiaGu.World2D
         }
 
         #endregion
+
+
+        IEnumerator ICoroutineInit<BuildGameData>.Initialize(
+            BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
+        {
+            followToUpdate.Start(UpdateMap1);
+            yield break;
+        }
 
 
         private void CopyDirectory(ICancelable cancelable, string sourceDirectoryName, string destDirectoryName,

@@ -1,15 +1,15 @@
-﻿using System;
+﻿
+#define DETAILED_DEBUG
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu
 {
-
     public interface ICoroutineInit<T>
     {
         IEnumerator Initialize(T item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak);
@@ -101,7 +101,9 @@ namespace KouXiaGu
             }
             else
             {
-                Debug.Log("创建成功!");
+#if DETAILED_DEBUG
+                Debug.Log("操作成功!");
+#endif
                 onComplete();
             }
             coroutines.Clear();
@@ -158,7 +160,7 @@ namespace KouXiaGu
         {
             runningCoroutines.Add(coroutine);
             Action onComplete = () => runningCoroutines.Remove(coroutine);
-            IEnumerator coroutineMethod = GetCoroutine(coroutine, item, this, onError, onComplete);
+            Func<IEnumerator> coroutineMethod =() => GetCoroutine(coroutine, item, this, onError, onComplete);
 
             Observable.FromMicroCoroutine(coroutineMethod, false, UpdateType).Subscribe(null, onError, onComplete);
         }

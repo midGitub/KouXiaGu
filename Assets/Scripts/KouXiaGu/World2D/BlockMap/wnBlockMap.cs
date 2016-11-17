@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+#define DETAILED_DEBUG
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -169,17 +172,40 @@ namespace KouXiaGu.World2D
             Dictionary<ShortVector2, WorldNode> archiveMap;
             MapBlock mapBlock;
 
-            prefabMap = LoadPrefabMapBlock(blockAddress);
-
-            if (TryLoadArchiveMapBlock(blockAddress, out archiveMap))
+            if (TryLoadPrefabMapBlock(blockAddress, out prefabMap))
             {
-                mapBlock = new MapBlock(prefabMap, archiveMap);
+                if (TryLoadArchiveMapBlock(blockAddress, out archiveMap))
+                {
+#if DETAILED_DEBUG
+                    Debug.Log(blockAddress + "找到预制地图 和 存档地图");
+#endif
+                    mapBlock = new MapBlock(prefabMap, archiveMap);
+                }
+                else
+                {
+#if DETAILED_DEBUG
+                    Debug.Log(blockAddress + "找到预制地图");
+#endif
+                    mapBlock = new MapBlock(prefabMap, true);
+                }
             }
             else
             {
-                mapBlock = new MapBlock(prefabMap);
+                if (TryLoadArchiveMapBlock(blockAddress, out archiveMap))
+                {
+#if DETAILED_DEBUG
+                    Debug.Log(blockAddress + "找到存档地图");
+#endif
+                    mapBlock = new MapBlock(archiveMap, false);
+                }
+                else
+                {
+#if DETAILED_DEBUG
+                    Debug.Log(blockAddress + "未找到地图");
+#endif
+                    mapBlock = new MapBlock();
+                }
             }
-
             return mapBlock;
         }
 
@@ -187,6 +213,12 @@ namespace KouXiaGu.World2D
         {
             string fullArchiveTempFilePath = GetFullArchiveTempFilePath(blockAddress);
             return TryLoadMapBlock(blockAddress, fullArchiveTempFilePath, out archiveMap);
+        }
+
+        private bool TryLoadPrefabMapBlock(ShortVector2 blockAddress, out Dictionary<ShortVector2, WorldNode> archiveMap)
+        {
+            string fullPrefabMapFilePath = GetFullPrefabMapFilePath(blockAddress);
+            return TryLoadMapBlock(blockAddress, fullPrefabMapFilePath, out archiveMap);
         }
 
         private Dictionary<ShortVector2, WorldNode> LoadPrefabMapBlock(ShortVector2 blockAddress)
@@ -203,10 +235,16 @@ namespace KouXiaGu.World2D
                 dictionary = LoadMapBlock(fullFilePath);
                 return true;
             }
+#if !DETAILED_DEBUG
+            catch
+            {
+            }
+#else
             catch (Exception e)
             {
-                Debug.Log("读取存档地图" + blockAddress.ToString() + "未成功;\n" + e);
+                Debug.Log("尝试读取地图" + blockAddress.ToString() + fullFilePath + "未成功;\n" + e);
             }
+#endif
 
             dictionary = default(Dictionary<ShortVector2, WorldNode>);
             return false;
@@ -232,16 +270,21 @@ namespace KouXiaGu.World2D
             {
                 SaveArchiveMap(blockAddress, archiveMap);
             }
+#if DETAILED_DEBUG
             else
             {
                 Debug.Log("未改变的地图,跳过保存地图块 :" + blockAddress.ToString());
             }
+#endif
         }
 
         private void SaveArchiveMap(ShortVector2 blockAddress, Dictionary<ShortVector2, WorldNode> archiveMap)
         {
             string fullArchiveTempFilePath = GetFullArchiveTempFilePath(blockAddress);
             Save(fullArchiveTempFilePath, archiveMap);
+#if DETAILED_DEBUG
+            Debug.Log(blockAddress + "地图保存成功;" + fullArchiveTempFilePath);
+#endif
         }
 
         private void Save(string fullFilePath, Dictionary<ShortVector2, WorldNode> mapBlock)
@@ -255,10 +298,24 @@ namespace KouXiaGu.World2D
         /// </summary>
         public class MapBlock : IMap<ShortVector2, WorldNode>, IReadOnlyMap<ShortVector2, IReadOnlyWorldNode>
         {
-            public MapBlock(Dictionary<ShortVector2, WorldNode> prefabMap)
+            public MapBlock()
             {
-                this.prefabMap = prefabMap;
-                this.archiveMap = new Dictionary<ShortVector2, WorldNode>(prefabMap.Count);
+                this.prefabMap = new Dictionary<ShortVector2, WorldNode>();
+                this.archiveMap = new Dictionary<ShortVector2, WorldNode>();
+            }
+
+            public MapBlock(Dictionary<ShortVector2, WorldNode> map, bool isPrefabMap = true)
+            {
+                if (isPrefabMap)
+                {
+                    this.prefabMap = map;
+                    this.archiveMap = new Dictionary<ShortVector2, WorldNode>(map.Count);
+                }
+                else
+                {
+                    this.prefabMap = new Dictionary<ShortVector2, WorldNode>(map);
+                    this.archiveMap = map;
+                }
             }
             public MapBlock(Dictionary<ShortVector2, WorldNode> prefabMap, Dictionary<ShortVector2, WorldNode> archiveMap)
             {
@@ -271,7 +328,7 @@ namespace KouXiaGu.World2D
             /// </summary>
             private Dictionary<ShortVector2, WorldNode> prefabMap;
             /// <summary>
-            /// 修改过的节点合集;元素不会多于预制地图;
+            /// 修改过的节点合集,节点数不会多余预制地图;
             /// </summary>
             private Dictionary<ShortVector2, WorldNode> archiveMap;
 
@@ -283,7 +340,7 @@ namespace KouXiaGu.World2D
                 get { return prefabMap; }
             }
             /// <summary>
-            /// 修改过的节点合集;元素不会多于预制地图;
+            /// 修改过的节点合集,节点数不会多余预制地图;
             /// </summary>
             public Dictionary<ShortVector2, WorldNode> ArchiveMap
             {

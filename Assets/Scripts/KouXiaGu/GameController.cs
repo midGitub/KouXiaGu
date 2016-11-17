@@ -15,9 +15,24 @@ namespace KouXiaGu
 
         public const string Tag = "GameController";
 
+        public static GameObject GameObject
+        {
+            get { return GameObject.FindWithTag(Tag); }
+        }
+
+        public static GameObject GetGameController(this UnityEngine.Object unityEngine)
+        {
+            return GameObject;
+        }
+
         public static T FindInstance<T>()
         {
-            return GameObject.FindWithTag(Tag).GetComponent<T>();
+            return GameObject.GetComponent<T>();
+        }
+
+        public static T FindInstance<T>(this UnityEngine.Object unityEngine)
+        {
+            return GameObject.GetComponent<T>();
         }
 
     }

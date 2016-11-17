@@ -74,6 +74,7 @@ namespace KouXiaGu.World2D
                 if (mapCollection.TryGetValue(address, out block))
                 {
                     block[realPosition] = value;
+                    return;
                 }
                 throw BlockNotFoundException(address);
             }
@@ -88,6 +89,7 @@ namespace KouXiaGu.World2D
             if (mapCollection.TryGetValue(address, out block))
             {
                 block.Add(realPosition, item);
+                return;
             }
             throw BlockNotFoundException(address);
         }
@@ -294,6 +296,17 @@ namespace KouXiaGu.World2D
             position.y = address.y * partitionSizes.y + realPosition.y;
 
             return position;
+        }
+
+        public override string ToString()
+        {
+            string str = "";
+
+            foreach (var pair in mapCollection)
+            {
+                str += "地址:" + pair.Key + "块信息:" + pair.Value;
+            }
+            return str;
         }
 
     }
