@@ -1,5 +1,9 @@
-﻿using System;
+﻿
+#define DETAILED_DEBUG
+
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,8 +13,6 @@ namespace KouXiaGu.World2D
 
     public interface IMapBlockInfo
     {
-
-
         string AddressPrefix { get; }
         string FullArchiveTempDirectoryPath { get; }
         string FullPrefabMapDirectoryPath { get; }
@@ -65,25 +67,36 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
+        ///  保存这个结构到这个目录,若元素小于 0 则不保存;
+        /// </summary>
+        public static void SaveMapBlockOrNot<T>(string fullFilePath, Dictionary<ShortVector2, T> mapBlock)
+        {
+            if (mapBlock.Count > 0)
+            {
+                SaveMapBlock(fullFilePath, mapBlock);
+            }
+        }
+
+        /// <summary>
         /// 保存到预制地图;
         /// </summary>
-        public static void SavePrefabMapBlock<T, TRead>(this IMapBlockInfo info, ShortVector2 blockAddress, MapBlock<T, TRead> mapBlock)
+        public static void SavePrefabMapBlockOrNot<T, TRead>(this IMapBlockInfo info, ShortVector2 blockAddress, MapBlock<T, TRead> mapBlock)
             where TRead : class, IReadOnly<T>
             where T : class, TRead
         {
             string fullPrefabMapFilePath = info.GetFullPrefabMapFilePath(blockAddress);
-            SaveMapBlock(fullPrefabMapFilePath, mapBlock.PrefabMap);
+            SaveMapBlockOrNot(fullPrefabMapFilePath, mapBlock.PrefabMap);
         }
 
         /// <summary>
         /// 保存到存档缓存;
         /// </summary>
-        public static void SaveArchiveMapBlock<T, TRead>(this IMapBlockInfo info, ShortVector2 blockAddress, MapBlock<T, TRead> mapBlock)
+        public static void SaveArchiveMapBlockOrNot<T, TRead>(this IMapBlockInfo info, ShortVector2 blockAddress, MapBlock<T, TRead> mapBlock)
             where TRead : class, IReadOnly<T>
             where T : class, TRead
         {
             string fullArchiveTempFilePath = info.GetFullArchiveTempFilePath(blockAddress);
-            SaveMapBlock(fullArchiveTempFilePath, mapBlock.ArchiveMap);
+            SaveMapBlockOrNot(fullArchiveTempFilePath, mapBlock.ArchiveMap);
         }
 
 
@@ -108,11 +121,6 @@ namespace KouXiaGu.World2D
                 mapBlock = LoadMapBlock<T>(fullFilePath);
                 return true;
             }
-#if DETAILED_DEBUG
-            catch (Exception e)
-            {
-                Debug.Log("尝试读取地图" + fullFilePath + "未成功;\n" + e);
-#endif
             catch
             {
                 mapBlock = default(Dictionary<ShortVector2, T>);
@@ -209,6 +217,40 @@ namespace KouXiaGu.World2D
         public static void DeleteMapFile(this IMapBlockInfo info, string directoryPath)
         {
             FileHelper.DeleteFileInDirectory(directoryPath, info.GetMapSearchPattern());
+        }
+
+
+        /// <summary>
+        /// 合并两个地图块(2 覆盖 1)输出到文件,若只存在一个则直接移动到,若两个都不存在则返回异常;
+        /// </summary>
+        public static void CombineMapBlock<T>(string filePath1, string filePath2, string outputFilePath)
+        {
+            Dictionary<ShortVector2, T> blockMap1;
+            Dictionary<ShortVector2, T> blockMap2;
+
+            if (TryLoadMapBlock(filePath1, out blockMap1))
+            {
+                if (TryLoadMapBlock(filePath2, out blockMap2))
+                {
+                    blockMap1.AddOrReplace(blockMap2);
+                    SaveMapBlockOrNot(outputFilePath, blockMap1);
+                }
+                else
+                {
+                    File.Copy(filePath1, outputFilePath, true);
+                }
+            }
+            else
+            {
+                if (TryLoadMapBlock(filePath2, out blockMap2))
+                {
+                    File.Copy(filePath2, outputFilePath, true);
+                }
+                else
+                {
+                    throw new FileNotFoundException();
+                }
+            }
         }
 
 

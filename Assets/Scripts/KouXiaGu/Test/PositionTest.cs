@@ -1,4 +1,5 @@
-﻿using KouXiaGu.World2D;
+﻿using System;
+using KouXiaGu.World2D;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,15 +48,22 @@ namespace KouXiaGu.Test
 
         private string GetPlanePoint(Vector3 mousePosition)
         {
-            Vector2 planePoint = WorldConvert.MouseToPlane();
-            var pointPair = WorldConvert.PlaneToHexPair(planePoint);
-            string str = "";
+            try
+            {
+                Vector2 planePoint = WorldConvert.MouseToPlane();
+                var pointPair = WorldConvert.PlaneToHexPair(planePoint);
+                string str = "";
 
-            str += "平面坐标 :" + pointPair.HexPoint
-                + "地图坐标 :" + pointPair.MapPoint 
-                + "平面坐标 :" + planePoint;
+                str += "六边形中心坐标 :" + pointPair.HexPoint
+                    + "地图坐标 :" + pointPair.MapPoint
+                    + "平面坐标 :" + planePoint;
 
-            return str;
+                return str;
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
         }
 
     }

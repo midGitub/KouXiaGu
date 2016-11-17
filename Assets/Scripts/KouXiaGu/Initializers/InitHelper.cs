@@ -13,12 +13,12 @@ namespace KouXiaGu
 
     public interface ICoroutineInit<T>
     {
-        IEnumerator Initialize(T item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak);
+        IEnumerator Initialize(T item, ICancelable cancelable, Action<Exception> onError, Action onComplete);
     }
 
     public interface IThreadInit<T>
     {
-        void Initialize(T item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak);
+        void Initialize(T item, ICancelable cancelable, Action<Exception> onError, Action onComplete);
     }
 
     public interface IAppendInitialize<T, T2>
