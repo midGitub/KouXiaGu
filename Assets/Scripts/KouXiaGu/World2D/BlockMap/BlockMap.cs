@@ -14,38 +14,23 @@ namespace KouXiaGu.World2D
     public abstract class BlockMap<T, TBlock> : IMap<IntVector2, T>
         where TBlock : IMap<ShortVector2, T>
     {
-        private BlockMap()
-        {
-            mapCollection = new Dictionary<ShortVector2, TBlock>();
-        }
+        protected BlockMap() { }
 
-        public BlockMap(
-            ShortVector2 partitionSizes, 
-            ShortVector2 minRadiationRange, 
-            ShortVector2 maxRadiationRange)
-        {
-            this.partitionSizes = ShortVector2.Abs(partitionSizes);
-            this.minRadiationRange = ShortVector2.Abs(minRadiationRange);
-            this.maxRadiationRange = ShortVector2.Abs(maxRadiationRange);
-            mapCollection = new Dictionary<ShortVector2, TBlock>();
-        }
-
-        public void Awake()
+        public virtual void Awake()
         {
             mapCollection = new Dictionary<ShortVector2, TBlock>();
         }
 
 
-        [SerializeField, Header("地图块信息")]
-        private ShortVector2 partitionSizes;
         [SerializeField]
-        private ShortVector2 minRadiationRange;
-        [SerializeField]
-        private ShortVector2 maxRadiationRange;
+        protected ShortVector2 partitionSizes;
         private Dictionary<ShortVector2, TBlock> mapCollection;
-        private ShortVector2 lastUpdateCenterAddress;
+        /// <summary>
+        /// 线程锁;
+        /// </summary>
+        protected object thisLock = new object();
 
-        protected Dictionary<ShortVector2, TBlock> MapCollection
+        public Dictionary<ShortVector2, TBlock> MapCollection
         {
             get { return mapCollection; }
         }
@@ -153,110 +138,6 @@ namespace KouXiaGu.World2D
                 mapCollection.Keys.ToString());
         }
 
-
-        /// <summary>
-        /// 获取到这个地图块;
-        /// </summary>
-        protected abstract TBlock GetBlock(ShortVector2 blockAddress);
-        /// <summary>
-        /// 释放这个块的使用;
-        /// </summary>
-        protected abstract void ReleaseBlock(ShortVector2 blockAddress, TBlock block);
-
-
-        public void UpdateBlock(IntVector2 position, bool check = true)
-        {
-            ShortVector2 targetAddress = GetAddress(position);
-
-            if (this.lastUpdateCenterAddress != targetAddress || !check || mapCollection.Count == 0)
-            {
-                UpdateBlocks(targetAddress);
-                this.lastUpdateCenterAddress = targetAddress;
-            }
-        }
-
-        private void UpdateBlocks(ShortVector2 address)
-        {
-            CheckUnloadBlocks(address);
-            CheckLoadBlocks(address);
-        }
-
-        /// <summary>
-        /// 根据分页地址加入到地图;
-        /// </summary>
-        private void CheckLoadBlocks(ShortVector2 address)
-        {
-            IEnumerable<ShortVector2> radiationAddresses = GetMinRadiationAddresses(address);
-            IEnumerable<ShortVector2> addRadiationAddresses = radiationAddresses.
-                Where(loadedAddress => !mapCollection.ContainsKey(loadedAddress));
-
-            foreach (var addAddress in addRadiationAddresses)
-            {
-                LoadBlock(addAddress);
-            }
-        }
-
-        /// <summary>
-        /// 根据分页地址从地图内移除;根据最大辐射移除;
-        /// </summary>
-        private void CheckUnloadBlocks(ShortVector2 address)
-        {
-            IEnumerable<ShortVector2> radiationAddresses = GetMaxRadiationAddresses(address);
-            ShortVector2[] removeAddresses = mapCollection.Keys.
-                Where(loadedAddress => !radiationAddresses.Contains(loadedAddress)).ToArray();
-            foreach (var removeAddress in removeAddresses)
-            {
-                UnloadBlock(removeAddress);
-            }
-        }
-
-        private void LoadBlock(ShortVector2 address)
-        {
-            TBlock mapBlock = GetBlock(address);
-            mapCollection.Add(address, mapBlock);
-        }
-
-        private void UnloadBlock(ShortVector2 address)
-        {
-            TBlock mapBlock;
-            if (mapCollection.TryGetValue(address, out mapBlock))
-            {
-                ReleaseBlock(address, mapBlock);
-                mapCollection.Remove(address);
-            }
-        }
-
-        /// <summary>
-        /// 获取到目标辐射到的最大范围;
-        /// </summary>
-        private IEnumerable<ShortVector2> GetMaxRadiationAddresses(ShortVector2 address)
-        {
-            return GetRadiationAddresses(address, maxRadiationRange);
-        }
-
-        /// <summary>
-        /// 获取到目标辐射到的最小范围;
-        /// </summary>
-        private IEnumerable<ShortVector2> GetMinRadiationAddresses(ShortVector2 address)
-        {
-            return GetRadiationAddresses(address, minRadiationRange);
-        }
-
-        /// <summary>
-        /// 获取到目标辐射地图块地址;
-        /// </summary>
-        private IEnumerable<ShortVector2> GetRadiationAddresses(ShortVector2 address, ShortVector2 radiationRange)
-        {
-            for (short x = (short)(-radiationRange.x); x <= radiationRange.x; x++)
-            {
-                for (short y = (short)(-radiationRange.y); y <= radiationRange.y; y++)
-                {
-                    ShortVector2 radiationAddresses = new ShortVector2(x, y) + address;
-                    yield return radiationAddresses;
-                }
-            }
-        }
-
         /// <summary>
         /// 将地图坐标转换成地图块的坐标;
         /// </summary>
@@ -288,7 +169,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将地图块坐标转换成 地图坐标;
         /// </summary>
-        protected IntVector2 AddressToPosition(ShortVector2 address, ShortVector2 realPosition)
+        public IntVector2 AddressToPosition(ShortVector2 address, ShortVector2 realPosition)
         {
             IntVector2 position = new IntVector2();
 
@@ -296,17 +177,6 @@ namespace KouXiaGu.World2D
             position.y = address.y * partitionSizes.y + realPosition.y;
 
             return position;
-        }
-
-        public override string ToString()
-        {
-            string str = "";
-
-            foreach (var pair in mapCollection)
-            {
-                str += "地址:" + pair.Key + "块信息:" + pair.Value + "\n";
-            }
-            return str;
         }
 
     }

@@ -64,6 +64,9 @@ namespace KouXiaGu
         /// </summary>
         public static void DeleteFileInDirectory(string fullDirectoryPath, string fileSearchPattern)
         {
+            if (!Directory.Exists(fullDirectoryPath))
+                return;
+
             string[] filePaths = Directory.GetFileSystemEntries(fullDirectoryPath, fileSearchPattern);
             foreach (var mapFilePath in filePaths)
             {

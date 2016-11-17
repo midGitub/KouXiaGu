@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using UniRx;
 using UnityEngine;
+using System.Threading;
 
 namespace KouXiaGu.World2D
 {
@@ -13,66 +16,38 @@ namespace KouXiaGu.World2D
     [DisallowMultipleComponent]
     public class WorldMap : MonoBehaviour, IBuildInThread, IArchiveInThread, IQuitInThread, IBuildInCoroutine, IQuitInCoroutine
     {
-        /// <summary>
-        /// 地图块前缀;
-        /// </summary>
-        [SerializeField, Header("地图文件路径定义")]
-        private string addressPrefix;
+
+        [SerializeField]
+        private Transform target;
         /// <summary>
         /// 保存到存档的位置;
         /// </summary>
         [SerializeField]
         private string archivedDirectoryName;
-        /// <summary>
-        /// 地图缓存文件目录;
-        /// </summary>
         [SerializeField]
-        private string archiveTempDirectoryName;
-        /// <summary>
-        /// 游戏地图;
-        /// </summary>
-        [SerializeField]
-        private wnBlockMap worldMap;
-        [SerializeField]
-        private BlockMapUpdater followToUpdate;
+        private WorldDynBlockMapEx worldDynMap;
 
-        protected string ArchivedSearchPattern
+        private IDisposable mapUpdateEvent;
+
+        internal WorldDynBlockMapEx WorldDynMap
         {
-            get { return addressPrefix + "*"; }
-        }
-        internal wnBlockMap wnWorldMap
-        {
-            get { return worldMap; }
+            get { return worldDynMap; }
         }
         public IMap<IntVector2, WorldNode> Map
         {
-            get { return worldMap; }
+            get { return worldDynMap; }
         }
         public IReadOnlyMap<IntVector2, IReadOnlyWorldNode> ReadMap
         {
-            get { return worldMap; }
-        }
-
-        public string FullArchiveTempDirectoryPath
-        {
-            get { return worldMap.FullArchiveTempDirectoryPath; }
-            private set { worldMap.FullArchiveTempDirectoryPath = value; }
-        }
-        public string FullPrefabMapDirectoryPath
-        {
-            get { return worldMap.FullPrefabMapDirectoryPath; }
-            private set { worldMap.FullPrefabMapDirectoryPath = value; }
+            get { return worldDynMap; }
         }
 
 
         private void Awake()
         {
-            worldMap.Awake();
-            worldMap.AddressPrefix = addressPrefix;
-            FullArchiveTempDirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryName);
-
-            followToUpdate.Awake(worldMap);
+            worldDynMap.Awake();
         }
+
 
         /// <summary>
         /// 获取到完整的归档地图文件夹路径;
@@ -83,17 +58,9 @@ namespace KouXiaGu.World2D
             return fullArchivedDirectoryPath;
         }
 
-        [ContextMenu("存档合并到预制")]
-        public void CombineToPrefabMap()
-        {
-            worldMap.CombineToPrefabMap();
-        }
-
-
-        #region 线程初始化;
 
         void IThreadInit<BuildGameData>.Initialize(
-            BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
+          BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
             try
             {
@@ -112,12 +79,11 @@ namespace KouXiaGu.World2D
         /// </summary>
         private void RecoveryTempData(ArchivedGroup item, ICancelable cancelable)
         {
-            FileHelper.DeleteFileInDirectory(FullArchiveTempDirectoryPath, ArchivedSearchPattern);
+            worldDynMap.DeleteMapFile(worldDynMap.FullArchiveTempDirectoryPath);
             if (item.FromFile)
             {
                 string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-                FileHelper.CopyDirectory(cancelable,
-                    fullArchivedDirectoryPath, FullArchiveTempDirectoryPath, ArchivedSearchPattern, true);
+                worldDynMap.MapFileCopyTo(fullArchivedDirectoryPath, worldDynMap.FullArchiveTempDirectoryPath, true);
             }
         }
 
@@ -126,9 +92,9 @@ namespace KouXiaGu.World2D
         /// </summary>
         private void RecoveryLoadArchived(ArchivedGroup item, ICancelable cancelable)
         {
-            FullPrefabMapDirectoryPath = item.Archived.World2D.PathPrefabMapDirectory;
-            if (!Directory.Exists(FullPrefabMapDirectoryPath))
-                throw new FileNotFoundException("地图丢失!" + FullPrefabMapDirectoryPath);
+            worldDynMap.FullPrefabMapDirectoryPath = item.Archived.World2D.PathPrefabMapDirectory;
+            if (!Directory.Exists(worldDynMap.FullPrefabMapDirectoryPath))
+                throw new FileNotFoundException("地图丢失!" + worldDynMap.FullPrefabMapDirectoryPath);
         }
 
 
@@ -148,21 +114,29 @@ namespace KouXiaGu.World2D
             runningDoneCallBreak();
         }
 
+        /// <summary>
+        /// 对地图进行保存;
+        /// </summary>
         private void ArchiveSaveMap(ArchivedGroup item, ICancelable cancelable)
         {
-            followToUpdate.Save();
+            worldDynMap.OnSave();
         }
 
+        /// <summary>
+        /// 复制缓存地图到存档路径下;
+        /// </summary>
         private void ArchiveCopyData(ArchivedGroup item, ICancelable cancelable)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-            FileHelper.CopyDirectory(cancelable,
-                FullArchiveTempDirectoryPath, fullArchivedDirectoryPath, ArchivedSearchPattern, true);
+            worldDynMap.ArchiveMapCopyTo(fullArchivedDirectoryPath, true);
         }
 
+        /// <summary>
+        /// 将存档保存的信息初始化;
+        /// </summary>
         private void ArchiveOutput(ArchivedGroup item, ICancelable cancelable)
         {
-            item.Archived.World2D.PathPrefabMapDirectory = FullPrefabMapDirectoryPath;
+            item.Archived.World2D.PathPrefabMapDirectory = worldDynMap.FullPrefabMapDirectoryPath;
         }
 
 
@@ -171,7 +145,7 @@ namespace KouXiaGu.World2D
         {
             try
             {
-                worldMap.Clear();
+                OnQuitClearMap();
             }
             catch (Exception e)
             {
@@ -180,51 +154,158 @@ namespace KouXiaGu.World2D
             runningDoneCallBreak();
         }
 
-        #endregion
-
+        /// <summary>
+        /// 当退出时清除地图信息;
+        /// </summary>
+        private void OnQuitClearMap()
+        {
+            worldDynMap.Clear();
+        }
 
         #region 协程初始化;
 
         IEnumerator ICoroutineInit<BuildGameData>.Initialize(
             BuildGameData item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
-            followToUpdate.StartLoad();
+            this.mapUpdateEvent = Observable.EveryUpdate().Subscribe(MapUpdate);
 
-            for (int waitingTime = 8; waitingTime > 0; waitingTime --)
+            for (int waitingTime = 10; waitingTime > 0; waitingTime--)
                 yield return null;
 
-            while (followToUpdate.StateForNow != MapState.None)
+            while (worldDynMap.MapState != MapState.None || cancelable.IsDisposed)
+            {
                 yield return null;
+            }
 
             yield break;
+        }
+
+        private void MapUpdate(long unit)
+        {
+            IntVector2 mapPoint = WorldConvert.PlaneToHexPair(target.position);
+            worldDynMap.OnMapUpdate(mapPoint);
         }
 
         IEnumerator ICoroutineInit<Unit>.Initialize(
             Unit item, ICancelable cancelable, Action<Exception> onError, Action runningDoneCallBreak)
         {
-            followToUpdate.StopLoad();
+            if (this.mapUpdateEvent != null)
+            {
+                this.mapUpdateEvent.Dispose();
+            }
             yield break;
         }
 
         #endregion
 
 
-        public override string ToString()
-        {
-            string str = base.ToString();
-
-            str += "\n worldMap :\n" + worldMap.ToString();
-
-            return str;
-        }
 
 #if UNITY_EDITOR
         [ContextMenu("ToString")]
-        private void Test_DebugToString()
+        private void Test_Debug()
         {
-            Debug.Log(this.ToString());
+            string str = base.ToString();
+
+            str += "\n worldMap :\n" + worldDynMap.ToString();
+
+            Debug.Log(str);
         }
 #endif
+
+        /// <summary>
+        /// 地图结构;
+        /// </summary>
+        [Serializable]
+        public sealed class WorldDynBlockMapEx : DynBlockMapEx<WorldNode, IReadOnlyWorldNode, MapBlock<WorldNode, IReadOnlyWorldNode>>,
+            IMapBlockInfo
+        {
+            private WorldDynBlockMapEx() { }
+
+            /// <summary>
+            /// 地图当前状态;
+            /// </summary>
+            [SerializeField]
+            private MapState mapState;
+            /// <summary>
+            /// 地图块前缀;
+            /// </summary>
+            [SerializeField]
+            private string addressPrefix;
+            /// <summary>
+            /// 地图缓存文件目录;
+            /// </summary>
+            [SerializeField]
+            private string archiveTempDirectoryName;
+
+            public string AddressPrefix
+            {
+                get { return addressPrefix; }
+            }
+            public string FullArchiveTempDirectoryPath { get; set; }
+            public string FullPrefabMapDirectoryPath { get; set; }
+
+            public MapState MapState
+            {
+                get { return mapState; }
+            }
+
+            public override void Awake()
+            {
+                mapState = MapState.None;
+                base.Awake();
+                FullArchiveTempDirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryName);
+            }
+
+            public override MapBlock<WorldNode, IReadOnlyWorldNode> GetBlock(ShortVector2 blockAddress)
+            {
+                return this.LoadMapBlock<WorldNode, IReadOnlyWorldNode>(blockAddress);
+            }
+
+            public override void ReleaseBlock(ShortVector2 blockAddress, MapBlock<WorldNode, IReadOnlyWorldNode> block)
+            {
+                this.SaveArchiveMapBlock(blockAddress, block);
+            }
+
+            /// <summary>
+            /// 更新地图的数据;
+            /// </summary>
+            public void OnMapUpdate(IntVector2 mapPoint)
+            {
+                ShortVector2 address;
+                lock (thisLock)
+                {
+                    if (NeedToUpdate(mapPoint, out address) || mapState == MapState.None)
+                    {
+                        mapState = MapState.Loading;
+                        WaitCallback waitCallback = delegate
+                        {
+                            UpdateBlocks(mapPoint);
+                            mapState = MapState.None;
+                        };
+                        ThreadPool.QueueUserWorkItem(waitCallback);
+                    }
+                }
+            }
+
+            /// <summary>
+            /// 将地图保存到缓存地图文件夹内;
+            /// </summary>
+            public void OnSave()
+            {
+                lock (thisLock)
+                {
+                    mapState = MapState.Saving;
+                    KeyValuePair<ShortVector2, MapBlock<WorldNode, IReadOnlyWorldNode>>[] pairs = MapCollection.ToArray();
+                    foreach (var pair in pairs)
+                    {
+                        this.SaveArchiveMapBlock(pair.Key, pair.Value);
+                    }
+                    mapState = MapState.None;
+                }
+            }
+
+
+        }
 
     }
 

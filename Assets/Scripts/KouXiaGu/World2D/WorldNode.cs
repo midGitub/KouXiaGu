@@ -7,7 +7,14 @@ using ProtoBuf;
 namespace KouXiaGu.World2D
 {
 
-    public interface IReadOnlyWorldNode
+    /// <summary>
+    /// 地图节点只读接口,提供只读节点接口继承;
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IReadOnly<T> { }
+
+
+    public interface IReadOnlyWorldNode : IReadOnly<WorldNode>
     {
         int Landform { get; }
         bool Road { get; }

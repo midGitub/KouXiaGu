@@ -107,8 +107,6 @@ namespace KouXiaGu
                 OrderByDescending(value => value.ArchivedHead.SavedTime).
                 First();
 
-            Debug.Log(smallArchivedGroup.ArchivedPath);
-
             return smallArchivedGroup;
         }
 

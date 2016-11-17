@@ -45,8 +45,8 @@ namespace KouXiaGu.Test
             WorldNode node;
 
             string LandformType;
-            ShortVector2 mapBlockAddress = worldMap.wnWorldMap.GetAddress(mapPoint);
-            string mapBlockName = worldMap.wnWorldMap.GetBlockName(mapBlockAddress);
+            ShortVector2 mapBlockAddress = worldMap.WorldDynMap.GetAddress(mapPoint);
+            string mapBlockName = worldMap.WorldDynMap.GetMapBlockName(mapBlockAddress);
             try
             {
                 node = worldMap.Map[mapPoint];

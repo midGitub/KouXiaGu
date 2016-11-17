@@ -20,12 +20,14 @@ namespace KouXiaGu.World2D
     /// <summary>
     /// 游戏地图基本接口
     /// </summary>
-    public interface IMap<TPoint, T> : IReadOnlyMap<TPoint, T>
+    public interface IMap<TPoint, T>
     {
-        new T this[TPoint position] { get; set; }
+        T this[TPoint position] { get; set; }
 
         void Add(TPoint position, T item);
         bool Remove(TPoint position);
+        bool Contains(TPoint position);
+        bool TryGetValue(TPoint position, out T item);
 
         void Clear();
     }
