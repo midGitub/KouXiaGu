@@ -8,7 +8,7 @@ namespace KouXiaGu
 {
 
     [DisallowMultipleComponent]
-    public class LifecycleControl : MonoBehaviour, IPoolObject
+    public class XiaGuObject : MonoBehaviour, IPoolObject
     {
         public uint MaxCountInPool
         {
@@ -37,14 +37,19 @@ namespace KouXiaGu
         }
 
 
-        public static implicit operator GameObject(LifecycleControl item)
+        public static implicit operator GameObject(XiaGuObject item)
         {
             return item.gameObject;
         }
 
-        public static implicit operator LifecycleControl(GameObject item)
+        public static explicit operator XiaGuObject(GameObject item)
         {
-            return item.GetComponent<LifecycleControl>();
+            XiaGuObject instance = item.GetComponent<XiaGuObject>();
+
+            if (instance == null)
+                Debug.LogWarning("GameObject 不存在初始化组件!");
+
+            return instance;
         }
 
     }

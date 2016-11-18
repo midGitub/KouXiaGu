@@ -8,13 +8,13 @@ namespace KouXiaGu
     /// 允许线程调用的实例化池;
     /// 注意: 实例化后需要在主线程调用 MainThreadUpdate(),以保证在主线程能够实例化物体;
     /// </summary>
-    public class InstancePool
+    public class XiaGuObjectPool
     {
-        public InstancePool()
+        public XiaGuObjectPool()
         {
-            this.objectPool = new ObejctPool<string, LifecycleControl>();
+            this.objectPool = new ObejctPool<string, XiaGuObject>();
         }
-        public InstancePool(IObjectPool<string, LifecycleControl> objectPool)
+        public XiaGuObjectPool(IObjectPool<string, XiaGuObject> objectPool)
         {
             this.objectPool = objectPool;
         }
@@ -22,29 +22,29 @@ namespace KouXiaGu
         /// <summary>
         /// 对象池接口;
         /// </summary>
-        private IObjectPool<string, LifecycleControl> objectPool;
+        private IObjectPool<string, XiaGuObject> objectPool;
         /// <summary>
         /// 等待主线程进行从池移除事件的队列;
         /// </summary>
-        private ConcurrentQueue<AsyncComponent<LifecycleControl>> waitMTOutPoolEventQueue = new ConcurrentQueue<AsyncComponent<LifecycleControl>>();
+        private ConcurrentQueue<InstantiateAction<XiaGuObject>> waitInstantiateQueue = new ConcurrentQueue<InstantiateAction<XiaGuObject>>();
         /// <summary>
         /// 等待主线程进行加入池事件的队列;
         /// </summary>
-        private ConcurrentQueue<LifecycleControl> waitMTInPoolEventQueue = new ConcurrentQueue<LifecycleControl>();
+        private ConcurrentQueue<XiaGuObject> waitDestroyQueue = new ConcurrentQueue<XiaGuObject>();
 
         /// <summary>
         /// 等待实例化的元素个数;
         /// </summary>
         public int WaitInstantiateCount
         {
-            get { return waitMTOutPoolEventQueue.Count; }
+            get { return waitInstantiateQueue.Count; }
         }
         /// <summary>
         /// 等待销毁的元素个数;
         /// </summary>
         public int WaitDestroyCount
         {
-            get { return waitMTInPoolEventQueue.Count; }
+            get { return waitDestroyQueue.Count; }
         }
 
 
@@ -53,12 +53,12 @@ namespace KouXiaGu
         /// <summary>
         /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
         /// </summary>
-        public LifecycleControl Instantiate(LifecycleControl original)
+        public XiaGuObject Instantiate(XiaGuObject original)
         {
-            LifecycleControl cloneObject;
+            XiaGuObject cloneObject;
             if (!TryGetInstance(original, out cloneObject))
             {
-                cloneObject = UnityEngine.Object.Instantiate(original) as LifecycleControl;
+                cloneObject = UnityEngine.Object.Instantiate(original) as XiaGuObject;
                 Activate(cloneObject);
             }
             return cloneObject;
@@ -66,9 +66,9 @@ namespace KouXiaGu
         /// <summary>
         /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
         /// </summary>
-        public LifecycleControl Instantiate(LifecycleControl original, Vector3 position, Quaternion rotation)
+        public XiaGuObject Instantiate(XiaGuObject original, Vector3 position, Quaternion rotation)
         {
-            LifecycleControl cloneObject;
+            XiaGuObject cloneObject;
             if (TryGetInstance(original, out cloneObject))
             {
                 Transform transform = cloneObject.transform;
@@ -77,7 +77,7 @@ namespace KouXiaGu
             }
             else
             {
-                cloneObject = UnityEngine.Object.Instantiate(original, position, rotation) as LifecycleControl;
+                cloneObject = UnityEngine.Object.Instantiate(original, position, rotation) as XiaGuObject;
                 Activate(cloneObject);
             }
             return cloneObject;
@@ -85,16 +85,16 @@ namespace KouXiaGu
         /// <summary>
         /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
         /// </summary>
-        public LifecycleControl Instantiate(LifecycleControl original, Transform parent, bool worldPositionStays = true)
+        public XiaGuObject Instantiate(XiaGuObject original, Transform parent, bool worldPositionStays = true)
         {
-            LifecycleControl cloneObject;
+            XiaGuObject cloneObject;
             if (TryGetInstance(original, out cloneObject))
             {
                 cloneObject.transform.SetParent(parent, worldPositionStays);
             }
             else
             {
-                cloneObject = UnityEngine.Object.Instantiate(original, parent, worldPositionStays) as LifecycleControl;
+                cloneObject = UnityEngine.Object.Instantiate(original, parent, worldPositionStays) as XiaGuObject;
                 Activate(cloneObject);
             }
             return cloneObject;
@@ -102,9 +102,9 @@ namespace KouXiaGu
         /// <summary>
         /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
         /// </summary>
-        public LifecycleControl Instantiate(LifecycleControl original, Vector3 position, Quaternion rotation, Transform parent)
+        public XiaGuObject Instantiate(XiaGuObject original, Vector3 position, Quaternion rotation, Transform parent)
         {
-            LifecycleControl cloneObject;
+            XiaGuObject cloneObject;
             if (TryGetInstance(original, out cloneObject))
             {
                 Transform transform = cloneObject.transform;
@@ -114,7 +114,7 @@ namespace KouXiaGu
             }
             else
             {
-                cloneObject = UnityEngine.Object.Instantiate(original, position, rotation, parent) as LifecycleControl;
+                cloneObject = UnityEngine.Object.Instantiate(original, position, rotation, parent) as XiaGuObject;
                 Activate(cloneObject);
             }
             return cloneObject;
@@ -122,7 +122,7 @@ namespace KouXiaGu
         /// <summary>
         /// 尝试保存到对象池,若保存失败则摧毁物体;
         /// </summary>
-        public void Destroy(LifecycleControl instance)
+        public void Destroy(XiaGuObject instance)
         {
             Sleep(instance);
             if (TryKeepInstance(instance))
@@ -139,7 +139,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public IAsyncState<LifecycleControl> InstantiateAsync(AsyncComponent<LifecycleControl> asyncGameObject)
+        public IAsyncState<XiaGuObject> InstantiateAsync(InstantiateAction<XiaGuObject> asyncGameObject)
         {
             AddOutPoolEventQueue(asyncGameObject);
             return asyncGameObject;
@@ -147,7 +147,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public IEnumerable<IAsyncState<LifecycleControl>> InstantiateAsync(IEnumerable<AsyncComponent<LifecycleControl>> asyncGameObjects)
+        public IEnumerable<IAsyncState<XiaGuObject>> InstantiateAsync(IEnumerable<InstantiateAction<XiaGuObject>> asyncGameObjects)
         {
             foreach (var asyncGameObject in asyncGameObjects)
             {
@@ -158,7 +158,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的摧毁物体,或保存到对象池;
         /// </summary>
-        public void DestroyAsync(LifecycleControl instance)
+        public void DestroyAsync(XiaGuObject instance)
         {
             AddInPoolEventQueue(instance);
         }
@@ -171,14 +171,14 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到对象池的Key;
         /// </summary>
-        private string GetKey(LifecycleControl instance)
+        private string GetKey(XiaGuObject instance)
         {
             return instance.Name;
         }
         /// <summary>
         /// 获取到对象池的Key;
         /// </summary>
-        private string GetKey(AsyncComponent<LifecycleControl> instance)
+        private string GetKey(InstantiateAction<XiaGuObject> instance)
         {
             return instance.Original.Name;
         }
@@ -186,7 +186,7 @@ namespace KouXiaGu
         /// <summary>
         /// 激活物体活动;
         /// </summary>
-        private void Activate(LifecycleControl instance)
+        private void Activate(XiaGuObject instance)
         {
             instance.OnActivate();
         }
@@ -194,7 +194,7 @@ namespace KouXiaGu
         /// <summary>
         /// 停止物体活动;
         /// </summary>
-        private void Sleep(LifecycleControl instance)
+        private void Sleep(XiaGuObject instance)
         {
             instance.OnSleep();
         }
@@ -202,24 +202,24 @@ namespace KouXiaGu
         /// <summary>
         /// 在主线程更新的方法;
         /// </summary>
-        protected void MainThreadUpdate(uint times)
+        public void MainThreadUpdate(uint times)
         {
-            UpdateOutPoolEventQueue(times);
-            UpdateInPoolEventQueue(times);
+            UpdateInstantiateQueue(times);
+            UpdateDestroyQueue(times);
         }
 
         /// <summary>
         /// 主线程调用 更新取出对象事件队列;
         /// </summary>
-        private void UpdateOutPoolEventQueue(uint times)
+        private void UpdateInstantiateQueue(uint times)
         {
             string key;
-            LifecycleControl clone;
-            AsyncComponent<LifecycleControl> asyncGameObject;
+            XiaGuObject clone;
+            InstantiateAction<XiaGuObject> asyncGameObject;
 
-            while (!waitMTOutPoolEventQueue.IsEmpty && times-- > uint.MinValue)
+            while (!waitInstantiateQueue.IsEmpty && times-- > uint.MinValue)
             {
-                if (waitMTOutPoolEventQueue.TryDequeue(out asyncGameObject))
+                if (waitInstantiateQueue.TryDequeue(out asyncGameObject))
                 {
                     key = GetKey(asyncGameObject);
                     if (TryGetInstance(key, out clone))
@@ -228,7 +228,7 @@ namespace KouXiaGu
                     }
                     else
                     {
-                        asyncGameObject.Instantiate();
+                        clone = asyncGameObject.Instantiate();
                     }
                     Activate(clone);
                 }
@@ -238,12 +238,12 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 更新加入对象事件队列;
         /// </summary>
-        private void UpdateInPoolEventQueue(uint times)
+        private void UpdateDestroyQueue(uint times)
         {
-            LifecycleControl instance;
-            while (!waitMTInPoolEventQueue.IsEmpty && times-- > uint.MinValue)
+            XiaGuObject instance;
+            while (!waitDestroyQueue.IsEmpty && times-- > uint.MinValue)
             {
-                if (waitMTInPoolEventQueue.TryDequeue(out instance))
+                if (waitDestroyQueue.TryDequeue(out instance))
                 {
                     Destroy(instance);
                 }
@@ -253,7 +253,7 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 尝试从对象池获取到物体;
         /// </summary>
-        private bool TryGetInstance(LifecycleControl instance, out LifecycleControl instance2)
+        private bool TryGetInstance(XiaGuObject instance, out XiaGuObject instance2)
         {
             string key = GetKey(instance);
             return TryGetInstance(key, out instance2);
@@ -261,7 +261,7 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 尝试从对象池获取到物体;
         /// </summary>
-        private bool TryGetInstance(string key, out LifecycleControl instance)
+        private bool TryGetInstance(string key, out XiaGuObject instance)
         {
             return objectPool.TryGetInstance(key, out instance);
         }
@@ -269,7 +269,7 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 从游戏移除这个组件物体;
         /// </summary>
-        private bool TryKeepInstance(LifecycleControl instance)
+        private bool TryKeepInstance(XiaGuObject instance)
         {
             string key = GetKey(instance);
             return objectPool.TryKeepInstance(key, instance);
@@ -278,17 +278,17 @@ namespace KouXiaGu
         /// <summary>
         /// 加入到取出对象事件队列;
         /// </summary>
-        private void AddOutPoolEventQueue(AsyncComponent<LifecycleControl> asyncInstance)
+        private void AddOutPoolEventQueue(InstantiateAction<XiaGuObject> asyncInstance)
         {
-            waitMTOutPoolEventQueue.Enqueue(asyncInstance);
+            waitInstantiateQueue.Enqueue(asyncInstance);
         }
 
         /// <summary>
         /// 加入到加入对象事件队列;
         /// </summary>
-        private void AddInPoolEventQueue(LifecycleControl instance)
+        private void AddInPoolEventQueue(XiaGuObject instance)
         {
-            waitMTInPoolEventQueue.Enqueue(instance);
+            waitDestroyQueue.Enqueue(instance);
         }
 
         #endregion

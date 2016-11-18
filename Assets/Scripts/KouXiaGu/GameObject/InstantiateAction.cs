@@ -16,28 +16,28 @@ namespace KouXiaGu
 
 
     /// <summary>
-    /// 允许异步实例化的类;
+    /// 将实例化方法打包;
     /// </summary>
-    public class AsyncComponent<T> : IAsyncState<T>
+    public class InstantiateAction<T> : IAsyncState<T>
         where T : UnityEngine.Component
     {
-        public AsyncComponent()
+        public InstantiateAction()
         {
             Clear();
         }
-        public AsyncComponent(T original) : this()
+        public InstantiateAction(T original) : this()
         {
             Set(original);
         }
-        public AsyncComponent(T original, Vector3 position, Quaternion rotation) : this()
+        public InstantiateAction(T original, Vector3 position, Quaternion rotation) : this()
         {
             Set(original, position, rotation);
         }
-        public AsyncComponent(T original, Transform parent, bool worldPositionStays) : this()
+        public InstantiateAction(T original, Transform parent, bool worldPositionStays) : this()
         {
             Set(original, parent, worldPositionStays);
         }
-        public AsyncComponent(T original, Vector3 position, Quaternion rotation, Transform parent) : this()
+        public InstantiateAction(T original, Vector3 position, Quaternion rotation, Transform parent) : this()
         {
             Set(original, position, rotation, parent);
         }

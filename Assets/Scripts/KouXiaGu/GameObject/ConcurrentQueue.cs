@@ -50,19 +50,19 @@ namespace KouXiaGu
             }
         }
 
-        /// <summary>
-        /// 将对象按返回顺序添加到 ConcurrentQueue<T> 的结尾处;
-        /// </summary>
-        public void Enqueue(IEnumerable<T> items)
-        {
-            lock (queue)
-            {
-                foreach (var item in items)
-                {
-                    queue.Enqueue(item);
-                }
-            }
-        }
+        ///// <summary>
+        ///// 将对象按返回顺序添加到 ConcurrentQueue<T> 的结尾处;
+        ///// </summary>
+        //public void Enqueue(IEnumerable<T> items)
+        //{
+        //    lock (queue)
+        //    {
+        //        foreach (var item in items)
+        //        {
+        //            queue.Enqueue(item);
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 尝试移除并返回并发队列开头处的对象

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 
@@ -77,7 +78,6 @@ namespace KouXiaGu
         {
             AddendInGameObejct();
         }
-
 
         public ICancelable Build(BuildGameData buildGameRes, Action onComplete = null)
         {
