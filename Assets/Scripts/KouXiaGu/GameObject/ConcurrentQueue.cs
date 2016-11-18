@@ -23,10 +23,10 @@ namespace KouXiaGu
 
         private readonly Queue<T> queue;
 
-        //public int Count
-        //{
-        //    get { return queue.Count; }
-        //}
+        public int Count
+        {
+            get { return queue.Count; }
+        }
 
         public bool IsEmpty
         {
