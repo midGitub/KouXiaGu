@@ -10,7 +10,7 @@ namespace KouXiaGu
     /// <summary>
     /// 对 Component 拓展方法;
     /// </summary>
-    internal static class UnityComponent
+    internal static class ComponentExpand
     {
 
         /// <summary>

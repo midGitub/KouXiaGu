@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace KouXiaGu
 {
@@ -13,15 +14,15 @@ namespace KouXiaGu
         /// <summary>
         /// 等待主线程实例化的队列;
         /// </summary>
-        private ConcurrentQueue<InstantiateAction<UnityEngine.Component>> waitInstantiateQueue =
-            new ConcurrentQueue<InstantiateAction<UnityEngine.Component>>();
-        private ConcurrentQueue<UnityEngine.Component> waitDestroyQueue = new ConcurrentQueue<UnityEngine.Component>();
+        private ConcurrentQueue<InstantiateAction<Component>> waitInstantiateQueue =
+            new ConcurrentQueue<InstantiateAction<Component>>();
+        private ConcurrentQueue<Component> waitDestroyQueue = new ConcurrentQueue<Component>();
 
 
         /// <summary>
         /// 异步实例化物体;
         /// </summary>
-        public IAsyncState<UnityEngine.Component> InstantiateAsync(InstantiateAction<UnityEngine.Component> asyncGameObject)
+        public IAsyncState<Component> InstantiateAsync(InstantiateAction<Component> asyncGameObject)
         {
             AddWaitInstantiate(asyncGameObject);
             return asyncGameObject;
@@ -29,8 +30,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步实例化物体;
         /// </summary>
-        public IEnumerable<IAsyncState<UnityEngine.Component>> InstantiateAsync(
-            IEnumerable<InstantiateAction<UnityEngine.Component>> asyncGameObjects)
+        public IEnumerable<IAsyncState<Component>> InstantiateAsync(IEnumerable<InstantiateAction<Component>> asyncGameObjects)
         {
             foreach (var asyncGameObject in asyncGameObjects)
             {
@@ -41,7 +41,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的摧毁物体;
         /// </summary>
-        public void DestroyAsync(UnityEngine.Component instance)
+        public void DestroyAsync(Component instance)
         {
             AddWaitDestroy(instance);
         }
@@ -50,14 +50,14 @@ namespace KouXiaGu
         /// <summary>
         /// 加入到等待实例化队列中;
         /// </summary>
-        private void AddWaitInstantiate(InstantiateAction<UnityEngine.Component> instance)
+        private void AddWaitInstantiate(InstantiateAction<Component> instance)
         {
             waitInstantiateQueue.Enqueue(instance);
         }
         /// <summary>
         /// 加入到等待摧毁队列中;
         /// </summary>
-        private void AddWaitDestroy(UnityEngine.Component instance)
+        private void AddWaitDestroy(Component instance)
         {
             waitDestroyQueue.Enqueue(instance);
         }
@@ -76,7 +76,7 @@ namespace KouXiaGu
         /// </summary>
         private void UpdateInstantiateQueue(uint times)
         {
-            InstantiateAction<UnityEngine.Component> async;
+            InstantiateAction<Component> async;
 
             while (!waitInstantiateQueue.IsEmpty && times-- > uint.MinValue)
             {
@@ -92,7 +92,7 @@ namespace KouXiaGu
         /// </summary>
         private void UpdateDestroyQueue(uint times)
         {
-            UnityEngine.Component instance;
+            Component instance;
             while (!waitDestroyQueue.IsEmpty && times-- > uint.MinValue)
             {
                 if (waitDestroyQueue.TryDequeue(out instance))
@@ -105,7 +105,7 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 实例化物体;
         /// </summary>
-        private void Instantiate(InstantiateAction<UnityEngine.Component> async)
+        private void Instantiate(InstantiateAction<Component> async)
         {
             async.Instantiate();
         }
@@ -113,7 +113,7 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 销毁物体;
         /// </summary>
-        private void Destroy(UnityEngine.Component instance)
+        private void Destroy(Component instance)
         {
             UnityEngine.Component.Destroy(instance);
         }
