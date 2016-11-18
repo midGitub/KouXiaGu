@@ -1,13 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace KouXiaGu
 {
 
     /// <summary>
-    /// 非线程安全的对象池;
+    /// 线程安全的对象池;
     /// </summary>
-    public class ObejctPool<TKey, TValue> : IObjectPool<TKey, TValue>, IEnumerable<TValue>
+    public class ConcurrentObjectPool<TKey, TValue> : IObjectPool<TKey, TValue>
         where TValue : class, IPoolObject
     {
 
@@ -27,15 +30,19 @@ namespace KouXiaGu
             {
                 return false;
             }
-            if (objectDictionary.TryGetValue(key, out objectQueue))
+
+            lock (objectDictionary)
             {
-                return TryAddInObjectQueue(objectQueue, instance);
-            }
-            else
-            {
-                objectQueue = new Queue<TValue>();
-                objectDictionary.Add(key, objectQueue);
-                return TryAddInObjectQueue(objectQueue, instance);
+                if (objectDictionary.TryGetValue(key, out objectQueue))
+                {
+                    return TryAddInObjectQueue(objectQueue, instance);
+                }
+                else
+                {
+                    objectQueue = new Queue<TValue>();
+                    objectDictionary.Add(key, objectQueue);
+                    return TryAddInObjectQueue(objectQueue, instance);
+                }
             }
         }
 
@@ -46,9 +53,12 @@ namespace KouXiaGu
         {
             Queue<TValue> objectQueue;
 
-            if (objectDictionary.TryGetValue(key, out objectQueue))
+            lock (objectDictionary)
             {
-                return TryDequeueNotNull(objectQueue, out instance);
+                if (objectDictionary.TryGetValue(key, out objectQueue))
+                {
+                    return TryDequeueNotNull(objectQueue, out instance);
+                }
             }
 
             instance = null;
@@ -86,33 +96,14 @@ namespace KouXiaGu
         /// </summary>
         public void Clear()
         {
-            foreach (var queue in objectDictionary.Values)
+            lock (objectDictionary)
             {
-                queue.Clear();
-            }
-            objectDictionary.Clear();
-        }
-
-        /// <summary>
-        /// 获取到所有保存到对象池的非 Null 引用;
-        /// </summary>
-        public IEnumerator<TValue> GetEnumerator()
-        {
-            foreach (var queue in objectDictionary.Values)
-            {
-                foreach (var item in queue)
+                foreach (var queue in objectDictionary.Values)
                 {
-                    yield return item;
+                    queue.Clear();
                 }
+                objectDictionary.Clear();
             }
-        }
-
-        /// <summary>
-        /// 获取到所有保存到对象池的非 Null 引用;
-        /// </summary>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
     }
