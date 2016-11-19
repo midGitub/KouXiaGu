@@ -31,6 +31,7 @@ namespace KouXiaGu
         {
             base.OnInspectorGUI();
             PropertyGUI();
+            //Debug.Log(properties.Length);
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace KouXiaGu
         }
 
         private const BindingFlags DefaultBindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
-            BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.GetProperty | BindingFlags.SetProperty;
+            BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
 
         /// <summary>
         /// 显示的标签;

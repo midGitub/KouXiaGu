@@ -28,12 +28,28 @@ namespace KouXiaGu
     /// <summary>
     /// 将实例化方法打包;
     /// </summary>
-    public class InstantiateAction<T> : IAsyncState<T>
+    public class InstantiateRequest<T> : IAsyncState<T>
         where T : UnityEngine.Component
     {
-        private InstantiateAction()
+        private InstantiateRequest()
         {
             Clear();
+        }
+        public InstantiateRequest(T original) : this()
+        {
+            Set(original);
+        }
+        public InstantiateRequest(T original, Vector3 position, Quaternion rotation) : this()
+        {
+            Set(original, position, rotation);
+        }
+        public InstantiateRequest(T original, Transform parent, bool worldPositionStays) : this()
+        {
+            Set(original, parent, worldPositionStays);
+        }
+        public InstantiateRequest(T original, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            Set(original, position, rotation, parent);
         }
 
         /// <summary>
@@ -79,48 +95,49 @@ namespace KouXiaGu
             }
         }
 
-        /// <summary>
-        /// 获取到实例;
-        /// </summary>
-        public static InstantiateAction<T> GetNew(T original)
-        {
-            var item = new InstantiateAction<T>();
-            item.Set(original);
-            return item;
-        }
-        /// <summary>
-        /// 获取到实例;
-        /// </summary>
-        public static InstantiateAction<T> GetNew(T original, Vector3 position, Quaternion rotation)
-        {
-            var item = new InstantiateAction<T>();
-            item.Set(original, position, rotation);
-            return item;
-        }
-        /// <summary>
-        /// 获取到实例;
-        /// </summary>
-        public static InstantiateAction<T> GetNew(T original, Transform parent, bool worldPositionStays)
-        {
-            var item = new InstantiateAction<T>();
-            item.Set(original, parent, worldPositionStays);
-            return item;
-        }
-        /// <summary>
-        /// 获取到实例;
-        /// </summary>
-        public static InstantiateAction<T> GetNew(T original, Vector3 position, Quaternion rotation, Transform parent)
-        {
-            var item = new InstantiateAction<T>();
-            item.Set(original, position, rotation, parent);
-            return item;
-        }
+        ///// <summary>
+        ///// 获取到实例;
+        ///// </summary>
+        //public static InstantiateRequest<T> GetNew(T original)
+        //{
+        //    var item = new InstantiateRequest<T>();
+        //    item.Set(original);
+        //    return item;
+        //}
+        ///// <summary>
+        ///// 获取到实例;
+        ///// </summary>
+        //public static InstantiateRequest<T> GetNew(T original, Vector3 position, Quaternion rotation)
+        //{
+        //    var item = new InstantiateRequest<T>();
+        //    item.Set(original, position, rotation);
+        //    return item;
+        //}
+        ///// <summary>
+        ///// 获取到实例;
+        ///// </summary>
+        //public static InstantiateRequest<T> GetNew(T original, Transform parent, bool worldPositionStays)
+        //{
+        //    var item = new InstantiateRequest<T>();
+        //    item.Set(original, parent, worldPositionStays);
+        //    return item;
+        //}
+        ///// <summary>
+        ///// 获取到实例;
+        ///// </summary>
+        //public static InstantiateRequest<T> GetNew(T original, Vector3 position, Quaternion rotation, Transform parent)
+        //{
+        //    var item = new InstantiateRequest<T>();
+        //    item.Set(original, position, rotation, parent);
+        //    return item;
+        //}
 
         /// <summary>
         /// 设置到实例化方式;
         /// </summary>
         internal void Set(T original)
         {
+            NulloriginalException(original);
             NotClearException();
             this.Original = original;
             this.methodType = MethodType.Original;
@@ -130,6 +147,7 @@ namespace KouXiaGu
         /// </summary>
         internal void Set(T original, Vector3 position, Quaternion rotation)
         {
+            NulloriginalException(original);
             NotClearException();
             this.Original = original;
             this.Position = position;
@@ -141,6 +159,7 @@ namespace KouXiaGu
         /// </summary>
         internal void Set(T original, Transform parent, bool worldPositionStays)
         {
+            NulloriginalException(original);
             NotClearException();
             this.Original = original;
             this.Parent = parent;
@@ -152,6 +171,7 @@ namespace KouXiaGu
         /// </summary>
         internal void Set(T original, Vector3 position, Quaternion rotation, Transform parent)
         {
+            NulloriginalException(original);
             NotClearException();
             this.Original = original;
             this.Position = position;
@@ -160,11 +180,19 @@ namespace KouXiaGu
             this.methodType = MethodType.Original_Parent_WorldPositionStays;
         }
         /// <summary>
+        /// 若传入参数为null;
+        /// </summary>
+        private void NulloriginalException(T original)
+        {
+            if (original == null)
+                throw new NullReferenceException();
+        }
+        /// <summary>
         /// 当完成时实例化后若不清除信息重复使用后返回错误;
         /// </summary>
         private void NotClearException()
         {
-            if (this.IsDone)
+            if (this.OnInitializeQueue)
                 throw new AccessViolationException("重复使用!");
         }
 

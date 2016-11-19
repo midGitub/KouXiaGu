@@ -17,7 +17,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步实例化物体;
         /// </summary>
-        IAsyncState<T> InstantiateAsync(InstantiateAction<T> asyncObject);
+        IAsyncState<T> InstantiateAsync(InstantiateRequest<T> asyncObject);
     }
 
     /// <summary>
@@ -26,13 +26,14 @@ namespace KouXiaGu
     public static class ExpandInstantiate
     {
 
+
         /// <summary>
         /// 异步的实例化;
         /// </summary>
         public static IAsyncState<T> InstantiateAsync<T>(this IThreadOfInstantiate<T> instance, T original)
             where T : Component
         {
-            InstantiateAction<T> instantiate = InstantiateAction<T>.GetNew(original);
+            InstantiateRequest<T> instantiate = GetInstantiateRequest<T>(original);
             return instance.InstantiateAsync(instantiate);
         }
         /// <summary>
@@ -41,7 +42,7 @@ namespace KouXiaGu
         public static IAsyncState<T> InstantiateAsync<T>(this IThreadOfInstantiate<T> instance, T original, Vector3 position, Quaternion rotation)
              where T : Component
         {
-            InstantiateAction<T> instantiate = InstantiateAction<T>.GetNew(original, position, rotation);
+            InstantiateRequest<T> instantiate = GetInstantiateRequest<T>(original, position, rotation);
             return instance.InstantiateAsync(instantiate);
         }
         /// <summary>
@@ -50,7 +51,7 @@ namespace KouXiaGu
         public static IAsyncState<T> InstantiateAsync<T>(this IThreadOfInstantiate<T> instance, T original, Transform parent, bool worldPositionStays)
              where T : Component
         {
-            InstantiateAction<T> instantiate = InstantiateAction<T>.GetNew(original, parent, worldPositionStays);
+            InstantiateRequest<T> instantiate = GetInstantiateRequest<T>(original, parent, worldPositionStays);
             return instance.InstantiateAsync(instantiate);
         }
         /// <summary>
@@ -59,9 +60,40 @@ namespace KouXiaGu
         public static IAsyncState<T> InstantiateAsync<T>(this IThreadOfInstantiate<T> instance, T original, Vector3 position, Quaternion rotation, Transform parent)
              where T : Component
         {
-            InstantiateAction<T> instantiate = InstantiateAction<T>.GetNew(original, position, rotation, parent);
+            InstantiateRequest<T> instantiate = GetInstantiateRequest<T>(original, position, rotation, parent);
             return instance.InstantiateAsync(instantiate);
         }
+
+
+        #region 获取到请求类;
+
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original)
+             where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original);
+            return instantiate;
+        }
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation)
+             where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, position, rotation);
+            return instantiate;
+        }
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Transform parent, bool worldPositionStays)
+            where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, parent, worldPositionStays);
+            return instantiate;
+        }
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation, Transform parent)
+            where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, position, rotation, parent);
+            return instantiate;
+        }
+
+        #endregion
+
 
     }
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 namespace KouXiaGu
@@ -9,21 +8,24 @@ namespace KouXiaGu
     /// Unity物体实例化\克隆方法;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class ObjectClone : MonoBehaviour
+    public sealed class UnityObjectClone : MonoBehaviour
     {
-        private ObjectClone() { }
+        private UnityObjectClone() { }
 
-        [SerializeField, Range(1, 100)]
-        private uint times = 50;
+        [SerializeField, Range(1, 300)]
+        private uint times = 120;
 
         internal static readonly ConcurrentInstantiate concurrentInstantiate = new ConcurrentInstantiate();
         internal static readonly XiaGuObjectPool xiaGuObjectPool = new XiaGuObjectPool();
-        internal static ObjectClone instance;
+        internal static UnityObjectClone instance;
+
+        [SerializeField]
+        private int max = 0;
 
         [ShowOnlyProperty]
         public static int WaitDestroy0
         {
-            get { return concurrentInstantiate.WaitDestroyCount; }
+            get{ return concurrentInstantiate.WaitDestroyCount; }
         }
         [ShowOnlyProperty]
         public static int WaitDestroy1
@@ -33,7 +35,7 @@ namespace KouXiaGu
         [ShowOnlyProperty]
         public static int WaitInstantiate0
         {
-            get { return concurrentInstantiate.WaitInstantiateCount; }
+            get{ return concurrentInstantiate.WaitInstantiateCount; }
         }
         [ShowOnlyProperty]
         public static int WaitInstantiate1
@@ -54,12 +56,15 @@ namespace KouXiaGu
             }
         }
 
-
         /// <summary>
         /// 主线程更新;
         /// </summary>
         private void Update()
         {
+            int count = WaitInstantiate0;
+            if (max < count)
+                max = count;
+
             concurrentInstantiate.MainThreadUpdate(times);
             xiaGuObjectPool.MainThreadUpdate(times);
         }
@@ -69,37 +74,41 @@ namespace KouXiaGu
         /// <summary>
         /// 异步实例化;
         /// </summary>
-        public static IAsyncState<Component> InstantiateInThread(InstantiateAction<Component> asyncOject)
+        public static IAsyncState<Component> InstantiateInThread(InstantiateRequest<Component> instantiate)
         {
-            return concurrentInstantiate.InstantiateAsync(asyncOject);
+            return concurrentInstantiate.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
         public static IAsyncState<Component> InstantiateInThread(Component original)
         {
-            return concurrentInstantiate.InstantiateAsync(original);
+            var instantiate = GetInstantiateRequest<Component>(original);
+            return concurrentInstantiate.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
         public static IAsyncState<Component> InstantiateInThread(Component original, Vector3 position, Quaternion rotation)
         {
-            return concurrentInstantiate.InstantiateAsync(original, position, rotation);
+            var instantiate = GetInstantiateRequest<Component>(original, position, rotation);
+            return concurrentInstantiate.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
         public static IAsyncState<Component> InstantiateInThread(Component original, Transform parent, bool worldPositionStays = true)
         {
-            return concurrentInstantiate.InstantiateAsync(original, parent, worldPositionStays);
+            var instantiate = GetInstantiateRequest<Component>(original, parent, worldPositionStays);
+            return concurrentInstantiate.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
         public static IAsyncState<Component> InstantiateInThread(Component original, Vector3 position, Quaternion rotation, Transform parent)
         {
-            return concurrentInstantiate.InstantiateAsync(original, position, rotation, parent);
+            var instantiate = GetInstantiateRequest<Component>(original, position, rotation, parent);
+            return concurrentInstantiate.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步摧毁物体;
@@ -152,7 +161,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public static IAsyncState<XiaGuObject> InstantiateInThread(InstantiateAction<XiaGuObject> asyncGameObject)
+        public static IAsyncState<XiaGuObject> InstantiateInThread(InstantiateRequest<XiaGuObject> asyncGameObject)
         {
             return xiaGuObjectPool.InstantiateAsync(asyncGameObject);
         }
@@ -161,28 +170,32 @@ namespace KouXiaGu
         /// </summary>
         public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original)
         {
-            return xiaGuObjectPool.InstantiateAsync(original);
+            var instantiate = GetInstantiateRequest<XiaGuObject>(original);
+            return xiaGuObjectPool.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
         public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original, Vector3 position, Quaternion rotation)
         {
-            return xiaGuObjectPool.InstantiateAsync(original, position, rotation);
+            var instantiate = GetInstantiateRequest<XiaGuObject>(original, position, rotation);
+            return xiaGuObjectPool.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
         public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original, Transform parent, bool worldPositionStays = true)
         {
-            return xiaGuObjectPool.InstantiateAsync(original, parent, worldPositionStays);
+            var instantiate = GetInstantiateRequest<XiaGuObject>(original, parent, worldPositionStays);
+            return xiaGuObjectPool.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
         public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original, Vector3 position, Quaternion rotation, Transform parent)
         {
-            return xiaGuObjectPool.InstantiateAsync(original, position, rotation, parent);
+            var instantiate = GetInstantiateRequest<XiaGuObject>(original, position, rotation, parent);
+            return xiaGuObjectPool.InstantiateAsync(instantiate);
         }
         /// <summary>
         /// 异步的摧毁物体,或保存到对象池;
@@ -190,6 +203,35 @@ namespace KouXiaGu
         public static void DestroyInThread(XiaGuObject instance)
         {
             xiaGuObjectPool.DestroyAsync(instance);
+        }
+
+        #endregion
+
+        #region 获取到请求类;
+
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original)
+             where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original);
+            return instantiate;
+        }
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation)
+             where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, position, rotation);
+            return instantiate;
+        }
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Transform parent, bool worldPositionStays)
+            where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, parent, worldPositionStays);
+            return instantiate;
+        }
+        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation, Transform parent)
+            where T : Component
+        {
+            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, position, rotation, parent);
+            return instantiate;
         }
 
         #endregion

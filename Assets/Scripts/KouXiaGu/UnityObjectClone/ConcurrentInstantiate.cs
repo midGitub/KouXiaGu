@@ -14,8 +14,8 @@ namespace KouXiaGu
         /// <summary>
         /// 等待主线程实例化的队列;
         /// </summary>
-        private ConcurrentQueue<InstantiateAction<Component>> waitInstantiateQueue =
-            new ConcurrentQueue<InstantiateAction<Component>>();
+        private ConcurrentQueue<InstantiateRequest<Component>> waitInstantiateQueue =
+            new ConcurrentQueue<InstantiateRequest<Component>>();
         private ConcurrentQueue<Component> waitDestroyQueue = new ConcurrentQueue<Component>();
 
 
@@ -38,7 +38,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步实例化物体;
         /// </summary>
-        public IAsyncState<Component> InstantiateAsync(InstantiateAction<Component> asyncGameObject)
+        public IAsyncState<Component> InstantiateAsync(InstantiateRequest<Component> asyncGameObject)
         {
             AddWaitInstantiate(asyncGameObject);
             return asyncGameObject;
@@ -55,7 +55,7 @@ namespace KouXiaGu
         /// <summary>
         /// 加入到等待实例化队列中;
         /// </summary>
-        private void AddWaitInstantiate(InstantiateAction<Component> instance)
+        private void AddWaitInstantiate(InstantiateRequest<Component> instance)
         {
             waitInstantiateQueue.Enqueue(instance);
             instance.OnInitializeQueue = true;
@@ -82,7 +82,7 @@ namespace KouXiaGu
         /// </summary>
         private void UpdateInstantiateQueue(uint times)
         {
-            InstantiateAction<Component> async;
+            InstantiateRequest<Component> async;
 
             while (!waitInstantiateQueue.IsEmpty && times-- > uint.MinValue)
             {
@@ -112,7 +112,7 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 实例化物体;
         /// </summary>
-        private void Instantiate(InstantiateAction<Component> async)
+        private void Instantiate(InstantiateRequest<Component> async)
         {
             async.Instantiate();
         }
