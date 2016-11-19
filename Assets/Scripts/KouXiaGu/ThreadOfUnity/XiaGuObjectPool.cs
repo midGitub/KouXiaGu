@@ -47,7 +47,6 @@ namespace KouXiaGu
             get { return waitDestroyQueue.Count; }
         }
 
-
         #region 主线程调用
 
         /// <summary>
@@ -210,7 +209,7 @@ namespace KouXiaGu
             {
                 if (waitInstantiateQueue.TryDequeue(out asyncGameObject))
                 {
-                    asyncGameObject.OnQueue = false;
+                    asyncGameObject.OnInitializeQueue = false;
                     key = GetKey(asyncGameObject);
                     if (TryGetInstance(key, out clone))
                     {
@@ -271,7 +270,7 @@ namespace KouXiaGu
         private void AddInstantiateQueue(InstantiateAction<XiaGuObject> asyncInstance)
         {
             waitInstantiateQueue.Enqueue(asyncInstance);
-            asyncInstance.OnQueue = true;
+            asyncInstance.OnInitializeQueue = true;
         }
 
         /// <summary>

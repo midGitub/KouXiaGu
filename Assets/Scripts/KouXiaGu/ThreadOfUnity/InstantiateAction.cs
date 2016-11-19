@@ -13,7 +13,7 @@ namespace KouXiaGu
         /// <summary>
         /// 是否正在队列中排队?
         /// </summary>
-        bool OnQueue { get; }
+        bool OnInitializeQueue { get; }
         /// <summary>
         /// 是否已经完成了读取?
         /// </summary>
@@ -28,7 +28,7 @@ namespace KouXiaGu
     /// <summary>
     /// 将实例化方法打包;
     /// </summary>
-    public sealed class InstantiateAction<T> : IAsyncState<T>
+    public class InstantiateAction<T> : IAsyncState<T>
         where T : UnityEngine.Component
     {
         private InstantiateAction()
@@ -49,7 +49,10 @@ namespace KouXiaGu
         }
 
         internal MethodType methodType { get; private set; }
-        public bool OnQueue { get; set; }
+        /// <summary>
+        /// 是否在初始化队列中(既正在被使用);
+        /// </summary>
+        public bool OnInitializeQueue { get; set; }
         public bool IsDone { get; private set; }
         public T Result { get; private set; }
 
@@ -64,7 +67,7 @@ namespace KouXiaGu
         /// </summary>
         public void Clear()
         {
-            if (!OnQueue)
+            if (!OnInitializeQueue)
             {
                 methodType = MethodType.None;
                 IsDone = false;

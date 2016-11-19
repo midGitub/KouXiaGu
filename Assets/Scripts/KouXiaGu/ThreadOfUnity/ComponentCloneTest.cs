@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using KouXiaGu.World2D;
 
 namespace KouXiaGu
 {
@@ -18,7 +19,9 @@ namespace KouXiaGu
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                //ThreadPool.QueueUserWorkItem(_ => ComponentClone.InstantiateAsync());
+                Vector2 position = WorldConvert.MouseToPlane();
+                Quaternion rotation = prefab.rotation;
+                ThreadPool.QueueUserWorkItem(_ => ObjectClone.InstantiateInThread(prefab, position, rotation));
             }
         }
 

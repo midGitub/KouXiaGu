@@ -13,12 +13,12 @@ namespace KouXiaGu
     //[CustomEditor(typeof(ComponentClone), true)]
     public class ExposableMonobehaviourEditor : Editor
     {
-        ComponentClone m_Instance;
+        ObjectClone m_Instance;
         PropertyField[] m_fields;
 
         public virtual void OnEnable()
         {
-            m_Instance = target as ComponentClone;
+            m_Instance = target as ObjectClone;
             m_fields = ExposeProperties.GetProperties(m_Instance);
         }
 

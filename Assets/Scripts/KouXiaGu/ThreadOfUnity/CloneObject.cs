@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace KouXiaGu
 {
 
@@ -8,16 +9,16 @@ namespace KouXiaGu
     /// Unity物体实例化\克隆方法;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class ComponentClone : MonoBehaviour
+    public sealed class ObjectClone : MonoBehaviour
     {
-        private ComponentClone() { }
+        private ObjectClone() { }
 
         [SerializeField, Range(1, 100)]
         private uint times = 50;
 
         internal static readonly ConcurrentInstantiate concurrentInstantiate = new ConcurrentInstantiate();
         internal static readonly XiaGuObjectPool xiaGuObjectPool = new XiaGuObjectPool();
-        internal static ComponentClone instance;
+        internal static ObjectClone instance;
 
         [ShowOnlyProperty]
         public static int WaitDestroy0
@@ -67,42 +68,42 @@ namespace KouXiaGu
         /// <summary>
         /// 异步实例化;
         /// </summary>
-        public static IAsyncState<Component> InstantiateAsync(InstantiateAction<Component> asyncOject)
+        public static IAsyncState<Component> InstantiateInThread(InstantiateAction<Component> asyncOject)
         {
             return concurrentInstantiate.InstantiateAsync(asyncOject);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
-        public static IAsyncState<Component> InstantiateAsync(Component original)
+        public static IAsyncState<Component> InstantiateInThread(Component original)
         {
             return concurrentInstantiate.InstantiateAsync(original);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
-        public static IAsyncState<Component> InstantiateAsync(Component original, Vector3 position, Quaternion rotation)
+        public static IAsyncState<Component> InstantiateInThread(Component original, Vector3 position, Quaternion rotation)
         {
             return concurrentInstantiate.InstantiateAsync(original, position, rotation);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
-        public static IAsyncState<Component> InstantiateAsync(Component original, Transform parent, bool worldPositionStays = true)
+        public static IAsyncState<Component> InstantiateInThread(Component original, Transform parent, bool worldPositionStays = true)
         {
             return concurrentInstantiate.InstantiateAsync(original, parent, worldPositionStays);
         }
         /// <summary>
         /// 异步实例化;
         /// </summary>
-        public static IAsyncState<Component> InstantiateAsync(Component original, Vector3 position, Quaternion rotation, Transform parent)
+        public static IAsyncState<Component> InstantiateInThread(Component original, Vector3 position, Quaternion rotation, Transform parent)
         {
             return concurrentInstantiate.InstantiateAsync(original, position, rotation, parent);
         }
         /// <summary>
         /// 异步摧毁物体;
         /// </summary>
-        public static void DestroyAsync(Component instance)
+        public static void DestroyInThread(Component instance)
         {
             concurrentInstantiate.DestroyAsync(instance);
         }
@@ -150,42 +151,42 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(InstantiateAction<XiaGuObject> asyncGameObject)
+        public static IAsyncState<XiaGuObject> InstantiateInThread(InstantiateAction<XiaGuObject> asyncGameObject)
         {
             return xiaGuObjectPool.InstantiateAsync(asyncGameObject);
         }
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original)
+        public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original)
         {
             return xiaGuObjectPool.InstantiateAsync(original);
         }
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original, Vector3 position, Quaternion rotation)
+        public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original, Vector3 position, Quaternion rotation)
         {
             return xiaGuObjectPool.InstantiateAsync(original, position, rotation);
         }
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original, Transform parent, bool worldPositionStays = true)
+        public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original, Transform parent, bool worldPositionStays = true)
         {
             return xiaGuObjectPool.InstantiateAsync(original, parent, worldPositionStays);
         }
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original, Vector3 position, Quaternion rotation, Transform parent)
+        public static IAsyncState<XiaGuObject> InstantiateInThread(XiaGuObject original, Vector3 position, Quaternion rotation, Transform parent)
         {
             return xiaGuObjectPool.InstantiateAsync(original, position, rotation, parent);
         }
         /// <summary>
         /// 异步的摧毁物体,或保存到对象池;
         /// </summary>
-        public static void PoolDestroyAsync(XiaGuObject instance)
+        public static void DestroyInThread(XiaGuObject instance)
         {
             xiaGuObjectPool.DestroyAsync(instance);
         }
@@ -193,21 +194,5 @@ namespace KouXiaGu
         #endregion
 
     }
-
-
-    //[CustomEditor(typeof(ComponentClone))]
-    //public class ComponentCloneDrawer : Editor
-    //{
-    //    public override void OnInspectorGUI()
-    //    {
-    //        base.OnInspectorGUI();
-
-    //        ComponentClone instance = (ComponentClone)target;
-
-
-
-    //    }
-    //}
-
 
 }

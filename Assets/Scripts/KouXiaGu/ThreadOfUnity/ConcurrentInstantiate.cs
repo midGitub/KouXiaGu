@@ -58,7 +58,7 @@ namespace KouXiaGu
         private void AddWaitInstantiate(InstantiateAction<Component> instance)
         {
             waitInstantiateQueue.Enqueue(instance);
-            instance.OnQueue = true;
+            instance.OnInitializeQueue = true;
         }
         /// <summary>
         /// 加入到等待摧毁队列中;
@@ -88,7 +88,7 @@ namespace KouXiaGu
             {
                 if (waitInstantiateQueue.TryDequeue(out async))
                 {
-                    async.OnQueue = false;
+                    async.OnInitializeQueue = false;
                     Instantiate(async);
                 }
             }
