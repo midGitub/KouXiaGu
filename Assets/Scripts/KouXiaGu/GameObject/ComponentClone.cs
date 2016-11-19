@@ -15,8 +15,10 @@ namespace KouXiaGu
         [SerializeField, Range(1, 100)]
         private uint times = 50;
 
-        private static ConcurrentInstantiate concurrentInstantiate;
-        private static XiaGuObjectPool xiaGuObjectPool;
+        private static InstantiateActionPool<XiaGuObject> xiaInstantiateActionPool = new InstantiateActionPool<XiaGuObject>();
+        private static InstantiateActionPool<Component> compInstantiateActionPool = new InstantiateActionPool<Component>();
+        private static ConcurrentInstantiate concurrentInstantiate = new ConcurrentInstantiate();
+        private static XiaGuObjectPool xiaGuObjectPool = new XiaGuObjectPool();
         private static ComponentClone instance;
 
         private void Awake()
@@ -24,8 +26,6 @@ namespace KouXiaGu
             if (instance == null)
             {
                 instance = this;
-                concurrentInstantiate = new ConcurrentInstantiate();
-                xiaGuObjectPool = new XiaGuObjectPool();
             }
             else
             {
@@ -44,7 +44,7 @@ namespace KouXiaGu
         }
 
 
-        #region XiaGuObjectPool
+        #region Pool
 
         /// <summary>
         /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
@@ -90,13 +90,6 @@ namespace KouXiaGu
             return xiaGuObjectPool.InstantiateAsync(asyncGameObject);
         }
         /// <summary>
-        /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
-        /// </summary>
-        public static IEnumerable<IAsyncState<XiaGuObject>> PoolInstantiateAsync(IEnumerable<InstantiateAction<XiaGuObject>> asyncGameObjects)
-        {
-            return xiaGuObjectPool.InstantiateAsync(asyncGameObjects);
-        }
-        /// <summary>
         /// 异步的摧毁物体,或保存到对象池;
         /// </summary>
         public static void PoolDestroyAsync(XiaGuObject instance)
@@ -106,7 +99,7 @@ namespace KouXiaGu
 
         #endregion
 
-        #region ConcurrentInstantiate
+        #region Instantiate
 
         ///// <summary>
         ///// Unity方法实例化到游戏中;
@@ -145,13 +138,6 @@ namespace KouXiaGu
             return concurrentInstantiate.InstantiateAsync(asyncOject);
         }
         /// <summary>
-        /// 异步实例化;
-        /// </summary>
-        public static IEnumerable<IAsyncState<Component>> InstantiateAsync(IEnumerable<InstantiateAction<Component>> asyncOjects)
-        {
-            return concurrentInstantiate.InstantiateAsync(asyncOjects);
-        }
-        /// <summary>
         /// 异步摧毁物体;
         /// </summary>
         public static void DestroyAsync(Component instance)
@@ -160,6 +146,10 @@ namespace KouXiaGu
         }
 
         #endregion
+
+
+
+
 
     }
 

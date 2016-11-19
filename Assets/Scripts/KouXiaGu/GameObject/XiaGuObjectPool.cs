@@ -145,17 +145,6 @@ namespace KouXiaGu
             return asyncGameObject;
         }
         /// <summary>
-        /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
-        /// </summary>
-        public IEnumerable<IAsyncState<XiaGuObject>> InstantiateAsync(IEnumerable<InstantiateAction<XiaGuObject>> asyncGameObjects)
-        {
-            foreach (var asyncGameObject in asyncGameObjects)
-            {
-                AddOutPoolEventQueue(asyncGameObject);
-                yield return asyncGameObject;
-            }
-        }
-        /// <summary>
         /// 异步的摧毁物体,或保存到对象池;
         /// </summary>
         public void DestroyAsync(XiaGuObject instance)

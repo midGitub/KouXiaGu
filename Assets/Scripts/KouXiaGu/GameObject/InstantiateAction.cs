@@ -18,10 +18,10 @@ namespace KouXiaGu
     /// <summary>
     /// 将实例化方法打包;
     /// </summary>
-    public class InstantiateAction<T> : IAsyncState<T>
+    public sealed class InstantiateAction<T> : IAsyncState<T>
         where T : UnityEngine.Component
     {
-        public InstantiateAction()
+        private InstantiateAction()
         {
             Clear();
         }
@@ -77,16 +77,18 @@ namespace KouXiaGu
         /// <summary>
         /// 设置到实例化方式;
         /// </summary>
-        public void Set(T original)
+        internal void Set(T original)
         {
+            NotClearException();
             this.Original = original;
             this.methodType = MethodType.Original;
         }
         /// <summary>
         /// 设置到实例化方式;
         /// </summary>
-        public void Set(T original, Vector3 position, Quaternion rotation)
+        internal void Set(T original, Vector3 position, Quaternion rotation)
         {
+            NotClearException();
             this.Original = original;
             this.Position = position;
             this.Rotation = rotation;
@@ -95,8 +97,9 @@ namespace KouXiaGu
         /// <summary>
         /// 设置到实例化方式;
         /// </summary>
-        public void Set(T original, Transform parent, bool worldPositionStays)
+        internal void Set(T original, Transform parent, bool worldPositionStays)
         {
+            NotClearException();
             this.Original = original;
             this.Parent = parent;
             this.WorldPositionStays = worldPositionStays;
@@ -105,13 +108,22 @@ namespace KouXiaGu
         /// <summary>
         /// 设置到实例化方式;
         /// </summary>
-        public void Set(T original, Vector3 position, Quaternion rotation, Transform parent)
+        internal void Set(T original, Vector3 position, Quaternion rotation, Transform parent)
         {
+            NotClearException();
             this.Original = original;
             this.Position = position;
             this.Rotation = rotation;
             this.Parent = parent;
             this.methodType = MethodType.Original_Parent_WorldPositionStays;
+        }
+        /// <summary>
+        /// 当完成时实例化后若不清除信息重复使用后返回错误;
+        /// </summary>
+        private void NotClearException()
+        {
+            if (this.IsDone)
+                throw new AccessViolationException("重复使用!");
         }
 
         /// <summary>

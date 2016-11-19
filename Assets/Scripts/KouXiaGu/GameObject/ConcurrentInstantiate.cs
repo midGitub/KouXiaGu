@@ -28,17 +28,6 @@ namespace KouXiaGu
             return asyncGameObject;
         }
         /// <summary>
-        /// 异步实例化物体;
-        /// </summary>
-        public IEnumerable<IAsyncState<Component>> InstantiateAsync(IEnumerable<InstantiateAction<Component>> asyncGameObjects)
-        {
-            foreach (var asyncGameObject in asyncGameObjects)
-            {
-                AddWaitInstantiate(asyncGameObject);
-                yield return asyncGameObject;
-            }
-        }
-        /// <summary>
         /// 异步的摧毁物体;
         /// </summary>
         public void DestroyAsync(Component instance)
