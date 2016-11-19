@@ -8,7 +8,7 @@ namespace KouXiaGu
     /// <summary>
     /// 非主线程实例化 Unity.Component;
     /// </summary>
-    public class ConcurrentInstantiate
+    public class ConcurrentInstantiate : IThreadOfInstantiate<Component>
     {
 
         /// <summary>

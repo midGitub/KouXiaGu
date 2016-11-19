@@ -8,7 +8,7 @@ namespace KouXiaGu
     /// 允许线程调用的实例化池;
     /// 注意: 实例化后需要在主线程调用 MainThreadUpdate(),以保证在主线程能够实例化物体;
     /// </summary>
-    public class XiaGuObjectPool
+    public class XiaGuObjectPool : IThreadOfInstantiate<XiaGuObject>
     {
         public XiaGuObjectPool()
         {

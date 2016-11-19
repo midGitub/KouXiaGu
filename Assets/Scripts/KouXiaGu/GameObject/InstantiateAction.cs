@@ -25,22 +25,6 @@ namespace KouXiaGu
         {
             Clear();
         }
-        public InstantiateAction(T original) : this()
-        {
-            Set(original);
-        }
-        public InstantiateAction(T original, Vector3 position, Quaternion rotation) : this()
-        {
-            Set(original, position, rotation);
-        }
-        public InstantiateAction(T original, Transform parent, bool worldPositionStays) : this()
-        {
-            Set(original, parent, worldPositionStays);
-        }
-        public InstantiateAction(T original, Vector3 position, Quaternion rotation, Transform parent) : this()
-        {
-            Set(original, position, rotation, parent);
-        }
 
         /// <summary>
         /// 实例化方法枚举;
@@ -72,6 +56,43 @@ namespace KouXiaGu
             methodType = MethodType.None;
             IsDone = false;
             Result = default(T);
+        }
+
+        /// <summary>
+        /// 获取到实例;
+        /// </summary>
+        public static InstantiateAction<T> GetNew(T original)
+        {
+            var item = new InstantiateAction<T>();
+            item.Set(original);
+            return item;
+        }
+        /// <summary>
+        /// 获取到实例;
+        /// </summary>
+        public static InstantiateAction<T> GetNew(T original, Vector3 position, Quaternion rotation)
+        {
+            var item = new InstantiateAction<T>();
+            item.Set(original, position, rotation);
+            return item;
+        }
+        /// <summary>
+        /// 获取到实例;
+        /// </summary>
+        public static InstantiateAction<T> GetNew(T original, Transform parent, bool worldPositionStays)
+        {
+            var item = new InstantiateAction<T>();
+            item.Set(original, parent, worldPositionStays);
+            return item;
+        }
+        /// <summary>
+        /// 获取到实例;
+        /// </summary>
+        public static InstantiateAction<T> GetNew(T original, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            var item = new InstantiateAction<T>();
+            item.Set(original, position, rotation, parent);
+            return item;
         }
 
         /// <summary>

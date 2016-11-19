@@ -15,8 +15,6 @@ namespace KouXiaGu
         [SerializeField, Range(1, 100)]
         private uint times = 50;
 
-        private static InstantiateActionPool<XiaGuObject> xiaInstantiateActionPool = new InstantiateActionPool<XiaGuObject>();
-        private static InstantiateActionPool<Component> compInstantiateActionPool = new InstantiateActionPool<Component>();
         private static ConcurrentInstantiate concurrentInstantiate = new ConcurrentInstantiate();
         private static XiaGuObjectPool xiaGuObjectPool = new XiaGuObjectPool();
         private static ComponentClone instance;
@@ -44,31 +42,80 @@ namespace KouXiaGu
         }
 
 
+        #region Instantiate
+
+
+        /// <summary>
+        /// 异步实例化;
+        /// </summary>
+        public static IAsyncState<Component> InstantiateAsync(InstantiateAction<Component> asyncOject)
+        {
+            return concurrentInstantiate.InstantiateAsync(asyncOject);
+        }
+        /// <summary>
+        /// 异步实例化;
+        /// </summary>
+        public static IAsyncState<Component> InstantiateAsync(Component original)
+        {
+            return concurrentInstantiate.InstantiateAsync(original);
+        }
+        /// <summary>
+        /// 异步实例化;
+        /// </summary>
+        public static IAsyncState<Component> InstantiateAsync(Component original, Vector3 position, Quaternion rotation)
+        {
+            return concurrentInstantiate.InstantiateAsync(original, position, rotation);
+        }
+        /// <summary>
+        /// 异步实例化;
+        /// </summary>
+        public static IAsyncState<Component> InstantiateAsync(Component original, Transform parent, bool worldPositionStays = true)
+        {
+            return concurrentInstantiate.InstantiateAsync(original, parent, worldPositionStays);
+        }
+        /// <summary>
+        /// 异步实例化;
+        /// </summary>
+        public static IAsyncState<Component> InstantiateAsync(Component original, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            return concurrentInstantiate.InstantiateAsync(original, position, rotation, parent);
+        }
+        /// <summary>
+        /// 异步摧毁物体;
+        /// </summary>
+        public static void DestroyAsync(Component instance)
+        {
+            concurrentInstantiate.DestroyAsync(instance);
+        }
+
+        #endregion
+
+
         #region Pool
 
         /// <summary>
-        /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
+        /// 从对象池取出物体,若存在物体则初始化返回,否则实例化\克隆物体并返回;
         /// </summary>
         public static XiaGuObject PoolInstantiate(XiaGuObject original)
         {
             return xiaGuObjectPool.Instantiate(original);
         }
         /// <summary>
-        /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
+        /// 从对象池取出物体,若存在物体则初始化返回,否则实例化\克隆物体并返回;
         /// </summary>
         public static XiaGuObject PoolInstantiate(XiaGuObject original, Vector3 position, Quaternion rotation)
         {
             return xiaGuObjectPool.Instantiate(original, position, rotation);
         }
         /// <summary>
-        /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
+        /// 从对象池取出物体,若存在物体则初始化返回,否则实例化\克隆物体并返回;
         /// </summary>
         public static XiaGuObject PoolInstantiate(XiaGuObject original, Transform parent, bool worldPositionStays = true)
         {
             return xiaGuObjectPool.Instantiate(original, parent, worldPositionStays);
         }
         /// <summary>
-        /// 从对象池取出物体,若存在物体则初始化返回,否则初始化克隆物体并返回;
+        /// 从对象池取出物体,若存在物体则初始化返回,否则实例化\克隆物体并返回;
         /// </summary>
         public static XiaGuObject PoolInstantiate(XiaGuObject original, Vector3 position, Quaternion rotation, Transform parent)
         {
@@ -90,6 +137,34 @@ namespace KouXiaGu
             return xiaGuObjectPool.InstantiateAsync(asyncGameObject);
         }
         /// <summary>
+        /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
+        /// </summary>
+        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original)
+        {
+            return xiaGuObjectPool.InstantiateAsync(original);
+        }
+        /// <summary>
+        /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
+        /// </summary>
+        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original, Vector3 position, Quaternion rotation)
+        {
+            return xiaGuObjectPool.InstantiateAsync(original, position, rotation);
+        }
+        /// <summary>
+        /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
+        /// </summary>
+        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original, Transform parent, bool worldPositionStays = true)
+        {
+            return xiaGuObjectPool.InstantiateAsync(original, parent, worldPositionStays);
+        }
+        /// <summary>
+        /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
+        /// </summary>
+        public static IAsyncState<XiaGuObject> PoolInstantiateAsync(XiaGuObject original, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            return xiaGuObjectPool.InstantiateAsync(original, position, rotation, parent);
+        }
+        /// <summary>
         /// 异步的摧毁物体,或保存到对象池;
         /// </summary>
         public static void PoolDestroyAsync(XiaGuObject instance)
@@ -98,58 +173,6 @@ namespace KouXiaGu
         }
 
         #endregion
-
-        #region Instantiate
-
-        ///// <summary>
-        ///// Unity方法实例化到游戏中;
-        ///// </summary>
-        //public static UnityEngine.Object Instantiate(UnityEngine.Object original)
-        //{
-        //    return UnityEngine.Object.Instantiate(original);
-        //}
-        ///// <summary>
-        ///// Unity方法实例化到游戏中;
-        ///// </summary>
-        //public static UnityEngine.Object Instantiate(UnityEngine.Object original, Vector3 position, Quaternion rotation)
-        //{
-        //    return UnityEngine.Object.Instantiate(original, position, rotation);
-        //}
-        ///// <summary>
-        ///// Unity方法实例化到游戏中;
-        ///// </summary>
-        //public static UnityEngine.Object Instantiate(UnityEngine.Object original, Transform parent, bool worldPositionStays)
-        //{
-        //    return UnityEngine.Object.Instantiate(original, parent, worldPositionStays);
-        //}
-        ///// <summary>
-        ///// Unity方法实例化到游戏中;
-        ///// </summary>
-        //public static UnityEngine.Object Instantiate(UnityEngine.Object original, Vector3 position, Quaternion rotation, Transform parent)
-        //{
-        //    return UnityEngine.Object.Instantiate(original, position, rotation, parent);
-        //}
-
-        /// <summary>
-        /// 异步实例化;
-        /// </summary>
-        public static IAsyncState<Component> InstantiateAsync(InstantiateAction<Component> asyncOject)
-        {
-            return concurrentInstantiate.InstantiateAsync(asyncOject);
-        }
-        /// <summary>
-        /// 异步摧毁物体;
-        /// </summary>
-        public static void DestroyAsync(Component instance)
-        {
-            concurrentInstantiate.DestroyAsync(instance);
-        }
-
-        #endregion
-
-
-
-
 
     }
 
