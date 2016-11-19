@@ -141,7 +141,7 @@ namespace KouXiaGu
         /// </summary>
         public IAsyncState<XiaGuObject> InstantiateAsync(InstantiateAction<XiaGuObject> asyncGameObject)
         {
-            AddOutPoolEventQueue(asyncGameObject);
+            AddInstantiateQueue(asyncGameObject);
             return asyncGameObject;
         }
         /// <summary>
@@ -149,7 +149,7 @@ namespace KouXiaGu
         /// </summary>
         public void DestroyAsync(XiaGuObject instance)
         {
-            AddInPoolEventQueue(instance);
+            AddDestroyQueue(instance);
         }
 
         #endregion
@@ -210,6 +210,7 @@ namespace KouXiaGu
             {
                 if (waitInstantiateQueue.TryDequeue(out asyncGameObject))
                 {
+                    asyncGameObject.OnQueue = false;
                     key = GetKey(asyncGameObject);
                     if (TryGetInstance(key, out clone))
                     {
@@ -267,15 +268,16 @@ namespace KouXiaGu
         /// <summary>
         /// 加入到取出对象事件队列;
         /// </summary>
-        private void AddOutPoolEventQueue(InstantiateAction<XiaGuObject> asyncInstance)
+        private void AddInstantiateQueue(InstantiateAction<XiaGuObject> asyncInstance)
         {
             waitInstantiateQueue.Enqueue(asyncInstance);
+            asyncInstance.OnQueue = true;
         }
 
         /// <summary>
         /// 加入到加入对象事件队列;
         /// </summary>
-        private void AddInPoolEventQueue(XiaGuObject instance)
+        private void AddDestroyQueue(XiaGuObject instance)
         {
             waitDestroyQueue.Enqueue(instance);
         }

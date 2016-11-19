@@ -10,7 +10,17 @@ namespace KouXiaGu
     /// </summary>
     public interface IAsyncState<T>
     {
+        /// <summary>
+        /// 是否正在队列中排队?
+        /// </summary>
+        bool OnQueue { get; }
+        /// <summary>
+        /// 是否已经完成了读取?
+        /// </summary>
         bool IsDone { get; }
+        /// <summary>
+        /// 完整后的结果;
+        /// </summary>
         T Result { get; }
     }
 
@@ -39,6 +49,7 @@ namespace KouXiaGu
         }
 
         internal MethodType methodType { get; private set; }
+        public bool OnQueue { get; set; }
         public bool IsDone { get; private set; }
         public T Result { get; private set; }
 
@@ -53,9 +64,16 @@ namespace KouXiaGu
         /// </summary>
         public void Clear()
         {
-            methodType = MethodType.None;
-            IsDone = false;
-            Result = default(T);
+            if (!OnQueue)
+            {
+                methodType = MethodType.None;
+                IsDone = false;
+                Result = default(T);
+            }
+            else
+            {
+                throw new AccessViolationException("物体已经排队到队列,无法清空!");
+            }
         }
 
         /// <summary>

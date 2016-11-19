@@ -15,9 +15,9 @@ namespace KouXiaGu
         [SerializeField, Range(1, 100)]
         private uint times = 50;
 
-        private static ConcurrentInstantiate concurrentInstantiate = new ConcurrentInstantiate();
-        private static XiaGuObjectPool xiaGuObjectPool = new XiaGuObjectPool();
-        private static ComponentClone instance;
+        internal static readonly ConcurrentInstantiate concurrentInstantiate = new ConcurrentInstantiate();
+        internal static readonly XiaGuObjectPool xiaGuObjectPool = new XiaGuObjectPool();
+        internal static ComponentClone instance;
 
         private void Awake()
         {
@@ -43,7 +43,6 @@ namespace KouXiaGu
 
 
         #region Instantiate
-
 
         /// <summary>
         /// 异步实例化;

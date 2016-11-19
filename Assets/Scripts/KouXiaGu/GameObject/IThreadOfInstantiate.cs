@@ -7,12 +7,17 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 非主线程实例化游戏物体方法;
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IThreadOfInstantiate<T>
         where T : Component
     {
-
+        /// <summary>
+        /// 异步实例化物体;
+        /// </summary>
         IAsyncState<T> InstantiateAsync(InstantiateAction<T> asyncObject);
-
     }
 
     /// <summary>

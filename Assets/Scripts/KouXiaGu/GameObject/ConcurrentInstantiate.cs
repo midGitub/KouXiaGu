@@ -20,6 +20,22 @@ namespace KouXiaGu
 
 
         /// <summary>
+        /// 等待实例化的元素个数;
+        /// </summary>
+        public int WaitInstantiateCount
+        {
+            get { return waitInstantiateQueue.Count; }
+        }
+        /// <summary>
+        /// 等待销毁的元素个数;
+        /// </summary>
+        public int WaitDestroyCount
+        {
+            get { return waitDestroyQueue.Count; }
+        }
+
+
+        /// <summary>
         /// 异步实例化物体;
         /// </summary>
         public IAsyncState<Component> InstantiateAsync(InstantiateAction<Component> asyncGameObject)
@@ -42,6 +58,7 @@ namespace KouXiaGu
         private void AddWaitInstantiate(InstantiateAction<Component> instance)
         {
             waitInstantiateQueue.Enqueue(instance);
+            instance.OnQueue = true;
         }
         /// <summary>
         /// 加入到等待摧毁队列中;
@@ -71,6 +88,7 @@ namespace KouXiaGu
             {
                 if (waitInstantiateQueue.TryDequeue(out async))
                 {
+                    async.OnQueue = false;
                     Instantiate(async);
                 }
             }
