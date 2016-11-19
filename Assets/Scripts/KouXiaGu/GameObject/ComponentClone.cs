@@ -19,6 +19,27 @@ namespace KouXiaGu
         internal static readonly XiaGuObjectPool xiaGuObjectPool = new XiaGuObjectPool();
         internal static ComponentClone instance;
 
+        [ShowOnlyProperty]
+        public static int WaitDestroy0
+        {
+            get { return concurrentInstantiate.WaitDestroyCount; }
+        }
+        [ShowOnlyProperty]
+        public static int WaitDestroy1
+        {
+            get { return xiaGuObjectPool.WaitDestroyCount; }
+        }
+        [ShowOnlyProperty]
+        public static int WaitInstantiate0
+        {
+            get { return concurrentInstantiate.WaitInstantiateCount; }
+        }
+        [ShowOnlyProperty]
+        public static int WaitInstantiate1
+        {
+            get { return xiaGuObjectPool.WaitInstantiateCount; }
+        }
+
         private void Awake()
         {
             if (instance == null)
@@ -40,7 +61,6 @@ namespace KouXiaGu
             concurrentInstantiate.MainThreadUpdate(times);
             xiaGuObjectPool.MainThreadUpdate(times);
         }
-
 
         #region Instantiate
 
@@ -88,7 +108,6 @@ namespace KouXiaGu
         }
 
         #endregion
-
 
         #region Pool
 
@@ -174,5 +193,21 @@ namespace KouXiaGu
         #endregion
 
     }
+
+
+    //[CustomEditor(typeof(ComponentClone))]
+    //public class ComponentCloneDrawer : Editor
+    //{
+    //    public override void OnInspectorGUI()
+    //    {
+    //        base.OnInspectorGUI();
+
+    //        ComponentClone instance = (ComponentClone)target;
+
+
+
+    //    }
+    //}
+
 
 }
