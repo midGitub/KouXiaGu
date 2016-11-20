@@ -35,7 +35,7 @@ namespace KouXiaGu
         {
             for (int i = 0; i < 6; i++)
             {
-                UnityObjectClone.InstantiateInThread(prefab, position, rotation);
+                (UnityObjectClone.GetInstance as IThreadToClone<Component>).InstantiateInQueue(prefab, position, rotation);
                 count++;
             }
         }

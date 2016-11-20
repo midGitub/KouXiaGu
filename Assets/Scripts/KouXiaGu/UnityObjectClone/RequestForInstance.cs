@@ -14,6 +14,7 @@ namespace KouXiaGu
         bool WorldPositionStays { get; }
 
         T Instantiate();
+        void SetResult(T clone);
     }
 
 
@@ -31,7 +32,7 @@ namespace KouXiaGu
 
 
     public struct RequestForInstance<T> : IRequestForInstance<T>
-        where T :UnityEngine.Object
+        where T : UnityEngine.Component
     {
         public RequestForInstance(T original) : this()
         {
@@ -112,6 +113,11 @@ namespace KouXiaGu
             }
         }
 
+        void IRequestForInstance<T>.SetResult(T clone)
+        {
+            return;
+        }
+
         /// <summary>
         /// Unity方法实例化到游戏中;
         /// </summary>
@@ -140,6 +146,7 @@ namespace KouXiaGu
         {
             return UnityEngine.Object.Instantiate(original, position, rotation, parent) as T;
         }
+
     }
 
 
@@ -163,11 +170,15 @@ namespace KouXiaGu
     /// 将实例化方法打包;
     /// </summary>
     public class RequestForInstanceAsync<T> : IAsyncState<T>, IRequestForInstance<T>
-        where T : UnityEngine.Object
+       where T : UnityEngine.Component
     {
         private RequestForInstanceAsync()
         {
             Clear();
+        }
+        public RequestForInstanceAsync(RequestForInstance<T> requestForInstance) : this()
+        {
+            this.requestForInstance = requestForInstance;
         }
         public RequestForInstanceAsync(T original) : this()
         {
@@ -217,7 +228,7 @@ namespace KouXiaGu
             Result = default(T);
         }
 
-        internal void SetResult(T clone)
+       void IRequestForInstance<T>.SetResult(T clone)
         {
             IsDone = true;
             Result = clone;
