@@ -74,7 +74,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步实例化;
         /// </summary>
-        public static IAsyncState<Component> InstantiateInThread(InstantiateRequest<Component> instantiate)
+        public static IAsyncState<Component> InstantiateInThread(RequestForInstanceAsync<Component> instantiate)
         {
             return concurrentInstantiate.InstantiateAsync(instantiate);
         }
@@ -161,7 +161,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public static IAsyncState<XiaGuObject> InstantiateInThread(InstantiateRequest<XiaGuObject> asyncGameObject)
+        public static IAsyncState<XiaGuObject> InstantiateInThread(RequestForInstanceAsync<XiaGuObject> asyncGameObject)
         {
             return xiaGuObjectPool.InstantiateAsync(asyncGameObject);
         }
@@ -209,28 +209,28 @@ namespace KouXiaGu
 
         #region 获取到请求类;
 
-        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original)
+        private static RequestForInstanceAsync<T> GetInstantiateRequest<T>(T original)
              where T : Component
         {
-            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original);
+            RequestForInstanceAsync<T> instantiate = new RequestForInstanceAsync<T>(original);
             return instantiate;
         }
-        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation)
+        private static RequestForInstanceAsync<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation)
              where T : Component
         {
-            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, position, rotation);
+            RequestForInstanceAsync<T> instantiate = new RequestForInstanceAsync<T>(original, position, rotation);
             return instantiate;
         }
-        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Transform parent, bool worldPositionStays)
+        private static RequestForInstanceAsync<T> GetInstantiateRequest<T>(T original, Transform parent, bool worldPositionStays)
             where T : Component
         {
-            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, parent, worldPositionStays);
+            RequestForInstanceAsync<T> instantiate = new RequestForInstanceAsync<T>(original, parent, worldPositionStays);
             return instantiate;
         }
-        private static InstantiateRequest<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation, Transform parent)
+        private static RequestForInstanceAsync<T> GetInstantiateRequest<T>(T original, Vector3 position, Quaternion rotation, Transform parent)
             where T : Component
         {
-            InstantiateRequest<T> instantiate = new InstantiateRequest<T>(original, position, rotation, parent);
+            RequestForInstanceAsync<T> instantiate = new RequestForInstanceAsync<T>(original, position, rotation, parent);
             return instantiate;
         }
 

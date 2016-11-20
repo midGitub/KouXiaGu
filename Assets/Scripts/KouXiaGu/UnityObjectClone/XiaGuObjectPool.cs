@@ -27,7 +27,7 @@ namespace KouXiaGu
         /// <summary>
         /// 等待主线程进行从池移除事件的队列;
         /// </summary>
-        private ConcurrentQueue<InstantiateRequest<XiaGuObject>> waitInstantiateQueue = new ConcurrentQueue<InstantiateRequest<XiaGuObject>>();
+        private ConcurrentQueue<RequestForInstanceAsync<XiaGuObject>> waitInstantiateQueue = new ConcurrentQueue<RequestForInstanceAsync<XiaGuObject>>();
         /// <summary>
         /// 等待主线程进行加入池事件的队列;
         /// </summary>
@@ -155,7 +155,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步的实例化,若存在对象池内则从对象池返回,否则创建一个克隆返回;
         /// </summary>
-        public IAsyncState<XiaGuObject> InstantiateAsync(InstantiateRequest<XiaGuObject> asyncGameObject)
+        public IAsyncState<XiaGuObject> InstantiateAsync(RequestForInstanceAsync<XiaGuObject> asyncGameObject)
         {
             AddInstantiateQueue(asyncGameObject);
             return asyncGameObject;
@@ -184,7 +184,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到对象池的Key;
         /// </summary>
-        private string GetKey(InstantiateRequest<XiaGuObject> instance)
+        private string GetKey(RequestForInstanceAsync<XiaGuObject> instance)
         {
             return instance.Original.Name;
         }
@@ -221,13 +221,12 @@ namespace KouXiaGu
         {
             string key;
             XiaGuObject clone;
-            InstantiateRequest<XiaGuObject> asyncGameObject;
+            RequestForInstanceAsync<XiaGuObject> asyncGameObject;
 
             while (!waitInstantiateQueue.IsEmpty && times-- > uint.MinValue)
             {
                 if (waitInstantiateQueue.TryDequeue(out asyncGameObject))
                 {
-                    asyncGameObject.OnInitializeQueue = false;
                     key = GetKey(asyncGameObject);
                     if (TryGetInstance(key, out clone))
                     {
@@ -285,10 +284,9 @@ namespace KouXiaGu
         /// <summary>
         /// 加入到取出对象事件队列;
         /// </summary>
-        private void AddInstantiateQueue(InstantiateRequest<XiaGuObject> asyncInstance)
+        private void AddInstantiateQueue(RequestForInstanceAsync<XiaGuObject> asyncInstance)
         {
             waitInstantiateQueue.Enqueue(asyncInstance);
-            asyncInstance.OnInitializeQueue = true;
         }
 
         /// <summary>

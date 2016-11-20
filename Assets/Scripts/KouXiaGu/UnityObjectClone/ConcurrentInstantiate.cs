@@ -14,8 +14,8 @@ namespace KouXiaGu
         /// <summary>
         /// 等待主线程实例化的队列;
         /// </summary>
-        private ConcurrentQueue<InstantiateRequest<Component>> waitInstantiateQueue =
-            new ConcurrentQueue<InstantiateRequest<Component>>();
+        private ConcurrentQueue<RequestForInstanceAsync<Component>> waitInstantiateQueue =
+            new ConcurrentQueue<RequestForInstanceAsync<Component>>();
         private ConcurrentQueue<Component> waitDestroyQueue = new ConcurrentQueue<Component>();
 
 
@@ -38,7 +38,7 @@ namespace KouXiaGu
         /// <summary>
         /// 异步实例化物体;
         /// </summary>
-        public IAsyncState<Component> InstantiateAsync(InstantiateRequest<Component> asyncGameObject)
+        public IAsyncState<Component> InstantiateAsync(RequestForInstanceAsync<Component> asyncGameObject)
         {
             AddWaitInstantiate(asyncGameObject);
             return asyncGameObject;
@@ -55,10 +55,9 @@ namespace KouXiaGu
         /// <summary>
         /// 加入到等待实例化队列中;
         /// </summary>
-        private void AddWaitInstantiate(InstantiateRequest<Component> instance)
+        private void AddWaitInstantiate(RequestForInstanceAsync<Component> instance)
         {
             waitInstantiateQueue.Enqueue(instance);
-            instance.OnInitializeQueue = true;
         }
         /// <summary>
         /// 加入到等待摧毁队列中;
@@ -82,13 +81,12 @@ namespace KouXiaGu
         /// </summary>
         private void UpdateInstantiateQueue(uint times)
         {
-            InstantiateRequest<Component> async;
+            RequestForInstanceAsync<Component> async;
 
             while (!waitInstantiateQueue.IsEmpty && times-- > uint.MinValue)
             {
                 if (waitInstantiateQueue.TryDequeue(out async))
                 {
-                    async.OnInitializeQueue = false;
                     Instantiate(async);
                 }
             }
@@ -112,7 +110,7 @@ namespace KouXiaGu
         /// <summary>
         /// 主线程调用 实例化物体;
         /// </summary>
-        private void Instantiate(InstantiateRequest<Component> async)
+        private void Instantiate(RequestForInstanceAsync<Component> async)
         {
             async.Instantiate();
         }
