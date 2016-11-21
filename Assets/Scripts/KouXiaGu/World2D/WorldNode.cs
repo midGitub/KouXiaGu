@@ -17,7 +17,7 @@ namespace KouXiaGu.World2D
     /// 世界节点;
     /// </summary>
     [ProtoContract]
-    public class WorldNode : IReadOnlyWorldNode, IReadOnly<WorldNode>
+    public struct WorldNode : IReadOnlyWorldNode, IReadOnly<WorldNode>
     {
         /// <summary>
         /// 地貌;

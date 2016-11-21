@@ -10,121 +10,89 @@ namespace KouXiaGu.World2D
     /// <summary>
     /// 根据块加载的地图;
     /// </summary>
-    [Serializable]
-    public abstract class BlockMap<T, TBlock> : IMap<IntVector2, T>
+    /// <typeparam name="T">节点</typeparam>
+    /// <typeparam name="TBlock">地图块</typeparam>
+    public class BlockMap<T, TBlock> : IMap<IntVector2, T>, IMap<ShortVector2, TBlock>
         where TBlock : IMap<ShortVector2, T>
     {
-        protected BlockMap() { }
 
-        public virtual void Awake()
+        public BlockMap(ShortVector2 partitionSizes)
         {
+            this.partitionSizes = partitionSizes;
             mapCollection = new Dictionary<ShortVector2, TBlock>();
         }
 
+        protected ShortVector2 partitionSizes { get; private set; }
+        protected Dictionary<ShortVector2, TBlock> mapCollection { get; private set; }
 
-        [SerializeField]
-        protected ShortVector2 partitionSizes;
-        private Dictionary<ShortVector2, TBlock> mapCollection;
-        /// <summary>
-        /// 线程锁;
-        /// </summary>
-        protected object thisLock = new object();
 
-        public Dictionary<ShortVector2, TBlock> MapCollection
+        TBlock IMap<ShortVector2, TBlock>.this[ShortVector2 position]
         {
-            get { return mapCollection; }
+            get { return mapCollection[position]; }
+            set { mapCollection[position] = value; }
         }
 
-
-        public T this[IntVector2 position]
+        T IMap<IntVector2, T>.this[IntVector2 position]
         {
             get
             {
                 ShortVector2 realPosition;
-                ShortVector2 address = GetAddress(position, out realPosition);
-                TBlock block;
-
-                if (mapCollection.TryGetValue(address, out block))
-                {
-                    return block[realPosition];
-                }
-                throw BlockNotFoundException(address);
+                TBlock block = TransformToBlock(position, out realPosition);
+                return block[realPosition];
             }
             set
             {
                 ShortVector2 realPosition;
-                ShortVector2 address = GetAddress(position, out realPosition);
-                TBlock block;
-
-                if (mapCollection.TryGetValue(address, out block))
-                {
-                    block[realPosition] = value;
-                    return;
-                }
-                throw BlockNotFoundException(address);
+                TBlock block = TransformToBlock(position, out realPosition);
+                block[realPosition] = value;
             }
         }
    
-        public void Add(IntVector2 position, T item)
+        void IMap<IntVector2, T>.Add(IntVector2 position, T item)
         {
             ShortVector2 realPosition;
-            ShortVector2 address = GetAddress(position, out realPosition);
+            TBlock block = TransformToBlock(position, out realPosition);
+            block.Add(realPosition, item);
+        }
+
+        bool IMap<IntVector2, T>.Remove(IntVector2 position)
+        {
+            ShortVector2 realPosition;
+            TBlock block = TransformToBlock(position, out realPosition);
+            return block.Remove(realPosition);
+        }
+
+        bool IMap<IntVector2, T>.Contains(IntVector2 position)
+        {
+            ShortVector2 realPosition;
+            TBlock block = TransformToBlock(position, out realPosition);
+            return block.Contains(realPosition);
+        }
+
+        bool IMap<IntVector2, T>.TryGetValue(IntVector2 position, out T item)
+        {
+            ShortVector2 realPosition;
+            TBlock block = TransformToBlock(position, out realPosition);
+            return block.TryGetValue(realPosition, out item);
+        }
+
+        /// <summary>
+        /// 转换成块的信息;
+        /// </summary>
+        TBlock TransformToBlock(IntVector2 position, out ShortVector2 realPosition)
+        {
             TBlock block;
+            ShortVector2 address = GetAddress(position, out realPosition);
 
             if (mapCollection.TryGetValue(address, out block))
             {
-                block.Add(realPosition, item);
-                return;
+                return block;
             }
             throw BlockNotFoundException(address);
+
         }
 
-        public bool Remove(IntVector2 position)
-        {
-            ShortVector2 realPosition;
-            ShortVector2 address = GetAddress(position, out realPosition);
-            TBlock block;
-
-            if (mapCollection.TryGetValue(address, out block))
-            {
-               return block.Remove(realPosition);
-            }
-            throw BlockNotFoundException(address);
-        }
-
-        public bool Contains(IntVector2 position)
-        {
-            ShortVector2 realPosition;
-            ShortVector2 address = GetAddress(position, out realPosition);
-            TBlock block;
-
-            if (mapCollection.TryGetValue(address, out block))
-            {
-                return block.Contains(realPosition);
-            }
-            throw BlockNotFoundException(address);
-        }
-
-        public bool TryGetValue(IntVector2 position, out TBlock item)
-        {
-            ShortVector2 address = GetAddress(position);
-            return mapCollection.TryGetValue(address, out item);
-        }
-
-        public bool TryGetValue(IntVector2 position, out T item)
-        {
-            ShortVector2 realPosition;
-            ShortVector2 address = GetAddress(position, out realPosition);
-            TBlock block;
-
-            if (mapCollection.TryGetValue(address, out block))
-            {
-                return block.TryGetValue(realPosition, out item);
-            }
-            throw BlockNotFoundException(address);
-        }
-
-        public void Clear()
+        void IMap<IntVector2, T>.Clear()
         {
             mapCollection.Clear();
         }
@@ -132,10 +100,35 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 返回地图块错误信息;
         /// </summary>
-        private BlockNotFoundException BlockNotFoundException(ShortVector2 address)
+        BlockNotFoundException BlockNotFoundException(ShortVector2 address)
         {
             return new BlockNotFoundException(address.ToString() + "地图块未载入!\n" +
                 mapCollection.Keys.ToString());
+        }
+
+        void IMap<ShortVector2, TBlock>.Add(ShortVector2 position, TBlock item)
+        {
+            mapCollection.Add(position, item);
+        }
+
+        bool IMap<ShortVector2, TBlock>.Remove(ShortVector2 position)
+        {
+           return mapCollection.Remove(position);
+        }
+
+        bool IMap<ShortVector2, TBlock>.Contains(ShortVector2 position)
+        {
+            return mapCollection.ContainsKey(position);
+        }
+
+        bool IMap<ShortVector2, TBlock>.TryGetValue(ShortVector2 position, out TBlock item)
+        {
+            return mapCollection.TryGetValue(position, out item);
+        }
+
+        void IMap<ShortVector2, TBlock>.Clear()
+        {
+            mapCollection.Clear();
         }
 
         /// <summary>

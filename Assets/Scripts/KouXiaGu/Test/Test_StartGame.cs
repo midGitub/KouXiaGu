@@ -22,7 +22,7 @@ namespace KouXiaGu.Test
         private Button quitGame;
 
         [SerializeField]
-        private Initializers initializers;
+        private InitializersOB initializers;
 
         [SerializeField]
         private InputField mapDir;

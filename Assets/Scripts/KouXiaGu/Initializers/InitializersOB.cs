@@ -18,9 +18,9 @@ namespace KouXiaGu
     public interface IArchiveInThread : IThreadInit<ArchivedGroup> { }
 
 
-    public class Initializers : MonoBehaviour
+    public class InitializersOB : MonoBehaviour
     {
-        private Initializers() { }
+        private InitializersOB() { }
 
         [SerializeField]
         private GameStatusReactiveProperty state = new GameStatusReactiveProperty(GameStatus.Ready);
