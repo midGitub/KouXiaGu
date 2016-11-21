@@ -9,7 +9,7 @@ namespace KouXiaGu.World2D
 {
 
     /// <summary>
-    /// Int类型的向量,不作为哈希表的键,因为Int哈希值不够分;
+    /// Int类型的向量,不作为哈希表的键,因为哈希值不够分;
     /// </summary>
     [Serializable, ProtoContract]
     public struct IntVector2 : IEquatable<IntVector2>

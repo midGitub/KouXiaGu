@@ -7,17 +7,11 @@ using ProtoBuf;
 namespace KouXiaGu.World2D
 {
 
-    public interface IReadOnlyWorldNode : IReadOnly<WorldNode>
-    {
-        int Landform { get; }
-        bool Road { get; }
-    }
-
     /// <summary>
     /// 世界节点;
     /// </summary>
     [ProtoContract]
-    public struct WorldNode : IReadOnlyWorldNode, IReadOnly<WorldNode>
+    public struct WorldNode
     {
         /// <summary>
         /// 地貌;

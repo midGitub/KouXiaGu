@@ -25,10 +25,16 @@ namespace KouXiaGu.World2D
         /// 地图缓存文件目录;
         /// </summary>
         [SerializeField]
-        private string archiveTempDirectoryName;
+        string archiveTempDirectoryName;
+
+        /// <summary>
+        /// 做出的改变保存在预制地图上;
+        /// </summary>
+        [SerializeField]
+        bool editPrefab;
+
 
         public string FullPrefabMapDirectoryPath { get; private set; }
-
 
         public string AddressPrefix
         {
@@ -47,9 +53,17 @@ namespace KouXiaGu.World2D
 
         public void Unload(ShortVector2 address, MapBlock<T> block)
         {
-            this.SaveArchiveMapBlockOrNot(address, block);
+            SaveMapBlock(address, block);
         }
 
+        void SaveMapBlock(ShortVector2 address, MapBlock<T> block)
+        {
+            this.SaveArchiveMapBlockOrNot(address, block);
+            if (editPrefab)
+            {
+                this.SavePrefabMapBlockOrNot(address, block);
+            }
+        }
 
         /// <summary>
         /// 当开始构建游戏时调用;
@@ -63,7 +77,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将存档的归档地图拷贝到缓存地图文件夹下;
         /// </summary>
-        private void RecoveryTempData(string fullArchivedDirectoryPath)
+        void RecoveryTempData(string fullArchivedDirectoryPath)
         {
             this.DeleteMapFile(this.FullArchiveTempDirectoryPath);
             if (Directory.Exists(fullArchivedDirectoryPath))
@@ -75,7 +89,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 从存档读取信息;
         /// </summary>
-        private void RecoveryLoadArchived(string fullpathPrefabMapDirectoryPath)
+        void RecoveryLoadArchived(string fullpathPrefabMapDirectoryPath)
         {
             if (!Directory.Exists(fullpathPrefabMapDirectoryPath))
                 throw new FileNotFoundException("地图丢失!" + fullpathPrefabMapDirectoryPath);
@@ -95,19 +109,19 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将地图保存到缓存地图文件夹内;
         /// </summary>
-        public void OnSave(IBlockMap<ShortVector2, MapBlock<T>> blockMap)
+        void OnSave(IBlockMap<ShortVector2, MapBlock<T>> blockMap)
         {
             KeyValuePair<ShortVector2, MapBlock<T>>[] pairs = blockMap.ToArray();
             foreach (var pair in pairs)
             {
-                this.SaveArchiveMapBlockOrNot(pair.Key, pair.Value);
+                SaveMapBlock(pair.Key, pair.Value);
             }
         }
 
         /// <summary>
         /// 复制缓存存档地图到存档路径下;
         /// </summary>
-        private void ArchiveCopyArchived(string fullArchivedDirectoryPath)
+        void ArchiveCopyArchived(string fullArchivedDirectoryPath)
         {
             this.ArchiveMapCopyTo(fullArchivedDirectoryPath, true);
         }

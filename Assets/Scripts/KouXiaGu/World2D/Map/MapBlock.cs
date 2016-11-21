@@ -56,6 +56,14 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
+        /// 获取到所有的更改;
+        /// </summary>
+        public Dictionary<ShortVector2, T> AllData()
+        {
+            return mapNodeSet;
+        }
+
+        /// <summary>
         /// 获取到归档的内容;
         /// </summary>
         public Dictionary<ShortVector2, T> Archive()

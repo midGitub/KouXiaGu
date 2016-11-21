@@ -77,7 +77,7 @@ namespace KouXiaGu.World2D
             where T : struct
         {
             string fullPrefabMapFilePath = info.GetFullPrefabMapFilePath(blockAddress);
-            SaveMapBlockOrNot(fullPrefabMapFilePath, mapBlock.Archive());
+            SaveMapBlockOrNot(fullPrefabMapFilePath, mapBlock.AllData());
         }
 
         /// <summary>
