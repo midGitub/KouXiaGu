@@ -13,7 +13,7 @@ namespace KouXiaGu.World2D
     /// 游戏地图;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap2D : MonoBehaviour, IStartGameEvent, IArchiveEvent, IQuitGameEvent
+    public class WorldMap : MonoBehaviour, IStartGameEvent, IArchiveEvent, IQuitGameEvent
     {
 
         /// <summary>

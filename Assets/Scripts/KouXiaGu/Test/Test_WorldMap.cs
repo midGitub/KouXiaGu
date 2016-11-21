@@ -17,12 +17,12 @@ namespace KouXiaGu.Test
         [SerializeField]
         private int Landform;
 
-        private WorldMap2D worldMap;
+        private WorldMap worldMap;
 
 
         private void Awake()
         {
-            worldMap = GameController.FindInstance<WorldMap2D>();
+            worldMap = GameController.FindInstance<WorldMap>();
             textObject = textObject ?? GetComponent<Text>();
         }
 
@@ -80,13 +80,15 @@ namespace KouXiaGu.Test
             try
             {
                 node = worldMap.Map[mapPoint];
+                node.Landform = Landform;
+                worldMap.Map[mapPoint] = node;
             }
             catch (KeyNotFoundException)
             {
                 node = new WorldNode();
+                node.Landform = Landform;
                 worldMap.Map.Add(mapPoint, node);
             }
-            node.Landform = Landform;
             Debug.Log(mapPoint + "Landform赋值为:" + Landform);
         }
 

@@ -68,7 +68,7 @@ namespace KouXiaGu.World2D
             foreach (var address in addresses)
             {
                 TBlock block = blockMap[address];
-                mapBlockIO.Save(address, block);
+                mapBlockIO.Unload(address, block);
                 blockMap.Remove(address);
             }
         }

@@ -45,9 +45,9 @@
 //            return str;
 //        }
 
-//        /// <summary>
-//        /// 获取到鼠标指向节点的信息;
-//        /// </summary>
+//        / <summary>
+//        / 获取到鼠标指向节点的信息;
+//        / </summary>
 //        private string GetMapNodeInfo()
 //        {
 //            IntVector2 mapPosition = WorldConvert.MouseToMapPoint();

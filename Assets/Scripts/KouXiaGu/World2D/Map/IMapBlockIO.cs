@@ -12,7 +12,7 @@ namespace KouXiaGu.World2D
     public interface IMapBlockIO<T>
     {
         T Load(ShortVector2 address);
-        void Save(ShortVector2 address, T block);
+        void Unload(ShortVector2 address, T block);
     }
 
 }

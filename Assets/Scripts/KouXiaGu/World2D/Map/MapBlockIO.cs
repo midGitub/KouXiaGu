@@ -45,7 +45,7 @@ namespace KouXiaGu.World2D
             return this.LoadMapBlock<T>(address);
         }
 
-        public void Save(ShortVector2 address, MapBlock<T> block)
+        public void Unload(ShortVector2 address, MapBlock<T> block)
         {
             this.SaveArchiveMapBlockOrNot(address, block);
         }
