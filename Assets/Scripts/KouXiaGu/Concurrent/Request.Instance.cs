@@ -7,35 +7,35 @@ using UnityEngine;
 namespace KouXiaGu.Concurrent
 {
 
+
     public static partial class Request
     {
 
-        public static void Instantiate(this ThreadRequest instance, UnityEngine.Object original)
+        public static void InstantiateInQueue(this ThreadRequest instance, UnityEngine.Object original)
         {
             RequestForInstance instantiate = new RequestForInstance(original);
             instance.AddQueue(instantiate);
         }
 
-        public static void Instantiate(this ThreadRequest instance, UnityEngine.Object original, Vector3 position, Quaternion rotation)
+        public static void InstantiateInQueue(this ThreadRequest instance, UnityEngine.Object original, Vector3 position, Quaternion rotation)
         {
             RequestForInstance instantiate = new RequestForInstance(original, position, rotation);
             instance.AddQueue(instantiate);
         }
 
-        public static void Instantiate(this ThreadRequest instance, UnityEngine.Object original, Transform parent, bool worldPositionStays)
+        public static void InstantiateInQueue(this ThreadRequest instance, UnityEngine.Object original, Transform parent, bool worldPositionStays)
         {
             RequestForInstance instantiate = new RequestForInstance(original, parent, worldPositionStays);
             instance.AddQueue(instantiate);
         }
 
-        public static void Instantiate<T>(this ThreadRequest instance, UnityEngine.Object original, Vector3 position, Quaternion rotation, Transform parent)
+        public static void InstantiateInQueue(this ThreadRequest instance, UnityEngine.Object original, Vector3 position, Quaternion rotation, Transform parent)
         {
             RequestForInstance instantiate = new RequestForInstance(original, position, rotation, parent);
             instance.AddQueue(instantiate);
         }
 
     }
-
 
 
     public struct RequestForInstance : IRequest

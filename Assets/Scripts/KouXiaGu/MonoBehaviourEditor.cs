@@ -162,7 +162,14 @@ namespace KouXiaGu
 
         public override void OnGUI(Property property)
         {
-            EditorGUILayout.LabelField(property.Label, property.Value.ToString());
+            try
+            {
+                EditorGUILayout.LabelField(property.Label, property.Value.ToString());
+            }
+            catch
+            {
+                EditorGUILayout.LabelField(property.Label, "未能获取");
+            }
         }
     }
 
@@ -179,41 +186,48 @@ namespace KouXiaGu
 
         public override void OnGUI(Property property)
         {
-            if (!property.CanWrite)
+            try
             {
-                EditorGUILayout.LabelField(property.Label, property.Value.ToString());
-                return;
-            }
+                if (!property.CanWrite)
+                {
+                    EditorGUILayout.LabelField(property.Label, property.Value.ToString());
+                    return;
+                }
 
-            switch (property.ObjectType)
+                switch (property.ObjectType)
+                {
+                    case ObjectType.Integer:
+                        property.Value = EditorGUILayout.IntField(property.Label, (int)property.Value);
+                        break;
+                    case ObjectType.Float:
+                        property.Value = EditorGUILayout.FloatField(property.Label, (float)property.Value);
+                        break;
+                    case ObjectType.Boolean:
+                        property.Value = EditorGUILayout.Toggle(property.Label, (bool)property.Value);
+                        break;
+                    case ObjectType.String:
+                        property.Value = EditorGUILayout.TextField(property.Label, (string)property.Value);
+                        break;
+                    case ObjectType.Vector2:
+                        property.Value = EditorGUILayout.Vector2Field(property.Label, (Vector2)property.Value);
+                        break;
+                    case ObjectType.Vector3:
+                        property.Value = EditorGUILayout.Vector3Field(property.Label, (Vector3)property.Value);
+                        break;
+                    case ObjectType.Enum:
+                        property.Value = EditorGUILayout.EnumPopup(property.Label, (Enum)property.Value);
+                        break;
+                    case ObjectType.ObjectReference:
+                        property.Value = EditorGUILayout.ObjectField(property.Label, (UnityEngine.Object)property.Value, property.PropertyInfo, true);
+                        break;
+                    default:
+                        EditorGUILayout.LabelField(UnbeknownTypeLabel, property.Value.ToString());
+                        break;
+                }
+            }
+            catch
             {
-                case ObjectType.Integer:
-                    property.Value = EditorGUILayout.IntField(property.Label, (int)property.Value);
-                    break;
-                case ObjectType.Float:
-                    property.Value = EditorGUILayout.FloatField(property.Label, (float)property.Value);
-                    break;
-                case ObjectType.Boolean:
-                    property.Value = EditorGUILayout.Toggle(property.Label, (bool)property.Value);
-                    break;
-                case ObjectType.String:
-                    property.Value = EditorGUILayout.TextField(property.Label, (string)property.Value);
-                    break;
-                case ObjectType.Vector2:
-                    property.Value = EditorGUILayout.Vector2Field(property.Label, (Vector2)property.Value);
-                    break;
-                case ObjectType.Vector3:
-                    property.Value = EditorGUILayout.Vector3Field(property.Label, (Vector3)property.Value);
-                    break;
-                case ObjectType.Enum:
-                    property.Value = EditorGUILayout.EnumPopup(property.Label, (Enum)property.Value);
-                    break;
-                case ObjectType.ObjectReference:
-                    property.Value = EditorGUILayout.ObjectField(property.Label, (UnityEngine.Object)property.Value, property.PropertyInfo, true);
-                    break;
-                default:
-                    EditorGUILayout.LabelField(UnbeknownTypeLabel, property.Value.ToString());
-                    break;
+                EditorGUILayout.LabelField(property.Label, "未能获取");
             }
 
         }

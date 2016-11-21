@@ -7,7 +7,7 @@ namespace KouXiaGu.Concurrent
     /// 多线程请求;
     /// </summary>
     [DisallowMultipleComponent]
-    public class ThreadRequest : MonoBehaviour
+    public sealed class ThreadRequest : UnitySingleton<ThreadRequest>
     {
         private ThreadRequest() { }
 
@@ -15,19 +15,30 @@ namespace KouXiaGu.Concurrent
         /// 每次更新解决的最大请求数;
         /// </summary>
         [SerializeField]
-        uint width;
+        uint width = 200;
 
         ConcurrentQueue<IRequest> requestsQueue;
 
-        void Awake()
+        /// <summary>
+        /// 等待中的请求;
+        /// </summary>
+        [ShowOnlyProperty]
+        public int WaitingRequest
         {
+            get { return requestsQueue.Count; }
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
             requestsQueue = new ConcurrentQueue<IRequest>();
         }
 
         void FixedUpdate()
         {
             IRequest request;
-            while (!requestsQueue.IsEmpty && width-- > uint.MinValue)
+            uint times = this.width;
+            while (!requestsQueue.IsEmpty && times-- > uint.MinValue)
             {
                 if (requestsQueue.TryDequeue(out request))
                 {
