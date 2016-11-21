@@ -32,4 +32,12 @@ namespace KouXiaGu.World2D
         void Clear();
     }
 
+
+    public interface IBlockMap<TPoint, T> : IMap<TPoint, T>, IEnumerable<KeyValuePair<TPoint, T>>
+    {
+        //IEnumerable<KeyValuePair<TPoint, T>> Blocks { get; }
+        //IEnumerable<TPoint> Addresses { get; }
+        //IEnumerable<T> Blocks { get; }
+    }
+
 }

@@ -10,6 +10,8 @@ namespace KouXiaGu
 {
 
     public interface IStartGameEvent : IConstruct<BuildGameData> { }
+    public interface IArchiveEvent : IConstruct<ArchivedGroup> { }
+    public interface IQuitGameEvent : IConstruct<QuitGameData> { }
 
     [DisallowMultipleComponent]
     public class Initializers : MonoBehaviour
@@ -22,8 +24,8 @@ namespace KouXiaGu
         FrameCountType CheckType = FrameCountType.Update;
         readonly bool publishEveryYield = false;
 
-        [SerializeField]
-        private DataGame dataGame;
+        //[SerializeField]
+        //private DataGame dataGame;
 
         public GameStatus State
         {
@@ -35,10 +37,10 @@ namespace KouXiaGu
             get { return state; }
         }
 
-        public DataGame DataGame
-        {
-            get { return dataGame; }
-        }
+        //public DataGame DataGame
+        //{
+        //    get { return dataGame; }
+        //}
 
         public IDisposable Build(BuildGameData buildGameRes, Action onComplete = null)
         {
@@ -47,9 +49,28 @@ namespace KouXiaGu
 
             Func<IEnumerator> coroutine = () => Constructer.Start(buildGameRes);
             return Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).
-                Subscribe(null, OnBuildingFail, OnBuiltComplete);
+                Subscribe(null, OnBuildingFail, () => OnBuiltComplete(onComplete));
         }
 
+        public IDisposable Save(ArchivedGroup archivedGroup, Action onComplete = null)
+        {
+            CheckSave();
+            OnSaving();
+
+            Func<IEnumerator> coroutine = () => Constructer.Start(archivedGroup);
+            return Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).
+               Subscribe(null, OnSavingFail, () => OnSavedComplete(onComplete));
+        }
+
+        public IDisposable Quit(QuitGameData quitGameData, Action onComplete = null)
+        {
+            CheckQuit();
+            OnQuitting();
+
+            Func<IEnumerator> coroutine = () => Constructer.Start(quitGameData);
+            return Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).
+               Subscribe(null, OnQuittingFail, () => OnQuittedComplete(onComplete));
+        }
 
         public void CheckBuild()
         {
@@ -67,17 +88,51 @@ namespace KouXiaGu
                 throw new Exception("当前状态无法退出游戏!");
         }
 
-        private void OnBuilding()
+        void OnBuilding()
         {
             State = GameStatus.Creating;
         }
-        private void OnBuiltComplete()
+        void OnBuiltComplete(Action onComplete)
         {
             State = GameStatus.Running;
+            if (onComplete != null)
+                onComplete();
         }
-        private void OnBuildingFail(Exception error)
+        void OnBuildingFail(Exception error)
         {
             State = GameStatus.Ready;
+            Debug.Log(error);
+        }
+
+        void OnSaving()
+        {
+            State = GameStatus.Saving;
+        }
+        void OnSavedComplete(Action onComplete)
+        {
+            State = GameStatus.Running;
+            if (onComplete != null)
+                onComplete();
+        }
+        void OnSavingFail(Exception error)
+        {
+            State = GameStatus.Running;
+            Debug.Log(error);
+        }
+
+        void OnQuitting()
+        {
+            State = GameStatus.Quitting;
+        }
+        void OnQuittedComplete(Action onComplete)
+        {
+            State = GameStatus.Ready;
+            if (onComplete != null)
+                onComplete();
+        }
+        void OnQuittingFail(Exception error)
+        {
+            State = GameStatus.Running;
             Debug.Log(error);
         }
 

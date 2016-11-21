@@ -13,7 +13,7 @@ namespace KouXiaGu.World2D
     /// 游戏地图;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap2D : MonoBehaviour, IMapBlockInfo, IMapBlockIO<MapBlock<WorldNode>>, IStartGameEvent
+    public class WorldMap2D : MonoBehaviour, IStartGameEvent, IArchiveEvent, IQuitGameEvent
     {
 
         /// <summary>
@@ -31,37 +31,32 @@ namespace KouXiaGu.World2D
         /// </summary>
         [SerializeField]
         IntVector2 loadRang;
-        /// <summary>
-        /// 保存地图文件的前缀;
-        /// </summary>
-        [SerializeField]
-        string addressFilePrefix;
-        /// <summary>
-        /// 地图缓存文件目录;
-        /// </summary>
-        [SerializeField]
-        private string archiveTempDirectoryName;
 
-        BlockLoader<WorldNode, MapBlock<WorldNode>> mapCollection;
+        internal BlockLoader<WorldNode, MapBlock<WorldNode>> mapCollection;
+        [SerializeField]
+        UseMapBlockIO mapBlockIO;
+
         public IMap<IntVector2, WorldNode> Map { get { return mapCollection; } }
-
-        public string AddressPrefix { get { return addressFilePrefix; } }
-        public string FullArchiveTempDirectoryPath { get; private set; }
-        public string FullPrefabMapDirectoryPath { get; private set; }
 
         void Awake()
         {
-            FullArchiveTempDirectoryPath = Path.Combine(Application.dataPath, archiveTempDirectoryName);
+            mapCollection = new BlockLoader<WorldNode, MapBlock<WorldNode>>(partitionSizes, loadRang, mapBlockIO);
         }
 
-        MapBlock<WorldNode> IMapBlockIO<MapBlock<WorldNode>>.Load(ShortVector2 address)
-        {
-            return this.LoadMapBlock<WorldNode>(address);
-        }
 
-        void IMapBlockIO<MapBlock<WorldNode>>.Save(ShortVector2 address, MapBlock<WorldNode> block)
+        /// <summary>
+        /// 开始游戏时调用;
+        /// </summary>
+        IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
         {
-            this.SaveArchiveMapBlockOrNot(address, block);
+            string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
+            string fullPrefabMapDirectoryPath = item.ArchivedData.Archived.World2D.PathPrefabMapDirectory;
+
+            mapBlockIO.OnBulidGame(fullArchivedDirectoryPath, fullPrefabMapDirectoryPath);
+
+            mapCollection.UpdateCenterPoint(new IntVector2(0, 0));
+
+            yield break;
         }
 
         /// <summary>
@@ -73,43 +68,22 @@ namespace KouXiaGu.World2D
             return fullArchivedDirectoryPath;
         }
 
-        /// <summary>
-        /// 开始游戏时调用;
-        /// </summary>
-        IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
+        IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-            string fullPrefabMapDirectory = item.ArchivedData.Archived.World2D.PathPrefabMapDirectory;
-
-            RecoveryTempData(fullArchivedDirectoryPath);
-            RecoveryLoadArchived(fullPrefabMapDirectory);
-
-            mapCollection = new BlockLoader<WorldNode, MapBlock<WorldNode>>(partitionSizes, loadRang, this);
+            mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, mapCollection);
+            item.Archived.World2D.PathPrefabMapDirectory = mapBlockIO.FullPrefabMapDirectoryPath;
             yield break;
         }
 
-        /// <summary>
-        /// 将存档的归档地图拷贝到缓存地图文件夹下;
-        /// </summary>
-        private void RecoveryTempData(string fullArchivedDirectoryPath)
+        IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
         {
-            this.DeleteMapFile(this.FullArchiveTempDirectoryPath);
-            if (Directory.Exists(fullArchivedDirectoryPath))
-            {
-                this.MapFileCopyTo(fullArchivedDirectoryPath, this.FullArchiveTempDirectoryPath, true);
-            }
+            Map.Clear();
+            yield break;
         }
 
-        /// <summary>
-        /// 从存档读取信息;
-        /// </summary>
-        private void RecoveryLoadArchived(string fullpathPrefabMapDirectory)
-        {
-            if (!Directory.Exists(fullpathPrefabMapDirectory))
-                throw new FileNotFoundException("地图丢失!" + fullpathPrefabMapDirectory);
-
-            this.FullPrefabMapDirectoryPath = fullpathPrefabMapDirectory;
-        }
+        [Serializable]
+        private class UseMapBlockIO : MapBlockIO<WorldNode> { }
 
     }
 

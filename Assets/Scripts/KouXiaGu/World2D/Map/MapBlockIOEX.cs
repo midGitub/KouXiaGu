@@ -11,7 +11,7 @@ using System.Text;
 namespace KouXiaGu.World2D
 {
 
-    public static class MapBlockIO
+    public static class MapBlockIOEX
     {
 
         /// <summary>

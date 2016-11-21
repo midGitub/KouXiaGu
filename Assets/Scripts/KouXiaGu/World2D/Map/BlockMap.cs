@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace KouXiaGu.World2D
     /// </summary>
     /// <typeparam name="T">节点</typeparam>
     /// <typeparam name="TBlock">地图块</typeparam>
-    public class BlockMap<T, TBlock> : IMap<IntVector2, T>, IMap<ShortVector2, TBlock>
+    public class BlockMap<T, TBlock> : IMap<IntVector2, T>, IBlockMap<ShortVector2, TBlock>
         where TBlock : IMap<ShortVector2, T>
     {
 
@@ -24,7 +25,6 @@ namespace KouXiaGu.World2D
 
         protected ShortVector2 partitionSizes { get; private set; }
         protected Dictionary<ShortVector2, TBlock> mapCollection { get; private set; }
-
 
         TBlock IMap<ShortVector2, TBlock>.this[ShortVector2 position]
         {
@@ -172,6 +172,15 @@ namespace KouXiaGu.World2D
             return position;
         }
 
+        IEnumerator<KeyValuePair<ShortVector2, TBlock>> IEnumerable<KeyValuePair<ShortVector2, TBlock>>.GetEnumerator()
+        {
+            return mapCollection.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (this as IEnumerable<KeyValuePair<ShortVector2, TBlock>>).GetEnumerator();
+        }
     }
 
 }

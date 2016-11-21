@@ -81,9 +81,9 @@ namespace KouXiaGu.World2D
             ShortVector2 southwestAddress = GetSouthwestAddress(centerPoint);
             ShortVector2 northeastAddress = GetNortheastAddress(centerPoint);
 
-            for (short x = southwestAddress.x; x < northeastAddress.x; x++)
+            for (short x = southwestAddress.x; x <= northeastAddress.x; x++)
             {
-                for (short y = southwestAddress.y; y < northeastAddress.y; y++)
+                for (short y = southwestAddress.y; y <= northeastAddress.y; y++)
                 {
                     yield return new ShortVector2(x, y);
                 }

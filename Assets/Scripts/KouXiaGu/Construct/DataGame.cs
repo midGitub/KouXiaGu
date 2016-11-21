@@ -7,8 +7,8 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    [Serializable]
-    public class DataGame
+    [DisallowMultipleComponent]
+    public class DataGame : MonoBehaviour
     {
 
         [SerializeField]

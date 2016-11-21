@@ -17,8 +17,8 @@ namespace KouXiaGu
 
         public static IEnumerator Start<T>(T item)
         {
-            UnityEngine.Object[] array = GameObject.FindObjectsOfType(typeof(IConstruct<T>));
-            IEnumerable<IConstruct<T>> constructs = array.Cast<IConstruct<T>>();
+            UnityEngine.Object[] array = GameObject.FindObjectsOfType(typeof(MonoBehaviour));
+            IEnumerable<IConstruct<T>> constructs = array.OfType<IConstruct<T>>();
             return Start(constructs, item);
         }
 
