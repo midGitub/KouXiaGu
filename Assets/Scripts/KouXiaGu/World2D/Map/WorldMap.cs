@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.World2D
 {
@@ -16,33 +17,35 @@ namespace KouXiaGu.World2D
     public class WorldMap : MonoBehaviour, IStartGameEvent, IArchiveEvent, IQuitGameEvent
     {
 
+        [SerializeField]
+        private Transform target;
+
         /// <summary>
         /// 保存到存档的位置;
         /// </summary>
         [SerializeField]
         private string archivedDirectoryName;
-        /// <summary>
-        /// 每个地图块的大小;
-        /// </summary>
+        
         [SerializeField]
-        ShortVector2 partitionSizes;
-        /// <summary>
-        /// 地图读取的范围;
-        /// </summary>
+        internal UseBlockMap bliockMap;
         [SerializeField]
-        IntVector2 loadRang;
-
-        internal BlockLoader<WorldNode, MapBlock<WorldNode>> mapCollection;
+        UseLoadByRange loadByRange;
         [SerializeField]
         UseMapBlockIO mapBlockIO;
 
-        public IMap<IntVector2, WorldNode> Map { get { return mapCollection; } }
+        public IMap<IntVector2, WorldNode> Map { get { return bliockMap; } }
 
         void Awake()
         {
-            mapCollection = new BlockLoader<WorldNode, MapBlock<WorldNode>>(partitionSizes, loadRang, mapBlockIO);
+            loadByRange.BlockMap = bliockMap;
+            loadByRange.MapBlockIO = mapBlockIO;
         }
 
+        void OnMapDataUpdate(Vector3 targetPlanePoint)
+        {
+            IntVector2 mapPoint = WorldConvert.PlaneToHexPair(targetPlanePoint);
+            loadByRange.UpdateCenterPoint(mapPoint);
+        }
 
         /// <summary>
         /// 开始游戏时调用;
@@ -54,7 +57,8 @@ namespace KouXiaGu.World2D
 
             mapBlockIO.OnBulidGame(fullArchivedDirectoryPath, fullPrefabMapDirectoryPath);
 
-            mapCollection.UpdateCenterPoint(new IntVector2(0, 0));
+            target.ObserveEveryValueChanged(_ => target.position).
+                Subscribe(OnMapDataUpdate);
 
             yield break;
         }
@@ -71,7 +75,7 @@ namespace KouXiaGu.World2D
         IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-            mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, mapCollection);
+            mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, bliockMap);
             item.Archived.World2D.PathPrefabMapDirectory = mapBlockIO.FullPrefabMapDirectoryPath;
             yield break;
         }
@@ -84,6 +88,12 @@ namespace KouXiaGu.World2D
 
         [Serializable]
         private class UseMapBlockIO : MapBlockIO<WorldNode> { }
+
+        [Serializable]
+        private class UseLoadByRange : LoadByRange<MapBlock<WorldNode>> { }
+
+        [Serializable]
+        public class UseBlockMap : BlockMap<WorldNode, MapBlock<WorldNode>> { }
 
     }
 

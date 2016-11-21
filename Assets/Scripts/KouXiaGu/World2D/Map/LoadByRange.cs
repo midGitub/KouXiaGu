@@ -2,35 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace KouXiaGu.World2D
 {
 
     /// <summary>
-    /// 确定地图块读取的范围;
+    /// 按范围读取地图;
     /// </summary>
-    public class BlockLoader<T, TBlock> : BlockMap<T, TBlock>
-        where TBlock : IMap<ShortVector2, T>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TBlock"></typeparam>
+    [Serializable]
+    public class LoadByRange<TBlock>
     {
-
-        public BlockLoader(ShortVector2 partitionSizes , IntVector2 loadRange, IMapBlockIO<TBlock> mapBlockIO) : base(partitionSizes)
+        public LoadByRange()
         {
-            this.loadRange = loadRange;
-            this.mapBlockIO = mapBlockIO;
+        }
+        public LoadByRange(IMapBlockIO<TBlock> mapBlockIO, IBlockMap<ShortVector2, TBlock> blockMap)
+        {
+            this.MapBlockIO = mapBlockIO;
+            this.BlockMap = blockMap;
         }
 
         /// <summary>
         /// 地图加载的范围;
         /// </summary>
+        [SerializeField]
         IntVector2 loadRange;
-        IMapBlockIO<TBlock> mapBlockIO;
+        public IMapBlockIO<TBlock> MapBlockIO { get; set; }
+        public IBlockMap<ShortVector2, TBlock> BlockMap { get; set; }
 
         /// <summary>
         /// 已经加载到的地图块编号;
         /// </summary>
         private IEnumerable<ShortVector2> loadedBlock
         {
-            get { return mapCollection.Keys; }
+            get { return BlockMap.Addresses; }
         }
 
         /// <summary>
@@ -51,11 +58,10 @@ namespace KouXiaGu.World2D
         /// </summary>
         private void Load(IEnumerable<ShortVector2> addresses)
         {
-            IMap<ShortVector2, TBlock> blockMap = (this as IMap<ShortVector2, TBlock>);
             foreach (var address in addresses)
             {
-                TBlock block = mapBlockIO.Load(address);
-                blockMap.Add(address, block);
+                TBlock block = MapBlockIO.Load(address);
+                BlockMap.Add(address, block);
             }
         }
 
@@ -64,12 +70,11 @@ namespace KouXiaGu.World2D
         /// </summary>
         private void Unload(IEnumerable<ShortVector2> addresses)
         {
-            IMap<ShortVector2, TBlock> blockMap = (this as IMap<ShortVector2, TBlock>);
             foreach (var address in addresses)
             {
-                TBlock block = blockMap[address];
-                mapBlockIO.Unload(address, block);
-                blockMap.Remove(address);
+                TBlock block = BlockMap[address];
+                MapBlockIO.Unload(address, block);
+                BlockMap.Remove(address);
             }
         }
 
@@ -93,14 +98,14 @@ namespace KouXiaGu.World2D
         private ShortVector2 GetSouthwestAddress(IntVector2 centerPoint)
         {
             IntVector2 southwestPoint = GetSouthwestPoint(centerPoint);
-            ShortVector2 southwestAddress = GetAddress(southwestPoint);
+            ShortVector2 southwestAddress = BlockMap.GetAddress(southwestPoint);
             return southwestAddress;
         }
 
         private ShortVector2 GetNortheastAddress(IntVector2 centerPoint)
         {
             IntVector2 northeastPoint = GetNortheastPoint(centerPoint);
-            ShortVector2 northeastAddress = GetAddress(northeastPoint);
+            ShortVector2 northeastAddress = BlockMap.GetAddress(northeastPoint);
             return northeastAddress;
         }
 

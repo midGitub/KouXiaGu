@@ -17,14 +17,24 @@ namespace KouXiaGu.World2D
         where TBlock : IMap<ShortVector2, T>
     {
 
-        public BlockMap(ShortVector2 partitionSizes)
+        [SerializeField]
+        ShortVector2 partitionSizes;
+        Dictionary<ShortVector2, TBlock> mapCollection = new Dictionary<ShortVector2, TBlock>();
+
+        public ShortVector2 PartitionSizes
         {
-            this.partitionSizes = partitionSizes;
-            mapCollection = new Dictionary<ShortVector2, TBlock>();
+            get { return partitionSizes; }
         }
 
-        protected ShortVector2 partitionSizes { get; private set; }
-        protected Dictionary<ShortVector2, TBlock> mapCollection { get; private set; }
+        IEnumerable<ShortVector2> IBlockMap<ShortVector2, TBlock>.Addresses
+        {
+            get { return mapCollection.Keys; }
+        }
+
+        IEnumerable<TBlock> IBlockMap<ShortVector2, TBlock>.Blocks
+        {
+            get { return mapCollection.Values; }
+        }
 
         TBlock IMap<ShortVector2, TBlock>.this[ShortVector2 position]
         {

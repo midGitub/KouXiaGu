@@ -35,9 +35,12 @@ namespace KouXiaGu.World2D
 
     public interface IBlockMap<TPoint, T> : IMap<TPoint, T>, IEnumerable<KeyValuePair<TPoint, T>>
     {
-        //IEnumerable<KeyValuePair<TPoint, T>> Blocks { get; }
-        //IEnumerable<TPoint> Addresses { get; }
-        //IEnumerable<T> Blocks { get; }
+        IEnumerable<TPoint> Addresses { get; }
+        IEnumerable<T> Blocks { get; }
+
+        ShortVector2 GetAddress(IntVector2 position);
+        ShortVector2 GetAddress(IntVector2 position, out ShortVector2 realPosition);
+        IntVector2 AddressToPosition(ShortVector2 address, ShortVector2 realPosition);
     }
 
 }
