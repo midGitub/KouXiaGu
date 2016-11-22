@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using System.IO;
+using KouXiaGu.World2D.Map;
 
 namespace KouXiaGu.World2D
 {
@@ -12,9 +12,9 @@ namespace KouXiaGu.World2D
     /// 定义地貌预制ID和其信息转换;
     /// </summary>
     [DisallowMultipleComponent]
-    public class TopographysData : UnitySingleton<TopographysData>
+    public class TopographiessData : UnitySingleton<TopographiessData>
     {
-        TopographysData() { }
+        TopographiessData() { }
 
         /// <summary>
         /// 定义地貌信息的XML文件;
@@ -28,7 +28,10 @@ namespace KouXiaGu.World2D
         [SerializeField]
         TopographyPrefab[] topographyPrefabs;
 
-        
+        [SerializeField]
+        TopographyCreater topographyCreater;
+
+
         Dictionary<int, TopographyPrefab> topographyPrefabDictionary;
 
         public string TopographyInfosXMLFilePath
@@ -36,10 +39,16 @@ namespace KouXiaGu.World2D
             get { return Path.Combine(ResCoreData.CoreDataDirectoryPath, TopographyInfosXMLFileName); }
         }
 
-        protected override void Awake()
+        public TopographyPrefab GetWithID(int id)
         {
-            base.Awake();
+            return topographyPrefabDictionary[id];
+        }
+
+        void Start()
+        {
             topographyPrefabDictionary = GetDictionary();
+            topographyCreater.TopographiessData = this;
+            GameObject.FindObjectOfType<WorldMap>().ObservableWorldNode.Subscribe(topographyCreater);
         }
 
         Dictionary<int, TopographyPrefab> GetDictionary()
@@ -80,7 +89,7 @@ namespace KouXiaGu.World2D
 
 
         [Serializable]
-        private class TopographyPrefab
+        public class TopographyPrefab
         {
             /// <summary>
             /// 定义的真正的ID;

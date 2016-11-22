@@ -4,14 +4,13 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace KouXiaGu
 {
 
 #if UNITY_EDITOR
+
+    using UnityEditor;
+
     /// <summary>
     /// 编辑器类,用于重写 MonoBehaviour 的编辑器;
     /// </summary>
@@ -151,6 +150,7 @@ namespace KouXiaGu
         }
     }
 
+
     /// <summary>
     /// 在检视面板显示这个属性;
     /// </summary>
@@ -162,6 +162,7 @@ namespace KouXiaGu
 
         public override void OnGUI(Property property)
         {
+#if UNITY_EDITOR
             try
             {
                 EditorGUILayout.LabelField(property.Label, property.Value.ToString());
@@ -170,8 +171,12 @@ namespace KouXiaGu
             {
                 EditorGUILayout.LabelField(property.Label, "未能获取");
             }
+#endif
         }
+
+
     }
+
 
     /// <summary>
     /// 在检视面板暴露这个属性,若不可读则显示为标签,否则显示为可编辑状态;
@@ -186,6 +191,7 @@ namespace KouXiaGu
 
         public override void OnGUI(Property property)
         {
+#if UNITY_EDITOR
             try
             {
                 if (!property.CanWrite)
@@ -229,8 +235,9 @@ namespace KouXiaGu
             {
                 EditorGUILayout.LabelField(property.Label, "未能获取");
             }
-
+#endif
         }
+        
     }
 
 }

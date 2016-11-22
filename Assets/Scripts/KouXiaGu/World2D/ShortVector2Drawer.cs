@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEditor;
-using UnityEngine;
-
+﻿
 namespace KouXiaGu.World2D
 {
 
-  
+#if UNITY_EDITOR
+
+    using UnityEditor;
+    using UnityEngine;
+
     [CustomPropertyDrawer(typeof(ShortVector2))]
     public class ShortVector2Drawer : PropertyDrawer
     {
@@ -41,5 +39,6 @@ namespace KouXiaGu.World2D
         }
 
     }
+#endif
 
 }
