@@ -37,6 +37,7 @@ namespace KouXiaGu.World2D
     {
         IEnumerable<TPoint> Addresses { get; }
         IEnumerable<T> Blocks { get; }
+        ShortVector2 PartitionSizes { get; }
 
         ShortVector2 GetAddress(IntVector2 position);
         ShortVector2 GetAddress(IntVector2 position, out ShortVector2 realPosition);

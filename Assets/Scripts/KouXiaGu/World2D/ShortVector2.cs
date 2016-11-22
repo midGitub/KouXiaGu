@@ -74,16 +74,23 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
+        /// 将哈希值转换成坐标;
+        /// </summary>
+        public static ShortVector2 HashCodeToShortVector2(int hashCode)
+        {
+            short x = (short)(hashCode >> 16);
+            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
+            return new ShortVector2(x, y);
+        }
+
+        /// <summary>
         /// 根据位置确定哈希值;
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
         {
-            int hashCode = 0;
-
-            hashCode += x * ushort.MaxValue;
+            int hashCode = x << 16;
             hashCode += short.MaxValue + y;
-
             return hashCode;
         }
 
