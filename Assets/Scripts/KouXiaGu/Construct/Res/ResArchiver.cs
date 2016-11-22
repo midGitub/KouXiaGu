@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu
 {
+
 
     /// <summary>
     /// 预读存档 + 存档路径;
@@ -46,30 +47,38 @@ namespace KouXiaGu
         }
     }
 
-    /// <summary>
-    /// 游戏归档管理;
-    /// </summary>
-    [Serializable]
-    public sealed class DataArchive
+
+    public class ResArchiver
     {
-        private DataArchive() { }
 
-        [Header("存档信息"), SerializeField, Tooltip("保存到的文件夹")]
-        private string archivedsDirectory;
+        /// <summary>
+        /// 存档保存到的文件夹;
+        /// </summary>
+        const string archivedsDirectory = "Saves";
 
-        [SerializeField, Tooltip("预读取的存档名")]
-        private string smallArchivedName;
+        /// <summary>
+        /// 预读取的存档名
+        /// </summary>
+        const string smallArchivedName = "Small.save";
 
-        [SerializeField, Tooltip("存档名")]
-        private string archivedName;
+        /// <summary>
+        /// 存档名
+        /// </summary>
+        const string archivedName = "Save.save";
 
-        [SerializeField, Tooltip("当前使用的存档版本")]
-        private float version;
+        /// <summary>
+        /// 获取到保存所有存档的文件夹路径;
+        /// </summary>
+        public static string ArchivedsPath
+        {
+            get { return Path.Combine(Application.persistentDataPath, archivedsDirectory); }
+        }
+
 
         /// <summary>
         /// 获取到所有存档的预读信息;
         /// </summary>
-        public IEnumerable<SmallArchivedGroup> GetSmallArchiveds()
+        public static IEnumerable<SmallArchivedGroup> GetSmallArchiveds()
         {
             SmallArchivedGroup smallArchived;
             ArchivedGroup archived;
@@ -91,7 +100,7 @@ namespace KouXiaGu
         /// 获取到最近保存的存档;
         /// 若不存在存档则返回异常 InvalidOperationException;
         /// </summary>
-        public ArchivedGroup GetRecentArchivedGroup()
+        public static ArchivedGroup GetRecentArchivedGroup()
         {
             SmallArchivedGroup smallArchivedGroup = GetRecentSmallArchivedGroup();
             return SmallArchivedTransfrom(smallArchivedGroup);
@@ -101,7 +110,7 @@ namespace KouXiaGu
         /// 获取到最近保存的存档;
         /// 若不存在存档则返回异常 InvalidOperationException;
         /// </summary>
-        public SmallArchivedGroup GetRecentSmallArchivedGroup()
+        public static SmallArchivedGroup GetRecentSmallArchivedGroup()
         {
             SmallArchivedGroup smallArchivedGroup = GetSmallArchiveds().
                 OrderByDescending(value => value.ArchivedHead.SavedTime).
@@ -113,7 +122,7 @@ namespace KouXiaGu
         /// <summary>
         /// 将存档预读信息转换成存档文件;
         /// </summary>
-        public ArchivedGroup SmallArchivedTransfrom(SmallArchivedGroup smallArchived)
+        public static ArchivedGroup SmallArchivedTransfrom(SmallArchivedGroup smallArchived)
         {
             ArchivedGroup archivedGroup;
             if (TryGetArchived(smallArchived.ArchivedPath, out archivedGroup))
@@ -129,7 +138,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到一个新的存档实例(未在磁盘上创建);
         /// </summary>
-        public ArchivedGroup CreateArchived()
+        public static ArchivedGroup CreateArchived()
         {
             ArchivedExpand archivedExpand = new ArchivedExpand();
             string archivedDirectoryPath = GetNewArchivedDirectoryPath();
@@ -140,8 +149,7 @@ namespace KouXiaGu
         /// <summary>
         /// 将这个存档保存到硬盘上(持久化保存);
         /// </summary>
-        /// <param name="archived"></param>
-        public void SaveInDisk(ArchivedGroup archived)
+        public static void SaveInDisk(ArchivedGroup archived)
         {
             Directory.CreateDirectory(archived.ArchivedPath);
 
@@ -154,22 +162,21 @@ namespace KouXiaGu
             SerializeHelper.Serialize_ProtoBuf(smallArchivedFilePath, (SmallArchived)archived.Archived);
         }
 
-        /// <summary>
-        /// 获取到保存所有存档的文件夹路径;
-        /// </summary>
-        public string GetArchivedsPath()
-        {
-            string archivedsPath = Path.Combine(Application.persistentDataPath, archivedsDirectory);
-            return archivedsPath;
-        }
+        ///// <summary>
+        ///// 获取到保存所有存档的文件夹路径;
+        ///// </summary>
+        //public static string GetArchivedsPath()
+        //{
+        //    string archivedsPath = Path.Combine(Application.persistentDataPath, archivedsDirectory);
+        //    return archivedsPath;
+        //}
 
         /// <summary>
         /// 获取到所有存档文件夹下的所有文件夹路径,不做检查;
         /// </summary>
-        /// <returns></returns>
-        private IEnumerable<string> GetAllArchivedPath()
+        static IEnumerable<string> GetAllArchivedPath()
         {
-            string[] archivedsPath = Directory.GetDirectories(GetArchivedsPath());
+            string[] archivedsPath = Directory.GetDirectories(ArchivedsPath);
 
             foreach (var archivedPath in archivedsPath)
             {
@@ -181,7 +188,7 @@ namespace KouXiaGu
         /// 尝试获取到这个存档路径内的预读存档;
         /// 若不存在完整的存档,也算不存在;
         /// </summary>
-        private bool TryGetSmallArchived(string archivedPath, out SmallArchivedGroup smallArchived)
+        static bool TryGetSmallArchived(string archivedPath, out SmallArchivedGroup smallArchived)
         {
             string smallArchivedFilePath;
 
@@ -198,7 +205,7 @@ namespace KouXiaGu
         /// <summary>
         /// 尝试获取到这个存档路径内的存档;
         /// </summary>
-        private bool TryGetArchived(string archivedPath, out ArchivedGroup archived)
+        static bool TryGetArchived(string archivedPath, out ArchivedGroup archived)
         {
             string archivedFilePath;
 
@@ -217,10 +224,10 @@ namespace KouXiaGu
         /// 获取到一个新的存档存放文件夹路径;
         /// </summary>
         /// <returns></returns>
-        private string GetNewArchivedDirectoryPath()
+        static string GetNewArchivedDirectoryPath()
         {
             int appendNumber = 0;
-            string archivedDirectoryPath = Path.Combine(GetArchivedsPath(), DateTime.Now.Ticks.ToString());
+            string archivedDirectoryPath = Path.Combine(ArchivedsPath, DateTime.Now.Ticks.ToString());
 
             while (Directory.Exists(archivedDirectoryPath))
             {
@@ -233,16 +240,15 @@ namespace KouXiaGu
         /// <summary>
         /// 设置这个存档的存档信息部分;
         /// </summary>
-        private void SetArchivedInfo(ArchivedExpand archived)
+        static void SetArchivedInfo(ArchivedExpand archived)
         {
             archived.SavedTime = DateTime.Now.Ticks;
-            archived.Version = version;
         }
 
         /// <summary>
         /// 从存档路径获取到预读的存档文件路径;
         /// </summary>
-        private string GetSmallArchivedFilePath(string archivedPath)
+        static string GetSmallArchivedFilePath(string archivedPath)
         {
             string mallArchivedFilePath = Path.Combine(archivedPath, smallArchivedName);
             return mallArchivedFilePath;
@@ -251,7 +257,7 @@ namespace KouXiaGu
         /// <summary>
         /// 从存档路径获取到存档文件路径;
         /// </summary>
-        private string GetArchivedFilePath(string archivedPath)
+        static string GetArchivedFilePath(string archivedPath)
         {
             string archivedFilePath = Path.Combine(archivedPath, archivedName);
             return archivedFilePath;
@@ -260,7 +266,7 @@ namespace KouXiaGu
         /// <summary>
         /// 尝试从存档路径获取到预读的存档文件路径;
         /// </summary>
-        private bool TryGetSmallArchivedFilePath(string archivedPath, out string smallArchivedFilePath)
+        static bool TryGetSmallArchivedFilePath(string archivedPath, out string smallArchivedFilePath)
         {
             smallArchivedFilePath = GetSmallArchivedFilePath(archivedPath);
             return File.Exists(smallArchivedFilePath);
@@ -269,7 +275,7 @@ namespace KouXiaGu
         /// <summary>
         /// 尝试从存档路径获取到存档文件路径;
         /// </summary>
-        private bool TryGetArchivedFilePath(string archivedPath, out string archivedFilePath)
+        static bool TryGetArchivedFilePath(string archivedPath, out string archivedFilePath)
         {
             archivedFilePath = GetArchivedFilePath(archivedPath);
             return File.Exists(archivedFilePath);
@@ -278,7 +284,7 @@ namespace KouXiaGu
         /// <summary>
         /// 这个路径下是否存在完整存档文件;
         /// </summary>
-        private bool ExistArchivedFile(string archivedPath)
+        static bool ExistArchivedFile(string archivedPath)
         {
             string archivedFilePath = GetArchivedFilePath(archivedPath);
             return File.Exists(archivedFilePath);

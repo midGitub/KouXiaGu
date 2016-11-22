@@ -17,7 +17,7 @@ namespace KouXiaGu.World2D
         /// 地貌;
         /// </summary>
         [ProtoMember(1)]
-        public int Landform { get; set; }
+        public int Topography { get; set; }
 
         /// <summary>
         /// 是否存在道路;

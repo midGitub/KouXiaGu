@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UniRx;
 
-namespace KouXiaGu.World2D
+namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>

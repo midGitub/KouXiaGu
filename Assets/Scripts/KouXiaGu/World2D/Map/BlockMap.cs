@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KouXiaGu.World2D
+namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>
@@ -24,7 +24,7 @@ namespace KouXiaGu.World2D
         public ShortVector2 PartitionSizes
         {
             get { return partitionSizes; }
-            set { partitionSizes = value; }
+            //set { partitionSizes = value; }
         }
 
         IEnumerable<ShortVector2> IBlockMap<ShortVector2, TBlock>.Addresses

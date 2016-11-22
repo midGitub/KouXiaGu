@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KouXiaGu.World2D
+namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>

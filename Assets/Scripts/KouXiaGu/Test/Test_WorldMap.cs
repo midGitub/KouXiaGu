@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using KouXiaGu.World2D;
+using KouXiaGu.World2D.Map;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using KouXiaGu.World2D;
 
 namespace KouXiaGu.Test
 {
@@ -50,7 +51,7 @@ namespace KouXiaGu.Test
             try
             {
                 node = worldMap.Map[mapPoint];
-                LandformType = node.Landform.ToString();
+                LandformType = node.Topography.ToString();
             }
             catch (BlockNotFoundException)
             {
@@ -80,13 +81,13 @@ namespace KouXiaGu.Test
             try
             {
                 node = worldMap.Map[mapPoint];
-                node.Landform = Landform;
+                node.Topography = Landform;
                 worldMap.Map[mapPoint] = node;
             }
             catch (KeyNotFoundException)
             {
                 node = new WorldNode();
-                node.Landform = Landform;
+                node.Topography = Landform;
                 worldMap.Map.Add(mapPoint, node);
             }
             Debug.Log(mapPoint + "Landform赋值为:" + Landform);

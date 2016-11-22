@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.World2D
+namespace KouXiaGu.World2D.Map
 {
 
     public static class MapBlockIOEX

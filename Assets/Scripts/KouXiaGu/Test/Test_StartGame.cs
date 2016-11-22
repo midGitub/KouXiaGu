@@ -25,15 +25,11 @@ namespace KouXiaGu.Test
         private Initializers initializers;
 
         [SerializeField]
-        private DataGame dataGame;
-
-        [SerializeField]
         private InputField mapDir;
 
         private void Awake()
         {
             initializers = GameObject.FindObjectOfType<Initializers>();
-            dataGame = GameObject.FindObjectOfType<DataGame>();
         }
 
         private void Start()
@@ -46,22 +42,22 @@ namespace KouXiaGu.Test
 
         private void OnContinueGame(UniRx.Unit unit)
         {
-            BuildGameData buildGameData = dataGame.GetRecentBuildGameData();
+            BuildGameData buildGameData = ResGame.GetRecentBuildGameData();
             buildGameData.ArchivedData.Archived.World2D.PathPrefabMapDirectory = mapDir.text;
             initializers.Build(buildGameData);
         }
 
         private void OnStartGame(UniRx.Unit unit)
         {
-            BuildGameData buildGameData = dataGame.GetBuildGameData();
+            BuildGameData buildGameData = ResGame.GetBuildGameData();
             buildGameData.ArchivedData.Archived.World2D.PathPrefabMapDirectory = mapDir.text;
             initializers.Build(buildGameData);
         }
 
         private void OnSaveGame(UniRx.Unit unit)
         {
-            var saveGameData = dataGame.ArchiveData.CreateArchived();
-            initializers.Save(saveGameData, () => dataGame.ArchiveData.SaveInDisk(saveGameData));
+            var saveGameData = ResArchiver.CreateArchived();
+            initializers.Save(saveGameData, () => ResArchiver.SaveInDisk(saveGameData));
         }
 
         private void OnQuit(UniRx.Unit unit)
