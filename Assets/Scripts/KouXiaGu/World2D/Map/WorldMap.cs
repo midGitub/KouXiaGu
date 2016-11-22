@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UniRx;
+using System.Collections.Generic;
 
 namespace KouXiaGu.World2D.Map
 {
@@ -24,17 +25,18 @@ namespace KouXiaGu.World2D.Map
         private string archivedDirectoryName;
         
         [SerializeField]
-        internal UseBlockMap bliockMap;
+        internal UseBlockMap worldMap;
         [SerializeField]
         UseLoadByRange loadByRange;
         [SerializeField]
         UseMapBlockIO mapBlockIO;
 
-        public IMap<IntVector2, WorldNode> Map { get { return bliockMap; } }
+        public IMap<IntVector2, WorldNode> Map { get { return worldMap; } }
+        public IObservable<KeyValuePair<IntVector2, WorldNode>> ObservableWorldNode { get { return worldMap; } }
 
         void Awake()
         {
-            loadByRange.BlockMap = bliockMap;
+            loadByRange.BlockMap = worldMap;
             loadByRange.MapBlockIO = mapBlockIO;
         }
 
@@ -72,7 +74,7 @@ namespace KouXiaGu.World2D.Map
         IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-            mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, bliockMap);
+            mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, worldMap);
             item.Archived.World2D.PathPrefabMapDirectory = mapBlockIO.FullPrefabMapDirectoryPath;
             yield break;
         }
@@ -90,7 +92,7 @@ namespace KouXiaGu.World2D.Map
         private class UseLoadByRange : LoadByRange<MapBlock<WorldNode>> { }
 
         [Serializable]
-        public class UseBlockMap : BlockMap<WorldNode, MapBlock<WorldNode>> { }
+        public class UseBlockMap : NodeMap<WorldNode, MapBlock<WorldNode>> { }
 
     }
 

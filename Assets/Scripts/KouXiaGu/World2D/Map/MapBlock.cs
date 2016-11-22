@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,11 @@ namespace KouXiaGu.World2D.Map
         /// 存在变化的节点;
         /// </summary>
         HashSet<ShortVector2> haveChangedSet;
+
+        public IEnumerable<KeyValuePair<ShortVector2, T>> NodePair
+        {
+            get { return mapNodeSet; }
+        }
 
         /// <summary>
         /// 根据预制地图和存档地图获取到地图块文件;

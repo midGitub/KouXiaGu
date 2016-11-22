@@ -9,6 +9,7 @@ namespace KouXiaGu.World2D
     /// <summary>
     /// 资源类型;
     /// </summary>
+    [Serializable]
     public struct Resource
     {
 

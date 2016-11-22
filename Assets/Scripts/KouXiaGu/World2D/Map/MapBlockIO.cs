@@ -111,7 +111,7 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         void OnSave(IBlockMap<ShortVector2, MapBlock<T>> blockMap)
         {
-            KeyValuePair<ShortVector2, MapBlock<T>>[] pairs = blockMap.ToArray();
+            KeyValuePair<ShortVector2, MapBlock<T>>[] pairs = blockMap.BlocksPair.ToArray();
             foreach (var pair in pairs)
             {
                 SaveMapBlock(pair.Key, pair.Value);

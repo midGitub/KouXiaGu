@@ -46,7 +46,7 @@ namespace KouXiaGu.Test
             WorldNode node;
 
             string LandformType;
-            ShortVector2 mapBlockAddress = worldMap.bliockMap.GetAddress(mapPoint);
+            ShortVector2 mapBlockAddress = worldMap.worldMap.GetAddress(mapPoint);
             string mapBlockName = mapBlockAddress.ToString();
             try
             {

@@ -11,7 +11,7 @@ namespace KouXiaGu.World2D
     /// 世界节点;
     /// </summary>
     [ProtoContract]
-    public struct WorldNode
+    public struct WorldNode : IEquatable<WorldNode>
     {
         /// <summary>
         /// 地貌;
@@ -24,6 +24,12 @@ namespace KouXiaGu.World2D
         /// </summary>
         [ProtoMember(2)]
         public bool Road { get; set; }
+
+        public bool Equals(WorldNode other)
+        {
+            return Topography != other.Topography ||
+                    Road != other.Road;
+        }
 
     }
 

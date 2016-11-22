@@ -9,18 +9,20 @@ namespace KouXiaGu.World2D
     /// <summary>
     /// 地貌细节;
     /// </summary>
+    [Serializable]
     public struct Topography
     {
 
         /// <summary>
         /// 地形唯一的表示;
         /// </summary>
+        [NonSerialized]
         public int id;
 
         /// <summary>
         /// 是否允许行走到?;
         /// </summary>
-        public bool CanWalk;
+        public bool Walk;
 
         /// <summary>
         /// 行动的代价值;
