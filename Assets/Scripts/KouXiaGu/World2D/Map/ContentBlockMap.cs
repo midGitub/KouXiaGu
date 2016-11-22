@@ -13,9 +13,9 @@ namespace KouXiaGu.World2D.Map
     /// 根据块加载的地图;
     /// </summary>
     /// <typeparam name="T">节点</typeparam>
-    /// <typeparam name="TBlock">地图块</typeparam>
+    /// <typeparam name="TBlock">地图块类型</typeparam>
     [Serializable]
-    public class NodeMap<T, TBlock> : BlockMap<TBlock>, IMap<IntVector2, T>, IBlockMap<ShortVector2, TBlock>,
+    public class ContentBlockMap<T, TBlock> : BlockMap<TBlock>, IMap<IntVector2, T>, IBlockMap<ShortVector2, TBlock>,
         IObservable<KeyValuePair<IntVector2, T>>
         where T : struct
         where TBlock : IMap<ShortVector2, T>

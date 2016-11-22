@@ -24,6 +24,7 @@ namespace KouXiaGu.Test
         private void Awake()
         {
             target = target == null ? transform : target;
+            targetPosition = transform.position;
         }
 
         private void Update()

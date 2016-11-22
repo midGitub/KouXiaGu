@@ -8,17 +8,18 @@ namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>
-    /// 按范围读取地图;
+    /// 按范围读取地图块;
+    /// 根据定义的加载范围读取到其内的地图块;
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TBlock"></typeparam>
     [Serializable]
-    public class LoadByRange<TBlock>
+    public class LoadBlockByRange<TBlock>
     {
-        public LoadByRange()
+        public LoadBlockByRange()
         {
         }
-        public LoadByRange(IMapBlockIO<TBlock> mapBlockIO, IBlockMap<ShortVector2, TBlock> blockMap)
+        public LoadBlockByRange(IMapBlockIO<TBlock> mapBlockIO, IBlockMap<ShortVector2, TBlock> blockMap)
         {
             this.MapBlockIO = mapBlockIO;
             this.BlockMap = blockMap;

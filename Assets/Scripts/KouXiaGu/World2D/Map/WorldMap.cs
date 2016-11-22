@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UniRx;
-using System.Collections.Generic;
 
 namespace KouXiaGu.World2D.Map
 {
@@ -25,14 +24,13 @@ namespace KouXiaGu.World2D.Map
         private string archivedDirectoryName;
         
         [SerializeField]
-        internal UseBlockMap worldMap;
+        internal UseContentBlockMap worldMap;
         [SerializeField]
-        UseLoadByRange loadByRange;
+        UseLoadBlockByRange loadByRange;
         [SerializeField]
-        UseMapBlockIO mapBlockIO;
+        UseArchiveBlockIO mapBlockIO;
 
         public IMap<IntVector2, WorldNode> Map { get { return worldMap; } }
-        public IObservable<KeyValuePair<IntVector2, WorldNode>> ObservableWorldNode { get { return worldMap; } }
 
         void Awake()
         {
@@ -86,13 +84,13 @@ namespace KouXiaGu.World2D.Map
         }
 
         [Serializable]
-        private class UseMapBlockIO : MapBlockIO<WorldNode> { }
+        private class UseArchiveBlockIO : ArchiveBlockIO<WorldNode> { }
 
         [Serializable]
-        private class UseLoadByRange : LoadByRange<MapBlock<WorldNode>> { }
+        private class UseLoadBlockByRange : LoadBlockByRange<ArchiveBlock<WorldNode>> { }
 
         [Serializable]
-        public class UseBlockMap : NodeMap<WorldNode, MapBlock<WorldNode>> { }
+        public class UseContentBlockMap : ContentBlockMap<WorldNode, ArchiveBlock<WorldNode>> { }
 
     }
 

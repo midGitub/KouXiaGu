@@ -11,7 +11,12 @@ using System.Text;
 namespace KouXiaGu.World2D.Map
 {
 
-    public static class MapBlockIOEX
+
+
+    /// <summary>
+    /// 对可进行归档的地图块拓展;
+    /// </summary>
+    public static class ArchiveBlockIO_ProtoBuf
     {
 
         /// <summary>
@@ -73,7 +78,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 保存到预制地图;
         /// </summary>
-        public static void SavePrefabMapBlockOrNot<T>(this IMapBlockInfo info, ShortVector2 blockAddress, MapBlock<T> mapBlock)
+        public static void SavePrefabMapBlockOrNot<T>(this IMapBlockInfo info, ShortVector2 blockAddress, ArchiveBlock<T> mapBlock)
             where T : struct
         {
             string fullPrefabMapFilePath = info.GetFullPrefabMapFilePath(blockAddress);
@@ -83,7 +88,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 保存到存档缓存;
         /// </summary>
-        public static void SaveArchiveMapBlockOrNot<T>(this IMapBlockInfo info, ShortVector2 blockAddress, MapBlock<T> mapBlock)
+        public static void SaveArchiveMapBlockOrNot<T>(this IMapBlockInfo info, ShortVector2 blockAddress, ArchiveBlock<T> mapBlock)
              where T : struct
         {
             string fullArchiveTempFilePath = info.GetFullArchiveTempFilePath(blockAddress);
@@ -140,12 +145,12 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 尝试获取到这个区域的完整地图块信息;
         /// </summary>
-        public static MapBlock<T> LoadMapBlock<T>(this IMapBlockInfo info, ShortVector2 blockAddress)
+        public static ArchiveBlock<T> LoadMapBlock<T>(this IMapBlockInfo info, ShortVector2 blockAddress)
             where T : struct
         {
             Dictionary<ShortVector2, T> prefabMap;
             Dictionary<ShortVector2, T> archiveMap;
-            MapBlock<T> mapBlock;
+            ArchiveBlock<T> mapBlock;
 
             if (info.TryLoadPrefabMapBlock(blockAddress, out prefabMap))
             {
@@ -154,14 +159,14 @@ namespace KouXiaGu.World2D.Map
 #if DETAILED_DEBUG
                     Debug.Log(blockAddress + "找到预制地图 和 存档地图");
 #endif
-                    mapBlock = new MapBlock<T>(prefabMap, archiveMap);
+                    mapBlock = new ArchiveBlock<T>(prefabMap, archiveMap);
                 }
                 else
                 {
 #if DETAILED_DEBUG
                     Debug.Log(blockAddress + "找到预制地图");
 #endif
-                    mapBlock = new MapBlock<T>(prefabMap, archiveMap);
+                    mapBlock = new ArchiveBlock<T>(prefabMap, archiveMap);
                 }
             }
             else
@@ -171,14 +176,14 @@ namespace KouXiaGu.World2D.Map
 #if DETAILED_DEBUG
                     Debug.Log(blockAddress + "找到存档地图");
 #endif
-                    mapBlock = new MapBlock<T>(prefabMap, archiveMap);
+                    mapBlock = new ArchiveBlock<T>(prefabMap, archiveMap);
                 }
                 else
                 {
 #if DETAILED_DEBUG
                     Debug.Log(blockAddress + "未找到地图");
 #endif
-                    mapBlock = new MapBlock<T>(prefabMap, archiveMap);
+                    mapBlock = new ArchiveBlock<T>(prefabMap, archiveMap);
                 }
             }
             return mapBlock;

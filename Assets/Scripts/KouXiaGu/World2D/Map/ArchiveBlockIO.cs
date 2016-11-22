@@ -9,10 +9,10 @@ namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>
-    /// 从存储文件读取地图块的方法;
+    /// 从存储文件读取可归档地图块的方法;
     /// </summary>
     [Serializable]
-    public class MapBlockIO<T> : IMapBlockIO<MapBlock<T>>, IMapBlockInfo
+    public class ArchiveBlockIO<T> : IMapBlockIO<ArchiveBlock<T>>, IMapBlockInfo
         where T : struct
     {
 
@@ -46,17 +46,17 @@ namespace KouXiaGu.World2D.Map
         }
 
 
-        public MapBlock<T> Load(ShortVector2 address)
+        public ArchiveBlock<T> Load(ShortVector2 address)
         {
             return this.LoadMapBlock<T>(address);
         }
 
-        public void Unload(ShortVector2 address, MapBlock<T> block)
+        public void Unload(ShortVector2 address, ArchiveBlock<T> block)
         {
             SaveMapBlock(address, block);
         }
 
-        void SaveMapBlock(ShortVector2 address, MapBlock<T> block)
+        void SaveMapBlock(ShortVector2 address, ArchiveBlock<T> block)
         {
             this.SaveArchiveMapBlockOrNot(address, block);
             if (editPrefab)
@@ -100,7 +100,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 当游戏归档时进行的操作;
         /// </summary>
-        public void OnGameArchive(string fullArchivedDirectoryPath, IBlockMap<ShortVector2, MapBlock<T>> blockMap)
+        public void OnGameArchive(string fullArchivedDirectoryPath, IBlockMap<ShortVector2, ArchiveBlock<T>> blockMap)
         {
             this.OnSave(blockMap);
             ArchiveCopyArchived(fullArchivedDirectoryPath);
@@ -109,9 +109,9 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图保存到缓存地图文件夹内;
         /// </summary>
-        void OnSave(IBlockMap<ShortVector2, MapBlock<T>> blockMap)
+        void OnSave(IBlockMap<ShortVector2, ArchiveBlock<T>> blockMap)
         {
-            KeyValuePair<ShortVector2, MapBlock<T>>[] pairs = blockMap.BlocksPair.ToArray();
+            KeyValuePair<ShortVector2, ArchiveBlock<T>>[] pairs = blockMap.BlocksPair.ToArray();
             foreach (var pair in pairs)
             {
                 SaveMapBlock(pair.Key, pair.Value);

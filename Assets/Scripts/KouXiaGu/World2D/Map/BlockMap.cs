@@ -8,6 +8,10 @@ using UnityEngine;
 namespace KouXiaGu.World2D.Map
 {
 
+    /// <summary>
+    /// 块地图结构;
+    /// </summary>
+    /// <typeparam name="TBlock"></typeparam>
     [Serializable]
     public class BlockMap<TBlock> : IBlockMap<ShortVector2, TBlock>
     {

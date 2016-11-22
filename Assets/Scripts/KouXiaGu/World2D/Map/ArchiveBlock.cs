@@ -8,13 +8,13 @@ namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>
-    /// 地图块;
+    /// 进行归档的地图块;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MapBlock<T> : IMap<ShortVector2, T>
+    public class ArchiveBlock<T> : IMap<ShortVector2, T>
         where T : struct
     {
-        public MapBlock(Dictionary<ShortVector2, T> prefab, Dictionary<ShortVector2, T> archive)
+        public ArchiveBlock(Dictionary<ShortVector2, T> prefab, Dictionary<ShortVector2, T> archive)
         {
             Load(prefab, archive);
         }

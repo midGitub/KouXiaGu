@@ -5,6 +5,10 @@ using System.Text;
 
 namespace KouXiaGu.World2D.Map
 {
+
+    /// <summary>
+    /// 块未载入异常;
+    /// </summary>
     public class BlockNotFoundException : Exception
     {
 

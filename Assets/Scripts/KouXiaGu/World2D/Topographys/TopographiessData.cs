@@ -28,10 +28,6 @@ namespace KouXiaGu.World2D
         [SerializeField]
         TopographyPrefab[] topographyPrefabs;
 
-        [SerializeField]
-        TopographyCreater topographyCreater;
-
-
         Dictionary<int, TopographyPrefab> topographyPrefabDictionary;
 
         public string TopographyInfosXMLFilePath
@@ -47,8 +43,6 @@ namespace KouXiaGu.World2D
         void Start()
         {
             topographyPrefabDictionary = GetDictionary();
-            topographyCreater.TopographiessData = this;
-            GameObject.FindObjectOfType<WorldMap>().ObservableWorldNode.Subscribe(topographyCreater);
         }
 
         Dictionary<int, TopographyPrefab> GetDictionary()
