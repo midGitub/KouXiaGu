@@ -3,8 +3,10 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UniRx;
+using KouXiaGu.World2D.Map;
+using System.Collections.Generic;
 
-namespace KouXiaGu.World2D.Map
+namespace KouXiaGu.World2D
 {
 
     /// <summary>
@@ -21,20 +23,33 @@ namespace KouXiaGu.World2D.Map
         /// 保存到存档的位置;
         /// </summary>
         [SerializeField]
-        private string archivedDirectoryName;
-        
+        string archivedDirectoryName;
+        /// <summary>
+        /// 地图块大小;
+        /// </summary>
         [SerializeField]
-        internal UseContentBlockMap worldMap;
+        ShortVector2 partitionSizes = new ShortVector2(100, 100);
+
+        [SerializeField]
+        internal ContentBlockMap<WorldNode, ArchiveBlock<WorldNode>> worldMap;
         [SerializeField]
         UseLoadBlockByRange loadByRange;
         [SerializeField]
         UseArchiveBlockIO mapBlockIO;
 
-        public IMap<IntVector2, WorldNode> Map { get { return worldMap; } }
+        public IMap<IntVector2, WorldNode> Map
+        {
+            get { return worldMap; }
+        }
+        public IObservable<KeyValuePair<IntVector2, WorldNode>> observeChanges
+        {
+            get { return worldMap.observeChanges; }
+        }
 
         void Awake()
         {
-            loadByRange.BlockMap = worldMap;
+            worldMap = new ContentBlockMap<WorldNode, ArchiveBlock<WorldNode>>(partitionSizes);
+            loadByRange.BlockMap = worldMap.BlockMap;
             loadByRange.MapBlockIO = mapBlockIO;
         }
 
@@ -72,7 +87,7 @@ namespace KouXiaGu.World2D.Map
         IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-            mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, worldMap);
+            mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, worldMap.BlockMap);
             item.Archived.World2D.PathPrefabMapDirectory = mapBlockIO.FullPrefabMapDirectoryPath;
             yield break;
         }
@@ -88,9 +103,6 @@ namespace KouXiaGu.World2D.Map
 
         [Serializable]
         private class UseLoadBlockByRange : LoadBlockByRange<ArchiveBlock<WorldNode>> { }
-
-        [Serializable]
-        public class UseContentBlockMap : ContentBlockMap<WorldNode, ArchiveBlock<WorldNode>> { }
 
     }
 

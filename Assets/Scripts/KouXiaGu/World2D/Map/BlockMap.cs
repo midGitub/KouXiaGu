@@ -15,6 +15,12 @@ namespace KouXiaGu.World2D.Map
     [Serializable]
     public class BlockMap<TBlock> : IBlockMap<ShortVector2, TBlock>
     {
+        protected BlockMap() { }
+
+        public BlockMap(ShortVector2 partitionSizes)
+        {
+            this.partitionSizes = partitionSizes;
+        }
 
         [SerializeField]
         ShortVector2 partitionSizes;

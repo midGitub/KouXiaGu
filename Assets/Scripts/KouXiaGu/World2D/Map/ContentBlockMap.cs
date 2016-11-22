@@ -15,26 +15,39 @@ namespace KouXiaGu.World2D.Map
     /// <typeparam name="T">节点</typeparam>
     /// <typeparam name="TBlock">地图块类型</typeparam>
     [Serializable]
-    public class ContentBlockMap<T, TBlock> : BlockMap<TBlock>, IMap<IntVector2, T>, IBlockMap<ShortVector2, TBlock>,
-        IObservable<KeyValuePair<IntVector2, T>>
+    public class ContentBlockMap<T, TBlock> : IMap<IntVector2, T>
         where T : struct
         where TBlock : IMap<ShortVector2, T>
     {
+        protected ContentBlockMap() { }
 
-        IBlockMap<ShortVector2, TBlock> mapCollection
+        public ContentBlockMap(ShortVector2 partitionSizes)
         {
-            get { return (this as IBlockMap<ShortVector2, TBlock>); }
+            blockMap = new BlockMap<TBlock>(partitionSizes);
+        }
+
+        BlockMap<TBlock> blockMap;
+        NodeChangingReporter nodeChangingReporter = new NodeChangingReporter();
+
+        public BlockMap<TBlock> BlockMap
+        {
+            get { return blockMap; }
+        }
+
+        public IObservable<KeyValuePair<IntVector2, T>> observeChanges
+        {
+            get { return nodeChangingReporter; }
         }
 
         public IEnumerable<KeyValuePair<IntVector2, T>> NodePair
         {
             get
             {
-                foreach (var block in base.BlocksPair)
+                foreach (var block in blockMap.BlocksPair)
                 {
                     foreach (var node in block.Value.NodePair)
                     {
-                        IntVector2 position = AddressToPosition(block.Key, node.Key);
+                        IntVector2 position = blockMap.AddressToPosition(block.Key, node.Key);
                         yield return new KeyValuePair<IntVector2, T>(position, node.Value);
                     }
                 }
@@ -55,7 +68,7 @@ namespace KouXiaGu.World2D.Map
                 TBlock block = TransformToBlock(position, out realPosition);
                 block[realPosition] = value;
 
-                OnValueUpdate(position, value);
+                nodeChangingReporter.NodeDataUpdate(position, value);
             }
         }
 
@@ -65,7 +78,7 @@ namespace KouXiaGu.World2D.Map
             TBlock block = TransformToBlock(position, out realPosition);
             block.Add(realPosition, item);
 
-            OnValueUpdate(position, item);
+            nodeChangingReporter.NodeDataUpdate(position, item);
         }
 
         public bool Remove(IntVector2 position)
@@ -95,9 +108,9 @@ namespace KouXiaGu.World2D.Map
         TBlock TransformToBlock(IntVector2 position, out ShortVector2 realPosition)
         {
             TBlock block;
-            ShortVector2 address = GetAddress(position, out realPosition);
+            ShortVector2 address = blockMap.GetAddress(position, out realPosition);
 
-            if (mapCollection.TryGetValue(address, out block))
+            if (blockMap.TryGetValue(address, out block))
             {
                 return block;
             }
@@ -105,9 +118,12 @@ namespace KouXiaGu.World2D.Map
 
         }
 
+        /// <summary>
+        /// 实质清除块内容;
+        /// </summary>
         void IMap<IntVector2, T>.Clear()
         {
-            mapCollection.Clear();
+            blockMap.Clear();
         }
 
         /// <summary>
@@ -118,54 +134,54 @@ namespace KouXiaGu.World2D.Map
             return new BlockNotFoundException(address.ToString() + "地图块未载入!");
         }
 
-
-        List<IObserver<KeyValuePair<IntVector2, T>>> observers = new List<IObserver<KeyValuePair<IntVector2, T>>>();
-
-        public override void Add(ShortVector2 position, TBlock item)
-        {
-            base.Add(position, item);
-            foreach (var node in item.NodePair)
-            {
-                OnValueUpdate(node.Key, node.Value);
-            }
-        }
-
-        public void OnValueUpdate(IntVector2 position, T worldNode)
-        {
-            KeyValuePair<IntVector2, T> pari = new KeyValuePair<IntVector2, T>(position, worldNode);
-            foreach (var observer in observers.ToArray())
-            {
-                observer.OnNext(pari);
-            }
-        }
-
         /// <summary>
-        /// 当这个点的内容发生变化时调用;
+        /// 当新加入点,或者点内容发生变化时进行通知;
         /// </summary>
-        public IDisposable Subscribe(IObserver<KeyValuePair<IntVector2, T>> observer)
+        class NodeChangingReporter : IObservable<KeyValuePair<IntVector2, T>>
         {
-            if (observer != null && !observers.Contains(observer))
-                observers.Add(observer);
-            return new Unsubscriber(observers, observer);
+            public NodeChangingReporter() { }
 
-        }
+            List<IObserver<KeyValuePair<IntVector2, T>>> observers = new List<IObserver<KeyValuePair<IntVector2, T>>>();
 
-        private class Unsubscriber : IDisposable
-        {
-            public Unsubscriber(List<IObserver<KeyValuePair<IntVector2, T>>> observers, IObserver<KeyValuePair<IntVector2, T>> observer)
+            public void NodeDataUpdate(IntVector2 position, T worldNode)
             {
-                this.observers = observers;
-                this.observer = observer;
+                if (observers.Count != 0)
+                {
+                    KeyValuePair<IntVector2, T> pari = new KeyValuePair<IntVector2, T>(position, worldNode);
+                    foreach (var observer in observers.ToArray())
+                    {
+                        observer.OnNext(pari);
+                    }
+                }
             }
 
-            List<IObserver<KeyValuePair<IntVector2, T>>> observers;
-            IObserver<KeyValuePair<IntVector2, T>> observer;
-
-            public void Dispose()
+            public IDisposable Subscribe(IObserver<KeyValuePair<IntVector2, T>> observer)
             {
-                if(observer != null)
+                if (observer == null)
+                    throw new NullReferenceException();
+
+                if (!observers.Contains(observer))
+                    observers.Add(observer);
+                return new Unsubscriber(observers, observer);
+            }
+
+            private class Unsubscriber : IDisposable
+            {
+                public Unsubscriber(List<IObserver<KeyValuePair<IntVector2, T>>> observers, IObserver<KeyValuePair<IntVector2, T>> observer)
+                {
+                    this.observers = observers;
+                    this.observer = observer;
+                }
+
+                List<IObserver<KeyValuePair<IntVector2, T>>> observers;
+                IObserver<KeyValuePair<IntVector2, T>> observer;
+
+                public void Dispose()
+                {
                     observers.Remove(observer);
+                }
             }
+
         }
 
     }

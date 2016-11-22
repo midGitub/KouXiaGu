@@ -16,8 +16,8 @@ namespace KouXiaGu.World2D
 
 
 
-        [Serializable]
-        public class UseBlockMap : ContentBlockMap<int, ArchiveBlock<int>> { }
+        //[Serializable]
+        //public class UseBlockMap : ContentBlockMap<int, ArchiveBlock<int>> { }
 
 
 

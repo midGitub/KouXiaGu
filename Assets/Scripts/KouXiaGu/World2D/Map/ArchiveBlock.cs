@@ -14,6 +14,7 @@ namespace KouXiaGu.World2D.Map
     public class ArchiveBlock<T> : IMap<ShortVector2, T>
         where T : struct
     {
+
         public ArchiveBlock(Dictionary<ShortVector2, T> prefab, Dictionary<ShortVector2, T> archive)
         {
             Load(prefab, archive);
