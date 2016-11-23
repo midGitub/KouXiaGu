@@ -9,7 +9,7 @@ namespace KouXiaGu.World2D
 {
 
     [DisallowMultipleComponent]
-    public class TopographyMap : MonoBehaviour
+    public class TopographyMap : UnitySingleton<TopographyMap>
     {
 
 

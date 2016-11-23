@@ -16,9 +16,8 @@ namespace KouXiaGu.World2D.Map
     [Serializable]
     public class LoadBlockByRange<TBlock>
     {
-        protected LoadBlockByRange()
-        {
-        }
+        protected LoadBlockByRange() { }
+
         public LoadBlockByRange(IMapBlockIO<TBlock> mapBlockIO, BlockMap<TBlock> blockMap)
         {
             this.MapBlockIO = mapBlockIO;

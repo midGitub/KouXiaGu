@@ -18,41 +18,52 @@ namespace KouXiaGu.World2D.Map
         {
             mapCollection = new Dictionary<ShortVector2, T>();
         }
+        public Block(Dictionary<ShortVector2, T> mapCollection)
+        {
+            this.mapCollection = mapCollection;
+        }
+
 
         Dictionary<ShortVector2, T> mapCollection;
 
-        T IMap<ShortVector2, T>.this[ShortVector2 position]
+
+        public T this[ShortVector2 position]
         {
             get { return mapCollection[position]; }
             set { mapCollection[position] = value; }
         }
 
-        IEnumerable<KeyValuePair<ShortVector2, T>> IMap<ShortVector2, T>.NodePair
+        public IEnumerable<T> Nodes
+        {
+            get { return mapCollection.Values; }
+        }
+
+        public IEnumerable<KeyValuePair<ShortVector2, T>> NodePair
         {
             get { return mapCollection; }
         }
 
-        void IMap<ShortVector2, T>.Add(ShortVector2 position, T item)
+        public void Add(ShortVector2 position, T item)
         {
             mapCollection.Add(position, item);
         }
 
-        void IMap<ShortVector2, T>.Clear()
+        public void Clear()
         {
             mapCollection.Clear();
         }
 
-        bool IMap<ShortVector2, T>.Contains(ShortVector2 position)
+        public bool Contains(ShortVector2 position)
         {
             return mapCollection.ContainsKey(position);
         }
 
-        bool IMap<ShortVector2, T>.Remove(ShortVector2 position)
+        public bool Remove(ShortVector2 position)
         {
             return mapCollection.Remove(position);
         }
 
-        bool IMap<ShortVector2, T>.TryGetValue(ShortVector2 position, out T item)
+        public bool TryGetValue(ShortVector2 position, out T item)
         {
             return mapCollection.TryGetValue(position, out item);
         }

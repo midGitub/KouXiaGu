@@ -28,9 +28,8 @@ namespace KouXiaGu.Concurrent
             get { return requestsQueue.Count; }
         }
 
-        protected override void Awake()
+        void Awake()
         {
-            base.Awake();
             requestsQueue = new ConcurrentQueue<IRequest>();
         }
 

@@ -6,16 +6,16 @@ using System.Text;
 namespace KouXiaGu.World2D.Map
 {
 
-    /// <summary>
-    /// 只读的地图;
-    /// </summary>
-    public interface IReadOnlyMap<TPoint, T>
-    {
-        T this[TPoint position] { get; }
+    ///// <summary>
+    ///// 只读的地图;
+    ///// </summary>
+    //public interface IReadOnlyMap<TPoint, T>
+    //{
+    //    T this[TPoint position] { get; }
 
-        bool Contains(TPoint position);
-        bool TryGetValue(TPoint position, out T item);
-    }
+    //    bool Contains(TPoint position);
+    //    bool TryGetValue(TPoint position, out T item);
+    //}
 
     /// <summary>
     /// 游戏地图基本接口

@@ -44,10 +44,10 @@ namespace KouXiaGu
             return singletonGameObject;
         }
 
-        protected virtual void Awake()
-        {
-            GameObject.DontDestroyOnLoad(gameObject);
-        }
+        //protected virtual void Awake()
+        //{
+        //    //GameObject.DontDestroyOnLoad(gameObject);
+        //}
 
     }
 

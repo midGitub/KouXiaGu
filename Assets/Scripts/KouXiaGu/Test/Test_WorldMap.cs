@@ -23,7 +23,7 @@ namespace KouXiaGu.Test
 
         private void Awake()
         {
-            worldMap = GameController.FindInstance<WorldMap>();
+            worldMap = GameObject.FindObjectOfType<WorldMap>();
             textObject = textObject ?? GetComponent<Text>();
         }
 
