@@ -68,7 +68,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         public TopographyInfo GetWithID(int id)
         {
-            return topographyPrefabDictionary[id].info;
+            return topographyPrefabDictionary[id].Info;
         }
 
         /// <summary>
@@ -80,22 +80,22 @@ namespace KouXiaGu.World2D
         }
 
 
-        [ContextMenu("输出到XML")]
-        void Input_TopographyPrefab()
-        {
-            TopographyInfo[] topographys = topographyPrefabs.Select(item => item.info).ToArray();
-            SerializeHelper.Serialize_Xml(TopographyInfosXMLFilePath, topographys);
-        }
+        //[ContextMenu("输出到XML")]
+        //void Input_TopographyPrefab()
+        //{
+        //    TopographyInfo[] topographys = topographyPrefabs.Select(item => item.Info).ToArray();
+        //    SerializeHelper.Serialize_Xml(TopographyInfosXMLFilePath, topographys);
+        //}
 
-        [ContextMenu("输入到XML")]
-        void OutPut_TopographyPrefab()
-        {
-            TopographyInfo[] topographys = SerializeHelper.Deserialize_Xml<TopographyInfo[]>(TopographyInfosXMLFilePath);
-            foreach (var item in topographys)
-            {
-                topographyPrefabs.First(topographyPrefab => topographyPrefab.id == item.id).info = item;
-            }
-        }
+        //[ContextMenu("输入到XML")]
+        //void OutPut_TopographyPrefab()
+        //{
+        //    TopographyInfo[] topographys = SerializeHelper.Deserialize_Xml<TopographyInfo[]>(TopographyInfosXMLFilePath);
+        //    foreach (var item in topographys)
+        //    {
+        //        topographyPrefabs.First(topographyPrefab => topographyPrefab.id == item.id).Info = item;
+        //    }
+        //}
 
     }
 

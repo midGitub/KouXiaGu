@@ -18,12 +18,16 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 代表的预制物体;
         /// </summary>
+        [SerializeField]
         public Topography topography = null;
 
         /// <summary>
-        /// 地貌;
+        /// 地貌信息;
         /// </summary>
-        public TopographyInfo info;
+        public TopographyInfo Info
+        {
+            get { return topography.Info; }
+        }
     }
 
 

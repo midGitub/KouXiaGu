@@ -10,8 +10,12 @@ namespace KouXiaGu.World2D
     [DisallowMultipleComponent]
     public class Topography : MonoBehaviour
     {
+
         [SerializeField]
         int id;
+
+        [SerializeField]
+        TopographyInfo info;
 
         /// <summary>
         /// 唯一标识;
@@ -21,7 +25,13 @@ namespace KouXiaGu.World2D
             get { return id; }
         }
 
-
+        /// <summary>
+        /// 暂时放在这;
+        /// </summary>
+        public TopographyInfo Info
+        {
+            get { return info; }
+        }
 
     }
 
