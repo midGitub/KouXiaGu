@@ -28,22 +28,22 @@ namespace KouXiaGu.World2D
         [SerializeField]
         TopographyPrefab[] topographyPrefabs;
 
-        public Dictionary<int, TopographyPrefab> TopographyPrefabDictionary
-        {
-            get { return GetTopographyPrefabDictionary(); }
-        }
+        Dictionary<int, TopographyPrefab> topographyPrefabDictionary;
 
         public string TopographyInfosXMLFilePath
         {
             get { return Path.Combine(ResCoreData.CoreDataDirectoryPath, TopographyInfosXMLFileName); }
         }
 
-        public TopographyPrefab GetWithID(int id)
+        public void Awake()
         {
-            return TopographyPrefabDictionary[id];
+            topographyPrefabDictionary = GetTopographyPrefabDictionary(topographyPrefabs);
         }
 
-        Dictionary<int, TopographyPrefab> GetTopographyPrefabDictionary()
+        /// <summary>
+        /// 将数组转换成字典;
+        /// </summary>
+        Dictionary<int, TopographyPrefab> GetTopographyPrefabDictionary(TopographyPrefab[] topographyPrefabs)
         {
             Dictionary<int, TopographyPrefab> topographyPrefabDictionary = new Dictionary<int, TopographyPrefab>();
 
@@ -61,6 +61,24 @@ namespace KouXiaGu.World2D
 
             return topographyPrefabDictionary;
         }
+
+
+        /// <summary>
+        /// 根据ID获取到地貌详细信息;
+        /// </summary>
+        public TopographyPrefab GetWithID(int id)
+        {
+            return topographyPrefabDictionary[id];
+        }
+
+        /// <summary>
+        /// 根据ID获取到预制物体;
+        /// </summary>
+        public Transform GetPrefabWithID(int id)
+        {
+            return topographyPrefabDictionary[id].prefab;
+        }
+
 
         [ContextMenu("输出到XML")]
         void Input_TopographyPrefab()

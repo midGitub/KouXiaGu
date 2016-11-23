@@ -26,7 +26,7 @@ namespace KouXiaGu.World2D.Map
         }
 
         BlockMap<TBlock> blockMap;
-        NodeChangingReporter nodeChangingReporter = new NodeChangingReporter();
+        NodeChangeReporter<T> nodeChangingReporter = new NodeChangeReporter<T>();
 
         public BlockMap<TBlock> BlockMap
         {
@@ -136,56 +136,6 @@ namespace KouXiaGu.World2D.Map
         BlockNotFoundException BlockNotFoundException(ShortVector2 address)
         {
             return new BlockNotFoundException(address.ToString() + "地图块未载入!");
-        }
-
-        /// <summary>
-        /// 当新加入点,或者点内容发生变化时进行通知;
-        /// </summary>
-        class NodeChangingReporter : IObservable<MapNodeState<T>>
-        {
-            public NodeChangingReporter() { }
-
-            List<IObserver<MapNodeState<T>>> observers = new List<IObserver<MapNodeState<T>>>();
-
-            public void NodeDataUpdate(ChangeType eventType, IntVector2 mapPoint, T node)
-            {
-                if (observers.Count != 0)
-                {
-                    MapNodeState<T> pari = new MapNodeState<T>(eventType, mapPoint, node);
-                    foreach (var observer in observers.ToArray())
-                    {
-                        observer.OnNext(pari);
-                    }
-                }
-            }
-
-            public IDisposable Subscribe(IObserver<MapNodeState<T>> observer)
-            {
-                if (observer == null)
-                    throw new NullReferenceException();
-
-                if (!observers.Contains(observer))
-                    observers.Add(observer);
-                return new Unsubscriber(observers, observer);
-            }
-
-            private class Unsubscriber : IDisposable
-            {
-                public Unsubscriber(List<IObserver<MapNodeState<T>>> observers, IObserver<MapNodeState<T>> observer)
-                {
-                    this.observers = observers;
-                    this.observer = observer;
-                }
-
-                List<IObserver<MapNodeState<T>>> observers;
-                IObserver<MapNodeState<T>> observer;
-
-                public void Dispose()
-                {
-                    observers.Remove(observer);
-                }
-            }
-
         }
 
     }

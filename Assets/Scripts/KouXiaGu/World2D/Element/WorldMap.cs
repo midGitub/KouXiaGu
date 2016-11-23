@@ -13,7 +13,7 @@ namespace KouXiaGu.World2D
     /// 游戏地图;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap : UnitySingleton<WorldMap>, IStartGameEvent, IArchiveEvent, IQuitGameEvent, IFollowTargetMap
+    public class WorldMap : UnitySingleton<WorldMap>, IStartGameEvent, IArchiveEvent, IQuitGameEvent
     {
 
         /// <summary>
@@ -43,17 +43,24 @@ namespace KouXiaGu.World2D
             get { return worldMap.observeChanges; }
         }
 
+        /// <summary>
+        /// 是否已经准备完毕?
+        /// </summary>
         [ShowOnlyProperty]
         public bool IsReady { get; private set; }
 
         void Awake()
         {
             worldMap = new ObservableBlockMap<WorldNode, ArchiveBlock<WorldNode>>(partitionSizes);
+
             loadByRange.BlockMap = worldMap.BlockMap;
             loadByRange.MapBlockIO = mapBlockIO;
         }
 
-        void IFollowTargetMap.OnMapDataUpdate(Vector3 targetPlanePoint, IntVector2 targetMapPoint)
+        /// <summary>
+        /// 根据中心点更新地图数据;
+        /// </summary>
+        public void OnMapDataUpdate(Vector3 targetPlanePoint, IntVector2 targetMapPoint)
         {
             loadByRange.UpdateCenterPoint(targetMapPoint);
         }
