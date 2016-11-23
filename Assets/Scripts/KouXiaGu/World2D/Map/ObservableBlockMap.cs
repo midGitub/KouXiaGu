@@ -33,7 +33,7 @@ namespace KouXiaGu.World2D.Map
             get { return blockMap; }
         }
 
-        public IObservable<KeyValuePair<IntVector2, T>> observeChanges
+        public IObservable<MapNodeState<T>> observeChanges
         {
             get { return nodeChangingReporter; }
         }
@@ -67,7 +67,7 @@ namespace KouXiaGu.World2D.Map
                 TBlock block = TransformToBlock(position, out realPosition);
                 block[realPosition] = value;
 
-                nodeChangingReporter.NodeDataUpdate(position, value);
+                nodeChangingReporter.NodeDataUpdate(ChangeType.Update, position, value);
             }
         }
 
@@ -77,14 +77,19 @@ namespace KouXiaGu.World2D.Map
             TBlock block = TransformToBlock(position, out realPosition);
             block.Add(realPosition, item);
 
-            nodeChangingReporter.NodeDataUpdate(position, item);
+            nodeChangingReporter.NodeDataUpdate(ChangeType.Add, position, item);
         }
 
         public bool Remove(IntVector2 position)
         {
             ShortVector2 realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
-            return block.Remove(realPosition);
+            if (block.Remove(realPosition))
+            {
+                nodeChangingReporter.NodeDataUpdate(ChangeType.Remove, position, default(T));
+                return true;
+            }
+            return false;
         }
 
         public bool Contains(IntVector2 position)
@@ -136,17 +141,17 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 当新加入点,或者点内容发生变化时进行通知;
         /// </summary>
-        class NodeChangingReporter : IObservable<KeyValuePair<IntVector2, T>>
+        class NodeChangingReporter : IObservable<MapNodeState<T>>
         {
             public NodeChangingReporter() { }
 
-            List<IObserver<KeyValuePair<IntVector2, T>>> observers = new List<IObserver<KeyValuePair<IntVector2, T>>>();
+            List<IObserver<MapNodeState<T>>> observers = new List<IObserver<MapNodeState<T>>>();
 
-            public void NodeDataUpdate(IntVector2 position, T worldNode)
+            public void NodeDataUpdate(ChangeType eventType, IntVector2 mapPoint, T node)
             {
                 if (observers.Count != 0)
                 {
-                    KeyValuePair<IntVector2, T> pari = new KeyValuePair<IntVector2, T>(position, worldNode);
+                    MapNodeState<T> pari = new MapNodeState<T>(eventType, mapPoint, node);
                     foreach (var observer in observers.ToArray())
                     {
                         observer.OnNext(pari);
@@ -154,7 +159,7 @@ namespace KouXiaGu.World2D.Map
                 }
             }
 
-            public IDisposable Subscribe(IObserver<KeyValuePair<IntVector2, T>> observer)
+            public IDisposable Subscribe(IObserver<MapNodeState<T>> observer)
             {
                 if (observer == null)
                     throw new NullReferenceException();
@@ -166,14 +171,14 @@ namespace KouXiaGu.World2D.Map
 
             private class Unsubscriber : IDisposable
             {
-                public Unsubscriber(List<IObserver<KeyValuePair<IntVector2, T>>> observers, IObserver<KeyValuePair<IntVector2, T>> observer)
+                public Unsubscriber(List<IObserver<MapNodeState<T>>> observers, IObserver<MapNodeState<T>> observer)
                 {
                     this.observers = observers;
                     this.observer = observer;
                 }
 
-                List<IObserver<KeyValuePair<IntVector2, T>>> observers;
-                IObserver<KeyValuePair<IntVector2, T>> observer;
+                List<IObserver<MapNodeState<T>>> observers;
+                IObserver<MapNodeState<T>> observer;
 
                 public void Dispose()
                 {

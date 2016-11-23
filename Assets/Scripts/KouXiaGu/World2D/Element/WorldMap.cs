@@ -38,7 +38,7 @@ namespace KouXiaGu.World2D
         {
             get { return worldMap; }
         }
-        public IObservable<KeyValuePair<IntVector2, WorldNode>> observeChanges
+        public IObservable<MapNodeState<WorldNode>> observeChanges
         {
             get { return worldMap.observeChanges; }
         }

@@ -7,12 +7,13 @@ namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>
-    /// 监视地图内容变化的
+    /// 地图节点更新事件类型;
     /// </summary>
-    public class MapObserverBase<T>
+    public enum ChangeType
     {
-
-
+        Update,
+        Add,
+        Remove,
     }
 
 }
