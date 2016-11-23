@@ -115,8 +115,9 @@ namespace KouXiaGu.World2D.Map
                 mapBlock = LoadMapBlock<T>(fullFilePath);
                 return true;
             }
-            catch
+            catch(Exception e)
             {
+                Debug.Log(e);
                 mapBlock = default(Dictionary<ShortVector2, T>);
                 return false;
             }

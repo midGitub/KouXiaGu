@@ -22,7 +22,8 @@ namespace KouXiaGu.World2D
         [SerializeField]
         Vector2 buildUpdateCheckRange = new Vector2(5, 5);
 
-        IMap<ShortVector2, WorldNode> worldMap;
+        WorldMap worldMap;
+        IMap<ShortVector2, WorldNode> Map;
         HashSet<ShortVector2> loadedPoint;
         NodeChangeReporter<WorldNode> nodeChangeReporter;
         Vector2 lastBuildUpdatePoint = new Vector2(float.MaxValue, float.MaxValue);
@@ -52,7 +53,8 @@ namespace KouXiaGu.World2D
 
         void Start()
         {
-            worldMap = WorldMap.GetInstance.Map;
+            worldMap = WorldMap.GetInstance;
+            Map = worldMap.Map;
         }
 
         IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
@@ -99,16 +101,25 @@ namespace KouXiaGu.World2D
                 current.x < northeastPoint.x && current.y < northeastPoint.y;
         }
 
-
+        /// <summary>
+        /// 当地图节点存在变化时调用;
+        /// </summary>
+        /// <param name="node"></param>
         void WorldNodeChange(MapNodeState<WorldNode> node)
         {
             nodeChangeReporter.NodeDataUpdate(ChangeType.Update, node.MapPoint, node.WorldNode);
         }
 
+        /// <summary>
+        /// 当目标位置发生变化时调用;
+        /// </summary>
+        /// <param name="targetPlanePoint"></param>
         void BuildUpdate(Vector3 targetPlanePoint)
         {
             ShortVector2 targetMapPoint = WorldConvert.PlaneToHexPair(targetPlanePoint);
-            WorldMap.GetInstance.OnMapDataUpdate(targetPlanePoint, targetMapPoint);
+
+            worldMap.OnMapDataUpdate(targetPlanePoint, targetMapPoint); //更新主地图的信息;
+
             UpdateWorldRes(targetMapPoint);
 
             lastBuildUpdatePoint = targetPlanePoint;
@@ -128,9 +139,6 @@ namespace KouXiaGu.World2D
             HashSet<ShortVector2> unloadPoints = loadedPoint;
 
             loadedPoint = newPoints;
-
-            //ShortVector2[] unloadPoints = loadedPoint.Except(newBlock).ToArray();
-            //ShortVector2[] loadPoints = newBlock.Except(loadedPoint).ToArray();
 
             Load(loadPoints);
             Unload(unloadPoints);
@@ -160,10 +168,13 @@ namespace KouXiaGu.World2D
             }
         }
 
+        /// <summary>
+        /// 通知观察程序更新信息;
+        /// </summary>
         void UpdateBuildRes(ChangeType eventType, ShortVector2 mapPoint)
         {
             WorldNode worldNode;
-            if (worldMap.TryGetValue(mapPoint, out worldNode))
+            if (Map.TryGetValue(mapPoint, out worldNode))
             {
                 nodeChangeReporter.NodeDataUpdate(eventType, mapPoint, worldNode);
             }

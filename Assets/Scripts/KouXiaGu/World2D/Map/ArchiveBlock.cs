@@ -46,8 +46,8 @@ namespace KouXiaGu.World2D.Map
             }
             else if (prefab == null)
             {
+                mapNodeSet = archive;
                 haveChangedSet = new HashSet<ShortVector2>(archive.Keys);
-                prefab = archive;
             }
             else if (archive == null)
             {

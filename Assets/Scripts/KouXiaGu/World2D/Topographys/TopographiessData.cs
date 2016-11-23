@@ -35,7 +35,7 @@ namespace KouXiaGu.World2D
             get { return Path.Combine(ResCoreData.CoreDataDirectoryPath, TopographyInfosXMLFileName); }
         }
 
-        public void Awake()
+        public void Start()
         {
             topographyPrefabDictionary = GetTopographyPrefabDictionary(topographyPrefabs);
         }
