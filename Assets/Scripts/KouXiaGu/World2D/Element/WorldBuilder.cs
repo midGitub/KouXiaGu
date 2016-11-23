@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UniRx;
 using KouXiaGu.World2D.Map;
@@ -24,7 +23,7 @@ namespace KouXiaGu.World2D
         Vector2 buildUpdateCheckRange = new Vector2(5, 5);
 
         IMap<ShortVector2, WorldNode> worldMap;
-        List<ShortVector2> loadedPoint;
+        HashSet<ShortVector2> loadedPoint;
         NodeChangeReporter<WorldNode> nodeChangeReporter;
         Vector2 lastBuildUpdatePoint = new Vector2(float.MaxValue, float.MaxValue);
 
@@ -47,7 +46,7 @@ namespace KouXiaGu.World2D
 
         void Awake()
         {
-            loadedPoint = new List<ShortVector2>();
+            loadedPoint = new HashSet<ShortVector2>();
             nodeChangeReporter = new NodeChangeReporter<WorldNode>();
         }
 
@@ -120,9 +119,18 @@ namespace KouXiaGu.World2D
         /// </summary>
         void UpdateWorldRes(ShortVector2 mapPoint)
         {
-            ShortVector2[] newBlock = GetAllPoint(mapPoint).ToArray();
-            ShortVector2[] unloadPoints = loadedPoint.Except(newBlock).ToArray();
-            ShortVector2[] loadPoints = newBlock.Except(loadedPoint).ToArray();
+            HashSet<ShortVector2> newPoints = new HashSet<ShortVector2>(GetAllPoint(mapPoint));
+
+            HashSet<ShortVector2> loadPoints = new HashSet<ShortVector2>(newPoints);
+            loadPoints.ExceptWith(loadedPoint);
+
+            loadedPoint.ExceptWith(newPoints);
+            HashSet<ShortVector2> unloadPoints = loadedPoint;
+
+            loadedPoint = newPoints;
+
+            //ShortVector2[] unloadPoints = loadedPoint.Except(newBlock).ToArray();
+            //ShortVector2[] loadPoints = newBlock.Except(loadedPoint).ToArray();
 
             Load(loadPoints);
             Unload(unloadPoints);
