@@ -28,7 +28,7 @@ namespace KouXiaGu.World2D
         ShortVector2 partitionSizes = new ShortVector2(100, 100);
 
         [SerializeField]
-        internal ContentBlockMap<WorldNode, ArchiveBlock<WorldNode>> worldMap;
+        internal ObservableBlockMap<WorldNode, ArchiveBlock<WorldNode>> worldMap;
         [SerializeField]
         UseLoadBlockByRange loadByRange;
         [SerializeField]
@@ -48,7 +48,7 @@ namespace KouXiaGu.World2D
 
         void Awake()
         {
-            worldMap = new ContentBlockMap<WorldNode, ArchiveBlock<WorldNode>>(partitionSizes);
+            worldMap = new ObservableBlockMap<WorldNode, ArchiveBlock<WorldNode>>(partitionSizes);
             loadByRange.BlockMap = worldMap.BlockMap;
             loadByRange.MapBlockIO = mapBlockIO;
         }

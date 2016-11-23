@@ -14,13 +14,13 @@ namespace KouXiaGu.World2D.Map
     /// </summary>
     /// <typeparam name="T">节点</typeparam>
     /// <typeparam name="TBlock">地图块类型</typeparam>
-    public class ContentBlockMap<T, TBlock> : IMap<IntVector2, T>
+    public class ObservableBlockMap<T, TBlock> : IMap<IntVector2, T>
         where T : struct
         where TBlock : IMap<ShortVector2, T>
     {
-        protected ContentBlockMap() { }
+        protected ObservableBlockMap() { }
 
-        public ContentBlockMap(ShortVector2 partitionSizes)
+        public ObservableBlockMap(ShortVector2 partitionSizes)
         {
             blockMap = new BlockMap<TBlock>(partitionSizes);
         }

@@ -36,7 +36,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 已经加载到的地图块编号;
         /// </summary>
-        private IEnumerable<ShortVector2> loadedBlock
+        IEnumerable<ShortVector2> loadedBlock
         {
             get { return BlockMap.Addresses; }
         }
@@ -57,7 +57,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 读取到这些位置的资源;
         /// </summary>
-        private void Load(IEnumerable<ShortVector2> addresses)
+        void Load(IEnumerable<ShortVector2> addresses)
         {
             foreach (var address in addresses)
             {
@@ -69,7 +69,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 卸载这些区域的资源;
         /// </summary>
-        private void Unload(IEnumerable<ShortVector2> addresses)
+        void Unload(IEnumerable<ShortVector2> addresses)
         {
             foreach (var address in addresses)
             {
@@ -96,14 +96,14 @@ namespace KouXiaGu.World2D.Map
             }
         }
 
-        private ShortVector2 GetSouthwestAddress(IntVector2 centerPoint)
+        ShortVector2 GetSouthwestAddress(IntVector2 centerPoint)
         {
             IntVector2 southwestPoint = GetSouthwestPoint(centerPoint);
             ShortVector2 southwestAddress = BlockMap.PlanePointToAddress(southwestPoint);
             return southwestAddress;
         }
 
-        private ShortVector2 GetNortheastAddress(IntVector2 centerPoint)
+        ShortVector2 GetNortheastAddress(IntVector2 centerPoint)
         {
             IntVector2 northeastPoint = GetNortheastPoint(centerPoint);
             ShortVector2 northeastAddress = BlockMap.PlanePointToAddress(northeastPoint);
@@ -113,7 +113,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到西南角的点;
         /// </summary>
-        private IntVector2 GetSouthwestPoint(IntVector2 centerPoint)
+        IntVector2 GetSouthwestPoint(IntVector2 centerPoint)
         {
             centerPoint.x -= loadRange.x;
             centerPoint.y -= loadRange.y;
@@ -123,7 +123,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到东北角的点;
         /// </summary>
-        private IntVector2 GetNortheastPoint(IntVector2 centerPoint)
+        IntVector2 GetNortheastPoint(IntVector2 centerPoint)
         {
             centerPoint.x += loadRange.x;
             centerPoint.y += loadRange.y;
