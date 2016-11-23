@@ -19,12 +19,12 @@ namespace KouXiaGu.World2D
         [SerializeField]
         Transform target;
         [SerializeField]
-        IntVector2 buildUpdateRange = new IntVector2(20, 20);
+        ShortVector2 buildUpdateRange = new ShortVector2(20, 20);
         [SerializeField]
         Vector2 buildUpdateCheckRange = new Vector2(5, 5);
 
-        IMap<IntVector2, WorldNode> worldMap;
-        List<IntVector2> loadedPoint;
+        IMap<ShortVector2, WorldNode> worldMap;
+        List<ShortVector2> loadedPoint;
         NodeChangeReporter<WorldNode> nodeChangeReporter;
         Vector2 lastBuildUpdatePoint = new Vector2(float.MaxValue, float.MaxValue);
 
@@ -35,7 +35,7 @@ namespace KouXiaGu.World2D
         {
             get { return target.position; }
         }
-        IntVector2 targetMapPoint
+        ShortVector2 targetMapPoint
         {
             get { return WorldConvert.PlaneToHexPair(targetPlanePoint); }
         }
@@ -47,7 +47,7 @@ namespace KouXiaGu.World2D
 
         void Awake()
         {
-            loadedPoint = new List<IntVector2>();
+            loadedPoint = new List<ShortVector2>();
             nodeChangeReporter = new NodeChangeReporter<WorldNode>();
         }
 
@@ -79,10 +79,10 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 这个点是否在读取的范围内?
         /// </summary>
-        bool WithinRange(IntVector2 range, IntVector2 centerPoint, IntVector2 current)
+        bool WithinRange(ShortVector2 range, ShortVector2 centerPoint, ShortVector2 current)
         {
-            IntVector2 southwestPoint = new IntVector2(centerPoint.x - range.x, centerPoint.y - range.y);
-            IntVector2 northeastPoint = new IntVector2(centerPoint.x + range.x, centerPoint.y + range.y);
+            ShortVector2 southwestPoint = new ShortVector2(centerPoint.x - range.x, centerPoint.y - range.y);
+            ShortVector2 northeastPoint = new ShortVector2(centerPoint.x + range.x, centerPoint.y + range.y);
 
             return current.x > southwestPoint.x && current.y > southwestPoint.y &&
                 current.x < northeastPoint.x && current.y < northeastPoint.y;
@@ -108,7 +108,7 @@ namespace KouXiaGu.World2D
 
         void BuildUpdate(Vector3 targetPlanePoint)
         {
-            IntVector2 targetMapPoint = WorldConvert.PlaneToHexPair(targetPlanePoint);
+            ShortVector2 targetMapPoint = WorldConvert.PlaneToHexPair(targetPlanePoint);
             WorldMap.GetInstance.OnMapDataUpdate(targetPlanePoint, targetMapPoint);
             UpdateWorldRes(targetMapPoint);
 
@@ -118,11 +118,11 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 更新范围内需要更新的点;
         /// </summary>
-        void UpdateWorldRes(IntVector2 mapPoint)
+        void UpdateWorldRes(ShortVector2 mapPoint)
         {
-            IntVector2[] newBlock = GetAllPoint(mapPoint).ToArray();
-            IntVector2[] unloadPoints = loadedPoint.Except(newBlock).ToArray();
-            IntVector2[] loadPoints = newBlock.Except(loadedPoint).ToArray();
+            ShortVector2[] newBlock = GetAllPoint(mapPoint).ToArray();
+            ShortVector2[] unloadPoints = loadedPoint.Except(newBlock).ToArray();
+            ShortVector2[] loadPoints = newBlock.Except(loadedPoint).ToArray();
 
             Load(loadPoints);
             Unload(unloadPoints);
@@ -131,7 +131,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 读取到这些位置的资源;
         /// </summary>
-        void Load(IEnumerable<IntVector2> mapPoints)
+        void Load(IEnumerable<ShortVector2> mapPoints)
         {
             foreach (var point in mapPoints)
             {
@@ -143,7 +143,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 卸载这些区域的资源;
         /// </summary>
-        void Unload(IEnumerable<IntVector2> mapPoints)
+        void Unload(IEnumerable<ShortVector2> mapPoints)
         {
             foreach (var point in mapPoints)
             {
@@ -152,7 +152,7 @@ namespace KouXiaGu.World2D
             }
         }
 
-        void UpdateBuildRes(ChangeType eventType, IntVector2 mapPoint)
+        void UpdateBuildRes(ChangeType eventType, ShortVector2 mapPoint)
         {
             WorldNode worldNode;
             if (worldMap.TryGetValue(mapPoint, out worldNode))
@@ -164,18 +164,18 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到需要读取的点;
         /// </summary>
-        IEnumerable<IntVector2> GetAllPoint(IntVector2 centerPoint)
+        IEnumerable<ShortVector2> GetAllPoint(ShortVector2 centerPoint)
         {
-            IntVector2 southwestPoint = GetSouthwestPoint(centerPoint);
-            IntVector2 northeastPoint = GetNortheastPoint(centerPoint);
+            ShortVector2 southwestPoint = GetSouthwestPoint(centerPoint);
+            ShortVector2 northeastPoint = GetNortheastPoint(centerPoint);
 
-            return IntVector2.Range(southwestPoint, northeastPoint);
+            return ShortVector2.Range(southwestPoint, northeastPoint);
         }
 
         /// <summary>
         /// 获取到范围内最西南角的点;
         /// </summary>
-        IntVector2 GetSouthwestPoint(IntVector2 centerPoint)
+        ShortVector2 GetSouthwestPoint(ShortVector2 centerPoint)
         {
             centerPoint.x -= buildUpdateRange.x;
             centerPoint.y -= buildUpdateRange.y;
@@ -185,7 +185,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到范围内最东北角的点;
         /// </summary>
-        IntVector2 GetNortheastPoint(IntVector2 centerPoint)
+        ShortVector2 GetNortheastPoint(ShortVector2 centerPoint)
         {
             centerPoint.x += buildUpdateRange.x;
             centerPoint.y += buildUpdateRange.y;

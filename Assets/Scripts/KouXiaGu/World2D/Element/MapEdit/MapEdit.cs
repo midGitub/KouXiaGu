@@ -16,7 +16,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个点保存的信息;
         /// </summary>
-        public static WorldNode GetWorldNode(this IMap<IntVector2, WorldNode> map, IntVector2 position)
+        public static WorldNode GetWorldNode(this IMap<ShortVector2, WorldNode> map, ShortVector2 position)
         {
             return map[position];
         }
@@ -24,7 +24,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 设置这个点保存的信息;
         /// </summary>
-        public static void SetWorldNode(this IMap<IntVector2, WorldNode> map, IntVector2 position, WorldNode node)
+        public static void SetWorldNode(this IMap<ShortVector2, WorldNode> map, ShortVector2 position, WorldNode node)
         {
             map[position] = node;
         }

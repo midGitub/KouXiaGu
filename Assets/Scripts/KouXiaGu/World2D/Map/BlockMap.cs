@@ -79,7 +79,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图坐标转换成地图块的坐标;
         /// </summary>
-        public ShortVector2 PlanePointToAddress(IntVector2 position)
+        public ShortVector2 MapPointToAddress(ShortVector2 position)
         {
             ShortVector2 address = new ShortVector2();
 
@@ -92,7 +92,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图坐标转换成地图块的坐标 和 地图块内的坐标;
         /// </summary>
-        public ShortVector2 PlanePointToAddress(IntVector2 position, out ShortVector2 realPosition)
+        public ShortVector2 MapPointToAddress(ShortVector2 position, out ShortVector2 realPosition)
         {
             ShortVector2 address = new ShortVector2();
             int realPositionX, realPositionY;
@@ -107,43 +107,43 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图块坐标转换成 地图坐标;
         /// </summary>
-        public IntVector2 AddressToPosition(ShortVector2 address, ShortVector2 addressPoint)
+        public ShortVector2 AddressToMapPoint(ShortVector2 address, ShortVector2 addressPoint)
         {
-            IntVector2 position = new IntVector2();
+            ShortVector2 mapPoint = new ShortVector2();
 
-            position.x = address.x * partitionSize.x + addressPoint.x;
-            position.y = address.y * partitionSize.y + addressPoint.y;
+            mapPoint.x = (short)(address.x * partitionSize.x + addressPoint.x);
+            mapPoint.y = (short)(address.y * partitionSize.y + addressPoint.y);
 
-            return position;
+            return mapPoint;
         }
 
         /// <summary>
         /// 获取到这个块包含的所有点;
         /// </summary>
-        public IEnumerable<IntVector2> GetBlockRange(ShortVector2 address)
+        public IEnumerable<ShortVector2> GetBlockRange(ShortVector2 address)
         {
-            IntVector2 southwestPlanePoint = GetSouthwestPlanePoint(address);
-            IntVector2 northeastPlanePoint = GetNortheastPlanePoint(address);
+            ShortVector2 southwestMapPoint = GetSouthwestMapPoint(address);
+            ShortVector2 northeastMapPoint = GetNortheastMapPoint(address);
 
-            return IntVector2.Range(southwestPlanePoint, northeastPlanePoint);
+            return ShortVector2.Range(southwestMapPoint, northeastMapPoint);
         }
 
         /// <summary>
         /// 获取到这个块最西南角的点;
         /// </summary>
-        IntVector2 GetSouthwestPlanePoint(ShortVector2 address)
+        ShortVector2 GetSouthwestMapPoint(ShortVector2 address)
         {
             ShortVector2 southwestAddressPoint = GetSouthwestAddressPoint(address);
-            return AddressToPosition(address, southwestAddressPoint);
+            return AddressToMapPoint(address, southwestAddressPoint);
         }
 
         /// <summary>
         /// 获取到这个块最东北角的点;
         /// </summary>
-        IntVector2 GetNortheastPlanePoint(ShortVector2 address)
+        ShortVector2 GetNortheastMapPoint(ShortVector2 address)
         {
             ShortVector2 northeastAddressPoint = GetNortheastAddressPoint(address);
-            return AddressToPosition(address, northeastAddressPoint);
+            return AddressToMapPoint(address, northeastAddressPoint);
         }
 
         /// <summary>

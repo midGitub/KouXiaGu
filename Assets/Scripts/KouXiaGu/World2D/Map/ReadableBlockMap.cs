@@ -11,7 +11,7 @@ namespace KouXiaGu.World2D.Map
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TBlock"></typeparam>
-    public class ReadableBlockMap<T, TBlock> : IMap<IntVector2, T>
+    public class ReadableBlockMap<T, TBlock> : IMap<ShortVector2, T>
         where T : struct
         where TBlock : IMap<ShortVector2, T>
     {
@@ -29,7 +29,7 @@ namespace KouXiaGu.World2D.Map
             get { return blockMap; }
         }
 
-        public IEnumerable<KeyValuePair<IntVector2, T>> NodePair
+        public IEnumerable<KeyValuePair<ShortVector2, T>> NodePair
         {
             get
             {
@@ -37,14 +37,14 @@ namespace KouXiaGu.World2D.Map
                 {
                     foreach (var node in block.Value.NodePair)
                     {
-                        IntVector2 position = blockMap.AddressToPosition(block.Key, node.Key);
-                        yield return new KeyValuePair<IntVector2, T>(position, node.Value);
+                        ShortVector2 position = blockMap.AddressToMapPoint(block.Key, node.Key);
+                        yield return new KeyValuePair<ShortVector2, T>(position, node.Value);
                     }
                 }
             }
         }
 
-        public T this[IntVector2 position]
+        public T this[ShortVector2 position]
         {
             get
             {
@@ -60,28 +60,28 @@ namespace KouXiaGu.World2D.Map
             }
         }
 
-        public void Add(IntVector2 position, T item)
+        public void Add(ShortVector2 position, T item)
         {
             ShortVector2 realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
             block.Add(realPosition, item);
         }
 
-        public bool Remove(IntVector2 position)
+        public bool Remove(ShortVector2 position)
         {
             ShortVector2 realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
             return block.Remove(realPosition);
         }
 
-        public bool Contains(IntVector2 position)
+        public bool Contains(ShortVector2 position)
         {
             ShortVector2 realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
             return block.Contains(realPosition);
         }
 
-        public bool TryGetValue(IntVector2 position, out T item)
+        public bool TryGetValue(ShortVector2 position, out T item)
         {
             ShortVector2 realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
@@ -91,10 +91,10 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 转换成块的信息;
         /// </summary>
-        TBlock TransformToBlock(IntVector2 position, out ShortVector2 realPosition)
+        TBlock TransformToBlock(ShortVector2 position, out ShortVector2 realPosition)
         {
             TBlock block;
-            ShortVector2 address = blockMap.PlanePointToAddress(position, out realPosition);
+            ShortVector2 address = blockMap.MapPointToAddress(position, out realPosition);
 
             if (blockMap.TryGetValue(address, out block))
             {
@@ -107,7 +107,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 实质清除块内容;
         /// </summary>
-        void IMap<IntVector2, T>.Clear()
+        void IMap<ShortVector2, T>.Clear()
         {
             blockMap.Clear();
         }

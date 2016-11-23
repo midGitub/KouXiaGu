@@ -19,6 +19,12 @@ namespace KouXiaGu.World2D
             this.y = y;
         }
 
+        public ShortVector2(int x, int y)
+        {
+            this.x = (short)x;
+            this.y = (short)y;
+        }
+
         [ProtoMember(1)]
         public short x;
 
@@ -149,15 +155,15 @@ namespace KouXiaGu.World2D
                 (short)Math.Round(vector2.y));
         }
 
-        public static implicit operator IntVector2(ShortVector2 v)
-        {
-            return new IntVector2(v.x, v.y);
-        }
+        //public static implicit operator ShortVector2(ShortVector2 v)
+        //{
+        //    return new ShortVector2(v.x, v.y);
+        //}
 
-        public static explicit operator ShortVector2(IntVector2 v)
-        {
-            return new ShortVector2((short)v.x, (short)v.y);
-        }
+        //public static explicit operator ShortVector2(ShortVector2 v)
+        //{
+        //    return new ShortVector2((short)v.x, (short)v.y);
+        //}
 
         public static explicit operator Vector2(ShortVector2 v)
         {

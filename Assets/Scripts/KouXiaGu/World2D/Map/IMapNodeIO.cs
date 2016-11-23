@@ -8,8 +8,8 @@ namespace KouXiaGu.World2D.Map
 
     public interface IMapNodeIO<T>
     {
-        T Load(IntVector2 mapPoint);
-        void Unload(IntVector2 mapPoint);
+        T Load(ShortVector2 mapPoint);
+        void Unload(ShortVector2 mapPoint);
     }
 
 }

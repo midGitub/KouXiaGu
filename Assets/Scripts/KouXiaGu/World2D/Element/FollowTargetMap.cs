@@ -22,7 +22,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 更新地图数据;
         /// </summary>
-        void OnMapDataUpdate(Vector3 targetPlanePoint, IntVector2 targetMapPoint);
+        void OnMapDataUpdate(Vector3 targetPlanePoint, ShortVector2 targetMapPoint);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ namespace KouXiaGu.World2D
 
         IFollowTargetMap[] followTargetMaps;
 
-        public event Action<Vector3, IntVector2> UpdateAction;
+        public event Action<Vector3, ShortVector2> UpdateAction;
 
         void Awake()
         {
@@ -61,7 +61,7 @@ namespace KouXiaGu.World2D
 
         void OnMapDataUpdate(Vector3 targetPlanePoint)
         {
-            IntVector2 targetMapPoint = WorldConvert.PlaneToHexPair(targetPlanePoint);
+            ShortVector2 targetMapPoint = WorldConvert.PlaneToHexPair(targetPlanePoint);
             if (UpdateAction != null)
             {
                 UpdateAction(targetPlanePoint, targetMapPoint);

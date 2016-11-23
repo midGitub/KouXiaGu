@@ -34,7 +34,7 @@ namespace KouXiaGu.World2D
         [SerializeField]
         UseArchiveBlockIO mapBlockIO;
 
-        public IMap<IntVector2, WorldNode> Map
+        public IMap<ShortVector2, WorldNode> Map
         {
             get { return worldMap; }
         }
@@ -60,7 +60,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 根据中心点更新地图数据;
         /// </summary>
-        public void OnMapDataUpdate(Vector3 targetPlanePoint, IntVector2 targetMapPoint)
+        public void OnMapDataUpdate(Vector3 targetPlanePoint, ShortVector2 targetMapPoint)
         {
             loadByRange.UpdateCenterPoint(targetMapPoint);
         }

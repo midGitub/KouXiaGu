@@ -42,11 +42,11 @@ namespace KouXiaGu.Test
 
         private string ReadMap(Vector2 planePoint)
         {
-            IntVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
+            ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             WorldNode node;
 
             string LandformType;
-            ShortVector2 mapBlockAddress = worldMap.worldMap.BlockMap.PlanePointToAddress(mapPoint);
+            ShortVector2 mapBlockAddress = worldMap.worldMap.BlockMap.MapPointToAddress(mapPoint);
             string mapBlockName = mapBlockAddress.ToString();
             try
             {
@@ -76,7 +76,7 @@ namespace KouXiaGu.Test
         private void AddMapNode(IList<long> down)
         {
             var planePoint = WorldConvert.MouseToPlane();
-            IntVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
+            ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             WorldNode node;
             try
             {

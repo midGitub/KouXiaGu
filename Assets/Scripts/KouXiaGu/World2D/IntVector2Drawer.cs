@@ -8,7 +8,7 @@ namespace KouXiaGu.World2D
     using UnityEngine;
 
 
-    [CustomPropertyDrawer(typeof(IntVector2))]
+    [CustomPropertyDrawer(typeof(ShortVector2))]
     public class IntVector2Drawer : ShortVector2Drawer
     {
 

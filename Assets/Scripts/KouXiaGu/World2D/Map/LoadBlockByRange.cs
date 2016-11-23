@@ -28,7 +28,7 @@ namespace KouXiaGu.World2D.Map
         /// 地图加载的范围;
         /// </summary>
         [SerializeField]
-        IntVector2 loadRange = new IntVector2(40, 40);
+        ShortVector2 loadRange = new ShortVector2(40, 40);
 
         public IMapBlockIO<TBlock> MapBlockIO { get; set; }
         public BlockMap<TBlock> BlockMap { get; set; }
@@ -44,7 +44,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 更新地图的中心点;
         /// </summary>
-        public void UpdateCenterPoint(IntVector2 position)
+        public void UpdateCenterPoint(ShortVector2 position)
         {
             IEnumerable<ShortVector2> newBlock = GetBlock(position);
             ShortVector2[] unloadPoints = loadedBlock.Except(newBlock).ToArray();
@@ -82,7 +82,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到需要读取的地图块;
         /// </summary>
-        public IEnumerable<ShortVector2> GetBlock(IntVector2 centerPoint)
+        public IEnumerable<ShortVector2> GetBlock(ShortVector2 centerPoint)
         {
             ShortVector2 southwestAddress = GetSouthwestAddress(centerPoint);
             ShortVector2 northeastAddress = GetNortheastAddress(centerPoint);
@@ -96,24 +96,24 @@ namespace KouXiaGu.World2D.Map
             }
         }
 
-        ShortVector2 GetSouthwestAddress(IntVector2 centerPoint)
+        ShortVector2 GetSouthwestAddress(ShortVector2 centerPoint)
         {
-            IntVector2 southwestPoint = GetSouthwestPoint(centerPoint);
-            ShortVector2 southwestAddress = BlockMap.PlanePointToAddress(southwestPoint);
+            ShortVector2 southwestPoint = GetSouthwestPoint(centerPoint);
+            ShortVector2 southwestAddress = BlockMap.MapPointToAddress(southwestPoint);
             return southwestAddress;
         }
 
-        ShortVector2 GetNortheastAddress(IntVector2 centerPoint)
+        ShortVector2 GetNortheastAddress(ShortVector2 centerPoint)
         {
-            IntVector2 northeastPoint = GetNortheastPoint(centerPoint);
-            ShortVector2 northeastAddress = BlockMap.PlanePointToAddress(northeastPoint);
+            ShortVector2 northeastPoint = GetNortheastPoint(centerPoint);
+            ShortVector2 northeastAddress = BlockMap.MapPointToAddress(northeastPoint);
             return northeastAddress;
         }
 
         /// <summary>
         /// 获取到西南角的点;
         /// </summary>
-        IntVector2 GetSouthwestPoint(IntVector2 centerPoint)
+        ShortVector2 GetSouthwestPoint(ShortVector2 centerPoint)
         {
             centerPoint.x -= loadRange.x;
             centerPoint.y -= loadRange.y;
@@ -123,7 +123,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到东北角的点;
         /// </summary>
-        IntVector2 GetNortheastPoint(IntVector2 centerPoint)
+        ShortVector2 GetNortheastPoint(ShortVector2 centerPoint)
         {
             centerPoint.x += loadRange.x;
             centerPoint.y += loadRange.y;

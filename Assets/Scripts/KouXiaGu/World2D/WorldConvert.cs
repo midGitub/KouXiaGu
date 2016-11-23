@@ -106,7 +106,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将 六边形编号 转换成 六边形中心点;
         /// </summary>
-        public static Vector2 MapToHex(IntVector2 mapPoint)
+        public static Vector2 MapToHex(ShortVector2 mapPoint)
         {
             Vector2 position = new Vector2();
             position.x = hexagon.DistanceX * mapPoint.x;
@@ -133,11 +133,11 @@ namespace KouXiaGu.World2D
         {
             public PointPair(Hexagon hexagon, int mapX, int mapY)
             {
-                MapPoint = new IntVector2(mapX, mapY);
+                MapPoint = new ShortVector2(mapX, mapY);
                 HexPoint = MapToHex(MapPoint);
             }
 
-            public IntVector2 MapPoint { get; private set; }
+            public ShortVector2 MapPoint { get; private set; }
             public ShortVector2 ShortMapPoint { get { return (ShortVector2)MapPoint; } }
             public Vector2 HexPoint { get; private set; }
 
@@ -147,7 +147,7 @@ namespace KouXiaGu.World2D
                 return str;
             }
 
-            public static implicit operator IntVector2(PointPair item)
+            public static implicit operator ShortVector2(PointPair item)
             {
                 return item.MapPoint;
             }
