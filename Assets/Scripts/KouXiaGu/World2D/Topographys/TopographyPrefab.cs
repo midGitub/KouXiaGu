@@ -10,20 +10,20 @@ namespace KouXiaGu.World2D
     [Serializable]
     public class TopographyPrefab
     {
-        /// <summary>
-        /// 定义的真正的ID;
-        /// </summary>
-        public int id = 0;
+        public int id
+        {
+            get { return topography.ID; }
+        }
 
         /// <summary>
         /// 代表的预制物体;
         /// </summary>
-        public Transform prefab = null;
+        public Topography topography = null;
 
         /// <summary>
         /// 地貌;
         /// </summary>
-        public Topography topography;
+        public TopographyInfo info;
     }
 
 

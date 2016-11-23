@@ -12,7 +12,7 @@ namespace KouXiaGu.World2D
     /// <summary>
     /// 监视地图变化,和初始化地图;
     /// </summary>
-    public class WorldBuilder : UnitySingleton<WorldBuilder>, IStartGameEvent
+    public class WorldBuilder : UnitySingleton<WorldBuilder>, IStartGameEvent, IQuitGameEvent
     {
 
         [SerializeField]
@@ -22,11 +22,13 @@ namespace KouXiaGu.World2D
         [SerializeField]
         Vector2 buildUpdateCheckRange = new Vector2(5, 5);
 
-        WorldMap worldMap;
+        IDisposable WorldNodeChangeEvent;
+        IDisposable BuildEvent;
+        WorldMapData worldMap;
         IMap<ShortVector2, WorldNode> Map;
         HashSet<ShortVector2> loadedPoint;
         NodeChangeReporter<WorldNode> nodeChangeReporter;
-        Vector2 lastBuildUpdatePoint = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 lastBuildUpdatePoint;
 
         [ShowOnlyProperty]
         public bool IsBuilding { get; private set; }
@@ -53,28 +55,41 @@ namespace KouXiaGu.World2D
 
         void Start()
         {
-            worldMap = WorldMap.GetInstance;
+            worldMap = WorldMapData.GetInstance;
             Map = worldMap.Map;
         }
 
+        /// <summary>
+        /// 当开始游戏时调用;
+        /// </summary>
         IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
         {
-            while (!WorldMap.GetInstance.IsReady)
+            lastBuildUpdatePoint = new Vector2(float.MaxValue, float.MaxValue);
+
+            while (!WorldMapData.GetInstance.IsReady)
             {
                 yield return null;
             }
 
             //当地图节点发生变化时调用;
-            WorldMap.GetInstance.observeChanges.
+            WorldNodeChangeEvent = WorldMapData.GetInstance.observeChanges.
                 Where(nodeState => WithinRange(buildUpdateRange, targetMapPoint, nodeState.MapPoint)).
                 Subscribe(WorldNodeChange);
 
             //当超出上次更新范围则更新建筑;
-            target.ObserveEveryValueChanged(_ => target.position).
+            BuildEvent = target.ObserveEveryValueChanged(_ => target.position).
                 Where(_ => !WithinRange(buildUpdateCheckRange, lastBuildUpdatePoint, targetPlanePoint)).
                 Subscribe(BuildUpdate);
 
             IsBuilding = true;
+        }
+
+        IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
+        {
+            WorldNodeChangeEvent.Dispose();
+            BuildEvent.Dispose();
+            UnloadAll();
+            yield break;
         }
 
         /// <summary>
@@ -145,13 +160,22 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
+        /// 卸载所有已经读取的资源;
+        /// </summary>
+        void UnloadAll()
+        {
+            Unload(loadedPoint.ToArray());
+            loadedPoint.Clear();
+        }
+
+        /// <summary>
         /// 读取到这些位置的资源;
         /// </summary>
         void Load(IEnumerable<ShortVector2> mapPoints)
         {
             foreach (var point in mapPoints)
             {
-                UpdateBuildRes(ChangeType.Add, point);
+                NotifyObservers(ChangeType.Add, point);
                 loadedPoint.Add(point);
             }
         }
@@ -163,7 +187,7 @@ namespace KouXiaGu.World2D
         {
             foreach (var point in mapPoints)
             {
-                UpdateBuildRes(ChangeType.Remove, point);
+                NotifyObservers(ChangeType.Remove, point);
                 loadedPoint.Remove(point);
             }
         }
@@ -171,7 +195,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 通知观察程序更新信息;
         /// </summary>
-        void UpdateBuildRes(ChangeType eventType, ShortVector2 mapPoint)
+        void NotifyObservers(ChangeType eventType, ShortVector2 mapPoint)
         {
             WorldNode worldNode;
             if (Map.TryGetValue(mapPoint, out worldNode))

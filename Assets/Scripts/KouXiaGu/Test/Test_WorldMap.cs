@@ -18,12 +18,12 @@ namespace KouXiaGu.Test
         [SerializeField]
         private int Landform;
 
-        private WorldMap worldMap;
+        private WorldMapData worldMap;
 
 
         private void Awake()
         {
-            worldMap = GameObject.FindObjectOfType<WorldMap>();
+            worldMap = GameObject.FindObjectOfType<WorldMapData>();
             textObject = textObject ?? GetComponent<Text>();
         }
 

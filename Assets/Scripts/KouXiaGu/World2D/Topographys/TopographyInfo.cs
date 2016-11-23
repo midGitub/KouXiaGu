@@ -7,36 +7,32 @@ namespace KouXiaGu.World2D
 {
 
     /// <summary>
-    /// 资源类型;
+    /// 地貌细节;
     /// </summary>
     [Serializable]
-    public struct Resource
+    public struct TopographyInfo
     {
 
-        ///// <summary>
-        ///// 住房;
-        ///// </summary>
-        //public int Housing;
+        /// <summary>
+        /// 地形唯一的表示;
+        /// </summary>
+        [NonSerialized]
+        public int id;
 
         /// <summary>
-        /// 水资源;
+        /// 是否允许行走到?;
         /// </summary>
-        public int Water;
+        public bool Walk;
 
         /// <summary>
-        /// 食物;
+        /// 行动的代价值;
         /// </summary>
-        public int Food;
+        public int ActionCost;
 
         /// <summary>
-        /// 木材;
+        /// 提供的资源;
         /// </summary>
-        public int Wood;
-
-        /// <summary>
-        /// 金属;
-        /// </summary>
-        public int Metal;
+        public Resource Provide;
 
     }
 

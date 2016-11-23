@@ -2,37 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace KouXiaGu.World2D
 {
 
-    /// <summary>
-    /// 地貌细节;
-    /// </summary>
-    [Serializable]
-    public struct Topography
+    [DisallowMultipleComponent]
+    public class Topography : MonoBehaviour
     {
+        [SerializeField]
+        int id;
 
         /// <summary>
-        /// 地形唯一的表示;
+        /// 唯一标识;
         /// </summary>
-        [NonSerialized]
-        public int id;
+        public int ID
+        {
+            get { return id; }
+        }
 
-        /// <summary>
-        /// 是否允许行走到?;
-        /// </summary>
-        public bool Walk;
 
-        /// <summary>
-        /// 行动的代价值;
-        /// </summary>
-        public int ActionCost;
-
-        /// <summary>
-        /// 提供的资源;
-        /// </summary>
-        public Resource Provide;
 
     }
 

@@ -20,7 +20,7 @@ namespace KouXiaGu.World2D
         /// 定义地貌信息的XML文件;
         /// </summary>
         [SerializeField]
-        string TopographyInfosXMLFileName;
+        string TopographyInfosXMLFileName = "Topographys.xml";
 
         /// <summary>
         /// 预制定义;
@@ -66,34 +66,34 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 根据ID获取到地貌详细信息;
         /// </summary>
-        public TopographyPrefab GetWithID(int id)
+        public TopographyInfo GetWithID(int id)
         {
-            return topographyPrefabDictionary[id];
+            return topographyPrefabDictionary[id].info;
         }
 
         /// <summary>
         /// 根据ID获取到预制物体;
         /// </summary>
-        public Transform GetPrefabWithID(int id)
+        public Topography GetPrefabWithID(int id)
         {
-            return topographyPrefabDictionary[id].prefab;
+            return topographyPrefabDictionary[id].topography;
         }
 
 
         [ContextMenu("输出到XML")]
         void Input_TopographyPrefab()
         {
-            Topography[] topographys = topographyPrefabs.Select(item => item.topography).ToArray();
+            TopographyInfo[] topographys = topographyPrefabs.Select(item => item.info).ToArray();
             SerializeHelper.Serialize_Xml(TopographyInfosXMLFilePath, topographys);
         }
 
         [ContextMenu("输入到XML")]
         void OutPut_TopographyPrefab()
         {
-            Topography[] topographys = SerializeHelper.Deserialize_Xml<Topography[]>(TopographyInfosXMLFilePath);
+            TopographyInfo[] topographys = SerializeHelper.Deserialize_Xml<TopographyInfo[]>(TopographyInfosXMLFilePath);
             foreach (var item in topographys)
             {
-                topographyPrefabs.First(topographyPrefab => topographyPrefab.id == item.id).topography = item;
+                topographyPrefabs.First(topographyPrefab => topographyPrefab.id == item.id).info = item;
             }
         }
 

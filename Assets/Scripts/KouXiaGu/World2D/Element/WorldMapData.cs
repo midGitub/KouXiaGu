@@ -10,10 +10,10 @@ namespace KouXiaGu.World2D
 {
 
     /// <summary>
-    /// 游戏地图;
+    /// 游戏地图数据,保存地图和读取地图;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap : UnitySingleton<WorldMap>, IStartGameEvent, IArchiveEvent, IQuitGameEvent
+    public class WorldMapData : UnitySingleton<WorldMapData>, IStartGameEvent, IArchiveEvent, IQuitGameEvent
     {
 
         /// <summary>

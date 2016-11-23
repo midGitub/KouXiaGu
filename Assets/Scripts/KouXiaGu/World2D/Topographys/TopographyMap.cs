@@ -23,7 +23,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 记录已经实例化到场景的物体;
         /// </summary>
-        Dictionary<ShortVector2, TopographyNode> activeWorldNode;
+        Dictionary<ShortVector2, Topography> activeWorldNode;
 
         public TopographiessData TopographiessData
         {
@@ -32,7 +32,7 @@ namespace KouXiaGu.World2D
 
         void Awake()
         {
-            activeWorldNode = new Dictionary<ShortVector2, TopographyNode>();
+            activeWorldNode = new Dictionary<ShortVector2, Topography>();
         }
 
         void Start()
@@ -62,7 +62,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         void BuildTopography(MapNodeState<WorldNode> nodeState)
         {
-            TopographyNode topography = InitTopographyNode(nodeState);
+            Topography topography = InitTopographyNode(nodeState);
             activeWorldNode.Add(nodeState.MapPoint, topography);
         }
 
@@ -71,7 +71,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         void DestroyTopography(MapNodeState<WorldNode> nodeState)
         {
-            TopographyNode topography = activeWorldNode[nodeState.MapPoint];
+            Topography topography = activeWorldNode[nodeState.MapPoint];
             DestroyTopographyNode(topography);
             activeWorldNode.Remove(nodeState.MapPoint);
         }
@@ -82,7 +82,7 @@ namespace KouXiaGu.World2D
         void UpdateTopography(MapNodeState<WorldNode> nodeState)
         {
             ShortVector2 mapPoint = nodeState.MapPoint;
-            TopographyNode topography;
+            Topography topography;
             if (activeWorldNode.TryGetValue(mapPoint, out topography))
             {
                 if (topography.ID != nodeState.WorldNode.Topography)
@@ -101,7 +101,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 向这个位置创建一个地形,并且返回创建内容;
         /// </summary>
-        TopographyNode InitTopographyNode(MapNodeState<WorldNode> nodeState)
+        Topography InitTopographyNode(MapNodeState<WorldNode> nodeState)
         {
             int topographyID = nodeState.WorldNode.Topography;
             ShortVector2 mapPoint = nodeState.MapPoint;
@@ -110,30 +110,30 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 向这个位置创建一个地形,并且返回创建内容;
         /// </summary>
-        TopographyNode InitTopographyNode(int topographyID, ShortVector2 mapPoint)
+        Topography InitTopographyNode(int topographyID, ShortVector2 mapPoint)
         {
             Vector2 planePoint = WorldConvert.MapToHex(mapPoint);
-            Transform topographyPrefab = GetTopographyPrefab(topographyID, mapPoint);
+            Topography topographyPrefab = GetTopographyPrefab(topographyID, mapPoint);
 
-            Transform sceneObject = Instantiate(topographyPrefab, planePoint);
+            Topography topography = Instantiate(topographyPrefab, planePoint);
 
-            return new TopographyNode(topographyID, sceneObject);
+            return topography;
         }
 
         /// <summary>
         /// 销毁这个地貌;
         /// </summary>
-        void DestroyTopographyNode(TopographyNode topographyNode)
+        void DestroyTopographyNode(Topography topography)
         {
-            Destroy(topographyNode.topographyObject);
+            Destroy(topography.gameObject);
         }
-        
+
         /// <summary>
         /// 获取到地貌预制,若未定义则返回 编号为 0 的预制,并输出警告;
         /// </summary>
-        Transform GetTopographyPrefab(int topographyID, ShortVector2 mapPoint)
+        Topography GetTopographyPrefab(int topographyID, ShortVector2 mapPoint)
         {
-            Transform topographyPrefab;
+            Topography topographyPrefab;
             try
             {
                 topographyPrefab = topographiessData.GetPrefabWithID(topographyID);
@@ -149,9 +149,9 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 实例化
         /// </summary>
-        Transform Instantiate(Transform topographyPrefab, Vector2 position)
+        Topography Instantiate(Topography topographyPrefab, Vector2 position)
         {
-            Transform topographyObject = GameObject.Instantiate(topographyPrefab, position, Quaternion.identity) as Transform;
+            Topography topographyObject = GameObject.Instantiate(topographyPrefab, position, Quaternion.identity) as Topography;
             return topographyObject;
         }
 
@@ -161,25 +161,6 @@ namespace KouXiaGu.World2D
         void Destroy(Transform topographyObject)
         {
             GameObject.Destroy(topographyObject.gameObject);
-        }
-
-        struct TopographyNode
-        {
-            public TopographyNode(int topographyID, Transform topographyObject)
-            {
-                this.ID = topographyID;
-                this.topographyObject = topographyObject;
-            }
-
-            /// <summary>
-            /// 当前保存的地貌;
-            /// </summary>
-            public int ID;
-
-            /// <summary>
-            /// 实例化的物体;
-            /// </summary>
-            public Transform topographyObject;
         }
 
     }
