@@ -20,18 +20,18 @@ namespace KouXiaGu.World2D.Map
         /// 保存地图文件的前缀;
         /// </summary>
         [SerializeField]
-        string addressFilePrefix;
+        string addressFilePrefix = "MapData";
         /// <summary>
         /// 地图缓存文件目录;
         /// </summary>
         [SerializeField]
-        string archiveTempDirectoryName;
+        string archiveTempDirectoryName = "Temp/Maps";
 
         /// <summary>
         /// 做出的改变保存在预制地图上;
         /// </summary>
         [SerializeField]
-        bool editPrefab;
+        bool editPrefab = false;
 
 
         public string FullPrefabMapDirectoryPath { get; private set; }
@@ -100,7 +100,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 当游戏归档时进行的操作;
         /// </summary>
-        public void OnGameArchive(string fullArchivedDirectoryPath, IBlockMap<ShortVector2, ArchiveBlock<T>> blockMap)
+        public void OnGameArchive(string fullArchivedDirectoryPath, BlockMap<ArchiveBlock<T>> blockMap)
         {
             this.OnSave(blockMap);
             ArchiveCopyArchived(fullArchivedDirectoryPath);
@@ -109,7 +109,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图保存到缓存地图文件夹内;
         /// </summary>
-        void OnSave(IBlockMap<ShortVector2, ArchiveBlock<T>> blockMap)
+        void OnSave(BlockMap<ArchiveBlock<T>> blockMap)
         {
             KeyValuePair<ShortVector2, ArchiveBlock<T>>[] pairs = blockMap.BlocksPair.ToArray();
             foreach (var pair in pairs)

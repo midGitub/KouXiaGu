@@ -58,6 +58,22 @@ namespace KouXiaGu.World2D
             return distance;
         }
 
+        /// <summary>
+        /// 获取到这个范围所有的点;
+        /// </summary>
+        public static IEnumerable<IntVector2> Range(IntVector2 southwest, IntVector2 northeast)
+        {
+            for (int x = southwest.x; x <= northeast.x; x++)
+            {
+                for (int y = southwest.y; y <= northeast.y; y++)
+                {
+                    yield return new IntVector2(x, y);
+                }
+            }
+        }
+
+
+
         #region 重载,对比,转换;
 
         public override string ToString()

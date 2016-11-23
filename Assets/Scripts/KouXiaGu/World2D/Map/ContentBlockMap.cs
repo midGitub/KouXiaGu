@@ -14,7 +14,6 @@ namespace KouXiaGu.World2D.Map
     /// </summary>
     /// <typeparam name="T">节点</typeparam>
     /// <typeparam name="TBlock">地图块类型</typeparam>
-    [Serializable]
     public class ContentBlockMap<T, TBlock> : IMap<IntVector2, T>
         where T : struct
         where TBlock : IMap<ShortVector2, T>
@@ -108,7 +107,7 @@ namespace KouXiaGu.World2D.Map
         TBlock TransformToBlock(IntVector2 position, out ShortVector2 realPosition)
         {
             TBlock block;
-            ShortVector2 address = blockMap.GetAddress(position, out realPosition);
+            ShortVector2 address = blockMap.PlanePointToAddress(position, out realPosition);
 
             if (blockMap.TryGetValue(address, out block))
             {

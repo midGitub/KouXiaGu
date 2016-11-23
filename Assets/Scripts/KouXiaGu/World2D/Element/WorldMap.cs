@@ -23,7 +23,7 @@ namespace KouXiaGu.World2D
         /// 保存到存档的位置;
         /// </summary>
         [SerializeField]
-        string archivedDirectoryName;
+        string archivedDirectoryName = "Maps";
         /// <summary>
         /// 地图块大小;
         /// </summary>
@@ -52,6 +52,7 @@ namespace KouXiaGu.World2D
             loadByRange.BlockMap = worldMap.BlockMap;
             loadByRange.MapBlockIO = mapBlockIO;
         }
+
 
         void OnMapDataUpdate(Vector3 targetPlanePoint)
         {

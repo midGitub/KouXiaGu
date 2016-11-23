@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.World2D.Map;
+using UnityEngine;
 
 namespace KouXiaGu.World2D
 {
 
-    /// <summary>
-    /// 地形地图;
-    /// </summary>
-    public class TopographyMap
+    [DisallowMultipleComponent]
+    public class TopographyMap : MonoBehaviour
     {
 
 

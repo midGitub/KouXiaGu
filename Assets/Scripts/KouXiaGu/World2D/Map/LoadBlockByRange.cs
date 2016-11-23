@@ -16,10 +16,10 @@ namespace KouXiaGu.World2D.Map
     [Serializable]
     public class LoadBlockByRange<TBlock>
     {
-        public LoadBlockByRange()
+        protected LoadBlockByRange()
         {
         }
-        public LoadBlockByRange(IMapBlockIO<TBlock> mapBlockIO, IBlockMap<ShortVector2, TBlock> blockMap)
+        public LoadBlockByRange(IMapBlockIO<TBlock> mapBlockIO, BlockMap<TBlock> blockMap)
         {
             this.MapBlockIO = mapBlockIO;
             this.BlockMap = blockMap;
@@ -29,9 +29,10 @@ namespace KouXiaGu.World2D.Map
         /// 地图加载的范围;
         /// </summary>
         [SerializeField]
-        IntVector2 loadRange;
+        IntVector2 loadRange = new IntVector2(40, 40);
+
         public IMapBlockIO<TBlock> MapBlockIO { get; set; }
-        public IBlockMap<ShortVector2, TBlock> BlockMap { get; set; }
+        public BlockMap<TBlock> BlockMap { get; set; }
 
         /// <summary>
         /// 已经加载到的地图块编号;
@@ -99,14 +100,14 @@ namespace KouXiaGu.World2D.Map
         private ShortVector2 GetSouthwestAddress(IntVector2 centerPoint)
         {
             IntVector2 southwestPoint = GetSouthwestPoint(centerPoint);
-            ShortVector2 southwestAddress = BlockMap.GetAddress(southwestPoint);
+            ShortVector2 southwestAddress = BlockMap.PlanePointToAddress(southwestPoint);
             return southwestAddress;
         }
 
         private ShortVector2 GetNortheastAddress(IntVector2 centerPoint)
         {
             IntVector2 northeastPoint = GetNortheastPoint(centerPoint);
-            ShortVector2 northeastAddress = BlockMap.GetAddress(northeastPoint);
+            ShortVector2 northeastAddress = BlockMap.PlanePointToAddress(northeastPoint);
             return northeastAddress;
         }
 

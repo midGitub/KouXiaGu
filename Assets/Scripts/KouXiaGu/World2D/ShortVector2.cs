@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ProtoBuf;
 using UnityEngine;
 
@@ -50,6 +51,20 @@ namespace KouXiaGu.World2D
             short x = Math.Abs(v1.x);
             short y = Math.Abs(v1.y);
             return new ShortVector2(x, y);
+        }
+
+        /// <summary>
+        /// 获取到这个范围所有的点;
+        /// </summary>
+        public static IEnumerable<ShortVector2> Range(ShortVector2 southwest, ShortVector2 northeast)
+        {
+            for (short x = southwest.x; x <= northeast.x; x++)
+            {
+                for (short y = southwest.y; y <= northeast.y; y++)
+                {
+                    yield return new ShortVector2(x, y);
+                }
+            }
         }
 
 
