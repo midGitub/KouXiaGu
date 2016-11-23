@@ -11,8 +11,8 @@ namespace KouXiaGu.World2D
     /// <summary>
     /// 定义地貌预制ID和其信息转换;
     /// </summary>
-    [DisallowMultipleComponent]
-    public class TopographiessData : UnitySingleton<TopographiessData>
+    [Serializable]
+    public class TopographiessData
     {
         TopographiessData() { }
 
@@ -28,7 +28,10 @@ namespace KouXiaGu.World2D
         [SerializeField]
         TopographyPrefab[] topographyPrefabs;
 
-        Dictionary<int, TopographyPrefab> topographyPrefabDictionary;
+        public Dictionary<int, TopographyPrefab> TopographyPrefabDictionary
+        {
+            get { return GetTopographyPrefabDictionary(); }
+        }
 
         public string TopographyInfosXMLFilePath
         {
@@ -37,15 +40,10 @@ namespace KouXiaGu.World2D
 
         public TopographyPrefab GetWithID(int id)
         {
-            return topographyPrefabDictionary[id];
+            return TopographyPrefabDictionary[id];
         }
 
-        void Start()
-        {
-            topographyPrefabDictionary = GetDictionary();
-        }
-
-        Dictionary<int, TopographyPrefab> GetDictionary()
+        Dictionary<int, TopographyPrefab> GetTopographyPrefabDictionary()
         {
             Dictionary<int, TopographyPrefab> topographyPrefabDictionary = new Dictionary<int, TopographyPrefab>();
 

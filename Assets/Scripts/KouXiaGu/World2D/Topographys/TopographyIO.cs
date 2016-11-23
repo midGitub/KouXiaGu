@@ -13,11 +13,12 @@ namespace KouXiaGu.World2D
     /// </summary>
     public class TopographyIO : IMapBlockIO<Block<TopographyNode>>
     {
+        public TopographyIO() { }
 
         public TopographyIO(
             BlockMap<Block<TopographyNode>> blockMap, 
             IMap<IntVector2, WorldNode> readOnlyWorldMap,
-            Dictionary<int, Transform> topographyPrefabDictionary)
+            Dictionary<int, TopographyPrefab> topographyPrefabDictionary)
         {
             this.BlockMap = blockMap;
             this.ReadOnlyWorldMap = readOnlyWorldMap;
@@ -35,7 +36,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 在其上构建的预制物体信息;
         /// </summary>
-        public Dictionary<int, Transform> TopographyPrefabDictionary { get; set; }
+        public Dictionary<int, TopographyPrefab> TopographyPrefabDictionary { get; set; }
 
 
         public Block<TopographyNode> Load(ShortVector2 address)
@@ -88,7 +89,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         Transform GetTopographyPrefab(int topographyID)
         {
-            return TopographyPrefabDictionary[topographyID];
+            return TopographyPrefabDictionary[topographyID].prefab;
         }
 
         /// <summary>

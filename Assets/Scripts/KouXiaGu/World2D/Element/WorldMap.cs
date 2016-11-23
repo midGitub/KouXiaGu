@@ -13,11 +13,8 @@ namespace KouXiaGu.World2D
     /// 游戏地图;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMap : UnitySingleton<WorldMap>, IStartGameEvent, IArchiveEvent, IQuitGameEvent
+    public class WorldMap : UnitySingleton<WorldMap>, IStartGameEvent, IArchiveEvent, IQuitGameEvent, IFollowTargetMap
     {
-
-        [SerializeField]
-        private Transform target;
 
         /// <summary>
         /// 保存到存档的位置;
@@ -46,6 +43,9 @@ namespace KouXiaGu.World2D
             get { return worldMap.observeChanges; }
         }
 
+        [ShowOnlyProperty]
+        public bool IsReady { get; private set; }
+
         void Awake()
         {
             worldMap = new ContentBlockMap<WorldNode, ArchiveBlock<WorldNode>>(partitionSizes);
@@ -53,11 +53,9 @@ namespace KouXiaGu.World2D
             loadByRange.MapBlockIO = mapBlockIO;
         }
 
-
-        void OnMapDataUpdate(Vector3 targetPlanePoint)
+        void IFollowTargetMap.OnMapDataUpdate(Vector3 targetPlanePoint, IntVector2 targetMapPoint)
         {
-            IntVector2 mapPoint = WorldConvert.PlaneToHexPair(targetPlanePoint);
-            loadByRange.UpdateCenterPoint(mapPoint);
+            loadByRange.UpdateCenterPoint(targetMapPoint);
         }
 
         /// <summary>
@@ -70,9 +68,7 @@ namespace KouXiaGu.World2D
 
             mapBlockIO.OnBulidGame(fullArchivedDirectoryPath, fullPrefabMapDirectoryPath);
 
-            target.ObserveEveryValueChanged(_ => target.position).
-                Subscribe(OnMapDataUpdate);
-
+            IsReady = true;
             yield break;
         }
 
@@ -96,6 +92,8 @@ namespace KouXiaGu.World2D
         IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
         {
             Map.Clear();
+
+            IsReady = false;
             yield break;
         }
 
