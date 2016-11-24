@@ -21,45 +21,24 @@ namespace KouXiaGu.World2D
         /// </summary>
         [SerializeField]
         string TopographyInfosXMLFileName = "Topographys.xml";
-
-        /// <summary>
-        /// 预制定义;
-        /// </summary>
         [SerializeField]
-        TopographyPrefab[] topographyPrefabs;
+        TopographyInfo[] topographyInfos;
+        [SerializeField]
+        Topography[] topographiess;
 
-        Dictionary<int, TopographyPrefab> topographyPrefabDictionary;
+        Dictionary<int, TopographyInfo> topographyInfosDictionary;
+        Dictionary<int, Topography> topographiessDictionary;
 
         public string TopographyInfosXMLFilePath
         {
             get { return Path.Combine(ResCoreData.CoreDataDirectoryPath, TopographyInfosXMLFileName); }
         }
 
+
         public void Start()
         {
-            topographyPrefabDictionary = GetTopographyPrefabDictionary(topographyPrefabs);
-        }
-
-        /// <summary>
-        /// 将数组转换成字典;
-        /// </summary>
-        Dictionary<int, TopographyPrefab> GetTopographyPrefabDictionary(TopographyPrefab[] topographyPrefabs)
-        {
-            Dictionary<int, TopographyPrefab> topographyPrefabDictionary = new Dictionary<int, TopographyPrefab>();
-
-            foreach (var topographyPrefab in topographyPrefabs)
-            {
-                try
-                {
-                    topographyPrefabDictionary.Add(topographyPrefab.id, topographyPrefab);
-                }
-                catch (ArgumentException)
-                {
-                    Debug.LogWarning("地貌存在相同定义的ID:" + topographyPrefab.id + ";已进行忽略");
-                }
-            }
-
-            return topographyPrefabDictionary;
+            topographyInfosDictionary = topographyInfos.ToDictionary(item => item.id);
+            topographiessDictionary = topographiess.ToDictionary(item => item.ID);
         }
 
 
@@ -68,7 +47,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         public TopographyInfo GetWithID(int id)
         {
-            return topographyPrefabDictionary[id].Info;
+            return topographyInfosDictionary[id];
         }
 
         /// <summary>
@@ -76,7 +55,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         public Topography GetPrefabWithID(int id)
         {
-            return topographyPrefabDictionary[id].topography;
+            return topographiessDictionary[id];
         }
 
 

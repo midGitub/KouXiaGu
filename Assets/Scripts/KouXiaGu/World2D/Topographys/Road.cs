@@ -14,8 +14,24 @@ namespace KouXiaGu.World2D
         [SerializeField]
         HexDirection roadDirection;
 
-        [ShowOnlyProperty]
-        string Dic { get { return roadDirection.ToString(); } }
+        //[SerializeField]
+        //Transform North;
+        //[SerializeField]
+        //Transform Northeast;
+        //[SerializeField]
+        //Transform Southeast;
+        //[SerializeField]
+        //Transform South;
+        //[SerializeField]
+        //Transform Southwest;
+        //[SerializeField]
+        //Transform Northwest;
+
+        [SerializeField]
+        RoadGroup[] roadGroup;
+
+        //[ShowOnlyProperty]
+        //string Dic { get { return roadDirection.ToString(); } }
 
         /// <summary>
         /// 本身是否存在道路;
@@ -25,10 +41,62 @@ namespace KouXiaGu.World2D
             get { return (roadDirection & HexDirection.Self) > 0; }
         }
 
+        void OnValidate()
+        {
+            if (roadGroup.Length > 0)
+            {
+                for (int i = 0; i <  roadGroup.Length; i++)
+                {
+                    roadGroup[i].name = roadGroup[i].direction.ToString();
+                }
+            }
+        }
+
         public void SetState(HexDirection roadDirection)
         {
             this.roadDirection = roadDirection;
-            Debug.Log(transform.position.ToString() + roadDirection.ToString());
+
+            //if ((roadDirection | HexDirection.North) > 0)
+            //{
+            //    Display(North);
+            //}
+            //if ((roadDirection | HexDirection.Northeast) > 0)
+            //{
+            //    Display(Northeast);
+            //}
+            //if ((roadDirection | HexDirection.Southeast) > 0)
+            //{
+            //    Display(Southeast);
+            //}
+            //if ((roadDirection | HexDirection.South) > 0)
+            //{
+            //    Display(South);
+            //}
+            //if ((roadDirection | HexDirection.Southwest) > 0)
+            //{
+            //    Display(Southwest);
+            //}
+            //if ((roadDirection | HexDirection.Northwest) > 0)
+            //{
+            //    Display(Northwest);
+            //}
+        }
+
+        void Display(Transform item)
+        {
+            if (item != null)
+            {
+                item.gameObject.SetActive(true);
+            }
+        }
+
+        [Serializable]
+        struct RoadGroup
+        {
+            [HideInInspector]
+            public string name;
+            public HexDirection direction;
+            public GameObject prefab;
         }
 
     }

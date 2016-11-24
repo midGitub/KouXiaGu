@@ -100,11 +100,19 @@ namespace KouXiaGu
         /// </summary>
         public static ObjectType GetObjectType(this Type type)
         {
-            ObjectType objectType;
-            if (ObjectTypeDictionary.TryGetValue(type, out objectType))
+            //ObjectType objectType;
+            //if (ObjectTypeDictionary.TryGetValue(type, out objectType))
+            //{
+            //    return objectType;
+            //}
+            foreach (var pair in ObjectTypeDictionary)
             {
-                return objectType;
+                if (type.IsSubclassOf(pair.Key) || type == pair.Key)
+                {
+                    return pair.Value;
+                }
             }
+
             return ObjectType.Unbeknown;
         }
 
