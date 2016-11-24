@@ -18,20 +18,26 @@ namespace KouXiaGu.World2D
 
 
         TopographiessData topographiessData;
+
         /// <summary>
         /// 记录已经实例化到场景的物体;
         /// </summary>
-        Dictionary<ShortVector2, Topography> activeWorldNode;
+        MapCollection<Topography> activeWorldNode;
+        MapCollection<Road> activeRoad;
+
+        IMap<ShortVector2, WorldNode> WorldMap;
 
         void Awake()
         {
-            activeWorldNode = new Dictionary<ShortVector2, Topography>();
+            activeWorldNode = new MapCollection<Topography>();
+            activeRoad = new MapCollection<Road>();
         }
 
         void Start()
         {
             WorldBuilder.GetInstance.ObserveBuilderNode.Subscribe(UpdateScene);
             topographiessData = TopographiessData.GetInstance;
+            WorldMap = WorldMapData.GetInstance.Map;
         }
 
 
@@ -62,12 +68,8 @@ namespace KouXiaGu.World2D
         /// </summary>
         void BuildTopography(MapNodeState<WorldNode> nodeState)
         {
-            int topographyID = nodeState.WorldNode.Topography;
             ShortVector2 mapPoint = nodeState.MapPoint;
-
-            Topography topography = Build(topographyID, mapPoint);
-
-            activeWorldNode.Add(nodeState.MapPoint, topography);
+            BuildTopography(mapPoint, nodeState.WorldNode);
         }
 
         /// <summary>
@@ -76,10 +78,7 @@ namespace KouXiaGu.World2D
         void DestroyTopography(MapNodeState<WorldNode> nodeState)
         {
             ShortVector2 mapPoint = nodeState.MapPoint;
-
-            Topography topography = activeWorldNode[mapPoint];
-            Destroy(topography);
-            activeWorldNode.Remove(nodeState.MapPoint);
+            DestroyTopography(mapPoint);
         }
 
         /// <summary>
@@ -87,49 +86,105 @@ namespace KouXiaGu.World2D
         /// </summary>
         void UpdateTopography(MapNodeState<WorldNode> nodeState)
         {
-            int topographyID = nodeState.WorldNode.Topography;
             ShortVector2 mapPoint = nodeState.MapPoint;
-
-            Topography topography = activeWorldNode[mapPoint];
-            activeWorldNode[mapPoint] = UpdateTopography(topography, topographyID);
+            UpdateTopography(mapPoint, nodeState.WorldNode);
         }
 
 
 
-        /// <summary>
-        /// 向这个位置创建一个地形,并且返回创建内容;
-        /// </summary>
-        Topography Build(int topographyID, ShortVector2 mapPoint)
+        void BuildTopography(ShortVector2 mapPoint, WorldNode worldNode)
         {
-            Vector2 planePoint = WorldConvert.MapToHex(mapPoint);
-            Topography topographyPrefab = GetTopographyPrefab(topographyID, mapPoint);
+            int topographyID = worldNode.Topography;
 
-            Topography topography = Instantiate(topographyPrefab, planePoint);
+            Topography topography = Instantiate(mapPoint, topographyID);
+            BuildRoad(mapPoint, worldNode, topography);
 
-            return topography;
+            activeWorldNode.Add(mapPoint, topography);
         }
 
-        /// <summary>
-        /// 更新这个地貌到目标地貌,并且返回正确的地貌;
-        /// </summary>
-        Topography UpdateTopography(Topography original, int targetID)
+        void BuildRoad(ShortVector2 mapPoint, WorldNode worldNode, UnityEngine.Component instance)
         {
-            if (original.ID != targetID)
+            if (worldNode.Road)
             {
-                ShortVector2 mapPoint = original.MapPoint;
-                Destroy(original);
-                Build(targetID, mapPoint);
+                Road road = instance.GetComponent<Road>();
+                if (road != null)
+                {
+                    activeRoad.Add(mapPoint, road);
+                    UpdateRoadDirection(mapPoint, road);
+                    UpdateAroundRoadDirection(mapPoint);
+                }
             }
-            return original;
         }
+
 
         /// <summary>
         /// 销毁这个地貌;
         /// </summary>
-        public void Destroy(Topography topography)
+        void DestroyTopography(ShortVector2 mapPoint)
         {
-            GameObject.Destroy(topography.gameObject);
+            Topography topography = activeWorldNode[mapPoint];
+            DestroyTopography(mapPoint, topography);
         }
+        /// <summary>
+        /// 销毁这个地貌;
+        /// </summary>
+        void DestroyTopography(ShortVector2 mapPoint, Topography topography)
+        {
+            DestroyRoad(mapPoint);
+            Destroy(topography);
+            activeWorldNode.Remove(mapPoint);
+        }
+        /// <summary>
+        /// 移除这个点的路径预制;
+        /// </summary>
+        void DestroyRoad(ShortVector2 mapPoint)
+        {
+            activeRoad.Remove(mapPoint);
+            UpdateAroundRoadDirection(mapPoint);
+        }
+
+
+        void UpdateTopography(ShortVector2 mapPoint, WorldNode worldNode)
+        {
+            Topography original = activeWorldNode[mapPoint];
+            int topographyID = worldNode.Topography;
+
+            if (original.ID != topographyID)
+            {
+                DestroyTopography(mapPoint, original);
+                BuildTopography(mapPoint, worldNode);
+            }
+            UpdateRoad(mapPoint, worldNode);
+        }
+
+        void UpdateRoad(ShortVector2 mapPoint, WorldNode worldNode)
+        {
+            if (activeRoad[mapPoint].HaveRoad != worldNode.Road)
+            {
+                UpdateAroundRoadDirection(mapPoint);
+            }
+        }
+
+
+        /// <summary>
+        /// 更新这个道路的信息;
+        /// </summary>
+        void UpdateRoadDirection(ShortVector2 mapPoint, Road instance)
+        {
+            HexDirection directionmask = WorldMap.GetAroundAndSelfMask(mapPoint, node => node.Road);
+            instance.SetState(directionmask);
+        }
+        /// <summary>
+        /// 更新这个点周围的信息;
+        /// </summary>
+        void UpdateAroundRoadDirection(ShortVector2 mapPoint)
+        {
+            foreach (var road in activeRoad.GetAround(mapPoint))
+            {
+                UpdateRoadDirection(road.Key, road.Value);
+            }
+        }
+
 
         /// <summary>
         /// 获取到地貌预制,若未定义则返回 编号为 0 的预制,并输出警告;
@@ -149,8 +204,19 @@ namespace KouXiaGu.World2D
             return topographyPrefab;
         }
 
+
         /// <summary>
-        /// 实例化
+        /// 实例化;
+        /// </summary>
+        Topography Instantiate(ShortVector2 mapPoint, int topographyID)
+        {
+            Topography topographyPrefab = GetTopographyPrefab(topographyID, mapPoint);
+            Vector2 planePoint = WorldConvert.MapToHex(mapPoint);
+
+            return Instantiate(topographyPrefab, planePoint);
+        }
+        /// <summary>
+        /// 实例化;
         /// </summary>
         Topography Instantiate(Topography topographyPrefab, Vector2 position)
         {
@@ -161,7 +227,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 销毁
         /// </summary>
-        void Destroy(Transform topographyObject)
+        void Destroy(Topography topographyObject)
         {
             GameObject.Destroy(topographyObject.gameObject);
         }

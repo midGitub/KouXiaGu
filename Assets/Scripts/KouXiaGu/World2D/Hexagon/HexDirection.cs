@@ -18,6 +18,7 @@ namespace KouXiaGu.World2D
         South = 8,
         Southwest = 16,
         Northwest = 32,
+        Self = 64,
     }
 
 }

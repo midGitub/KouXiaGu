@@ -40,6 +40,14 @@ namespace KouXiaGu.Test
             clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(250)))
                 .Where(xs => xs.Count >= 2)
                 .Subscribe(AddMapNode);
+
+
+            var clickStream2 = Observable.EveryUpdate()
+           .Where(_ => Input.GetMouseButtonDown(1));
+
+            clickStream2.Buffer(clickStream2.Throttle(TimeSpan.FromMilliseconds(250)))
+                .Where(xs => xs.Count >= 2)
+                .Subscribe(RemoveMapNode);
         }
 
         private string ReadMap(Vector2 planePoint)
@@ -83,29 +91,32 @@ namespace KouXiaGu.Test
         {
             var planePoint = WorldConvert.MouseToPlane();
             ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
-            WorldNode node;
+            WorldNode node = new WorldNode();
+            node.Topography = Landform;
+            node.Road = Road;
             try
             {
-                node = worldMap.Map[mapPoint];
-                node.Topography = Landform;
-                node.Road = Road;
-                worldMap.Map[mapPoint] = node;
-
-                Debug.Log(GetMask(mapPoint));
-            }
-            catch (KeyNotFoundException)
-            {
-                node = new WorldNode();
-                node.Topography = Landform;
-                node.Road = Road;
                 worldMap.Map.Add(mapPoint, node);
+            }
+            catch (ArgumentException)
+            {
+                worldMap.Map[mapPoint] = node;
             }
             //Debug.Log(mapPoint + "Landform赋值为:" + Landform);
         }
 
+        void RemoveMapNode(IList<long> down)
+        {
+            var planePoint = WorldConvert.MouseToPlane();
+            ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
+
+            worldMap.Map.Remove(mapPoint);
+            Debug.Log("Remove " + mapPoint);
+        }
+
         int GetMask(ShortVector2 mapPoint)
         {
-            return (int)worldMap.Map.GetHexDirectionMask(mapPoint, node => node.Road);
+            return (int)worldMap.Map.GetAroundAndSelfMask(mapPoint, node => node.Road);
         }
 
 

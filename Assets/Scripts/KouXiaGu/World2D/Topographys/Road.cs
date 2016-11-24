@@ -11,19 +11,24 @@ namespace KouXiaGu.World2D
     public class Road : MonoBehaviour
     {
 
-        ///// <summary>
-        ///// 本身是否存在道路;
-        ///// </summary>
-        //public bool HaveRoad { get; set; }
-        ///// <summary>
-        ///// 存在道路的节点方向;
-        ///// </summary>
-        //public int Mask { get; set; }
+        [SerializeField]
+        HexDirection roadDirection;
 
-        
-        public void SetState(bool haveRoad, HexDirection roadDirection)
+        [ShowOnlyProperty]
+        string Dic { get { return roadDirection.ToString(); } }
+
+        /// <summary>
+        /// 本身是否存在道路;
+        /// </summary>
+        public bool HaveRoad
         {
+            get { return (roadDirection & HexDirection.Self) > 0; }
+        }
 
+        public void SetState(HexDirection roadDirection)
+        {
+            this.roadDirection = roadDirection;
+            Debug.Log(transform.position.ToString() + roadDirection.ToString());
         }
 
     }

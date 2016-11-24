@@ -122,7 +122,7 @@ namespace KouXiaGu.World2D
         /// <param name="node"></param>
         void WorldNodeChange(MapNodeState<WorldNode> node)
         {
-            nodeChangeReporter.NodeDataUpdate(ChangeType.Update, node.MapPoint, node.WorldNode);
+            nodeChangeReporter.NodeDataUpdate(node.EventType, node.MapPoint, node.WorldNode);
         }
 
         /// <summary>

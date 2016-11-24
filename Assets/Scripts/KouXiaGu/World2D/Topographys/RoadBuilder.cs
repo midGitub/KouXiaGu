@@ -25,15 +25,52 @@ namespace KouXiaGu.World2D
 
 
         /// <summary>
-        /// 在地貌实例上寻找道路组件并对其进行更新;
+        /// 对新建的地貌物体进行构建;
         /// </summary>
-        /// <param name="topography"></param>
-        public void UpdateRoad(ShortVector2 mapPoint, WorldNode worldNode, Road instance)
+        public void Build(ShortVector2 mapPoint, UnityEngine.Component instance)
         {
-            if (worldNode.Road)
+            Road road = instance.GetComponent<Road>();
+            if (road != null)
             {
-                HexDirection directionmask = Map.GetHexDirectionMask(mapPoint, Mask);
-                instance.SetState(worldNode.Road, directionmask);
+                UpdateRoadDirection(mapPoint, road);
+                activeRoad.Add(mapPoint, road);
+            }
+        }
+
+        public void Update(ShortVector2 mapPoint, bool changeTo)
+        {
+            if (activeRoad[mapPoint].HaveRoad != changeTo)
+            {
+                UpdateAroundRoad(mapPoint);
+            }
+        }
+
+        /// <summary>
+        /// 移除这个点的路径预制;
+        /// </summary>
+        public void Destroy(ShortVector2 mapPoint)
+        {
+            UpdateAroundRoad(mapPoint);
+            activeRoad.Remove(mapPoint);
+        }
+
+        /// <summary>
+        /// 更新这个道路的信息;
+        /// </summary>
+        void UpdateRoadDirection(ShortVector2 mapPoint, Road instance)
+        {
+            HexDirection directionmask = Map.GetAroundAndSelfMask(mapPoint, Mask);
+            instance.SetState(directionmask);
+        }
+
+        /// <summary>
+        /// 更新这个点周围的信息;
+        /// </summary>
+        void UpdateAroundRoad(ShortVector2 mapPoint)
+        {
+            foreach (var road in activeRoad.GetAround(mapPoint))
+            {
+                UpdateRoadDirection(road.Key, road.Value);
             }
         }
 

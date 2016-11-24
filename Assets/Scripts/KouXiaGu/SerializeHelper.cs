@@ -37,7 +37,7 @@ namespace KouXiaGu
         /// </summary>
         public static T Deserialize_Xml<T>(string filePath)
         {
-            Stream fStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Read);
+            Stream fStream = new FileStream(filePath, FileMode.Create, FileAccess.Read);
             T t = Deserialize_Xml<T>(fStream);
             fStream.Close();
             return t;
@@ -58,7 +58,7 @@ namespace KouXiaGu
 
         public static void Serialize_ProtoBuf<T>(string filePath, T t)
         {
-            Stream fStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+            Stream fStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             Serializer.Serialize(fStream, t);
             fStream.Close();
         }

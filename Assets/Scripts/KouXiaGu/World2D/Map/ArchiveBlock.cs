@@ -118,7 +118,7 @@ namespace KouXiaGu.World2D.Map
         bool IMap<ShortVector2, T>.Remove(ShortVector2 position)
         {
             bool isRemove = mapNodeSet.Remove(position);
-            mapNodeSet.Remove(position);
+            haveChangedSet.Remove(position);
             return isRemove;
         }
 
