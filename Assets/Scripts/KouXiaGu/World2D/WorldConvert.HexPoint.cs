@@ -7,19 +7,19 @@ using UnityEngine;
 namespace KouXiaGu.World2D
 {
 
+
     /// <summary>
     /// 对世界坐标和其它类型进行转换;
     /// </summary>
-    [DisallowMultipleComponent]
-    public static class WorldConvert
+    public static partial class WorldConvert
     {
 
-        #region 地图
+        #region 六边形定义
 
         /// <summary>
         /// 地图以外径为2的正六边形排列;
         /// </summary>
-        private static readonly Hexagon hexagon = new Hexagon() { OuterDiameter = 2 };
+        private static readonly Hexagon hexagon = new Hexagon() { OuterDiameter = 4 };
 
         /// <summary>
         /// 地图所使用的六边形;
@@ -58,11 +58,7 @@ namespace KouXiaGu.World2D
         /// 获取到这个数所在的整数区间;
         /// intPoint1 为靠近0的点, intPoint2 为远离0的点;
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="spacing"></param>
-        /// <param name="intPoint1"></param>
-        /// <param name="intPoint2"></param>
-        private static void GetInterval(float point, float spacing, out int intPoint1, out int intPoint2)
+        static void GetInterval(float point, float spacing, out int intPoint1, out int intPoint2)
         {
             intPoint1 = (int)(point / spacing);
             if (point > 0)
@@ -82,10 +78,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取 坐标集 内世界坐标离目标最短的 坐标集;
         /// </summary>
-        /// <param name="target"></param>
-        /// <param name="points"></param>
-        /// <returns></returns>
-        private static PointPair Nearest(Vector2 target, params PointPair[] points)
+        static PointPair Nearest(Vector2 target, params PointPair[] points)
         {
             float minDistance = Vector2.Distance(target, points[0].HexPoint);
             PointPair minPointPair = points[0];
@@ -160,76 +153,17 @@ namespace KouXiaGu.World2D
         #endregion
 
 
-        #region 方向向量获取\转换;
-
-        private const int DirectionNumber = 6;
-
-        private static readonly Dictionary<int, DirectionVector> DirectionVectorSet = GetDirectionVector();
-
-        private static Dictionary<int, DirectionVector> GetDirectionVector()
-        {
-            var directionVectorSet = new Dictionary<int, DirectionVector>(DirectionNumber);
-
-            directionVectorSet.Add(HexDirection.North, new ShortVector2(0, 1), new ShortVector2(0, 1));
-            directionVectorSet.Add(HexDirection.Northeast, new ShortVector2(1, 0), new ShortVector2(1, 1));
-            directionVectorSet.Add(HexDirection.Southeast, new ShortVector2(1, -1), new ShortVector2(1, 0));
-            directionVectorSet.Add(HexDirection.South, new ShortVector2(0, -1), new ShortVector2(0, -1));
-            directionVectorSet.Add(HexDirection.Southwest, new ShortVector2(-1, -1), new ShortVector2(-1, 0));
-            directionVectorSet.Add(HexDirection.Northwest, new ShortVector2(-1, 0), new ShortVector2(-1, 1));
-
-            return directionVectorSet;
-        }
-
-        private static void Add(this Dictionary<int, DirectionVector> directionVectorDictionary,
-            HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
-        {
-            DirectionVector directionVector = new DirectionVector(direction, oddVector, evenVector);
-            directionVectorDictionary.Add((int)direction, directionVector);
-        }
-
-        /// <summary>
-        /// 获取到这个地图坐标这个方向需要偏移的量;
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="direction"></param>
-        public static ShortVector2 GetVector(ShortVector2 target, HexDirection direction)
-        {
-            DirectionVector directionVector = DirectionVectorSet[(int)direction];
-            if ((target.x & 1) == 1)
-            {
-                return directionVector.OddVector;
-            }
-            else
-            {
-                return directionVector.EvenVector;
-            }
-        }
-
-        /// <summary>
-        /// 六边形 x轴奇数位和偶数位 对应方向的偏移向量;
-        /// </summary>
-        private struct DirectionVector
-        {
-            public DirectionVector(HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
-            {
-                this.Direction = direction;
-                this.OddVector = oddVector;
-                this.EvenVector = evenVector;
-            }
-
-            public HexDirection Direction { get; private set; }
-            public ShortVector2 OddVector { get; private set; }
-            public ShortVector2 EvenVector { get; private set; }
-        }
-
-        #endregion
-
-
         #region 鼠标
 
-        private static readonly int SceneAssistMask = LayerMask.GetMask("SceneAssist");
+        /// <summary>
+        /// 定义在Unity内触发器所在的层(重要)!
+        /// </summary>
+        static readonly int SceneAssistMask = LayerMask.GetMask("SceneAssist");
 
-        private const float RayMaxDistance = 50;
+        /// <summary>
+        /// 射线最大距离;
+        /// </summary>
+        const float RayMaxDistance = 50;
 
         /// <summary>
         /// 获取视窗鼠标所在水平面上的坐标;
