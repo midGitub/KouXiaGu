@@ -98,7 +98,7 @@ namespace KouXiaGu.World2D
 
         IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
         {
-            Map.Clear();
+            //Map.Clear();
 
             IsReady = false;
             yield break;

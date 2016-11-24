@@ -177,6 +177,7 @@ namespace KouXiaGu.World2D
             {
                 NotifyObservers(ChangeType.Add, point);
                 loadedPoint.Add(point);
+                //Debug.Log("加载" + point);
             }
         }
 
@@ -189,6 +190,7 @@ namespace KouXiaGu.World2D
             {
                 NotifyObservers(ChangeType.Remove, point);
                 loadedPoint.Remove(point);
+                //Debug.Log("卸载" + point);
             }
         }
 

@@ -99,11 +99,22 @@ namespace KouXiaGu.World2D.Map
             return block.Contains(realPosition);
         }
 
+        /// <summary>
+        /// 尝试获取到此值;
+        /// </summary>
         public bool TryGetValue(ShortVector2 position, out T item)
         {
             ShortVector2 realPosition;
-            TBlock block = TransformToBlock(position, out realPosition);
-            return block.TryGetValue(realPosition, out item);
+            TBlock block;
+            ShortVector2 address = blockMap.MapPointToAddress(position, out realPosition);
+
+            if (blockMap.TryGetValue(address, out block))
+            {
+                return block.TryGetValue(realPosition, out item);
+            }
+
+            item = default(T);
+            return false;
         }
 
         /// <summary>
