@@ -7,18 +7,17 @@ namespace KouXiaGu.World2D.Map
 {
 
     /// <summary>
-    /// 仅一个地图块结构;
+    /// 地图结构;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Block<T> : IMap<ShortVector2, T>
-        where T : struct
+    public class MapCollection<T> : IMap<ShortVector2, T>
     {
 
-        public Block()
+        public MapCollection()
         {
             mapCollection = new Dictionary<ShortVector2, T>();
         }
-        public Block(Dictionary<ShortVector2, T> mapCollection)
+        public MapCollection(Dictionary<ShortVector2, T> mapCollection)
         {
             this.mapCollection = mapCollection;
         }

@@ -17,6 +17,8 @@ namespace KouXiaGu.Test
 
         [SerializeField]
         private int Landform;
+        [SerializeField]
+        private bool Road;
 
         private WorldMapData worldMap;
 
@@ -45,28 +47,32 @@ namespace KouXiaGu.Test
             ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             WorldNode node;
 
-            string LandformType;
+            string LandformType = "Null";
+            string Road = "Null";
+            int RoadMask = 0;
             ShortVector2 mapBlockAddress = worldMap.worldMap.BlockMap.MapPointToAddress(mapPoint);
             string mapBlockName = mapBlockAddress.ToString();
             try
             {
                 node = worldMap.Map[mapPoint];
                 LandformType = node.Topography.ToString();
+                Road = node.Road.ToString();
+                //RoadMask = GetMask(mapPoint);
             }
             catch (BlockNotFoundException)
             {
                 node = new WorldNode();
-                LandformType = "不存在";
             }
             catch (KeyNotFoundException)
             {
                 node = new WorldNode();
-                LandformType = "不存在";
             }
 
             string str = "";
 
             str += "地图类型:" + LandformType
+                + ";道路:" + Road
+                + ";存在道路:" + RoadMask
                 + ";地图块:" + mapBlockAddress
                 + ";地图块编号:" + mapBlockName;
 
@@ -82,15 +88,24 @@ namespace KouXiaGu.Test
             {
                 node = worldMap.Map[mapPoint];
                 node.Topography = Landform;
+                node.Road = Road;
                 worldMap.Map[mapPoint] = node;
+
+                Debug.Log(GetMask(mapPoint));
             }
             catch (KeyNotFoundException)
             {
                 node = new WorldNode();
                 node.Topography = Landform;
+                node.Road = Road;
                 worldMap.Map.Add(mapPoint, node);
             }
-            Debug.Log(mapPoint + "Landform赋值为:" + Landform);
+            //Debug.Log(mapPoint + "Landform赋值为:" + Landform);
+        }
+
+        int GetMask(ShortVector2 mapPoint)
+        {
+            return (int)worldMap.Map.GetHexDirectionMask(mapPoint, node => node.Road);
         }
 
 

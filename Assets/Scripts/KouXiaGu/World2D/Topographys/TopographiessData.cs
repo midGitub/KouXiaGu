@@ -12,9 +12,9 @@ namespace KouXiaGu.World2D
     /// 定义地貌预制ID和其信息转换;
     /// </summary>
     [Serializable]
-    public class TopographiessData
+    public class TopographiessData : UnitySingleton<TopographiessData>
     {
-        TopographiessData() { }
+        protected TopographiessData() { }
 
         /// <summary>
         /// 定义地貌信息的XML文件;

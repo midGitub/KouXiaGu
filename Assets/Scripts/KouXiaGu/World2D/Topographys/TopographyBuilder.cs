@@ -1,34 +1,27 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.World2D.Map;
-using UniRx;
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.World2D
 {
 
-    [DisallowMultipleComponent]
-    public class TopographyMap : UnitySingleton<TopographyMap>
+    /// <summary>
+    /// 维护场景地貌实例;
+    /// </summary>
+    public class TopographyBuilder : MonoBehaviour
     {
+        protected TopographyBuilder() { }
 
-        /// <summary>
-        /// 地貌信息;
-        /// </summary>
-        [SerializeField]
+
         TopographiessData topographiessData;
-
         /// <summary>
         /// 记录已经实例化到场景的物体;
         /// </summary>
         Dictionary<ShortVector2, Topography> activeWorldNode;
-
-        public TopographiessData TopographiessData
-        {
-            get { return topographiessData; }
-        }
 
         void Awake()
         {
@@ -38,31 +31,42 @@ namespace KouXiaGu.World2D
         void Start()
         {
             WorldBuilder.GetInstance.ObserveBuilderNode.Subscribe(UpdateScene);
-            topographiessData.Start();
+            topographiessData = TopographiessData.GetInstance;
         }
 
+
+        /// <summary>
+        /// 更新场景内的实例;
+        /// </summary>
         void UpdateScene(MapNodeState<WorldNode> nodeState)
         {
-            if (nodeState.EventType == ChangeType.Add)
+            switch (nodeState.EventType)
             {
-                BuildTopography(nodeState);
-            }
-            else if (nodeState.EventType == ChangeType.Remove)
-            {
-                DestroyTopography(nodeState);
-            }
-            else if (nodeState.EventType == ChangeType.Update)
-            {
-                UpdateTopography(nodeState);
+                case ChangeType.Add:
+                    BuildTopography(nodeState);
+                    break;
+
+                case ChangeType.Remove:
+                    DestroyTopography(nodeState);
+                    break;
+
+                case ChangeType.Update:
+                    UpdateTopography(nodeState);
+                    break;
             }
         }
+
 
         /// <summary>
         /// 将地貌信息实例化到场景内对应位置;
         /// </summary>
         void BuildTopography(MapNodeState<WorldNode> nodeState)
         {
-            Topography topography = InitTopographyNode(nodeState);
+            int topographyID = nodeState.WorldNode.Topography;
+            ShortVector2 mapPoint = nodeState.MapPoint;
+
+            Topography topography = Build(topographyID, mapPoint);
+
             activeWorldNode.Add(nodeState.MapPoint, topography);
         }
 
@@ -71,8 +75,10 @@ namespace KouXiaGu.World2D
         /// </summary>
         void DestroyTopography(MapNodeState<WorldNode> nodeState)
         {
-            Topography topography = activeWorldNode[nodeState.MapPoint];
-            DestroyTopographyNode(topography);
+            ShortVector2 mapPoint = nodeState.MapPoint;
+
+            Topography topography = activeWorldNode[mapPoint];
+            Destroy(topography);
             activeWorldNode.Remove(nodeState.MapPoint);
         }
 
@@ -81,36 +87,19 @@ namespace KouXiaGu.World2D
         /// </summary>
         void UpdateTopography(MapNodeState<WorldNode> nodeState)
         {
+            int topographyID = nodeState.WorldNode.Topography;
             ShortVector2 mapPoint = nodeState.MapPoint;
-            Topography topography;
-            if (activeWorldNode.TryGetValue(mapPoint, out topography))
-            {
-                if (topography.ID != nodeState.WorldNode.Topography)
-                {
-                    DestroyTopographyNode(topography);
-                    topography = InitTopographyNode(nodeState);
-                    activeWorldNode[mapPoint] = topography;
-                }
-            }
-            else
-            {
-                BuildTopography(nodeState);
-            }
+
+            Topography topography = activeWorldNode[mapPoint];
+            activeWorldNode[mapPoint] = UpdateTopography(topography, topographyID);
         }
+
+
 
         /// <summary>
         /// 向这个位置创建一个地形,并且返回创建内容;
         /// </summary>
-        Topography InitTopographyNode(MapNodeState<WorldNode> nodeState)
-        {
-            int topographyID = nodeState.WorldNode.Topography;
-            ShortVector2 mapPoint = nodeState.MapPoint;
-            return InitTopographyNode(topographyID, mapPoint);
-        }
-        /// <summary>
-        /// 向这个位置创建一个地形,并且返回创建内容;
-        /// </summary>
-        Topography InitTopographyNode(int topographyID, ShortVector2 mapPoint)
+        Topography Build(int topographyID, ShortVector2 mapPoint)
         {
             Vector2 planePoint = WorldConvert.MapToHex(mapPoint);
             Topography topographyPrefab = GetTopographyPrefab(topographyID, mapPoint);
@@ -121,11 +110,25 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
+        /// 更新这个地貌到目标地貌,并且返回正确的地貌;
+        /// </summary>
+        Topography UpdateTopography(Topography original, int targetID)
+        {
+            if (original.ID != targetID)
+            {
+                ShortVector2 mapPoint = original.MapPoint;
+                Destroy(original);
+                Build(targetID, mapPoint);
+            }
+            return original;
+        }
+
+        /// <summary>
         /// 销毁这个地貌;
         /// </summary>
-        void DestroyTopographyNode(Topography topography)
+        public void Destroy(Topography topography)
         {
-            Destroy(topography.gameObject);
+            GameObject.Destroy(topography.gameObject);
         }
 
         /// <summary>
