@@ -14,12 +14,10 @@ namespace KouXiaGu.World2D.Navigation
     public class NavController : UnitySingleton<NavController>
     {
 
-
-
         /// <summary>
         /// 返回到达这儿的路径;
         /// </summary>
-        public WayPath FreeToGo(ShortVector2 mapPoint)
+        public NavPath FreeToGo(ShortVector2 mapPoint)
         {
             throw new NotImplementedException();
         }

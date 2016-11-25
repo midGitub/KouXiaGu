@@ -84,23 +84,22 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 开始跟随路径点移动到,不做起点检查;
         /// </summary>
-        public void StartFollowWayPath(LinkedListNode<ShortVector2> node)
+        public void StartFollowWayPath(NavPath navPath)
         {
             if (IsFollowPath)
             {
                 this.followPathCoroutine.Dispose();
             }
-            this.followPathCoroutine = Observable.FromMicroCoroutine(() => FollowWayPath(node)).Subscribe();
+            this.followPathCoroutine = Observable.FromMicroCoroutine(() => FollowWayPath(navPath)).Subscribe();
         }
 
         /// <summary>
         /// 更随路径行走到;
         /// </summary>
-        IEnumerator FollowWayPath(LinkedListNode<ShortVector2> node)
+        IEnumerator FollowWayPath(NavPath navPath)
         {
-            for (; node != null; node = node.Next)
+            while(navPath.TryGoNext(out this.targetPoint, out maxSpeed))
             {
-                this.targetPoint = MapPointToPlanePoint(node.Value);
                 while (!IsClose(transform.position, this.targetPoint))
                 {
                     yield return null;

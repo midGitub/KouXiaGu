@@ -66,7 +66,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 开始寻路;若无法找到目标点则返回异常;
         /// </summary>
-        public WayPath Start(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange)
+        public LinkedList<ShortVector2> Start(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange)
         {
             this.Starting = starting;
             this.Destination = destination;
@@ -100,9 +100,9 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 开始寻路循环;
         /// </summary>
-        WayPath Pathfinding()
+        LinkedList<ShortVector2> Pathfinding()
         {
-            WayPath wayPath;
+            LinkedList<ShortVector2> wayPath;
 
             while (openPointsSet.Count != 0)
             {
@@ -199,7 +199,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 尝试在开放点合集中获取到终点;获取到了返回true,否则返回false;
         /// </summary>
-        bool TryFindDestinationInOpenSet(out WayPath wayPath)
+        bool TryFindDestinationInOpenSet(out LinkedList<ShortVector2> wayPath)
         {
             AStartPathNode node;
             if (openPointsSet.TryGetValue(Destination, out node))
@@ -209,7 +209,7 @@ namespace KouXiaGu.World2D.Navigation
             }
             else
             {
-                wayPath = default(WayPath);
+                wayPath = default(LinkedList<ShortVector2>);
                 return false;
             }
         }
@@ -217,9 +217,9 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 从A*路径点转换成双向链表;
         /// </summary>
-        WayPath PathNodeToWayPath(AStartPathNode node)
+        LinkedList<ShortVector2> PathNodeToWayPath(AStartPathNode node)
         {
-            WayPath path = new WayPath();
+            LinkedList<ShortVector2> path = new LinkedList<ShortVector2>();
             for (; node != null; node = node.Previous)
             {
                 path.AddFirst(node.point);
