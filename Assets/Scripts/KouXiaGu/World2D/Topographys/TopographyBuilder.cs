@@ -94,7 +94,7 @@ namespace KouXiaGu.World2D
 
         void BuildTopography(ShortVector2 mapPoint, WorldNode worldNode)
         {
-            int topographyID = worldNode.Topography;
+            int topographyID = worldNode.TopographyID;
 
             Topography topography = Instantiate(mapPoint, topographyID);
             BuildRoad(mapPoint, worldNode, topography);
@@ -147,7 +147,7 @@ namespace KouXiaGu.World2D
         void UpdateTopography(ShortVector2 mapPoint, WorldNode worldNode)
         {
             Topography original = activeWorldNode[mapPoint];
-            int topographyID = worldNode.Topography;
+            int topographyID = worldNode.TopographyID;
 
             if (original.ID != topographyID)
             {

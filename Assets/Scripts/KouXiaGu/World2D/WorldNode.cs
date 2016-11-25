@@ -17,7 +17,7 @@ namespace KouXiaGu.World2D
         /// 地貌;
         /// </summary>
         [ProtoMember(1)]
-        public int Topography { get; set; }
+        public int TopographyID { get; set; }
 
         /// <summary>
         /// 是否存在道路;
@@ -27,7 +27,7 @@ namespace KouXiaGu.World2D
 
         public bool Equals(WorldNode other)
         {
-            return Topography != other.Topography ||
+            return TopographyID != other.TopographyID ||
                     Road != other.Road;
         }
 

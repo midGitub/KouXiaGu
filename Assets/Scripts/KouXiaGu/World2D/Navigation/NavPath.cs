@@ -12,37 +12,120 @@ namespace KouXiaGu.World2D.Navigation
     /// </summary>
     public class NavPath
     {
-        public NavPath(LinkedList<ShortVector2> waypath)
+        public NavPath(LinkedList<ShortVector2> wayPath,
+            IMap<ShortVector2, WorldNode> worldMap, 
+            TopographiessData topographiessData)
         {
-            this.WayPath = waypath;
+            this.wayPath = wayPath;
+            this.worldMap = worldMap;
+            this.topographiessData = topographiessData;
+
+            Reset();
         }
+
+        /// <summary>
+        /// 行走的地图;
+        /// </summary>
+        IMap<ShortVector2, WorldNode> worldMap;
+
+        /// <summary>
+        /// 地貌信息;
+        /// </summary>
+        TopographiessData topographiessData;
+
+        /// <summary>
+        /// 当前行走到;
+        /// </summary>
+        LinkedListNode<ShortVector2> current;
 
         /// <summary>
         /// 起点;
         /// </summary>
         public Vector2 StartingNode
         {
-            get { return MapPointToPlanePoint(WayPath.First.Value); }
+            get { return MapPointToPlanePoint(wayPath.First.Value); }
         }
+
         /// <summary>
         /// 寻路的终点;
         /// </summary>
         public Vector2 DestinationNode
         {
-            get { return MapPointToPlanePoint(WayPath.Last.Value); }
+            get { return MapPointToPlanePoint(wayPath.Last.Value); }
         }
+
         /// <summary>
         /// 路径点合集;
         /// </summary>
-        public LinkedList<ShortVector2> WayPath { get; private set; }
+        LinkedList<ShortVector2> wayPath;
 
         /// <summary>
         /// 获取到下一步行走到的点和行走的速度;
         /// 获取成功返回true,否则返回false;
         /// </summary>
-        public bool TryGoNext(out Vector2 planePoint, out float maxSpeed)
+        public bool TryGoNext(out Vector2 planePoint, out float percentage)
         {
-            throw new NotImplementedException();
+            if (current == null)
+            {
+                planePoint = default(Vector2);
+                percentage = default(float);
+                return false;
+            }
+
+            ShortVector2 mapPoint = current.Value;
+            planePoint = GetNextPoint();
+            percentage = GetPercentageOfMovement(mapPoint);
+
+            current = current.Next;
+            return true;
+        }
+
+        /// <summary>
+        /// 重设导航路径到起点;
+        /// </summary>
+        public void Reset()
+        {
+            this.current = wayPath.First;
+        }
+
+        /// <summary>
+        /// 获取到将要行走到的下一个点;
+        /// </summary>
+        Vector2 GetNextPoint()
+        {
+            Vector2 currentPlanePoint = MapPointToPlanePoint(current.Value);
+
+            if (current.Next != null)
+            {
+                Vector2 nextPlanePoint = MapPointToPlanePoint(current.Next.Value);
+                return GetMidpoint(currentPlanePoint, nextPlanePoint);
+            }
+            else
+            {
+                return currentPlanePoint;
+            }
+        }
+
+        /// <summary>
+        /// 获取到这两个点的中点;
+        /// </summary>
+        Vector2 GetMidpoint(Vector2 point1, Vector2 point2)
+        {
+            Vector2 newPoint = (point1 + point2) / 2;
+            return newPoint;
+        }
+
+        /// <summary>
+        /// 获取到这个点的移动百分比;
+        /// </summary>
+        float GetPercentageOfMovement(ShortVector2 mapPoint)
+        {
+            WorldNode worldNode = worldMap[mapPoint];
+            int topographyID = worldNode.TopographyID;
+
+            TopographyInfo topographyInfo = topographiessData.GetWithID(topographyID);
+            float percentage = topographyInfo.PercentageOfMovement;
+            return percentage;
         }
 
         /// <summary>

@@ -63,7 +63,7 @@ namespace KouXiaGu.Test
             try
             {
                 node = worldMap.Map[mapPoint];
-                LandformType = node.Topography.ToString();
+                LandformType = node.TopographyID.ToString();
                 Road = node.Road.ToString();
                 //RoadMask = GetMask(mapPoint);
             }
@@ -92,7 +92,7 @@ namespace KouXiaGu.Test
             var planePoint = WorldConvert.MouseToPlane();
             ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             WorldNode node = new WorldNode();
-            node.Topography = Landform;
+            node.TopographyID = Landform;
             node.Road = Road;
             try
             {

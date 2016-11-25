@@ -47,6 +47,11 @@ namespace KouXiaGu.World2D.Navigation
         Vector2 velocity;
 
         /// <summary>
+        /// 现在可行动的最大速度;
+        /// </summary>
+        float speedForNow;
+
+        /// <summary>
         /// 更随路线行动协程;
         /// </summary>
         IDisposable followPathCoroutine;
@@ -73,12 +78,18 @@ namespace KouXiaGu.World2D.Navigation
             set { maxSpeed = value; }
         }
 
+
+        void Awake()
+        {
+            speedForNow = maxSpeed;
+        }
+
         /// <summary>
         /// 更新挂在物体位置;
         /// </summary>
         void FixedUpdate()
         {
-            transform.position = Vector2.SmoothDamp(transform.position, targetPoint, ref velocity, smoothTime, maxSpeed);
+            transform.position = Vector2.SmoothDamp(transform.position, targetPoint, ref velocity, smoothTime, speedForNow);
         }
 
         /// <summary>
@@ -98,13 +109,18 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         IEnumerator FollowWayPath(NavPath navPath)
         {
-            while(navPath.TryGoNext(out this.targetPoint, out maxSpeed))
+            float speedPercentage;
+            while (navPath.TryGoNext(out this.targetPoint, out speedPercentage))
             {
+                this.speedForNow = speedPercentage * maxSpeed;
+
                 while (!IsClose(transform.position, this.targetPoint))
                 {
                     yield return null;
                 }
             }
+
+            this.speedForNow = maxSpeed;
         }
 
         /// <summary>
