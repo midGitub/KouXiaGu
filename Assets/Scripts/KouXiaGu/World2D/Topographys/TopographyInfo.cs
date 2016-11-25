@@ -16,7 +16,6 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 地形唯一的表示;
         /// </summary>
-        [NonSerialized]
         public int id;
 
         /// <summary>

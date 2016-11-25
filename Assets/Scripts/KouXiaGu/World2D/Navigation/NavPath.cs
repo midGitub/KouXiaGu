@@ -116,16 +116,25 @@ namespace KouXiaGu.World2D.Navigation
         }
 
         /// <summary>
+        /// 若未获取到地图节点返回的默认速度;
+        /// </summary>
+        const float outMapRangePercentageOfMovement = 1;
+
+        /// <summary>
         /// 获取到这个点的移动百分比;
         /// </summary>
         float GetPercentageOfMovement(ShortVector2 mapPoint)
         {
-            WorldNode worldNode = worldMap[mapPoint];
-            int topographyID = worldNode.TopographyID;
-
-            TopographyInfo topographyInfo = topographiessData.GetWithID(topographyID);
-            float percentage = topographyInfo.PercentageOfMovement;
-            return percentage;
+            WorldNode worldNode;
+            if (worldMap.TryGetValue(mapPoint, out worldNode))
+            {
+                int topographyID = worldNode.TopographyID;
+                TopographyInfo topographyInfo = topographiessData.GetWithID(topographyID);
+                float percentage = topographyInfo.PercentageOfMovement;
+                return percentage;
+            }
+            Debug.LogWarning("未能获取到地图点" + mapPoint + "但是导航路径经过上面;");
+            return 1;
         }
 
         /// <summary>

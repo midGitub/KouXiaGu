@@ -78,7 +78,6 @@ namespace KouXiaGu.World2D.Navigation
             set { maxSpeed = value; }
         }
 
-
         void Awake()
         {
             speedForNow = maxSpeed;
@@ -95,7 +94,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 开始跟随路径点移动到,不做起点检查;
         /// </summary>
-        public void StartFollowWayPath(NavPath navPath)
+        public void StartFollow(NavPath navPath)
         {
             if (IsFollowPath)
             {
@@ -105,14 +104,46 @@ namespace KouXiaGu.World2D.Navigation
         }
 
         /// <summary>
+        /// 暂停当前路径行为;
+        /// </summary>
+        [ContextMenu("Pause")]
+        public void Pause()
+        {
+            enabled = false;
+        }
+
+        /// <summary>
+        /// 继续暂停后的行为;
+        /// </summary>
+        [ContextMenu("Continue")]
+        public void Continue()
+        {
+            enabled = true;
+        }
+
+        /// <summary>
+        /// 停止跟随路径行动,并且设置位置到最近的六边形中心;
+        /// </summary>
+        public void Stop()
+        {
+            if (IsFollowPath)
+            {
+                this.followPathCoroutine.Dispose();
+            }
+            this.targetPoint = WorldConvert.PlaneToHexPair(transform.position);
+        }
+
+        /// <summary>
         /// 更随路径行走到;
         /// </summary>
         IEnumerator FollowWayPath(NavPath navPath)
         {
             float speedPercentage;
-            while (navPath.TryGoNext(out this.targetPoint, out speedPercentage))
+            Vector2 newTargetPoint;
+            while (navPath.TryGoNext(out newTargetPoint, out speedPercentage))
             {
                 this.speedForNow = speedPercentage * maxSpeed;
+                this.targetPoint = newTargetPoint;
 
                 while (!IsClose(transform.position, this.targetPoint))
                 {
@@ -137,6 +168,22 @@ namespace KouXiaGu.World2D.Navigation
         Vector2 MapPointToPlanePoint(ShortVector2 mapPoint)
         {
             return WorldConvert.MapToHex(mapPoint);
+        }
+
+
+        [ContextMenu("Test_Path")]
+        void Test_Path()
+        {
+            LinkedList<ShortVector2> path = new LinkedList<ShortVector2>();
+
+            path.AddLast(new ShortVector2(0, 0));
+            path.AddLast(new ShortVector2(1, 0));
+            path.AddLast(new ShortVector2(2, 0));
+            path.AddLast(new ShortVector2(3, 1));
+            path.AddLast(new ShortVector2(3, 2));
+
+            NavPath navPath = new NavPath(path, WorldMapData.GetInstance.Map, TopographiessData.GetInstance);
+            StartFollow(navPath);
         }
 
     }
