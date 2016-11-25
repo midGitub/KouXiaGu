@@ -7,22 +7,6 @@ using KouXiaGu.World2D.Map;
 namespace KouXiaGu.World2D.Navigation
 {
 
-    public interface IObstructive<TNode, TMover>
-    {
-        ///// <summary>
-        ///// 尝试获取到代价值,若不允许行走则返回false;
-        ///// </summary>
-        //bool TryGetCost(TMover mover, TNode item, out float cost);
-
-        bool CanWalk(TMover mover, TNode item);
-
-        /// <summary>
-        /// 获取到人物走到这个地图节点的代价值,和距离终点的代价值总和(作为寻路依据);
-        /// </summary>
-        float GetCost(TMover mover, ShortVector2 currentPoint, TNode currentNode, ShortVector2 destination);
-
-    }
-
     /// <summary>
     /// A*寻路;非线程安全;
     /// </summary>
@@ -88,7 +72,9 @@ namespace KouXiaGu.World2D.Navigation
             this.Destination = destination;
             this.maximumRange.SetMaximumRange(starting, maximumRange);
 
-            StartingPointOutRangeException();
+            if (this.maximumRange.IsOutRange(Starting))
+                throw new PathNotFoundException("开始点超出了最大范围的定义");
+
             AddStartingPointToOpenSet();
             return Pathfinding();
         }
@@ -100,17 +86,6 @@ namespace KouXiaGu.World2D.Navigation
         {
             openPointsSet.Clear();
             closePointsSet.Clear();
-        }
-
-        /// <summary>
-        /// 若开始点超出了最大范围的定义则返回异常;
-        /// </summary>
-        void StartingPointOutRangeException()
-        {
-            if (maximumRange.IsOutRange(Starting))
-            {
-                throw new PathNotFoundException("开始点超出了最大范围的定义");
-            }
         }
 
         /// <summary>

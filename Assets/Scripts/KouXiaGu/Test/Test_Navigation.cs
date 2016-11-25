@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.World2D.Navigation
+namespace KouXiaGu.Test
 {
 
-    public class Navigator
+    public class Test_Navigation
     {
+
+
+
+        void Update()
+        {
+
+        }
 
 
     }
