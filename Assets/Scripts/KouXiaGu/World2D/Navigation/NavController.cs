@@ -16,6 +16,14 @@ namespace KouXiaGu.World2D.Navigation
 
 
 
+        /// <summary>
+        /// 返回到达这儿的路径;
+        /// </summary>
+        public WayPath FreeToGo(ShortVector2 mapPoint)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
 }

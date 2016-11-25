@@ -18,9 +18,14 @@ namespace KouXiaGu.World2D
         #region 六边形定义
 
         /// <summary>
+        /// 六边形直径;
+        /// </summary>
+        public const float HexOuterDiameter = 4;
+
+        /// <summary>
         /// 地图以外径为2的正六边形排列;
         /// </summary>
-        private static readonly Hexagon hexagon = new Hexagon() { OuterDiameter = 4 };
+        static readonly Hexagon hexagon = new Hexagon() { OuterDiameter = HexOuterDiameter };
 
         /// <summary>
         /// 地图所使用的六边形;

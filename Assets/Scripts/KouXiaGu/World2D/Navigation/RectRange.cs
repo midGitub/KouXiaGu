@@ -9,10 +9,10 @@ namespace KouXiaGu.World2D.Navigation
     /// <summary>
     /// 设定一个范围,可以检查是否超出这个范围;
     /// </summary>
-    public struct MaximumRectRange
+    public struct RectRange
     {
 
-        public MaximumRectRange(ShortVector2 center, ShortVector2 range): this()
+        public RectRange(ShortVector2 center, ShortVector2 range): this()
         {
             SetMaximumRange(center, range);
         }
