@@ -6,9 +6,6 @@
 //namespace KouXiaGu.Navigation
 //{
 
-//    /// <summary>
-//    /// A*寻路;
-//    /// </summary>
 //    public sealed class AStar<TNode, TMover>
 //        where TNode : INavNode<TMover>
 //    {
