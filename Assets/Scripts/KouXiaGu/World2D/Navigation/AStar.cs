@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.World2D.Map;
+using UnityEngine;
 
 namespace KouXiaGu.World2D.Navigation
 {
@@ -187,8 +188,10 @@ namespace KouXiaGu.World2D.Navigation
         AStartPathNode GetMinCostInOpenSet()
         {
             try
-            {
-                return openPointsSet.Values.Min();
+            { 
+                var minNode = openPointsSet.Values.Min();
+                Debug.Log("minNode :" + minNode.point + " NodeCost" + minNode.nodeCost + " PathCost:" + minNode.PathCost);
+                return minNode;
             }
             catch (InvalidOperationException e)
             {
@@ -219,6 +222,7 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         LinkedList<ShortVector2> PathNodeToWayPath(AStartPathNode node)
         {
+            Debug.Log("路线代价值:" + node.PathCost);
             LinkedList<ShortVector2> path = new LinkedList<ShortVector2>();
             for (; node != null; node = node.Previous)
             {
@@ -230,7 +234,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// A*寻路点;
         /// </summary>
-        class AStartPathNode
+        class AStartPathNode : IComparable<AStartPathNode>
         {
             public AStartPathNode(ShortVector2 position)
             {
@@ -251,7 +255,14 @@ namespace KouXiaGu.World2D.Navigation
             /// <summary>
             /// 在路径中的总代价值;
             /// </summary>
-            public float PathCost { get { return Previous.PathCost + nodeCost; } }
+            public float PathCost
+            {
+                get
+                {
+                    float PreviousCost = Previous != null ? Previous.PathCost : 0;
+                    return PreviousCost + nodeCost;
+                }
+            }
             /// <summary>
             /// 所指的地图坐标;
             /// </summary>
@@ -276,6 +287,16 @@ namespace KouXiaGu.World2D.Navigation
                 {
                     return false;
                 }
+            }
+
+            int IComparable<AStartPathNode>.CompareTo(AStartPathNode other)
+            {
+                if (this.nodeCost < other.nodeCost)
+                    return -1;
+                else if (this.nodeCost == other.nodeCost)
+                    return 0;
+                else
+                    return 1;
             }
 
         }

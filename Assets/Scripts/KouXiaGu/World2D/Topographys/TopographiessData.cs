@@ -8,13 +8,14 @@ using KouXiaGu.World2D.Map;
 namespace KouXiaGu.World2D
 {
 
+
     /// <summary>
     /// 定义地貌预制ID和其信息转换;
     /// </summary>
     [Serializable]
     public class TopographiessData : UnitySingleton<TopographiessData>
     {
-        protected TopographiessData() { }
+        TopographiessData() { }
 
         /// <summary>
         /// 定义地貌信息的XML文件;
@@ -45,7 +46,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 根据ID获取到地貌详细信息;
         /// </summary>
-        public TopographyInfo GetWithID(int id)
+        public TopographyInfo GetInfoWithID(int id)
         {
             return topographyInfosDictionary[id];
         }

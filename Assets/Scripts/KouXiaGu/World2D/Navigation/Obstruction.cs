@@ -13,14 +13,27 @@ namespace KouXiaGu.World2D.Navigation
     public class Obstruction : UnitySingleton<Obstruction>, IObstructive<WorldNode, NavAction>
     {
 
+        TopographiessData topographiessData;
+
+        void Awake()
+        {
+            topographiessData = TopographiessData.GetInstance;
+        }
+
+
         public bool CanWalk(NavAction mover, WorldNode item)
         {
-            throw new NotImplementedException();
+            TopographyInfo topographyInfo = topographiessData.GetInfoWithID(item.TopographyID);
+            return topographyInfo.CanWalk;
         }
 
         public float GetCost(NavAction mover, ShortVector2 currentPoint, WorldNode currentNode, ShortVector2 destination)
         {
-            throw new NotImplementedException();
+            float cost = 0;
+            TopographyInfo topographyInfo = topographiessData.GetInfoWithID(currentNode.TopographyID);
+            cost += topographyInfo.ActionCost;
+            cost += (ShortVector2.ManhattanDistance(currentPoint, destination) * 3);
+            return cost;
         }
 
     }

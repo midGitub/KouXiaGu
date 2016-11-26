@@ -196,6 +196,15 @@ namespace KouXiaGu.World2D
             return MouseToPlane(Camera.main);
         }
 
+        /// <summary>
+        /// 获取到主相机到地图坐标;
+        /// </summary>
+        public static PointPair MouseToHexPair()
+        {
+            Vector2 mousePlanePoint = MouseToPlane();
+            return PlaneToHexPair(mousePlanePoint);
+        }
+
         #endregion
 
 

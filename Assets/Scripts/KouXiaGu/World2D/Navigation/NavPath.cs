@@ -129,7 +129,7 @@ namespace KouXiaGu.World2D.Navigation
             if (worldMap.TryGetValue(mapPoint, out worldNode))
             {
                 int topographyID = worldNode.TopographyID;
-                TopographyInfo topographyInfo = topographiessData.GetWithID(topographyID);
+                TopographyInfo topographyInfo = topographiessData.GetInfoWithID(topographyID);
                 float percentage = topographyInfo.PercentageOfMovement;
                 return percentage;
             }

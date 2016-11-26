@@ -15,7 +15,7 @@ namespace KouXiaGu.World2D.Navigation
     [DisallowMultipleComponent]
     public class Navigate : MonoBehaviour
     {
-        Navigate() { }
+        protected Navigate() { }
 
         /// <summary>
         /// 移动的最大速度;

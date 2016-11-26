@@ -21,17 +21,17 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 是否允许行走到?;
         /// </summary>
-        public bool Walk;
+        public bool CanWalk;
 
         /// <summary>
         /// 移动的速率;
         /// </summary>
         public float PercentageOfMovement;
 
-        ///// <summary>
-        ///// 行动的代价值;
-        ///// </summary>
-        //public int ActionCost;
+        /// <summary>
+        /// 行动的代价值;
+        /// </summary>
+        public int ActionCost;
 
         /// <summary>
         /// 提供的资源;
