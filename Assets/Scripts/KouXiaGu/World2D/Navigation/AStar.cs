@@ -73,11 +73,12 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 开始寻路;若无法找到目标点则返回异常;
         /// </summary>
-        public LinkedList<ShortVector2> Start(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange)
+        public LinkedList<ShortVector2> Start(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange, TMover mover)
         {
             this.Starting = starting;
             this.Destination = destination;
             this.maximumRange.SetMaximumRange(starting, maximumRange);
+            this.Mover = mover;
 
             if (IsTrapped(Starting))
                 throw new TrappedException("起点周围不可行走,物体可能被困住;");

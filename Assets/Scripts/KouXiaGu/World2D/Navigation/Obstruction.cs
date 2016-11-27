@@ -10,7 +10,7 @@ namespace KouXiaGu.World2D.Navigation
     /// <summary>
     /// 寻路障碍物;
     /// </summary>
-    public class Obstruction : UnitySingleton<Obstruction>, IObstructive<WorldNode, NavAction>
+    public class Obstruction : UnitySingleton<Obstruction>, IObstructive<WorldNode, INavAction>
     {
 
         TopographiessData topographiessData;
@@ -21,13 +21,13 @@ namespace KouXiaGu.World2D.Navigation
         }
 
 
-        public bool CanWalk(NavAction mover, WorldNode item)
+        public bool CanWalk(INavAction mover, WorldNode item)
         {
             TopographyInfo topographyInfo = topographiessData.GetInfoWithID(item.TopographyID);
             return topographyInfo.CanWalk;
         }
 
-        public float GetCost(NavAction mover, ShortVector2 currentPoint, WorldNode currentNode, ShortVector2 destination)
+        public float GetCost(INavAction mover, ShortVector2 currentPoint, WorldNode currentNode, ShortVector2 destination)
         {
             float cost = 0;
             TopographyInfo topographyInfo = topographiessData.GetInfoWithID(currentNode.TopographyID);
