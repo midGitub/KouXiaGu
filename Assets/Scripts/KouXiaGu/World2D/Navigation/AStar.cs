@@ -79,8 +79,14 @@ namespace KouXiaGu.World2D.Navigation
             this.Destination = destination;
             this.maximumRange.SetMaximumRange(starting, maximumRange);
 
+            if (IsTrapped(Starting))
+                throw new TrappedException("起点周围不可行走,物体可能被困住;");
+
             if (this.maximumRange.IsOutRange(Starting))
-                throw new DestinationNotFoundException("目的地超出了最大搜索范围的定义");
+                throw new DestinationNotFoundException("目的地超出了最大搜索范围的定义;");
+
+            if(IsTrapped(Destination))
+                throw new DestinationNotFoundException("目的地周围不可行走;");
 
             AddStartingPointToOpenSet();
             return Pathfinding();
@@ -93,6 +99,24 @@ namespace KouXiaGu.World2D.Navigation
         {
             openPointsSet.Clear();
             closePointsSet.Clear();
+        }
+
+        /// <summary>
+        /// 是否这个点和周围的点都无法行走?
+        /// </summary>
+        bool IsTrapped(ShortVector2 point)
+        {
+            TNode worldNode;
+            if (WroldMap.TryGetValue(point, out worldNode))
+            {
+                if (!Obstructive.CanWalk(Mover, worldNode))
+                    return true;
+            }
+            if (GetAround(point).Count() == 0)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -129,7 +153,7 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         void AddAroundToOpenSet(ShortVector2 point)
         {
-            var around = WroldMap.GetAround(point).Where(WhereAddOpenSet);
+            var around = GetAround(point);
 
             foreach (KeyValuePair<ShortVector2, TNode> info in around)
             {
@@ -138,12 +162,21 @@ namespace KouXiaGu.World2D.Navigation
         }
 
         /// <summary>
+        /// 获取到周围的节点;
+        /// </summary>
+        IEnumerable<KeyValuePair<ShortVector2, TNode>> GetAround(ShortVector2 point)
+        {
+            return WroldMap.GetAround(point).Where(WhereAddOpenSet);
+        }
+
+        /// <summary>
         /// 加入到开放节点的过滤;
         /// </summary>
         bool WhereAddOpenSet(KeyValuePair<ShortVector2, TNode> nodePair)
         {
-            return !closePointsSet.Contains(nodePair.Key) && Obstructive.CanWalk(Mover, nodePair.Value) &&
-                    !maximumRange.IsOutRange(nodePair.Key);
+            return !closePointsSet.Contains(nodePair.Key) &&
+                Obstructive.CanWalk(Mover, nodePair.Value) &&
+                !maximumRange.IsOutRange(nodePair.Key);
         }
 
         /// <summary>
@@ -226,7 +259,7 @@ namespace KouXiaGu.World2D.Navigation
         }
 
         /// <summary>
-        /// A*寻路点;
+        /// A*寻路节点;
         /// </summary>
         class AStartPathNode : IComparable<AStartPathNode>
         {
