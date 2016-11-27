@@ -1,9 +1,15 @@
-﻿using System;
+﻿
+
+//#define UNITY_EDITOR_DUBUG
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KouXiaGu.World2D.Map;
+using KouXiaGu.Collections;
+
+#if UNITY_EDITOR_DUBUG
 using UnityEngine;
+#endif
 
 namespace KouXiaGu.World2D.Navigation
 {
@@ -15,7 +21,7 @@ namespace KouXiaGu.World2D.Navigation
     {
         AStar()
         {
-            openPointsSet = new Dictionary<ShortVector2, AStartPathNode>();
+            openPointsSet = new OpenDictionary<ShortVector2, AStartPathNode>(node => node.point);
             closePointsSet = new HashSet<ShortVector2>();
             maximumRange = new RectRange();
         }
@@ -37,7 +43,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 需要进行搜索的点;
         /// </summary>
-        private Dictionary<ShortVector2, AStartPathNode> openPointsSet;
+        private OpenDictionary<ShortVector2, AStartPathNode> openPointsSet;
         /// <summary>
         /// 丢弃点合集;
         /// </summary>
@@ -74,7 +80,7 @@ namespace KouXiaGu.World2D.Navigation
             this.maximumRange.SetMaximumRange(starting, maximumRange);
 
             if (this.maximumRange.IsOutRange(Starting))
-                throw new PathNotFoundException("开始点超出了最大范围的定义");
+                throw new DestinationNotFoundException("目的地超出了最大搜索范围的定义");
 
             AddStartingPointToOpenSet();
             return Pathfinding();
@@ -95,7 +101,7 @@ namespace KouXiaGu.World2D.Navigation
         void AddStartingPointToOpenSet()
         {
             AStartPathNode startingNode = new AStartPathNode(Starting);
-            openPointsSet.Add(Starting, startingNode);
+            openPointsSet.Add(startingNode);
         }
 
         /// <summary>
@@ -107,17 +113,15 @@ namespace KouXiaGu.World2D.Navigation
 
             while (openPointsSet.Count != 0)
             {
-                currentNode = GetMinCostInOpenSet();
-
-                AddAroundToOpenSet(currentNode.point);
-
                 if (TryFindDestinationInOpenSet(out wayPath))
                     return wayPath;
 
-                TransferredToCloseSet(currentNode.point);
+                currentNode = DequeueMinCostInOpenSet();
+
+                AddAroundToOpenSet(currentNode.point);
             }
 
-            throw new PathNotFoundException("已经遍历完所有可行走节点!");
+            throw new DestinationNotFoundException("已经遍历完所有可行走节点,无法到达目的地");
         }
 
         /// <summary>
@@ -160,7 +164,7 @@ namespace KouXiaGu.World2D.Navigation
             else
             {
                 newNode = GetPathNode(previous, point, node);
-                openPointsSet.Add(point, newNode);
+                openPointsSet.Add(newNode);
             }
         }
 
@@ -174,29 +178,17 @@ namespace KouXiaGu.World2D.Navigation
         }
 
         /// <summary>
-        /// 将这个点从开放合集内移除,且加入到关闭合集;
+        /// 从开放节点获取到最小的A*寻路点,
+        /// 并且从开放合集内移除,加入到关闭合集;
         /// </summary>
-        void TransferredToCloseSet(ShortVector2 point)
+        AStartPathNode DequeueMinCostInOpenSet()
         {
-            openPointsSet.Remove(point);
-            closePointsSet.Add(point);
-        }
-
-        /// <summary>
-        /// 获取到最小的A*寻路点;
-        /// </summary>
-        AStartPathNode GetMinCostInOpenSet()
-        {
-            try
-            { 
-                var minNode = openPointsSet.Values.Min();
-                Debug.Log("minNode :" + minNode.point + " NodeCost" + minNode.nodeCost + " PathCost:" + minNode.PathCost);
-                return minNode;
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new PathNotFoundException("已经遍历完所有可行走节点!", e);
-            }
+            var minNode = openPointsSet.Extract();
+            closePointsSet.Add(minNode.point);
+#if UNITY_EDITOR_DUBUG
+            Debug.Log("minNode :" + minNode.point + " NodeCost" + minNode.nodeCost + " PathCost:" + minNode.PathCost);
+#endif
+            return minNode;
         }
 
         /// <summary>
@@ -222,7 +214,9 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         LinkedList<ShortVector2> PathNodeToWayPath(AStartPathNode node)
         {
-            Debug.Log("路线代价值:" + node.PathCost);
+#if UNITY_EDITOR_DUBUG
+            Debug.Log("路线代价值:" + node.PathCost + "检索的点:" + (openPointsSet.Count + closePointsSet.Count));
+#endif
             LinkedList<ShortVector2> path = new LinkedList<ShortVector2>();
             for (; node != null; node = node.Previous)
             {
@@ -236,15 +230,15 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         class AStartPathNode : IComparable<AStartPathNode>
         {
-            public AStartPathNode(ShortVector2 position)
+            public AStartPathNode(ShortVector2 point)
             {
-                this.point = position;
+                this.point = point;
             }
 
-            public AStartPathNode(ShortVector2 position, AStartPathNode previous, float nodeCost)
+            public AStartPathNode(ShortVector2 point, AStartPathNode previous, float nodeCost)
             {
                 this.nodeCost = nodeCost;
-                this.point = position;
+                this.point = point;
                 this.Previous = previous;
             }
 
@@ -297,6 +291,73 @@ namespace KouXiaGu.World2D.Navigation
                     return 0;
                 else
                     return 1;
+            }
+
+            public override int GetHashCode()
+            {
+                return point.GetHashCode();
+            }
+
+        }
+
+
+        /// <summary>
+        /// 对键使用哈希表记录;
+        /// 对值使用最小堆;
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        class OpenDictionary<TKey, TValue> 
+            where TValue : IComparable<TValue>
+        {
+            public OpenDictionary(Func<TValue, TKey> keyGetter)
+            {
+                if (keyGetter == null)
+                    throw new NullReferenceException();
+
+                this.keyGetter = keyGetter;
+                keyDictionary = new Dictionary<TKey, TValue>();
+                valueHeap = new MinHeap<TValue>();
+            }
+
+            Dictionary<TKey, TValue> keyDictionary;
+            MinHeap<TValue> valueHeap;
+            Func<TValue, TKey> keyGetter;
+
+            public int Count
+            {
+                get
+                {
+                    return valueHeap.Count;
+                }
+            }
+
+            public void Add(TValue item)
+            {
+                TKey key = keyGetter(item);
+                keyDictionary.Add(key, item);
+                valueHeap.Add(item);
+            }
+
+            /// <summary>
+            /// 输出最小值并且移除
+            /// </summary>
+            public TValue Extract()
+            {
+                TValue min = valueHeap.Extract();
+                TKey key = keyGetter(min);
+                keyDictionary.Remove(key);
+                return min;
+            }
+
+            public bool TryGetValue(TKey key, out TValue value)
+            {
+                return keyDictionary.TryGetValue(key, out value);
+            }
+
+            public void Clear()
+            {
+                keyDictionary.Clear();
+                valueHeap.Clear();
             }
 
         }
