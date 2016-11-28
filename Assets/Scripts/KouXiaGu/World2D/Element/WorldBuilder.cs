@@ -59,7 +59,7 @@ namespace KouXiaGu.World2D
             Map = worldMap.Map;
         }
 
-        IEnumerator IConstruct<BuildGameData>.Prepare(BuildGameData item)
+        IEnumerator IConstruct2<BuildGameData>.Prepare(BuildGameData item)
         {
             yield break;
         }
@@ -67,7 +67,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 当开始游戏时调用;
         /// </summary>
-        IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
+        IEnumerator IConstruct2<BuildGameData>.Construction(BuildGameData item)
         {
             lastBuildUpdatePoint = new Vector2(float.MaxValue, float.MaxValue);
 
@@ -86,12 +86,7 @@ namespace KouXiaGu.World2D
         }
 
 
-        IEnumerator IConstruct<QuitGameData>.Prepare(QuitGameData item)
-        {
-            yield break;
-        }
-
-        IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
+        IEnumerator IConstruct1<QuitGameData>.Construction(QuitGameData item)
         {
             WorldNodeChangeEvent.Dispose();
             BuildEvent.Dispose();

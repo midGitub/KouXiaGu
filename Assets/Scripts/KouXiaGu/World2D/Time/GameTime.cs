@@ -33,7 +33,7 @@ namespace KouXiaGu.World2D
         /// 游戏经过的时间单位;
         /// </summary>
         [SerializeField]
-        uLongReactiveProperty time;
+        uLongReactiveProperty time = new uLongReactiveProperty(1);
 
         /// <summary>
         /// 时间更新协程返回参数;
@@ -45,6 +45,12 @@ namespace KouXiaGu.World2D
         /// </summary>
         Coroutine timeUpdateCoroutine;
 
+        public bool Activate
+        {
+            get { return activate; }
+            set { activate = value; }
+        }
+
         /// <summary>
         /// 游戏经过的时间单位;
         /// </summary>
@@ -54,20 +60,20 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
+        /// 监视时间变化;
+        /// </summary>
+        public IObservable<ulong> ObservableTime
+        {
+            get { return time; }
+        }
+
+        /// <summary>
         /// 游戏时间缩放;
         /// </summary>
         public float TimeScale
         {
             get { return timeScale; }
             set { SetTimeScale(value); }
-        }
-
-        /// <summary>
-        /// 监视时间变化;
-        /// </summary>
-        public IObservable<ulong> ObservableTime
-        {
-            get { return time; }
         }
 
         void Awake()
@@ -94,48 +100,46 @@ namespace KouXiaGu.World2D
         /// </summary>
         void SetTimeScale(float timeScale)
         {
+            timeUpdateYieldInstruction = new WaitForSeconds(timeScale);
+            RestartTimeUpdateCoroutine();
+        }
+
+        /// <summary>
+        /// 重新开始时间更新协程;
+        /// </summary>
+        void RestartTimeUpdateCoroutine()
+        {
             if (timeUpdateCoroutine != null)
             {
                 StopCoroutine(timeUpdateCoroutine);
             }
-            timeUpdateYieldInstruction = new WaitForSeconds(timeScale);
-            StartCoroutine(TimeUpdateCoroutine());
+            timeUpdateCoroutine = StartCoroutine(TimeUpdateCoroutine());
         }
 
 
-        IEnumerator IConstruct<BuildGameData>.Prepare(BuildGameData item)
+        IEnumerator IConstruct2<BuildGameData>.Prepare(BuildGameData item)
         {
             ArchivedTime archivedTime = item.ArchivedData.Archived.Time;
             time.Value = archivedTime.Time;
-            timeUpdateCoroutine = StartCoroutine(TimeUpdateCoroutine());
             yield break;
         }
 
-        IEnumerator IConstruct<ArchivedGroup>.Prepare(ArchivedGroup item)
+        IEnumerator IConstruct2<BuildGameData>.Construction(BuildGameData item)
+        {
+            RestartTimeUpdateCoroutine();
+            yield break;
+        }
+
+        IEnumerator IConstruct1<ArchivedGroup>.Construction(ArchivedGroup item)
         {
             ArchivedTime archivedTime = item.Archived.Time;
             archivedTime.Time = time.Value;
             yield break;
         }
 
-        IEnumerator IConstruct<QuitGameData>.Prepare(QuitGameData item)
+        IEnumerator IConstruct1<QuitGameData>.Construction(QuitGameData item)
         {
             StopCoroutine(timeUpdateCoroutine);
-            yield break;
-        }
-
-        IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
-        {
-            yield break;
-        }
-
-        IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
-        {
-            yield break;
-        }
-
-        IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
-        {
             yield break;
         }
 

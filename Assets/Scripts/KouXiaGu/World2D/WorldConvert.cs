@@ -481,20 +481,6 @@ namespace KouXiaGu.World2D
                 }
             }
             return directions;
-            //T item;
-            //int mask = 0;
-            //int setMask = maxDirectionMark;
-            //IEnumerable<ShortVector2> aroundPoints = GetAroundPoints(target);
-            //foreach (var point in aroundPoints)
-            //{
-            //    if (map.TryGetValue(point, out item))
-            //    {
-            //        if(func(item))
-            //            mask |= setMask;
-            //    }
-            //    setMask >>= 1;
-            //}
-            //return (HexDirection)mask;
         }
 
         #endregion

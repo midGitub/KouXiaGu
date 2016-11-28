@@ -7,10 +7,12 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    /// <summary>
-    /// 游戏构建调用;
-    /// </summary>
-    public interface IConstruct<T>
+    public interface IConstruct1<T>
+    {
+        IEnumerator Construction(T item);
+    }
+
+    public interface IConstruct2<T>
     {
         IEnumerator Prepare(T item);
         IEnumerator Construction(T item);

@@ -9,9 +9,9 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    public interface IStartGameEvent : IConstruct<BuildGameData> { }
-    public interface IArchiveEvent : IConstruct<ArchivedGroup> { }
-    public interface IQuitGameEvent : IConstruct<QuitGameData> { }
+    public interface IStartGameEvent : IConstruct2<BuildGameData> { }
+    public interface IArchiveEvent : IConstruct1<ArchivedGroup> { }
+    public interface IQuitGameEvent : IConstruct1<QuitGameData> { }
 
     [DisallowMultipleComponent]
     public class Initializers : MonoBehaviour
@@ -39,7 +39,7 @@ namespace KouXiaGu
             CheckBuild();
             OnBuilding();
 
-            Func<IEnumerator> coroutine = () => Constructer.Start(buildGameRes);
+            Func<IEnumerator> coroutine = () => Constructer.Start2(buildGameRes);
             return Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).
                 Subscribe(null, OnBuildingFail, () => OnBuiltComplete(onComplete));
         }
@@ -49,7 +49,7 @@ namespace KouXiaGu
             CheckSave();
             OnSaving();
 
-            Func<IEnumerator> coroutine = () => Constructer.Start(archivedGroup);
+            Func<IEnumerator> coroutine = () => Constructer.Start1(archivedGroup);
             return Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).
                Subscribe(null, OnSavingFail, () => OnSavedComplete(onComplete));
         }
@@ -59,7 +59,7 @@ namespace KouXiaGu
             CheckQuit();
             OnQuitting();
 
-            Func<IEnumerator> coroutine = () => Constructer.Start(quitGameData);
+            Func<IEnumerator> coroutine = () => Constructer.Start1(quitGameData);
             return Observable.FromMicroCoroutine(coroutine, publishEveryYield, CheckType).
                Subscribe(null, OnQuittingFail, () => OnQuittedComplete(onComplete));
         }

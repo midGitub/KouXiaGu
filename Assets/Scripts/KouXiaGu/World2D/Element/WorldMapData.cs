@@ -59,7 +59,7 @@ namespace KouXiaGu.World2D
             loadByRange.UpdateCenterPoint(targetMapPoint);
         }
 
-        IEnumerator IConstruct<BuildGameData>.Prepare(BuildGameData item)
+        IEnumerator IConstruct2<BuildGameData>.Prepare(BuildGameData item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
             string fullPrefabMapDirectoryPath = item.ArchivedData.Archived.Map.PathPrefabMapDirectory;
@@ -69,7 +69,7 @@ namespace KouXiaGu.World2D
             yield break;
         }
 
-        IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
+        IEnumerator IConstruct2<BuildGameData>.Construction(BuildGameData item)
         {
             yield break;
         }
@@ -83,17 +83,11 @@ namespace KouXiaGu.World2D
             return fullArchivedDirectoryPath;
         }
 
-
-        IEnumerator IConstruct<ArchivedGroup>.Prepare(ArchivedGroup item)
+        IEnumerator IConstruct1<ArchivedGroup>.Construction(ArchivedGroup item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
             mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, worldMap.BlockMap);
             item.Archived.Map.PathPrefabMapDirectory = mapBlockIO.FullPrefabMapDirectoryPath;
-            yield break;
-        }
-
-        IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
-        {
             yield break;
         }
 
