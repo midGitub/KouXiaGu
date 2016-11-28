@@ -59,17 +59,17 @@ namespace KouXiaGu.World2D
             Map = worldMap.Map;
         }
 
+        IEnumerator IConstruct<BuildGameData>.Prepare(BuildGameData item)
+        {
+            yield break;
+        }
+
         /// <summary>
         /// 当开始游戏时调用;
         /// </summary>
         IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
         {
             lastBuildUpdatePoint = new Vector2(float.MaxValue, float.MaxValue);
-
-            while (!WorldMapData.GetInstance.IsReady)
-            {
-                yield return null;
-            }
 
             //当地图节点发生变化时调用;
             WorldNodeChangeEvent = WorldMapData.GetInstance.observeChanges.
@@ -82,6 +82,13 @@ namespace KouXiaGu.World2D
                 Subscribe(BuildUpdate);
 
             IsBuilding = true;
+            yield break;
+        }
+
+
+        IEnumerator IConstruct<QuitGameData>.Prepare(QuitGameData item)
+        {
+            yield break;
         }
 
         IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
@@ -91,6 +98,7 @@ namespace KouXiaGu.World2D
             UnloadAll();
             yield break;
         }
+
 
         /// <summary>
         /// 这个点是否在读取的范围内?
@@ -177,7 +185,6 @@ namespace KouXiaGu.World2D
             {
                 NotifyObservers(ChangeType.Add, point);
                 loadedPoint.Add(point);
-                //Debug.Log("加载" + point);
             }
         }
 
@@ -190,7 +197,6 @@ namespace KouXiaGu.World2D
             {
                 NotifyObservers(ChangeType.Remove, point);
                 loadedPoint.Remove(point);
-                //Debug.Log("卸载" + point);
             }
         }
 
@@ -236,7 +242,6 @@ namespace KouXiaGu.World2D
             centerPoint.y += buildUpdateRange.y;
             return centerPoint;
         }
-
     }
 
 }

@@ -43,14 +43,14 @@ namespace KouXiaGu.Test
         private void OnContinueGame(UniRx.Unit unit)
         {
             BuildGameData buildGameData = ResGame.GetRecentBuildGameData();
-            buildGameData.ArchivedData.Archived.World2D.PathPrefabMapDirectory = mapDir.text;
+            buildGameData.ArchivedData.Archived.Map.PathPrefabMapDirectory = mapDir.text;
             initializers.Build(buildGameData);
         }
 
         private void OnStartGame(UniRx.Unit unit)
         {
             BuildGameData buildGameData = ResGame.GetBuildGameData();
-            buildGameData.ArchivedData.Archived.World2D.PathPrefabMapDirectory = mapDir.text;
+            buildGameData.ArchivedData.Archived.Map.PathPrefabMapDirectory = mapDir.text;
             initializers.Build(buildGameData);
         }
 

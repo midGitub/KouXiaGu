@@ -24,9 +24,6 @@ namespace KouXiaGu
         FrameCountType CheckType = FrameCountType.Update;
         readonly bool publishEveryYield = false;
 
-        //[SerializeField]
-        //private DataGame dataGame;
-
         public GameStatus State
         {
             get { return state.Value; }
@@ -36,11 +33,6 @@ namespace KouXiaGu
         {
             get { return state; }
         }
-
-        //public DataGame DataGame
-        //{
-        //    get { return dataGame; }
-        //}
 
         public IDisposable Build(BuildGameData buildGameRes, Action onComplete = null)
         {

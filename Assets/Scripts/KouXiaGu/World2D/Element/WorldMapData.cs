@@ -13,7 +13,7 @@ namespace KouXiaGu.World2D
     /// 游戏地图数据,保存地图和读取地图;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldMapData : UnitySingleton<WorldMapData>, IStartGameEvent, IArchiveEvent, IQuitGameEvent
+    public class WorldMapData : UnitySingleton<WorldMapData>, IStartGameEvent, IArchiveEvent/*, IQuitGameEvent*/
     {
 
         /// <summary>
@@ -43,12 +43,6 @@ namespace KouXiaGu.World2D
             get { return worldMap.observeChanges; }
         }
 
-        /// <summary>
-        /// 是否已经准备完毕?
-        /// </summary>
-        [ShowOnlyProperty]
-        public bool IsReady { get; private set; }
-
         void Awake()
         {
             worldMap = new ObservableBlockMap<WorldNode, ArchiveBlock<WorldNode>>(partitionSizes);
@@ -65,17 +59,18 @@ namespace KouXiaGu.World2D
             loadByRange.UpdateCenterPoint(targetMapPoint);
         }
 
-        /// <summary>
-        /// 开始游戏时调用;
-        /// </summary>
-        IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
+        IEnumerator IConstruct<BuildGameData>.Prepare(BuildGameData item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
-            string fullPrefabMapDirectoryPath = item.ArchivedData.Archived.World2D.PathPrefabMapDirectory;
+            string fullPrefabMapDirectoryPath = item.ArchivedData.Archived.Map.PathPrefabMapDirectory;
 
             mapBlockIO.OnBulidGame(fullArchivedDirectoryPath, fullPrefabMapDirectoryPath);
 
-            IsReady = true;
+            yield break;
+        }
+
+        IEnumerator IConstruct<BuildGameData>.Construction(BuildGameData item)
+        {
             yield break;
         }
 
@@ -88,19 +83,17 @@ namespace KouXiaGu.World2D
             return fullArchivedDirectoryPath;
         }
 
-        IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
+
+        IEnumerator IConstruct<ArchivedGroup>.Prepare(ArchivedGroup item)
         {
             string fullArchivedDirectoryPath = GetFullArchivedDirectoryPath(item);
             mapBlockIO.OnGameArchive(fullArchivedDirectoryPath, worldMap.BlockMap);
-            item.Archived.World2D.PathPrefabMapDirectory = mapBlockIO.FullPrefabMapDirectoryPath;
+            item.Archived.Map.PathPrefabMapDirectory = mapBlockIO.FullPrefabMapDirectoryPath;
             yield break;
         }
 
-        IEnumerator IConstruct<QuitGameData>.Construction(QuitGameData item)
+        IEnumerator IConstruct<ArchivedGroup>.Construction(ArchivedGroup item)
         {
-            //Map.Clear();
-
-            IsReady = false;
             yield break;
         }
 

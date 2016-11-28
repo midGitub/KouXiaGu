@@ -32,7 +32,7 @@ namespace KouXiaGu.World2D.Navigation
             float cost = 0;
             TopographyInfo topographyInfo = topographiessData.GetInfoWithID(currentNode.TopographyID);
             cost += topographyInfo.ActionCost;
-            cost += (ShortVector2.ManhattanDistance(currentPoint, destination) * 3);
+            cost += (ShortVector2.Distance(currentPoint, destination) * 3);
             return cost;
         }
 

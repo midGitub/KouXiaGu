@@ -8,14 +8,14 @@ namespace KouXiaGu.World2D
 {
 
     [ProtoContract]
-    public class ArchivedWorld2D
+    public class ArchivedTime
     {
 
         /// <summary>
-        /// 存档使用预制地图的路径;
+        /// 游戏已经经过了的时间;
         /// </summary>
         [ProtoMember(10)]
-        public string PathPrefabMapDirectory;
+        public ulong Time;
 
     }
 

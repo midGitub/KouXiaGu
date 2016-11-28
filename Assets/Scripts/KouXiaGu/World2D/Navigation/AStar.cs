@@ -1,6 +1,6 @@
 ﻿
 
-//#define UNITY_EDITOR_DUBUG
+#define UNITY_EDITOR_DUBUG
 
 using System;
 using System.Collections.Generic;

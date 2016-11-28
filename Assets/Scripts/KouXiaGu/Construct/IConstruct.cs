@@ -12,6 +12,7 @@ namespace KouXiaGu
     /// </summary>
     public interface IConstruct<T>
     {
+        IEnumerator Prepare(T item);
         IEnumerator Construction(T item);
     }
 

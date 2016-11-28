@@ -18,23 +18,71 @@ namespace KouXiaGu
         public static IEnumerator Start<T>(T item)
         {
             UnityEngine.Object[] array = GameObject.FindObjectsOfType(typeof(MonoBehaviour));
-            IEnumerable<IConstruct<T>> constructs = array.OfType<IConstruct<T>>();
+            IConstruct<T>[] constructs = array.OfType<IConstruct<T>>().ToArray();
             return Start(constructs, item);
         }
 
         public static IEnumerator Start<T>(IEnumerable<IConstruct<T>> constructs, T item)
         {
-            HashSet<IConstruct<T>> wait = new HashSet<IConstruct<T>>();
+            HashSet<IConstruct<T>> waitSet = new HashSet<IConstruct<T>>();
+            ConstructerGroup<T>[] constructerGroups = ToConstructerGroup(constructs, waitSet).ToArray();
 
-            foreach (var construct in constructs)
+            foreach (var constructerGroup in constructerGroups)
             {
-                Action onComplete = () => wait.Remove(construct);
-                Observable.FromMicroCoroutine(_ => construct.Construction(item)).Subscribe(null, onComplete);
+                constructerGroup.Prepare(item);
             }
 
-            while (wait.Count != 0)
+            while (waitSet.Count != 0)
             {
                 yield return null;
+            }
+
+            foreach (var constructerGroup in constructerGroups)
+            {
+                constructerGroup.Construction(item);
+            }
+
+            while (waitSet.Count != 0)
+            {
+                yield return null;
+            }
+
+        }
+
+        static IEnumerable<ConstructerGroup<T>> ToConstructerGroup<T>(IEnumerable<IConstruct<T>> constructs, HashSet<IConstruct<T>> waitSet)
+        {
+            foreach (var construct in constructs)
+            {
+                yield return new ConstructerGroup<T>(waitSet, construct);
+            }
+        }
+
+        public class ConstructerGroup<T>
+        {
+            public ConstructerGroup(HashSet<IConstruct<T>> waitSet, IConstruct<T> construct)
+            {
+                this.waitSet = waitSet;
+                this.construct = construct;
+            }
+
+            HashSet<IConstruct<T>> waitSet;
+            IConstruct<T> construct;
+
+            public void Prepare(T item)
+            {
+                waitSet.Add(construct);
+                Observable.FromMicroCoroutine(_ => construct.Prepare(item)).Subscribe(null, OnComplete);
+            }
+
+            public void Construction(T item)
+            {
+                waitSet.Add(construct);
+                Observable.FromMicroCoroutine(_ => construct.Construction(item)).Subscribe(null, OnComplete);
+            }
+
+            void OnComplete()
+            {
+               waitSet.Remove(construct);
             }
 
         }

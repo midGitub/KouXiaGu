@@ -62,8 +62,17 @@ namespace KouXiaGu
         [ProtoMember(100)]
         public readonly ArchivedCharacter Character = new ArchivedCharacter();
 
+        /// <summary>
+        /// 游戏地图;
+        /// </summary>
         [ProtoMember(150)]
-        public readonly ArchivedWorld2D World2D = new ArchivedWorld2D();
+        public readonly ArchivedMap Map = new ArchivedMap();
+
+        /// <summary>
+        /// 游戏时间;
+        /// </summary>
+        [ProtoMember(200)]
+        public readonly ArchivedTime Time = new ArchivedTime();
 
     }
 
