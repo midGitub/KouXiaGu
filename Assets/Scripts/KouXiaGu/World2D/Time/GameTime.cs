@@ -18,16 +18,16 @@ namespace KouXiaGu.World2D
         GameTime() { }
 
         /// <summary>
-        /// 时间是否更新?
+        /// 是否更新时间?
         /// </summary>
         [SerializeField]
         bool activate = true;
 
         /// <summary>
-        /// 游戏时间缩放;
+        /// 时间更新比率;
         /// </summary>
         [SerializeField]
-        float timeScale = 1;
+        float timeRate = 1;
 
         /// <summary>
         /// 游戏经过的时间单位;
@@ -45,6 +45,9 @@ namespace KouXiaGu.World2D
         /// </summary>
         Coroutine timeUpdateCoroutine;
 
+        /// <summary>
+        /// 是否更新时间?
+        /// </summary>
         public bool Activate
         {
             get { return activate; }
@@ -62,7 +65,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 监视时间变化;
         /// </summary>
-        public IObservable<ulong> ObservableTime
+        public IReactiveProperty<ulong> ObservableTime
         {
             get { return time; }
         }
@@ -72,13 +75,13 @@ namespace KouXiaGu.World2D
         /// </summary>
         public float TimeScale
         {
-            get { return timeScale; }
+            get { return timeRate; }
             set { SetTimeScale(value); }
         }
 
         void Awake()
         {
-            timeUpdateYieldInstruction = new WaitForSeconds(timeScale);
+            timeUpdateYieldInstruction = new WaitForSeconds(timeRate);
         }
 
         /// <summary>

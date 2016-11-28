@@ -87,7 +87,7 @@ namespace KouXiaGu.World2D.Navigation
                 throw new DestinationNotFoundException("目的地超出了最大搜索范围的定义;");
 
             if(IsTrapped(Destination))
-                throw new DestinationNotFoundException("目的地周围不可行走;");
+                throw new DestinationNotFoundException("目的地本身或周围不可行走;");
 
             AddStartingPointToOpenSet();
             return Pathfinding();
