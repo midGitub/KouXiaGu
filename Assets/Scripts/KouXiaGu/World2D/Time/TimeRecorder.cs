@@ -13,9 +13,9 @@ namespace KouXiaGu.World2D
     /// 游戏时间;
     /// 记录游戏时间;
     /// </summary>
-    public class GameTime : UnitySingleton<GameTime>, IStartGameEvent, IArchiveEvent, IQuitGameEvent
+    public class TimeRecorder : UnitySingleton<TimeRecorder>, IStartGameEvent, IArchiveEvent, IQuitGameEvent
     {
-        GameTime() { }
+        TimeRecorder() { }
 
         /// <summary>
         /// 是否更新时间?
@@ -30,7 +30,7 @@ namespace KouXiaGu.World2D
         float timeRate = 1;
 
         /// <summary>
-        /// 游戏经过的时间单位;
+        /// 游戏经过的单位时间;
         /// </summary>
         [SerializeField]
         uLongReactiveProperty time = new uLongReactiveProperty(1);
@@ -55,7 +55,7 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
-        /// 游戏经过的时间单位;
+        /// 游戏经过的单位时间;
         /// </summary>
         public ulong Time
         {
