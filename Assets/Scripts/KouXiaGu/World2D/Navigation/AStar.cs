@@ -21,7 +21,7 @@ namespace KouXiaGu.World2D.Navigation
     {
         AStar()
         {
-            openPointsSet = new OpenDictionary<ShortVector2, AStartPathNode>(node => node.point);
+            openPointsSet = new OpenDictionary<AStartPathNode>();
             closePointsSet = new HashSet<ShortVector2>();
             maximumRange = new RectRange();
         }
@@ -43,7 +43,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 需要进行搜索的点;
         /// </summary>
-        private OpenDictionary<ShortVector2, AStartPathNode> openPointsSet;
+        private OpenDictionary<AStartPathNode> openPointsSet;
         /// <summary>
         /// 丢弃点合集;
         /// </summary>
@@ -340,22 +340,17 @@ namespace KouXiaGu.World2D.Navigation
         /// 对值使用最小堆;
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
-        class OpenDictionary<TKey, TValue> 
+        class OpenDictionary<TValue> 
             where TValue : IComparable<TValue>
         {
-            public OpenDictionary(Func<TValue, TKey> keyGetter)
+            public OpenDictionary()
             {
-                if (keyGetter == null)
-                    throw new NullReferenceException();
-
-                this.keyGetter = keyGetter;
-                keyDictionary = new Dictionary<TKey, TValue>();
+                keyDictionary = new Dictionary<int, TValue>();
                 valueHeap = new MinHeap<TValue>();
             }
 
-            Dictionary<TKey, TValue> keyDictionary;
+            Dictionary<int, TValue> keyDictionary;
             MinHeap<TValue> valueHeap;
-            Func<TValue, TKey> keyGetter;
 
             public int Count
             {
@@ -367,8 +362,7 @@ namespace KouXiaGu.World2D.Navigation
 
             public void Add(TValue item)
             {
-                TKey key = keyGetter(item);
-                keyDictionary.Add(key, item);
+                keyDictionary.Add(item.GetHashCode(), item);
                 valueHeap.Add(item);
             }
 
@@ -378,14 +372,13 @@ namespace KouXiaGu.World2D.Navigation
             public TValue Extract()
             {
                 TValue min = valueHeap.Extract();
-                TKey key = keyGetter(min);
-                keyDictionary.Remove(key);
+                keyDictionary.Remove(min.GetHashCode());
                 return min;
             }
 
-            public bool TryGetValue(TKey key, out TValue value)
+            public bool TryGetValue(object key, out TValue value)
             {
-                return keyDictionary.TryGetValue(key, out value);
+                return keyDictionary.TryGetValue(key.GetHashCode(), out value);
             }
 
             public void Clear()

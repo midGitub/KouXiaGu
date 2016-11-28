@@ -34,7 +34,7 @@ namespace KouXiaGu.World2D.Navigation
         {
             ShortVector2 starting = WorldConvert.PlaneToHexPair(transform.position);
             ShortVector2 mouseMapPoint = WorldConvert.MouseToHexPair();
-            NavPath navPath = navController.FreeToGo(starting, mouseMapPoint, maximumRange, null);
+            NavPath navPath = navController.NavigateTo(starting, mouseMapPoint, maximumRange, null);
             StartFollow(navPath);
         }
 

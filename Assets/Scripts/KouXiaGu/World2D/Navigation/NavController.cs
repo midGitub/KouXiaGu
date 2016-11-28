@@ -14,30 +14,24 @@ namespace KouXiaGu.World2D.Navigation
     public class NavController : UnitySingleton<NavController>
     {
 
-        AStar<WorldNode, INavAction> astarNav;
+        Obstruction obstruction;
+        IMap<ShortVector2, WorldNode> worldMap;
 
         void Start()
         {
-            Obstruction obstruction = Obstruction.GetInstance;
-            IMap<ShortVector2, WorldNode> worldMap = WorldMapData.GetInstance.Map;
-            astarNav = new AStar<WorldNode, INavAction>(obstruction, worldMap);
+            obstruction = Obstruction.GetInstance;
+            worldMap = WorldMapData.GetInstance.Map;
         }
 
         /// <summary>
-        /// 返回到达这儿的路径;
+        /// 获取到导航路径;
         /// </summary>
-        public NavPath FreeToGo(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange, INavAction mover)
+        public NavPath NavigateTo(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange, INavAction mover)
         {
-            try
-            {
-                LinkedList<ShortVector2> path = astarNav.Start(starting, destination, maximumRange, mover);
-                astarNav.Clear();
-                return new NavPath(path, WorldMapData.GetInstance.Map, TopographiessData.GetInstance);
-            }
-            finally
-            {
-                astarNav.Clear();
-            }
+            AStar<WorldNode, INavAction> astarNav = new AStar<WorldNode, INavAction>(obstruction, worldMap);
+            LinkedList<ShortVector2> path = astarNav.Start(starting, destination, maximumRange, mover);
+            astarNav.Clear();
+            return new NavPath(path, WorldMapData.GetInstance.Map, TopographiessData.GetInstance);
         }
 
 
