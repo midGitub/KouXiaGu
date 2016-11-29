@@ -14,56 +14,79 @@ namespace KouXiaGu.GameScene
     public class Camera2DFollow : MonoBehaviour
     {
 
-        public Transform target;
-        public Vector2 offset;
+        [SerializeField]
+        Transform target;
+        [SerializeField]
+        Vector2 offset;
+        [SerializeField]
+        float damping = 1;
+        [SerializeField]
+        float lookAheadFactor = 3;
+        [SerializeField]
+        float lookAheadReturnSpeed = 0.5f;
+        [SerializeField]
+        float lookAheadMoveThreshold = 0.1f;
+        [SerializeField]
+        float cameraHeight;
 
-        public float damping = 1;
-        public float lookAheadFactor = 3;
-        public float lookAheadReturnSpeed = 0.5f;
-        public float lookAheadMoveThreshold = 0.1f;
+        Vector3 lastTargetPosition;
+        Vector3 currentVelocity;
+        Vector3 lookAheadPos;
 
-        private float m_OffsetZ;
-        private Vector3 m_LastTargetPosition;
-        private Vector3 m_CurrentVelocity;
-        private Vector3 m_LookAheadPos;
+        /// <summary>
+        /// 跟随的目标;
+        /// </summary>
+        public Transform Target
+        {
+            get { return target; }
+            set { target = value; }
+        }
 
+        /// <summary>
+        /// 设置Z轴高度;设置摄像机高度;
+        /// </summary>
+        public float CameraHeight
+        {
+            get { return cameraHeight; }
+            set { cameraHeight = value; }
+        }
 
-        private void Start()
+        void Awake()
         {
             Vector3 cameraPoint = GetCameraPoint();
-            m_LastTargetPosition = cameraPoint;
-            m_OffsetZ = (transform.position - cameraPoint).z;
+            lastTargetPosition = cameraPoint;
+            cameraHeight = cameraHeight == default(float) ? (transform.position - cameraPoint).z : cameraHeight;
             transform.parent = null;
         }
 
-        private void Update()
+        void Update()
         {
             Vector3 cameraPoint = GetCameraPoint();
             // only update lookahead pos if accelerating or changed direction
-            float xMoveDelta = (cameraPoint - m_LastTargetPosition).x;
+            float xMoveDelta = (cameraPoint - lastTargetPosition).x;
 
             bool updateLookAheadTarget = Mathf.Abs(xMoveDelta) > lookAheadMoveThreshold;
 
             if (updateLookAheadTarget)
             {
-                m_LookAheadPos = lookAheadFactor * Vector3.right * Mathf.Sign(xMoveDelta);
+                lookAheadPos = lookAheadFactor * Vector3.right * Mathf.Sign(xMoveDelta);
             }
             else
             {
-                m_LookAheadPos = Vector3.MoveTowards(m_LookAheadPos, Vector3.zero, Time.deltaTime * lookAheadReturnSpeed);
+                lookAheadPos = Vector3.MoveTowards(lookAheadPos, Vector3.zero, Time.deltaTime * lookAheadReturnSpeed);
             }
 
-            Vector3 aheadTargetPos = cameraPoint + m_LookAheadPos + Vector3.forward * m_OffsetZ;
-            Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref m_CurrentVelocity, damping);
+            Vector3 aheadTargetPos = cameraPoint + lookAheadPos + Vector3.forward * cameraHeight;
+            Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref currentVelocity, damping);
 
             transform.position = newPos;
-            m_LastTargetPosition = cameraPoint;
+            lastTargetPosition = cameraPoint;
         }
 
         /// <summary>
         /// 获取到摄像机需要到达的位置;
         /// </summary>
-        public Vector3 GetCameraPoint()
+        Vector3 GetCameraPoint()
         {
             Vector3 targetPosition, camerzEulerAngles;
             float camerzX, cameraY, cameraZ, radius;

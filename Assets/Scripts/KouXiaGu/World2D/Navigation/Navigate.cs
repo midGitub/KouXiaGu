@@ -1,10 +1,13 @@
-﻿using System;
+﻿
+#define UniRx_MicroCoroutine
+
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
+
+#if UniRx_MicroCoroutine
 using UniRx;
+#endif
 
 namespace KouXiaGu.World2D.Navigation
 {
@@ -54,7 +57,11 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 更随路线行动协程;
         /// </summary>
+#if UniRx_MicroCoroutine
         IDisposable followPathCoroutine;
+#else
+        Coroutine followPathCoroutine;
+#endif
 
         /// <summary>
         /// 是否正在跟随路线而行动;
@@ -78,11 +85,6 @@ namespace KouXiaGu.World2D.Navigation
             set { maxSpeed = value; }
         }
 
-        void Awake()
-        {
-            speedForNow = maxSpeed;
-        }
-
         /// <summary>
         /// 更新挂在物体位置;
         /// </summary>
@@ -98,9 +100,15 @@ namespace KouXiaGu.World2D.Navigation
         {
             if (IsFollowPath)
             {
-                this.followPathCoroutine.Dispose();
+                StopFollowPathCoroutine();
             }
-            this.followPathCoroutine = Observable.FromMicroCoroutine(() => FollowWayPath(navPath)).Subscribe();
+
+#if UniRx_MicroCoroutine
+            this.followPathCoroutine = Observable.FromMicroCoroutine(() => FollowWayPath(navPath)).
+                Subscribe();
+#else
+            this.followPathCoroutine = StartCoroutine(FollowWayPath(navPath));
+#endif
         }
 
         /// <summary>
@@ -128,9 +136,21 @@ namespace KouXiaGu.World2D.Navigation
         {
             if (IsFollowPath)
             {
-                this.followPathCoroutine.Dispose();
+                StopFollowPathCoroutine();
             }
             this.targetPoint = WorldConvert.PlaneToHexPair(transform.position);
+        }
+
+        /// <summary>
+        /// 停止更随路径协程;
+        /// </summary>
+        void StopFollowPathCoroutine()
+        {
+#if UniRx_MicroCoroutine
+            this.followPathCoroutine.Dispose();
+#else
+            StopCoroutine(this.followPathCoroutine);
+#endif
         }
 
         /// <summary>
@@ -140,7 +160,7 @@ namespace KouXiaGu.World2D.Navigation
         {
             float speedPercentage;
             Vector2 newTargetPoint;
-            while (navPath.TryGoNext(out newTargetPoint, out speedPercentage))
+            while (navPath.TryNext(out newTargetPoint, out speedPercentage))
             {
                 this.speedForNow = speedPercentage * maxSpeed;
                 this.targetPoint = newTargetPoint;
@@ -171,20 +191,20 @@ namespace KouXiaGu.World2D.Navigation
         }
 
 
-        [ContextMenu("Test_Path")]
-        void Test_Path()
-        {
-            LinkedList<ShortVector2> path = new LinkedList<ShortVector2>();
+        //[ContextMenu("Test_Path")]
+        //void Test_Path()
+        //{
+        //    LinkedList<ShortVector2> path = new LinkedList<ShortVector2>();
 
-            path.AddLast(new ShortVector2(0, 0));
-            path.AddLast(new ShortVector2(1, 0));
-            path.AddLast(new ShortVector2(2, 0));
-            path.AddLast(new ShortVector2(3, 1));
-            path.AddLast(new ShortVector2(3, 2));
+        //    path.AddLast(new ShortVector2(0, 0));
+        //    path.AddLast(new ShortVector2(1, 0));
+        //    path.AddLast(new ShortVector2(2, 0));
+        //    path.AddLast(new ShortVector2(3, 1));
+        //    path.AddLast(new ShortVector2(3, 2));
 
-            NavPath navPath = new NavPath(path, WorldMapData.GetInstance.Map, TopographiessData.GetInstance);
-            StartFollow(navPath);
-        }
+        //    NavPath navPath = new NavPath(path, WorldMapData.GetInstance.Map, TopographiessData.GetInstance);
+        //    StartFollow(navPath);
+        //}
 
     }
 

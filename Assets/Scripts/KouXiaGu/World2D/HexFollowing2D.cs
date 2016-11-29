@@ -12,11 +12,17 @@ namespace KouXiaGu.World2D
         private HexFollowing2D() { }
 
         [SerializeField]
-        private Transform target;
+        Transform target;
+
+        [SerializeField]
+        ShortVector2 offset;
 
         private void Update()
         {
-            transform.position = WorldConvert.PlaneToHex(target.position);
+            Vector2 point = WorldConvert.PlaneToHex(target.position);
+            point.x = offset.x * WorldConvert.MapHexagon.DistanceX * 2;
+            point.y = offset.y * WorldConvert.MapHexagon.DistanceY * 2;
+            transform.position = point;
         }
 
     }

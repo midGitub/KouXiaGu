@@ -20,7 +20,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 六边形直径;
         /// </summary>
-        public const float HexOuterDiameter = 4;
+        public const float HexOuterDiameter = 2;
 
         /// <summary>
         /// 地图以外径为2的正六边形排列;

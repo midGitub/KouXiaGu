@@ -41,7 +41,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 起点;
         /// </summary>
-        public Vector2 StartingNode
+        public Vector2 Starting
         {
             get { return MapPointToPlanePoint(wayPath.First.Value); }
         }
@@ -49,9 +49,17 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 寻路的终点;
         /// </summary>
-        public Vector2 DestinationNode
+        public Vector2 Destination
         {
             get { return MapPointToPlanePoint(wayPath.Last.Value); }
+        }
+
+        /// <summary>
+        /// 下一步行走到的点;
+        /// </summary>
+        public Vector2 Current
+        {
+            get { return MapPointToPlanePoint(current.Value); }
         }
 
         /// <summary>
@@ -63,7 +71,7 @@ namespace KouXiaGu.World2D.Navigation
         /// 获取到下一步行走到的点和行走的速度;
         /// 获取成功返回true,否则返回false;
         /// </summary>
-        public bool TryGoNext(out Vector2 planePoint, out float percentage)
+        public bool TryNext(out Vector2 planePoint, out float percentage)
         {
             if (current == null)
             {
