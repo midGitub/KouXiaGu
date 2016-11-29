@@ -169,7 +169,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 射线最大距离;
         /// </summary>
-        const float RayMaxDistance = 50;
+        const float RayMaxDistance = 5000;
 
         /// <summary>
         /// 获取视窗鼠标所在水平面上的坐标;
