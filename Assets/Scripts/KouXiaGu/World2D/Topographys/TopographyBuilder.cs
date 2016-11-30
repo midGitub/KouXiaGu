@@ -179,7 +179,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         void UpdateAroundRoadDirection(ShortVector2 mapPoint)
         {
-            foreach (var road in activeRoad.GetAround(mapPoint))
+            foreach (var road in activeRoad.GetNeighbours(mapPoint))
             {
                 UpdateRoadDirection(road.Key, road.Value);
             }

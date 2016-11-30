@@ -167,7 +167,7 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         IEnumerable<KeyValuePair<ShortVector2, TNode>> GetAround(ShortVector2 point)
         {
-            return WroldMap.GetAround(point).Where(WhereAddOpenSet);
+            return WroldMap.GetNeighbours(point).Where(WhereAddOpenSet);
         }
 
         /// <summary>
