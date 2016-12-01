@@ -5,7 +5,7 @@ namespace KouXiaGu3D.Map
 {
 
     /// <summary>
-    /// 对更改的地图进行存档;
+    /// 游戏地图结构;
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Map2D<T> : IMap2D<T>, IReadOnlyMap2D<T>

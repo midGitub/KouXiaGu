@@ -6,7 +6,6 @@ using System.Text;
 namespace KouXiaGu3D.Map
 {
 
-
     public interface IReadOnlyMap2D<T>
     {
         T this[ShortVector2 position] { get; }
