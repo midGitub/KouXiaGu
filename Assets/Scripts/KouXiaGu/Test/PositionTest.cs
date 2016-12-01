@@ -54,7 +54,7 @@ namespace KouXiaGu.Test
                 var pointPair = WorldConvert.PlaneToHexPair(planePoint);
                 string str = "";
 
-                str += "六边形中心坐标 :" + pointPair.HexPoint
+                str += "六边形中心坐标 :" + pointPair.HexCenter
                     + "地图坐标 :" + pointPair.MapPoint
                     + "平面坐标 :" + planePoint;
 

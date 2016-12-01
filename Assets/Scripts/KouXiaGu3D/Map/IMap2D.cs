@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu3D.Map
+namespace KouXiaGu3D
 {
 
     public interface IReadOnlyMap2D<T>

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KouXiaGu.World2D.Map;
 using UnityEngine;
 
-namespace KouXiaGu.World2D
+namespace KouXiaGu3D
 {
 
-
     /// <summary>
-    /// 对世界坐标和其它类型进行转换;
+    /// 对游戏世界的定义和转换;
     /// </summary>
     public static class WorldConvert
     {
@@ -332,7 +329,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IMap2D< T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target);
@@ -349,7 +346,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<T> GetNeighboursAndSelfOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<T> GetNeighboursAndSelfOrDefault<T>(this IMap2D< T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursAndSelfPoints(target);
@@ -366,7 +363,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IMap2D< T> map, ShortVector2 target, HexDirection directions)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target, directions);
@@ -383,7 +380,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IMap2D< T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target);
@@ -399,7 +396,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighboursAndSelf<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighboursAndSelf<T>(this IMap2D< T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursAndSelfPoints(target);
@@ -415,7 +412,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IMap2D< T> map, ShortVector2 target, HexDirection directions)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target, directions);
@@ -471,7 +468,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到满足条件的方向;若方向不存在节点则为不满足;
         /// </summary>
-        public static HexDirection GetAroundAndSelfMask<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, Func<T, bool> func)
+        public static HexDirection GetAroundAndSelfMask<T>(this IMap2D< T> map, ShortVector2 target, Func<T, bool> func)
         {
             HexDirection directions = 0;
             T item;
@@ -491,5 +488,6 @@ namespace KouXiaGu.World2D
         #endregion
 
     }
+
 
 }

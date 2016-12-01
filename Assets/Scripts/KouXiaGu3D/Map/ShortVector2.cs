@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ProtoBuf;
 using UnityEngine;
 
-namespace KouXiaGu3D.Map
+namespace KouXiaGu3D
 {
 
     /// <summary>

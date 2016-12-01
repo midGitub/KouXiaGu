@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ProtoBuf;
-using KouXiaGu3D.Map;
 
 namespace KouXiaGu3D.Terrain
 {
