@@ -7,7 +7,7 @@ namespace KouXiaGu3D
 {
 
     /// <summary>
-    /// 六边形边对应的方向;
+    /// 平顶六边形边对应的方向;
     /// </summary>
     [Flags]
     public enum HexDirection

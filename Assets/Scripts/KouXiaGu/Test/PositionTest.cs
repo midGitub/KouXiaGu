@@ -1,5 +1,6 @@
 ﻿using System;
 using KouXiaGu.World2D;
+using KouXiaGu3D;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,12 +51,13 @@ namespace KouXiaGu.Test
         {
             try
             {
-                Vector2 planePoint = WorldConvert.MouseToPlane();
-                var pointPair = WorldConvert.PlaneToHexPair(planePoint);
+                Vector2 planePoint = World2D.WorldConvert.MouseToPlane();
+                KouXiaGu3D.ShortVector2 offsetPoint = HexGrids.PixelToOffset(planePoint);
+                var pointPair = World2D.WorldConvert.PlaneToHexPair(planePoint);
                 string str = "";
 
-                str += "六边形中心坐标 :" + pointPair.HexCenter
-                    + "地图坐标 :" + pointPair.MapPoint
+                str += "六边形中心坐标 :" + HexGrids.OffsetToPixel(offsetPoint)
+                    + "地图坐标 :" + offsetPoint
                     + "平面坐标 :" + planePoint;
 
                 return str;
