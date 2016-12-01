@@ -53,7 +53,7 @@ namespace KouXiaGu.Test
             {
                 Vector2 planePoint = World2D.WorldConvert.MouseToPlane();
                 KouXiaGu3D.ShortVector2 offsetPoint = HexGrids.PixelToOffset(planePoint);
-                var pointPair = World2D.WorldConvert.PlaneToHexPair(planePoint);
+                //var pointPair = World2D.WorldConvert.PlaneToHexPair(planePoint);
                 string str = "";
 
                 str += "六边形中心坐标 :" + HexGrids.OffsetToPixel(offsetPoint)

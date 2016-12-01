@@ -11,7 +11,7 @@ namespace KouXiaGu3D
     /// 游戏六边形网格拓展;
     /// 六边形为平顶的偶数垂直布局;
     /// </summary>
-    public static class HexGrids
+    public static partial class HexGrids
     {
 
         /// <summary>
@@ -145,18 +145,36 @@ namespace KouXiaGu3D
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        public static CubeCoordinate CubeDirection(HexDirection direction)
+        public static CubeCoordinate CubeDirectionVector(HexDirection direction)
         {
             return directions[(int)direction];
         }
 
         /// <summary>
+        /// 获取到邻居;
+        /// </summary>
+        public static CubeCoordinate CubeNeighbor(CubeCoordinate cube, HexDirection direction)
+        {
+            CubeCoordinate cubeVector = CubeDirectionVector(direction);
+            return cube + cubeVector;
+        }
+
+        /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        public static ShortVector2 OffSetDirection(HexDirection direction)
+        public static ShortVector2 OffSetDirectionVector(HexDirection direction)
         {
             CubeCoordinate hex = directions[(int)direction];
             return CubeToOffset(hex);
+        }
+
+        /// <summary>
+        /// 获取到邻居;
+        /// </summary>
+        public static ShortVector2 OffSetNeighbor(ShortVector2 offset, HexDirection direction)
+        {
+            ShortVector2 offsetVector = OffSetDirectionVector(direction);
+            return offset + offsetVector;
         }
 
         #endregion
