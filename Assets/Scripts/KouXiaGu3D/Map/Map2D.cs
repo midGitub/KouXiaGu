@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace KouXiaGu3D.Map
 {
@@ -12,7 +9,6 @@ namespace KouXiaGu3D.Map
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Map2D<T> : IMap2D<T>, IReadOnlyMap2D<T>
-        where T : struct
     {
         /// <summary>
         /// 地图结构;
