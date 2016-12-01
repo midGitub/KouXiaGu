@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using UnityEngine;
 
-namespace KouXiaGu3D.Terrain
+namespace KouXiaGu.Terrain
 {
 
     /// <summary>

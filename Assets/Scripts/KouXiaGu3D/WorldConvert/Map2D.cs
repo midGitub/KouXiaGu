@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace KouXiaGu3D
+namespace KouXiaGu
 {
 
     /// <summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu3D
+namespace KouXiaGu
 {
 
 	//对 IMap2D 接口的拓展;

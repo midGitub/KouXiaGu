@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KouXiaGu3D
+namespace KouXiaGu
 {
 
     /// <summary>

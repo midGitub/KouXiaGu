@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using ProtoBuf;
 
-namespace KouXiaGu3D.Terrain
+namespace KouXiaGu.Terrain
 {
 
     /// <summary>
