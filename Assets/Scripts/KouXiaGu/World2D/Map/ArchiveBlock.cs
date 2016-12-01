@@ -11,7 +11,7 @@ namespace KouXiaGu.World2D.Map
     /// 进行归档的地图块;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ArchiveBlock<T> : IMap<ShortVector2, T>
+    public class ArchiveBlock<T> : IHexMap<ShortVector2, T>
         where T : struct
     {
 
@@ -85,7 +85,7 @@ namespace KouXiaGu.World2D.Map
             return dictionary;
         }
 
-        T IMap<ShortVector2, T>.this[ShortVector2 position]
+        T IHexMap<ShortVector2, T>.this[ShortVector2 position]
         {
             get
             {
@@ -98,31 +98,31 @@ namespace KouXiaGu.World2D.Map
             }
         }
 
-        void IMap<ShortVector2, T>.Add(ShortVector2 position, T item)
+        void IHexMap<ShortVector2, T>.Add(ShortVector2 position, T item)
         {
             mapNodeSet.Add(position, item);
             haveChangedSet.Add(position);
         }
 
-        void IMap<ShortVector2, T>.Clear()
+        void IHexMap<ShortVector2, T>.Clear()
         {
             mapNodeSet.Clear();
             haveChangedSet.Clear();
         }
 
-        bool IMap<ShortVector2, T>.Contains(ShortVector2 position)
+        bool IHexMap<ShortVector2, T>.Contains(ShortVector2 position)
         {
             return mapNodeSet.ContainsKey(position);
         }
 
-        bool IMap<ShortVector2, T>.Remove(ShortVector2 position)
+        bool IHexMap<ShortVector2, T>.Remove(ShortVector2 position)
         {
             bool isRemove = mapNodeSet.Remove(position);
             haveChangedSet.Remove(position);
             return isRemove;
         }
 
-        bool IMap<ShortVector2, T>.TryGetValue(ShortVector2 position, out T item)
+        bool IHexMap<ShortVector2, T>.TryGetValue(ShortVector2 position, out T item)
         {
             return mapNodeSet.TryGetValue(position, out item);
         }

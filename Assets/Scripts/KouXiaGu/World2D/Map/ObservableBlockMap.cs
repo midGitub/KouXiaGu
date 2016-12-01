@@ -14,9 +14,9 @@ namespace KouXiaGu.World2D.Map
     /// </summary>
     /// <typeparam name="T">节点</typeparam>
     /// <typeparam name="TBlock">地图块类型</typeparam>
-    public class ObservableBlockMap<T, TBlock> : IMap<ShortVector2, T>
+    public class ObservableBlockMap<T, TBlock> : IHexMap<ShortVector2, T>
         where T : struct
-        where TBlock : IMap<ShortVector2, T>
+        where TBlock : IHexMap<ShortVector2, T>
     {
         protected ObservableBlockMap() { }
 
@@ -136,7 +136,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 实质清除块内容;
         /// </summary>
-        void IMap<ShortVector2, T>.Clear()
+        void IHexMap<ShortVector2, T>.Clear()
         {
             blockMap.Clear();
         }

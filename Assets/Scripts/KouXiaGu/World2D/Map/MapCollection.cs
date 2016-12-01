@@ -10,7 +10,7 @@ namespace KouXiaGu.World2D.Map
     /// 地图结构;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MapCollection<T> : IMap<ShortVector2, T>
+    public class MapCollection<T> : IHexMap<ShortVector2, T>
     {
 
         public MapCollection()

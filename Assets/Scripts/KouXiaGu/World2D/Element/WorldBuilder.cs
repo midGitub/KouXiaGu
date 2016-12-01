@@ -25,7 +25,7 @@ namespace KouXiaGu.World2D
         IDisposable WorldNodeChangeEvent;
         IDisposable BuildEvent;
         WorldMapData worldMap;
-        IMap<ShortVector2, WorldNode> Map;
+        IHexMap<ShortVector2, WorldNode> Map;
         HashSet<ShortVector2> loadedPoint;
         NodeChangeReporter<WorldNode> nodeChangeReporter;
         Vector2 lastBuildUpdatePoint;

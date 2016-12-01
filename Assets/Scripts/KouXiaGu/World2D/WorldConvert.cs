@@ -279,7 +279,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 按标记为从 高位到低位 循序排列的数组;不包含本身
         /// </summary>
-        static readonly HexDirection[] DirectionMarked = new HexDirection[]
+        static readonly HexDirection[] HexDirectionsArray = new HexDirection[]
         {
             HexDirection.Northwest,
             HexDirection.Southwest,
@@ -290,11 +290,17 @@ namespace KouXiaGu.World2D
         };
 
         /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组;
+        /// </summary>
+        static readonly HexDirection[] HexDirectionsAndSelfArray = Enum.GetValues(typeof(HexDirection)).
+            Cast<HexDirection>().Reverse().ToArray();
+
+        /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
         /// </summary>
         public static IEnumerable<HexDirection> HexDirections()
         {
-            return DirectionMarked;
+            return HexDirectionsArray;
         }
 
         /// <summary>
@@ -302,10 +308,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         public static IEnumerable<HexDirection> HexDirectionsAndSelf()
         {
-            for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
-            {
-                yield return (HexDirection)intDirection;
-            }
+            return HexDirectionsAndSelfArray;
         }
 
         /// <summary>
@@ -331,7 +334,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target);
@@ -345,7 +348,10 @@ namespace KouXiaGu.World2D
             }
         }
 
-        public static IEnumerable<T> GetNeighboursAndSelfOrDefault<T>(this IMap<ShortVector2, T> map, ShortVector2 target)
+        /// <summary>
+        /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<T> GetNeighboursAndSelfOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursAndSelfPoints(target);
@@ -359,7 +365,10 @@ namespace KouXiaGu.World2D
             }
         }
 
-        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        /// <summary>
+        /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target, directions);
@@ -376,7 +385,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target);
@@ -389,7 +398,10 @@ namespace KouXiaGu.World2D
             }
         }
 
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighboursAndSelf<T>(this IMap<ShortVector2, T> map, ShortVector2 target)
+        /// <summary>
+        /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighboursAndSelf<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursAndSelfPoints(target);
@@ -403,9 +415,9 @@ namespace KouXiaGu.World2D
         }
 
         /// <summary>
-        /// 获取到这个地图结构周围的点;
+        /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
         {
             T item;
             IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target, directions);
@@ -462,7 +474,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到满足条件的方向;若方向不存在节点则为不满足;
         /// </summary>
-        public static HexDirection GetAroundAndSelfMask<T>(this IMap<ShortVector2, T> map, ShortVector2 target, Func<T, bool> func)
+        public static HexDirection GetAroundAndSelfMask<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, Func<T, bool> func)
         {
             HexDirection directions = 0;
             T item;

@@ -25,7 +25,7 @@ namespace KouXiaGu.World2D
         MapCollection<Topography> activeWorldNode;
         MapCollection<Road> activeRoad;
 
-        IMap<ShortVector2, WorldNode> WorldMap;
+        IHexMap<ShortVector2, WorldNode> WorldMap;
 
         void Awake()
         {

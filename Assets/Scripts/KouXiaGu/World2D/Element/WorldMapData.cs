@@ -34,7 +34,7 @@ namespace KouXiaGu.World2D
         [SerializeField]
         UseArchiveBlockIO mapBlockIO;
 
-        public IMap<ShortVector2, WorldNode> Map
+        public IHexMap<ShortVector2, WorldNode> Map
         {
             get { return worldMap; }
         }

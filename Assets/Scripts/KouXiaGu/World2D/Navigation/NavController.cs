@@ -15,7 +15,7 @@ namespace KouXiaGu.World2D.Navigation
     {
 
         Obstruction obstruction;
-        IMap<ShortVector2, WorldNode> worldMap;
+        IHexMap<ShortVector2, WorldNode> worldMap;
 
         void Start()
         {

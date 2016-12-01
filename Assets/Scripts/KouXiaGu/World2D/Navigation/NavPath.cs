@@ -13,7 +13,7 @@ namespace KouXiaGu.World2D.Navigation
     public class NavPath
     {
         public NavPath(LinkedList<ShortVector2> wayPath,
-            IMap<ShortVector2, WorldNode> worldMap, 
+            IHexMap<ShortVector2, WorldNode> worldMap, 
             TopographiessData topographiessData)
         {
             this.wayPath = wayPath;
@@ -26,7 +26,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 行走的地图;
         /// </summary>
-        IMap<ShortVector2, WorldNode> worldMap;
+        IHexMap<ShortVector2, WorldNode> worldMap;
 
         /// <summary>
         /// 地貌信息;

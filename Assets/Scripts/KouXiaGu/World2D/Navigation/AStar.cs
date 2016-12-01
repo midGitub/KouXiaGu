@@ -25,7 +25,7 @@ namespace KouXiaGu.World2D.Navigation
             closePointsSet = new HashSet<ShortVector2>();
             maximumRange = new RectRange();
         }
-        public AStar(IObstructive<TNode, TMover> obstructive, IMap<ShortVector2, TNode> wroldMap) : this()
+        public AStar(IObstructive<TNode, TMover> obstructive, IHexMap<ShortVector2, TNode> wroldMap) : this()
         {
             this.Obstructive = obstructive;
             this.WroldMap = wroldMap;
@@ -38,7 +38,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 地图;
         /// </summary>
-        public IMap<ShortVector2, TNode> WroldMap { get; set; }
+        public IHexMap<ShortVector2, TNode> WroldMap { get; set; }
 
         /// <summary>
         /// 需要进行搜索的点;
