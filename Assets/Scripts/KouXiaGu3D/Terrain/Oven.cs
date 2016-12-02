@@ -10,12 +10,11 @@ namespace KouXiaGu.Terrain
 
     /// <summary>
     /// 烘焙贴图队列;
-    /// 负责把地形块渲染成一套地形贴图;
     /// </summary>
     [DisallowMultipleComponent, RequireComponent(typeof(Camera))]
-    public class TerrainOven : MonoBehaviour
+    public class Oven : MonoBehaviour
     {
-        TerrainOven() { }
+        Oven() { }
 
         public Camera bakingCamera;
 

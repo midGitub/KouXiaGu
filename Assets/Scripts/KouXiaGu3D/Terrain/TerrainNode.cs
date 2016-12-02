@@ -13,16 +13,11 @@ namespace KouXiaGu.Terrain
     [ProtoContract]
     public struct TerrainNode
     {
-
-        [ProtoMember(1)]
-        public ShortVector2 position;
-
         [ProtoMember(2)]
         public int terrainTypeId;
 
         [ProtoMember(3)]
         public float rotationAngle;
-
     }
 
 }

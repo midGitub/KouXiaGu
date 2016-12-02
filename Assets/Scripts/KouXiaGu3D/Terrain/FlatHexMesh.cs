@@ -8,11 +8,12 @@ namespace KouXiaGu.Terrain
 {
 
     /// <summary>
-    /// 平顶的六边形;
+    /// 平顶的六边形网格结构;
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode]
-    public class FlatHexMesh : MonoBehaviour
+    public sealed class FlatHexMesh : MonoBehaviour
     {
+        FlatHexMesh() { }
 
         /// <summary>
         /// 六边形外半径;

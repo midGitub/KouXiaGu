@@ -9,8 +9,9 @@ namespace KouXiaGu.Terrain
 
     /// <summary>
     /// 地形数据定义;
+    /// 负责提供地形贴图数据;
     /// </summary>
-    public class TerrainDefinition
+    public class TextureManager
     {
         
 
