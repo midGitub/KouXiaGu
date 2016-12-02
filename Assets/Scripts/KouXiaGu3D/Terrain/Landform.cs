@@ -85,7 +85,11 @@ namespace KouXiaGu.Terrain
 
         public override string ToString()
         {
-            string info = string.Concat("id:", id, ",name:", name, base.ToString());
+            string info = string.Concat(
+                "id:", id,
+                " ,name:", name,
+                " ,IsInitialized:", IsInitialized,
+                "\n", base.ToString());
             return info;
         }
 

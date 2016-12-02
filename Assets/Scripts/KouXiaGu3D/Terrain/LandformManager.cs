@@ -59,6 +59,13 @@ namespace KouXiaGu.Terrain
             get { return initializedLandforms.Values; }
         }
 
+        /// <summary>
+        /// 已经实例化的地貌数量;
+        /// </summary>
+        public static int InitializedCount
+        {
+            get { return initializedLandforms.Count; }
+        }
 
         static LandformManager()
         {
@@ -95,7 +102,7 @@ namespace KouXiaGu.Terrain
         /// </summary>
         public static IEnumerator Initialize()
         {
-            Landform[] landforms = LoadLandforms();
+            IEnumerable<Landform> landforms = Load();
             return Initialize(landforms);
         }
 
@@ -118,7 +125,7 @@ namespace KouXiaGu.Terrain
             AssetBundle assetBundle = bundleLoadRequest.assetBundle;
             if (assetBundle == null)
             {
-                Debug.LogError("目录目录不存在贴图资源包,地貌资源初始化失败;" + TextureAssetBundleFilePath);
+                Debug.LogError("目录不存在贴图资源包,地貌资源初始化失败;" + TextureAssetBundleFilePath);
                 yield break;
             }
 
@@ -246,42 +253,52 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 将现有地貌定义输出到文件;
         /// </summary>
-        public static void SaveLandforms()
+        public static void Save()
         {
-            Landform[] landforms = initializedLandforms.Values.ToArray();
-            SaveLandforms(landforms);
+            List<Landform> landforms = initializedLandforms.Values.ToList();
+            Save(landforms);
         }
 
         /// <summary>
         /// 将地貌定义输出到文件;
         /// </summary>
-        public static void SaveLandforms(Landform[] landforms)
+        public static void Save(List<Landform> landforms)
         {
-            SaveLandforms(landforms, ConfigFilePath);
+            Save(landforms, ConfigFilePath);
         }
 
         /// <summary>
         /// 将地貌定义输出到文件;
         /// </summary>
-        public static void SaveLandforms(Landform[] landforms, string filePath)
+        public static void Save(List<Landform> landforms, string filePath)
         {
-            SerializeHelper.SerializeXml<Landform[]>(filePath, landforms);
+            SerializeHelper.SerializeXml(filePath, landforms);
+        }
+
+        /// <summary>
+        /// 将此地貌结构附加到地貌定义文件中;
+        /// </summary>
+        public static void Append(IEnumerable<Landform> landforms)
+        {
+            var originalLandforms = Load();
+            originalLandforms.AddRange(landforms);
+            Save(originalLandforms);
         }
 
         /// <summary>
         /// 从地貌定义文件读取到地貌信息;
         /// </summary>
-        public static Landform[] LoadLandforms()
+        public static List<Landform> Load()
         {
-            return LoadLandforms(ConfigFilePath);
+            return Load(ConfigFilePath);
         }
 
         /// <summary>
         /// 从文件读取到地貌信息;
         /// </summary>
-        public static Landform[] LoadLandforms(string filePath)
+        public static List<Landform> Load(string filePath)
         {
-            Landform[] landforms = SerializeHelper.DeserializeXml<Landform[]>(filePath);
+            List<Landform> landforms = SerializeHelper.DeserializeXml<List<Landform>>(filePath);
             return landforms;
         }
 
