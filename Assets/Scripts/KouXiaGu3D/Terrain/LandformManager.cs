@@ -20,36 +20,12 @@ namespace KouXiaGu.Terrain
     public static class LandformManager
     {
 
-        /// <summary>
-        /// 地貌信息描述文件文件名;
-        /// </summary>
-        const string ConfigFileName = "LandformDefinition.xml";
-
-        /// <summary>
-        /// 地貌信息描述文件路径;
-        /// </summary>
-        public static readonly string ConfigFilePath = ResourcePath.CombineConfiguration(ConfigFileName);
-
-        /// <summary>
-        /// 地貌贴图资源包名;
-        /// </summary>
-        const string TextureAssetBundleFileName = "terrain";
-
-        /// <summary>
-        /// 地貌贴图资源包文件路径;
-        /// </summary>
-        public static readonly string TextureAssetBundleFilePath = ResourcePath.CombineAssetBundle(TextureAssetBundleFileName);
-
+        #region 初始化完毕的地貌信息;
 
         /// <summary>
         /// 已经初始化完毕的地貌信息;
         /// </summary>
         static readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
-
-        /// <summary>
-        /// 是否正在初始化中?
-        /// </summary>
-        public static bool IsInitializing { get; private set; }
 
         /// <summary>
         /// 已经初始化完毕的地貌信息;
@@ -65,11 +41,6 @@ namespace KouXiaGu.Terrain
         public static int InitializedCount
         {
             get { return initializedLandforms.Count; }
-        }
-
-        static LandformManager()
-        {
-            IsInitializing = false;
         }
 
         /// <summary>
@@ -96,6 +67,20 @@ namespace KouXiaGu.Terrain
             return initializedLandforms.TryGetValue(id, out landform);
         }
 
+        #endregion
+
+
+        #region 地貌资源初始化;
+
+        /// <summary>
+        /// 地貌贴图资源包名;
+        /// </summary>
+        const string TextureAssetBundleFileName = "terrain";
+
+        /// <summary>
+        /// 地貌贴图资源包文件路径;
+        /// </summary>
+        public static readonly string TextureAssetBundleFilePath = ResourcePath.CombineAssetBundle(TextureAssetBundleFileName);
 
         /// <summary>
         /// 从定义的资源配置初始化地形信息;
@@ -112,20 +97,13 @@ namespace KouXiaGu.Terrain
         /// </summary>
         public static IEnumerator Initialize(IEnumerable<Landform> landforms)
         {
-            if (IsInitializing)
-            {
-                Debug.LogWarning("尝试启动多个初始化协程;" + typeof(LandformManager).FullName);
-                yield break;
-            }
-            IsInitializing = true;
-
             var bundleLoadRequest = AssetBundle.LoadFromFileAsync(TextureAssetBundleFilePath);
             yield return bundleLoadRequest;
 
             AssetBundle assetBundle = bundleLoadRequest.assetBundle;
             if (assetBundle == null)
             {
-                Debug.LogError("目录不存在贴图资源包,地貌资源初始化失败;" + TextureAssetBundleFilePath);
+                Debug.LogError("目录不存在贴图资源包或者在编辑器中进行读取,地貌资源初始化失败;" + TextureAssetBundleFilePath);
                 yield break;
             }
 
@@ -148,17 +126,15 @@ namespace KouXiaGu.Terrain
             }
 
             assetBundle.Unload(false);
-            IsInitializing = false;
             yield break;
         }
-
 
         /// <summary>
         /// 是否对这个地貌信息进行初始化?返回true则初始化;
         /// </summary>
         static bool InitializeOrNot(Landform landform)
         {
-            return !initializedLandforms.ContainsKey(landform.id) && !landform.IsInitialized;
+            return !initializedLandforms.ContainsKey(landform.id) /*&& !landform.IsInitialized*/;
         }
 
         /// <summary>
@@ -173,7 +149,7 @@ namespace KouXiaGu.Terrain
             }
             else
             {
-                Debug.LogWarning("初始化失败;" + landform.ToString());
+                Debug.LogWarning(" 此地貌未能初始化成功;" + landform.ToString());
                 return false;
             }
         }
@@ -250,6 +226,22 @@ namespace KouXiaGu.Terrain
 
         }
 
+        #endregion
+
+
+        #region 地貌输出到XML
+
+        /// <summary>
+        /// 地貌信息描述文件文件名;
+        /// </summary>
+        const string ConfigFileName = "LandformDefinition.xml";
+
+        /// <summary>
+        /// 地貌信息描述文件路径;
+        /// </summary>
+        public static readonly string ConfigFilePath = ResourcePath.CombineConfiguration(ConfigFileName);
+
+
         /// <summary>
         /// 将现有地貌定义输出到文件;
         /// </summary>
@@ -302,6 +294,7 @@ namespace KouXiaGu.Terrain
             return landforms;
         }
 
+        #endregion
 
     }
 
