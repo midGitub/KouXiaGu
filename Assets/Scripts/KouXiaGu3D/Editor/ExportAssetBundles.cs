@@ -1,7 +1,7 @@
 ﻿
 #if UNITY_EDITOR
 
-namespace KouXiaGu3D.Editor
+namespace KouXiaGu.Editor
 {
     using UnityEditor;
     using UnityEngine;
@@ -16,7 +16,7 @@ namespace KouXiaGu3D.Editor
         [MenuItem("Assets/Build AssetBundles")]
         static void BuildAllAssetBundles()
         {
-            string directoryPath = Path.Combine(Application.dataPath, "AssetBundles");
+            string directoryPath = ResourcePath.AssetBundleDirectoryPath;
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
