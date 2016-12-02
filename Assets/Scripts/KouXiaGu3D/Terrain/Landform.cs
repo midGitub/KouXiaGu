@@ -27,22 +27,22 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 地形名;
         /// </summary>
-        [XmlAttribute, DefaultValue("UnknownLandform")]
-        public string name;
+        [XmlAttribute]
+        public string name { get; private set; }
 
         /// <summary>
         /// 地形唯一标示;
         /// </summary>
         [XmlAttribute]
-        public int id;
+        public int id { get; private set; }
 
         // 贴图名或路径定义;
         [XmlElement]
-        public string diffusePath;
+        public string diffusePath { get; private set; }
         [XmlElement]
-        public string heightPath;
+        public string heightPath { get; private set; }
         [XmlElement]
-        public string mixerPath;
+        public string mixerPath { get; private set; }
 
         /// <summary>
         /// 漫反射贴图;

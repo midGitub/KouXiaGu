@@ -3,11 +3,12 @@
 //异步的实例化地貌信息;
 #define INIT_LANDFORM_ASYNC
 
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.Collections;
+
 
 namespace KouXiaGu.Terrain
 {
@@ -16,7 +17,7 @@ namespace KouXiaGu.Terrain
     /// 获取到地貌信息和
     /// 负责提供地形贴图数据;
     /// </summary>
-    public class LandformManager
+    public static class LandformManager
     {
 
         /// <summary>
@@ -43,22 +44,23 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 已经初始化完毕的地貌信息;
         /// </summary>
-        readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
+        static readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
 
         /// <summary>
         /// 是否正在初始化中?
         /// </summary>
-        public bool IsInitializing { get; private set; }
+        public static bool IsInitializing { get; private set; }
 
         /// <summary>
         /// 已经初始化完毕的地貌信息;
         /// </summary>
-        public IEnumerable<Landform> InitializedLandforms
+        public static IEnumerable<Landform> InitializedLandforms
         {
             get { return initializedLandforms.Values; }
         }
 
-        public LandformManager()
+
+        static LandformManager()
         {
             IsInitializing = false;
         }
@@ -66,7 +68,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 根据ID获取到地貌;
         /// </summary>
-        public Landform GetWithID(int id)
+        public static Landform GetWithID(int id)
         {
             return initializedLandforms[id];
         }
@@ -74,7 +76,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 根据ID移除地貌;
         /// </summary>
-        public bool Remove(int id)
+        public static bool Remove(int id)
         {
             return initializedLandforms.Remove(id);
         }
@@ -82,7 +84,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 尝试获取到地貌信息;
         /// </summary>
-        public bool TryGetValue(int id, out Landform landform)
+        public static bool TryGetValue(int id, out Landform landform)
         {
             return initializedLandforms.TryGetValue(id, out landform);
         }
@@ -91,7 +93,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 从定义的资源配置初始化地形信息;
         /// </summary>
-        public IEnumerator Initialize()
+        public static IEnumerator Initialize()
         {
             Landform[] landforms = LoadLandforms();
             return Initialize(landforms);
@@ -101,11 +103,11 @@ namespace KouXiaGu.Terrain
         /// 对这些资源进行初始化,并且加入到已经初始化字典;
         /// 若字典已经存在相同编号的地貌则不加入到;
         /// </summary>
-        public IEnumerator Initialize(IEnumerable<Landform> landforms)
+        public static IEnumerator Initialize(IEnumerable<Landform> landforms)
         {
             if (IsInitializing)
             {
-                Debug.LogWarning("尝试启动多个初始化协程;" + this.ToString());
+                Debug.LogWarning("尝试启动多个初始化协程;" + typeof(LandformManager).FullName);
                 yield break;
             }
             IsInitializing = true;
@@ -147,7 +149,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 是否对这个地貌信息进行初始化?返回true则初始化;
         /// </summary>
-        bool InitializeOrNot(Landform landform)
+        static bool InitializeOrNot(Landform landform)
         {
             return !initializedLandforms.ContainsKey(landform.id) && !landform.IsInitialized;
         }
@@ -155,7 +157,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 若初始化完毕则加入到已初始化合集内,返回true,否则返回false;
         /// </summary>
-        bool TryAddInitialized(Landform landform)
+        static bool TryAddInitialized(Landform landform)
         {
             if (landform.IsInitialized)
             {
@@ -172,7 +174,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 同步初始化设置到贴图;
         /// </summary>
-        void Initialize(Landform landform, AssetBundle assetBundle)
+        static void Initialize(Landform landform, AssetBundle assetBundle)
         {
             Texture diffuse = assetBundle.LoadAsset<Texture>(landform.diffusePath);
             Texture height = assetBundle.LoadAsset<Texture>(landform.heightPath);
@@ -184,7 +186,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 异步初始化设置到贴图信息;
         /// </summary>
-        CustomYieldInstruction InitializeAsync(Landform landform, AssetBundle assetBundle)
+        static CustomYieldInstruction InitializeAsync(Landform landform, AssetBundle assetBundle)
         {
             var asyncRequest = new LandformInitializeRequest(landform, assetBundle);
             return asyncRequest;
@@ -193,7 +195,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 异步读取需要的贴图;
         /// </summary>
-        internal class LandformInitializeRequest : CustomYieldInstruction
+        class LandformInitializeRequest : CustomYieldInstruction
         {
             Landform landform;
 
@@ -241,11 +243,10 @@ namespace KouXiaGu.Terrain
 
         }
 
-
         /// <summary>
         /// 将现有地貌定义输出到文件;
         /// </summary>
-        public void SaveLandforms()
+        public static void SaveLandforms()
         {
             Landform[] landforms = initializedLandforms.Values.ToArray();
             SaveLandforms(landforms);
