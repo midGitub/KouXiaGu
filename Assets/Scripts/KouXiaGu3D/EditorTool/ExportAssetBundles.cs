@@ -1,7 +1,7 @@
 ﻿
 #if UNITY_EDITOR
 
-namespace KouXiaGu.Editor
+namespace KouXiaGu.EditorTool
 {
     using UnityEditor;
     using UnityEngine;

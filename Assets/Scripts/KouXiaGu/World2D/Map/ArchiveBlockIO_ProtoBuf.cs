@@ -59,7 +59,7 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         public static void SaveMapBlock<T>(string fullFilePath, Dictionary<ShortVector2, T> mapBlock)
         {
-            SerializeHelper.Serialize_ProtoBuf(fullFilePath, mapBlock);
+            SerializeHelper.SerializeProtoBuf(fullFilePath, mapBlock);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         public static Dictionary<ShortVector2, T> LoadMapBlock<T>(string fullFilePath)
         {
-            var dictionary = SerializeHelper.Deserialize_ProtoBuf<Dictionary<ShortVector2, T>>(fullFilePath);
+            var dictionary = SerializeHelper.DeserializeProtoBuf<Dictionary<ShortVector2, T>>(fullFilePath);
             return dictionary;
         }
 

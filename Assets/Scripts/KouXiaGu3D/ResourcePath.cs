@@ -19,16 +19,14 @@ namespace KouXiaGu
         /// 存放 AssetBundle 的文件夹路径;
         /// </summary>
         public static readonly string AssetBundleDirectoryPath =
-#if UNITY_EDITOR
-            Path.Combine(Application.dataPath, "AssetBundles");
-#else
-            Application.dataPath;
-#endif
+            Path.Combine(Application.streamingAssetsPath, "AssetBundles");
+
 
         /// <summary>
         /// 存放配置文件的文件夹路径;
         /// </summary>
-        public static readonly string ConfigurationDirectoryPath = Path.Combine(Application.dataPath, "Configuration");
+        public static readonly string ConfigurationDirectoryPath = 
+            Path.Combine(Application.streamingAssetsPath, "Configurations");
 
 
         /// <summary>
