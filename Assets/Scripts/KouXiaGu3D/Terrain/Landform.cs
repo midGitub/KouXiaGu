@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Xml.Serialization;
 using System.Collections;
 
-namespace KouXiaGu.Terrain
+namespace KouXiaGu.HexTerrain
 {
 
     /// <summary>

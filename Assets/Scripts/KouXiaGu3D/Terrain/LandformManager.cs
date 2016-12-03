@@ -5,12 +5,11 @@
 
 
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using System.Collections;
 using System.Xml.Serialization;
 
-namespace KouXiaGu.Terrain
+namespace KouXiaGu.HexTerrain
 {
 
     /// <summary>
