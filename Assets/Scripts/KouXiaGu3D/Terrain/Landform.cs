@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain
     /// <summary>
     /// 地貌定义;
     /// </summary>
-    public class Landform 
+    public class Landform : ILandform
     {
 
         public Landform()
@@ -21,46 +21,46 @@ namespace KouXiaGu.Terrain
         }
         public Landform(int id) : this()
         {
-            this.id = id;
+            this.ID = id;
         }
 
         /// <summary>
         /// 地形名;
         /// </summary>
         [XmlAttribute]
-        public string name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 地形唯一标示;
         /// </summary>
         [XmlAttribute]
-        public int id { get; private set; }
+        public int ID { get; set; }
 
         // 贴图名或路径定义;
         [XmlElement]
-        public string diffusePath { get; private set; }
+        public string diffusePath { get; set; }
         [XmlElement]
-        public string heightPath { get; private set; }
+        public string heightPath { get; set; }
         [XmlElement]
-        public string mixerPath { get; private set; }
+        public string mixerPath { get; set; }
 
         /// <summary>
         /// 漫反射贴图;
         /// </summary>
         [XmlIgnore]
-        public Texture DiffuseTexture { get; private set; }
+        public Texture DiffuseTexture { get; set; }
 
         /// <summary>
         /// 高度贴图;
         /// </summary>
         [XmlIgnore]
-        public Texture HeightTexture { get; private set; }
+        public Texture HeightTexture { get; set; }
 
         /// <summary>
         /// 混合贴图;
         /// </summary>
         [XmlIgnore]
-        public Texture MixerTexture { get; private set; }
+        public Texture MixerTexture { get; set; }
 
         /// <summary>
         /// 是否已经初始化完毕?
@@ -73,25 +73,80 @@ namespace KouXiaGu.Terrain
             }
         }
 
-        /// <summary>
-        /// 设置贴图到;
-        /// </summary>
-        public void SetLandform(Texture diffuse, Texture height, Texture mixer)
-        {
-            this.DiffuseTexture = diffuse;
-            this.HeightTexture = height;
-            this.MixerTexture = mixer;
-        }
-
         public override string ToString()
         {
             string info = string.Concat(
-                "id:", id,
-                " ,name:", name,
+                "id:", ID,
+                " ,name:", Name,
                 " ,IsInitialized:", IsInitialized,
                 "\n", base.ToString());
             return info;
         }
+
+
+        /// <summary>
+        /// 地貌信息描述文件文件名;
+        /// </summary>
+        public const string ConfigFileName = "LandformDefinition.xml";
+
+        /// <summary>
+        /// 地貌信息描述文件路径;
+        /// </summary>
+        public static readonly string ConfigFilePath = ResourcePath.CombineConfiguration(ConfigFileName);
+
+        /// <summary>
+        /// 将现有地貌定义输出到文件;
+        /// </summary>
+        public static void Save(List<Landform> landforms)
+        {
+            Save(landforms, ConfigFilePath);
+        }
+
+        /// <summary>
+        /// 将地貌定义输出到文件;
+        /// </summary>
+        public static void Save(List<Landform> landforms, string filePath)
+        {
+            SerializeHelper.SerializeXml(filePath, landforms);
+        }
+
+        /// <summary>
+        /// 将地貌信息追加到定义的地貌文件;
+        /// </summary>
+        public static void Append(IEnumerable<Landform> landforms)
+        {
+            Append(landforms, ConfigFilePath);
+        }
+
+        /// <summary>
+        /// 将此地貌结构附加到地貌定义文件中;
+        /// </summary>
+        public static void Append(IEnumerable<Landform> landforms, string filePath)
+        {
+            var originalLandforms = Load(filePath);
+            originalLandforms.AddRange(landforms);
+            Save(originalLandforms, filePath);
+        }
+
+
+        /// <summary>
+        /// 从地貌定义文件读取到地貌信息;
+        /// </summary>
+        public static List<Landform> Load()
+        {
+            return Load(ConfigFilePath);
+        }
+
+        /// <summary>
+        /// 从文件读取到地貌信息;
+        /// </summary>
+        public static List<Landform> Load(string filePath)
+        {
+            List<Landform> landforms = SerializeHelper.DeserializeXml<List<Landform>>(filePath);
+            return landforms;
+        }
+
+
 
     }
 

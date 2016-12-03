@@ -14,10 +14,9 @@ namespace KouXiaGu.Terrain
 {
 
     /// <summary>
-    /// 获取到地貌信息和
-    /// 负责提供地形贴图数据;
+    /// 负责提供地貌的贴图数据;
     /// </summary>
-    public static class LandformManager
+    public class LandformInit
     {
 
         #region 初始化完毕的地貌信息;
@@ -25,20 +24,20 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 已经初始化完毕的地貌信息;
         /// </summary>
-        static readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
+        readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
 
         /// <summary>
         /// 已经初始化完毕的地貌信息;
         /// </summary>
-        public static IEnumerable<Landform> InitializedLandforms
+        public IEnumerable<ILandform> InitializedLandforms
         {
-            get { return initializedLandforms.Values; }
+            get { return initializedLandforms.Values.OfType<ILandform>(); }
         }
 
         /// <summary>
         /// 已经实例化的地貌数量;
         /// </summary>
-        public static int InitializedCount
+        public int InitializedCount
         {
             get { return initializedLandforms.Count; }
         }
@@ -46,7 +45,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 根据ID获取到地貌;
         /// </summary>
-        public static Landform GetWithID(int id)
+        public ILandform GetWithID(int id)
         {
             return initializedLandforms[id];
         }
@@ -54,7 +53,7 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 根据ID移除地貌;
         /// </summary>
-        public static bool Remove(int id)
+        public bool Remove(int id)
         {
             return initializedLandforms.Remove(id);
         }
@@ -62,9 +61,12 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 尝试获取到地貌信息;
         /// </summary>
-        public static bool TryGetValue(int id, out Landform landform)
+        public bool TryGetValue(int id, out ILandform landform)
         {
-            return initializedLandforms.TryGetValue(id, out landform);
+            Landform Landform;
+            bool isFind = initializedLandforms.TryGetValue(id, out Landform);
+            landform = Landform;
+            return isFind;
         }
 
         #endregion
@@ -87,7 +89,7 @@ namespace KouXiaGu.Terrain
         /// </summary>
         public static IEnumerator Initialize()
         {
-            IEnumerable<Landform> landforms = Load();
+            IEnumerable<Landform> landforms = Landform.Load();
             return Initialize(landforms);
         }
 
@@ -109,50 +111,54 @@ namespace KouXiaGu.Terrain
 
             foreach (var landform in landforms)
             {
-                if (InitializeOrNot(landform))
-                {
+                //if (InitializeOrNot(landform))
+                //{
 #if INIT_LANDFORM_ASYNC
                     yield return InitializeAsync(landform, assetBundle);
 #else
                 Initialize(landform, assetBundle);
                 yield return null;
 #endif
-                    TryAddInitialized(landform);
-                }
-                else
-                {
-                    Debug.LogWarning("相同的地貌ID,跳过此物体;" + landform.ToString());
-                }
+                    //TryAddInitialized(landform);
+                //}
             }
 
             assetBundle.Unload(false);
             yield break;
         }
 
-        /// <summary>
-        /// 是否对这个地貌信息进行初始化?返回true则初始化;
-        /// </summary>
-        static bool InitializeOrNot(Landform landform)
-        {
-            return !initializedLandforms.ContainsKey(landform.id) /*&& !landform.IsInitialized*/;
-        }
+        ///// <summary>
+        ///// 是否对这个地貌信息进行初始化?返回true则初始化;
+        ///// </summary>
+        //static bool InitializeOrNot(Landform landform)
+        //{
+        //    if (!initializedLandforms.ContainsKey(landform.ID))
+        //    {
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning("相同的地貌ID,跳过此物体;" + landform.ToString());
+        //        return false;
+        //    }
+        //}
 
-        /// <summary>
-        /// 若初始化完毕则加入到已初始化合集内,返回true,否则返回false;
-        /// </summary>
-        static bool TryAddInitialized(Landform landform)
-        {
-            if (landform.IsInitialized)
-            {
-                initializedLandforms.Add(landform.id, landform);
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning(" 此地貌未能初始化成功;" + landform.ToString());
-                return false;
-            }
-        }
+        ///// <summary>
+        ///// 若初始化完毕则加入到已初始化合集内,返回true,否则返回false;
+        ///// </summary>
+        //static bool TryAddInitialized(Landform landform)
+        //{
+        //    if (landform.IsInitialized)
+        //    {
+        //        initializedLandforms.Add(landform.ID, landform);
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning(" 此地貌未能初始化成功;" + landform.ToString());
+        //        return false;
+        //    }
+        //}
 
         /// <summary>
         /// 同步初始化设置到贴图;
@@ -163,7 +169,9 @@ namespace KouXiaGu.Terrain
             Texture height = assetBundle.LoadAsset<Texture>(landform.heightPath);
             Texture mixer = assetBundle.LoadAsset<Texture>(landform.mixerPath);
 
-            landform.SetLandform(diffuse, height, mixer);
+            landform.DiffuseTexture = diffuse;
+            landform.HeightTexture = height;
+            landform.MixerTexture = mixer;
         }
 
         /// <summary>
@@ -212,7 +220,10 @@ namespace KouXiaGu.Terrain
                     Texture height = (Texture)heightRequest.asset;
                     Texture mixer = (Texture)mixerRequest.asset;
 
-                    landform.SetLandform(diffuse, height, mixer);
+                    landform.DiffuseTexture = diffuse;
+                    landform.HeightTexture = height;
+                    landform.MixerTexture = mixer;
+
                     return false;
                 }
             }
@@ -224,74 +235,6 @@ namespace KouXiaGu.Terrain
                 mixerRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.mixerPath);
             }
 
-        }
-
-        #endregion
-
-
-        #region 地貌输出到XML
-
-        /// <summary>
-        /// 地貌信息描述文件文件名;
-        /// </summary>
-        const string ConfigFileName = "LandformDefinition.xml";
-
-        /// <summary>
-        /// 地貌信息描述文件路径;
-        /// </summary>
-        public static readonly string ConfigFilePath = ResourcePath.CombineConfiguration(ConfigFileName);
-
-
-        /// <summary>
-        /// 将现有地貌定义输出到文件;
-        /// </summary>
-        public static void Save()
-        {
-            List<Landform> landforms = initializedLandforms.Values.ToList();
-            Save(landforms);
-        }
-
-        /// <summary>
-        /// 将地貌定义输出到文件;
-        /// </summary>
-        public static void Save(List<Landform> landforms)
-        {
-            Save(landforms, ConfigFilePath);
-        }
-
-        /// <summary>
-        /// 将地貌定义输出到文件;
-        /// </summary>
-        public static void Save(List<Landform> landforms, string filePath)
-        {
-            SerializeHelper.SerializeXml(filePath, landforms);
-        }
-
-        /// <summary>
-        /// 将此地貌结构附加到地貌定义文件中;
-        /// </summary>
-        public static void Append(IEnumerable<Landform> landforms)
-        {
-            var originalLandforms = Load();
-            originalLandforms.AddRange(landforms);
-            Save(originalLandforms);
-        }
-
-        /// <summary>
-        /// 从地貌定义文件读取到地貌信息;
-        /// </summary>
-        public static List<Landform> Load()
-        {
-            return Load(ConfigFilePath);
-        }
-
-        /// <summary>
-        /// 从文件读取到地貌信息;
-        /// </summary>
-        public static List<Landform> Load(string filePath)
-        {
-            List<Landform> landforms = SerializeHelper.DeserializeXml<List<Landform>>(filePath);
-            return landforms;
         }
 
         #endregion
