@@ -59,7 +59,7 @@ namespace KouXiaGu
         /// <summary>
         /// 3D像素坐标 转换到 偏移坐标;
         /// </summary>
-        public static ShortVector2 PixelToCube(Vector3 point)
+        public static ShortVector2 PixelToOffset(Vector3 point)
         {
             CubeCoordinate cube = Pixel2DToCube(new Vector2(point.x, point.z));
             return CubeToOffset(cube);
