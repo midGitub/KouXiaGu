@@ -14,6 +14,23 @@ namespace KouXiaGu
 
         #region XML
 
+        public static void Serialize(this XmlSerializer serializer, string filePath, object item, FileMode fileMode = FileMode.Create)
+        {
+            using (Stream fStream = new FileStream(filePath, fileMode, FileAccess.Write))
+            {
+                SerializeXml(fStream, item);
+            }
+        }
+
+        public static object Deserialize(this XmlSerializer serializer, string filePath, FileMode fileMode = FileMode.Open)
+        {
+            using (Stream fStream = new FileStream(filePath, fileMode, FileAccess.Read))
+            {
+                return serializer.Deserialize(fStream);
+            }
+        }
+
+
         public static void SerializeXml<T>(Stream stream, T t)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));

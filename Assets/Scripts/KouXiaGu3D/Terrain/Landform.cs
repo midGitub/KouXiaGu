@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 using System.Xml.Serialization;
-using System.ComponentModel;
+using System.Collections;
 
 namespace KouXiaGu.Terrain
 {
@@ -13,7 +9,7 @@ namespace KouXiaGu.Terrain
     /// <summary>
     /// 地貌定义;
     /// </summary>
-    public class Landform : ILandform
+    public class Landform
     {
 
         public Landform()
@@ -27,40 +23,42 @@ namespace KouXiaGu.Terrain
         /// <summary>
         /// 地形名;
         /// </summary>
-        [XmlAttribute]
+        [XmlAttribute("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// 地形唯一标示;
         /// </summary>
-        [XmlAttribute]
+        [XmlAttribute("id")]
         public int ID { get; set; }
 
         // 贴图名或路径定义;
-        [XmlElement]
+        [XmlElement("diffusePath")]
         public string diffusePath { get; set; }
-        [XmlElement]
+
+        [XmlElement("heightPath")]
         public string heightPath { get; set; }
-        [XmlElement]
+
+        [XmlElement("mixerPath")]
         public string mixerPath { get; set; }
 
         /// <summary>
         /// 漫反射贴图;
         /// </summary>
         [XmlIgnore]
-        public Texture DiffuseTexture { get; set; }
+        public Texture DiffuseTexture { get; private set; }
 
         /// <summary>
         /// 高度贴图;
         /// </summary>
         [XmlIgnore]
-        public Texture HeightTexture { get; set; }
+        public Texture HeightTexture { get; private set; }
 
         /// <summary>
         /// 混合贴图;
         /// </summary>
         [XmlIgnore]
-        public Texture MixerTexture { get; set; }
+        public Texture MixerTexture { get; private set; }
 
         /// <summary>
         /// 是否已经初始化完毕?
@@ -84,68 +82,86 @@ namespace KouXiaGu.Terrain
         }
 
 
-        /// <summary>
-        /// 地貌信息描述文件文件名;
-        /// </summary>
-        public const string ConfigFileName = "LandformDefinition.xml";
+        #region 地貌资源初始化;
 
         /// <summary>
-        /// 地貌信息描述文件路径;
+        /// 同步初始化设置到贴图;
         /// </summary>
-        public static readonly string ConfigFilePath = ResourcePath.CombineConfiguration(ConfigFileName);
-
-        /// <summary>
-        /// 将现有地貌定义输出到文件;
-        /// </summary>
-        public static void Save(List<Landform> landforms)
+        public void Initialize(AssetBundle assetBundle)
         {
-            Save(landforms, ConfigFilePath);
+            Texture diffuse = assetBundle.LoadAsset<Texture>(diffusePath);
+            Texture height = assetBundle.LoadAsset<Texture>(heightPath);
+            Texture mixer = assetBundle.LoadAsset<Texture>(mixerPath);
+
+            this.DiffuseTexture = diffuse;
+            this.HeightTexture = height;
+            this.MixerTexture = mixer;
         }
 
         /// <summary>
-        /// 将地貌定义输出到文件;
+        /// 异步初始化设置到贴图信息;
         /// </summary>
-        public static void Save(List<Landform> landforms, string filePath)
+        public CustomYieldInstruction InitializeAsync(AssetBundle assetBundle)
         {
-            SerializeHelper.SerializeXml(filePath, landforms);
+            var asyncRequest = new LandformInitializeRequest(this, assetBundle);
+            return asyncRequest;
         }
 
         /// <summary>
-        /// 将地貌信息追加到定义的地貌文件;
+        /// 异步读取需要的贴图;
         /// </summary>
-        public static void Append(IEnumerable<Landform> landforms)
+        class LandformInitializeRequest : CustomYieldInstruction
         {
-            Append(landforms, ConfigFilePath);
+            Landform landform;
+
+            AssetBundleRequest diffuseRequest;
+            AssetBundleRequest heightRequest;
+            AssetBundleRequest mixerRequest;
+
+            public LandformInitializeRequest(Landform landform, AssetBundle assetBundle)
+            {
+                this.landform = landform;
+                LoadTexture(assetBundle, landform);
+            }
+
+            public override bool keepWaiting
+            {
+                get
+                {
+                    return KeepWaiting();
+                }
+            }
+
+            bool KeepWaiting()
+            {
+                if (!diffuseRequest.isDone || !heightRequest.isDone || !mixerRequest.isDone)
+                {
+                    return true;
+                }
+                else
+                {
+                    Texture diffuse = (Texture)diffuseRequest.asset;
+                    Texture height = (Texture)heightRequest.asset;
+                    Texture mixer = (Texture)mixerRequest.asset;
+
+                    landform.DiffuseTexture = diffuse;
+                    landform.HeightTexture = height;
+                    landform.MixerTexture = mixer;
+
+                    return false;
+                }
+            }
+
+            void LoadTexture(AssetBundle assetBundle, Landform landformXml)
+            {
+                diffuseRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.diffusePath);
+                heightRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.heightPath);
+                mixerRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.mixerPath);
+            }
+
         }
 
-        /// <summary>
-        /// 将此地貌结构附加到地貌定义文件中;
-        /// </summary>
-        public static void Append(IEnumerable<Landform> landforms, string filePath)
-        {
-            var originalLandforms = Load(filePath);
-            originalLandforms.AddRange(landforms);
-            Save(originalLandforms, filePath);
-        }
-
-
-        /// <summary>
-        /// 从地貌定义文件读取到地貌信息;
-        /// </summary>
-        public static List<Landform> Load()
-        {
-            return Load(ConfigFilePath);
-        }
-
-        /// <summary>
-        /// 从文件读取到地貌信息;
-        /// </summary>
-        public static List<Landform> Load(string filePath)
-        {
-            List<Landform> landforms = SerializeHelper.DeserializeXml<List<Landform>>(filePath);
-            return landforms;
-        }
-
+        #endregion
 
 
     }

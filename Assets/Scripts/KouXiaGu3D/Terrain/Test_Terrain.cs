@@ -16,31 +16,19 @@ namespace KouXiaGu.Terrain
         [ContextMenu("Serialize")]
         void Serialize()
         {
-            List<Landform> Landforms = new List<Landform>()
+            Landform[] Landforms = new Landform[]
             {
                 new Landform(10),
                 new Landform(20),
                 new Landform(90),
             };
-            LandformInit.Save(Landforms);
-        }
-
-        [ContextMenu("Append")]
-        void Append()
-        {
-            List<Landform> Landforms = new List<Landform>()
-            {
-                new Landform(10),
-                new Landform(20),
-                new Landform(90),
-            };
-            LandformInit.Append(Landforms);
+            LandformManager.Serialize(Landforms);
         }
 
         [ContextMenu("Deserialize")]
         void Deserialize()
         {
-            IEnumerable<Landform> Landforms = LandformInit.Load();
+            IEnumerable<Landform> Landforms = LandformManager.Deserialize();
 
             foreach (var Landform in Landforms)
             {
@@ -55,14 +43,14 @@ namespace KouXiaGu.Terrain
 
             Action done = delegate ()
             {
-                Debug.Log("Done:" + LandformInit.InitializedCount);
-                foreach (var item in LandformInit.InitializedLandforms)
+                Debug.Log("Done:" + LandformManager.GetInstance.Count);
+                foreach (var item in LandformManager.GetInstance.initializedLandforms)
                 {
                     Debug.Log(item.ToString());
                 }
             };
 
-            Observable.FromCoroutine(LandformInit.Initialize).Subscribe(null, done);
+            Observable.FromCoroutine(LandformManager.GetInstance.Initialize).Subscribe(null, done);
         }
 
 

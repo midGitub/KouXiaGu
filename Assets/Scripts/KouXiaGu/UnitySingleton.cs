@@ -11,7 +11,6 @@ namespace KouXiaGu
         where T : UnitySingleton<T>
     {
 
-        const string singletonGameObjectTag = "Singleton";
         static readonly object syncRoot = new object();
         static T instance;
 
@@ -40,14 +39,8 @@ namespace KouXiaGu
         {
             GameObject singletonGameObject = new GameObject(typeof(T).Name);
             GameObject.DontDestroyOnLoad(singletonGameObject);
-
             return singletonGameObject;
         }
-
-        //protected virtual void Awake()
-        //{
-        //    //GameObject.DontDestroyOnLoad(gameObject);
-        //}
 
     }
 
