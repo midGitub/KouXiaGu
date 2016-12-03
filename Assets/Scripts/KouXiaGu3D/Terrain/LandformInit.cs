@@ -69,6 +69,18 @@ namespace KouXiaGu.Terrain
             return isFind;
         }
 
+        /// <summary>
+        /// 从定义的资源配置初始化地形信息;
+        /// </summary>
+        public IEnumerator Initialize()
+        {
+            IEnumerable<Landform> landforms = Landform.Load().Where(item => !initializedLandforms.ContainsKey(item.ID));
+            var landformsArray = landforms.ToDictionary(item => item.ID);
+            initializedLandforms.AddOrReplace(landformsArray);
+
+            return Initialize(initializedLandforms.Values);
+        }
+
         #endregion
 
 
@@ -83,15 +95,6 @@ namespace KouXiaGu.Terrain
         /// 地貌贴图资源包文件路径;
         /// </summary>
         public static readonly string TextureAssetBundleFilePath = ResourcePath.CombineAssetBundle(TextureAssetBundleFileName);
-
-        /// <summary>
-        /// 从定义的资源配置初始化地形信息;
-        /// </summary>
-        public static IEnumerator Initialize()
-        {
-            IEnumerable<Landform> landforms = Landform.Load();
-            return Initialize(landforms);
-        }
 
         /// <summary>
         /// 对这些资源进行初始化,并且加入到已经初始化字典;
@@ -111,54 +114,17 @@ namespace KouXiaGu.Terrain
 
             foreach (var landform in landforms)
             {
-                //if (InitializeOrNot(landform))
-                //{
 #if INIT_LANDFORM_ASYNC
-                    yield return InitializeAsync(landform, assetBundle);
+                yield return InitializeAsync(landform, assetBundle);
 #else
                 Initialize(landform, assetBundle);
                 yield return null;
 #endif
-                    //TryAddInitialized(landform);
-                //}
             }
 
             assetBundle.Unload(false);
             yield break;
         }
-
-        ///// <summary>
-        ///// 是否对这个地貌信息进行初始化?返回true则初始化;
-        ///// </summary>
-        //static bool InitializeOrNot(Landform landform)
-        //{
-        //    if (!initializedLandforms.ContainsKey(landform.ID))
-        //    {
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning("相同的地貌ID,跳过此物体;" + landform.ToString());
-        //        return false;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 若初始化完毕则加入到已初始化合集内,返回true,否则返回false;
-        ///// </summary>
-        //static bool TryAddInitialized(Landform landform)
-        //{
-        //    if (landform.IsInitialized)
-        //    {
-        //        initializedLandforms.Add(landform.ID, landform);
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning(" 此地貌未能初始化成功;" + landform.ToString());
-        //        return false;
-        //    }
-        //}
 
         /// <summary>
         /// 同步初始化设置到贴图;
