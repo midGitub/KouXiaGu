@@ -17,7 +17,7 @@ namespace KouXiaGu
         /// <summary>
         /// 六边形半径定义(单位像素);
         /// </summary>
-        const int OuterRadius = 1;
+        public const int OuterRadius = 1;
 
         /// <summary>
         /// 六边形起点;
@@ -50,16 +50,25 @@ namespace KouXiaGu
         /// <summary>
         /// 从像素坐标获取到所在的 偏移坐标;
         /// </summary>
-        public static ShortVector2 PixelToOffset(Vector2 point)
+        public static ShortVector2 Pixel2DToOffset(Vector2 point)
         {
-            CubeCoordinate h = PixelToCube(point);
-            return CubeToOffset(h);
+            CubeCoordinate cube = Pixel2DToCube(point);
+            return CubeToOffset(cube);
+        }
+
+        /// <summary>
+        /// 3D像素坐标 转换到 偏移坐标;
+        /// </summary>
+        public static ShortVector2 PixelToCube(Vector3 point)
+        {
+            CubeCoordinate cube = Pixel2DToCube(new Vector2(point.x, point.z));
+            return CubeToOffset(cube);
         }
 
         /// <summary>
         /// 从像素坐标获取到所在的 立方体坐标;
         /// </summary>
-        public static CubeCoordinate PixelToCube(Vector2 point)
+        public static CubeCoordinate Pixel2DToCube(Vector2 point)
         {
             Vector2 pt = new Vector2((point.x - origin.x) / OuterRadius, (point.y - origin.y) / OuterRadius);
             float q = (float)(2.0 / 3.0 * pt.x);
@@ -67,10 +76,11 @@ namespace KouXiaGu
             return new CubeCoordinate(q, r, (-q - r));
         }
 
+
         /// <summary>
         /// 立方体坐标 转换成 像素坐标;
         /// </summary>
-        public static Vector2 CubeToPixel(CubeCoordinate hex)
+        public static Vector2 CubeToPixel2D(CubeCoordinate hex)
         {
             float x = OuterRadius * 1.5f * hex.q;
             float y = (float)(OuterRadius * Math.Sqrt(3) * (hex.r + hex.q / 2));
@@ -80,11 +90,21 @@ namespace KouXiaGu
         /// <summary>
         /// 偏移坐标 转换成 像素坐标;
         /// </summary>
-        public static Vector2 OffsetToPixel(ShortVector2 offset)
+        public static Vector2 OffsetToPixel2D(ShortVector2 offset)
         {
             float x = (float)(OuterRadius * 1.5f * offset.x);
             float y = (float)(OuterRadius * Math.Sqrt(3) * (offset.y - 0.5 * (offset.x & 1)));
             return new Vector2(x, y);
+        }
+
+        /// <summary>
+        /// 偏移坐标 转换成 3D的像素坐标;
+        /// </summary>
+        public static Vector3 OffsetToPixel(ShortVector2 offset)
+        {
+            float x = (float)(OuterRadius * 1.5f * offset.x);
+            float z = (float)(OuterRadius * Math.Sqrt(3) * (offset.y - 0.5 * (offset.x & 1)));
+            return new Vector3(x, 0, z);
         }
 
         #endregion

@@ -52,11 +52,11 @@ namespace KouXiaGu.Test
             try
             {
                 Vector2 planePoint = World2D.WorldConvert.MouseToPlane();
-                KouXiaGu.ShortVector2 offsetPoint = HexGrids.PixelToOffset(planePoint);
+                KouXiaGu.ShortVector2 offsetPoint = HexGrids.Pixel2DToOffset(planePoint);
                 //var pointPair = World2D.WorldConvert.PlaneToHexPair(planePoint);
                 string str = "";
 
-                str += "六边形中心坐标 :" + HexGrids.OffsetToPixel(offsetPoint)
+                str += "六边形中心坐标 :" + HexGrids.OffsetToPixel2D(offsetPoint)
                     + "地图坐标 :" + offsetPoint
                     + "平面坐标 :" + planePoint;
 
