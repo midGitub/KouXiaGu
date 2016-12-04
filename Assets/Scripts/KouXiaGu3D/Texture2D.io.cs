@@ -68,7 +68,7 @@ namespace KouXiaGu
                 Directory.CreateDirectory(directoryPath);
             }
             string filePath = Path.Combine(directoryPath, DateTime.Now.Ticks.ToString());
-            SavePNG(texture, filePath, FileMode.OpenOrCreate);
+            SavePNG(texture, filePath, FileMode.Create);
         }
 
         /// <summary>
@@ -81,7 +81,34 @@ namespace KouXiaGu
                 Directory.CreateDirectory(directoryPath);
             }
             string filePath = Path.Combine(directoryPath, DateTime.Now.Ticks.ToString());
-            SaveJPG(texture, filePath, FileMode.OpenOrCreate);
+            SaveJPG(texture, filePath, FileMode.Create);
+        }
+
+        /// <summary>
+        /// 保存到这个目录并且按 现在时间 的 记号(DateTime.Ticks) 命名;
+        /// </summary>
+        public static void SavePNG(this RenderTexture renderTexture, string directoryPath)
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+            Texture2D texture = renderTexture.GetTexture2D();
+            string filePath = Path.Combine(directoryPath, DateTime.Now.Ticks.ToString());
+            SavePNG(texture, filePath, FileMode.Create);
+        }
+
+
+        public static Texture2D GetTexture2D(this RenderTexture renderTexture)
+        {
+            RenderTexture currentActiveRT = RenderTexture.active;
+
+            RenderTexture.active = renderTexture;
+            Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height);
+            texture.ReadPixels(new Rect(0, 0, texture.width, texture.height), 0, 0);
+
+            RenderTexture.active = currentActiveRT;
+            return texture;
         }
 
     }

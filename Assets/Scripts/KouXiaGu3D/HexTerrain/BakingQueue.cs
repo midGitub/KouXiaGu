@@ -23,8 +23,8 @@ namespace KouXiaGu.HexTerrain
         Material heightMaterial;
         [SerializeField]
         Material blurMaterial;
-        //[SerializeField]
-        //Material shadowsAndHeightMaterial;
+        [SerializeField]
+        Material shadowsAndHeightMaterial;
         [SerializeField]
         Material diffuseMaterial;
 
@@ -41,6 +41,9 @@ namespace KouXiaGu.HexTerrain
 
         RenderTexture mixerRT;
         RenderTexture heightRT;
+        RenderTexture heightRTOffset1;
+        RenderTexture heightRTOffset2;
+        RenderTexture shadowsAndHeightRT;
         RenderTexture diffuseRT;
 
         //贴图尺寸;
@@ -99,6 +102,7 @@ namespace KouXiaGu.HexTerrain
             foreach (var pixelPair in HexGrids.GetNeighboursAndSelf(HexGrids.Origin))
             {
                 GameObject hexRendererObject = GameObject.Instantiate(ovenDisplayMesh, transform, false) as GameObject;
+                hexRendererObject.name = pixelPair.Key.ToString();
                 hexRendererObject.SetActive(true);
                 hexRendererObject.transform.position = HexGrids.OffsetToPixel(pixelPair.Value);
                 MeshRenderer hexRenderer = hexRendererObject.GetComponent<MeshRenderer>();
@@ -115,6 +119,12 @@ namespace KouXiaGu.HexTerrain
 
             heightRT = new RenderTexture(mixerTextureSize >> 1, mixerTextureSize >> 1, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
             heightRT.wrapMode = TextureWrapMode.Clamp;
+
+            heightRTOffset1 = new RenderTexture(mixerTextureSize >> 1, mixerTextureSize >> 1, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            heightRTOffset1.wrapMode = TextureWrapMode.Clamp;
+
+            heightRTOffset2 = new RenderTexture(mixerTextureSize >> 1, mixerTextureSize >> 1, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            heightRTOffset1.wrapMode = TextureWrapMode.Clamp;
 
             diffuseRT = new RenderTexture(mixerTextureSize, mixerTextureSize, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
             diffuseRT.wrapMode = TextureWrapMode.Clamp;
@@ -133,16 +143,21 @@ namespace KouXiaGu.HexTerrain
                 yield return bakingYieldInstruction;
 
                 BakingRequest bakingRequest = bakingQueue.Dequeue();
-                IEnumerable<KeyValuePair<HexDirection, Landform>> bakingRange = bakingRequest.GetBakingRange();
-
-                List<KeyValuePair<HexDirection, Landform>> bakingLandforms = BakingRangeSetting(bakingRange);
+                List<KeyValuePair<HexDirection, Landform>> bakingLandforms = BakingRangeSetting(bakingRequest);
 
                 BakingMixer(bakingLandforms);
                 yield return new WaitForSeconds(Test_Wait);
 
                 BakingHeight(bakingLandforms);
-                //BlurTexture(heightRT, 1, 1, 1);
+                BlurTexture(heightRT, 1, 1, 1);
+                //BakeTo(heightRTOffset1);
+                //BlurTexture(heightRTOffset1, 1, 1, 1);
+                //BakeTo(heightRTOffset2);
+                //BlurTexture(heightRTOffset2, 1, 1, 1);
                 yield return new WaitForSeconds(Test_Wait);
+
+                //shadowsAndHeightRT = ProduceShadowsAndHeightTexture(heightRT, heightRTOffset1, heightRTOffset2);
+                //yield return new WaitForSeconds(Test_Wait);
 
                 BakingDiffuse(bakingLandforms);
                 yield return new WaitForSeconds(Test_Wait);
@@ -154,8 +169,8 @@ namespace KouXiaGu.HexTerrain
                 diffuse.wrapMode = TextureWrapMode.Clamp;
                 diffuse.Apply();
 
-                //diffuse.SavePNG(Path.Combine(Application.dataPath, "1123"));
-                //height_Alpha8.SavePNG(Path.Combine(Application.dataPath, "1123"));
+                //diffuse.SavePNG(Test_Path);
+                //height_Alpha8.SavePNG(Test_Path);
 
                 Vector3 gameDisplayMeshPoint = HexGrids.OffsetToPixel(bakingRequest.MapPoint);
                 Instantiate(gameDisplayMeshPoint, diffuse, height_Alpha8);
@@ -166,21 +181,25 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 对烘焙范围进行设置,关闭或开启烘焙的方向;并返回需要进行烘焙的内容;
         /// </summary>
-        List<KeyValuePair<HexDirection, Landform>> BakingRangeSetting(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        List<KeyValuePair<HexDirection, Landform>> BakingRangeSetting(BakingRequest bakingRequest)
         {
+            var baking = bakingRequest.GetBakingRange();
             var bakingLandform = new List<KeyValuePair<HexDirection, Landform>>();
             foreach (var pair in baking)
             {
-                MeshRenderer hexMesh = GetHexMesh(pair.Key);
-                if (pair.Value == null)
+                MeshRenderer hexMesh = GetHexMesh(pair.Direction);
+                if (pair.Item == null)
                 {
                     hexMesh.gameObject.SetActive(false);
                 }
                 else
                 {
                     hexMesh.gameObject.SetActive(true);
-                    //hexMesh.transform.position = new Vector3(hexMesh.transform.position.x, )
-                    bakingLandform.Add(pair);
+                    hexMesh.transform.position = new Vector3(
+                        hexMesh.transform.position.x,
+                        pair.Point.y,
+                        hexMesh.transform.position.z);
+                    bakingLandform.Add(new KeyValuePair<HexDirection, Landform>(pair.Direction, pair.Item));
                 }
             }
             return bakingLandform;
@@ -272,6 +291,40 @@ namespace KouXiaGu.HexTerrain
             bakingCamera.targetTexture = diffuseRT;
             bakingCamera.Render();
             bakingCamera.targetTexture = null;
+        }
+
+
+        RenderTexture ProduceShadowsAndHeightTexture(RenderTexture terrainHeight,
+                                          RenderTexture terrainHeightOff1,
+                                          RenderTexture terrainHeightOff2)
+        {
+            shadowsAndHeightMaterial.SetTexture("_Height", terrainHeight);
+            shadowsAndHeightMaterial.SetTexture("_Height1", terrainHeightOff1);
+            shadowsAndHeightMaterial.SetTexture("_Height2", terrainHeightOff2);
+
+
+            RenderTexture rt = new RenderTexture(terrainHeight.width, terrainHeight.height, 0, RenderTextureFormat.ARGB32);
+            //simpler baking for older GPUs, in case they have problem with bilinear filtering in render targets
+
+            terrainHeight.filterMode = FilterMode.Bilinear;
+            terrainHeightOff1.filterMode = FilterMode.Bilinear;
+            terrainHeightOff1.filterMode = FilterMode.Bilinear;
+            rt.filterMode = FilterMode.Bilinear;
+
+            Graphics.Blit(null, rt, shadowsAndHeightMaterial, 0);
+
+            shadowsAndHeightMaterial.SetTexture("_Height", null);
+            shadowsAndHeightMaterial.SetTexture("_Height1", null);
+            shadowsAndHeightMaterial.SetTexture("_Height2", null);
+            return rt;
+        }
+
+
+        void BakeTo(RenderTexture target)
+        {
+            target.Release();
+            bakingCamera.targetTexture = target;
+            bakingCamera.Render();
         }
 
         void Instantiate(Vector3 position, Texture2D diffuse, Texture2D height)

@@ -57,13 +57,13 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 包含所有方向需要进行烘焙的节点信息,不需要渲染的方向 Landform 置为NULL;
         /// </summary>
-        public IEnumerable<KeyValuePair<HexDirection, Landform>> GetBakingRange()
+        public IEnumerable<HexDirectionPack<ShortVector2, Landform>> GetBakingRange()
         {
             foreach (var pair in TerrainMap.GetNeighboursAndSelfOrDefault(MapPoint))
             {
                 LandformNode landformNode = pair.Item;
                 Landform landform = GetLandform(landformNode);
-                yield return new KeyValuePair<HexDirection, Landform>(pair.Direction, landform);
+                yield return new HexDirectionPack<ShortVector2, Landform>(pair.Direction, pair.Point, landform);
             }
         }
 
