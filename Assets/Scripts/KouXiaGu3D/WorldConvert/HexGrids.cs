@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -22,7 +23,9 @@ namespace KouXiaGu
         /// <summary>
         /// 六边形起点;
         /// </summary>
-        static readonly ShortVector2 origin = new ShortVector2(0, 0);
+        public static readonly ShortVector2 Origin = new ShortVector2(0, 0);
+
+        public static readonly Vector3 OriginPixelPoint = Vector3.zero;
 
         #region 坐标转换;
 
@@ -70,7 +73,7 @@ namespace KouXiaGu
         /// </summary>
         public static CubeCoordinate Pixel2DToCube(Vector2 point)
         {
-            Vector2 pt = new Vector2((point.x - origin.x) / OuterRadius, (point.y - origin.y) / OuterRadius);
+            Vector2 pt = new Vector2((point.x - Origin.x) / OuterRadius, (point.y - Origin.y) / OuterRadius);
             float q = (float)(2.0 / 3.0 * pt.x);
             float r = (float)(-1.0 / 3.0 * pt.x + Math.Sqrt(3.0) / 3.0 * pt.y);
             return new CubeCoordinate(q, r, (-q - r));
@@ -78,13 +81,23 @@ namespace KouXiaGu
 
 
         /// <summary>
-        /// 立方体坐标 转换成 像素坐标;
+        /// 立方体坐标 转换成 2D像素坐标;
         /// </summary>
-        public static Vector2 CubeToPixel2D(CubeCoordinate hex)
+        public static Vector2 CubeToPixel2D(CubeCoordinate cube)
         {
-            float x = OuterRadius * 1.5f * hex.q;
-            float y = (float)(OuterRadius * Math.Sqrt(3) * (hex.r + hex.q / 2));
+            float x = OuterRadius * 1.5f * cube.q;
+            float y = (float)(OuterRadius * Math.Sqrt(3) * (cube.r + cube.q / 2));
             return new Vector2(x, y);
+        }
+
+        /// <summary>
+        /// 立方体坐标 转换成 3D像素坐标;
+        /// </summary>
+        public static Vector3 CubeToPixel(CubeCoordinate cube)
+        {
+            float x = OuterRadius * 1.5f * cube.q;
+            float z = (float)(OuterRadius * Math.Sqrt(3) * (cube.r + cube.q / 2));
+            return new Vector3(x, 0, z);
         }
 
         /// <summary>
@@ -199,6 +212,135 @@ namespace KouXiaGu
 
         #endregion
 
+
+
+
+        const int maxDirectionMark = (int)HexDirection.Self;
+        const int minDirectionMark = (int)HexDirection.North;
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组;不包含本身
+        /// </summary>
+        static readonly HexDirection[] HexDirectionsArray = new HexDirection[]
+        {
+            HexDirection.Northwest,
+            HexDirection.Southwest,
+            HexDirection.South,
+            HexDirection.Southeast,
+            HexDirection.Northeast,
+            HexDirection.North,
+        };
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组;
+        /// </summary>
+        static readonly HexDirection[] HexDirectionsAndSelfArray = Enum.GetValues(typeof(HexDirection)).
+            Cast<HexDirection>().Reverse().ToArray();
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
+        /// </summary>
+        public static IEnumerable<HexDirection> HexDirections()
+        {
+            return HexDirectionsArray;
+        }
+
+        /// <summary>
+        /// 获取到从 高位到低位 顺序返回的迭代结构;包括本身;
+        /// </summary>
+        public static IEnumerable<HexDirection> HexDirectionsAndSelf()
+        {
+            return HexDirectionsAndSelfArray;
+        }
+
+        /// <summary>
+        /// 获取到方向集表示的所有方向;
+        /// </summary>
+        public static IEnumerable<HexDirection> HexDirections(HexDirection directions)
+        {
+            int mask = (int)directions;
+            for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
+            {
+                if ((intDirection & mask) == 1)
+                {
+                    yield return (HexDirection)intDirection;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 获取到这个点周围的坐标;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<ShortVector2> GetNeighboursPoints(ShortVector2 target)
+        {
+            foreach (var direction in HexDirections())
+            {
+                ShortVector2 point = OffSetNeighbor(target, direction);
+                yield return point;
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighbours(ShortVector2 target)
+        {
+            foreach (var direction in HexDirections())
+            {
+                ShortVector2 point = OffSetNeighbor(target, direction);
+                yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个点本身和周围的坐标;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<ShortVector2> GetNeighboursAndSelfPoints(ShortVector2 target)
+        {
+            foreach (var direction in HexDirectionsAndSelf())
+            {
+                ShortVector2 point = OffSetNeighbor(target, direction);
+                yield return point;
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个点本身和周围的方向和坐标;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighboursAndSelf(ShortVector2 target)
+        {
+            foreach (var direction in HexDirectionsAndSelf())
+            {
+                ShortVector2 point = OffSetNeighbor(target, direction);
+                yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个点这些方向的坐标;
+        /// </summary>
+        public static IEnumerable<ShortVector2> GetNeighboursPoints(ShortVector2 target, HexDirection directions)
+        {
+            foreach (var direction in HexDirections(directions))
+            {
+                ShortVector2 point = OffSetNeighbor(target, direction);
+                yield return point;
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个点这些方向的坐标和方向;
+        /// </summary>
+        public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighbours(ShortVector2 target, HexDirection directions)
+        {
+            foreach (var direction in HexDirections(directions))
+            {
+                ShortVector2 point = OffSetNeighbor(target, direction);
+                yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
+            }
+        }
+
     }
 
     /// <summary>
@@ -274,206 +416,5 @@ namespace KouXiaGu
         }
 
     }
-
-
-    //struct FractionalHex
-    //{
-    //    public FractionalHex(double q, double r, double s)
-    //    {
-    //        this.q = q;
-    //        this.r = r;
-    //        this.s = s;
-    //    }
-    //    public readonly double q;
-    //    public readonly double r;
-    //    public readonly double s;
-
-    //    public Hex HexRound()
-    //    {
-    //        int q = (int)(Math.Round(this.q));
-    //        int r = (int)(Math.Round(this.r));
-    //        int s = (int)(Math.Round(this.s));
-    //        double q_diff = Math.Abs(q - this.q);
-    //        double r_diff = Math.Abs(r - this.r);
-    //        double s_diff = Math.Abs(s - this.s);
-    //        if (q_diff > r_diff && q_diff > s_diff)
-    //        {
-    //            q = -r - s;
-    //        }
-    //        else
-    //            if (r_diff > s_diff)
-    //        {
-    //            r = -q - s;
-    //        }
-    //        else
-    //        {
-    //            s = -q - r;
-    //        }
-    //        return new Hex(q, r, s);
-    //    }
-
-
-    //    static public FractionalHex HexLerp(FractionalHex a, FractionalHex b, double t)
-    //    {
-    //        return new FractionalHex(a.q * (1 - t) + b.q * t, a.r * (1 - t) + b.r * t, a.s * (1 - t) + b.s * t);
-    //    }
-
-
-    //    //static public List<Hex> HexLinedraw(Hex a, Hex b)
-    //    //{
-    //    //    int N = Hex.ManhattanDistances(a, b);
-    //    //    FractionalHex a_nudge = new FractionalHex(a.q + 0.000001, a.r + 0.000001, a.s - 0.000002);
-    //    //    FractionalHex b_nudge = new FractionalHex(b.q + 0.000001, b.r + 0.000001, b.s - 0.000002);
-    //    //    List<Hex> results = new List<Hex> { };
-    //    //    double step = 1.0 / Math.Max(N, 1);
-    //    //    for (int i = 0; i <= N; i++)
-    //    //    {
-    //    //        results.Add(FractionalHex.HexLerp(a_nudge, b_nudge, step * i).HexRound());
-    //    //    }
-    //    //    return results;
-    //    //}
-
-    //}
-
-    //struct OffsetCoord
-    //{
-    //    public OffsetCoord(int col, int row)
-    //    {
-    //        this.col = col;
-    //        this.row = row;
-    //    }
-    //    public readonly int col;
-    //    public readonly int row;
-    //    static public int EVEN = 1;
-    //    static public int ODD = -1;
-
-    //    static public OffsetCoord QoffsetFromCube(int offset, Hex h)
-    //    {
-    //        int col = h.q;
-    //        int row = h.r + (int)((h.q + offset * (h.q & 1)) / 2);
-    //        return new OffsetCoord(col, row);
-    //    }
-
-
-    //    static public Hex QoffsetToCube(int offset, OffsetCoord h)
-    //    {
-    //        int q = h.col;
-    //        int r = h.row - (int)((h.col + offset * (h.col & 1)) / 2);
-    //        int s = -q - r;
-    //        return new Hex(q, r, s);
-    //    }
-
-
-    //    static public OffsetCoord RoffsetFromCube(int offset, Hex h)
-    //    {
-    //        int col = h.q + (int)((h.r + offset * (h.r & 1)) / 2);
-    //        int row = h.r;
-    //        return new OffsetCoord(col, row);
-    //    }
-
-
-    //    static public Hex RoffsetToCube(int offset, OffsetCoord h)
-    //    {
-    //        int q = h.col - (int)((h.row + offset * (h.row & 1)) / 2);
-    //        int r = h.row;
-    //        int s = -q - r;
-    //        return new Hex(q, r, s);
-    //    }
-
-    //}
-
-    //struct Orientation
-    //{
-    //    public Orientation(double f0, double f1, double f2, double f3, double b0, double b1, double b2, double b3, double start_angle)
-    //    {
-    //        this.f0 = f0;
-    //        this.f1 = f1;
-    //        this.f2 = f2;
-    //        this.f3 = f3;
-    //        this.b0 = b0;
-    //        this.b1 = b1;
-    //        this.b2 = b2;
-    //        this.b3 = b3;
-    //        this.start_angle = start_angle;
-    //    }
-    //    public readonly double f0;
-    //    public readonly double f1;
-    //    public readonly double f2;
-    //    public readonly double f3;
-    //    public readonly double b0;
-    //    public readonly double b1;
-    //    public readonly double b2;
-    //    public readonly double b3;
-    //    public readonly double start_angle;
-    //}
-
-    //struct Layout
-    //{
-    //    public Layout(Orientation orientation, Vector2 size, Vector2 origin)
-    //    {
-    //        this.orientation = orientation;
-    //        this.size = size;
-    //        this.origin = origin;
-    //    }
-    //    public readonly Orientation orientation;
-    //    public readonly Vector2 size;
-    //    public readonly Vector2 origin;
-    //    //static public Orientation pointy = new Orientation(Math.Sqrt(3.0), Math.Sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, Math.Sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5);
-    //    static public Orientation flat = new Orientation(
-    //        3.0 / 2.0,
-    //        0.0,
-    //        Math.Sqrt(3.0) / 2.0,
-    //        Math.Sqrt(3.0), 
-    //        2.0 / 3.0,
-    //        0.0,
-    //        -1.0 / 3.0,
-    //        Math.Sqrt(3.0) / 3.0, 
-    //        0.0);
-
-    //    static public Vector2 HexToPixel(Layout layout, Hex h)
-    //    {
-    //        Orientation M = layout.orientation;
-    //        Vector2 size = layout.size;
-    //        Vector2 origin = layout.origin;
-    //        float x = (float)((M.f0 * h.q + M.f1 * h.r) * size.x);
-    //        float y = (float)((M.f2 * h.q + M.f3 * h.r) * size.y);
-    //        return new Vector2(x + origin.x, y + origin.y);
-    //    }
-
-
-    //    static public FractionalHex PixelToHex(Layout layout, Vector2 p)
-    //    {
-    //        Orientation M = layout.orientation;
-    //        Vector2 size = layout.size;
-    //        Vector2 origin = layout.origin;
-    //        Vector2 pt = new Vector2((p.x - origin.x) / size.x, (p.y - origin.y) / size.y);
-    //        double q = M.b0 * pt.x + M.b1 * pt.y;
-    //        double r = M.b2 * pt.x + M.b3 * pt.y;
-    //        return new FractionalHex(q, r, -q - r);
-    //    }
-
-
-    //    static public Vector2 HexCornerOffset(Layout layout, int corner)
-    //    {
-    //        Orientation M = layout.orientation;
-    //        Vector2 size = layout.size;
-    //        double angle = 2.0 * Math.PI * (M.start_angle - corner) / 6;
-    //        return new Vector2((float)(size.x * Math.Cos(angle)), (float)(size.y * Math.Sin(angle)));
-    //    }
-
-
-    //    static public List<Vector2> PolygonCorners(Layout layout, Hex h)
-    //    {
-    //        List<Vector2> corners = new List<Vector2> { };
-    //        Vector2 center = Layout.HexToPixel(layout, h);
-    //        for (int i = 0; i < 6; i++)
-    //        {
-    //            Vector2 offset = Layout.HexCornerOffset(layout, i);
-    //            corners.Add(new Vector2(center.x + offset.x, center.y + offset.y));
-    //        }
-    //        return corners;
-    //    }
-
-    //}
 
 }

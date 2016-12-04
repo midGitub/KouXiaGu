@@ -31,6 +31,44 @@ namespace KouXiaGu
         [ProtoMember(2)]
         public short y;
 
+
+        static readonly ShortVector2 up = new ShortVector2(0, 1);
+        public static ShortVector2 Up
+        {
+            get { return up; }
+        }
+
+        static readonly ShortVector2 down = new ShortVector2(0, -1);
+        public static ShortVector2 Down
+        {
+            get { return down; }
+        }
+
+        static readonly ShortVector2 left = new ShortVector2(-1, 0);
+        public static ShortVector2 Left
+        {
+            get { return left; }
+        }
+
+        static readonly ShortVector2 right = new ShortVector2(1, 0);
+        public static ShortVector2 Right
+        {
+            get { return right; }
+        }
+
+        static readonly ShortVector2 zero = new ShortVector2(0, 0);
+        public static ShortVector2 Zero
+        {
+            get { return zero; }
+        }
+
+        static readonly ShortVector2 one = new ShortVector2(1, 1);
+        public static ShortVector2 One
+        {
+            get { return one; }
+        }
+
+
         /// <summary>
         /// 获取这两个点的距离;
         /// </summary>
@@ -73,30 +111,10 @@ namespace KouXiaGu
             }
         }
 
-
-        #region 重载,对比,转换;
-
-        public override string ToString()
-        {
-            return String.Concat("(", x, " , ", y, ")");
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is ShortVector2))
-                return false;
-            return Equals((ShortVector2)obj);
-        }
-
-        public bool Equals(ShortVector2 other)
-        {
-            return x == other.x && y == other.y;
-        }
-
         /// <summary>
         /// 将哈希值转换成坐标;
         /// </summary>
-        public static ShortVector2 HashCodeToShortVector2(int hashCode)
+        public static ShortVector2 HashCodeToVector(int hashCode)
         {
             short x = (short)(hashCode >> 16);
             short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
@@ -125,13 +143,13 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 根据四舍五入进行转换;
+        /// 根据四舍五入进行转换(取 x 和 z 轴);
         /// </summary>
-        public static explicit operator ShortVector2(Vector3 vector2)
+        public static explicit operator ShortVector2(Vector3 vector3)
         {
             return new ShortVector2(
-                (short)Math.Round(vector2.x),
-                (short)Math.Round(vector2.y));
+                (short)Math.Round(vector3.x),
+                (short)Math.Round(vector3.z));
         }
 
         public static explicit operator Vector2(ShortVector2 v)
@@ -139,9 +157,12 @@ namespace KouXiaGu
             return new Vector2(v.x, v.y);
         }
 
+        /// <summary>
+        /// 转换到向量;(设置 x 和 z 轴, y轴设为0);
+        /// </summary>
         public static explicit operator Vector3(ShortVector2 v)
         {
-            return new Vector3(v.x, v.y);
+            return new Vector3(v.x, 0, v.y);
         }
 
         public static bool operator ==(ShortVector2 point1, ShortVector2 point2)
@@ -200,8 +221,22 @@ namespace KouXiaGu
             return point1;
         }
 
-        #endregion
+        public override string ToString()
+        {
+            return String.Concat("(", x, " , ", y, ")");
+        }
 
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ShortVector2))
+                return false;
+            return Equals((ShortVector2)obj);
+        }
+
+        public bool Equals(ShortVector2 other)
+        {
+            return x == other.x && y == other.y;
+        }
 
     }
 }

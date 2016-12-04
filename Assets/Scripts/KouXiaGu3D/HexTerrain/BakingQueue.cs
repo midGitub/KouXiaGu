@@ -26,11 +26,12 @@ namespace KouXiaGu.HexTerrain
         [SerializeField]
         Material diffuseMaterial;
 
+        [SerializeField]
+        GameObject hexMesh;
 
         Camera bakingCamera;
-
-        Queue<BakingNode> bakingQueue;
-
+        Queue<BakingRequest> bakingQueue;
+        Dictionary<int, MeshRenderer> aroundHexMesh;
         Coroutine bakingCoroutine;
 
         /// <summary>
@@ -45,12 +46,13 @@ namespace KouXiaGu.HexTerrain
         void Awake()
         {
             bakingCamera = GetComponent<Camera>();
-            bakingQueue = new Queue<BakingNode>();
+            bakingQueue = new Queue<BakingRequest>();
         }
 
         void Start()
         {
             InitializeBakingCamera();
+            InitializeBakingMesh();
 
             bakingCoroutine = StartCoroutine(Baking());
         }
@@ -62,26 +64,29 @@ namespace KouXiaGu.HexTerrain
         {
             bakingCamera.orthographic = true;
             bakingCamera.orthographicSize = HexOuterRadius;
+            bakingCamera.transform.position = new Vector3(HexGrids.OriginPixelPoint.x,5f, HexGrids.OriginPixelPoint.z);
+        }
+
+        /// <summary>
+        /// 设置六边形的网格到场景;
+        /// </summary>
+        void InitializeBakingMesh()
+        {
+            aroundHexMesh = new Dictionary<int, MeshRenderer>();
+            foreach (var pixelPair in HexGrids.GetNeighboursAndSelf(HexGrids.Origin))
+            {
+                GameObject hexRendererObject = GameObject.Instantiate(hexMesh, transform, false) as GameObject;
+                hexRendererObject.SetActive(true);
+                hexRendererObject.transform.position = HexGrids.OffsetToPixel(pixelPair.Value);
+                MeshRenderer hexRenderer = hexRendererObject.GetComponent<MeshRenderer>();
+                aroundHexMesh.Add((int)pixelPair.Key, hexRenderer);
+            }
         }
 
 
-        public void Enqueue(BakingNode bakingNode)
+        public void Enqueue(BakingRequest bakingNode)
         {
             bakingQueue.Enqueue(bakingNode);
-        }
-
-        bool TryDequeue(out BakingNode bakingNode)
-        {
-            if (bakingQueue.Count == 0)
-            {
-                bakingNode = default(BakingNode);
-                return false;
-            }
-            else
-            {
-                bakingNode = bakingQueue.Dequeue();
-                return true;
-            }
         }
 
 
@@ -90,16 +95,42 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         const int DiffuseTextureSize = 500;
 
-        public Renderer renderer;
-
         IEnumerator Baking()
         {
+            CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
+
             while (true)
             {
+                yield return bakingYieldInstruction;
+
+                BakingRequest bakingNode = bakingQueue.Dequeue();
+                KeyValuePair<HexDirection, Landform>[] bakingRange = bakingNode.BakingRange.ToArray();
+
+                BakingRangeSetting(bakingRange);
 
 
-                yield return null;
+
             }
+        }
+
+        /// <summary>
+        /// 对烘焙范围进行设置,关闭或开启烘焙的方向;
+        /// </summary>
+        void BakingRangeSetting(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        {
+            foreach (var pair in baking)
+            {
+                MeshRenderer hexMesh = aroundHexMesh[(int)pair.Key];
+                hexMesh.gameObject.SetActive(pair.Value != null);
+            }
+        }
+
+        /// <summary>
+        /// 对混合贴图进行烘焙;
+        /// </summary>
+        void BakingMixer(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        {
+
         }
 
 
@@ -121,23 +152,23 @@ namespace KouXiaGu.HexTerrain
         }
 
 
-        [ContextMenu("保存到")]
-        void SaveToPng()
-        {
-            RenderTexture renderTexture = new RenderTexture(DiffuseTextureSize, DiffuseTextureSize, 24, RenderTextureFormat.ARGB32);
-            bakingCamera.targetTexture = renderTexture;
-            bakingCamera.Render();
+        //[ContextMenu("保存到")]
+        //void SaveToPng()
+        //{
+        //    RenderTexture renderTexture = new RenderTexture(DiffuseTextureSize, DiffuseTextureSize, 24, RenderTextureFormat.ARGB32);
+        //    bakingCamera.targetTexture = renderTexture;
+        //    bakingCamera.Render();
 
-            Texture2D texture = HexTextureCutOut(renderTexture, TextureFormat.RGB24, false);
+        //    Texture2D texture = HexTextureCutOut(renderTexture, TextureFormat.RGB24, false);
 
-            texture.SavePNG(Path.Combine(Application.dataPath, "1123"));
+        //    texture.SavePNG(Path.Combine(Application.dataPath, "1123"));
 
-            texture.Compress(false);
-            texture.filterMode = FilterMode.Bilinear;
-            texture.Apply();
+        //    texture.Compress(false);
+        //    texture.filterMode = FilterMode.Bilinear;
+        //    texture.Apply();
 
-            renderer.material.SetTexture("_MainTex", texture);
-        }
+        //    renderer.material.SetTexture("_MainTex", texture);
+        //}
 
 
     }

@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
 using System.Xml.Serialization;
+using System;
+using UniRx;
 
 namespace KouXiaGu.HexTerrain
 {
@@ -43,6 +45,21 @@ namespace KouXiaGu.HexTerrain
         void Awake()
         {
             initializedLandforms = new Dictionary<int, Landform>();
+        }
+
+        //Test
+        void Start()
+        {
+            Action done = delegate ()
+            {
+                Debug.Log("Done:" + LandformManager.GetInstance.Count);
+                foreach (var item in LandformManager.GetInstance.initializedLandforms)
+                {
+                    Debug.Log(item.ToString());
+                }
+            };
+
+            Observable.FromCoroutine(LandformManager.GetInstance.Initialize).Subscribe(null, done);
         }
 
         #region 初始化地貌;

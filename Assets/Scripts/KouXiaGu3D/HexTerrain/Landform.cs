@@ -27,7 +27,7 @@ namespace KouXiaGu.HexTerrain
         public string Name { get; set; }
 
         /// <summary>
-        /// 地形唯一标示;
+        /// 地形唯一标示(0,-1作为保留);
         /// </summary>
         [XmlAttribute("id")]
         public int ID { get; set; }

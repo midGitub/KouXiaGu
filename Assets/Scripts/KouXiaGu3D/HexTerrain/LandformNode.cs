@@ -11,13 +11,16 @@ namespace KouXiaGu.HexTerrain
     /// 用于保存的地形节点结构;
     /// </summary>
     [ProtoContract]
-    public struct TerrainNode
+    public struct LandformNode
     {
+        /// <summary>
+        /// 代表的地形ID((0,-1作为保留);
+        /// </summary>
         [ProtoMember(2)]
-        public int terrainTypeId;
+        public int ID;
 
-        [ProtoMember(3)]
-        public float rotationAngle;
+        //[ProtoMember(3)]
+        //public float rotationAngle;
     }
 
 }
