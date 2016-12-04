@@ -19,14 +19,6 @@ namespace KouXiaGu.HexTerrain
         public IReadOnlyMap2D<LandformNode> TerrainMap { get; private set; }
 
         /// <summary>
-        /// 包含所有方向需要进行烘焙的节点信息,不需要渲染的方向 Landform 置为NULL;
-        /// </summary>
-        public KeyValuePair<HexDirection, Landform>[] BakingRange
-        {
-            get { return GetBakingRange().ToArray(); }
-        }
-
-        /// <summary>
         /// 初始化需要烘焙的节点;
         /// </summary>
         public BakingRequest(ShortVector2 mapPoint, IReadOnlyMap2D<LandformNode> terrainMap)
@@ -63,9 +55,9 @@ namespace KouXiaGu.HexTerrain
         }
 
         /// <summary>
-        /// 获取到邻居节点和本身的地貌信息;
+        /// 包含所有方向需要进行烘焙的节点信息,不需要渲染的方向 Landform 置为NULL;
         /// </summary>
-        IEnumerable<KeyValuePair<HexDirection, Landform>> GetBakingRange()
+        public IEnumerable<KeyValuePair<HexDirection, Landform>> GetBakingRange()
         {
             foreach (var pair in TerrainMap.GetNeighboursAndSelfOrDefault(MapPoint))
             {
@@ -80,6 +72,9 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         Landform GetLandform(LandformNode landformNode)
         {
+            if (landformNode.ID == 0)
+                return null;
+
             Landform landform = LandformManager.GetInstance[landformNode.ID];
             return landform;
         }

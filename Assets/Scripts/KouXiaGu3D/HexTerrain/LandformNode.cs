@@ -13,6 +13,12 @@ namespace KouXiaGu.HexTerrain
     [ProtoContract]
     public struct LandformNode
     {
+
+        public LandformNode(int id)
+        {
+            this.ID = id;
+        }
+
         /// <summary>
         /// 代表的地形ID((0,-1作为保留);
         /// </summary>

@@ -31,7 +31,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public Landform this[int id]
         {
-            get { return initializedLandforms[id]; }
+            get{ return initializedLandforms[id]; }
         }
 
         /// <summary>

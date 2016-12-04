@@ -13,7 +13,7 @@ namespace KouXiaGu.HexTerrain
     /// 烘焙贴图队列;
     /// </summary>
     [DisallowMultipleComponent, RequireComponent(typeof(Camera))]
-    public class BakingQueue : MonoBehaviour
+    public sealed class BakingQueue : UnitySingleton<BakingQueue>
     {
         BakingQueue() { }
 
@@ -27,12 +27,23 @@ namespace KouXiaGu.HexTerrain
         Material diffuseMaterial;
 
         [SerializeField]
-        GameObject hexMesh;
+        GameObject ovenDisplayMesh;
+        [SerializeField]
+        GameObject gameDisplayMesh;
 
         Camera bakingCamera;
         Queue<BakingRequest> bakingQueue;
         Dictionary<int, MeshRenderer> aroundHexMesh;
         Coroutine bakingCoroutine;
+
+
+        RenderTexture mixerRT;
+        RenderTexture heightRT;
+        RenderTexture diffuseRT;
+
+        //贴图尺寸;
+        int mixerTextureSize = 500;
+
 
         /// <summary>
         /// 定义的六边形半径;
@@ -51,8 +62,9 @@ namespace KouXiaGu.HexTerrain
 
         void Start()
         {
-            InitializeBakingCamera();
-            InitializeBakingMesh();
+            InitBakingCamera();
+            InitBakingMesh();
+            InitRenderTextures();
 
             bakingCoroutine = StartCoroutine(Baking());
         }
@@ -60,7 +72,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 设置烘焙相机参数;
         /// </summary>
-        void InitializeBakingCamera()
+        void InitBakingCamera()
         {
             bakingCamera.orthographic = true;
             bakingCamera.orthographicSize = HexOuterRadius;
@@ -70,12 +82,12 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 设置六边形的网格到场景;
         /// </summary>
-        void InitializeBakingMesh()
+        void InitBakingMesh()
         {
             aroundHexMesh = new Dictionary<int, MeshRenderer>();
             foreach (var pixelPair in HexGrids.GetNeighboursAndSelf(HexGrids.Origin))
             {
-                GameObject hexRendererObject = GameObject.Instantiate(hexMesh, transform, false) as GameObject;
+                GameObject hexRendererObject = GameObject.Instantiate(ovenDisplayMesh, transform, false) as GameObject;
                 hexRendererObject.SetActive(true);
                 hexRendererObject.transform.position = HexGrids.OffsetToPixel(pixelPair.Value);
                 MeshRenderer hexRenderer = hexRendererObject.GetComponent<MeshRenderer>();
@@ -83,17 +95,27 @@ namespace KouXiaGu.HexTerrain
             }
         }
 
-
-        public void Enqueue(BakingRequest bakingNode)
+        /// <summary>
+        /// 初始化渲染纹理;
+        /// </summary>
+        void InitRenderTextures()
         {
-            bakingQueue.Enqueue(bakingNode);
+            mixerRT = new RenderTexture(mixerTextureSize, mixerTextureSize, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+
+            heightRT = new RenderTexture(mixerTextureSize >> 1, mixerTextureSize >> 1, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            heightRT.wrapMode = TextureWrapMode.Clamp;
+
+            diffuseRT = new RenderTexture(mixerTextureSize, mixerTextureSize, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            diffuseRT.wrapMode = TextureWrapMode.Clamp;
         }
 
-
         /// <summary>
-        /// 漫反射贴图尺寸;
+        /// 添加需要渲染的节点;
         /// </summary>
-        const int DiffuseTextureSize = 500;
+        public void Enqueue(BakingRequest bakingRequest)
+        {
+            bakingQueue.Enqueue(bakingRequest);
+        }
 
         IEnumerator Baking()
         {
@@ -104,35 +126,109 @@ namespace KouXiaGu.HexTerrain
                 yield return bakingYieldInstruction;
 
                 BakingRequest bakingNode = bakingQueue.Dequeue();
-                KeyValuePair<HexDirection, Landform>[] bakingRange = bakingNode.BakingRange.ToArray();
+                IEnumerable<KeyValuePair<HexDirection, Landform>> bakingRange = bakingNode.GetBakingRange();
 
-                BakingRangeSetting(bakingRange);
+                List<KeyValuePair<HexDirection, Landform>> bakingLandforms = BakingRangeSetting(bakingRange);
 
-
-
+                BakingMixer(bakingLandforms);
+                BakingHeight(bakingLandforms);
+                BakingDiffuse(bakingLandforms);
             }
         }
 
         /// <summary>
-        /// 对烘焙范围进行设置,关闭或开启烘焙的方向;
+        /// 对烘焙范围进行设置,关闭或开启烘焙的方向;并返回需要进行烘焙的内容;
         /// </summary>
-        void BakingRangeSetting(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        List<KeyValuePair<HexDirection, Landform>> BakingRangeSetting(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
         {
+            var bakingLandform = new List<KeyValuePair<HexDirection, Landform>>();
             foreach (var pair in baking)
             {
-                MeshRenderer hexMesh = aroundHexMesh[(int)pair.Key];
-                hexMesh.gameObject.SetActive(pair.Value != null);
+                MeshRenderer hexMesh = GetHexMesh(pair.Key);
+                if (pair.Value == null)
+                {
+                    hexMesh.gameObject.SetActive(false);
+                }
+                else
+                {
+                    hexMesh.gameObject.SetActive(true);
+                    bakingLandform.Add(pair);
+                }
             }
+            return bakingLandform;
         }
 
         /// <summary>
-        /// 对混合贴图进行烘焙;
+        /// 对混合贴图进行烘焙;传入需要设置到的地貌节点;
         /// </summary>
         void BakingMixer(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
         {
+            foreach (var pair in baking)
+            {
+                Landform landform = pair.Value;
+                MeshRenderer hexMesh = GetHexMesh(pair.Key);
+                if (hexMesh.material != null)
+                    GameObject.Destroy(hexMesh.material);
 
+                hexMesh.material = mixerMaterial;
+                hexMesh.material.mainTexture = landform.MixerTexture;
+            }
+
+            mixerRT.Release();
+            bakingCamera.targetTexture = mixerRT;
+            bakingCamera.Render();
         }
 
+        void BakingHeight(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        {
+            foreach (var pair in baking)
+            {
+                Landform landform = pair.Value;
+                MeshRenderer hexMesh = GetHexMesh(pair.Key);
+                if (hexMesh.material != null)
+                    GameObject.Destroy(hexMesh.material);
+
+                hexMesh.material = heightMaterial;
+                hexMesh.material.SetTexture("_MainTex", landform.HeightTexture);
+                hexMesh.material.SetTexture("_Mixer", landform.MixerTexture);
+                hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
+            }
+
+            heightRT.Release();
+            bakingCamera.targetTexture = heightRT;
+            bakingCamera.Render();
+        }
+
+        void BakingDiffuse(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        {
+            foreach (var pair in baking)
+            {
+                Landform landform = pair.Value;
+                MeshRenderer hexMesh = GetHexMesh(pair.Key);
+                if (hexMesh.material != null)
+                    GameObject.Destroy(hexMesh.material);
+
+                hexMesh.material = diffuseMaterial;
+
+                hexMesh.material.SetTexture("_MainTex", landform.DiffuseTexture);
+                hexMesh.material.SetTexture("_Mixer", landform.MixerTexture);
+                hexMesh.material.SetTexture("_Height", landform.HeightTexture);
+                hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
+                //hexMesh.material.SetTexture("_ShadowsAndHeight", shadowsAndHeightRT);
+                //hexMesh.material.SetFloat("_Sea", pair.Key.terrainType.source.seaType ? 1f : 0f);
+                hexMesh.material.SetFloat("_Centralization", 1.0f);
+            }
+
+            diffuseRT.Release();
+            bakingCamera.targetTexture = diffuseRT;
+            bakingCamera.Render();
+        }
+
+
+        MeshRenderer GetHexMesh(HexDirection direction)
+        {
+            return aroundHexMesh[(int)direction];
+        }
 
         /// <summary>
         /// 剪切到平顶的六边形贴图的大小,传入贴图必须为矩形的;
