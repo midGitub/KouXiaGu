@@ -93,11 +93,11 @@ namespace KouXiaGu
         /// <summary>
         /// 立方体坐标 转换成 3D像素坐标;
         /// </summary>
-        public static Vector3 CubeToPixel(CubeCoordinate cube)
+        public static Vector3 CubeToPixel(CubeCoordinate cube, float y = 0)
         {
             float x = OuterRadius * 1.5f * cube.q;
             float z = (float)(OuterRadius * Math.Sqrt(3) * (cube.r + cube.q / 2));
-            return new Vector3(x, 0, z);
+            return new Vector3(x, y, z);
         }
 
         /// <summary>
@@ -113,11 +113,11 @@ namespace KouXiaGu
         /// <summary>
         /// 偏移坐标 转换成 3D的像素坐标;
         /// </summary>
-        public static Vector3 OffsetToPixel(ShortVector2 offset)
+        public static Vector3 OffsetToPixel(ShortVector2 offset, float y = 0)
         {
             float x = (float)(OuterRadius * 1.5f * offset.x);
             float z = (float)(OuterRadius * Math.Sqrt(3) * (offset.y - 0.5 * (offset.x & 1)));
-            return new Vector3(x, 0, z);
+            return new Vector3(x, y, z);
         }
 
         #endregion
