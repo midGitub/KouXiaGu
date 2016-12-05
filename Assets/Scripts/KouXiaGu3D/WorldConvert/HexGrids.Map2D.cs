@@ -120,7 +120,7 @@ namespace KouXiaGu
             IEnumerable<HexDirection> aroundDirection = HexDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
-                ShortVector2 vePoint = OffSetNeighbor(target, direction);
+                ShortVector2 vePoint = OffSetDirectionVector(target, direction) + target;
                 if (map.TryGetValue(vePoint, out item))
                 {
                     if (func(item))

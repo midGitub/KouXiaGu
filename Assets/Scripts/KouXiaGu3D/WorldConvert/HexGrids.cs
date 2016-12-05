@@ -79,6 +79,12 @@ namespace KouXiaGu
             return new CubeCoordinate(q, r, (-q - r));
         }
 
+        public static CubeCoordinate PixelToCube(Vector3 point)
+        {
+            Vector2 v2 = new Vector2(point.x, point.z);
+            return Pixel2DToCube(v2);
+        }
+
 
         /// <summary>
         /// 立方体坐标 转换成 2D像素坐标;
@@ -86,7 +92,7 @@ namespace KouXiaGu
         public static Vector2 CubeToPixel2D(CubeCoordinate cube)
         {
             float x = OuterRadius * 1.5f * cube.q;
-            float y = (float)(OuterRadius * Math.Sqrt(3) * (cube.r + cube.q / 2));
+            float y = (float)(Math.Sqrt(3.0) / 2.0 * cube.q + Math.Sqrt(3.0) * cube.r) * OuterRadius;
             return new Vector2(x, y);
         }
 
@@ -95,9 +101,8 @@ namespace KouXiaGu
         /// </summary>
         public static Vector3 CubeToPixel(CubeCoordinate cube, float y = 0)
         {
-            float x = OuterRadius * 1.5f * cube.q;
-            float z = (float)(OuterRadius * Math.Sqrt(3) * (cube.r + cube.q / 2));
-            return new Vector3(x, y, z);
+            Vector2 v2 = CubeToPixel2D(cube);
+            return new Vector3(v2.x, y, v2.y);
         }
 
         /// <summary>
@@ -115,9 +120,8 @@ namespace KouXiaGu
         /// </summary>
         public static Vector3 OffsetToPixel(ShortVector2 offset, float y = 0)
         {
-            float x = (float)(OuterRadius * 1.5f * offset.x);
-            float z = (float)(OuterRadius * Math.Sqrt(3) * (offset.y - 0.5 * (offset.x & 1)));
-            return new Vector3(x, y, z);
+            Vector2 v2 = OffsetToPixel2D(offset);
+            return new Vector3(v2.x, y, v2.y);
         }
 
         #endregion
@@ -145,7 +149,10 @@ namespace KouXiaGu
 
         #endregion
 
+
         #region 方向;
+
+        #region 立方体坐标方向;
 
         /// <summary>
         /// 存在方向数;
@@ -183,37 +190,76 @@ namespace KouXiaGu
             return directions[(int)direction];
         }
 
+        #endregion
+
+        #region 偏移坐标方向;
+
         /// <summary>
-        /// 获取到邻居;
+        /// 方向转换偏移量合集;
         /// </summary>
-        public static CubeCoordinate CubeNeighbor(CubeCoordinate cube, HexDirection direction)
+        static readonly Dictionary<int, DirectionVector> DirectionVectorSet = GetDirectionVector();
+
+        static Dictionary<int, DirectionVector> GetDirectionVector()
         {
-            CubeCoordinate cubeVector = CubeDirectionVector(direction);
-            return cube + cubeVector;
+            var directionVectorSet = new Dictionary<int, DirectionVector>(DirectionNumber);
+
+            AddIn(directionVectorSet, HexDirection.North, new ShortVector2(0, 1), new ShortVector2(0, 1));
+            AddIn(directionVectorSet, HexDirection.Northeast, new ShortVector2(1, 0), new ShortVector2(1, 1));
+            AddIn(directionVectorSet, HexDirection.Southeast, new ShortVector2(1, -1), new ShortVector2(1, 0));
+            AddIn(directionVectorSet, HexDirection.South, new ShortVector2(0, -1), new ShortVector2(0, -1));
+            AddIn(directionVectorSet, HexDirection.Southwest, new ShortVector2(-1, -1), new ShortVector2(-1, 0));
+            AddIn(directionVectorSet, HexDirection.Northwest, new ShortVector2(-1, 0), new ShortVector2(-1, 1));
+            AddIn(directionVectorSet, HexDirection.Self, new ShortVector2(0, 0), new ShortVector2(0, 0));
+
+            return directionVectorSet;
+        }
+
+        static void AddIn(Dictionary<int, DirectionVector> directionVectorDictionary,
+            HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
+        {
+            DirectionVector directionVector = new DirectionVector(direction, oddVector, evenVector);
+            directionVectorDictionary.Add((int)direction, directionVector);
         }
 
         /// <summary>
-        /// 获取到方向偏移量;
+        /// 获取到这个地图坐标这个方向需要偏移的量(不进行相加,仅是偏移量);
         /// </summary>
-        public static ShortVector2 OffSetDirectionVector(HexDirection direction)
+        public static ShortVector2 OffSetDirectionVector(ShortVector2 target, HexDirection direction)
         {
-            CubeCoordinate hex = directions[(int)direction];
-            return CubeToOffset(hex);
+            DirectionVector directionVector = DirectionVectorSet[(int)direction];
+            if ((target.x & 1) == 1)
+            {
+                return directionVector.OddVector;
+            }
+            else
+            {
+                return directionVector.EvenVector;
+            }
         }
 
         /// <summary>
-        /// 获取到邻居;
+        /// 六边形 x轴奇数位和偶数位 对应方向的偏移向量;
         /// </summary>
-        public static ShortVector2 OffSetNeighbor(ShortVector2 offset, HexDirection direction)
+        struct DirectionVector
         {
-            ShortVector2 offsetVector = OffSetDirectionVector(direction);
-            return offset + offsetVector;
+            public DirectionVector(HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
+            {
+                this.Direction = direction;
+                this.OddVector = oddVector;
+                this.EvenVector = evenVector;
+            }
+
+            public HexDirection Direction { get; private set; }
+            public ShortVector2 OddVector { get; private set; }
+            public ShortVector2 EvenVector { get; private set; }
         }
 
         #endregion
 
+        #endregion
 
 
+        #region 经过排序的方向;
 
         const int maxDirectionMark = (int)HexDirection.Self;
         const int minDirectionMark = (int)HexDirection.North;
@@ -268,6 +314,8 @@ namespace KouXiaGu
             }
         }
 
+        #endregion
+
 
         /// <summary>
         /// 获取到这个点周围的坐标;从 HexDirection 高位标记开始返回;
@@ -276,7 +324,7 @@ namespace KouXiaGu
         {
             foreach (var direction in HexDirections())
             {
-                ShortVector2 point = OffSetNeighbor(target, direction);
+                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
                 yield return point;
             }
         }
@@ -288,7 +336,7 @@ namespace KouXiaGu
         {
             foreach (var direction in HexDirections())
             {
-                ShortVector2 point = OffSetNeighbor(target, direction);
+                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
                 yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
             }
         }
@@ -300,7 +348,7 @@ namespace KouXiaGu
         {
             foreach (var direction in HexDirectionsAndSelf())
             {
-                ShortVector2 point = OffSetNeighbor(target, direction);
+                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
                 yield return point;
             }
         }
@@ -312,7 +360,7 @@ namespace KouXiaGu
         {
             foreach (var direction in HexDirectionsAndSelf())
             {
-                ShortVector2 point = OffSetNeighbor(target, direction);
+                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
                 yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
             }
         }
@@ -324,7 +372,7 @@ namespace KouXiaGu
         {
             foreach (var direction in HexDirections(directions))
             {
-                ShortVector2 point = OffSetNeighbor(target, direction);
+                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
                 yield return point;
             }
         }
@@ -336,7 +384,7 @@ namespace KouXiaGu
         {
             foreach (var direction in HexDirections(directions))
             {
-                ShortVector2 point = OffSetNeighbor(target, direction);
+                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
                 yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
             }
         }
@@ -413,6 +461,11 @@ namespace KouXiaGu
         public static CubeCoordinate operator /(CubeCoordinate a, int k)
         {
             return new CubeCoordinate(a.q / k, a.r / k, a.s / k);
+        }
+
+        public override string ToString()
+        {
+            return string.Concat("(", q, ",", r, ",", s, ")");
         }
 
     }

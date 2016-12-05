@@ -26,8 +26,8 @@ namespace KouXiaGu.HexTerrain
             terrainMap.Add(new ShortVector2(0, 0), new LandformNode(10));
             terrainMap.Add(ShortVector2.Up, new LandformNode(20));
             terrainMap.Add(ShortVector2.Down, new LandformNode(20));
-            terrainMap.Add(ShortVector2.Left, new LandformNode(30));
-            terrainMap.Add(ShortVector2.Right, new LandformNode(30));
+            terrainMap.Add(ShortVector2.Left, new LandformNode(20));
+            terrainMap.Add(ShortVector2.Right, new LandformNode(20));
             terrainMap.Add(new ShortVector2(1,1), new LandformNode(20));
             terrainMap.Add(new ShortVector2(-1, -1), new LandformNode(20));
             terrainMap.Add(new ShortVector2(-1, 1), new LandformNode(20));

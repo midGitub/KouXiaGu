@@ -74,10 +74,10 @@ namespace KouXiaGu.HexTerrain
         public override string ToString()
         {
             string info = string.Concat(
+                this.GetType().Name,
                 "id:", ID,
                 " ,name:", Name,
-                " ,IsInitialized:", IsInitialized,
-                "\n", base.ToString());
+                " ,IsInitialized:", IsInitialized);
             return info;
         }
 

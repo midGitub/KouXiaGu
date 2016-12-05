@@ -13,30 +13,38 @@ namespace KouXiaGu.Test
     public class Test_Point : MonoBehaviour
     {
 
-        private Text textObject;
+        Text textObject;
 
-        private void Awake()
+        Vector3 currentPixelPosition;
+        string checkPointText;
+
+        void Awake()
         {
             textObject = GetComponent<Text>();
         }
 
-        private void Start()
+        void Start()
         {
             this.ObserveEveryValueChanged(_ => UnityEngine.Input.mousePosition).
                 SubscribeToText(textObject, TextUpdate);
+
+            this.ObserveEveryValueChanged(_ => Input.GetKeyDown(KeyCode.Mouse0)).
+                Subscribe(_ => currentPixelPosition = MouseConvert.MouseToPixel());
+
         }
 
-        private string TextUpdate(Vector3 mousePosition)
+        string TextUpdate(Vector3 mousePosition)
         {
             string str = "";
 
             str += GetScreenPoint(mousePosition);
             str += GetPlanePoint(mousePosition);
+            str += OnMouseDown();
 
             return str;
         }
 
-        private string GetScreenPoint(Vector2 mousePosition)
+        string GetScreenPoint(Vector2 mousePosition)
         {
             string str = "";
 
@@ -45,17 +53,45 @@ namespace KouXiaGu.Test
             return str;
         }
 
-        private string GetPlanePoint(Vector3 mousePosition)
+        string GetPlanePoint(Vector3 mousePosition)
         {
-                Vector3 pixelPoint = MouseConvert.MouseToPixel();
-                ShortVector2 offsetPoint = HexGrids.PixelToOffset(pixelPoint);
-                string str = "";
+            Vector3 pixel = MouseConvert.MouseToPixel();
+            ShortVector2 offset = HexGrids.PixelToOffset(pixel);
+            CubeCoordinate cube = HexGrids.PixelToCube(pixel);
 
-                str += "六边形中心坐标 :" + HexGrids.OffsetToPixel(offsetPoint)
-                    + "地图坐标 :" + offsetPoint
-                    + "平面坐标 :" + pixelPoint;
+            Vector3 offsetPixel = HexGrids.OffsetToPixel(offset);
+            CubeCoordinate offsetCube = HexGrids.OffsetToCube(offset);
 
-                return str;
+            Vector3 cubePixel = HexGrids.CubeToPixel(cube);
+            ShortVector2 cubeOffset = HexGrids.CubeToOffset(cube);
+
+            string str = "";
+
+            str +="\n基本数值: 像素:" + pixel
+                + "偏移:" + offset
+                + "立方:" + cube
+
+                + "\n偏移转换: 中心:" + offsetPixel
+                + "立方:" + offsetCube
+
+                + "\n立方转换: 中心:" + cubePixel
+                + "偏移:" + cubeOffset;
+                
+            return str;
+        }
+
+        string OnMouseDown()
+        {
+            string str = "";
+
+            ShortVector2 offset = HexGrids.PixelToOffset(currentPixelPosition);
+
+            foreach (var item in HexGrids.GetNeighboursAndSelf(offset))
+            {
+                str += "\n" + item.ToString();
+            }
+
+            return str;
         }
 
     }

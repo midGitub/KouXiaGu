@@ -94,7 +94,7 @@ namespace KouXiaGu.HexTerrain
         }
 
         /// <summary>
-        /// 设置六边形的网格到场景;
+        /// 设置可渲染的六边形的网格到场景;
         /// </summary>
         void InitBakingMesh()
         {
@@ -132,7 +132,7 @@ namespace KouXiaGu.HexTerrain
 
         [SerializeField]
         float Test_Wait = 0f;
-        string Test_Path { get { return Path.Combine(Application.dataPath, "1123"); } }
+        string Test_Path { get { return @"123"; } }
 
         IEnumerator Baking()
         {
@@ -144,18 +144,16 @@ namespace KouXiaGu.HexTerrain
 
                 BakingRequest bakingRequest = bakingQueue.Dequeue();
                 List<KeyValuePair<HexDirection, Landform>> bakingLandforms = BakingRangeSetting(bakingRequest);
-
                 BakingMixer(bakingLandforms);
                 yield return new WaitForSeconds(Test_Wait);
 
                 BakingHeight(bakingLandforms);
                 BlurTexture(heightRT, 1, 1, 1);
+
                 //BakeTo(heightRTOffset1);
                 //BlurTexture(heightRTOffset1, 1, 1, 1);
                 //BakeTo(heightRTOffset2);
                 //BlurTexture(heightRTOffset2, 1, 1, 1);
-                yield return new WaitForSeconds(Test_Wait);
-
                 //shadowsAndHeightRT = ProduceShadowsAndHeightTexture(heightRT, heightRTOffset1, heightRTOffset2);
                 //yield return new WaitForSeconds(Test_Wait);
 
@@ -167,8 +165,11 @@ namespace KouXiaGu.HexTerrain
                 // Copy Diffuse to Texture2D            
                 Texture2D diffuse = HexTexture2DCutOut(diffuseRT, TextureFormat.RGB24, false);
                 diffuse.wrapMode = TextureWrapMode.Clamp;
+                diffuse.Compress(false);
+                diffuse.filterMode = FilterMode.Bilinear;
                 diffuse.Apply();
 
+                diffuseRT.SavePNG(Test_Path);
                 //diffuse.SavePNG(Test_Path);
                 //height_Alpha8.SavePNG(Test_Path);
 
@@ -281,9 +282,9 @@ namespace KouXiaGu.HexTerrain
                 hexMesh.material.SetTexture("_Mixer", landform.MixerTexture);
                 hexMesh.material.SetTexture("_Height", landform.HeightTexture);
                 hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
-                //hexMesh.material.SetTexture("_ShadowsAndHeight", shadowsAndHeightRT);
+                hexMesh.material.SetTexture("_ShadowsAndHeight", shadowsAndHeightRT);
                 hexMesh.material.SetFloat("_Sea", 0f);
-                //hexMesh.material.SetFloat("_Sea", pair.Key.terrainType.source.seaType ? 1f : 0f);
+                hexMesh.material.SetFloat("_Sea", landform.ID == 30 ? 1f : 0f);
                 hexMesh.material.SetFloat("_Centralization", 1.0f);
             }
 
