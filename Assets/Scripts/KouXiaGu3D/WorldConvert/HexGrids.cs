@@ -1,13 +1,26 @@
-﻿// Generated code -- http://www.redblobgames.com/grids/hexagons/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ProtoBuf;
 using UnityEngine;
 
 namespace KouXiaGu
 {
+
+    /// <summary>
+    /// 平顶六边形边对应的方向;
+    /// </summary>
+    [Flags]
+    public enum HexDirection
+    {
+        North = 1,
+        Northeast = 2,
+        Southeast = 4,
+        South = 8,
+        Southwest = 16,
+        Northwest = 32,
+        Self = 64,
+    }
+
 
     /// <summary>
     /// 游戏六边形网格拓展;
@@ -25,8 +38,11 @@ namespace KouXiaGu
         /// 六边形起点;
         /// </summary>
         public static readonly ShortVector2 Origin = new ShortVector2(0, 0);
-
+        /// <summary>
+        /// 六边形的像素坐标起点;
+        /// </summary>
         public static readonly Vector3 OriginPixelPoint = Vector3.zero;
+
 
         #region 坐标转换;
 
@@ -50,6 +66,7 @@ namespace KouXiaGu
             int z = -x - y;
             return new CubicHexCoord(x, y, z);
         }
+
 
         /// <summary>
         /// 从像素坐标获取到所在的 偏移坐标;
@@ -80,12 +97,14 @@ namespace KouXiaGu
             return new CubicHexCoord(x, y, (-x - y));
         }
 
+        /// <summary>
+        /// 像素转换到立方体坐标;
+        /// </summary>
         public static CubicHexCoord PixelToHex(Vector3 point)
         {
             Vector2 v2 = new Vector2(point.x, point.z);
             return Pixel2DToHex(v2);
         }
-
 
         /// <summary>
         /// 立方体坐标 转换成 2D像素坐标;
@@ -127,12 +146,13 @@ namespace KouXiaGu
 
         #endregion
 
+
         #region 距离
 
         /// <summary>
         /// 曼哈顿距离;
         /// </summary>
-        public static int ManhattanDistances(CubicHexCoord a, CubicHexCoord b)
+        public static int ManhattanDistances(this CubicHexCoord a, CubicHexCoord b)
         {
             CubicHexCoord hex = a - b;
             return (int)((Math.Abs(hex.X) + Math.Abs(hex.Y) + Math.Abs(hex.Z)) / 2);
@@ -192,6 +212,7 @@ namespace KouXiaGu
         }
 
         #endregion
+
 
         #region 偏移坐标方向;
 
@@ -319,18 +340,6 @@ namespace KouXiaGu
 
 
         /// <summary>
-        /// 获取到这个点周围的坐标;从 HexDirection 高位标记开始返回;
-        /// </summary>
-        public static IEnumerable<ShortVector2> GetNeighboursPoints(ShortVector2 target)
-        {
-            foreach (var direction in HexDirections())
-            {
-                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
-                yield return point;
-            }
-        }
-
-        /// <summary>
         /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
         public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighbours(ShortVector2 target)
@@ -339,18 +348,6 @@ namespace KouXiaGu
             {
                 ShortVector2 point = OffSetDirectionVector(target, direction) + target;
                 yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
-            }
-        }
-
-        /// <summary>
-        /// 获取到这个点本身和周围的坐标;从 HexDirection 高位标记开始返回;
-        /// </summary>
-        public static IEnumerable<ShortVector2> GetNeighboursAndSelfPoints(ShortVector2 target)
-        {
-            foreach (var direction in HexDirectionsAndSelf())
-            {
-                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
-                yield return point;
             }
         }
 
@@ -367,19 +364,7 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 获取到这个点这些方向的坐标;
-        /// </summary>
-        public static IEnumerable<ShortVector2> GetNeighboursPoints(ShortVector2 target, HexDirection directions)
-        {
-            foreach (var direction in HexDirections(directions))
-            {
-                ShortVector2 point = OffSetDirectionVector(target, direction) + target;
-                yield return point;
-            }
-        }
-
-        /// <summary>
-        /// 获取到这个点这些方向的坐标和方向;
+        /// 获取到这个点这些方向的坐标和方向,从 HexDirection 高位标记开始返回;
         /// </summary>
         public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighbours(ShortVector2 target, HexDirection directions)
         {
@@ -390,153 +375,42 @@ namespace KouXiaGu
             }
         }
 
-    }
 
 
-    /// <summary>
-    /// 平顶六边形边对应的方向;
-    /// </summary>
-    [Flags]
-    public enum HexDirection
-    {
-        North = 1,
-        Northeast = 2,
-        Southeast = 4,
-        South = 8,
-        Southwest = 16,
-        Northwest = 32,
-        Self = 64,
-    }
-
-
-    /// <summary>
-    /// 六边形立方体坐标;
-    /// </summary>
-    [ProtoContract]
-    public struct CubicHexCoord
-    {
-
-        [ProtoMember(1)]
-        public short X { get; private set; }
-        [ProtoMember(2)]
-        public short Y { get; private set; }
-        public short Z { get; private set; }
-
-        public CubicHexCoord(short x, short y, short z)
+        /// <summary>
+        /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<KeyValuePair<HexDirection, CubicHexCoord>> GetNeighbours(CubicHexCoord target)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-        }
-
-        public CubicHexCoord(short x, short y)
-        {
-            this.X = x;
-            this.Y = y;
-            this.Z = (short)(-x - y);
-        }
-
-        public CubicHexCoord(int x, int y, int z)
-        {
-            this.X = (short)x;
-            this.Y = (short)y;
-            this.Z = (short)z;
-        }
-
-        public CubicHexCoord(float x, float y, float z)
-        {
-            int intQ = (short)(Math.Round(x));
-            int intR = (short)(Math.Round(y));
-            int intS = (short)(Math.Round(z));
-            double q_diff = Math.Abs(intQ - x);
-            double r_diff = Math.Abs(intR - y);
-            double s_diff = Math.Abs(intS - z);
-            if (q_diff > r_diff && q_diff > s_diff)
+            foreach (var direction in HexDirections())
             {
-                intQ = -intR - intS;
+                CubicHexCoord point = HexDirectionVector(direction) + target;
+                yield return new KeyValuePair<HexDirection, CubicHexCoord>(direction, point);
             }
-            else
-            {
-                if (r_diff > s_diff)
-                {
-                    intR = -intQ - intS;
-                }
-                else
-                {
-                    intS = -intQ - intR;
-                }
-            }
-            this.X = (short)intQ;
-            this.Y = (short)intR;
-            this.Z = (short)intS;
         }
 
         /// <summary>
-        /// 在反序列化后调用;
+        /// 获取到这个点本身和周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        [ProtoAfterDeserialization]
-        void ProtoAfterDeserialization()
+        public static IEnumerable<KeyValuePair<HexDirection, CubicHexCoord>> GetNeighboursAndSelf(CubicHexCoord target)
         {
-            this.Z = (short)(-this.X - this.Y);
+            foreach (var direction in HexDirectionsAndSelf())
+            {
+                CubicHexCoord point = HexDirectionVector(direction) + target;
+                yield return new KeyValuePair<HexDirection, CubicHexCoord>(direction, point);
+            }
         }
 
         /// <summary>
-        /// 将哈希值转换成坐标;
+        /// 获取到这个点这些方向的坐标和方向,从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static CubicHexCoord HashCodeToCoord(int hashCode)
+        public static IEnumerable<KeyValuePair<HexDirection, CubicHexCoord>> GetNeighbours(CubicHexCoord target, HexDirection directions)
         {
-            short x = (short)(hashCode >> 16);
-            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
-            return new CubicHexCoord(x, y);
-        }
-
-        public override int GetHashCode()
-        {
-            int hashCode = X << 16;
-            hashCode += short.MaxValue + Y;
-            return hashCode;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is CubicHexCoord))
-                return false;
-            return (CubicHexCoord)obj == this;
-        }
-
-        public override string ToString()
-        {
-            return string.Concat("(", X, ",", Y, ",", Z, ")");
-        }
-
-        public static CubicHexCoord operator +(CubicHexCoord a, CubicHexCoord b)
-        {
-            return new CubicHexCoord(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
-        }
-
-        public static CubicHexCoord operator -(CubicHexCoord a, CubicHexCoord b)
-        {
-            return new CubicHexCoord(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
-        }
-
-        public static CubicHexCoord operator *(CubicHexCoord a, int k)
-        {
-            return new CubicHexCoord(a.X * k, a.Y * k, a.Z * k);
-        }
-
-        public static CubicHexCoord operator /(CubicHexCoord a, int k)
-        {
-            return new CubicHexCoord(a.X / k, a.Y / k, a.Z / k);
-        }
-
-        public static bool operator ==(CubicHexCoord a, CubicHexCoord b)
-        {
-            return a.X == b.X && a.Y == b.Y && a.Z == b.Z;
-        }
-
-        public static bool operator !=(CubicHexCoord a, CubicHexCoord b)
-        {
-            return !(a == b);
+            foreach (var direction in HexDirections(directions))
+            {
+                CubicHexCoord point = HexDirectionVector(direction) + target;
+                yield return new KeyValuePair<HexDirection, CubicHexCoord>(direction, point);
+            }
         }
 
     }

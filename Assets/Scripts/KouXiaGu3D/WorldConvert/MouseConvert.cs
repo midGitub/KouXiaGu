@@ -11,8 +11,6 @@ namespace KouXiaGu
     public static class MouseConvert
     {
 
-        #region 鼠标
-
         /// <summary>
         /// 定义在Unity内触发器所在的层(重要)!
         /// </summary>
@@ -57,8 +55,6 @@ namespace KouXiaGu
             Vector3 mousePlanePoint = MouseToPixel();
             return HexGrids.PixelToOffset(mousePlanePoint);
         }
-
-        #endregion
 
     }
 

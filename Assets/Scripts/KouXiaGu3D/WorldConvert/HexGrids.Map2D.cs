@@ -10,6 +10,7 @@ namespace KouXiaGu
     public static partial class HexGrids
     {
 
+
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
@@ -109,7 +110,6 @@ namespace KouXiaGu
             }
         }
 
-
         /// <summary>
         /// 获取到满足条件的方向;若方向不存在节点则为不满足;
         /// </summary>
@@ -121,6 +121,128 @@ namespace KouXiaGu
             foreach (var direction in aroundDirection)
             {
                 ShortVector2 vePoint = OffSetDirectionVector(target, direction) + target;
+                if (map.TryGetValue(vePoint, out item))
+                {
+                    if (func(item))
+                        directions |= direction;
+                }
+            }
+            return directions;
+        }
+
+
+
+
+        /// <summary>
+        /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target)
+        {
+            T item;
+            var aroundPoints = GetNeighbours(target);
+            foreach (var point in aroundPoints)
+            {
+                if (!map.TryGetValue(point.Value, out item))
+                {
+                    item = default(T);
+                }
+                yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursAndSelfOrDefault<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target)
+        {
+            T item;
+            var aroundPoints = GetNeighboursAndSelf(target);
+            foreach (var point in aroundPoints)
+            {
+                if (!map.TryGetValue(point.Value, out item))
+                {
+                    item = default(T);
+                }
+                yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, HexDirection directions)
+        {
+            T item;
+            var aroundPoints = GetNeighbours(target, directions);
+            foreach (var point in aroundPoints)
+            {
+                if (!map.TryGetValue(point.Value, out item))
+                {
+                    item = default(T);
+                }
+                yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighbours<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target)
+        {
+            T item;
+            var aroundPoints = GetNeighbours(target);
+            foreach (var point in aroundPoints)
+            {
+                if (map.TryGetValue(point.Value, out item))
+                {
+                    yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursAndSelf<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target)
+        {
+            T item;
+            var aroundPoints = GetNeighboursAndSelf(target);
+            foreach (var point in aroundPoints)
+            {
+                if (map.TryGetValue(point.Value, out item))
+                {
+                    yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighbours<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, HexDirection directions)
+        {
+            T item;
+            var aroundPoints = GetNeighbours(target, directions);
+            foreach (var point in aroundPoints)
+            {
+                if (map.TryGetValue(point.Value, out item))
+                {
+                    yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到满足条件的方向;若方向不存在节点则为不满足;
+        /// </summary>
+        public static HexDirection GetNeighboursAndSelfMask<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, Func<T, bool> func)
+        {
+            HexDirection directions = 0;
+            T item;
+            IEnumerable<HexDirection> aroundDirection = HexDirectionsAndSelf();
+            foreach (var direction in aroundDirection)
+            {
+                CubicHexCoord vePoint = HexDirectionVector(direction) + target;
                 if (map.TryGetValue(vePoint, out item))
                 {
                     if (func(item))
