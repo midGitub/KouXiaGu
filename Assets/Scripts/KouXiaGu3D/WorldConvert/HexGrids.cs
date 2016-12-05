@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ProtoBuf;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -32,22 +33,22 @@ namespace KouXiaGu
         /// <summary>
         /// 立方体坐标 转换为 偏移坐标;
         /// </summary>
-        public static ShortVector2 CubeToOffset(CubeCoordinate cube)
+        public static ShortVector2 HexToOffset(CubicHexCoord hex)
         {
-            int x = cube.q;
-            int y = cube.r + (int)((cube.q + 1 * (cube.q & 1)) / 2);
+            int x = hex.X;
+            int y = hex.Y + (int)((hex.X + 1 * (hex.X & 1)) / 2);
             return new ShortVector2(x, y);
         }
 
         /// <summary>
         /// 偏移坐标 转换成 立方体坐标;
         /// </summary>
-        public static CubeCoordinate OffsetToCube(ShortVector2 offset)
+        public static CubicHexCoord OffsetToHex(ShortVector2 offset)
         {
-            int q = offset.x;
-            int r = offset.y - (int)((offset.x + 1 * (offset.x & 1)) / 2);
-            int s = -q - r;
-            return new CubeCoordinate(q, r, s);
+            int x = offset.x;
+            int y = offset.y - (int)((offset.x + 1 * (offset.x & 1)) / 2);
+            int z = -x - y;
+            return new CubicHexCoord(x, y, z);
         }
 
         /// <summary>
@@ -55,8 +56,8 @@ namespace KouXiaGu
         /// </summary>
         public static ShortVector2 Pixel2DToOffset(Vector2 point)
         {
-            CubeCoordinate cube = Pixel2DToCube(point);
-            return CubeToOffset(cube);
+            CubicHexCoord hex = Pixel2DToHex(point);
+            return HexToOffset(hex);
         }
 
         /// <summary>
@@ -64,44 +65,44 @@ namespace KouXiaGu
         /// </summary>
         public static ShortVector2 PixelToOffset(Vector3 point)
         {
-            CubeCoordinate cube = Pixel2DToCube(new Vector2(point.x, point.z));
-            return CubeToOffset(cube);
+            CubicHexCoord hex = Pixel2DToHex(new Vector2(point.x, point.z));
+            return HexToOffset(hex);
         }
 
         /// <summary>
         /// 从像素坐标获取到所在的 立方体坐标;
         /// </summary>
-        public static CubeCoordinate Pixel2DToCube(Vector2 point)
+        public static CubicHexCoord Pixel2DToHex(Vector2 point)
         {
             Vector2 pt = new Vector2((point.x - Origin.x) / OuterRadius, (point.y - Origin.y) / OuterRadius);
-            float q = (float)(2.0 / 3.0 * pt.x);
-            float r = (float)(-1.0 / 3.0 * pt.x + Math.Sqrt(3.0) / 3.0 * pt.y);
-            return new CubeCoordinate(q, r, (-q - r));
+            float x = (float)(2.0 / 3.0 * pt.x);
+            float y = (float)(-1.0 / 3.0 * pt.x + Math.Sqrt(3.0) / 3.0 * pt.y);
+            return new CubicHexCoord(x, y, (-x - y));
         }
 
-        public static CubeCoordinate PixelToCube(Vector3 point)
+        public static CubicHexCoord PixelToHex(Vector3 point)
         {
             Vector2 v2 = new Vector2(point.x, point.z);
-            return Pixel2DToCube(v2);
+            return Pixel2DToHex(v2);
         }
 
 
         /// <summary>
         /// 立方体坐标 转换成 2D像素坐标;
         /// </summary>
-        public static Vector2 CubeToPixel2D(CubeCoordinate cube)
+        public static Vector2 HexToPixel2D(CubicHexCoord hex)
         {
-            float x = OuterRadius * 1.5f * cube.q;
-            float y = (float)(Math.Sqrt(3.0) / 2.0 * cube.q + Math.Sqrt(3.0) * cube.r) * OuterRadius;
+            float x = OuterRadius * 1.5f * hex.X;
+            float y = (float)(Math.Sqrt(3.0) / 2.0 * hex.X + Math.Sqrt(3.0) * hex.Y) * OuterRadius;
             return new Vector2(x, y);
         }
 
         /// <summary>
         /// 立方体坐标 转换成 3D像素坐标;
         /// </summary>
-        public static Vector3 CubeToPixel(CubeCoordinate cube, float y = 0)
+        public static Vector3 HexToPixel(CubicHexCoord hex, float y = 0)
         {
-            Vector2 v2 = CubeToPixel2D(cube);
+            Vector2 v2 = HexToPixel2D(hex);
             return new Vector3(v2.x, y, v2.y);
         }
 
@@ -131,10 +132,10 @@ namespace KouXiaGu
         /// <summary>
         /// 曼哈顿距离;
         /// </summary>
-        public static int ManhattanDistances(CubeCoordinate a, CubeCoordinate b)
+        public static int ManhattanDistances(CubicHexCoord a, CubicHexCoord b)
         {
-            CubeCoordinate hex = a - b;
-            return (int)((Math.Abs(hex.q) + Math.Abs(hex.r) + Math.Abs(hex.s)) / 2);
+            CubicHexCoord hex = a - b;
+            return (int)((Math.Abs(hex.X) + Math.Abs(hex.Y) + Math.Abs(hex.Z)) / 2);
         }
 
         /// <summary>
@@ -142,8 +143,8 @@ namespace KouXiaGu
         /// </summary>
         public static int ManhattanDistances(ShortVector2 offset1, ShortVector2 offset2)
         {
-            CubeCoordinate hex1 = OffsetToCube(offset1);
-            CubeCoordinate hex2 = OffsetToCube(offset2);
+            CubicHexCoord hex1 = OffsetToHex(offset1);
+            CubicHexCoord hex2 = OffsetToHex(offset2);
             return ManhattanDistances(hex1, hex2);
         }
 
@@ -162,22 +163,22 @@ namespace KouXiaGu
         /// <summary>
         /// 方向偏移量;
         /// </summary>
-        static Dictionary<int, CubeCoordinate> directions = GetDirections();
+        static Dictionary<int, CubicHexCoord> directions = GetDirections();
 
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        static Dictionary<int, CubeCoordinate> GetDirections()
+        static Dictionary<int, CubicHexCoord> GetDirections()
         {
-            Dictionary<int, CubeCoordinate> directions = new Dictionary<int, CubeCoordinate>(DirectionNumber);
+            Dictionary<int, CubicHexCoord> directions = new Dictionary<int, CubicHexCoord>(DirectionNumber);
 
-            directions.Add((int)HexDirection.North, new CubeCoordinate(0, 1, -1));
-            directions.Add((int)HexDirection.Northeast, new CubeCoordinate(1, 0, -1));
-            directions.Add((int)HexDirection.Southeast, new CubeCoordinate(1, -1, 0));
-            directions.Add((int)HexDirection.South, new CubeCoordinate(0, -1, 1));
-            directions.Add((int)HexDirection.Southwest, new CubeCoordinate(-1, 0, 1));
-            directions.Add((int)HexDirection.Northwest, new CubeCoordinate(-1, 1, 0));
-            directions.Add((int)HexDirection.Self, new CubeCoordinate(0, 0, 0));
+            directions.Add((int)HexDirection.North, new CubicHexCoord(0, 1, -1));
+            directions.Add((int)HexDirection.Northeast, new CubicHexCoord(1, 0, -1));
+            directions.Add((int)HexDirection.Southeast, new CubicHexCoord(1, -1, 0));
+            directions.Add((int)HexDirection.South, new CubicHexCoord(0, -1, 1));
+            directions.Add((int)HexDirection.Southwest, new CubicHexCoord(-1, 0, 1));
+            directions.Add((int)HexDirection.Northwest, new CubicHexCoord(-1, 1, 0));
+            directions.Add((int)HexDirection.Self, new CubicHexCoord(0, 0, 0));
 
             return directions;
         }
@@ -185,7 +186,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        public static CubeCoordinate CubeDirectionVector(HexDirection direction)
+        public static CubicHexCoord HexDirectionVector(HexDirection direction)
         {
             return directions[(int)direction];
         }
@@ -391,38 +392,65 @@ namespace KouXiaGu
 
     }
 
+
+    /// <summary>
+    /// 平顶六边形边对应的方向;
+    /// </summary>
+    [Flags]
+    public enum HexDirection
+    {
+        North = 1,
+        Northeast = 2,
+        Southeast = 4,
+        South = 8,
+        Southwest = 16,
+        Northwest = 32,
+        Self = 64,
+    }
+
+
     /// <summary>
     /// 六边形立方体坐标;
     /// </summary>
-    public struct CubeCoordinate
+    [ProtoContract]
+    public struct CubicHexCoord
     {
 
-        public short q;
-        public short r;
-        public short s;
+        [ProtoMember(1)]
+        public short X { get; private set; }
+        [ProtoMember(2)]
+        public short Y { get; private set; }
+        public short Z { get; private set; }
 
-        public CubeCoordinate(short q, short r, short s)
+        public CubicHexCoord(short x, short y, short z)
         {
-            this.q = q;
-            this.r = r;
-            this.s = s;
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
         }
 
-        public CubeCoordinate(int q, int r, int s)
+        public CubicHexCoord(short x, short y)
         {
-            this.q = (short)q;
-            this.r = (short)r;
-            this.s = (short)s;
+            this.X = x;
+            this.Y = y;
+            this.Z = (short)(-x - y);
         }
 
-        public CubeCoordinate(float q, float r, float s)
+        public CubicHexCoord(int x, int y, int z)
         {
-            int intQ = (short)(Math.Round(q));
-            int intR = (short)(Math.Round(r));
-            int intS = (short)(Math.Round(s));
-            double q_diff = Math.Abs(intQ - q);
-            double r_diff = Math.Abs(intR - r);
-            double s_diff = Math.Abs(intS - s);
+            this.X = (short)x;
+            this.Y = (short)y;
+            this.Z = (short)z;
+        }
+
+        public CubicHexCoord(float x, float y, float z)
+        {
+            int intQ = (short)(Math.Round(x));
+            int intR = (short)(Math.Round(y));
+            int intS = (short)(Math.Round(z));
+            double q_diff = Math.Abs(intQ - x);
+            double r_diff = Math.Abs(intR - y);
+            double s_diff = Math.Abs(intS - z);
             if (q_diff > r_diff && q_diff > s_diff)
             {
                 intQ = -intR - intS;
@@ -438,34 +466,77 @@ namespace KouXiaGu
                     intS = -intQ - intR;
                 }
             }
-            this.q = (short)intQ;
-            this.r = (short)intR;
-            this.s = (short)intS;
+            this.X = (short)intQ;
+            this.Y = (short)intR;
+            this.Z = (short)intS;
         }
 
-        public static CubeCoordinate operator +(CubeCoordinate a, CubeCoordinate b)
+        /// <summary>
+        /// 在反序列化后调用;
+        /// </summary>
+        [ProtoAfterDeserialization]
+        void ProtoAfterDeserialization()
         {
-            return new CubeCoordinate(a.q + b.q, a.r + b.r, a.s + b.s);
+            this.Z = (short)(-this.X - this.Y);
         }
 
-        public static CubeCoordinate operator -(CubeCoordinate a, CubeCoordinate b)
+        /// <summary>
+        /// 将哈希值转换成坐标;
+        /// </summary>
+        public static CubicHexCoord HashCodeToCoord(int hashCode)
         {
-            return new CubeCoordinate(a.q - b.q, a.r - b.r, a.s - b.s);
+            short x = (short)(hashCode >> 16);
+            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
+            return new CubicHexCoord(x, y);
         }
 
-        public static CubeCoordinate operator *(CubeCoordinate a, int k)
+        public override int GetHashCode()
         {
-            return new CubeCoordinate(a.q * k, a.r * k, a.s * k);
+            int hashCode = X << 16;
+            hashCode += short.MaxValue + Y;
+            return hashCode;
         }
 
-        public static CubeCoordinate operator /(CubeCoordinate a, int k)
+        public override bool Equals(object obj)
         {
-            return new CubeCoordinate(a.q / k, a.r / k, a.s / k);
+            if (!(obj is CubicHexCoord))
+                return false;
+            return (CubicHexCoord)obj == this;
         }
 
         public override string ToString()
         {
-            return string.Concat("(", q, ",", r, ",", s, ")");
+            return string.Concat("(", X, ",", Y, ",", Z, ")");
+        }
+
+        public static CubicHexCoord operator +(CubicHexCoord a, CubicHexCoord b)
+        {
+            return new CubicHexCoord(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+
+        public static CubicHexCoord operator -(CubicHexCoord a, CubicHexCoord b)
+        {
+            return new CubicHexCoord(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
+        public static CubicHexCoord operator *(CubicHexCoord a, int k)
+        {
+            return new CubicHexCoord(a.X * k, a.Y * k, a.Z * k);
+        }
+
+        public static CubicHexCoord operator /(CubicHexCoord a, int k)
+        {
+            return new CubicHexCoord(a.X / k, a.Y / k, a.Z / k);
+        }
+
+        public static bool operator ==(CubicHexCoord a, CubicHexCoord b)
+        {
+            return a.X == b.X && a.Y == b.Y && a.Z == b.Z;
+        }
+
+        public static bool operator !=(CubicHexCoord a, CubicHexCoord b)
+        {
+            return !(a == b);
         }
 
     }

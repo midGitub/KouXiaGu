@@ -90,7 +90,7 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         void FixedUpdate()
         {
-            transform.position = Vector2.SmoothDamp(transform.position, targetPoint, ref velocity, smoothTime, speedForNow);
+            transform.position = Vector2.SmoothDamp(transform.position, targetPoint, ref velocity, smoothTime, speedForNow,Time.deltaTime);
         }
 
         /// <summary>

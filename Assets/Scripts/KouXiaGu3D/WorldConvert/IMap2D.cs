@@ -6,27 +6,27 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    public interface IReadOnlyMap2D<T>
+    public interface IReadOnlyMap2D<TP, T>
     {
-        T this[ShortVector2 position] { get; }
+        T this[TP position] { get; }
         int Count { get; }
 
-        bool Contains(ShortVector2 position);
-        bool TryGetValue(ShortVector2 position, out T item);
+        bool Contains(TP position);
+        bool TryGetValue(TP position, out T item);
     }
 
-    public interface IMap2D<T> : IEnumerable<KeyValuePair<ShortVector2, T>>
+    public interface IMap2D<TP, T> : IEnumerable<KeyValuePair<TP, T>>
     {
 
-        T this[ShortVector2 position] { get; set; }
-        IEnumerable<ShortVector2> Points { get; }
+        T this[TP position] { get; set; }
+        IEnumerable<TP> Points { get; }
         IEnumerable<T> Nodes { get; }
         int Count { get; }
 
-        void Add(ShortVector2 position, T item);
-        bool Remove(ShortVector2 position);
-        bool Contains(ShortVector2 position);
-        bool TryGetValue(ShortVector2 position, out T item);
+        void Add(TP position, T item);
+        bool Remove(TP position);
+        bool Contains(TP position);
+        bool TryGetValue(TP position, out T item);
         void Clear();
     }
 

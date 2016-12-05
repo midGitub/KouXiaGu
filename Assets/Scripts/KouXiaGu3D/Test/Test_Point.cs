@@ -57,13 +57,13 @@ namespace KouXiaGu.Test
         {
             Vector3 pixel = MouseConvert.MouseToPixel();
             ShortVector2 offset = HexGrids.PixelToOffset(pixel);
-            CubeCoordinate cube = HexGrids.PixelToCube(pixel);
+            CubicHexCoord cube = HexGrids.PixelToHex(pixel);
 
             Vector3 offsetPixel = HexGrids.OffsetToPixel(offset);
-            CubeCoordinate offsetCube = HexGrids.OffsetToCube(offset);
+            CubicHexCoord offsetCube = HexGrids.OffsetToHex(offset);
 
-            Vector3 cubePixel = HexGrids.CubeToPixel(cube);
-            ShortVector2 cubeOffset = HexGrids.CubeToOffset(cube);
+            Vector3 cubePixel = HexGrids.HexToPixel(cube);
+            ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
             string str = "";
 

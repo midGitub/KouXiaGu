@@ -8,14 +8,14 @@ namespace KouXiaGu
     /// 游戏地图结构;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Map2D<T> : IMap2D<T>, IReadOnlyMap2D<T>
+    public class Map2D<TP, T> : IMap2D<TP, T>, IReadOnlyMap2D<TP, T>
     {
         /// <summary>
         /// 地图结构;
         /// </summary>
-        Dictionary<ShortVector2, T> mapCollection;
+        Dictionary<TP, T> mapCollection;
 
-        public IEnumerable<ShortVector2> Points
+        public IEnumerable<TP> Points
         {
             get
             {
@@ -39,7 +39,7 @@ namespace KouXiaGu
             }
         }
 
-        public T this[ShortVector2 position]
+        public T this[TP position]
         {
             get
             {
@@ -53,25 +53,25 @@ namespace KouXiaGu
 
         public Map2D()
         {
-            mapCollection = new Dictionary<ShortVector2, T>();
+            mapCollection = new Dictionary<TP, T>();
         }
 
-        public void Add(ShortVector2 position, T item)
+        public void Add(TP position, T item)
         {
             mapCollection.Add(position, item);
         }
 
-        public bool Remove(ShortVector2 position)
+        public bool Remove(TP position)
         {
             return mapCollection.Remove(position);
         }
 
-        public bool Contains(ShortVector2 position)
+        public bool Contains(TP position)
         {
             return mapCollection.ContainsKey(position);
         }
 
-        public bool TryGetValue(ShortVector2 position, out T item)
+        public bool TryGetValue(TP position, out T item)
         {
             return mapCollection.TryGetValue(position, out item);
         }
@@ -81,7 +81,7 @@ namespace KouXiaGu
             mapCollection.Clear();
         }
 
-        public IEnumerator<KeyValuePair<ShortVector2, T>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TP, T>> GetEnumerator()
         {
             return mapCollection.GetEnumerator();
         }
