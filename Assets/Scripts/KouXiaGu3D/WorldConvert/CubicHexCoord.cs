@@ -17,6 +17,11 @@ namespace KouXiaGu
         public short Y { get; private set; }
         public short Z { get; private set; }
 
+        /// <summary>
+        /// (0,0,0)
+        /// </summary>
+        public static readonly CubicHexCoord Zero = new CubicHexCoord(0, 0, 0);
+
         public CubicHexCoord(short x, short y, short z)
         {
             this.X = x;

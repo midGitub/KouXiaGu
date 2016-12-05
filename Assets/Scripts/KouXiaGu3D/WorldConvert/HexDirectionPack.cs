@@ -19,6 +19,27 @@ namespace KouXiaGu
         public HexDirection Direction { get; private set; }
         public TVector Point { get; private set; }
         public T Item { get; private set; }
+
+        public static implicit operator HexDirection(HexDirectionPack<TVector, T> pack)
+        {
+            return pack.Direction;
+        }
+
+        public static implicit operator TVector(HexDirectionPack<TVector, T> pack)
+        {
+            return pack.Point;
+        }
+
+        public static implicit operator T(HexDirectionPack<TVector, T> pack)
+        {
+            return pack.Item;
+        }
+
+        public override string ToString()
+        {
+            return "[" + Direction.ToString() + "," + Point.ToString() + "," + Item.ToString() + "]";
+        }
+
     }
 
 }
