@@ -20,7 +20,7 @@ namespace KouXiaGu.HexTerrain
         {
             get { return HexGrids.hexagon; }
         }
-
+        
         const int size = 4;
 
         /// <summary>
@@ -40,8 +40,32 @@ namespace KouXiaGu.HexTerrain
 
 
         public static readonly float BlockWidth = (float)(hexagon.OuterDiameters * size + hexagon.OuterRadius);
-
         public static readonly float BlockHeight = (float)hexagon.InnerDiameters * size;
+        public static readonly float HalfBlockWidth = BlockWidth / 2;
+        public static readonly float HalfBlockHeight = BlockHeight / 2;
+
+        /// <summary>
+        /// 从像素节点 获取到所属的地形块;
+        /// </summary>
+        public static ShortVector2 PixelToBlockCoord(Vector3 position)
+        {
+            short x = (short)Math.Floor(position.x / BlockWidth);
+            short y = (short)Math.Floor(position.z / BlockHeight);
+            return new ShortVector2(x, y);
+        }
+
+        /// <summary>
+        /// 地图块坐标 获取到其像素中心点;
+        /// </summary>
+        public static Vector3 BlockCoordToCenter(ShortVector2 coord)
+        {
+            float x = coord.x * HalfBlockWidth + (coord.x >= 0 ? HalfBlockWidth : 0);
+            float z = coord.y * HalfBlockHeight + (coord.y >= 0 ? HalfBlockHeight : 0);
+            return new Vector3(x, 0, z);
+        }
+
+
+
 
     }
 

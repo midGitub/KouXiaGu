@@ -24,6 +24,8 @@ namespace KouXiaGu.HexTerrain
 
         public CubicHexCoord(short x, short y, short z)
         {
+            OutOfRangeException(x, y, z);
+
             this.X = x;
             this.Y = y;
             this.Z = z;
@@ -38,6 +40,7 @@ namespace KouXiaGu.HexTerrain
 
         public CubicHexCoord(int x, int y, int z)
         {
+            OutOfRangeException((short)x, (short)y, (short)z);
             this.X = (short)x;
             this.Y = (short)y;
             this.Z = (short)z;
@@ -66,9 +69,29 @@ namespace KouXiaGu.HexTerrain
                     intS = -intQ - intR;
                 }
             }
+
+            OutOfRangeException((short)intQ, (short)intR, (short)intS);
+
             this.X = (short)intQ;
             this.Y = (short)intR;
             this.Z = (short)intS;
+        }
+
+        /// <summary>
+        /// 定义的值是否超出定义范围?
+        /// </summary>
+        public static bool IsOutOfRange(short x, short y, short z)
+        {
+            if ((x + y + z) != 0)
+                return false;
+            else
+                return true;
+        }
+
+        static void OutOfRangeException(short x, short y, short z)
+        {
+            if ((x + y + z) != 0)
+                throw new ArgumentOutOfRangeException("坐标必须满足 (x + y + z) == 0");
         }
 
         /// <summary>

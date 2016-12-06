@@ -66,9 +66,12 @@ namespace KouXiaGu.Test
             Vector3 cubePixel = HexGrids.HexToPixel(cube);
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
+            ShortVector2 terrainBlockCoord = TerrainBlock.PixelToBlockCoord(pixel);
+            Vector3 terrainBlockCenter = TerrainBlock.BlockCoordToCenter(terrainBlockCoord);
+
             string str = "";
 
-            str +="\n基本数值: 像素:" + pixel
+            str += "\n基本数值: 像素:" + pixel
                 + "偏移:" + offset
                 + "立方:" + cube
 
@@ -76,8 +79,11 @@ namespace KouXiaGu.Test
                 + "立方:" + offsetCube
 
                 + "\n立方转换: 中心:" + cubePixel
-                + "偏移:" + cubeOffset;
-                
+                + "偏移:" + cubeOffset
+
+                + "\n地貌块: 块编号:" + terrainBlockCoord
+                + "中心:" + terrainBlockCenter;
+
             return str;
         }
 

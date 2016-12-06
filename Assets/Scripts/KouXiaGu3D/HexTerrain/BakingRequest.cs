@@ -14,8 +14,6 @@ namespace KouXiaGu.HexTerrain
     public struct BakingRequest
     {
 
-        const float cameraSize = 5f;
-
         /// <summary>
         /// 请求烘焙中心点的位置;
         /// </summary>
@@ -24,25 +22,11 @@ namespace KouXiaGu.HexTerrain
         //烘焙参数;
         public int DiffuseMapWidth { get; set; }
         public int DiffuseMapHeight { get; set; }
-        public int DiffuseMapDepthBuffer { get; set; }
-        public RenderTextureFormat DiffuseMapFormat { get; set; }
-        public RenderTextureReadWrite DiffuseMapReadWrite { get; set; }
         public int DiffuseMapAntiAliasing { get; set; }
 
         public int HeightMapWidth { get; set; }
         public int HeightMapHeight { get; set; }
-        public int HeightMapDepthBuffer { get; set; }
-        public RenderTextureFormat HeightMapFormat { get; set; }
-        public RenderTextureReadWrite HeightMapReadWrite { get; set; }
         public int HeightMapAntiAliasing { get; set; }
-
-        /// <summary>
-        /// 摄像机正交大小;
-        /// </summary>
-        public float CameraSize
-        {
-            get { return cameraSize; }
-        }
 
         /// <summary>
         /// 摄像机位置;
