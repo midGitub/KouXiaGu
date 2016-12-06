@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu
+namespace KouXiaGu.HexTerrain
 {
 
     //对 IMap2D 接口的拓展;
@@ -117,7 +117,7 @@ namespace KouXiaGu
         {
             HexDirections directions = 0;
             T item;
-            IEnumerable<HexDirections> aroundDirection = HexDirectionsAndSelf();
+            IEnumerable<HexDirections> aroundDirection = GetHexDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
                 ShortVector2 vePoint = OffSetDirectionVector(target, direction) + target;
@@ -239,7 +239,7 @@ namespace KouXiaGu
         {
             HexDirections directions = 0;
             T item;
-            IEnumerable<HexDirections> aroundDirection = HexDirectionsAndSelf();
+            IEnumerable<HexDirections> aroundDirection = GetHexDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
                 CubicHexCoord vePoint = HexDirectionVector(direction) + target;

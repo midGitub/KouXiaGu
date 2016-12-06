@@ -80,15 +80,6 @@ namespace KouXiaGu
             return MouseToPlane(Camera.main);
         }
 
-        /// <summary>
-        /// 获取到主相机到地图坐标;
-        /// </summary>
-        public static ShortVector2 MouseToOffset()
-        {
-            Vector3 mousePlanePoint = MouseToPixel();
-            return HexGrids.PixelToOffset(mousePlanePoint);
-        }
-
     }
 
 }

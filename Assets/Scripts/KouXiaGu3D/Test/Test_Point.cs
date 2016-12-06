@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.HexTerrain;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
