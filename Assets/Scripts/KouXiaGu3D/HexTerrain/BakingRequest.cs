@@ -45,7 +45,7 @@ namespace KouXiaGu.HexTerrain
         }
 
         /// <summary>
-        /// 当完成时调用;
+        /// 当完成后调用;
         /// </summary>
         public void OnComplete(Texture2D diffuse, Texture2D height)
         {
