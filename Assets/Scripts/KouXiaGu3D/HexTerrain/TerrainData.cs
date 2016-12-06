@@ -15,9 +15,13 @@ namespace KouXiaGu.HexTerrain
 
         Map2D<CubicHexCoord, LandformNode> terrainMap;
 
+        [SerializeField]
+        Camera bbbCamera;
+
         void Awake()
         {
             terrainMap = new Map2D<CubicHexCoord, LandformNode>();
+            bbbCamera.aspect = 1.15385f;
         }
 
         //Test
@@ -30,6 +34,25 @@ namespace KouXiaGu.HexTerrain
                 terrainMap.Add(item.Value, new LandformNode(20));
             }
         }
+
+        //RenderTexture renderTexture;
+
+        //int size = 1000;
+
+        //void Update()
+        //{
+        //    renderTexture = RenderTexture.GetTemporary(size, size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 8);
+        //    bbbCamera.targetTexture = renderTexture;
+        //    bbbCamera.Render();
+        //    bbbCamera.targetTexture = null;
+        //    RenderTexture.active = renderTexture;
+        //    var ttt = new Texture2D(size, size);
+        //    Destroy(ttt);
+        //    RenderTexture.active = null;
+        //    renderTexture.Release();
+        //    RenderTexture.ReleaseTemporary(renderTexture);
+        //}
+
 
         ///// <summary>
         ///// 烘焙这个位置的地貌;

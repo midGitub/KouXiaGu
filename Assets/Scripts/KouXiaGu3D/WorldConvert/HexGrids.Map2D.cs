@@ -48,7 +48,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap2D<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap2D<ShortVector2, T> map, ShortVector2 target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -97,7 +97,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighbours<T>(this IReadOnlyMap2D<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighbours<T>(this IReadOnlyMap2D<ShortVector2, T> map, ShortVector2 target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -113,11 +113,11 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到满足条件的方向;若方向不存在节点则为不满足;
         /// </summary>
-        public static HexDirection GetNeighboursAndSelfMask<T>(this IReadOnlyMap2D<ShortVector2, T> map, ShortVector2 target, Func<T, bool> func)
+        public static HexDirections GetNeighboursAndSelfMask<T>(this IReadOnlyMap2D<ShortVector2, T> map, ShortVector2 target, Func<T, bool> func)
         {
-            HexDirection directions = 0;
+            HexDirections directions = 0;
             T item;
-            IEnumerable<HexDirection> aroundDirection = HexDirectionsAndSelf();
+            IEnumerable<HexDirections> aroundDirection = HexDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
                 ShortVector2 vePoint = OffSetDirectionVector(target, direction) + target;
@@ -170,7 +170,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, HexDirection directions)
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -219,7 +219,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighbours<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, HexDirection directions)
+        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighbours<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -235,11 +235,11 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到满足条件的方向;若方向不存在节点则为不满足;
         /// </summary>
-        public static HexDirection GetNeighboursAndSelfMask<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, Func<T, bool> func)
+        public static HexDirections GetNeighboursAndSelfMask<T>(this IReadOnlyMap2D<CubicHexCoord, T> map, CubicHexCoord target, Func<T, bool> func)
         {
-            HexDirection directions = 0;
+            HexDirections directions = 0;
             T item;
-            IEnumerable<HexDirection> aroundDirection = HexDirectionsAndSelf();
+            IEnumerable<HexDirections> aroundDirection = HexDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
                 CubicHexCoord vePoint = HexDirectionVector(direction) + target;

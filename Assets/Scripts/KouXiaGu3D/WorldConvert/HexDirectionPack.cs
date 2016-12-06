@@ -9,18 +9,18 @@ namespace KouXiaGu
     public struct HexDirectionPack<TVector, T>
     {
 
-        public HexDirectionPack(HexDirection direction, TVector point, T item)
+        public HexDirectionPack(HexDirections direction, TVector point, T item)
         {
             this.Direction = direction;
             this.Point = point;
             this.Item = item;
         }
 
-        public HexDirection Direction { get; private set; }
+        public HexDirections Direction { get; private set; }
         public TVector Point { get; private set; }
         public T Item { get; private set; }
 
-        public static implicit operator HexDirection(HexDirectionPack<TVector, T> pack)
+        public static implicit operator HexDirections(HexDirectionPack<TVector, T> pack)
         {
             return pack.Direction;
         }

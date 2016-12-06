@@ -11,6 +11,7 @@ namespace KouXiaGu.HexTerrain
 
     /// <summary>
     /// 烘焙贴图队列;
+    /// 负责将传入的请求渲染出高度图和地貌贴图输出;
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BakingQueue : UnitySingleton<BakingQueue>
@@ -60,7 +61,6 @@ namespace KouXiaGu.HexTerrain
             get { return HexGrids.OuterRadius; }
         }
 
-
         /// <summary>
         /// 添加需要渲染的节点;
         /// </summary>
@@ -78,21 +78,12 @@ namespace KouXiaGu.HexTerrain
 
         void Start()
         {
-            InitBakingCamera();
-            InitBakingMesh();
-            InitRenderTextures();
+            //bakingCamera.orthographic = true;
+
+            //InitBakingMesh();
+            //InitRenderTextures();
 
             //bakingCoroutine = StartCoroutine(Baking());
-        }
-
-        /// <summary>
-        /// 设置烘焙相机参数;
-        /// </summary>
-        void InitBakingCamera()
-        {
-            bakingCamera.orthographic = true;
-            bakingCamera.orthographicSize = HexOuterRadius;
-            bakingCamera.transform.position = new Vector3(HexGrids.OriginPixelPoint.x, 5f, HexGrids.OriginPixelPoint.z);
         }
 
         /// <summary>
@@ -209,7 +200,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 对混合贴图进行烘焙;传入需要设置到的地貌节点;
         /// </summary>
-        void BakingMixer(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        void BakingMixer(IEnumerable<KeyValuePair<HexDirections, Landform>> baking)
         {
             foreach (var pair in baking)
             {
@@ -228,7 +219,7 @@ namespace KouXiaGu.HexTerrain
             bakingCamera.targetTexture = null;
         }
 
-        void BakingHeight(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        void BakingHeight(IEnumerable<KeyValuePair<HexDirections, Landform>> baking)
         {
             foreach (var pair in baking)
             {
@@ -267,7 +258,7 @@ namespace KouXiaGu.HexTerrain
         }
 
 
-        void BakingDiffuse(IEnumerable<KeyValuePair<HexDirection, Landform>> baking)
+        void BakingDiffuse(IEnumerable<KeyValuePair<HexDirections, Landform>> baking)
         {
             foreach (var pair in baking)
             {
@@ -338,7 +329,7 @@ namespace KouXiaGu.HexTerrain
             mr.material.SetTexture("_HeightTex", height);
         }
 
-        MeshRenderer GetHexMesh(HexDirection direction)
+        MeshRenderer GetHexMesh(HexDirections direction)
         {
             return aroundHexMesh[(int)direction];
         }

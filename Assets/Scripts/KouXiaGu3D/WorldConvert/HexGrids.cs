@@ -10,13 +10,28 @@ namespace KouXiaGu
     /// 平顶六边形边对应的方向;
     /// </summary>
     [Flags]
-    public enum HexDirection
+    public enum HexDirections
     {
         North = 1,
         Northeast = 2,
         Southeast = 4,
         South = 8,
         Southwest = 16,
+        Northwest = 32,
+        Self = 64,
+    }
+
+    /// <summary>
+    /// 平顶六边形对应的对角线方向;
+    /// </summary>
+    [Flags]
+    public enum HexDiagonals
+    {
+        Northeast = 1,
+        East = 2,
+        Southeast = 4,
+        Southwest = 8,
+        West = 16,
         Northwest = 32,
         Self = 64,
     }
@@ -178,27 +193,27 @@ namespace KouXiaGu
         /// <summary>
         /// 存在方向数;
         /// </summary>
-        public const int DirectionNumber = 7;
+        public const int DirectionsNumber = 7;
 
         /// <summary>
         /// 方向偏移量;
         /// </summary>
-        static Dictionary<int, CubicHexCoord> directions = GetDirections();
+        static Dictionary<int, CubicHexCoord> directions = HexDirectionVectors();
 
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        static Dictionary<int, CubicHexCoord> GetDirections()
+        static Dictionary<int, CubicHexCoord> HexDirectionVectors()
         {
-            Dictionary<int, CubicHexCoord> directions = new Dictionary<int, CubicHexCoord>(DirectionNumber);
+            Dictionary<int, CubicHexCoord> directions = new Dictionary<int, CubicHexCoord>(DirectionsNumber);
 
-            directions.Add((int)HexDirection.North, new CubicHexCoord(0, 1, -1));
-            directions.Add((int)HexDirection.Northeast, new CubicHexCoord(1, 0, -1));
-            directions.Add((int)HexDirection.Southeast, new CubicHexCoord(1, -1, 0));
-            directions.Add((int)HexDirection.South, new CubicHexCoord(0, -1, 1));
-            directions.Add((int)HexDirection.Southwest, new CubicHexCoord(-1, 0, 1));
-            directions.Add((int)HexDirection.Northwest, new CubicHexCoord(-1, 1, 0));
-            directions.Add((int)HexDirection.Self, new CubicHexCoord(0, 0, 0));
+            directions.Add((int)KouXiaGu.HexDirections.North, new CubicHexCoord(0, 1, -1));
+            directions.Add((int)KouXiaGu.HexDirections.Northeast, new CubicHexCoord(1, 0, -1));
+            directions.Add((int)KouXiaGu.HexDirections.Southeast, new CubicHexCoord(1, -1, 0));
+            directions.Add((int)KouXiaGu.HexDirections.South, new CubicHexCoord(0, -1, 1));
+            directions.Add((int)KouXiaGu.HexDirections.Southwest, new CubicHexCoord(-1, 0, 1));
+            directions.Add((int)KouXiaGu.HexDirections.Northwest, new CubicHexCoord(-1, 1, 0));
+            directions.Add((int)KouXiaGu.HexDirections.Self, new CubicHexCoord(0, 0, 0));
 
             return directions;
         }
@@ -206,9 +221,49 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        public static CubicHexCoord HexDirectionVector(HexDirection direction)
+        public static CubicHexCoord HexDirectionVector(HexDirections direction)
         {
             return directions[(int)direction];
+        }
+
+        #endregion
+
+        #region 立方体坐标对角线方向;
+
+        /// <summary>
+        /// 存在的对角线方向数目;
+        /// </summary>
+        public const int DiagonalsNumber = 7;
+
+        /// <summary>
+        /// 对角线偏移量;
+        /// </summary>
+        static Dictionary<int, CubicHexCoord> diagonals = HexDiagonalVectors();
+
+        /// <summary>
+        /// 获取到对角线偏移量;
+        /// </summary>
+        static Dictionary<int, CubicHexCoord> HexDiagonalVectors()
+        {
+            Dictionary<int, CubicHexCoord> diagonals = new Dictionary<int, CubicHexCoord>(DiagonalsNumber);
+
+            diagonals.Add((int)HexDiagonals.Northeast, new CubicHexCoord(1, 1, -2));
+            diagonals.Add((int)HexDiagonals.East, new CubicHexCoord(2, -1, -1));
+            diagonals.Add((int)HexDiagonals.Southeast, new CubicHexCoord(1, -2, 1));
+            diagonals.Add((int)HexDiagonals.Southwest, new CubicHexCoord(-1, -1, 2));
+            diagonals.Add((int)HexDiagonals.West, new CubicHexCoord(-2, 1, 1));
+            diagonals.Add((int)HexDiagonals.Northwest, new CubicHexCoord(-1, 2, -1));
+            diagonals.Add((int)HexDiagonals.Self, new CubicHexCoord(0, 0, 0));
+
+            return diagonals;
+        }
+
+        /// <summary>
+        /// 获取到对角线偏移量;
+        /// </summary>
+        public static CubicHexCoord HexDiagonalVector(HexDiagonals diagonal)
+        {
+            return diagonals[(int)diagonal];
         }
 
         #endregion
@@ -223,21 +278,21 @@ namespace KouXiaGu
 
         static Dictionary<int, DirectionVector> GetDirectionVector()
         {
-            var directionVectorSet = new Dictionary<int, DirectionVector>(DirectionNumber);
+            var directionVectorSet = new Dictionary<int, DirectionVector>(DirectionsNumber);
 
-            AddIn(directionVectorSet, HexDirection.North, new ShortVector2(0, 1), new ShortVector2(0, 1));
-            AddIn(directionVectorSet, HexDirection.Northeast, new ShortVector2(1, 0), new ShortVector2(1, 1));
-            AddIn(directionVectorSet, HexDirection.Southeast, new ShortVector2(1, -1), new ShortVector2(1, 0));
-            AddIn(directionVectorSet, HexDirection.South, new ShortVector2(0, -1), new ShortVector2(0, -1));
-            AddIn(directionVectorSet, HexDirection.Southwest, new ShortVector2(-1, -1), new ShortVector2(-1, 0));
-            AddIn(directionVectorSet, HexDirection.Northwest, new ShortVector2(-1, 0), new ShortVector2(-1, 1));
-            AddIn(directionVectorSet, HexDirection.Self, new ShortVector2(0, 0), new ShortVector2(0, 0));
+            AddIn(directionVectorSet, KouXiaGu.HexDirections.North, new ShortVector2(0, 1), new ShortVector2(0, 1));
+            AddIn(directionVectorSet, KouXiaGu.HexDirections.Northeast, new ShortVector2(1, 0), new ShortVector2(1, 1));
+            AddIn(directionVectorSet, KouXiaGu.HexDirections.Southeast, new ShortVector2(1, -1), new ShortVector2(1, 0));
+            AddIn(directionVectorSet, KouXiaGu.HexDirections.South, new ShortVector2(0, -1), new ShortVector2(0, -1));
+            AddIn(directionVectorSet, KouXiaGu.HexDirections.Southwest, new ShortVector2(-1, -1), new ShortVector2(-1, 0));
+            AddIn(directionVectorSet, KouXiaGu.HexDirections.Northwest, new ShortVector2(-1, 0), new ShortVector2(-1, 1));
+            AddIn(directionVectorSet, KouXiaGu.HexDirections.Self, new ShortVector2(0, 0), new ShortVector2(0, 0));
 
             return directionVectorSet;
         }
 
         static void AddIn(Dictionary<int, DirectionVector> directionVectorDictionary,
-            HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
+            HexDirections direction, ShortVector2 oddVector, ShortVector2 evenVector)
         {
             DirectionVector directionVector = new DirectionVector(direction, oddVector, evenVector);
             directionVectorDictionary.Add((int)direction, directionVector);
@@ -246,7 +301,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个地图坐标这个方向需要偏移的量(不进行相加,仅是偏移量);
         /// </summary>
-        public static ShortVector2 OffSetDirectionVector(ShortVector2 target, HexDirection direction)
+        public static ShortVector2 OffSetDirectionVector(ShortVector2 target, HexDirections direction)
         {
             DirectionVector directionVector = DirectionVectorSet[(int)direction];
             if ((target.x & 1) == 1)
@@ -264,14 +319,14 @@ namespace KouXiaGu
         /// </summary>
         struct DirectionVector
         {
-            public DirectionVector(HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
+            public DirectionVector(HexDirections direction, ShortVector2 oddVector, ShortVector2 evenVector)
             {
                 this.Direction = direction;
                 this.OddVector = oddVector;
                 this.EvenVector = evenVector;
             }
 
-            public HexDirection Direction { get; private set; }
+            public HexDirections Direction { get; private set; }
             public ShortVector2 OddVector { get; private set; }
             public ShortVector2 EvenVector { get; private set; }
         }
@@ -283,32 +338,32 @@ namespace KouXiaGu
 
         #region 经过排序的方向;
 
-        const int maxDirectionMark = (int)HexDirection.Self;
-        const int minDirectionMark = (int)HexDirection.North;
+        const int maxDirectionMark = (int)KouXiaGu.HexDirections.Self;
+        const int minDirectionMark = (int)KouXiaGu.HexDirections.North;
 
         /// <summary>
         /// 按标记为从 高位到低位 循序排列的数组;不包含本身
         /// </summary>
-        static readonly HexDirection[] HexDirectionsArray = new HexDirection[]
+        static readonly HexDirections[] HexDirectionsArray = new HexDirections[]
         {
-            HexDirection.Northwest,
-            HexDirection.Southwest,
-            HexDirection.South,
-            HexDirection.Southeast,
-            HexDirection.Northeast,
-            HexDirection.North,
+            KouXiaGu.HexDirections.Northwest,
+            KouXiaGu.HexDirections.Southwest,
+            KouXiaGu.HexDirections.South,
+            KouXiaGu.HexDirections.Southeast,
+            KouXiaGu.HexDirections.Northeast,
+            KouXiaGu.HexDirections.North,
         };
 
         /// <summary>
         /// 按标记为从 高位到低位 循序排列的数组;
         /// </summary>
-        static readonly HexDirection[] HexDirectionsAndSelfArray = Enum.GetValues(typeof(HexDirection)).
-            Cast<HexDirection>().Reverse().ToArray();
+        static readonly HexDirections[] HexDirectionsAndSelfArray = Enum.GetValues(typeof(HexDirections)).
+            Cast<HexDirections>().Reverse().ToArray();
 
         /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
         /// </summary>
-        public static IEnumerable<HexDirection> HexDirections()
+        public static IEnumerable<HexDirections> HexDirections()
         {
             return HexDirectionsArray;
         }
@@ -316,7 +371,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到从 高位到低位 顺序返回的迭代结构;包括本身;
         /// </summary>
-        public static IEnumerable<HexDirection> HexDirectionsAndSelf()
+        public static IEnumerable<HexDirections> HexDirectionsAndSelf()
         {
             return HexDirectionsAndSelfArray;
         }
@@ -324,14 +379,14 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到方向集表示的所有方向;
         /// </summary>
-        public static IEnumerable<HexDirection> HexDirections(HexDirection directions)
+        public static IEnumerable<HexDirections> HexDirections(HexDirections directions)
         {
             int mask = (int)directions;
             for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
             {
                 if ((intDirection & mask) == 1)
                 {
-                    yield return (HexDirection)intDirection;
+                    yield return (HexDirections)intDirection;
                 }
             }
         }
@@ -342,36 +397,36 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighbours(ShortVector2 target)
+        public static IEnumerable<KeyValuePair<HexDirections, ShortVector2>> GetNeighbours(ShortVector2 target)
         {
             foreach (var direction in HexDirections())
             {
                 ShortVector2 point = OffSetDirectionVector(target, direction) + target;
-                yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
+                yield return new KeyValuePair<HexDirections, ShortVector2>(direction, point);
             }
         }
 
         /// <summary>
         /// 获取到这个点本身和周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighboursAndSelf(ShortVector2 target)
+        public static IEnumerable<KeyValuePair<HexDirections, ShortVector2>> GetNeighboursAndSelf(ShortVector2 target)
         {
             foreach (var direction in HexDirectionsAndSelf())
             {
                 ShortVector2 point = OffSetDirectionVector(target, direction) + target;
-                yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
+                yield return new KeyValuePair<HexDirections, ShortVector2>(direction, point);
             }
         }
 
         /// <summary>
         /// 获取到这个点这些方向的坐标和方向,从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirection, ShortVector2>> GetNeighbours(ShortVector2 target, HexDirection directions)
+        public static IEnumerable<KeyValuePair<HexDirections, ShortVector2>> GetNeighbours(ShortVector2 target, HexDirections directions)
         {
             foreach (var direction in HexDirections(directions))
             {
                 ShortVector2 point = OffSetDirectionVector(target, direction) + target;
-                yield return new KeyValuePair<HexDirection, ShortVector2>(direction, point);
+                yield return new KeyValuePair<HexDirections, ShortVector2>(direction, point);
             }
         }
 
@@ -380,36 +435,36 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirection, CubicHexCoord>> GetNeighbours(CubicHexCoord target)
+        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(CubicHexCoord target)
         {
             foreach (var direction in HexDirections())
             {
                 CubicHexCoord point = HexDirectionVector(direction) + target;
-                yield return new KeyValuePair<HexDirection, CubicHexCoord>(direction, point);
+                yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
             }
         }
 
         /// <summary>
         /// 获取到这个点本身和周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirection, CubicHexCoord>> GetNeighboursAndSelf(CubicHexCoord target)
+        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighboursAndSelf(CubicHexCoord target)
         {
             foreach (var direction in HexDirectionsAndSelf())
             {
                 CubicHexCoord point = HexDirectionVector(direction) + target;
-                yield return new KeyValuePair<HexDirection, CubicHexCoord>(direction, point);
+                yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
             }
         }
 
         /// <summary>
         /// 获取到这个点这些方向的坐标和方向,从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirection, CubicHexCoord>> GetNeighbours(CubicHexCoord target, HexDirection directions)
+        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(CubicHexCoord target, HexDirections directions)
         {
             foreach (var direction in HexDirections(directions))
             {
                 CubicHexCoord point = HexDirectionVector(direction) + target;
-                yield return new KeyValuePair<HexDirection, CubicHexCoord>(direction, point);
+                yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
             }
         }
 
