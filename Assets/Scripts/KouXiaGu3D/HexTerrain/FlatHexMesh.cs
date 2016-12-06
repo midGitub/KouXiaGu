@@ -15,28 +15,25 @@ namespace KouXiaGu.HexTerrain
     {
         FlatHexMesh() { }
 
+        const string meshName = "Hex Mesh";
+
         /// <summary>
         /// 六边形外半径;
         /// </summary>
         const float outerRadius = 1f;
         static readonly float innerRadius = (float)(Math.Sqrt(3) / 2 * outerRadius);
         const float halfOuterRadius = outerRadius / 2;
-        const float height = 0;
-        const string hexMeshName = "Hex Mesh";
+        const float altitude = 0;
 
-        /// <summary>
-        /// 定点定义;
-        /// </summary>
         static readonly Vector3[] vertices = new Vector3[]
             {
-                new Vector3(-halfOuterRadius , height, innerRadius),
-                new Vector3(halfOuterRadius, height, innerRadius),
-                new Vector3(outerRadius, height, 0f),
-                new Vector3(halfOuterRadius, height, -innerRadius),
-                new Vector3(-halfOuterRadius, height, -innerRadius),
-                new Vector3(-outerRadius, height, 0f)
+                new Vector3(-halfOuterRadius , altitude, innerRadius),
+                new Vector3(halfOuterRadius, altitude, innerRadius),
+                new Vector3(outerRadius, altitude, 0f),
+                new Vector3(halfOuterRadius, altitude, -innerRadius),
+                new Vector3(-halfOuterRadius, altitude, -innerRadius),
+                new Vector3(-outerRadius, altitude, 0f)
             };
-
 
         static readonly int[] triangles = new int[]
             {
@@ -56,28 +53,25 @@ namespace KouXiaGu.HexTerrain
                 new Vector2(0, 0.5f),
             };
 
-        Mesh hexMesh;
-       
         void Awake()
         {
-            GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
-            hexMesh.name = hexMeshName;
+            Mesh mesh;
+            GetComponent<MeshFilter>().mesh = mesh = new Mesh();
+            mesh.name = meshName;
 
-            //if (meshFilter.mesh != null && meshFilter.mesh.name != hexMeshName)
-            //{
-            //    hexMesh = new Mesh();
-            //    hexMesh.name = hexMeshName;
-            //    meshFilter.mesh = hexMesh;
-            //}
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.uv = uv;
+            mesh.RecalculateNormals();
         }
 
-        void Start()
-        {
-            hexMesh.vertices = vertices;
-            hexMesh.triangles = triangles;
-            hexMesh.uv = uv;
-            hexMesh.RecalculateNormals();
-        }
+        //void Start()
+        //{
+        //    hexMesh.vertices = vertices;
+        //    hexMesh.triangles = triangles;
+        //    hexMesh.uv = uv;
+        //    hexMesh.RecalculateNormals();
+        //}
 
     }
 

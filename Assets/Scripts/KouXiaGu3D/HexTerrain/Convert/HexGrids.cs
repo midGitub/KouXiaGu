@@ -50,6 +50,11 @@ namespace KouXiaGu.HexTerrain
         public const int OuterRadius = 1;
 
         /// <summary>
+        /// 提供的六边形运算;
+        /// </summary>
+        public static readonly Hexagon hexagon = new Hexagon(OuterRadius);
+
+        /// <summary>
         /// 六边形起点;
         /// </summary>
         public static readonly ShortVector2 Origin = new ShortVector2(0, 0);

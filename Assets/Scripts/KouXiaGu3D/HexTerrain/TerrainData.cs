@@ -21,7 +21,9 @@ namespace KouXiaGu.HexTerrain
         void Awake()
         {
             terrainMap = new Map2D<CubicHexCoord, LandformNode>();
-            bbbCamera.aspect = 1.15385f;
+            bbbCamera.aspect = TerrainBlock.CameraAspect;
+            bbbCamera.orthographicSize = TerrainBlock.CameraSize;
+            bbbCamera.transform.rotation = TerrainBlock.CameraRotation;
         }
 
         //Test
