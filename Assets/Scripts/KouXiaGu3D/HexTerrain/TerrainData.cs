@@ -37,6 +37,8 @@ namespace KouXiaGu.HexTerrain
             }
         }
 
+       
+
         //RenderTexture renderTexture;
 
         //int size = 1000;

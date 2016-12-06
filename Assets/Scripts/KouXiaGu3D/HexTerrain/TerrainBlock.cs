@@ -22,9 +22,9 @@ namespace KouXiaGu.HexTerrain
         }
         
         /// <summary>
-        /// 地图块大小;
+        /// 地图块大小(需要大于或等于2),不允许动态变换;
         /// </summary>
-        const int size = 4;
+        public const int size = 4;
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例;
@@ -41,8 +41,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static readonly Quaternion CameraRotation = Quaternion.Euler(90, 0, 0);
 
-
-        public static readonly float BlockWidth = (float)(hexagon.OuterDiameters * 1.5f * (size - 1) /*+ hexagon.OuterRadius*/);
+        public static readonly float BlockWidth = (float)(hexagon.OuterDiameters * 1.5f * (size - 1));
         public static readonly float BlockHeight = (float)hexagon.InnerDiameters * size;
 
         /// <summary>
@@ -74,25 +73,28 @@ namespace KouXiaGu.HexTerrain
             return HexGrids.PixelToHex(pixelCenter);
         }
 
-        //static readonly CubicHexCoord North = HexGrids.HexDirectionVector(HexDirections.North);
-        //static readonly CubicHexCoord Northeast = HexGrids.HexDirectionVector(HexDirections.Northeast);
-        //static readonly CubicHexCoord Southeast = HexGrids.HexDirectionVector(HexDirections.Southeast);
-        //static readonly CubicHexCoord East = HexGrids.HexDiagonalVector(HexDiagonals.East);
-        //static 
-
         /// <summary>
-        /// 获取到这个地图块所覆盖的所有地图节点位置;
+        /// 获取到这个地图块覆盖到的所有地图节点坐标;
         /// </summary>
-        public static IEnumerable<CubicHexCoord> GetRange(ShortVector2 coord)
+        public static IEnumerable<CubicHexCoord> GetBlockCover(ShortVector2 coord)
         {
             CubicHexCoord hexCenter = BlockCoordToHexCenter(coord);
-            //CubicHexCoord southwestPoint = 
-            //while ()
-            //{
+            CubicHexCoord startCoord = HexGrids.HexDirectionVector(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
 
-            //}
-
-            throw new NotImplementedException();
+            for (short endX = (short)-startCoord.X;
+                startCoord.X <= endX;
+                startCoord += (startCoord.X & 1) == 0 ?
+                (((size & 1) == 0) ? CubicHexCoord.DIR_Northeast : CubicHexCoord.DIR_Southeast) :
+                (((size & 1) == 0) ? CubicHexCoord.DIR_Southeast : CubicHexCoord.DIR_Northeast))
+            {
+                CubicHexCoord startRow = startCoord;
+                for (short endY = startRow.Z;
+                    startRow.Y <= endY;
+                    startRow += CubicHexCoord.DIR_North)
+                {
+                    yield return startRow;
+                }
+            }
         }
 
     }

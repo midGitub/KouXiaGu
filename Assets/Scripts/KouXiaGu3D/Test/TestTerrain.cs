@@ -11,17 +11,21 @@ namespace KouXiaGu.Test
 {
 
 
-    public class Test_Point : MonoBehaviour
+    public class TestTerrain : MonoBehaviour
     {
 
+        [SerializeField]
         Text textObject;
+
+        [SerializeField]
+        GameObject hexMesh;
 
         Vector3 currentPixelPosition;
         string checkPointText;
 
         void Awake()
         {
-            textObject = GetComponent<Text>();
+            textObject = textObject ?? GetComponent<Text>();
         }
 
         void Start()
@@ -39,7 +43,7 @@ namespace KouXiaGu.Test
             string str = "";
 
             str += GetScreenPoint(mousePosition);
-            str += GetPlanePoint(mousePosition);
+            str += GetTestPointsLog(mousePosition);
             str += OnMouseDown();
 
             return str;
@@ -54,7 +58,8 @@ namespace KouXiaGu.Test
             return str;
         }
 
-        string GetPlanePoint(Vector3 mousePosition)
+
+        string GetTestPointsLog(Vector3 mousePosition)
         {
             Vector3 pixel = MouseConvert.MouseToPixel();
             ShortVector2 offset = HexGrids.PixelToOffset(pixel);
@@ -101,6 +106,17 @@ namespace KouXiaGu.Test
             }
 
             return str;
+        }
+
+
+        [ContextMenu("地图块布满")]
+        void TestCreateRange()
+        {
+            foreach (var point in TerrainBlock.GetBlockCover(new ShortVector2(0,0)))
+            {
+                Vector3 pix = point.HexToPixel(-1);
+                Instantiate(hexMesh, pix, Quaternion.identity);
+            }
         }
 
     }

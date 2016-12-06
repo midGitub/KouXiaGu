@@ -69,7 +69,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 立方体坐标 转换为 偏移坐标;
         /// </summary>
-        public static ShortVector2 HexToOffset(CubicHexCoord hex)
+        public static ShortVector2 HexToOffset(this CubicHexCoord hex)
         {
             int x = hex.X;
             int y = hex.Y + (int)((hex.X + 1 * (hex.X & 1)) / 2);
@@ -129,7 +129,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 立方体坐标 转换成 2D像素坐标;
         /// </summary>
-        public static Vector2 HexToPixel2D(CubicHexCoord hex)
+        public static Vector2 HexToPixel2D(this CubicHexCoord hex)
         {
             float x = OuterRadius * 1.5f * hex.X;
             float y = (float)(Math.Sqrt(3.0) / 2.0 * hex.X + Math.Sqrt(3.0) * hex.Y) * OuterRadius;
@@ -139,7 +139,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 立方体坐标 转换成 3D像素坐标;
         /// </summary>
-        public static Vector3 HexToPixel(CubicHexCoord hex, float y = 0)
+        public static Vector3 HexToPixel(this CubicHexCoord hex, float y = 0)
         {
             Vector2 v2 = HexToPixel2D(hex);
             return new Vector3(v2.x, y, v2.y);
@@ -216,7 +216,7 @@ namespace KouXiaGu.HexTerrain
             directions.Add((int)HexDirections.Northeast, CubicHexCoord.DIR_Northeast);
             directions.Add((int)HexDirections.Southeast, CubicHexCoord.DIR_Southeast);
             directions.Add((int)HexDirections.South, CubicHexCoord.DIR_South);
-            directions.Add((int)HexDirections.Southwest, CubicHexCoord.DIR_South);
+            directions.Add((int)HexDirections.Southwest, CubicHexCoord.DIR_Southwest);
             directions.Add((int)HexDirections.Northwest, CubicHexCoord.DIR_Northwest);
             directions.Add((int)HexDirections.Self, CubicHexCoord.Zero);
 
