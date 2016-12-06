@@ -67,7 +67,8 @@ namespace KouXiaGu.Test
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
             ShortVector2 terrainBlockCoord = TerrainBlock.PixelToBlockCoord(pixel);
-            Vector3 terrainBlockCenter = TerrainBlock.BlockCoordToCenter(terrainBlockCoord);
+            Vector3 terrainBlockCenter = TerrainBlock.BlockCoordToPixelCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = TerrainBlock.BlockCoordToHexCenter(terrainBlockCoord);
 
             string str = "";
 
@@ -82,7 +83,8 @@ namespace KouXiaGu.Test
                 + "偏移:" + cubeOffset
 
                 + "\n地貌块: 块编号:" + terrainBlockCoord
-                + "中心:" + terrainBlockCenter;
+                + "中心:" + terrainBlockCenter
+                + "立方:" + terrainBlockHexCenter;
 
             return str;
         }

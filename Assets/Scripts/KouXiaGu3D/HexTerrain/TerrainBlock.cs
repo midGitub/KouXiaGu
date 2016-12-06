@@ -21,6 +21,9 @@ namespace KouXiaGu.HexTerrain
             get { return HexGrids.hexagon; }
         }
         
+        /// <summary>
+        /// 地图块大小;
+        /// </summary>
         const int size = 4;
 
         /// <summary>
@@ -39,33 +42,58 @@ namespace KouXiaGu.HexTerrain
         public static readonly Quaternion CameraRotation = Quaternion.Euler(90, 0, 0);
 
 
-        public static readonly float BlockWidth = (float)(hexagon.OuterDiameters * size + hexagon.OuterRadius);
+        public static readonly float BlockWidth = (float)(hexagon.OuterDiameters * 1.5f * (size - 1) /*+ hexagon.OuterRadius*/);
         public static readonly float BlockHeight = (float)hexagon.InnerDiameters * size;
-        public static readonly float HalfBlockWidth = BlockWidth / 2;
-        public static readonly float HalfBlockHeight = BlockHeight / 2;
 
         /// <summary>
         /// 从像素节点 获取到所属的地形块;
         /// </summary>
         public static ShortVector2 PixelToBlockCoord(Vector3 position)
         {
-            short x = (short)Math.Floor(position.x / BlockWidth);
-            short y = (short)Math.Floor(position.z / BlockHeight);
+            short x = (short)Math.Round(position.x / BlockWidth);
+            short y = (short)Math.Round(position.z / BlockHeight);
             return new ShortVector2(x, y);
         }
 
         /// <summary>
         /// 地图块坐标 获取到其像素中心点;
         /// </summary>
-        public static Vector3 BlockCoordToCenter(ShortVector2 coord)
+        public static Vector3 BlockCoordToPixelCenter(ShortVector2 coord)
         {
-            float x = coord.x * HalfBlockWidth + (coord.x >= 0 ? HalfBlockWidth : 0);
-            float z = coord.y * HalfBlockHeight + (coord.y >= 0 ? HalfBlockHeight : 0);
+            float x = coord.x * BlockWidth;
+            float z = coord.y * BlockHeight;
             return new Vector3(x, 0, z);
         }
 
+        /// <summary>
+        /// 地图块坐标 获取到其中心的六边形坐标;
+        /// </summary>
+        public static CubicHexCoord BlockCoordToHexCenter(ShortVector2 coord)
+        {
+            Vector3 pixelCenter = BlockCoordToPixelCenter(coord);
+            return HexGrids.PixelToHex(pixelCenter);
+        }
 
+        //static readonly CubicHexCoord North = HexGrids.HexDirectionVector(HexDirections.North);
+        //static readonly CubicHexCoord Northeast = HexGrids.HexDirectionVector(HexDirections.Northeast);
+        //static readonly CubicHexCoord Southeast = HexGrids.HexDirectionVector(HexDirections.Southeast);
+        //static readonly CubicHexCoord East = HexGrids.HexDiagonalVector(HexDiagonals.East);
+        //static 
 
+        /// <summary>
+        /// 获取到这个地图块所覆盖的所有地图节点位置;
+        /// </summary>
+        public static IEnumerable<CubicHexCoord> GetRange(ShortVector2 coord)
+        {
+            CubicHexCoord hexCenter = BlockCoordToHexCenter(coord);
+            //CubicHexCoord southwestPoint = 
+            //while ()
+            //{
+
+            //}
+
+            throw new NotImplementedException();
+        }
 
     }
 

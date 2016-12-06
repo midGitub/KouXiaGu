@@ -22,6 +22,23 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static readonly CubicHexCoord Zero = new CubicHexCoord(0, 0, 0);
 
+        //(平顶)存在的方向偏移量;
+        public static readonly CubicHexCoord DIR_North = new CubicHexCoord(0, 1, -1);
+        public static readonly CubicHexCoord DIR_Northeast = new CubicHexCoord(1, 0, -1);
+        public static readonly CubicHexCoord DIR_Southeast = new CubicHexCoord(1, -1, 0);
+        public static readonly CubicHexCoord DIR_South = new CubicHexCoord(0, -1, 1);
+        public static readonly CubicHexCoord DIR_Southwest = new CubicHexCoord(-1, 0, 1);
+        public static readonly CubicHexCoord DIR_Northwest = new CubicHexCoord(-1, 1, 0);
+
+        //(平顶)存在的对角线方向偏移量;
+        public static readonly CubicHexCoord DIA_Northeast = new CubicHexCoord(1, 1, -2);
+        public static readonly CubicHexCoord DIA_East = new CubicHexCoord(2, -1, -1);
+        public static readonly CubicHexCoord DIA_Southeast = new CubicHexCoord(1, -2, 1);
+        public static readonly CubicHexCoord DIA_Southwest = new CubicHexCoord(-1, -1, 2);
+        public static readonly CubicHexCoord DIA_West = new CubicHexCoord(-2, 1, 1);
+        public static readonly CubicHexCoord DIA_Northwest = new CubicHexCoord(-1, 2, -1);
+
+
         public CubicHexCoord(short x, short y, short z)
         {
             OutOfRangeException(x, y, z);

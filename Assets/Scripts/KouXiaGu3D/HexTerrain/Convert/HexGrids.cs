@@ -212,13 +212,13 @@ namespace KouXiaGu.HexTerrain
         {
             Dictionary<int, CubicHexCoord> directions = new Dictionary<int, CubicHexCoord>(DirectionsNumber);
 
-            directions.Add((int)HexDirections.North, new CubicHexCoord(0, 1, -1));
-            directions.Add((int)HexDirections.Northeast, new CubicHexCoord(1, 0, -1));
-            directions.Add((int)HexDirections.Southeast, new CubicHexCoord(1, -1, 0));
-            directions.Add((int)HexDirections.South, new CubicHexCoord(0, -1, 1));
-            directions.Add((int)HexDirections.Southwest, new CubicHexCoord(-1, 0, 1));
-            directions.Add((int)HexDirections.Northwest, new CubicHexCoord(-1, 1, 0));
-            directions.Add((int)HexDirections.Self, new CubicHexCoord(0, 0, 0));
+            directions.Add((int)HexDirections.North, CubicHexCoord.DIR_North);
+            directions.Add((int)HexDirections.Northeast, CubicHexCoord.DIR_Northeast);
+            directions.Add((int)HexDirections.Southeast, CubicHexCoord.DIR_Southeast);
+            directions.Add((int)HexDirections.South, CubicHexCoord.DIR_South);
+            directions.Add((int)HexDirections.Southwest, CubicHexCoord.DIR_South);
+            directions.Add((int)HexDirections.Northwest, CubicHexCoord.DIR_Northwest);
+            directions.Add((int)HexDirections.Self, CubicHexCoord.Zero);
 
             return directions;
         }
@@ -229,6 +229,14 @@ namespace KouXiaGu.HexTerrain
         public static CubicHexCoord HexDirectionVector(HexDirections direction)
         {
             return directions[(int)direction];
+        }
+
+        /// <summary>
+        /// 获取到这个方向的坐标;
+        /// </summary>
+        public static CubicHexCoord GetDirection(this CubicHexCoord coord, HexDirections direction)
+        {
+            return coord + HexDirectionVector(direction);
         }
 
         #endregion
@@ -252,13 +260,13 @@ namespace KouXiaGu.HexTerrain
         {
             Dictionary<int, CubicHexCoord> diagonals = new Dictionary<int, CubicHexCoord>(DiagonalsNumber);
 
-            diagonals.Add((int)HexDiagonals.Northeast, new CubicHexCoord(1, 1, -2));
-            diagonals.Add((int)HexDiagonals.East, new CubicHexCoord(2, -1, -1));
-            diagonals.Add((int)HexDiagonals.Southeast, new CubicHexCoord(1, -2, 1));
-            diagonals.Add((int)HexDiagonals.Southwest, new CubicHexCoord(-1, -1, 2));
-            diagonals.Add((int)HexDiagonals.West, new CubicHexCoord(-2, 1, 1));
-            diagonals.Add((int)HexDiagonals.Northwest, new CubicHexCoord(-1, 2, -1));
-            diagonals.Add((int)HexDiagonals.Self, new CubicHexCoord(0, 0, 0));
+            diagonals.Add((int)HexDiagonals.Northeast, CubicHexCoord.DIA_Northeast);
+            diagonals.Add((int)HexDiagonals.East, CubicHexCoord.DIA_East);
+            diagonals.Add((int)HexDiagonals.Southeast, CubicHexCoord.DIA_Southeast);
+            diagonals.Add((int)HexDiagonals.Southwest, CubicHexCoord.DIA_Southwest);
+            diagonals.Add((int)HexDiagonals.West, CubicHexCoord.DIA_West);
+            diagonals.Add((int)HexDiagonals.Northwest, CubicHexCoord.DIA_Northwest);
+            diagonals.Add((int)HexDiagonals.Self, CubicHexCoord.Zero);
 
             return diagonals;
         }
@@ -269,6 +277,14 @@ namespace KouXiaGu.HexTerrain
         public static CubicHexCoord HexDiagonalVector(HexDiagonals diagonal)
         {
             return diagonals[(int)diagonal];
+        }
+
+        /// <summary>
+        /// 获取到这个对角线的偏移量;
+        /// </summary>
+        public static CubicHexCoord GetDiagonal(this CubicHexCoord coord, HexDiagonals diagonal)
+        {
+            return coord + HexDiagonalVector(diagonal);
         }
 
         #endregion
