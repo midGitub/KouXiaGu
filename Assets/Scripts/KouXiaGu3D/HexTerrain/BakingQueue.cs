@@ -24,27 +24,85 @@ namespace KouXiaGu.HexTerrain
         [SerializeField]
         Camera bakingCamera;
         [SerializeField]
-        OvenDisplayMeshPool ovenDisplayMeshPool;
+        OvenDisplayMeshQueue ovenDisplayMeshPool;
+        [SerializeField]
+        BakingParameter parameter;
+
+        Queue<BakingRequest> bakingQueue;
 
         void Awake()
         {
             ovenDisplayMeshPool.Awake();
+            bakingQueue = new Queue<BakingRequest>();
         }
 
         void Start()
         {
-            
+            bakingCamera.aspect = TerrainBlock.CameraAspect;
+            bakingCamera.orthographicSize = TerrainBlock.CameraSize;
+            bakingCamera.transform.position = Vector3.zero;
+            bakingCamera.transform.rotation = TerrainBlock.CameraRotation;
+
+            StartCoroutine(Baking());
         }
 
+        /// <summary>
+        /// 加入到烘焙队列;
+        /// </summary>
+        public void Enqueue(BakingRequest request)
+        {
+            bakingQueue.Enqueue(request);
+        }
+
+        IEnumerator Baking()
+        {
+            CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
+
+            while (true)
+            {
+                yield return bakingYieldInstruction;
+
+                BakingRequest request = bakingQueue.Dequeue();
+
+                IEnumerable<KeyValuePair<MeshRenderer, BakingNode>> bakingNodes = PrepareBaking(request);
+
+
+
+            }
+        }
+
+        /// <summary>
+        /// 烘焙前的准备,返回烘焙对应的网格;
+        /// </summary>
+        List<KeyValuePair<MeshRenderer, BakingNode>> PrepareBaking(BakingRequest request)
+        {
+            ovenDisplayMeshPool.RecoveryActive();
+
+            IEnumerable<BakingNode> bakingNodes = request.GetBakingNodes();
+            List<KeyValuePair<MeshRenderer, BakingNode>> list = new List<KeyValuePair<MeshRenderer, BakingNode>>();
+
+            foreach (var node in bakingNodes)
+            {
+                if (node.NotBoundary)
+                {
+                    Quaternion rotation = Quaternion.Euler(0, node.RotationY, 0);
+                    var mesh = ovenDisplayMeshPool.Dequeue(node.Position, rotation);
+
+                    list.Add(new KeyValuePair<MeshRenderer, BakingNode>(mesh, node));
+                }
+            }
+
+            return list;
+        }
 
 
         /// <summary>
         /// 在烘焙时显示在场景内的网格;
         /// </summary>
         [Serializable]
-        class OvenDisplayMeshPool
+        class OvenDisplayMeshQueue
         {
-            OvenDisplayMeshPool() { }
+            OvenDisplayMeshQueue() { }
 
             [SerializeField]
             Transform parent;
@@ -52,22 +110,47 @@ namespace KouXiaGu.HexTerrain
             [SerializeField]
             MeshRenderer ovenDisplayMesh;
 
-            Queue<MeshRenderer> meshQueue;
+            Queue<MeshRenderer> sleep;
+            Queue<MeshRenderer> active;
+
+            /// <summary>
+            /// 激活在场景的物体;
+            /// </summary>
+            public IEnumerable<MeshRenderer> Active
+            {
+                get { return active; }
+            }
 
             public void Awake()
             {
-                meshQueue = new Queue<MeshRenderer>();
+                sleep = new Queue<MeshRenderer>();
+                active = new Queue<MeshRenderer>();
             }
 
-            public MeshRenderer Instantiate(Vector3 position, Quaternion rotation)
+            /// <summary>
+            /// 回收所有激活的物体(将所有激活的物体设为睡眠模式);
+            /// </summary>
+            public void RecoveryActive()
             {
-                if (meshQueue.Count == 0)
+                while (active.Count != 0)
+                {
+                    var item = active.Dequeue();
+                    Destroy(item);
+                }
+            }
+
+            /// <summary>
+            /// 获取到一个网格物体;
+            /// </summary>
+            public MeshRenderer Dequeue(Vector3 position, Quaternion rotation)
+            {
+                if (sleep.Count == 0)
                 {
                     return GameObject.Instantiate(ovenDisplayMesh, position, rotation, parent) as MeshRenderer;
                 }
                 else
                 {
-                    MeshRenderer mesh = meshQueue.Dequeue();
+                    MeshRenderer mesh = sleep.Dequeue();
                     mesh.transform.position = position;
                     mesh.transform.rotation = rotation;
                     mesh.gameObject.SetActive(true);
@@ -75,13 +158,32 @@ namespace KouXiaGu.HexTerrain
                 }
             }
 
-            public void Destroy(MeshRenderer mesh)
+            void Destroy(MeshRenderer mesh)
             {
                 mesh.gameObject.SetActive(false);
-                meshQueue.Enqueue(mesh);
+                sleep.Enqueue(mesh);
             }
 
         }
+
+    }
+
+
+    /// <summary>
+    /// 烘焙的参数;
+    /// </summary>
+    [SerializeField]
+    public class BakingParameter
+    {
+
+        ////烘焙参数;
+        public int DiffuseMapWidth;
+        public int DiffuseMapHeight;
+        public int DiffuseMapAntiAliasing;
+
+        public int HeightMapWidth;
+        public int HeightMapHeight;
+        public int HeightMapAntiAliasing;
 
     }
 

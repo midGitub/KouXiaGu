@@ -14,9 +14,10 @@ namespace KouXiaGu.HexTerrain
     public struct LandformNode
     {
 
-        public LandformNode(int id)
+        public LandformNode(int id, float rotationAngle)
         {
             this.ID = id;
+            this.rotationAngle = rotationAngle;
         }
 
         /// <summary>
@@ -25,8 +26,11 @@ namespace KouXiaGu.HexTerrain
         [ProtoMember(2)]
         public int ID;
 
-        //[ProtoMember(3)]
-        //public float rotationAngle;
+        /// <summary>
+        /// 地形旋转角度;
+        /// </summary>
+        [ProtoMember(3)]
+        public float rotationAngle;
     }
 
 }

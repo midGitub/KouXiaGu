@@ -15,26 +15,26 @@ namespace KouXiaGu.HexTerrain
 
         Map2D<CubicHexCoord, LandformNode> terrainMap;
 
-        [SerializeField]
-        Camera bbbCamera;
-
         void Awake()
         {
             terrainMap = new Map2D<CubicHexCoord, LandformNode>();
-            bbbCamera.aspect = TerrainBlock.CameraAspect;
-            bbbCamera.orthographicSize = TerrainBlock.CameraSize;
-            bbbCamera.transform.rotation = TerrainBlock.CameraRotation;
         }
 
         //Test
         void Start()
         {
-            terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10));
+            terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
 
             foreach (var item in HexGrids.GetNeighbours(CubicHexCoord.Zero))
             {
-                terrainMap.Add(item.Value, new LandformNode(20));
+                terrainMap.Add(item.Value, new LandformNode(20, 0));
             }
+        }
+
+        [ContextMenu("烘焙测试")]
+        void Test_Baking()
+        {
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Zero));
         }
 
     }
