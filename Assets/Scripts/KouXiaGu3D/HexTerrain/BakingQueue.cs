@@ -45,7 +45,7 @@ namespace KouXiaGu.HexTerrain
 
         RenderTexture mixerRT;
         RenderTexture heightRT;
-        RenderTexture shadowsAndHeightRT;
+        RenderTexture alphaHeightRT;
         RenderTexture diffuseRT;
 
         BakingParameter parameter = BakingParameter.Default;
@@ -133,7 +133,7 @@ namespace KouXiaGu.HexTerrain
 
             BakingDiffuse(bakingNodes);
 
-            Texture2D height = GetHeightTexture(shadowsAndHeightRT);
+            Texture2D height = GetHeightTexture(alphaHeightRT);
             Texture2D diffuse = GetDiffuseTexture(diffuseRT);
 
             request.OnComplete(diffuse, height);
@@ -232,7 +232,7 @@ namespace KouXiaGu.HexTerrain
                 hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
                 hexMesh.material.SetTexture("_Height", node.HeightTexture);
                 hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
-                hexMesh.material.SetTexture("_ShadowsAndHeight", shadowsAndHeightRT);
+                hexMesh.material.SetTexture("_ShadowsAndHeight", alphaHeightRT);
                 hexMesh.material.SetFloat("_Sea", 0f);
                 hexMesh.material.SetFloat("_Centralization", 1.0f);
             }
@@ -283,23 +283,15 @@ namespace KouXiaGu.HexTerrain
 
         void ProduceShadowsAndHeightTexture(RenderTexture terrainHeight)
         {
-            heightToAlphaMaterial.SetTexture("_Height", terrainHeight);
-            //shadowsAndHeightMaterial.SetTexture("_Height1", terrainHeightOff1);
-            //shadowsAndHeightMaterial.SetTexture("_Height2", terrainHeightOff2);
+            //heightToAlphaMaterial.mainTexture = terrainHeight;
 
-            RenderTexture.ReleaseTemporary(shadowsAndHeightRT);
-            shadowsAndHeightRT = RenderTexture.GetTemporary(terrainHeight.width, terrainHeight.height, 0, RenderTextureFormat.ARGB32);
+            RenderTexture.ReleaseTemporary(alphaHeightRT);
+            alphaHeightRT = RenderTexture.GetTemporary(terrainHeight.width, terrainHeight.height, 0, RenderTextureFormat.ARGB32);
 
             terrainHeight.filterMode = FilterMode.Bilinear;
-            //terrainHeightOff1.filterMode = FilterMode.Bilinear;
-            //terrainHeightOff1.filterMode = FilterMode.Bilinear;
-            shadowsAndHeightRT.filterMode = FilterMode.Bilinear;
+            alphaHeightRT.filterMode = FilterMode.Bilinear;
 
-            Graphics.Blit(null, shadowsAndHeightRT, heightToAlphaMaterial, 0);
-
-            heightToAlphaMaterial.SetTexture("_Height", null);
-            //shadowsAndHeightMaterial.SetTexture("_Height1", null);
-            //shadowsAndHeightMaterial.SetTexture("_Height2", null);
+            Graphics.Blit(terrainHeight, alphaHeightRT, heightToAlphaMaterial, 0);
         }
 
         ///// <summary>

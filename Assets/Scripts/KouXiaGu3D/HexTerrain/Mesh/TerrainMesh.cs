@@ -17,8 +17,8 @@ namespace KouXiaGu.HexTerrain
 
         const string meshName = "Terrain Mesh";
 
-        static readonly float halfWidth = BakingBlock.BlockWidth / 2;
-        static readonly float halfHeight = BakingBlock.BlockHeight / 2;
+        static readonly float halfWidth = BakingBlock.BlockWidth / 2 + 0.01f;
+        static readonly float halfHeight = BakingBlock.BlockHeight / 2 + 0.01f;
         const float altitude = 0;
 
         static readonly Vector3[] vertices = new Vector3[]

@@ -23,13 +23,15 @@ namespace KouXiaGu.HexTerrain
         //Test
         void Start()
         {
+            int[] aa = new int[] { 10, 20, 30};
+
             terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
 
             foreach (var item in HexGrids.GetHexRange(CubicHexCoord.Zero, 10))
             {
                 try
                 {
-                    terrainMap.Add(item, new LandformNode((item.X & 1) == 0 ? 10 : 20, UnityEngine.Random.Range(0, 360)));
+                    terrainMap.Add(item, new LandformNode(aa[UnityEngine.Random.Range(0,3)], UnityEngine.Random.Range(0, 360)));
                 }
                 catch (ArgumentException)
                 {
