@@ -38,8 +38,6 @@ namespace KouXiaGu.HexTerrain
                     Debug.Log(item);
                 }
             }
-
-            Test_Baking();
         }
 
         [ContextMenu("烘焙测试")]

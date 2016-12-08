@@ -43,13 +43,10 @@ namespace KouXiaGu.HexTerrain
         Material heightToAlphaMaterial;
         Material diffuseMaterial;
 
-        RenderTexture mixerRT;
-        RenderTexture heightRT;
-        RenderTexture alphaHeightRT;
-        RenderTexture diffuseRT;
-
         BakingParameter parameter = BakingParameter.Default;
         Queue<BakingRequest> bakingQueue;
+        Coroutine bakingCoroutine;
+
 
         void Awake()
         {
@@ -61,7 +58,25 @@ namespace KouXiaGu.HexTerrain
         {
             InitBakingCamera();
             InitMaterial();
-            StartCoroutine(Baking());
+
+            StartCoroutine();
+        }
+
+        /// <summary>
+        /// 开始烘焙协程;
+        /// </summary>
+        public void StartCoroutine()
+        {
+            bakingCoroutine = StartCoroutine(Baking());
+        }
+
+        /// <summary>
+        /// 停止烘焙的协程,清空请求队列;
+        /// </summary>
+        public void StopCoroutine()
+        {
+            StopCoroutine(bakingCoroutine);
+            bakingQueue.Clear();
         }
 
         /// <summary>
@@ -97,10 +112,10 @@ namespace KouXiaGu.HexTerrain
             diffuseMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
 
-        public string TestPath
-        {
-            get { return Path.Combine(Application.dataPath, "TestTexture"); }
-        }
+        //string TestPath
+        //{
+        //    get { return Path.Combine(Application.dataPath, "TestTexture"); }
+        //}
 
         /// <summary>
         /// 在协程内队列中进行烘焙;
@@ -121,7 +136,7 @@ namespace KouXiaGu.HexTerrain
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError(e);
+                    Debug.LogError("地形烘焙错误:" + e);
                 }
             }
         }
@@ -133,21 +148,26 @@ namespace KouXiaGu.HexTerrain
         {
             IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
 
-            BakingMixer(bakingNodes);
+            RenderTexture mixerRT;
+            RenderTexture heightRT;
+            RenderTexture alphaHeightRT;
+            RenderTexture diffuseRT;
 
-            BakingHeight(bakingNodes, ref heightRT);
-
-            BakingHeightToAlpha(heightRT);
-
-            BakingDiffuse(bakingNodes);
+            mixerRT = BakingMixer(bakingNodes);
+            heightRT = BakingHeight(bakingNodes, mixerRT);
+            alphaHeightRT = BakingHeightToAlpha(heightRT);
+            diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
 
             Texture2D height = GetHeightTexture(alphaHeightRT);
             Texture2D diffuse = GetDiffuseTexture(diffuseRT);
 
             request.OnComplete(diffuse, height);
+
+            RenderTexture.ReleaseTemporary(mixerRT);
+            RenderTexture.ReleaseTemporary(heightRT);
+            RenderTexture.ReleaseTemporary(alphaHeightRT);
+            RenderTexture.ReleaseTemporary(diffuseRT);
         }
-
-
 
 
         /// <summary>
@@ -179,7 +199,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 对混合贴图进行烘焙;传入需要设置到的地貌节点;
         /// </summary>
-        void BakingMixer(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
+        RenderTexture BakingMixer(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
         {
             foreach (var pair in bakingNodes)
             {
@@ -193,54 +213,52 @@ namespace KouXiaGu.HexTerrain
                 hexMesh.material.mainTexture = node.MixerTexture;
             }
 
-            RenderTexture.ReleaseTemporary(mixerRT);
-            mixerRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            RenderTexture mixerRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
             Render(mixerRT);
+            return mixerRT;
         }
 
         /// <summary>
         /// 混合高度贴图;
         /// </summary>
-        void BakingHeight(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, ref RenderTexture heightRT, bool bakingOnly = false)
+        RenderTexture BakingHeight(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer)
         {
-            if (!bakingOnly)
+            foreach (var pair in bakingNodes)
             {
-                foreach (var pair in bakingNodes)
-                {
-                    BakingNode node = pair.Key;
-                    MeshRenderer hexMesh = pair.Value;
+                BakingNode node = pair.Key;
+                MeshRenderer hexMesh = pair.Value;
 
-                    if (hexMesh.material != null)
-                        GameObject.Destroy(hexMesh.material);
+                if (hexMesh.material != null)
+                    GameObject.Destroy(hexMesh.material);
 
-                    hexMesh.material = heightMaterial;
-                    hexMesh.material.SetTexture("_MainTex", node.HeightTexture);
-                    hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
-                    hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
-                }
+                hexMesh.material = heightMaterial;
+                hexMesh.material.SetTexture("_MainTex", node.HeightTexture);
+                hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
+                hexMesh.material.SetTexture("_GlobalMixer", mixer);
             }
 
-            RenderTexture.ReleaseTemporary(heightRT);
-            heightRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            RenderTexture heightRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
             Render(heightRT);
+            return heightRT;
         }
 
         /// <summary>
         /// 将高度图从灰度通道转到阿尔法通道上;
         /// </summary>
-        void BakingHeightToAlpha(RenderTexture heightRT)
+        RenderTexture BakingHeightToAlpha(RenderTexture heightRT)
         {
-            RenderTexture.ReleaseTemporary(alphaHeightRT);
-            alphaHeightRT = RenderTexture.GetTemporary(heightRT.width, heightRT.height, 0, RenderTextureFormat.ARGB32);
+            //RenderTexture.ReleaseTemporary(alphaHeightRT);
+            RenderTexture alphaHeightRT = RenderTexture.GetTemporary(heightRT.width, heightRT.height, 0, RenderTextureFormat.ARGB32);
 
             heightRT.filterMode = FilterMode.Bilinear;
             alphaHeightRT.filterMode = FilterMode.Bilinear;
 
             Graphics.Blit(heightRT, alphaHeightRT, heightToAlphaMaterial, 0);
+            return alphaHeightRT;
         }
 
 
-        void BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
+        RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer, Texture height)
         {
             foreach (var pair in bakingNodes)
             {
@@ -255,15 +273,15 @@ namespace KouXiaGu.HexTerrain
                 hexMesh.material.SetTexture("_MainTex", node.DiffuseTexture);
                 hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
                 hexMesh.material.SetTexture("_Height", node.HeightTexture);
-                hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
-                hexMesh.material.SetTexture("_ShadowsAndHeight", alphaHeightRT);
+                hexMesh.material.SetTexture("_GlobalMixer", mixer);
+                hexMesh.material.SetTexture("_ShadowsAndHeight", height);
                 hexMesh.material.SetFloat("_Sea", 0f);
                 hexMesh.material.SetFloat("_Centralization", 1.0f);
             }
 
-            RenderTexture.ReleaseTemporary(diffuseRT);
-            diffuseRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            RenderTexture diffuseRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
             Render(diffuseRT);
+            return diffuseRT;
         }
 
 
@@ -405,8 +423,6 @@ namespace KouXiaGu.HexTerrain
         //    rt.Release();
         //    //RenderTargetManager.ReleaseTexture(rt);
         //}
-
-
 
 
         /// <summary>
