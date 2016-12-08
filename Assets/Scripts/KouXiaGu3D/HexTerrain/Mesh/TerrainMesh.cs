@@ -17,6 +17,7 @@ namespace KouXiaGu.HexTerrain
 
         const string meshName = "Terrain Mesh";
 
+        //为了地形相接的地方不存在明显的缝隙,所以加上 小数 的数值;
         static readonly float halfWidth = BakingBlock.BlockWidth / 2 + 0.01f;
         static readonly float halfHeight = BakingBlock.BlockHeight / 2 + 0.01f;
         const float altitude = 0;
