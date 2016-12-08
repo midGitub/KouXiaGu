@@ -41,12 +41,22 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         Landform landform;
 
+        public Texture DiffuseTexture
+        {
+            get { return landform.DiffuseTexture; }
+        }
+
         /// <summary>
         /// 高度贴图;
         /// </summary>
         public Texture HeightTexture
         {
             get { return landform.HeightTexture; }
+        }
+
+        public Texture MixerTexture
+        {
+            get { return landform.MixerTexture; }
         }
 
     }

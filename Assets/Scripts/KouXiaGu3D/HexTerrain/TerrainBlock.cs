@@ -27,7 +27,7 @@ namespace KouXiaGu.HexTerrain
         public const int size = 4;
 
         /// <summary>
-        /// 完整预览整个地图块的摄像机比例;
+        /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
         public static readonly float CameraAspect = (float)((hexagon.OuterDiameters + hexagon.OuterRadius / 4) / hexagon.InnerDiameters);
 
@@ -81,14 +81,14 @@ namespace KouXiaGu.HexTerrain
             CubicHexCoord hexCenter = BlockCoordToHexCenter(coord);
             CubicHexCoord startCoord = HexGrids.HexDirectionVector(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
 
-            for (short endX = (short)-startCoord.X;
+            for (short endX = (short)(Math.Abs(hexCenter.X - startCoord.X) + hexCenter.X);
                 startCoord.X <= endX;
                 startCoord += (startCoord.X & 1) == 0 ?
                 (((size & 1) == 0) ? CubicHexCoord.DIR_Northeast : CubicHexCoord.DIR_Southeast) :
                 (((size & 1) == 0) ? CubicHexCoord.DIR_Southeast : CubicHexCoord.DIR_Northeast))
             {
                 CubicHexCoord startRow = startCoord;
-                for (short endY = startRow.Z;
+                for (short endY = (short)(Math.Abs(hexCenter.Z - startCoord.Z) + hexCenter.Y);
                     startRow.Y <= endY;
                     startRow += CubicHexCoord.DIR_North)
                 {

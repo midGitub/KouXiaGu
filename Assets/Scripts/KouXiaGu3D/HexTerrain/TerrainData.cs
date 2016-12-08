@@ -25,9 +25,16 @@ namespace KouXiaGu.HexTerrain
         {
             terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
 
-            foreach (var item in HexGrids.GetNeighbours(CubicHexCoord.Zero))
+            foreach (var item in HexGrids.GetHexRange(CubicHexCoord.Zero, 10))
             {
-                terrainMap.Add(item.Value, new LandformNode(20, 0));
+                try
+                {
+                    terrainMap.Add(item, new LandformNode((item.X & 1) == 0 ? 10 : 20, 0));
+                }
+                catch (ArgumentException)
+                {
+                    Debug.Log(item);
+                }
             }
         }
 
@@ -35,6 +42,14 @@ namespace KouXiaGu.HexTerrain
         void Test_Baking()
         {
             BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Zero));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Left));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Right));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Down));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Down + ShortVector2.Left));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Down + ShortVector2.Right));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
+            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
         }
 
     }

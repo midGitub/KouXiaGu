@@ -25,10 +25,31 @@ namespace KouXiaGu.HexTerrain
         Camera bakingCamera;
         [SerializeField]
         OvenDisplayMeshQueue ovenDisplayMeshPool;
+
         [SerializeField]
-        BakingParameter parameter;
+        Material mixerMaterial;
+        [SerializeField]
+        Material heightMaterial;
+        [SerializeField]
+        Material blurMaterial;
+        [SerializeField]
+        Material shadowsAndHeightMaterial;
+        [SerializeField]
+        Material diffuseMaterial;
+
+        BakingParameter parameter = BakingParameter.Default;
+
+        RenderTexture mixerRT;
+        RenderTexture heightRT;
+        RenderTexture heightRTOffset1;
+        RenderTexture heightRTOffset2;
+        RenderTexture shadowsAndHeightRT;
+        RenderTexture diffuseRT;
 
         Queue<BakingRequest> bakingQueue;
+
+        [SerializeField]
+        MeshRenderer test_Mesh;
 
         void Awake()
         {
@@ -38,10 +59,7 @@ namespace KouXiaGu.HexTerrain
 
         void Start()
         {
-            bakingCamera.aspect = TerrainBlock.CameraAspect;
-            bakingCamera.orthographicSize = TerrainBlock.CameraSize;
-            bakingCamera.transform.position = Vector3.zero;
-            bakingCamera.transform.rotation = TerrainBlock.CameraRotation;
+            InitBakingCamera();
 
             StartCoroutine(Baking());
         }
@@ -54,6 +72,21 @@ namespace KouXiaGu.HexTerrain
             bakingQueue.Enqueue(request);
         }
 
+        /// <summary>
+        /// 初始化烘焙相机参数;
+        /// </summary>
+        void InitBakingCamera()
+        {
+            bakingCamera.aspect = TerrainBlock.CameraAspect;
+            bakingCamera.orthographicSize = TerrainBlock.CameraSize;
+            bakingCamera.transform.rotation = TerrainBlock.CameraRotation;
+        }
+
+        public string TestPath
+        {
+            get { return Path.Combine(Application.dataPath, "TestTexture"); }
+        }
+
         IEnumerator Baking()
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
@@ -62,38 +95,258 @@ namespace KouXiaGu.HexTerrain
             {
                 yield return bakingYieldInstruction;
 
+
                 BakingRequest request = bakingQueue.Dequeue();
+                IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
 
-                IEnumerable<KeyValuePair<MeshRenderer, BakingNode>> bakingNodes = PrepareBaking(request);
+                BakingMixer(bakingNodes);
 
+                BakingHeight(bakingNodes, ref heightRT);
+                BlurTexture(heightRT, 1, 1, 1);
 
+                BakingHeight(bakingNodes, ref heightRTOffset1, true);
+                BlurTexture(heightRTOffset1, 1, 1, 1);
 
+                BakingHeight(bakingNodes, ref heightRTOffset2, true);
+                BlurTexture(heightRTOffset2, 1, 1, 1);
+
+                ProduceShadowsAndHeightTexture(heightRT, heightRTOffset1, heightRTOffset2);
+
+                BakingDiffuse(bakingNodes);
+
+                Texture2D height = GetHeightTexture(shadowsAndHeightRT);
+                Texture2D diffuse = GetDiffuseTexture(diffuseRT);
+
+                //diffuse.SavePNG(TestPath);
+
+                MeshRenderer tt = Instantiate(test_Mesh, TerrainBlock.BlockCoordToPixelCenter(request.BlockCoord), Quaternion.identity) as MeshRenderer;
+                tt.gameObject.SetActive(true);
+                tt.material.SetTexture("_HeightTex", height);
+                tt.material.SetTexture("_MainTex", diffuse);
             }
         }
+
 
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
-        List<KeyValuePair<MeshRenderer, BakingNode>> PrepareBaking(BakingRequest request)
+        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(BakingRequest request)
         {
-            ovenDisplayMeshPool.RecoveryActive();
+            bakingCamera.transform.position = request.CameraPosition;
 
             IEnumerable<BakingNode> bakingNodes = request.GetBakingNodes();
-            List<KeyValuePair<MeshRenderer, BakingNode>> list = new List<KeyValuePair<MeshRenderer, BakingNode>>();
+            List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
+
+            ovenDisplayMeshPool.RecoveryActive();
 
             foreach (var node in bakingNodes)
             {
                 if (node.NotBoundary)
                 {
-                    Quaternion rotation = Quaternion.Euler(0, node.RotationY, 0);
-                    var mesh = ovenDisplayMeshPool.Dequeue(node.Position, rotation);
+                    var mesh = ovenDisplayMeshPool.Dequeue(node.Position, node.RotationY);
 
-                    list.Add(new KeyValuePair<MeshRenderer, BakingNode>(mesh, node));
+                    list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
                 }
             }
 
             return list;
         }
+
+
+        /// <summary>
+        /// 对混合贴图进行烘焙;传入需要设置到的地貌节点;
+        /// </summary>
+        void BakingMixer(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
+        {
+            foreach (var pair in bakingNodes)
+            {
+                BakingNode node = pair.Key;
+                MeshRenderer hexMesh = pair.Value;
+
+                if (hexMesh.material != null)
+                    GameObject.Destroy(hexMesh.material);
+
+                hexMesh.material = mixerMaterial;
+                hexMesh.material.mainTexture = node.MixerTexture;
+            }
+
+            RenderTexture.ReleaseTemporary(mixerRT);
+            mixerRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            Render(mixerRT);
+        }
+
+        /// <summary>
+        /// 混合高度贴图;
+        /// </summary>
+        void BakingHeight(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, ref RenderTexture heightRT, bool bakingOnly = false)
+        {
+            if (!bakingOnly)
+            {
+                foreach (var pair in bakingNodes)
+                {
+                    BakingNode node = pair.Key;
+                    MeshRenderer hexMesh = pair.Value;
+
+                    if (hexMesh.material != null)
+                        GameObject.Destroy(hexMesh.material);
+
+                    hexMesh.material = heightMaterial;
+                    hexMesh.material.SetTexture("_MainTex", node.HeightTexture);
+                    hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
+                    hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
+                }
+            }
+
+            RenderTexture.ReleaseTemporary(heightRT);
+            heightRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            Render(heightRT);
+        }
+
+
+        void BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
+        {
+            foreach (var pair in bakingNodes)
+            {
+                BakingNode node = pair.Key;
+                MeshRenderer hexMesh = pair.Value;
+
+                if (hexMesh.material != null)
+                    GameObject.Destroy(hexMesh.material);
+
+                hexMesh.material = diffuseMaterial;
+
+                hexMesh.material.SetTexture("_MainTex", node.DiffuseTexture);
+                hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
+                hexMesh.material.SetTexture("_Height", node.HeightTexture);
+                hexMesh.material.SetTexture("_GlobalMixer", mixerRT);
+                hexMesh.material.SetTexture("_ShadowsAndHeight", shadowsAndHeightRT);
+                hexMesh.material.SetFloat("_Sea", 0f);
+                hexMesh.material.SetFloat("_Centralization", 1.0f);
+            }
+
+            RenderTexture.ReleaseTemporary(diffuseRT);
+            diffuseRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            Render(diffuseRT);
+        }
+
+
+
+        Texture2D GetHeightTexture(RenderTexture renderTexture)
+        {
+            RenderTexture.active = renderTexture;
+            Texture2D height_ARGB32 = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
+            height_ARGB32.ReadPixels(new Rect(0, 0, renderTexture.width, (float)renderTexture.height), 0, 0, false);
+            height_ARGB32.wrapMode = TextureWrapMode.Clamp;
+            height_ARGB32.Apply();
+
+            //RenderTexture.active = null;
+            Texture2D height_Alpha8 = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.Alpha8, false);
+            //height_Alpha8.ReadPixels(new Rect(0, 0, renderTexture.width, (float)renderTexture.height), 0, 0, false);
+            height_Alpha8.wrapMode = TextureWrapMode.Clamp;
+            Color32[] data = height_ARGB32.GetPixels32();
+
+            height_Alpha8.SetPixels32(data);
+            height_Alpha8.Apply();
+
+            return height_Alpha8;
+        }
+
+        Texture2D GetDiffuseTexture(RenderTexture renderTexture)
+        {
+            RenderTexture.active = renderTexture;
+            Texture2D diffuse = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+            diffuse.ReadPixels(new Rect(0, 0, renderTexture.width, (float)renderTexture.height), 0, 0, false);
+            diffuse.wrapMode = TextureWrapMode.Clamp;
+            diffuse.Apply();
+
+            return diffuse;
+        }
+
+        void Render(RenderTexture rt)
+        {
+            bakingCamera.targetTexture = rt;
+            bakingCamera.Render();
+            bakingCamera.targetTexture = null;
+        }
+
+
+        void ProduceShadowsAndHeightTexture(RenderTexture terrainHeight,
+                                          RenderTexture terrainHeightOff1,
+                                          RenderTexture terrainHeightOff2)
+        {
+            shadowsAndHeightMaterial.SetTexture("_Height", terrainHeight);
+            shadowsAndHeightMaterial.SetTexture("_Height1", terrainHeightOff1);
+            shadowsAndHeightMaterial.SetTexture("_Height2", terrainHeightOff2);
+
+            RenderTexture.ReleaseTemporary(shadowsAndHeightRT);
+            shadowsAndHeightRT = RenderTexture.GetTemporary(terrainHeight.width, terrainHeight.height, 0, RenderTextureFormat.ARGB32);
+
+            terrainHeight.filterMode = FilterMode.Bilinear;
+            terrainHeightOff1.filterMode = FilterMode.Bilinear;
+            terrainHeightOff1.filterMode = FilterMode.Bilinear;
+            shadowsAndHeightRT.filterMode = FilterMode.Bilinear;
+
+            Graphics.Blit(null, shadowsAndHeightRT, shadowsAndHeightMaterial, 0);
+
+            shadowsAndHeightMaterial.SetTexture("_Height", null);
+            shadowsAndHeightMaterial.SetTexture("_Height1", null);
+            shadowsAndHeightMaterial.SetTexture("_Height2", null);
+        }
+
+        void BlurTexture(RenderTexture texture, int downSample, int size, int interations)
+        {
+            float widthMod = 1.0f / (1.0f * (1 << downSample));
+
+            Material material = new Material(blurMaterial);
+            material.SetVector("_Parameter", new Vector4(size * widthMod, -size * widthMod, 0.0f, 0.0f));
+            texture.filterMode = FilterMode.Bilinear;
+
+
+            int rtW = texture.width >> downSample;
+            int rtH = texture.height >> downSample;
+
+            // downsample
+            RenderTexture rt = new RenderTexture(rtW, rtH, 0, texture.format);
+            //RenderTexture rt = RenderTargetManager.GetNewTexture(rtW, rtH, 0, texture.format);
+            rt.filterMode = FilterMode.Bilinear;
+
+            Graphics.Blit(texture, rt, material, 0);
+
+            for (int i = 0; i < interations; i++)
+            {
+                float iterationOffs = (i * 1.0f);
+                material.SetVector("_Parameter", new Vector4(size * widthMod + iterationOffs, -size * widthMod - iterationOffs, 0.0f, 0.0f));
+
+                // vertical blur
+                RenderTexture rt2 = new RenderTexture(rtW, rtH, 0, texture.format);
+                //RenderTexture rt2 = RenderTargetManager.GetNewTexture(rtW, rtH, 0, texture.format);
+                rt2.filterMode = FilterMode.Bilinear;
+
+                Graphics.Blit(rt, rt2, material, 1);
+                rt.Release();
+                //RenderTargetManager.ReleaseTexture(rt);
+                rt = rt2;
+
+                // horizontal blur
+                rt2 = new RenderTexture(rtW, rtH, 0, texture.format);
+                //rt2 = RenderTargetManager.GetNewTexture(rtW, rtH, 0, texture.format);
+                rt2.filterMode = FilterMode.Bilinear;
+
+                Graphics.Blit(rt, rt2, material, 2);
+                rt.Release();
+                //RenderTargetManager.ReleaseTexture(rt);
+                rt = rt2;
+            }
+
+            GameObject.Destroy(material);
+
+            Graphics.Blit(rt, texture);
+
+            rt.Release();
+            //RenderTargetManager.ReleaseTexture(rt);
+        }
+
+
 
 
         /// <summary>
@@ -108,10 +361,12 @@ namespace KouXiaGu.HexTerrain
             Transform parent;
 
             [SerializeField]
-            MeshRenderer ovenDisplayMesh;
+            MeshRenderer ovenDisplayPrefab;
 
             Queue<MeshRenderer> sleep;
             Queue<MeshRenderer> active;
+
+            float rotationX;
 
             /// <summary>
             /// 激活在场景的物体;
@@ -125,6 +380,7 @@ namespace KouXiaGu.HexTerrain
             {
                 sleep = new Queue<MeshRenderer>();
                 active = new Queue<MeshRenderer>();
+                rotationX = ovenDisplayPrefab.transform.rotation.eulerAngles.x;
             }
 
             /// <summary>
@@ -142,20 +398,25 @@ namespace KouXiaGu.HexTerrain
             /// <summary>
             /// 获取到一个网格物体;
             /// </summary>
-            public MeshRenderer Dequeue(Vector3 position, Quaternion rotation)
+            public MeshRenderer Dequeue(Vector3 position, float rotationY)
             {
+                MeshRenderer mesh;
+                Quaternion rotation = Quaternion.Euler(rotationX, rotationY, 0);
                 if (sleep.Count == 0)
                 {
-                    return GameObject.Instantiate(ovenDisplayMesh, position, rotation, parent) as MeshRenderer;
+                    mesh = GameObject.Instantiate(ovenDisplayPrefab, position, rotation, parent) as MeshRenderer;
+                    mesh.gameObject.SetActive(true);
                 }
                 else
                 {
-                    MeshRenderer mesh = sleep.Dequeue();
+                    mesh = sleep.Dequeue();
                     mesh.transform.position = position;
                     mesh.transform.rotation = rotation;
                     mesh.gameObject.SetActive(true);
-                    return mesh;
                 }
+
+                active.Enqueue(mesh);
+                return mesh;
             }
 
             void Destroy(MeshRenderer mesh)
@@ -172,18 +433,40 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 烘焙的参数;
     /// </summary>
-    [SerializeField]
-    public class BakingParameter
+    public struct BakingParameter
     {
 
-        ////烘焙参数;
-        public int DiffuseMapWidth;
-        public int DiffuseMapHeight;
-        public int DiffuseMapAntiAliasing;
+        public BakingParameter(float textureSize) : this()
+        {
+            SetTextureSize(textureSize);
+        }
 
-        public int HeightMapWidth;
-        public int HeightMapHeight;
-        public int HeightMapAntiAliasing;
+        public float textureSize { get; private set; }
+
+        void SetTextureSize(float size)
+        {
+            this.DiffuseMapWidth = (int)(TerrainBlock.BlockWidth * size);
+            this.DiffuseMapHeight = (int)(TerrainBlock.BlockHeight * size);
+            this.HeightMapWidth = (int)(TerrainBlock.BlockWidth * size);
+            this.HeightMapHeight = (int)(TerrainBlock.BlockHeight * size);
+            this.textureSize = size;
+        }
+
+        public int DiffuseMapWidth { get; private set; }
+        public int DiffuseMapHeight { get; private set; }
+        public int HeightMapWidth { get; private set; }
+        public int HeightMapHeight { get; private set; }
+
+
+        readonly static BakingParameter defaultParameter = new BakingParameter(150);
+
+        /// <summary>
+        /// 默认的参数;
+        /// </summary>
+        public static BakingParameter Default
+        {
+            get { return defaultParameter; }
+        }
 
     }
 

@@ -489,6 +489,24 @@ namespace KouXiaGu.HexTerrain
             }
         }
 
+
+        /// <summary>
+        /// 获取到六边形的范围;
+        /// </summary>
+        public static IEnumerable<CubicHexCoord> GetHexRange(CubicHexCoord target, int step)
+        {
+            for (int x = -step; x <= step; x++)
+            {
+                for (int y = Math.Max(-step, -x - step); y <= Math.Min(step, -x + step); y++)
+                {
+                    int z = -x - y;
+                    yield return new CubicHexCoord(x, y, z);
+                }
+            }
+        }
+
+
+
     }
 
 }

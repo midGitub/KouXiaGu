@@ -43,9 +43,11 @@ namespace KouXiaGu.HexTerrain
             IEnumerable<CubicHexCoord> cover = TerrainBlock.GetBlockCover(BlockCoord);
             LandformNode node;
 
+            float index = -2;
+
             foreach (var coord in cover)
             {
-                Vector3 pixPoint = HexGrids.HexToPixel(coord);
+                Vector3 pixPoint = HexGrids.HexToPixel(coord, index--);
                 if (Map.TryGetValue(coord, out node))
                 {
                     Landform landform = GetLandform(node);
