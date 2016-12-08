@@ -52,14 +52,14 @@ namespace KouXiaGu.HexTerrain
         {
             Action done = delegate ()
             {
-                Debug.Log("Done:" + LandformManager.GetInstance.Count);
-                foreach (var item in LandformManager.GetInstance.initializedLandforms)
+                Debug.Log("Done:" + Count);
+                foreach (var item in initializedLandforms)
                 {
                     Debug.Log(item.ToString());
                 }
             };
 
-            Observable.FromCoroutine(LandformManager.GetInstance.Initialize).Subscribe(null, done);
+            Observable.FromCoroutine(Initialize).Subscribe(null, done);
         }
 
         #region 初始化地貌;

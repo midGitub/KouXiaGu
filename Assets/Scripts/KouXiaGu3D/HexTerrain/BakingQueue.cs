@@ -113,8 +113,16 @@ namespace KouXiaGu.HexTerrain
             while (true)
             {
                 yield return bakingYieldInstruction;
-                BakingRequest request = bakingQueue.Dequeue();
-                Baking(request);
+
+                try
+                {
+                    BakingRequest request = bakingQueue.Dequeue();
+                    Baking(request);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
             }
         }
 
@@ -129,7 +137,7 @@ namespace KouXiaGu.HexTerrain
 
             BakingHeight(bakingNodes, ref heightRT);
 
-            ProduceShadowsAndHeightTexture(heightRT);
+            BakingHeightToAlpha(heightRT);
 
             BakingDiffuse(bakingNodes);
 
@@ -138,6 +146,8 @@ namespace KouXiaGu.HexTerrain
 
             request.OnComplete(diffuse, height);
         }
+
+
 
 
         /// <summary>
@@ -215,6 +225,20 @@ namespace KouXiaGu.HexTerrain
             Render(heightRT);
         }
 
+        /// <summary>
+        /// 将高度图从灰度通道转到阿尔法通道上;
+        /// </summary>
+        void BakingHeightToAlpha(RenderTexture heightRT)
+        {
+            RenderTexture.ReleaseTemporary(alphaHeightRT);
+            alphaHeightRT = RenderTexture.GetTemporary(heightRT.width, heightRT.height, 0, RenderTextureFormat.ARGB32);
+
+            heightRT.filterMode = FilterMode.Bilinear;
+            alphaHeightRT.filterMode = FilterMode.Bilinear;
+
+            Graphics.Blit(heightRT, alphaHeightRT, heightToAlphaMaterial, 0);
+        }
+
 
         void BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
         {
@@ -278,20 +302,6 @@ namespace KouXiaGu.HexTerrain
             bakingCamera.targetTexture = rt;
             bakingCamera.Render();
             bakingCamera.targetTexture = null;
-        }
-
-
-        void ProduceShadowsAndHeightTexture(RenderTexture terrainHeight)
-        {
-            //heightToAlphaMaterial.mainTexture = terrainHeight;
-
-            RenderTexture.ReleaseTemporary(alphaHeightRT);
-            alphaHeightRT = RenderTexture.GetTemporary(terrainHeight.width, terrainHeight.height, 0, RenderTextureFormat.ARGB32);
-
-            terrainHeight.filterMode = FilterMode.Bilinear;
-            alphaHeightRT.filterMode = FilterMode.Bilinear;
-
-            Graphics.Blit(terrainHeight, alphaHeightRT, heightToAlphaMaterial, 0);
         }
 
         ///// <summary>
@@ -481,7 +491,7 @@ namespace KouXiaGu.HexTerrain
 
 
     /// <summary>
-    /// 烘焙的参数;
+    /// 地形烘焙时的贴图大小参数;
     /// </summary>
     public struct BakingParameter
     {
@@ -497,8 +507,8 @@ namespace KouXiaGu.HexTerrain
         {
             this.DiffuseMapWidth = (int)(BakingBlock.BlockWidth * size);
             this.DiffuseMapHeight = (int)(BakingBlock.BlockHeight * size);
-            this.HeightMapWidth = (int)(BakingBlock.BlockWidth * size);
-            this.HeightMapHeight = (int)(BakingBlock.BlockHeight * size);
+            this.HeightMapWidth = (int)(BakingBlock.BlockWidth * size) >> 1;
+            this.HeightMapHeight = (int)(BakingBlock.BlockHeight * size) >> 1;
             this.textureSize = size;
         }
 
@@ -506,7 +516,6 @@ namespace KouXiaGu.HexTerrain
         public int DiffuseMapHeight { get; private set; }
         public int HeightMapWidth { get; private set; }
         public int HeightMapHeight { get; private set; }
-
 
         readonly static BakingParameter defaultParameter = new BakingParameter(150);
 
