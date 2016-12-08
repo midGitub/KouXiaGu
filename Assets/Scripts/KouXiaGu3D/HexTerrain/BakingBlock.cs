@@ -34,7 +34,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void Add(ShortVector2 coord, Texture2D diffuse, Texture2D height)
         {
-            MeshRenderer tt = Instantiate(terrain, BakingBlock.BlockCoordToPixelCenter(coord), Quaternion.identity) as MeshRenderer;
+            MeshRenderer tt = Instantiate(terrain, BakingBlock.BlockCoordToBlockCenter(coord), Quaternion.identity) as MeshRenderer;
             tt.gameObject.SetActive(true);
             tt.material.SetTexture("_HeightTex", height);
             tt.material.SetTexture("_MainTex", diffuse);
@@ -93,7 +93,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地图块坐标 获取到其像素中心点;
         /// </summary>
-        public static Vector3 BlockCoordToPixelCenter(ShortVector2 coord)
+        public static Vector3 BlockCoordToBlockCenter(ShortVector2 coord)
         {
             float x = coord.x * BlockWidth;
             float z = coord.y * BlockHeight;
@@ -105,7 +105,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static CubicHexCoord BlockCoordToHexCenter(ShortVector2 coord)
         {
-            Vector3 pixelCenter = BlockCoordToPixelCenter(coord);
+            Vector3 pixelCenter = BlockCoordToBlockCenter(coord);
             return HexGrids.PixelToHex(pixelCenter);
         }
 

@@ -72,7 +72,7 @@ namespace KouXiaGu.Test
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
             ShortVector2 terrainBlockCoord = BakingBlock.PixelToBlockCoord(pixel);
-            Vector3 terrainBlockCenter = BakingBlock.BlockCoordToPixelCenter(terrainBlockCoord);
+            Vector3 terrainBlockCenter = BakingBlock.BlockCoordToBlockCenter(terrainBlockCoord);
             CubicHexCoord terrainBlockHexCenter = BakingBlock.BlockCoordToHexCenter(terrainBlockCoord);
 
             string str = "";

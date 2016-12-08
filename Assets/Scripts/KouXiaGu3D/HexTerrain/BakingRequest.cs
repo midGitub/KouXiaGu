@@ -32,7 +32,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public Vector3 CameraPosition
         {
-            get { return BakingBlock.BlockCoordToPixelCenter(BlockCoord) + new Vector3(0, 5, 0); }
+            get { return BakingBlock.BlockCoordToBlockCenter(BlockCoord) + new Vector3(0, 5, 0); }
         }
 
         /// <summary>
