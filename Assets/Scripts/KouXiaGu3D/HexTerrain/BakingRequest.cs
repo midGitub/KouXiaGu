@@ -64,7 +64,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void OnComplete(Texture2D diffuse, Texture2D height)
         {
-            BakingBlock.GetInstance.CreateBlock(BlockCoord, diffuse, height);
+            BakingBlock.GetInstance.Add(BlockCoord, diffuse, height);
         }
 
     }

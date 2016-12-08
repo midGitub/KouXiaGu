@@ -52,6 +52,8 @@ namespace KouXiaGu.HexTerrain
             BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Down + ShortVector2.Right));
             BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
             BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
+
+            Debug.Log((((4 - 1) / 2 + (4 - 1)) * 2).ToString());
         }
 
     }

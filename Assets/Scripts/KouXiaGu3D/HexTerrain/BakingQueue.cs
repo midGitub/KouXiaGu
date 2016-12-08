@@ -245,15 +245,14 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 将高度图从灰度通道转到阿尔法通道上;
         /// </summary>
-        RenderTexture BakingHeightToAlpha(RenderTexture heightRT)
+        RenderTexture BakingHeightToAlpha(Texture height)
         {
-            //RenderTexture.ReleaseTemporary(alphaHeightRT);
-            RenderTexture alphaHeightRT = RenderTexture.GetTemporary(heightRT.width, heightRT.height, 0, RenderTextureFormat.ARGB32);
+            RenderTexture alphaHeightRT = RenderTexture.GetTemporary(height.width, height.height, 0, RenderTextureFormat.ARGB32);
 
-            heightRT.filterMode = FilterMode.Bilinear;
+            height.filterMode = FilterMode.Bilinear;
             alphaHeightRT.filterMode = FilterMode.Bilinear;
 
-            Graphics.Blit(heightRT, alphaHeightRT, heightToAlphaMaterial, 0);
+            Graphics.Blit(height, alphaHeightRT, heightToAlphaMaterial, 0);
             return alphaHeightRT;
         }
 

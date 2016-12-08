@@ -12,16 +12,22 @@ namespace KouXiaGu.HexTerrain
     /// </summary>
     public class BakingBlock : UnitySingleton<BakingBlock>
     {
+        BakingBlock() { }
 
-        [SerializeField]
-        MeshRenderer test_Mesh;
 
         /// <summary>
-        /// 创建一个地图块到地图;
+        /// 地块网格体;
         /// </summary>
-        public void CreateBlock(ShortVector2 coord, Texture2D diffuse, Texture2D height)
+        [SerializeField]
+        MeshRenderer terrain;
+
+
+        /// <summary>
+        /// 创建一个地图块到场景;
+        /// </summary>
+        public void Add(ShortVector2 coord, Texture2D diffuse, Texture2D height)
         {
-            MeshRenderer tt = Instantiate(test_Mesh, BakingBlock.BlockCoordToPixelCenter(coord), Quaternion.identity) as MeshRenderer;
+            MeshRenderer tt = Instantiate(terrain, BakingBlock.BlockCoordToPixelCenter(coord), Quaternion.identity) as MeshRenderer;
             tt.gameObject.SetActive(true);
             tt.material.SetTexture("_HeightTex", height);
             tt.material.SetTexture("_MainTex", diffuse);
@@ -45,7 +51,8 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
-        public static readonly float CameraAspect = (float)((hexagon.OuterDiameters + hexagon.OuterRadius / 4) / hexagon.InnerDiameters);
+        //public static readonly float CameraAspect = (float)((hexagon.OuterDiameters + hexagon.OuterRadius / 4) / hexagon.InnerDiameters);
+        public static readonly float CameraAspect = (float)(((size - 1) / 2 + (size - 1)) * hexagon.OuterDiameters / (hexagon.InnerDiameters * size));
 
         /// <summary>
         /// 完整预览整个地图块的摄像机大小;
