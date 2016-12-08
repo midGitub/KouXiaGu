@@ -10,8 +10,24 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 全局定义地形块大小,和部分渲染参数;
     /// </summary>
-    public static class BakingBlock
+    public class BakingBlock : UnitySingleton<BakingBlock>
     {
+
+        [SerializeField]
+        MeshRenderer test_Mesh;
+
+        /// <summary>
+        /// 创建一个地图块到地图;
+        /// </summary>
+        public void CreateBlock(ShortVector2 coord, Texture2D diffuse, Texture2D height)
+        {
+            MeshRenderer tt = Instantiate(test_Mesh, BakingBlock.BlockCoordToPixelCenter(coord), Quaternion.identity) as MeshRenderer;
+            tt.gameObject.SetActive(true);
+            tt.material.SetTexture("_HeightTex", height);
+            tt.material.SetTexture("_MainTex", diffuse);
+        }
+
+
 
         /// <summary>
         /// 地图节点所使用的六边形参数;

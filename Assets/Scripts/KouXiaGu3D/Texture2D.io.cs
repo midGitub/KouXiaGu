@@ -22,11 +22,17 @@ namespace KouXiaGu
         /// <summary>
         /// 保存为PNG格式,并指定 filePath 后缀为 .png
         /// </summary>
+        public static void SavePNG(this Texture2D texture, string directoryPath, string fileName, FileMode mode)
+        {
+            string filePath = Path.Combine(directoryPath, fileName);
+            SavePNG(texture, filePath, mode);
+        }
+
+        /// <summary>
+        /// 保存为PNG格式,并指定 filePath 后缀为 .png
+        /// </summary>
         public static void SavePNG(this Texture2D texture, string filePath, FileMode mode)
         {
-            if (texture == null)
-                throw new NullReferenceException();
-
             filePath = Path.ChangeExtension(filePath, ExtensionPNG);
             byte[] data = texture.EncodeToPNG();
             SaveBinary(data, filePath, mode);
@@ -45,6 +51,15 @@ namespace KouXiaGu
             SavePNG(texture, filePath, FileMode.Create);
         }
 
+
+        /// <summary>
+        /// 保存为PNG格式,并指定 filePath 后缀为 .png
+        /// </summary>
+        public static void SavePNG(this RenderTexture renderTexture, string directoryPath, string fileName, FileMode mode)
+        {
+            string filePath = Path.Combine(directoryPath, fileName);
+            SavePNG(renderTexture, filePath, mode);
+        }
 
         /// <summary>
         /// 保存为PNG格式,并指定 filePath 后缀为 .png
@@ -73,11 +88,17 @@ namespace KouXiaGu
         /// <summary>
         /// 保存为JPG格式,并指定 filePath 后缀为 .jpg
         /// </summary>
+        public static void SaveJPG(this Texture2D texture, string directoryPath, string fileName, FileMode mode)
+        {
+            string filePath = Path.Combine(directoryPath, fileName);
+            SaveJPG(texture, filePath, mode);
+        }
+
+        /// <summary>
+        /// 保存为JPG格式,并指定 filePath 后缀为 .jpg
+        /// </summary>
         public static void SaveJPG(this Texture2D texture, string filePath, FileMode mode)
         {
-            if (texture == null)
-                throw new NullReferenceException();
-
             filePath = Path.ChangeExtension(filePath, ExtensionJPG);
             byte[] data = texture.EncodeToJPG();
             SaveBinary(data, filePath, mode);

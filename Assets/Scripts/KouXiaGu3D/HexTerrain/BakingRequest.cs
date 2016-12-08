@@ -77,7 +77,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void OnComplete(Texture2D diffuse, Texture2D height)
         {
-            height.SavePNG(@"Test_Texture");
+            BakingBlock.GetInstance.CreateBlock(BlockCoord, diffuse, height);
         }
 
     }
