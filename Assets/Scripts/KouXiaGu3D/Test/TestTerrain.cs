@@ -71,9 +71,9 @@ namespace KouXiaGu.Test
             Vector3 cubePixel = HexGrids.HexToPixel(cube);
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            ShortVector2 terrainBlockCoord = TerrainBlock.PixelToBlockCoord(pixel);
-            Vector3 terrainBlockCenter = TerrainBlock.BlockCoordToPixelCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = TerrainBlock.BlockCoordToHexCenter(terrainBlockCoord);
+            ShortVector2 terrainBlockCoord = BakingBlock.PixelToBlockCoord(pixel);
+            Vector3 terrainBlockCenter = BakingBlock.BlockCoordToPixelCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = BakingBlock.BlockCoordToHexCenter(terrainBlockCoord);
 
             string str = "";
 
@@ -112,7 +112,7 @@ namespace KouXiaGu.Test
         [ContextMenu("地图块布满")]
         void TestCreateRange()
         {
-            foreach (var point in TerrainBlock.GetBlockCover(new ShortVector2(0,0)))
+            foreach (var point in BakingBlock.GetBlockCover(new ShortVector2(0,0)))
             {
                 Vector3 pix = point.HexToPixel(-1);
                 Instantiate(hexMesh, pix, Quaternion.identity);

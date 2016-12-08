@@ -77,9 +77,9 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         void InitBakingCamera()
         {
-            bakingCamera.aspect = TerrainBlock.CameraAspect;
-            bakingCamera.orthographicSize = TerrainBlock.CameraSize;
-            bakingCamera.transform.rotation = TerrainBlock.CameraRotation;
+            bakingCamera.aspect = BakingBlock.CameraAspect;
+            bakingCamera.orthographicSize = BakingBlock.CameraSize;
+            bakingCamera.transform.rotation = BakingBlock.CameraRotation;
         }
 
         public string TestPath
@@ -104,6 +104,8 @@ namespace KouXiaGu.HexTerrain
                 BakingHeight(bakingNodes, ref heightRT);
                 BlurTexture(heightRT, 1, 1, 1);
 
+                //heightRT.SavePNG();
+
                 BakingHeight(bakingNodes, ref heightRTOffset1, true);
                 BlurTexture(heightRTOffset1, 1, 1, 1);
 
@@ -119,7 +121,7 @@ namespace KouXiaGu.HexTerrain
 
                 //diffuse.SavePNG(TestPath);
 
-                MeshRenderer tt = Instantiate(test_Mesh, TerrainBlock.BlockCoordToPixelCenter(request.BlockCoord), Quaternion.identity) as MeshRenderer;
+                MeshRenderer tt = Instantiate(test_Mesh, BakingBlock.BlockCoordToPixelCenter(request.BlockCoord), Quaternion.identity) as MeshRenderer;
                 tt.gameObject.SetActive(true);
                 tt.material.SetTexture("_HeightTex", height);
                 tt.material.SetTexture("_MainTex", diffuse);
@@ -445,10 +447,10 @@ namespace KouXiaGu.HexTerrain
 
         void SetTextureSize(float size)
         {
-            this.DiffuseMapWidth = (int)(TerrainBlock.BlockWidth * size);
-            this.DiffuseMapHeight = (int)(TerrainBlock.BlockHeight * size);
-            this.HeightMapWidth = (int)(TerrainBlock.BlockWidth * size);
-            this.HeightMapHeight = (int)(TerrainBlock.BlockHeight * size);
+            this.DiffuseMapWidth = (int)(BakingBlock.BlockWidth * size);
+            this.DiffuseMapHeight = (int)(BakingBlock.BlockHeight * size);
+            this.HeightMapWidth = (int)(BakingBlock.BlockWidth * size);
+            this.HeightMapHeight = (int)(BakingBlock.BlockHeight * size);
             this.textureSize = size;
         }
 
