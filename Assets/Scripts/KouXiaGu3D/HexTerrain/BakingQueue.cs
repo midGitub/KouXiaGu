@@ -92,9 +92,9 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         void InitBakingCamera()
         {
-            bakingCamera.aspect = BakingBlock.CameraAspect;
-            bakingCamera.orthographicSize = BakingBlock.CameraSize;
-            bakingCamera.transform.rotation = BakingBlock.CameraRotation;
+            bakingCamera.aspect = TerrainBlock.CameraAspect;
+            bakingCamera.orthographicSize = TerrainBlock.CameraSize;
+            bakingCamera.transform.rotation = TerrainBlock.CameraRotation;
         }
 
         void InitMaterial()
@@ -520,10 +520,10 @@ namespace KouXiaGu.HexTerrain
 
         void SetTextureSize(float size)
         {
-            this.DiffuseMapWidth = (int)(BakingBlock.BlockWidth * size);
-            this.DiffuseMapHeight = (int)(BakingBlock.BlockHeight * size);
-            this.HeightMapWidth = (int)(BakingBlock.BlockWidth * size) >> 1;
-            this.HeightMapHeight = (int)(BakingBlock.BlockHeight * size) >> 1;
+            this.DiffuseMapWidth = (int)(TerrainBlock.BlockWidth * size);
+            this.DiffuseMapHeight = (int)(TerrainBlock.BlockHeight * size);
+            this.HeightMapWidth = (int)(TerrainBlock.BlockWidth * size) >> 1;
+            this.HeightMapHeight = (int)(TerrainBlock.BlockHeight * size) >> 1;
             this.textureSize = size;
         }
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace KouXiaGu.HexTerrain
 {
@@ -11,15 +7,15 @@ namespace KouXiaGu.HexTerrain
     /// 根据地形信息变换大小的网格结构;
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode]
-    public class TerrainMesh : MonoBehaviour
+    public class TerrainBlockMesh : MonoBehaviour
     {
-        TerrainMesh() { }
+        protected TerrainBlockMesh() { }
 
         const string meshName = "Terrain Mesh";
 
         //为了地形相接的地方不存在明显的缝隙,所以加上 小数 的数值;
-        static readonly float halfWidth = BakingBlock.BlockWidth / 2 + 0.01f;
-        static readonly float halfHeight = BakingBlock.BlockHeight / 2 + 0.01f;
+        static readonly float halfWidth = TerrainBlock.BlockWidth / 2 + 0.01f;
+        static readonly float halfHeight = TerrainBlock.BlockHeight / 2 + 0.01f;
         const float altitude = 0;
 
         static readonly Vector3[] vertices = new Vector3[]
@@ -44,7 +40,7 @@ namespace KouXiaGu.HexTerrain
                 new Vector2(0f, 0f),
            };
 
-        void Awake()
+        protected virtual void Awake()
         {
             Mesh mesh;
             GetComponent<MeshFilter>().mesh = mesh = new Mesh();
