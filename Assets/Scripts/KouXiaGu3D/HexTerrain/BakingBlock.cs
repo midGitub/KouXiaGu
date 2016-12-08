@@ -22,6 +22,13 @@ namespace KouXiaGu.HexTerrain
         MeshRenderer terrain;
 
 
+        void Start()
+        {
+            Debug.Log(BlockWidth);
+            Debug.Log(BlockHeight);
+            Debug.Log(CameraAspect);
+        }
+
         /// <summary>
         /// 创建一个地图块到场景;
         /// </summary>
@@ -46,26 +53,32 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地图块大小(需要大于或等于2),不允许动态变换;
         /// </summary>
-        public const int size = 4;
-
-        /// <summary>
-        /// 完整预览整个地图块的摄像机比例(W/H);
-        /// </summary>
-        //public static readonly float CameraAspect = (float)((hexagon.OuterDiameters + hexagon.OuterRadius / 4) / hexagon.InnerDiameters);
-        public static readonly float CameraAspect = (float)(((size - 1) / 2 + (size - 1)) * hexagon.OuterDiameters / (hexagon.InnerDiameters * size));
-
-        /// <summary>
-        /// 完整预览整个地图块的摄像机大小;
-        /// </summary>
-        public static readonly float CameraSize = (float)hexagon.InnerDiameters * (size / 2);
+        public const int size = 2;
 
         /// <summary>
         /// 完整预览整个地图块的摄像机旋转角度;
         /// </summary>
         public static readonly Quaternion CameraRotation = Quaternion.Euler(90, 0, 0);
 
+        /// <summary>
+        /// 地图块宽度;
+        /// </summary>
         public static readonly float BlockWidth = (float)(hexagon.OuterDiameters * 1.5f * (size - 1));
+
+        /// <summary>
+        /// 地图块高度;
+        /// </summary>
         public static readonly float BlockHeight = (float)hexagon.InnerDiameters * size;
+
+        /// <summary>
+        /// 完整预览整个地图块的摄像机大小;
+        /// </summary>
+        public static readonly float CameraSize = BlockHeight / 2;
+
+        /// <summary>
+        /// 完整预览整个地图块的摄像机比例(W/H);
+        /// </summary>
+        public static readonly float CameraAspect = BlockWidth / BlockHeight;
 
         /// <summary>
         /// 从像素节点 获取到所属的地形块;

@@ -10,7 +10,7 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 保存当前游戏地形数据;
     /// </summary>
-    public sealed class TerrainData : UnitySingleton<TerrainData>
+    public sealed class TerrainMap : UnitySingleton<TerrainMap>
     {
 
         Map2D<CubicHexCoord, LandformNode> terrainMap;
@@ -35,12 +35,9 @@ namespace KouXiaGu.HexTerrain
                 }
                 catch (ArgumentException)
                 {
-                    Debug.Log(item);
+                    //Debug.Log(item);
                 }
             }
-            Debug.Log("12313");
-            Debug.Log((((4 - 1) / 2 + (4 - 1)) * 2).ToString());
-            Debug.LogWarning((((4 - 1) / 2 + (4 - 1)) * 2).ToString());
         }
 
         [ContextMenu("烘焙测试")]
@@ -56,6 +53,8 @@ namespace KouXiaGu.HexTerrain
             BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
             BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
         }
+
+
 
     }
 
