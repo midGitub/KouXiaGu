@@ -50,26 +50,13 @@ namespace KouXiaGu.HexTerrain
                 Vector3 pixPoint = HexGrids.HexToPixel(coord, index--);
                 if (Map.TryGetValue(coord, out node))
                 {
-                    Landform landform = GetLandform(node);
-                    yield return new BakingNode(pixPoint, node.rotationAngle, landform);
+                    yield return new BakingNode(pixPoint, node);
                 }
                 else
                 {
                     yield return default(BakingNode);
                 }
             }
-        }
-
-        /// <summary>
-        /// 根据地貌节点获取到地貌信息;
-        /// </summary>
-        Landform GetLandform(LandformNode landformNode)
-        {
-            if (landformNode.ID == 0)
-                return null;
-
-            Landform landform = LandformManager.GetInstance[landformNode.ID];
-            return landform;
         }
 
         /// <summary>

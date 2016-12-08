@@ -13,13 +13,23 @@ namespace KouXiaGu.HexTerrain
     public struct BakingNode
     {
 
-        public BakingNode(Vector3 position, float rotationY, Landform landform)
+        public BakingNode(Vector3 position, LandformNode mapNode) : this()
         {
             this.Position = position;
-            this.RotationY = rotationY;
-            this.landform = landform;
+            this.mapNode = mapNode;
+            this.landform = GetLandform(mapNode);
             NotBoundary = true;
         }
+
+        /// <summary>
+        /// 地貌地图节点;
+        /// </summary>
+        LandformNode mapNode;
+
+        /// <summary>
+        /// 地貌信息;
+        /// </summary>
+        Landform landform;
 
         /// <summary>
         /// 这个点不为边界(超出地图范围)?
@@ -29,26 +39,21 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 节点的位置;
         /// </summary>
-        public Vector3 Position { get; set; }
+        public Vector3 Position { get; private set; }
 
         /// <summary>
         /// 贴图旋转角度;
         /// </summary>
-        public float RotationY { get; set; }
-
-        /// <summary>
-        /// 地貌信息;
-        /// </summary>
-        Landform landform;
+        public float RotationY
+        {
+            get { return mapNode.rotationAngle; }
+        }
 
         public Texture DiffuseTexture
         {
             get { return landform.DiffuseTexture; }
         }
 
-        /// <summary>
-        /// 高度贴图;
-        /// </summary>
         public Texture HeightTexture
         {
             get { return landform.HeightTexture; }
@@ -57,6 +62,19 @@ namespace KouXiaGu.HexTerrain
         public Texture MixerTexture
         {
             get { return landform.MixerTexture; }
+        }
+
+
+        /// <summary>
+        /// 根据地貌节点获取到地貌信息;
+        /// </summary>
+        Landform GetLandform(LandformNode landformNode)
+        {
+            if (landformNode.ID == 0)
+                return null;
+
+            Landform landform = LandformManager.GetInstance[landformNode.ID];
+            return landform;
         }
 
     }
