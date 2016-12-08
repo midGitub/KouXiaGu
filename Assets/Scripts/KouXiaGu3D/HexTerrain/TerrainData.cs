@@ -29,7 +29,7 @@ namespace KouXiaGu.HexTerrain
             {
                 try
                 {
-                    terrainMap.Add(item, new LandformNode((item.X & 1) == 0 ? 10 : 20, 0));
+                    terrainMap.Add(item, new LandformNode((item.X & 1) == 0 ? 10 : 20, UnityEngine.Random.Range(0,360)));
                 }
                 catch (ArgumentException)
                 {

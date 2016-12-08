@@ -367,6 +367,55 @@
 //        }
 
 
+///// <summary>
+///// 模糊贴图;
+///// </summary>
+///// <param name="rendertexture">原贴图;</param>
+///// <param name="destTexture">目标贴图;</param>
+///// <param name="downSampleNum">[降采样次数]向下采样的次数。此值越大,则采样间隔越大,需要处理的像素点越少,运行速度越快</param>
+///// <param name="iterations">[模糊扩散度]进行模糊时，相邻像素点的间隔。此值越大相邻像素间隔越远，图像越模糊。但过大的值会导致失真</param>
+///// <param name="spreadSize">[迭代次数]此值越大,则模糊操作的迭代次数越多，模糊效果越好，但消耗越大</param>
+//void BlurTexture(RenderTexture rendertexture, int downSampleNum, int iterations, int spreadSize)
+//{
+//    float widthMod = 1.0f / (1.0f * (1 << downSampleNum));
+//    blurMaterial.SetFloat("_Parameter", spreadSize * widthMod);
+//    rendertexture.filterMode = FilterMode.Bilinear;
+
+//    int renderWidth = rendertexture.width >> downSampleNum;
+//    int renderHeight = rendertexture.height >> downSampleNum;
+
+//    RenderTexture renderBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
+//    renderBuffer.filterMode = FilterMode.Bilinear;
+
+//    Graphics.Blit(rendertexture, renderBuffer, blurMaterial, 0);
+
+//    //根据BlurIterations（迭代次数），来进行指定次数的迭代操作  
+//    for (int i = 0; i < iterations; i++)
+//    {
+//        //迭代偏移量参数  
+//        float iterationOffs = (i * 1.0f);
+//        blurMaterial.SetFloat("_Parameter", spreadSize * widthMod + iterationOffs);
+
+//        //处理Shader的通道1，垂直方向模糊处理 || Pass1,for vertical blur  
+//        RenderTexture tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
+//        Graphics.Blit(renderBuffer, tempBuffer, blurMaterial, 1);
+//        RenderTexture.ReleaseTemporary(renderBuffer);
+//        renderBuffer = tempBuffer;
+
+//        // 处理Shader的通道2，竖直方向模糊处理 || Pass2,for horizontal blur  
+//        tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
+//        Graphics.Blit(renderBuffer, tempBuffer, blurMaterial, 2);
+
+//        RenderTexture.ReleaseTemporary(renderBuffer);
+//        renderBuffer = tempBuffer;
+//    }
+
+//    //拷贝最终的renderBuffer到目标纹理，并绘制所有通道的纹理到屏幕  
+//    Graphics.Blit(renderBuffer, rendertexture);
+//    RenderTexture.ReleaseTemporary(renderBuffer);
+//}
+
+
 //        /// <summary>
 //        /// Simple function which adds a bit of the blur to texture. used mostly by the height textures to avoid artifacts
 //        /// </summary>
