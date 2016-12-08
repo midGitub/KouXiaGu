@@ -10,12 +10,16 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 地块烘焙信息;
     /// </summary>
+    [DisallowMultipleComponent]
     public class TerrainBlock : TerrainBlockMesh
     {
         TerrainBlock() { }
 
         #region 实例
 
+        /// <summary>
+        /// 地图块坐标;
+        /// </summary>
         public ShortVector2 Coord { get; private set; }
         public Texture2D Diffuse { get; private set; }
         public Texture2D Height { get; private set; }
@@ -62,6 +66,8 @@ namespace KouXiaGu.HexTerrain
         #endregion
 
 
+        #region 地图块创建(静态)
+
         /// <summary>
         /// 在场景中激活的地图块;
         /// </summary>
@@ -90,6 +96,25 @@ namespace KouXiaGu.HexTerrain
             activatedBlocks.Add(coord, terrainBlock);
         }
 
+        /// <summary>
+        /// 移除这个地图块;
+        /// </summary>
+        public static bool Destroy(ShortVector2 coord)
+        {
+            TerrainBlock terrainBlock;
+            if (activatedBlocks.TryGetValue(coord, out terrainBlock))
+            {
+                ReleaseTerrainBlock(terrainBlock);
+                activatedBlocks.Remove(coord);
+                return true;
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 从池内获取到或者实例化一个;
+        /// </summary>
         static TerrainBlock GetTerrainBlock(string name)
         {
             TerrainBlock terrainBlock;
@@ -107,26 +132,16 @@ namespace KouXiaGu.HexTerrain
         }
 
         /// <summary>
-        /// 移除这个地图块;
+        /// 将地图块放回池内,备下次使用;
         /// </summary>
-        public static bool Destroy(ShortVector2 coord)
-        {
-            TerrainBlock terrainBlock;
-            if (activatedBlocks.TryGetValue(coord, out terrainBlock))
-            {
-                ReleaseTerrainBlock(terrainBlock);
-                activatedBlocks.Remove(coord);
-                return true;
-            }
-            return false;
-        }
-
         static void ReleaseTerrainBlock(TerrainBlock terrainBlock)
         {
             terrainBlock.Clear();
             terrainBlock.gameObject.SetActive(false);
             restingBlocks.Enqueue(terrainBlock);
         }
+
+        #endregion
 
         //static public Rect GetRect(Vector2i pos)
         //{
