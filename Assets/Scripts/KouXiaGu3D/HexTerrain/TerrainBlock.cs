@@ -14,6 +14,7 @@ namespace KouXiaGu.HexTerrain
     {
         TerrainBlock() { }
 
+        #region 实例
 
         public ShortVector2 Coord { get; private set; }
         public Texture2D Diffuse { get; private set; }
@@ -53,7 +54,12 @@ namespace KouXiaGu.HexTerrain
             throw new NotImplementedException();
         }
 
+        public override int GetHashCode()
+        {
+            return Coord.GetHashCode();
+        }
 
+        #endregion
 
 
         /// <summary>
@@ -155,6 +161,7 @@ namespace KouXiaGu.HexTerrain
         //}
 
 
+        #region 地图块大小定义(静态);
 
         /// <summary>
         /// 地图节点所使用的六边形参数;
@@ -170,31 +177,16 @@ namespace KouXiaGu.HexTerrain
         public const int size = 2;
 
         /// <summary>
-        /// 完整预览整个地图块的摄像机旋转角度;
-        /// </summary>
-        public static readonly Quaternion CameraRotation = Quaternion.Euler(90, 0, 0);
-
-        /// <summary>
-        /// 地图块宽度;
+        /// 地图块宽度(像素*100);
         /// </summary>
         public static readonly float BlockWidth = (float)(hexagon.OuterDiameters * 1.5f * (size - 1));
         public static readonly float BlockWidthHalf = BlockWidth / 2;
 
         /// <summary>
-        /// 地图块高度;
+        /// 地图块高度(像素*100);
         /// </summary>
         public static readonly float BlockHeight = (float)hexagon.InnerDiameters * size;
         public static readonly float BlockHeightHalf = BlockHeight / 2;
-
-        /// <summary>
-        /// 完整预览整个地图块的摄像机大小;
-        /// </summary>
-        public static readonly float CameraSize = BlockHeight / 2;
-
-        /// <summary>
-        /// 完整预览整个地图块的摄像机比例(W/H);
-        /// </summary>
-        public static readonly float CameraAspect = BlockWidth / BlockHeight;
 
 
         /// <summary>
@@ -271,6 +263,8 @@ namespace KouXiaGu.HexTerrain
                 }
             }
         }
+
+        #endregion
 
     }
 

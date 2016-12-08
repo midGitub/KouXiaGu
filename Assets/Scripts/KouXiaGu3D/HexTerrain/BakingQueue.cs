@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using UnityEngine;
 using System.Collections;
 
@@ -92,9 +89,9 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         void InitBakingCamera()
         {
-            bakingCamera.aspect = TerrainBlock.CameraAspect;
-            bakingCamera.orthographicSize = TerrainBlock.CameraSize;
-            bakingCamera.transform.rotation = TerrainBlock.CameraRotation;
+            bakingCamera.aspect = BakingParameter.CameraAspect;
+            bakingCamera.orthographicSize = BakingParameter.CameraSize;
+            bakingCamera.transform.rotation = BakingParameter.CameraRotation;
         }
 
         void InitMaterial()
@@ -511,12 +508,35 @@ namespace KouXiaGu.HexTerrain
     public struct BakingParameter
     {
 
+        /// <summary>
+        /// 完整预览整个地图块的摄像机旋转角度;
+        /// </summary>
+        public static readonly Quaternion CameraRotation = Quaternion.Euler(90, 0, 0);
+
+        /// <summary>
+        /// 完整预览整个地图块的摄像机大小;
+        /// </summary>
+        public static readonly float CameraSize = TerrainBlock.BlockHeight / 2;
+
+        /// <summary>
+        /// 完整预览整个地图块的摄像机比例(W/H);
+        /// </summary>
+        public static readonly float CameraAspect = TerrainBlock.BlockWidth / TerrainBlock.BlockHeight;
+
+
+
+        public float textureSize { get; private set; }
+
+        public int DiffuseMapWidth { get; private set; }
+        public int DiffuseMapHeight { get; private set; }
+        public int HeightMapWidth { get; private set; }
+        public int HeightMapHeight { get; private set; }
+
+
         public BakingParameter(float textureSize) : this()
         {
             SetTextureSize(textureSize);
         }
-
-        public float textureSize { get; private set; }
 
         void SetTextureSize(float size)
         {
@@ -527,10 +547,6 @@ namespace KouXiaGu.HexTerrain
             this.textureSize = size;
         }
 
-        public int DiffuseMapWidth { get; private set; }
-        public int DiffuseMapHeight { get; private set; }
-        public int HeightMapWidth { get; private set; }
-        public int HeightMapHeight { get; private set; }
 
         readonly static BakingParameter defaultParameter = new BakingParameter(150);
 
