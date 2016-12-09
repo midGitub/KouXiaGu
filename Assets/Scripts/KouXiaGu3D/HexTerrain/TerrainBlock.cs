@@ -385,7 +385,7 @@ namespace KouXiaGu.HexTerrain
         public static IEnumerable<CubicHexCoord> GetBlockCover(ShortVector2 coord)
         {
             CubicHexCoord hexCenter = BlockCoordToHexCenter(coord);
-            CubicHexCoord startCoord = HexGrids.HexDirectionVector(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
+            CubicHexCoord startCoord = HexGrids.GetDirection(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
 
             for (short endX = (short)(Math.Abs(hexCenter.X - startCoord.X) + hexCenter.X);
                 startCoord.X <= endX;

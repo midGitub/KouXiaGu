@@ -9,7 +9,7 @@ using KouXiaGu.HexTerrain;
 namespace KouXiaGu.Test
 {
 
-
+    [DisallowMultipleComponent, ExecuteInEditMode]
     public class HexRangeTest : MonoBehaviour
     {
         [SerializeField]
@@ -18,14 +18,18 @@ namespace KouXiaGu.Test
         [SerializeField]
         GameObject textObject;
 
-        HashSet<CubicHexCoord> insCoord;
+        [SerializeField]
+        public int radius;
 
-        void Awake()
+        [SerializeField]
+        Dictionary<CubicHexCoord, GameObject> insObjects = new Dictionary<CubicHexCoord, GameObject>();
+
+        void Start()
         {
-            insCoord = new HashSet<CubicHexCoord>();
+            //insObjects = new Dictionary<CubicHexCoord, GameObject>();
         }
 
-        [ContextMenu("输出到场景")]
+        [ContextMenu("块输出")]
         void Output()
         {
             Output(ShortVector2.Zero);
@@ -39,23 +43,62 @@ namespace KouXiaGu.Test
             Output(ShortVector2.Up + ShortVector2.Right);
         }
 
-        void Output(ShortVector2 coord)
+        [ContextMenu("环")]
+        void Raing()
         {
-
-            foreach (var item in TerrainBlock.GetBlockCover(coord))
+            foreach (var point in HexGrids.GetHexRing(CubicHexCoord.Zero, radius))
             {
-                if (!insCoord.Contains(item))
-                {
-                    Vector3 point = HexGrids.HexToPixel(item);
-                    GameObject gt = Instantiate(textObject, point, Quaternion.identity, parent) as GameObject;
-                    Text t = gt.GetComponentInChildren<Text>();
-                    t.text = item.ToString();
-                    insCoord.Add(item);
-                }
+                Instantiate(point);
             }
-
         }
 
+        [ContextMenu("螺旋")]
+        void Spiral()
+        {
+            foreach (var point in HexGrids.GetHexSpiral(CubicHexCoord.Zero, radius))
+            {
+                Instantiate(point);
+            }
+        }
+
+        [ContextMenu("移除所有创建")]
+        void Clear()
+        {
+            foreach (var item in insObjects.Values)
+            {
+                DestroyImmediate(item);
+            }
+            insObjects.Clear();
+        }
+
+        void Output(ShortVector2 coord)
+        {
+            foreach (var item in TerrainBlock.GetBlockCover(coord))
+            {
+                Instantiate(item);
+            }
+        }
+
+        void Instantiate(CubicHexCoord coord)
+        {
+            if (!insObjects.ContainsKey(coord))
+            {
+                Vector3 point = HexGrids.HexToPixel(coord);
+                GameObject gt = Instantiate(textObject, point, Quaternion.identity, parent) as GameObject;
+                gt.SetActive(true);
+                Text t = gt.GetComponentInChildren<Text>();
+
+                t.text = GetText(coord);
+
+                insObjects.Add(coord, gt);
+            }
+        }
+
+        string GetText(CubicHexCoord coord)
+        {
+            return coord.ToString()
+                + "\n" + HexGrids.GetRadius(coord);
+        }
 
     }
 

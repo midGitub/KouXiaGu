@@ -242,7 +242,7 @@ namespace KouXiaGu.HexTerrain
             IEnumerable<HexDirections> aroundDirection = GetHexDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
-                CubicHexCoord vePoint = HexDirectionVector(direction) + target;
+                CubicHexCoord vePoint = GetDirection(direction) + target;
                 if (map.TryGetValue(vePoint, out item))
                 {
                     if (func(item))

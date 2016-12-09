@@ -203,12 +203,12 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 方向偏移量;
         /// </summary>
-        static Dictionary<int, CubicHexCoord> directions = HexDirectionVectors();
+        static Dictionary<int, CubicHexCoord> directions = HexDirectionDictionary();
 
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        static Dictionary<int, CubicHexCoord> HexDirectionVectors()
+        static Dictionary<int, CubicHexCoord> HexDirectionDictionary()
         {
             Dictionary<int, CubicHexCoord> directions = new Dictionary<int, CubicHexCoord>(DirectionsNumber);
 
@@ -226,7 +226,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        public static CubicHexCoord HexDirectionVector(HexDirections direction)
+        public static CubicHexCoord GetDirection(HexDirections direction)
         {
             return directions[(int)direction];
         }
@@ -236,7 +236,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static CubicHexCoord GetDirection(this CubicHexCoord coord, HexDirections direction)
         {
-            return coord + HexDirectionVector(direction);
+            return coord + GetDirection(direction);
         }
 
         #endregion
@@ -251,12 +251,12 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 对角线偏移量;
         /// </summary>
-        static Dictionary<int, CubicHexCoord> diagonals = HexDiagonalVectors();
+        static Dictionary<int, CubicHexCoord> diagonals = HexDiagonalDictionary();
 
         /// <summary>
         /// 获取到对角线偏移量;
         /// </summary>
-        static Dictionary<int, CubicHexCoord> HexDiagonalVectors()
+        static Dictionary<int, CubicHexCoord> HexDiagonalDictionary()
         {
             Dictionary<int, CubicHexCoord> diagonals = new Dictionary<int, CubicHexCoord>(DiagonalsNumber);
 
@@ -274,7 +274,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到对角线偏移量;
         /// </summary>
-        public static CubicHexCoord HexDiagonalVector(HexDiagonals diagonal)
+        public static CubicHexCoord GetDiagonal(HexDiagonals diagonal)
         {
             return diagonals[(int)diagonal];
         }
@@ -284,7 +284,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static CubicHexCoord GetDiagonal(this CubicHexCoord coord, HexDiagonals diagonal)
         {
-            return coord + HexDiagonalVector(diagonal);
+            return coord + GetDiagonal(diagonal);
         }
 
         #endregion
@@ -460,7 +460,7 @@ namespace KouXiaGu.HexTerrain
         {
             foreach (var direction in GetHexDirections())
             {
-                CubicHexCoord point = HexDirectionVector(direction) + target;
+                CubicHexCoord point = GetDirection(direction) + target;
                 yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
             }
         }
@@ -472,7 +472,7 @@ namespace KouXiaGu.HexTerrain
         {
             foreach (var direction in GetHexDirectionsAndSelf())
             {
-                CubicHexCoord point = HexDirectionVector(direction) + target;
+                CubicHexCoord point = GetDirection(direction) + target;
                 yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
             }
         }
@@ -484,7 +484,7 @@ namespace KouXiaGu.HexTerrain
         {
             foreach (var direction in GetHexDirections(directions))
             {
-                CubicHexCoord point = HexDirectionVector(direction) + target;
+                CubicHexCoord point = GetDirection(direction) + target;
                 yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
             }
         }
@@ -506,6 +506,55 @@ namespace KouXiaGu.HexTerrain
         }
 
 
+        /// <summary>
+        /// 获取到目标所在的半径;
+        /// </summary>
+        public static int GetRadius(CubicHexCoord center, CubicHexCoord target)
+        {
+            var cube = target - center;
+            return GetRadius(cube);
+        }
+
+        /// <summary>
+        /// 获取到目标所在 (0,0,0) 的半径;
+        /// </summary>
+        public static int GetRadius(CubicHexCoord target)
+        {
+            return Mathf.Max(Mathf.Abs(target.X), Mathf.Abs(target.Y), Mathf.Abs(target.Z));
+        }
+
+
+        /// <summary>
+        ///  按 环状 返回点;
+        /// </summary>
+        /// <param name="radius">需要大于0</param>
+        public static IEnumerable<CubicHexCoord> GetHexRing(CubicHexCoord center, int radius)
+        {
+            var cube = center + (GetDirection(HexDirections.Northeast) * radius);
+
+            foreach(var direction in GetHexDirections())
+            {
+                for (int j = 0; j < radius; j++)
+                {
+                    yield return cube;
+                    cube = cube.GetDirection(direction);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 按 螺旋 形状返回点;
+        /// </summary>
+        /// <param name="radius">需要大于0</param>
+        public static List<CubicHexCoord> GetHexSpiral(CubicHexCoord center, int radius)
+        {
+            List<CubicHexCoord> coords = new List<CubicHexCoord>();
+            for (int k = 1; k <= radius; k++)
+            {
+                coords.AddRange(GetHexRing(center, k));
+            }
+            return coords;
+        }
 
     }
 
