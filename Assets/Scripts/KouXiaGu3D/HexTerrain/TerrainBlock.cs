@@ -17,7 +17,18 @@ namespace KouXiaGu.HexTerrain
 
         #region 实例;
 
-        const string shaderName = "HexTerrain/Terrain";
+        const string shaderTerrain = "HexTerrain/Terrain";
+        const string shaderHeight = "HexTerrain/Heigt";
+
+        static Shader terrainShader
+        {
+            get { return Shader.Find(shaderTerrain); }
+        }
+
+        static Shader heightShader
+        {
+            get { return Shader.Find(shaderHeight); }
+        }
 
         ShortVector2 coord;
         Material material;
@@ -35,18 +46,12 @@ namespace KouXiaGu.HexTerrain
             private set { transform.position = BlockCoordToPixelCenter(value); coord = value; }
         }
 
-
-        Shader shader
-        {
-            get { return Shader.Find(shaderName); }
-        }
-
         /// <summary>
         /// 正在使用的材质;
         /// </summary>
         Material Material
         {
-            get { return material ?? (material = new Material(shader)); }
+            get { return material ?? (material = new Material(terrainShader)); }
         }
 
         /// <summary>
@@ -96,6 +101,23 @@ namespace KouXiaGu.HexTerrain
             Coord = ShortVector2.Zero;
             DiffuseTexture = null;
             HeightTexture = null;
+        }
+
+        [ContextMenu("显示地形模式")]
+        void TerrainDisplay()
+        {
+            Material.shader = terrainShader;
+
+            DiffuseTexture = diffuseTexture;
+            HeightTexture = heightTexture;
+            Tessellation = tessellation;
+            Displacement = displacement;
+        }
+
+        [ContextMenu("显示高度模式")]
+        void HeightDisplay()
+        {
+            Material.shader = heightShader;
         }
 
         public override int GetHashCode()
@@ -354,6 +376,7 @@ namespace KouXiaGu.HexTerrain
             Vector2 uv = new Vector2(local.x / block.width, local.y / block.height);
             return uv;
         }
+
 
 
         /// <summary>
