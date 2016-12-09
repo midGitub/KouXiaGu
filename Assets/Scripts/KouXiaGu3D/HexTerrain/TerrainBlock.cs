@@ -15,39 +15,78 @@ namespace KouXiaGu.HexTerrain
     {
         TerrainBlock() { }
 
-        #region 实例
+        #region 实例的
+
+        const string shaderName = "HexTerrain/Terrain";
+
+        ShortVector2 coord;
+
+        Material material;
+        Texture2D heightTexture;
+        Texture2D diffuseTexture;
+        float tessellation;
 
         /// <summary>
         /// 地图块坐标;
         /// </summary>
-        public ShortVector2 Coord { get; private set; }
-        public Texture2D Diffuse { get; private set; }
-        public Texture2D Height { get; private set; }
-
-        const string shaderName = "HexTerrain/Terrain";
+        public ShortVector2 Coord
+        {
+            get { return coord; }
+            private set { transform.position = BlockCoordToBlockCenter(Coord); }
+        }
 
         Shader shader
         {
             get { return Shader.Find(shaderName); }
         }
 
+        /// <summary>
+        /// 正在使用的材质;
+        /// </summary>
+        Material Material
+        {
+            get { return material ?? (material = new Material(shader)); }
+        }
+
+        /// <summary>
+        /// 漫反射贴图;
+        /// </summary>
+        public Texture2D DiffuseTexture
+        {
+            get { return diffuseTexture; }
+            private set { material.SetTexture("_MainTex", value); diffuseTexture = value; }
+        }
+
+        /// <summary>
+        /// 高度贴图;
+        /// </summary>
+        public Texture2D HeightTexture
+        {
+            get { return heightTexture; }
+            private set { Material.SetTexture("_HeightTex", value); heightTexture = value; }
+        }
+
+        /// <summary>
+        /// 网格细分程度;
+        /// </summary>
+        public float Tessellation
+        {
+            get { return tessellation; }
+            private set { Material.SetFloat("_Tess", value); tessellation = value; }
+        }
+
+
         void Start()
         {
-            transform.position = BlockCoordToBlockCenter(Coord);
-
             MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-            Material material = new Material(shader);
-            meshRenderer.material = material;
-
-            material.SetTexture("_MainTex", Diffuse);
-            material.SetTexture("_HeightTex", Height);
+            meshRenderer.material = Material;
         }
 
         void Clear()
         {
             Coord = ShortVector2.Zero;
-            Diffuse = null;
-            Height = null;
+            DiffuseTexture = null;
+            HeightTexture = null;
         }
 
         /// <summary>
@@ -68,6 +107,8 @@ namespace KouXiaGu.HexTerrain
 
         #region 地图块创建(静态)
 
+        static float globalTessellation = 16;
+
         /// <summary>
         /// 在场景中激活的地图块;
         /// </summary>
@@ -76,6 +117,15 @@ namespace KouXiaGu.HexTerrain
         /// 休眠的地图块;
         /// </summary>
         static Queue<TerrainBlock> restingBlocks = new Queue<TerrainBlock>();
+
+        /// <summary>
+        /// 全局的网格细分程度;
+        /// </summary>
+        public static float GlobalTessellation
+        {
+            get { return globalTessellation; }
+            set { globalTessellation = value; }
+        }
 
         /// <summary>
         /// 创建地图块到场景;
@@ -90,8 +140,9 @@ namespace KouXiaGu.HexTerrain
             TerrainBlock terrainBlock = GetTerrainBlock(coord.ToString());
 
             terrainBlock.Coord = coord;
-            terrainBlock.Diffuse = diffuse;
-            terrainBlock.Height = height;
+            terrainBlock.DiffuseTexture = diffuse;
+            terrainBlock.HeightTexture = height;
+            terrainBlock.Tessellation = GlobalTessellation;
 
             activatedBlocks.Add(coord, terrainBlock);
         }
