@@ -132,6 +132,8 @@ namespace KouXiaGu.HexTerrain
             blurMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
 
+        static readonly YieldInstruction TestWiat = new WaitForSeconds(0);
+
         /// <summary>
         /// 在协程内队列中进行烘焙;
         /// </summary>
@@ -147,6 +149,7 @@ namespace KouXiaGu.HexTerrain
                 try
                 {
                     RenderRequest request = bakingQueue.Dequeue();
+
                     Baking(request);
                 }
                 catch (Exception e)
@@ -170,7 +173,6 @@ namespace KouXiaGu.HexTerrain
 
             mixerRT = BakingMixer(bakingNodes);
             heightRT = BakingHeight(bakingNodes, mixerRT);
-            //BlurTexture(heightRT, 1, 1, 1);
             alphaHeightRT = BakingHeightToAlpha(heightRT);
             diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
 
@@ -273,7 +275,7 @@ namespace KouXiaGu.HexTerrain
         }
 
 
-        RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer, Texture height)
+        RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture globalMixer, Texture globalHeight)
         {
             foreach (var pair in bakingNodes)
             {
@@ -288,8 +290,8 @@ namespace KouXiaGu.HexTerrain
                 hexMesh.material.SetTexture("_MainTex", node.DiffuseTexture);
                 hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
                 hexMesh.material.SetTexture("_Height", node.HeightTexture);
-                hexMesh.material.SetTexture("_GlobalMixer", mixer);
-                hexMesh.material.SetTexture("_ShadowsAndHeight", height);
+                hexMesh.material.SetTexture("_GlobalMixer", globalMixer);
+                hexMesh.material.SetTexture("_ShadowsAndHeight", globalHeight);
                 hexMesh.material.SetFloat("_Sea", 0f);
                 hexMesh.material.SetFloat("_Centralization", 1.0f);
             }
