@@ -108,8 +108,8 @@ namespace KouXiaGu.HexTerrain
 
         #region 地图块实例信息(静态)
 
-        static float globalTessellation = 16;
-        static float globalDisplacement = 1f;
+        static float globalTessellation = 16f;
+        static float globalDisplacement = 1.2f;
 
         /// <summary>
         /// 在场景中激活的地图块;
@@ -388,8 +388,8 @@ namespace KouXiaGu.HexTerrain
         const string meshName = "Terrain Mesh";
 
         //为了地形相接的地方不存在明显的缝隙,所以加上 小数 的数值;
-        static readonly float meshHalfWidth = BlockWidthHalf + 0.001f;
-        static readonly float meshHalfHeight = BlockHeightHalf + 0.001f;
+        static readonly float meshHalfWidth = BlockWidthHalf + 0.005f;
+        static readonly float meshHalfHeight = BlockHeightHalf + 0.005f;
 
         /// <summary>
         /// 网格生成的高度;

@@ -16,7 +16,7 @@ namespace KouXiaGu.HexTerrain
         BasicRenderer() { }
 
         /// <summary>
-        /// 负责渲染地形的摄像机;
+        /// 负责渲染的摄像机;
         /// </summary>
         [SerializeField]
         Camera bakingCamera;

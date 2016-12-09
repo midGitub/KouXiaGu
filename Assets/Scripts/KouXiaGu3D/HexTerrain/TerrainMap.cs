@@ -23,7 +23,7 @@ namespace KouXiaGu.HexTerrain
         //Test
         void Start()
         {
-            int[] aa = new int[] { 10, 20, 30, 40 };
+            int[] aa = new int[] { 40, 20, 30, 40 };
 
             terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
 
