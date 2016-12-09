@@ -175,6 +175,18 @@ namespace KouXiaGu.HexTerrain
         }
 
 
+#if UNITY_EDITOR
+        /// <summary>
+        /// 放置地图块的父节点;
+        /// </summary>
+        static Transform blockParent;
+
+        static Transform BlockParent
+        {
+            get { return blockParent ?? (blockParent = new GameObject("TerrainBlocks").transform); }
+        }
+#endif
+
         /// <summary>
         /// 从池内获取到或者实例化一个;
         /// </summary>
@@ -190,6 +202,9 @@ namespace KouXiaGu.HexTerrain
             {
                 GameObject gameObject = new GameObject(name, typeof(TerrainBlock));
                 terrainBlock = gameObject.GetComponent<TerrainBlock>();
+#if UNITY_EDITOR
+                terrainBlock.transform.SetParent(BlockParent, false);
+#endif
             }
             return terrainBlock;
         }

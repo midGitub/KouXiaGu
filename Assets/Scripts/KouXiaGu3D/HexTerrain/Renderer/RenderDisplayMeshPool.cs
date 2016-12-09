@@ -8,7 +8,7 @@ namespace KouXiaGu.HexTerrain
 {
 
     /// <summary>
-    /// 在烘焙时显示在场景内的网格;
+    /// 烘焙时使用的网格池;
     /// </summary>
     [Serializable]
     public class RenderDisplayMeshPool
