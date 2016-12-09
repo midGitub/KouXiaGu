@@ -72,9 +72,12 @@ namespace KouXiaGu.Test
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
             ShortVector2 terrainBlockCoord = TerrainBlock.PixelToBlockCoord(pixel);
-            Vector3 terrainBlockCenter = TerrainBlock.BlockCoordToBlockCenter(terrainBlockCoord);
+            Vector3 terrainBlockCenter = TerrainBlock.BlockCoordToPixelCenter(terrainBlockCoord);
             CubicHexCoord terrainBlockHexCenter = TerrainBlock.BlockCoordToHexCenter(terrainBlockCoord);
             Rect terrainBlockRect = TerrainBlock.BlockCenterToRect(terrainBlockCenter);
+            Vector2 terrainBlockLocal = TerrainBlock.PixelToBlockLocal(pixel);
+            Vector2 terrainBlockUV = TerrainBlock.PixelToUV(pixel);
+            float terrainHeight = TerrainBlock.GetHeight(pixel);
 
             string str = "";
 
@@ -91,7 +94,10 @@ namespace KouXiaGu.Test
                 + "\n地貌块: 块编号:" + terrainBlockCoord
                 + "中心:" + terrainBlockCenter
                 + "立方:" + terrainBlockHexCenter
-                + "矩形:" + terrainBlockRect;
+                + "矩形:" + terrainBlockRect
+                + "\n块坐标:" + terrainBlockLocal
+                + "UV:" + terrainBlockUV
+                + "高度:" + terrainHeight;
 
             return str;
         }

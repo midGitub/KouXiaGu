@@ -32,8 +32,9 @@ namespace KouXiaGu.HexTerrain
         public ShortVector2 Coord
         {
             get { return coord; }
-            private set { transform.position = BlockCoordToBlockCenter(Coord); }
+            private set { transform.position = BlockCoordToPixelCenter(value); coord = value; }
         }
+
 
         Shader shader
         {
@@ -54,7 +55,7 @@ namespace KouXiaGu.HexTerrain
         public Texture2D DiffuseTexture
         {
             get { return diffuseTexture; }
-            private set { material.SetTexture("_MainTex", value); diffuseTexture = value; }
+            private set { Material.SetTexture("_MainTex", value); diffuseTexture = value; }
         }
 
         /// <summary>
@@ -89,14 +90,6 @@ namespace KouXiaGu.HexTerrain
             HeightTexture = null;
         }
 
-        /// <summary>
-        /// 获取到高度;
-        /// </summary>
-        public float GetHeight(Vector2 position)
-        {
-            throw new NotImplementedException();
-        }
-
         public override int GetHashCode()
         {
             return Coord.GetHashCode();
@@ -105,7 +98,7 @@ namespace KouXiaGu.HexTerrain
         #endregion
 
 
-        #region 地图块创建(静态)
+        #region 地图块实例信息(静态)
 
         static float globalTessellation = 16;
 
@@ -192,6 +185,48 @@ namespace KouXiaGu.HexTerrain
             restingBlocks.Enqueue(terrainBlock);
         }
 
+        /// <summary>
+        /// 获取到高度,若超出地图边界则返回0;
+        /// </summary>
+        public static float GetHeight(Vector3 position)
+        {
+            TerrainBlock block;
+            ShortVector2 coord = PixelToBlockCoord(position);
+            if (activatedBlocks.TryGetValue(coord, out block))
+            {
+                Vector2 uv = PixelToUV(position);
+
+                int x = (int)(uv.x * block.HeightTexture.width);
+                int y = (int)(uv.y * block.HeightTexture.height);
+
+                Color pixelColor = block.HeightTexture.GetPixel(x, y);
+
+                return pixelColor.a * GlobalTessellation;
+            }
+            return 0f;
+        }
+
+
+        /// <summary>
+        /// 获取到高度;
+        /// </summary>
+        //float GetHeight(Vector3 position)
+        //{
+        //    Vector2 uv = PixelToUV(position);
+
+        //    int x = (int)(uv.x * HeightTexture.width);
+        //    int y = (int)(uv.y * HeightTexture.height);
+
+        //    Color pixelColor = HeightTexture.GetPixel(x, y);
+
+        //    return pixelColor.a;
+
+        //    //    //pixel is 0 - 1 value. we will move it to -1 to 1
+        //    //    float heightBase = (pixel.a - 0.5f) * 2f;
+
+        //    //    return heightBase * Chunk.ChunkSizeScale();
+        //}
+
         #endregion
 
         //static public Rect GetRect(Vector2i pos)
@@ -258,7 +293,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 从像素节点 获取到所属的地形块;
         /// </summary>
-        public static ShortVector2 PixelToBlockCoord(Vector3 position)
+        internal static ShortVector2 PixelToBlockCoord(Vector3 position)
         {
             short x = (short)Math.Round(position.x / BlockWidth);
             short y = (short)Math.Round(position.z / BlockHeight);
@@ -267,9 +302,18 @@ namespace KouXiaGu.HexTerrain
 
 
         /// <summary>
+        /// 从像素坐标 转换为 所在块的中心像素坐标;
+        /// </summary>
+        internal static Vector3 PixelToPixelCenter(Vector3 position)
+        {
+            ShortVector2 coord = PixelToBlockCoord(position);
+            return BlockCoordToPixelCenter(coord);
+        }
+
+        /// <summary>
         /// 地图块坐标 获取到其像素中心点;
         /// </summary>
-        public static Vector3 BlockCoordToBlockCenter(ShortVector2 coord)
+        internal static Vector3 BlockCoordToPixelCenter(ShortVector2 coord)
         {
             float x = coord.x * BlockWidth;
             float z = coord.y * BlockHeight;
@@ -279,30 +323,55 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地图块坐标 获取到其中心的六边形坐标;
         /// </summary>
-        public static CubicHexCoord BlockCoordToHexCenter(ShortVector2 coord)
+        internal static CubicHexCoord BlockCoordToHexCenter(ShortVector2 coord)
         {
-            Vector3 pixelCenter = BlockCoordToBlockCenter(coord);
+            Vector3 pixelCenter = BlockCoordToPixelCenter(coord);
             return HexGrids.PixelToHex(pixelCenter);
         }
+
 
 
         /// <summary>
         /// 地图块坐标 到获取到其在场景中的矩形大小;
         /// </summary>
-        public static Rect BlockCoordToRect(ShortVector2 coord)
+        internal static Rect BlockCoordToRect(ShortVector2 coord)
         {
-            Vector3 blockCenter = BlockCoordToBlockCenter(coord);
+            Vector3 blockCenter = BlockCoordToPixelCenter(coord);
             return BlockCenterToRect(blockCenter);
         }
 
         /// <summary>
         /// 地图块中心坐标 获取到其在场景中的矩形大小;
         /// </summary>
-        public static Rect BlockCenterToRect(Vector3 blockCenter)
+        internal static Rect BlockCenterToRect(Vector3 blockCenter)
         {
             Vector2 southwestPoint = new Vector2(blockCenter.x - BlockWidthHalf, blockCenter.z - BlockHeightHalf);
             Vector2 size = new Vector2(BlockWidth, BlockHeight);
             return new Rect(southwestPoint, size);
+        }
+
+
+        /// <summary>
+        /// 像素坐标转换成地图块的本地坐标;
+        /// </summary>
+        internal static Vector2 PixelToBlockLocal(Vector3 position)
+        {
+            Vector3 blockCenter = PixelToPixelCenter(position);
+            Rect block = BlockCenterToRect(blockCenter);
+            Vector2 local = new Vector2(position.x - block.xMin, position.z - block.yMin);
+            return local;
+        }
+
+        /// <summary>
+        /// 像素坐标 转换为 地图块的UV坐标;
+        /// </summary>
+        internal static Vector2 PixelToUV(Vector3 position)
+        {
+            Vector3 blockCenter = PixelToPixelCenter(position);
+            Rect block = BlockCenterToRect(blockCenter);
+            Vector2 local = new Vector2(position.x - block.xMin, position.z - block.yMin);
+            Vector2 uv = new Vector2(local.x / block.width, local.y / block.height);
+            return uv;
         }
 
 
