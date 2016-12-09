@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
 
+
 namespace KouXiaGu.HexTerrain
 {
 
     /// <summary>
-    /// 烘焙贴图队列;
-    /// 负责将传入的请求渲染出基本的高度图和地貌贴图输出;
+    /// 基本贴图信息渲染,负责将传入的请求渲染出基本的高度图和地貌贴图;
     /// </summary>
     [DisallowMultipleComponent, CustomEditor]
-    public sealed class BakingQueue : UnitySingleton<BakingQueue>
+    public sealed class BasicRenderer : UnitySingleton<BasicRenderer>
     {
-        BakingQueue() { }
+        BasicRenderer() { }
 
         /// <summary>
         /// 负责渲染地形的摄像机;
@@ -46,9 +46,13 @@ namespace KouXiaGu.HexTerrain
         Material diffuseMaterial;
         Material blurMaterial;
 
-        Queue<BakingRequest> bakingQueue;
+        Queue<RenderRequest> bakingQueue;
         Coroutine bakingCoroutine;
 
+        public bool IsRunning
+        {
+            get { return bakingCoroutine != null; }
+        }
 
         [ExposeProperty]
         public float TextureSize
@@ -61,7 +65,7 @@ namespace KouXiaGu.HexTerrain
         void Awake()
         {
             ovenDisplayMeshPool.Awake();
-            bakingQueue = new Queue<BakingRequest>();
+            bakingQueue = new Queue<RenderRequest>();
         }
 
         void Start()
@@ -77,7 +81,10 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void StartCoroutine()
         {
-            bakingCoroutine = StartCoroutine(Baking());
+            if (!IsRunning)
+            {
+                bakingCoroutine = StartCoroutine(Baking());
+            }
         }
 
         /// <summary>
@@ -92,7 +99,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 加入到烘焙队列;
         /// </summary>
-        public void Enqueue(BakingRequest request)
+        public void Enqueue(RenderRequest request)
         {
             bakingQueue.Enqueue(request);
         }
@@ -139,7 +146,7 @@ namespace KouXiaGu.HexTerrain
 
                 try
                 {
-                    BakingRequest request = bakingQueue.Dequeue();
+                    RenderRequest request = bakingQueue.Dequeue();
                     Baking(request);
                 }
                 catch (Exception e)
@@ -152,7 +159,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 立即烘焙这个请求;
         /// </summary>
-        public void Baking(BakingRequest request)
+        public void Baking(RenderRequest request)
         {
             IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
 
@@ -163,7 +170,7 @@ namespace KouXiaGu.HexTerrain
 
             mixerRT = BakingMixer(bakingNodes);
             heightRT = BakingHeight(bakingNodes, mixerRT);
-            BlurTexture(heightRT, 1, 1, 1);
+            //BlurTexture(heightRT, 1, 1, 1);
             alphaHeightRT = BakingHeightToAlpha(heightRT);
             diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
 
@@ -182,7 +189,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(BakingRequest request)
+        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(RenderRequest request)
         {
             bakingCamera.transform.position = request.CameraPosition;
 

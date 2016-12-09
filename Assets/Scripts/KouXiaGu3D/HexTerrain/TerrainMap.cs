@@ -43,15 +43,15 @@ namespace KouXiaGu.HexTerrain
         [ContextMenu("烘焙测试")]
         void Test_Baking()
         {
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Zero));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Left));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Right));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Down));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Down + ShortVector2.Left));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Down + ShortVector2.Right));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
-            BakingQueue.GetInstance.Enqueue(new BakingRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Zero));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Left));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Right));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Left));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Right));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
         }
 
 

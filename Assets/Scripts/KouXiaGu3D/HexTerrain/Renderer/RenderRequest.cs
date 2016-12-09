@@ -7,14 +7,15 @@ using UnityEngine;
 namespace KouXiaGu.HexTerrain
 {
 
+
     /// <summary>
     /// 地形烘焙请求;
     /// 烘焙的为一个正六边形网格内的区域;
     /// </summary>
-    public struct BakingRequest
+    public struct RenderRequest
     {
 
-        public BakingRequest(IReadOnlyMap2D<CubicHexCoord, LandformNode> map, ShortVector2 blockCoord)
+        public RenderRequest(IReadOnlyMap2D<CubicHexCoord, LandformNode> map, ShortVector2 blockCoord)
         {
             this.Map = map;
             this.BlockCoord = blockCoord;
