@@ -31,7 +31,18 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public Landform this[int id]
         {
-            get{ return initializedLandforms[id]; }
+            get
+            {
+                try
+                {
+                    return initializedLandforms[id];
+                }
+                catch (KeyNotFoundException e)
+                {
+                    Debug.LogWarning("获取到不存在的地貌ID: " + id);
+                    throw e;
+                }
+            }
         }
 
         /// <summary>

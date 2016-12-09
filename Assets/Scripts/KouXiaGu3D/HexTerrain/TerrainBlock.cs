@@ -109,7 +109,7 @@ namespace KouXiaGu.HexTerrain
         #region 地图块实例信息(静态)
 
         static float globalTessellation = 16f;
-        static float globalDisplacement = 1f;
+        static float globalDisplacement = 2f;
 
         /// <summary>
         /// 在场景中激活的地图块;

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using ProtoBuf;
 
 namespace KouXiaGu
 {
@@ -8,11 +9,14 @@ namespace KouXiaGu
     /// 游戏地图结构;
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [ProtoContract]
     public class Map2D<TP, T> : IMap2D<TP, T>, IReadOnlyMap2D<TP, T>
     {
+
         /// <summary>
         /// 地图结构;
         /// </summary>
+        [ProtoMember(1)]
         Dictionary<TP, T> mapCollection;
 
         public IEnumerable<TP> Points
@@ -59,6 +63,11 @@ namespace KouXiaGu
         public void Add(TP position, T item)
         {
             mapCollection.Add(position, item);
+        }
+
+        public void Add(KeyValuePair<TP, T> pair)
+        {
+            mapCollection.Add(pair.Key, pair.Value);
         }
 
         public bool Remove(TP position)

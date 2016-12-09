@@ -305,7 +305,7 @@ namespace KouXiaGu.HexTerrain
         {
             RenderTexture.active = renderTexture;
             Texture2D height_ARGB32 = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
-            height_ARGB32.ReadPixels(new Rect(0, 0, renderTexture.width, (float)renderTexture.height), 0, 0, false);
+            height_ARGB32.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0, false);
             height_ARGB32.wrapMode = TextureWrapMode.Clamp;
             height_ARGB32.Apply();
 

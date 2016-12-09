@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KouXiaGu.HexTerrain;
+﻿using KouXiaGu.HexTerrain;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,15 +6,12 @@ using UnityEngine.UI;
 namespace KouXiaGu.Test
 {
 
-
+    
     public class TestTerrain : MonoBehaviour
     {
 
         [SerializeField]
         Text textObject;
-
-        [SerializeField]
-        GameObject hexMesh;
 
         Vector3 currentPixelPosition;
         string checkPointText;
@@ -114,17 +107,6 @@ namespace KouXiaGu.Test
             }
 
             return str;
-        }
-
-
-        [ContextMenu("地图块布满")]
-        void TestCreateRange()
-        {
-            foreach (var point in TerrainBlock.GetBlockCover(new ShortVector2(0,0)))
-            {
-                Vector3 pix = point.HexToPixel(-1);
-                Instantiate(hexMesh, pix, Quaternion.identity);
-            }
         }
 
     }

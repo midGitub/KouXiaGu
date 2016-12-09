@@ -46,7 +46,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public float RotationY
         {
-            get { return mapNode.rotationAngle; }
+            get { return mapNode.RotationAngle; }
         }
 
         public Texture DiffuseTexture

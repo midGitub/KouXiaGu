@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using System.IO;
 
 namespace KouXiaGu.HexTerrain
 {
@@ -17,26 +18,16 @@ namespace KouXiaGu.HexTerrain
 
         void Awake()
         {
-            terrainMap = new Map2D<CubicHexCoord, LandformNode>();
+            //terrainMap = new Map2D<CubicHexCoord, LandformNode>();
         }
 
         //Test
         void Start()
         {
-            int[] aa = new int[] { 30, 30, 40, 40 };
-
-            terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
-
-            foreach (var item in HexGrids.GetHexRange(CubicHexCoord.Zero, 10))
+            terrainMap = LoadMap();
+            if (terrainMap == null)
             {
-                try
-                {
-                    terrainMap.Add(item, new LandformNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
-                }
-                catch (ArgumentException)
-                {
-                    //Debug.Log(item);
-                }
+                terrainMap = RandomMap();
             }
         }
 
@@ -55,6 +46,45 @@ namespace KouXiaGu.HexTerrain
         }
 
 
+        [ContextMenu("保存地图")]
+        void SaveMap()
+        {
+            string filePath = Path.Combine(Application.dataPath, "MAP.temp");
+            SerializeHelper.SerializeProtoBuf(filePath, terrainMap);
+        }
+
+        Map2D<CubicHexCoord, LandformNode> LoadMap()
+        {
+            string filePath = Path.Combine(Application.dataPath, "MAP.temp");
+
+            if (File.Exists(filePath))
+            {
+                return SerializeHelper.DeserializeProtoBuf<Map2D<CubicHexCoord, LandformNode>>(filePath);
+            }
+            return null;
+        }
+
+
+        Map2D<CubicHexCoord, LandformNode> RandomMap()
+        {
+            Map2D<CubicHexCoord, LandformNode> terrainMap = new Map2D<CubicHexCoord, LandformNode>();
+              int[] aa = new int[] { 30, 30, 40, 40 };
+
+            terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
+
+            foreach (var item in HexGrids.GetHexRange(CubicHexCoord.Zero, 10))
+            {
+                try
+                {
+                    terrainMap.Add(item, new LandformNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
+                }
+                catch (ArgumentException)
+                {
+                    //Debug.Log(item);
+                }
+            }
+            return terrainMap;
+        }
 
     }
 
