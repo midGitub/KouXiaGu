@@ -8,7 +8,7 @@ namespace KouXiaGu.HexTerrain
 
     /// <summary>
     /// 烘焙贴图队列;
-    /// 负责将传入的请求渲染出高度图和地貌贴图输出;
+    /// 负责将传入的请求渲染出基本的高度图和地貌贴图输出;
     /// </summary>
     [DisallowMultipleComponent, CustomEditor]
     public sealed class BakingQueue : UnitySingleton<BakingQueue>
@@ -26,7 +26,7 @@ namespace KouXiaGu.HexTerrain
         [SerializeField]
         OvenDisplayMeshQueue ovenDisplayMeshPool;
 
-        [SerializeField]
+        [SerializeField, HideInInspector]
         BakingParameter parameter = BakingParameter.Default;
 
         [SerializeField]

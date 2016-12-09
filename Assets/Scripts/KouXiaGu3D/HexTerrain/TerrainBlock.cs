@@ -8,7 +8,7 @@ namespace KouXiaGu.HexTerrain
 {
 
     /// <summary>
-    /// 地块烘焙信息;
+    /// 实例到场景的地图块网格;
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
     public class TerrainBlock : MonoBehaviour
