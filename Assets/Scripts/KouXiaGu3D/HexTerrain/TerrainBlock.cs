@@ -25,6 +25,7 @@ namespace KouXiaGu.HexTerrain
         Texture2D heightTexture;
         Texture2D diffuseTexture;
         float tessellation;
+        float displacement;
 
         /// <summary>
         /// 地图块坐标;
@@ -76,6 +77,14 @@ namespace KouXiaGu.HexTerrain
             private set { Material.SetFloat("_Tess", value); tessellation = value; }
         }
 
+        /// <summary>
+        /// 高度位移系数;
+        /// </summary>
+        public float Displacement
+        {
+            get { return displacement; }
+            private set { Material.SetFloat("_Displacement", value); displacement = value; }
+        }
 
         void Start()
         {
@@ -101,6 +110,7 @@ namespace KouXiaGu.HexTerrain
         #region 地图块实例信息(静态)
 
         static float globalTessellation = 16;
+        static float globalDisplacement = 1.5f;
 
         /// <summary>
         /// 在场景中激活的地图块;
@@ -121,6 +131,15 @@ namespace KouXiaGu.HexTerrain
         }
 
         /// <summary>
+        /// 全局的高度系数;
+        /// </summary>
+        public static float GlobalDisplacement
+        {
+            get { return globalDisplacement; }
+            set { globalDisplacement = value; }
+        }
+
+        /// <summary>
         /// 创建地图块到场景;
         /// </summary>
         public static void Create(ShortVector2 coord, Texture2D diffuse, Texture2D height)
@@ -136,6 +155,7 @@ namespace KouXiaGu.HexTerrain
             terrainBlock.DiffuseTexture = diffuse;
             terrainBlock.HeightTexture = height;
             terrainBlock.Tessellation = GlobalTessellation;
+            terrainBlock.Displacement = GlobalDisplacement;
 
             activatedBlocks.Add(coord, terrainBlock);
         }
@@ -201,65 +221,12 @@ namespace KouXiaGu.HexTerrain
 
                 Color pixelColor = block.HeightTexture.GetPixel(x, y);
 
-                return pixelColor.a * GlobalTessellation;
+                return pixelColor.a * GlobalDisplacement;
             }
             return 0f;
         }
 
-
-        /// <summary>
-        /// 获取到高度;
-        /// </summary>
-        //float GetHeight(Vector3 position)
-        //{
-        //    Vector2 uv = PixelToUV(position);
-
-        //    int x = (int)(uv.x * HeightTexture.width);
-        //    int y = (int)(uv.y * HeightTexture.height);
-
-        //    Color pixelColor = HeightTexture.GetPixel(x, y);
-
-        //    return pixelColor.a;
-
-        //    //    //pixel is 0 - 1 value. we will move it to -1 to 1
-        //    //    float heightBase = (pixel.a - 0.5f) * 2f;
-
-        //    //    return heightBase * Chunk.ChunkSizeScale();
-        //}
-
         #endregion
-
-        //static public Rect GetRect(Vector2i pos)
-        //{
-        //    Rect r = new Rect(pos.x * ChunkSizeInWorld - ChunkSizeInWorld * 0.5f, pos.y * ChunkSizeInWorld - ChunkSizeInWorld * 0.5f, ChunkSizeInWorld, ChunkSizeInWorld);
-        //    return r;
-        //}
-
-        //public Vector2 GetWorldToUV(Vector3 world3DPos)
-        //{
-        //    Rect r = GetRect();
-        //    Vector2 world2D = new Vector2(world3DPos.x, world3DPos.z);
-        //    Vector2 uv = (world2D - new Vector2(r.xMin, r.yMin)) / r.width;
-        //    return uv;
-        //}
-
-        //static public float GetWorldHeightAt(Vector3 world3Dposition)
-        //{
-        //    Chunk chunk = Chunk.WorldToChunk(world3Dposition);
-        //    if (chunk == null || chunk.height == null)
-        //        return 0f;
-
-        //    Vector2 uv = chunk.GetWorldToUV(world3Dposition);
-        //    int x = (int)(Mathf.Clamp01(1f - uv.x) * chunk.height.width);
-        //    int y = (int)(Mathf.Clamp01(1f - uv.y) * chunk.height.height);
-
-        //    Color pixel = chunk.height.GetPixel(x, y);
-
-        //    //pixel is 0 - 1 value. we will move it to -1 to 1
-        //    float heightBase = (pixel.a - 0.5f) * 2f;
-
-        //    return heightBase * Chunk.ChunkSizeScale();
-        //}
 
 
         #region 地图块大小定义(静态);
