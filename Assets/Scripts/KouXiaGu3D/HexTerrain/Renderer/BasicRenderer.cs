@@ -457,7 +457,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
-        public static readonly float CameraSize = TerrainBlock.BlockHeight / 2;
+        public static readonly float CameraSize = (TerrainBlock.BlockHeight / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
