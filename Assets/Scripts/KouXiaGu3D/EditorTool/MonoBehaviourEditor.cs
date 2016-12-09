@@ -12,39 +12,56 @@ namespace KouXiaGu
     using UnityEditor;
 
     /// <summary>
-    /// 编辑器类,用于重写 MonoBehaviour 的编辑器;
+    /// 编辑器类,用于重写 MonoBehaviour 的编辑器(仅在存在 CustomEditorAttribute 特性的类上有效);
     /// </summary>
-    [CustomEditor(typeof(MonoBehaviour), true)]
+    [@CustomEditor(typeof(MonoBehaviour), true)]
     public class MonoBehaviourEditor : Editor
     {
         protected MonoBehaviourEditor() { }
 
-        protected PropertyEditorAttribute.Property[] properties;
+        PropertyEditorAttribute.Property[] properties;
 
-        public virtual void OnEnable()
+        public void OnEnable()
         {
-            properties = PropertyEditorAttribute.GetProperties(target).ToArray();
+            var editorClass = Attribute.GetCustomAttribute(target.GetType(), typeof(CustomEditorAttribute));
+
+            if (editorClass != null)
+            {
+                properties = PropertyEditorAttribute.GetProperties(target).ToArray();
+            }
+            //Debug.Log(isEditorClass + " " + target.GetType().Name + " " + properties.Length);
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+
             PropertyGUI();
-            //Debug.Log(properties.Length);
         }
 
         /// <summary>
         /// PropertyEditorAttribute
         /// </summary>
-        public virtual void PropertyGUI()
+        public void PropertyGUI()
         {
-            foreach (var property in properties)
+            if (properties != null)
             {
-                property.OnGUI();
+                foreach (var property in properties)
+                {
+                    property.OnGUI();
+                }
             }
         }
     }
 #endif
+
+
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public sealed class CustomEditorAttribute : Attribute
+    {
+
+    }
 
     /// <summary>
     /// 编辑器中属性获取抽象类;
@@ -61,8 +78,8 @@ namespace KouXiaGu
             this.Label = label;
         }
 
-        private const BindingFlags DefaultBindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
-            BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+        private const BindingFlags DefaultBindingFlags = BindingFlags.Instance | BindingFlags.Public |
+            BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.GetProperty;
 
         /// <summary>
         /// 显示的标签;

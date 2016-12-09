@@ -23,7 +23,7 @@ namespace KouXiaGu.HexTerrain
         //Test
         void Start()
         {
-            int[] aa = new int[] { 10, 20, 30};
+            int[] aa = new int[] { 10, 20, 30, 40 };
 
             terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
 
@@ -31,7 +31,7 @@ namespace KouXiaGu.HexTerrain
             {
                 try
                 {
-                    terrainMap.Add(item, new LandformNode(aa[UnityEngine.Random.Range(0,3)], UnityEngine.Random.Range(0, 360)));
+                    terrainMap.Add(item, new LandformNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
                 }
                 catch (ArgumentException)
                 {

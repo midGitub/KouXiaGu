@@ -10,7 +10,7 @@ namespace KouXiaGu.HexTerrain
     /// 烘焙贴图队列;
     /// 负责将传入的请求渲染出高度图和地貌贴图输出;
     /// </summary>
-    [DisallowMultipleComponent]
+    [DisallowMultipleComponent, CustomEditor]
     public sealed class BakingQueue : UnitySingleton<BakingQueue>
     {
         BakingQueue() { }
@@ -27,6 +27,9 @@ namespace KouXiaGu.HexTerrain
         OvenDisplayMeshQueue ovenDisplayMeshPool;
 
         [SerializeField]
+        BakingParameter parameter = BakingParameter.Default;
+
+        [SerializeField]
         Shader mixer;
         [SerializeField]
         Shader height;
@@ -34,15 +37,25 @@ namespace KouXiaGu.HexTerrain
         Shader heightToAlpha;
         [SerializeField]
         Shader diffuse;
+        [SerializeField]
+        Shader blur;
 
         Material mixerMaterial;
         Material heightMaterial;
         Material heightToAlphaMaterial;
         Material diffuseMaterial;
+        Material blurMaterial;
 
-        BakingParameter parameter = BakingParameter.Default;
         Queue<BakingRequest> bakingQueue;
         Coroutine bakingCoroutine;
+
+
+        [ExposeProperty]
+        public float TextureSize
+        {
+            get { return parameter.TextureSize; }
+            set { parameter = new BakingParameter(value); }
+        }
 
 
         void Awake()
@@ -107,12 +120,10 @@ namespace KouXiaGu.HexTerrain
 
             diffuseMaterial = new Material(diffuse);
             diffuseMaterial.hideFlags = HideFlags.HideAndDontSave;
-        }
 
-        //string TestPath
-        //{
-        //    get { return Path.Combine(Application.dataPath, "TestTexture"); }
-        //}
+            blurMaterial = new Material(blur);
+            blurMaterial.hideFlags = HideFlags.HideAndDontSave;
+        }
 
         /// <summary>
         /// 在协程内队列中进行烘焙;
@@ -152,6 +163,7 @@ namespace KouXiaGu.HexTerrain
 
             mixerRT = BakingMixer(bakingNodes);
             heightRT = BakingHeight(bakingNodes, mixerRT);
+            BlurTexture(heightRT, 1, 1, 1);
             alphaHeightRT = BakingHeightToAlpha(heightRT);
             diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
 
@@ -234,7 +246,7 @@ namespace KouXiaGu.HexTerrain
                 hexMesh.material.SetTexture("_GlobalMixer", mixer);
             }
 
-            RenderTexture heightRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            RenderTexture heightRT = RenderTexture.GetTemporary(parameter.HeightMapWidth, parameter.HeightMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
             Render(heightRT);
             return heightRT;
         }
@@ -318,53 +330,53 @@ namespace KouXiaGu.HexTerrain
             bakingCamera.targetTexture = null;
         }
 
-        ///// <summary>
-        ///// 模糊贴图;
-        ///// </summary>
-        ///// <param name="rendertexture">原贴图;</param>
-        ///// <param name="destTexture">目标贴图;</param>
-        ///// <param name="downSampleNum">[降采样次数]向下采样的次数。此值越大,则采样间隔越大,需要处理的像素点越少,运行速度越快</param>
-        ///// <param name="iterations">[模糊扩散度]进行模糊时，相邻像素点的间隔。此值越大相邻像素间隔越远，图像越模糊。但过大的值会导致失真</param>
-        ///// <param name="spreadSize">[迭代次数]此值越大,则模糊操作的迭代次数越多，模糊效果越好，但消耗越大</param>
-        //void BlurTexture(RenderTexture rendertexture, int downSampleNum, int iterations, int spreadSize)
-        //{
-        //    float widthMod = 1.0f / (1.0f * (1 << downSampleNum));
-        //    blurMaterial.SetFloat("_DownSampleValue", spreadSize * widthMod);
-        //    rendertexture.filterMode = FilterMode.Bilinear;
+        /// <summary>
+        /// 模糊贴图;
+        /// </summary>
+        /// <param name="rendertexture">原贴图;</param>
+        /// <param name="destTexture">目标贴图;</param>
+        /// <param name="downSampleNum">[降采样次数]向下采样的次数。此值越大,则采样间隔越大,需要处理的像素点越少,运行速度越快</param>
+        /// <param name="iterations">[模糊扩散度]进行模糊时，相邻像素点的间隔。此值越大相邻像素间隔越远，图像越模糊。但过大的值会导致失真</param>
+        /// <param name="spreadSize">[迭代次数]此值越大,则模糊操作的迭代次数越多，模糊效果越好，但消耗越大</param>
+        void BlurTexture(RenderTexture rendertexture, int downSampleNum, int iterations, int spreadSize)
+        {
+            float widthMod = 1.0f / (1.0f * (1 << downSampleNum));
+            blurMaterial.SetFloat("_DownSampleValue", spreadSize * widthMod);
+            rendertexture.filterMode = FilterMode.Bilinear;
 
-        //    int renderWidth = rendertexture.width >> downSampleNum;
-        //    int renderHeight = rendertexture.height >> downSampleNum;
+            int renderWidth = rendertexture.width >> downSampleNum;
+            int renderHeight = rendertexture.height >> downSampleNum;
 
-        //    RenderTexture renderBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
-        //    renderBuffer.filterMode = FilterMode.Bilinear;
+            RenderTexture renderBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
+            renderBuffer.filterMode = FilterMode.Bilinear;
 
-        //    Graphics.Blit(rendertexture, renderBuffer, blurMaterial, 0);
+            Graphics.Blit(rendertexture, renderBuffer, blurMaterial, 0);
 
-        //    //根据BlurIterations（迭代次数），来进行指定次数的迭代操作  
-        //    for (int i = 0; i < iterations; i++)
-        //    {
-        //        //迭代偏移量参数  
-        //        float iterationOffs = (i * 1.0f);
-        //        blurMaterial.SetFloat("_DownSampleValue", spreadSize * widthMod + iterationOffs);
+            //根据BlurIterations（迭代次数），来进行指定次数的迭代操作  
+            for (int i = 0; i < iterations; i++)
+            {
+                //迭代偏移量参数  
+                float iterationOffs = (i * 1.0f);
+                blurMaterial.SetFloat("_DownSampleValue", spreadSize * widthMod + iterationOffs);
 
-        //        //处理Shader的通道1，垂直方向模糊处理 || Pass1,for vertical blur  
-        //        RenderTexture tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
-        //        Graphics.Blit(renderBuffer, tempBuffer, blurMaterial, 1);
-        //        RenderTexture.ReleaseTemporary(renderBuffer);
-        //        renderBuffer = tempBuffer;
+                //处理Shader的通道1，垂直方向模糊处理 || Pass1,for vertical blur  
+                RenderTexture tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
+                Graphics.Blit(renderBuffer, tempBuffer, blurMaterial, 1);
+                RenderTexture.ReleaseTemporary(renderBuffer);
+                renderBuffer = tempBuffer;
 
-        //        // 处理Shader的通道2，竖直方向模糊处理 || Pass2,for horizontal blur  
-        //        tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
-        //        Graphics.Blit(renderBuffer, tempBuffer, blurMaterial, 2);
+                // 处理Shader的通道2，竖直方向模糊处理 || Pass2,for horizontal blur  
+                tempBuffer = RenderTexture.GetTemporary(renderWidth, renderHeight, 0, rendertexture.format);
+                Graphics.Blit(renderBuffer, tempBuffer, blurMaterial, 2);
 
-        //        RenderTexture.ReleaseTemporary(renderBuffer);
-        //        renderBuffer = tempBuffer;
-        //    }
+                RenderTexture.ReleaseTemporary(renderBuffer);
+                renderBuffer = tempBuffer;
+            }
 
-        //    //拷贝最终的renderBuffer到目标纹理，并绘制所有通道的纹理到屏幕  
-        //    Graphics.Blit(renderBuffer, rendertexture);
-        //    RenderTexture.ReleaseTemporary(renderBuffer);
-        //}
+            //拷贝最终的renderBuffer到目标纹理，并绘制所有通道的纹理到屏幕  
+            Graphics.Blit(renderBuffer, rendertexture);
+            RenderTexture.ReleaseTemporary(renderBuffer);
+        }
 
 
         //void BlurTexture(RenderTexture texture, int downSample, int size, int interations)
@@ -505,6 +517,7 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 地形烘焙时的贴图大小参数;
     /// </summary>
+    [Serializable]
     public struct BakingParameter
     {
 
@@ -523,9 +536,17 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static readonly float CameraAspect = TerrainBlock.BlockWidth / TerrainBlock.BlockHeight;
 
+        [SerializeField]
+        float textureSize;
 
-
-        public float textureSize { get; private set; }
+        /// <summary>
+        /// 贴图大小;
+        /// </summary>
+        public float TextureSize
+        {
+            get { return textureSize; }
+            private set { textureSize = value; }
+        }
 
         public int DiffuseMapWidth { get; private set; }
         public int DiffuseMapHeight { get; private set; }
@@ -542,9 +563,9 @@ namespace KouXiaGu.HexTerrain
         {
             this.DiffuseMapWidth = (int)(TerrainBlock.BlockWidth * size);
             this.DiffuseMapHeight = (int)(TerrainBlock.BlockHeight * size);
-            this.HeightMapWidth = (int)(TerrainBlock.BlockWidth * size) >> 1;
-            this.HeightMapHeight = (int)(TerrainBlock.BlockHeight * size) >> 1;
-            this.textureSize = size;
+            this.HeightMapWidth = (int)(TerrainBlock.BlockWidth * size);
+            this.HeightMapHeight = (int)(TerrainBlock.BlockHeight * size);
+            this.TextureSize = size;
         }
 
 
