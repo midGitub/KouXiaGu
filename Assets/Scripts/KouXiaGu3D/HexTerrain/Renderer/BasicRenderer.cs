@@ -177,7 +177,7 @@ namespace KouXiaGu.HexTerrain
             Texture2D height = GetHeightTexture(alphaHeightRT);
             Texture2D diffuse = GetDiffuseTexture(diffuseRT);
 
-            request.OnComplete(diffuse, height);
+            request.BasicTextureComplete(diffuse, height);
 
             RenderTexture.ReleaseTemporary(mixerRT);
             RenderTexture.ReleaseTemporary(heightRT);

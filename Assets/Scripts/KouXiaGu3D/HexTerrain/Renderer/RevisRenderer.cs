@@ -12,6 +12,7 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 对基本地形进行修改的
     /// </summary>
+    [DisallowMultipleComponent]
     public class RevisRenderer : UnitySingleton<RevisRenderer>
     {
         RevisRenderer() { }

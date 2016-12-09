@@ -60,10 +60,7 @@ namespace KouXiaGu.HexTerrain
             }
         }
 
-        /// <summary>
-        /// 当完成后调用;
-        /// </summary>
-        public void OnComplete(Texture2D diffuse, Texture2D height)
+        public void BasicTextureComplete(Texture2D diffuse, Texture2D height)
         {
             TerrainBlock.Create(BlockCoord, diffuse, height);
         }
