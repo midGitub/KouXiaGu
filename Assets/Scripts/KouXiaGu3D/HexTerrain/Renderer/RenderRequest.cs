@@ -60,6 +60,12 @@ namespace KouXiaGu.HexTerrain
             }
         }
 
+        //float GetBakingNodeHeight(CubicHexCoord coord)
+        //{
+        //    float height = coord.GetHashCode();
+        //    return height > 0 ? -height : height;
+        //}
+
         public void BasicTextureComplete(Texture2D diffuse, Texture2D height)
         {
             TerrainBlock.Create(BlockCoord, diffuse, height);
