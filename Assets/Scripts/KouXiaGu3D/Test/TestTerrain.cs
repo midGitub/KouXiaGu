@@ -64,14 +64,14 @@ namespace KouXiaGu.Test
             Vector3 cubePixel = HexGrids.HexToPixel(cube);
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            ShortVector2 terrainBlockCoord = TerrainBlock.PixelToBlock(pixel);
-            Vector3 terrainBlockCenter = TerrainBlock.BlockToPixelCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = TerrainBlock.BlockToHexCenter(terrainBlockCoord);
-            Rect terrainBlockRect = TerrainBlock.CenterToRect(terrainBlockCenter);
-            Vector2 terrainBlockLocal = TerrainBlock.PixelToLocal(pixel);
-            Vector2 terrainBlockUV = TerrainBlock.PixelToUV(pixel);
-            float terrainHeight = TerrainBlock.GetHeight(pixel);
-            ShortVector2[] terrainBlocks = TerrainBlock.GetBelongBlocks(pixel);
+            ShortVector2 terrainBlockCoord = HexTerrain.TerrainData.PixelToBlock(pixel);
+            Vector3 terrainBlockCenter = HexTerrain.TerrainData.BlockToPixelCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = HexTerrain.TerrainData.BlockToHexCenter(terrainBlockCoord);
+            Rect terrainBlockRect = HexTerrain.TerrainData.CenterToRect(terrainBlockCenter);
+            Vector2 terrainBlockLocal = HexTerrain.TerrainData.PixelToLocal(pixel);
+            Vector2 terrainBlockUV = HexTerrain.TerrainData.PixelToUV(pixel);
+            float terrainHeight = HexTerrain.TerrainData.GetHeight(pixel);
+            ShortVector2[] terrainBlocks = HexTerrain.TerrainData.GetBelongBlocks(pixel);
 
             string str = "";
 
@@ -91,7 +91,7 @@ namespace KouXiaGu.Test
                 + "矩形:" + terrainBlockRect
                 + "\n块坐标:" + terrainBlockLocal
                 + "UV:" + terrainBlockUV
-                + "高度:" + terrainHeight
+                + "高度:" + terrainHeight + ";"
                 + "所属1:" + terrainBlocks[0]
                 + "所属2:" + terrainBlocks[1];
 

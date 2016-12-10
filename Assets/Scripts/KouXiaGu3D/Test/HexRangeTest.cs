@@ -73,9 +73,9 @@ namespace KouXiaGu.Test
 
         void Output(ShortVector2 coord)
         {
-            foreach (var item in TerrainBlock.GetBlockCover(coord))
+            foreach (var item in HexTerrain.TerrainData.GetBlockCover(coord))
             {
-                Instantiate(item);
+                this.Instantiate(item);
             }
         }
 

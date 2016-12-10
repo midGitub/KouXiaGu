@@ -8,12 +8,12 @@ namespace KouXiaGu.HexTerrain
 {
 
     /// <summary>
-    /// 实例到场景的地图块网格;
+    /// 地图数据提供;
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
-    public class TerrainBlock : MonoBehaviour
+    public class TerrainData : MonoBehaviour
     {
-        TerrainBlock() { }
+        TerrainData() { }
 
         #region 实例;
 
@@ -140,11 +140,11 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 在场景中激活的地图块;
         /// </summary>
-        static Dictionary<ShortVector2, TerrainBlock> activatedBlocks = new Dictionary<ShortVector2, TerrainBlock>();
+        static Dictionary<ShortVector2, TerrainData> activatedBlocks = new Dictionary<ShortVector2, TerrainData>();
         /// <summary>
         /// 休眠的地图块;
         /// </summary>
-        static Queue<TerrainBlock> restingBlocks = new Queue<TerrainBlock>();
+        static Queue<TerrainData> restingBlocks = new Queue<TerrainData>();
 
         /// <summary>
         /// 全局的网格细分程度;
@@ -174,7 +174,7 @@ namespace KouXiaGu.HexTerrain
             if (diffuse == null || height == null)
                 throw new NullReferenceException("空的贴图!");
             
-            TerrainBlock terrainBlock = GetTerrainBlock(coord.ToString());
+            TerrainData terrainBlock = GetTerrainBlock(coord.ToString());
 
             terrainBlock.Coord = coord;
             terrainBlock.DiffuseTexture = diffuse;
@@ -190,7 +190,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static bool Destroy(ShortVector2 coord)
         {
-            TerrainBlock terrainBlock;
+            TerrainData terrainBlock;
             if (activatedBlocks.TryGetValue(coord, out terrainBlock))
             {
                 ReleaseTerrainBlock(terrainBlock);
@@ -203,9 +203,9 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 从池内获取到或者实例化一个;
         /// </summary>
-        static TerrainBlock GetTerrainBlock(string name)
+        static TerrainData GetTerrainBlock(string name)
         {
-            TerrainBlock terrainBlock;
+            TerrainData terrainBlock;
             if (restingBlocks.Count > 0)
             {
                 terrainBlock = restingBlocks.Dequeue();
@@ -213,8 +213,8 @@ namespace KouXiaGu.HexTerrain
             }
             else
             {
-                GameObject gameObject = new GameObject(name, typeof(TerrainBlock));
-                terrainBlock = gameObject.GetComponent<TerrainBlock>();
+                GameObject gameObject = new GameObject(name, typeof(TerrainData));
+                terrainBlock = gameObject.GetComponent<TerrainData>();
 #if UNITY_EDITOR
                 terrainBlock.transform.SetParent(BlockParent, false);
 #endif
@@ -237,7 +237,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 将地图块放回池内,备下次使用;
         /// </summary>
-        static void ReleaseTerrainBlock(TerrainBlock terrainBlock)
+        static void ReleaseTerrainBlock(TerrainData terrainBlock)
         {
             terrainBlock.Clear();
             terrainBlock.gameObject.SetActive(false);
@@ -249,7 +249,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static float GetHeight(Vector3 position)
         {
-            TerrainBlock block;
+            TerrainData block;
             ShortVector2 coord = PixelToBlock(position);
             if (activatedBlocks.TryGetValue(coord, out block))
             {
@@ -479,7 +479,7 @@ namespace KouXiaGu.HexTerrain
         const float altitude = 0;
 
         /// <summary>
-        /// 网格定点数据;
+        /// 网格顶点数据;
         /// </summary>
         static readonly Vector3[] vertices = new Vector3[]
             {

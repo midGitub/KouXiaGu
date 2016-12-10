@@ -459,12 +459,12 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
-        public static readonly float CameraSize = (TerrainBlock.BlockHeight / 2);
+        public static readonly float CameraSize = (TerrainData.BlockHeight / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
-        public static readonly float CameraAspect = TerrainBlock.BlockWidth / TerrainBlock.BlockHeight;
+        public static readonly float CameraAspect = TerrainData.BlockWidth / TerrainData.BlockHeight;
 
         [SerializeField]
         float textureSize;
@@ -491,10 +491,10 @@ namespace KouXiaGu.HexTerrain
 
         void SetTextureSize(float size)
         {
-            this.DiffuseMapWidth = (int)(TerrainBlock.BlockWidth * size);
-            this.DiffuseMapHeight = (int)(TerrainBlock.BlockHeight * size);
-            this.HeightMapWidth = (int)(TerrainBlock.BlockWidth * size);
-            this.HeightMapHeight = (int)(TerrainBlock.BlockHeight * size);
+            this.DiffuseMapWidth = (int)(TerrainData.BlockWidth * size);
+            this.DiffuseMapHeight = (int)(TerrainData.BlockHeight * size);
+            this.HeightMapWidth = (int)(TerrainData.BlockWidth * size);
+            this.HeightMapHeight = (int)(TerrainData.BlockHeight * size);
             this.TextureSize = size;
         }
 

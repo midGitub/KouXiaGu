@@ -33,7 +33,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public Vector3 CameraPosition
         {
-            get { return TerrainBlock.BlockToPixelCenter(BlockCoord) + new Vector3(0, 5, 0); }
+            get { return TerrainData.BlockToPixelCenter(BlockCoord) + new Vector3(0, 5, 0); }
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public IEnumerable<BakingNode> GetBakingNodes()
         {
-            IEnumerable<CubicHexCoord> cover = TerrainBlock.GetBlockCover(BlockCoord);
+            IEnumerable<CubicHexCoord> cover = TerrainData.GetBlockCover(BlockCoord);
             LandformNode node;
 
             float index = -2;
@@ -68,7 +68,7 @@ namespace KouXiaGu.HexTerrain
 
         public void BasicTextureComplete(Texture2D diffuse, Texture2D height)
         {
-            TerrainBlock.Create(BlockCoord, diffuse, height);
+            TerrainData.Create(BlockCoord, diffuse, height);
         }
 
     }
