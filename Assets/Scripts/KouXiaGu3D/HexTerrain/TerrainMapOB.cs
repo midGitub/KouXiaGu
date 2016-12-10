@@ -14,7 +14,7 @@ namespace KouXiaGu.HexTerrain
     public sealed class TerrainMapOB : UnitySingleton<TerrainMapOB>
     {
 
-        Map2D<CubicHexCoord, LandformNode> terrainMap;
+        Map<CubicHexCoord, LandformNode> terrainMap;
 
         void Awake()
         {
@@ -57,21 +57,21 @@ namespace KouXiaGu.HexTerrain
             SerializeHelper.SerializeProtoBuf(filePath, terrainMap);
         }
 
-        Map2D<CubicHexCoord, LandformNode> LoadMap()
+        Map<CubicHexCoord, LandformNode> LoadMap()
         {
             string filePath = Path.Combine(Application.dataPath, "MAP.temp");
 
             if (File.Exists(filePath))
             {
-                return SerializeHelper.DeserializeProtoBuf<Map2D<CubicHexCoord, LandformNode>>(filePath);
+                return SerializeHelper.DeserializeProtoBuf<Map<CubicHexCoord, LandformNode>>(filePath);
             }
             return null;
         }
 
 
-        Map2D<CubicHexCoord, LandformNode> RandomMap()
+        Map<CubicHexCoord, LandformNode> RandomMap()
         {
-            Map2D<CubicHexCoord, LandformNode> terrainMap = new Map2D<CubicHexCoord, LandformNode>();
+            Map<CubicHexCoord, LandformNode> terrainMap = new Map<CubicHexCoord, LandformNode>();
               int[] aa = new int[] { 10, 20, 30, 20 };
 
             terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));

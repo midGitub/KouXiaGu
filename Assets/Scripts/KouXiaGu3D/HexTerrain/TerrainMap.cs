@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,16 +20,16 @@ namespace KouXiaGu.HexTerrain
         static readonly BlockMapRecord<LandformNode> terrainMap = new BlockMapRecord<LandformNode>(MapSize);
 
 
-        public static IReadOnlyMap2D<CubicHexCoord, LandformNode> Map
+        public static IReadOnlyMap<CubicHexCoord, LandformNode> Map
         {
             get { return terrainMap; }
         }
 
 
         /// <summary>
-        /// 保存地图;
+        /// 保存地图到这个文件夹;
         /// </summary>
-        public static void Save()
+        public static void Save(string directoryPath)
         {
             throw new NotImplementedException();
         }

@@ -15,13 +15,13 @@ namespace KouXiaGu.HexTerrain
     public struct RenderRequest
     {
 
-        public RenderRequest(IReadOnlyMap2D<CubicHexCoord, LandformNode> map, ShortVector2 blockCoord)
+        public RenderRequest(IReadOnlyMap<CubicHexCoord, LandformNode> map, ShortVector2 blockCoord)
         {
             this.Map = map;
             this.BlockCoord = blockCoord;
         }
 
-        public IReadOnlyMap2D<CubicHexCoord, LandformNode> Map { get; set; }
+        public IReadOnlyMap<CubicHexCoord, LandformNode> Map { get; set; }
 
         /// <summary>
         /// 请求烘焙的地图块位置;

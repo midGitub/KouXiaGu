@@ -9,7 +9,7 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 采用分块保存的地图结构;
     /// </summary>
-    public class BlockMap<T> : IMap2D<CubicHexCoord, T>, IReadOnlyMap2D<CubicHexCoord, T>, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>
+    public class BlockMap<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>
     {
 
         /// <param name="blockSize">必须为奇数,若不是则+1</param>

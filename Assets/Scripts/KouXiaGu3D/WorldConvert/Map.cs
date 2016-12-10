@@ -10,7 +10,7 @@ namespace KouXiaGu
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [ProtoContract]
-    public class Map2D<TP, T> : IMap2D<TP, T>, IReadOnlyMap2D<TP, T>
+    public class Map<TP, T> : IMap<TP, T>, IReadOnlyMap<TP, T>
     {
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace KouXiaGu
             }
         }
 
-        public Map2D()
+        public Map()
         {
             mapCollection = new Dictionary<TP, T>();
         }

@@ -6,7 +6,7 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    public interface IReadOnlyMap2D<TP, T>
+    public interface IReadOnlyMap<TP, T>
     {
         T this[TP position] { get; }
         int Count { get; }
@@ -15,7 +15,7 @@ namespace KouXiaGu
         bool TryGetValue(TP position, out T item);
     }
 
-    public interface IMap2D<TP, T> : IEnumerable<KeyValuePair<TP, T>>
+    public interface IMap<TP, T> : IEnumerable<KeyValuePair<TP, T>>
     {
 
         T this[TP position] { get; set; }
