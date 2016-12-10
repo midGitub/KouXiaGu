@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace KouXiaGu.HexTerrain
 
     /// <summary>
     /// 地形地图保存和提供;
+    /// 采用分块保存的方式;
     /// </summary>
     public static class TerrainMap
     {
@@ -21,10 +23,18 @@ namespace KouXiaGu.HexTerrain
         }
 
 
+        /// <summary>
+        /// 保存地图;
+        /// </summary>
+        public static void Save()
+        {
+            throw new NotImplementedException();
+        }
 
-
-
-
+        public static void Load()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 
