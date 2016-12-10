@@ -28,7 +28,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 将存档结构加入到地图内;
         /// </summary>
-        void Load(BlockArchive<CubicHexCoord, T> archive);
+        void Load(BlockArchive<TP, T> archive);
     }
 
 }

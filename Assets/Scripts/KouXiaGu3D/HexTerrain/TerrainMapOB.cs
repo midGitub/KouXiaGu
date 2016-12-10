@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.IO;
+using KouXiaGu.HexTerrain.MapProtoBuf;
 
 namespace KouXiaGu.HexTerrain
 {
@@ -89,6 +90,14 @@ namespace KouXiaGu.HexTerrain
             }
             return terrainMap;
         }
+
+        [ContextMenu("输出所有地图文件")]
+        void showAll()
+        {
+            var paths = BlockArchiveExtensions.GetFilePaths(Application.dataPath);
+            Debug.Log(paths.ToLog());
+        }
+
 
     }
 

@@ -18,9 +18,13 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         /// <summary>
         /// 地图文件的后缀名;
         /// </summary>
-        public const string fileSuffix = ".MAP";
+        public const string fileSuffix = ".MAPP";
 
-        static readonly string searchPattern = string.Concat("?", fileSuffix);
+        /// <summary>
+        /// 搜索文件时的通配符;
+        /// </summary>
+        static readonly string searchPattern = string.Concat("*", fileSuffix);
+
 
         /// <summary>
         /// 将需要保存的地图块,保存到这个文件夹下;
@@ -56,33 +60,93 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         }
 
 
-        /// <summary>
-        /// 读取这个目录下的所有地图文件;
-        /// </summary>
-        public static void LoadAll<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
-        {
 
+        /// <summary>
+        /// 读取这个目录下的所有地图文件,保存到地图结构内;
+        /// 注意地图内容是否存在重复,这个函数不进行重复块检查;
+        /// </summary>
+        public static void Load<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
+        {
+            string[] paths = GetFilePaths(directoryPath);
+            foreach (var path in paths)
+            {
+                var block = Load<TP, T>(path);
+                blockArchive.Load(block);
+            }
         }
 
         /// <summary>
-        /// 从块文件读取到;
+        /// 读取这个目录下的所有地图文件,保存到地图结构内;
+        /// 若地图内已经存在这个地图块,则跳过这个块的读取;
+        /// </summary>
+        public static void LoadContrastive<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
+        {
+            string[] paths = GetFilePaths(directoryPath);
+            foreach (var path in paths)
+            {
+                if (!blockArchive.Contains(path))
+                {
+                    var block = Load<TP, T>(path);
+                    blockArchive.Load(block);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从文件读取到;
         /// </summary>
         public static BlockArchive<TP, T> Load<TP, T>(ShortVector2 coord, string directoryPath)
         {
             string filePath = coord.GetFilePath(directoryPath);
+            return Load<TP, T>(filePath);
+        }
+
+        /// <summary>
+        /// 从文件读取到;
+        /// </summary>
+        public static BlockArchive<TP, T> Load<TP, T>(string filePath)
+        {
             BlockArchive<TP, T> block = SerializeHelper.DeserializeProtoBuf<BlockArchive<TP, T>>(filePath);
             return block;
+        }
+
+
+
+        /// <summary>
+        /// 确认这个地图结构是否已经读取了这个块节点(检查文件名);
+        /// </summary>
+        public static bool Contains<TP, T>(this IBlockArchive<TP, T> blockArchive, string filePath)
+        {
+            var coord = FilePathToCoord(filePath);
+            return blockArchive.Contains(coord);
+        }
+
+
+
+        /// <summary>
+        /// 获取到这个目录下存在的所有地图块文件标号;
+        /// </summary>
+        public static ShortVector2[] GetCoords(string directoryPath)
+        {
+            string[] paths = GetFilePaths(directoryPath);
+            ShortVector2[] coords = new ShortVector2[paths.Length];
+            int index = 0;
+
+            foreach (var path in paths)
+            {
+                coords[index] = FilePathToCoord(path);
+            }
+
+            return coords;
         }
 
         /// <summary>
         /// 获取到这个目录下存在的所有地图块文件;
         /// </summary>
-        public static string[] GetBlockFilePaths(string directoryPath)
+        public static string[] GetFilePaths(string directoryPath)
         {
             return Directory.GetFiles(directoryPath, searchPattern);
         }
-
-
 
 
         /// <summary>
@@ -90,7 +154,7 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         /// </summary>
         static string GetFilePath<TP, T>(this BlockArchive<TP, T> block, string directoryPath)
         {
-            string filePath = Path.Combine(directoryPath, GetFileName(block));
+            string filePath = Path.Combine(directoryPath, CoordToFileName(block));
             return filePath;
         }
 
@@ -99,22 +163,33 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         /// </summary>
         static string GetFilePath(this ShortVector2 coord, string directoryPath)
         {
-            string filePath = Path.Combine(directoryPath, GetFileName(coord));
+            string filePath = Path.Combine(directoryPath, CoordToFileName(coord));
             return filePath;
         }
 
         /// <summary>
         /// 获取到保存为的文件名;
         /// </summary>
-        public static string GetFileName<TP, T>(BlockArchive<TP, T> block)
+        public static string CoordToFileName<TP, T>(BlockArchive<TP, T> block)
         {
-            return GetFileName(block.Coord);
+            return CoordToFileName(block.Coord);
         }
 
         /// <summary>
-        /// 获取到保存为的文件名;
+        /// 文件路径转换为块坐标;
         /// </summary>
-        public static string GetFileName(ShortVector2 blockCoord)
+        public static ShortVector2 FilePathToCoord(string filePath)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            int hashCode = Convert.ToInt32(fileName);
+            ShortVector2 coord = ShortVector2.HashCodeToVector(hashCode);
+            return coord;
+        }
+
+        /// <summary>
+        /// 转换为保存到的文件名;
+        /// </summary>
+        public static string CoordToFileName(ShortVector2 blockCoord)
         {
             string fileName = string.Concat(blockCoord.GetHashCode(), fileSuffix);
             return fileName;
