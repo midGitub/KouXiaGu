@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.IO;
-using KouXiaGu.HexTerrain.MapProtoBuf;
 
 namespace KouXiaGu.HexTerrain
 {

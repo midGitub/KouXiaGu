@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ProtoBuf;
 
 
-namespace KouXiaGu.HexTerrain.MapProtoBuf
+namespace KouXiaGu.HexTerrain
 {
+
 
     /// <summary>
     /// 对 IBlockArchive 接口使用 ProtoBuf 方式保存的方法拓展;
