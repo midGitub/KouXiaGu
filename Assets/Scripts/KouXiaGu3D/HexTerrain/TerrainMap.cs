@@ -15,9 +15,15 @@ namespace KouXiaGu.HexTerrain
     public static class TerrainMap
     {
 
-        const short MapSize = 1000;
+        /// <summary>
+        /// 地图分块大小;
+        /// </summary>
+        const short MapBlockSize = 1000;
 
-        static readonly BlockMapRecord<LandformNode> terrainMap = new BlockMapRecord<LandformNode>(MapSize);
+        /// <summary>
+        /// 地形地图结构;
+        /// </summary>
+        static readonly BlockMapRecord<LandformNode> terrainMap = new BlockMapRecord<LandformNode>(MapBlockSize);
 
 
         public static IReadOnlyMap<CubicHexCoord, LandformNode> Map
