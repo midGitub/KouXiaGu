@@ -24,11 +24,26 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         /// <summary>
         /// 将需要保存的地图块,保存到这个文件夹下;
         /// </summary>
-        public static void Save<TP, T>(this IBlockArchive<TP, T> blocks, string directoryPath, FileMode fileMode)
+        public static void Save<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
         {
-
+            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.Save();
+            foreach (var block in blocks)
+            {
+                block.Save(directoryPath, fileMode);
+            }
         }
 
+        /// <summary>
+        /// 保存所有地图到这个文件夹下;
+        /// </summary>
+        public static void SaveAll<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
+        {
+            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.SaveAll();
+            foreach (var block in blocks)
+            {
+                block.Save(directoryPath, fileMode);
+            }
+        }
 
         /// <summary>
         /// 保存到这个文件夹下;
@@ -37,6 +52,15 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         {
             string filePath = block.GetFilePath(directoryPath);
             SerializeHelper.SerializeProtoBuf(filePath, block, fileMode);
+        }
+
+
+        /// <summary>
+        /// 读取这个目录下的所有地图文件;
+        /// </summary>
+        public static void LoadAll<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
+        {
+
         }
 
         /// <summary>
@@ -48,6 +72,16 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
             BlockArchive<TP, T> block = SerializeHelper.DeserializeProtoBuf<BlockArchive<TP, T>>(filePath);
             return block;
         }
+
+        /// <summary>
+        /// 获取到这个目录下存在的所有地图块文件;
+        /// </summary>
+        public static IEnumerable<string> GetBlockFilePaths(string directoryPath)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
 
         /// <summary>
