@@ -10,7 +10,7 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 对 IBlockArchive 接口使用 ProtoBuf 方式保存的方法拓展;
     /// </summary>
-    public static class BlockArchiveExtensions
+    public static class BlockProtoBufExtensions
     {
 
         /// <summary>

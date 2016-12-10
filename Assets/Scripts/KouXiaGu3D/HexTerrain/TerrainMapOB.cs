@@ -93,7 +93,7 @@ namespace KouXiaGu.HexTerrain
         [ContextMenu("输出所有地图文件")]
         void showAll()
         {
-            var paths = BlockArchiveExtensions.GetFilePaths(Application.dataPath);
+            var paths = BlockProtoBufExtensions.GetFilePaths(Application.dataPath);
             Debug.Log(paths.ToLog());
         }
 
