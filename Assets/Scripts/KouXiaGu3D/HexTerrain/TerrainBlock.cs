@@ -43,7 +43,7 @@ namespace KouXiaGu.HexTerrain
         public ShortVector2 Coord
         {
             get { return coord; }
-            private set { transform.position = BlockCoordToPixelCenter(value); coord = value; }
+            private set { transform.position = BlockToPixelCenter(value); coord = value; }
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace KouXiaGu.HexTerrain
         public static float GetHeight(Vector3 position)
         {
             TerrainBlock block;
-            ShortVector2 coord = PixelToBlockCoord(position);
+            ShortVector2 coord = PixelToBlock(position);
             if (activatedBlocks.TryGetValue(coord, out block))
             {
                 Vector2 uv = PixelToUV(position);
@@ -299,7 +299,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 从像素节点 获取到所属的地形块;
         /// </summary>
-        internal static ShortVector2 PixelToBlockCoord(Vector3 position)
+        internal static ShortVector2 PixelToBlock(Vector3 position)
         {
             short x = (short)Math.Round(position.x / BlockWidth);
             short y = (short)Math.Round(position.z / BlockHeight);
@@ -310,16 +310,16 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 从像素坐标 转换为 所在块的中心像素坐标;
         /// </summary>
-        internal static Vector3 PixelToPixelCenter(Vector3 position)
+        internal static Vector3 PixelToCenter(Vector3 position)
         {
-            ShortVector2 coord = PixelToBlockCoord(position);
-            return BlockCoordToPixelCenter(coord);
+            ShortVector2 coord = PixelToBlock(position);
+            return BlockToPixelCenter(coord);
         }
 
         /// <summary>
         /// 地图块坐标 获取到其像素中心点;
         /// </summary>
-        internal static Vector3 BlockCoordToPixelCenter(ShortVector2 coord)
+        internal static Vector3 BlockToPixelCenter(ShortVector2 coord)
         {
             float x = coord.x * BlockWidth;
             float z = coord.y * BlockHeight;
@@ -329,9 +329,9 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地图块坐标 获取到其中心的六边形坐标;
         /// </summary>
-        internal static CubicHexCoord BlockCoordToHexCenter(ShortVector2 coord)
+        internal static CubicHexCoord BlockToHexCenter(ShortVector2 coord)
         {
-            Vector3 pixelCenter = BlockCoordToPixelCenter(coord);
+            Vector3 pixelCenter = BlockToPixelCenter(coord);
             return HexGrids.PixelToHex(pixelCenter);
         }
 
@@ -340,16 +340,16 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地图块坐标 到获取到其在场景中的矩形大小;
         /// </summary>
-        internal static Rect BlockCoordToRect(ShortVector2 coord)
+        internal static Rect BlockToRect(ShortVector2 coord)
         {
-            Vector3 blockCenter = BlockCoordToPixelCenter(coord);
-            return BlockCenterToRect(blockCenter);
+            Vector3 blockCenter = BlockToPixelCenter(coord);
+            return CenterToRect(blockCenter);
         }
 
         /// <summary>
         /// 地图块中心坐标 获取到其在场景中的矩形大小;
         /// </summary>
-        internal static Rect BlockCenterToRect(Vector3 blockCenter)
+        internal static Rect CenterToRect(Vector3 blockCenter)
         {
             Vector2 southwestPoint = new Vector2(blockCenter.x - BlockWidthHalf, blockCenter.z - BlockHeightHalf);
             Vector2 size = new Vector2(BlockWidth, BlockHeight);
@@ -360,10 +360,10 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 像素坐标转换成地图块的本地坐标;
         /// </summary>
-        internal static Vector2 PixelToBlockLocal(Vector3 position)
+        internal static Vector2 PixelToLocal(Vector3 position)
         {
-            Vector3 blockCenter = PixelToPixelCenter(position);
-            Rect block = BlockCenterToRect(blockCenter);
+            Vector3 blockCenter = PixelToCenter(position);
+            Rect block = CenterToRect(blockCenter);
             Vector2 local = new Vector2(position.x - block.xMin, position.z - block.yMin);
             return local;
         }
@@ -373,8 +373,8 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         internal static Vector2 PixelToUV(Vector3 position)
         {
-            Vector3 blockCenter = PixelToPixelCenter(position);
-            Rect block = BlockCenterToRect(blockCenter);
+            Vector3 blockCenter = PixelToCenter(position);
+            Rect block = CenterToRect(blockCenter);
             Vector2 local = new Vector2(position.x - block.xMin, position.z - block.yMin);
             Vector2 uv = new Vector2(local.x / block.width, local.y / block.height);
             return uv;
@@ -387,7 +387,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetBlockCover(ShortVector2 coord)
         {
-            CubicHexCoord hexCenter = BlockCoordToHexCenter(coord);
+            CubicHexCoord hexCenter = BlockToHexCenter(coord);
             CubicHexCoord startCoord = HexGrids.GetDirection(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
 
             for (short endX = (short)(Math.Abs(hexCenter.X - startCoord.X) + hexCenter.X);
@@ -450,10 +450,10 @@ namespace KouXiaGu.HexTerrain
             try
             {
                 Vector3 point1 = point + cBelongPoint1;
-                blocks[0] = PixelToBlockCoord(point1);
+                blocks[0] = PixelToBlock(point1);
 
                 Vector3 point2 = point + cBelongPoint2;
-                blocks[1] = PixelToBlockCoord(point2);
+                blocks[1] = PixelToBlock(point2);
             }
             catch (ArgumentOutOfRangeException)
             {

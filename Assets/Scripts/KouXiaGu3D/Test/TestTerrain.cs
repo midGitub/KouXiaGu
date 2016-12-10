@@ -64,11 +64,11 @@ namespace KouXiaGu.Test
             Vector3 cubePixel = HexGrids.HexToPixel(cube);
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            ShortVector2 terrainBlockCoord = TerrainBlock.PixelToBlockCoord(pixel);
-            Vector3 terrainBlockCenter = TerrainBlock.BlockCoordToPixelCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = TerrainBlock.BlockCoordToHexCenter(terrainBlockCoord);
-            Rect terrainBlockRect = TerrainBlock.BlockCenterToRect(terrainBlockCenter);
-            Vector2 terrainBlockLocal = TerrainBlock.PixelToBlockLocal(pixel);
+            ShortVector2 terrainBlockCoord = TerrainBlock.PixelToBlock(pixel);
+            Vector3 terrainBlockCenter = TerrainBlock.BlockToPixelCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = TerrainBlock.BlockToHexCenter(terrainBlockCoord);
+            Rect terrainBlockRect = TerrainBlock.CenterToRect(terrainBlockCenter);
+            Vector2 terrainBlockLocal = TerrainBlock.PixelToLocal(pixel);
             Vector2 terrainBlockUV = TerrainBlock.PixelToUV(pixel);
             float terrainHeight = TerrainBlock.GetHeight(pixel);
 
