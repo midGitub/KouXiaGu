@@ -454,7 +454,7 @@ namespace KouXiaGu.HexTerrain
            };
 
         /// <summary>
-        /// 初始化网格信息;
+        /// 创建一个新的网格;
         /// </summary>
         static Mesh CreateMesh()
         {
@@ -471,6 +471,9 @@ namespace KouXiaGu.HexTerrain
 
         static Mesh terrainMesh;
 
+        /// <summary>
+        /// 获取到公共的网格;
+        /// </summary>
         static Mesh GetMesh()
         {
             return terrainMesh ?? (terrainMesh = CreateMesh());
