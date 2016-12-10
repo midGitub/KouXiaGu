@@ -14,7 +14,9 @@ namespace KouXiaGu.HexTerrain
     public static class TerrainMap
     {
 
-        static readonly Map2D<CubicHexCoord, LandformNode> terrainMap = new Map2D<CubicHexCoord, LandformNode>();
+        const short MapSize = 1000;
+
+        static readonly BlockMapRecord<LandformNode> terrainMap = new BlockMapRecord<LandformNode>(MapSize);
 
 
         public static IReadOnlyMap2D<CubicHexCoord, LandformNode> Map

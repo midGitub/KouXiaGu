@@ -21,15 +21,6 @@ namespace KouXiaGu.HexTerrain
             mapCollection = new Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>>();
         }
 
-        /// <param name="blockSize">必须为奇数,若不是则+1</param>
-        public BlockMap(short blockSize, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>> mapCollection)
-        {
-            this.blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
-            this.blockCount = blockSize * blockSize;
-
-            mapCollection = new Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>>(mapCollection);
-        }
-
         /// <summary>
         /// 块大小(需要是奇数);
         /// </summary>

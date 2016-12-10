@@ -132,7 +132,7 @@ namespace KouXiaGu.HexTerrain
             blurMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
 
-        static readonly YieldInstruction TestWiat = new WaitForSeconds(0);
+        //static readonly YieldInstruction TestWiat = new WaitForSeconds(0);
 
         /// <summary>
         /// 在协程内队列中进行烘焙;

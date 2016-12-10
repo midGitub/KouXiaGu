@@ -22,13 +22,6 @@ namespace KouXiaGu.HexTerrain
             editedBlock = new HashSet<ShortVector2>();
         }
 
-        /// <param name="blockSize">必须为奇数,若不是则+1</param>
-        public BlockMapRecord(short blockSize, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>> mapCollection)
-        {
-            mapCollection = new BlockMap<T>(blockSize, mapCollection);
-            editedBlock = new HashSet<ShortVector2>();
-        }
-
         /// <summary>
         /// 块地图结构;
         /// </summary>
