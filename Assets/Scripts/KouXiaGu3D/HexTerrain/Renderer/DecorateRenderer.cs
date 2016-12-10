@@ -10,12 +10,12 @@ namespace KouXiaGu.HexTerrain
 
 
     /// <summary>
-    /// 对基本地形进行修改;
+    /// 对基本地形进行后期的添加和修改;
     /// </summary>
     [DisallowMultipleComponent]
-    public class RevisRenderer : UnitySingleton<RevisRenderer>
+    public class DecorateRenderer : UnitySingleton<DecorateRenderer>
     {
-        RevisRenderer() { }
+        DecorateRenderer() { }
 
 
         /// <summary>
