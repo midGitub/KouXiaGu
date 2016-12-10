@@ -407,14 +407,22 @@ namespace KouXiaGu.HexTerrain
         }
 
 
+        /// <summary>
+        /// 获取到地图节点所属的地图块;
+        /// </summary>
+        public static ShortVector2[] GetBelongBlocks(Vector3 point)
+        {
+            CubicHexCoord coord = HexGrids.PixelToHex(point);
+            return GetBelongBlocks(coord);
+        }
 
         /// <summary>
         /// 获取到地图节点所属的地图块;
         /// </summary>
-        public static ShortVector2[] HexToBlockCoord(CubicHexCoord coord)
+        public static ShortVector2[] GetBelongBlocks(CubicHexCoord coord)
         {
             ShortVector2[] blocks = new ShortVector2[2];
-            HexToBlockCoord(coord, ref blocks);
+            GetBelongBlocks(coord, ref blocks);
             return blocks;
         }
 
@@ -422,37 +430,29 @@ namespace KouXiaGu.HexTerrain
         /// 获取到地图节点所属的地图块;
         /// 传入数组容量需要大于或者等于2,所属的地图块编号放置在 0 和 1 下标处;
         /// </summary>
-        public static void HexToBlockCoord(CubicHexCoord coord, ref ShortVector2[] blocks)
+        public static void GetBelongBlocks(CubicHexCoord coord, ref ShortVector2[] blocks)
         {
             Vector3 point = HexGrids.HexToPixel(coord);
-            HexToBlockCoord(point, ref blocks);
+            GetBelongBlocks(point, ref blocks);
         }
 
-        /// <summary>
-        /// 获取到地图节点所属的地图块;
-        /// </summary>
-        public static ShortVector2[] HexToBlockCoord(Vector3 point)
-        {
-            ShortVector2[] blocks = new ShortVector2[2];
-            HexToBlockCoord(point, ref blocks);
-            return blocks;
-        }
-
-        static readonly Vector3 cBelongPoint1 = HexGrids.HexToPixel(HexGrids.GetDirection(HexDirections.Northwest) / 2);
-        static readonly Vector3 cBelongPoint2 = HexGrids.HexToPixel(HexGrids.GetDirection(HexDirections.Southeast) / 2);
+        static readonly Vector3 cBelongPoint1 =
+            new Vector3((float)hexagon.OuterRadius / 2, 0, (float)hexagon.InnerRadius / 2);
+        static readonly Vector3 cBelongPoint2 =
+            new Vector3(-(float)hexagon.OuterRadius / 2, 0, -(float)hexagon.InnerRadius / 2);
 
         /// <summary>
         /// 获取到地图节点所属的地图块;
         /// 传入数组容量需要大于或者等于2,所属的地图块编号放置在 0 和 1 下标处;
         /// </summary>
-        public static void HexToBlockCoord(Vector3 point, ref ShortVector2[] blocks)
+        static void GetBelongBlocks(Vector3 pointCenter, ref ShortVector2[] blocks)
         {
             try
             {
-                Vector3 point1 = point + cBelongPoint1;
+                Vector3 point1 = pointCenter + cBelongPoint1;
                 blocks[0] = PixelToBlock(point1);
 
-                Vector3 point2 = point + cBelongPoint2;
+                Vector3 point2 = pointCenter + cBelongPoint2;
                 blocks[1] = PixelToBlock(point2);
             }
             catch (ArgumentOutOfRangeException)
