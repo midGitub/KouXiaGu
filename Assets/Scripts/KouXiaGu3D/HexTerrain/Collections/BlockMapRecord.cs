@@ -132,6 +132,22 @@ namespace KouXiaGu.HexTerrain
             return ((IMap2D<CubicHexCoord, T>)this.mapCollection).GetEnumerator();
         }
 
+
+        /// <summary>
+        /// 输出需要保存的字典结构;
+        /// </summary>
+        BlockArchive<T>[] Save()
+        {
+            BlockArchive<T>[] saveMap = new BlockArchive<T>[editedBlock.Count];
+            int index = 0;
+            foreach (var coord in editedBlock)
+            {
+                Dictionary<CubicHexCoord, T> block = mapCollection[coord];
+                saveMap[index++] = new BlockArchive<T>(coord, block);
+            }
+            return saveMap;
+        }
+
     }
 
 }

@@ -15,45 +15,35 @@ namespace KouXiaGu.HexTerrain
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
         public BlockMap(short blockSize)
         {
-            this.BlockSize = blockSize;
+            this.blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
+            this.blockCount = blockSize * blockSize;
+
             mapCollection = new Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>>();
         }
 
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
         public BlockMap(short blockSize, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>> mapCollection)
         {
-            this.BlockSize = blockSize;
+            this.blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
+            this.blockCount = blockSize * blockSize;
+
             mapCollection = new Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>>(mapCollection);
         }
 
         /// <summary>
         /// 块大小(需要是奇数);
         /// </summary>
-        short blockSize;
+        readonly short blockSize;
 
         /// <summary>
         /// 一个块存在的元素个数;
         /// </summary>
-        int blockCount;
+        readonly int blockCount;
 
         /// <summary>
         /// Key 保存块的编号, Value 保存块内容;
         /// </summary>
         Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>> mapCollection;
-
-
-        /// <summary>
-        /// 块大小(需要是奇数);
-        /// </summary>
-        public short BlockSize
-        {
-            get { return blockSize; }
-            private set
-            {
-                blockSize = (value & 1) == 1 ? value : ++value;
-                blockCount = blockSize * blockSize;
-            }
-        }
 
 
         public T this[CubicHexCoord position]
@@ -80,6 +70,13 @@ namespace KouXiaGu.HexTerrain
             get { return mapCollection.Values.SelectMany(block => block.Values); }
         }
 
+        /// <summary>
+        /// 块大小(需要是奇数);
+        /// </summary>
+        public short BlockSize
+        {
+            get { return blockSize; }
+        }
 
         public Dictionary<CubicHexCoord, T> this[ShortVector2 key]
         {
