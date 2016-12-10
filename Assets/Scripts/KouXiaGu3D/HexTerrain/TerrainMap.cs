@@ -34,18 +34,18 @@ namespace KouXiaGu.HexTerrain
         [ContextMenu("烘焙测试")]
         void Test_Baking()
         {
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Zero));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Left));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Right));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Left));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Right));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
-            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Zero));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Left));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Right));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Left));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Right));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
 
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, new ShortVector2(1,0)));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, new ShortVector2(1, -1)));
+            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, new ShortVector2(1,0)));
+            //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, new ShortVector2(1, -1)));
 
         }
 
@@ -72,7 +72,7 @@ namespace KouXiaGu.HexTerrain
         Map2D<CubicHexCoord, LandformNode> RandomMap()
         {
             Map2D<CubicHexCoord, LandformNode> terrainMap = new Map2D<CubicHexCoord, LandformNode>();
-              int[] aa = new int[] { 30, 30, 40, 40 };
+              int[] aa = new int[] { 10, 20, 30, 20 };
 
             terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
 
