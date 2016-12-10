@@ -9,18 +9,18 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 采用分块保存的地图结构;
     /// </summary>
-    public class HexBlockMap<T> : IMap2D<CubicHexCoord, T>, IReadOnlyMap2D<CubicHexCoord, T>, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>
+    public class BlockMap<T> : IMap2D<CubicHexCoord, T>, IReadOnlyMap2D<CubicHexCoord, T>, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>
     {
 
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
-        public HexBlockMap(short blockSize)
+        public BlockMap(short blockSize)
         {
             this.BlockSize = blockSize;
             mapCollection = new Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>>();
         }
 
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
-        public HexBlockMap(short blockSize, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>> mapCollection)
+        public BlockMap(short blockSize, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>> mapCollection)
         {
             this.BlockSize = blockSize;
             mapCollection = new Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>>(mapCollection);
@@ -55,6 +55,13 @@ namespace KouXiaGu.HexTerrain
             }
         }
 
+
+        public T this[CubicHexCoord position]
+        {
+            get { return FindBlock(position)[position]; }
+            set { FindBlock(position)[position] = value; }
+        }
+
         /// <summary>
         /// 元素个数;
         /// </summary>
@@ -73,12 +80,12 @@ namespace KouXiaGu.HexTerrain
             get { return mapCollection.Values.SelectMany(block => block.Values); }
         }
 
-        public T this[CubicHexCoord position]
-        {
-            get { return FindBlock(position)[position]; }
-            set { FindBlock(position)[position] = value; }
-        }
 
+        public Dictionary<CubicHexCoord, T> this[ShortVector2 key]
+        {
+            get { return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key]; }
+            set { ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key] = value; }
+        }
 
         int ICollection<KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>>>.Count
         {
@@ -98,12 +105,6 @@ namespace KouXiaGu.HexTerrain
         bool ICollection<KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>>>.IsReadOnly
         {
             get { return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).IsReadOnly; }
-        }
-
-        public Dictionary<CubicHexCoord, T> this[ShortVector2 key]
-        {
-            get {  return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key]; }
-            set { ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key] = value; }
         }
 
 
