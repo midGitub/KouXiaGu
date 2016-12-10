@@ -60,8 +60,10 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 删除文件夹内的部分文件;
+        ///  删除文件夹内的部分文件;
         /// </summary>
+        /// <param name="fullDirectoryPath"></param>
+        /// <param name="fileSearchPattern">要与 path 中的文件和目录的名称匹配的搜索字符串</param>
         public static void DeleteFileInDirectory(string fullDirectoryPath, string fileSearchPattern)
         {
             if (!Directory.Exists(fullDirectoryPath))

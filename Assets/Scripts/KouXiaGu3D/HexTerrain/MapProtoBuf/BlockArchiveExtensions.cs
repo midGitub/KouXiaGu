@@ -18,8 +18,9 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         /// <summary>
         /// 地图文件的后缀名;
         /// </summary>
-        public const string fileSuffix = "";
+        public const string fileSuffix = ".MAP";
 
+        static readonly string searchPattern = string.Concat("?", fileSuffix);
 
         /// <summary>
         /// 将需要保存的地图块,保存到这个文件夹下;
@@ -76,9 +77,9 @@ namespace KouXiaGu.HexTerrain.MapProtoBuf
         /// <summary>
         /// 获取到这个目录下存在的所有地图块文件;
         /// </summary>
-        public static IEnumerable<string> GetBlockFilePaths(string directoryPath)
+        public static string[] GetBlockFilePaths(string directoryPath)
         {
-            throw new NotImplementedException();
+            return Directory.GetFiles(directoryPath, searchPattern);
         }
 
 
