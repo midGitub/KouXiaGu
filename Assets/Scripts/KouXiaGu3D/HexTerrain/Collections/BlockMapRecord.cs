@@ -11,7 +11,7 @@ namespace KouXiaGu.HexTerrain
     /// <summary>
     /// 记录修改过的地图块,在保存仅保存修改过的地图块;
     /// </summary>
-    public class BlockMapRecord<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>
+    public class BlockMapRecord<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>, IBlockArchive<CubicHexCoord, T>
         where T : struct
     {
 
@@ -115,6 +115,14 @@ namespace KouXiaGu.HexTerrain
             editedBlock.Clear();
         }
 
+        /// <summary>
+        /// 加入发生变化的块;
+        /// </summary>
+        void AddChangedCoord(ShortVector2 coord)
+        {
+            editedBlock.Add(coord);
+        }
+
         public IEnumerator<KeyValuePair<CubicHexCoord, T>> GetEnumerator()
         {
             return ((IMap<CubicHexCoord, T>)this.mapCollection).GetEnumerator();
@@ -127,24 +135,24 @@ namespace KouXiaGu.HexTerrain
 
 
         /// <summary>
-        /// 加入发生变化的块;
+        /// 确认是否已经存在这个地图块;
         /// </summary>
-        void AddChangedCoord(ShortVector2 coord)
+        bool IBlockArchive<CubicHexCoord, T>.Contains(ShortVector2 coord)
         {
-            editedBlock.Add(coord);
+           return mapCollection.ContainsKey(coord);
         }
 
         /// <summary>
         /// 返回需要保存的地图块结构;
         /// </summary>
-        public BlockArchive<T>[] Save()
+        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.Save()
         {
-            BlockArchive<T>[] saveMap = new BlockArchive<T>[editedBlock.Count];
+            BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[editedBlock.Count];
             int index = 0;
             foreach (var coord in editedBlock)
             {
                 Dictionary<CubicHexCoord, T> block = mapCollection[coord];
-                saveMap[index++] = new BlockArchive<T>(coord, mapCollection.BlockSize, block);
+                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(coord, mapCollection.BlockSize, block);
             }
             return saveMap;
         }
@@ -152,13 +160,13 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 返回所有地图块结构;
         /// </summary>
-        public BlockArchive<T>[] SaveAll()
+        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.SaveAll()
         {
-            BlockArchive<T>[] saveMap = new BlockArchive<T>[mapCollection.Count];
+            BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[mapCollection.Count];
             int index = 0;
             foreach (var pair in mapCollection as IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)
             {
-                saveMap[index++] = new BlockArchive<T>(pair.Key, mapCollection.BlockSize, pair.Value);
+                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(pair.Key, mapCollection.BlockSize, pair.Value);
             }
             return saveMap;
         }
@@ -166,10 +174,9 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 将存档结构加入到地图内;
         /// </summary>
-        /// <param name="isCheck">是否在加入时进行检查?</param>
-        public void Load(BlockArchive<T> archive, bool isCheck = true)
+        void IBlockArchive<CubicHexCoord, T>.Load(BlockArchive<CubicHexCoord, T> archive)
         {
-            if (isCheck && archive.Size != mapCollection.BlockSize)
+            if (archive.Size != mapCollection.BlockSize)
                 throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockSize + "," + archive.ToString());
 
             mapCollection.Add(archive.Coord, archive.Map);

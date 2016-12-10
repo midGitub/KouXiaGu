@@ -11,10 +11,10 @@ namespace KouXiaGu.HexTerrain
     /// 用于存储地图的结构;
     /// </summary>
     [ProtoContract]
-    public struct BlockArchive<T>
+    public struct BlockArchive<TP, T>
     {
 
-        public BlockArchive(ShortVector2 coord, short size, Dictionary<CubicHexCoord, T> map)
+        public BlockArchive(ShortVector2 coord, short size, Dictionary<TP, T> map)
         {
             this.Coord = coord;
             this.Size = size;
@@ -37,7 +37,7 @@ namespace KouXiaGu.HexTerrain
         /// 块内容;
         /// </summary>
         [ProtoMember(3)]
-        public Dictionary<CubicHexCoord, T> Map { get; private set; }
+        public Dictionary<TP, T> Map { get; private set; }
 
         public override string ToString()
         {
