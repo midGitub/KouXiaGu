@@ -6,7 +6,9 @@ using System.Text;
 namespace KouXiaGu.HexTerrain
 {
 
-
+    /// <summary>
+    /// 允许进行保存的块接口;
+    /// </summary>
     public interface IBlockArchive<TP, T>
     {
 
@@ -18,17 +20,18 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 返回需要保存的地图块存档结构;
         /// </summary>
-        BlockArchive<TP, T>[] Save();
+        BlockArchive<TP, T>[] GetArchives();
 
         /// <summary>
         /// 返回所有地图块存档结构;
         /// </summary>
-        BlockArchive<TP, T>[] SaveAll();
+        BlockArchive<TP, T>[] GetArchiveAll();
 
         /// <summary>
         /// 将存档结构加入到地图内;
         /// </summary>
-        void Load(BlockArchive<TP, T> archive);
+        void AddArchives(BlockArchive<TP, T> archive);
+
     }
 
 }

@@ -145,7 +145,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 返回需要保存的地图块结构;
         /// </summary>
-        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.Save()
+        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.GetArchives()
         {
             BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[editedBlock.Count];
             int index = 0;
@@ -160,7 +160,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 返回所有地图块结构;
         /// </summary>
-        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.SaveAll()
+        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.GetArchiveAll()
         {
             BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[mapCollection.Count];
             int index = 0;
@@ -174,7 +174,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 将存档结构加入到地图内;
         /// </summary>
-        void IBlockArchive<CubicHexCoord, T>.Load(BlockArchive<CubicHexCoord, T> archive)
+        void IBlockArchive<CubicHexCoord, T>.AddArchives(BlockArchive<CubicHexCoord, T> archive)
         {
             if (archive.Size != mapCollection.BlockSize)
                 throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockSize + "," + archive.ToString());

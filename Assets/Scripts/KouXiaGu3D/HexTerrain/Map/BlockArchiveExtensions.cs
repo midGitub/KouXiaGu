@@ -29,7 +29,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static void Save<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
         {
-            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.Save();
+            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchives();
             foreach (var block in blocks)
             {
                 block.Save(directoryPath, fileMode);
@@ -41,7 +41,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static void SaveAll<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
         {
-            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.SaveAll();
+            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchiveAll();
             foreach (var block in blocks)
             {
                 block.Save(directoryPath, fileMode);
@@ -69,7 +69,7 @@ namespace KouXiaGu.HexTerrain
             foreach (var path in paths)
             {
                 var block = Load<TP, T>(path);
-                blockArchive.Load(block);
+                blockArchive.AddArchives(block);
             }
         }
 
@@ -85,7 +85,7 @@ namespace KouXiaGu.HexTerrain
                 if (!blockArchive.Contains(path))
                 {
                     var block = Load<TP, T>(path);
-                    blockArchive.Load(block);
+                    blockArchive.AddArchives(block);
                 }
             }
         }
