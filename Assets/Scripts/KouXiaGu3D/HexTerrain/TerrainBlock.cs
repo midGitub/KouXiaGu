@@ -92,7 +92,7 @@ namespace KouXiaGu.HexTerrain
 
         void Awake()
         {
-            GetComponent<MeshFilter>().mesh = CreateMesh();
+            GetComponent<MeshFilter>().mesh = GetMesh();
             GetComponent<MeshRenderer>().material = Material;
         }
 
@@ -102,6 +102,8 @@ namespace KouXiaGu.HexTerrain
             DiffuseTexture = null;
             HeightTexture = null;
         }
+
+
 
         [ContextMenu("显示地形模式")]
         void TerrainDisplay()
@@ -119,6 +121,8 @@ namespace KouXiaGu.HexTerrain
         {
             Material.shader = heightShader;
         }
+
+
 
         public override int GetHashCode()
         {
@@ -196,19 +200,6 @@ namespace KouXiaGu.HexTerrain
             return false;
         }
 
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// 放置地图块的父节点;
-        /// </summary>
-        static Transform blockParent;
-
-        static Transform BlockParent
-        {
-            get { return blockParent ?? (blockParent = new GameObject("TerrainBlocks").transform); }
-        }
-#endif
-
         /// <summary>
         /// 从池内获取到或者实例化一个;
         /// </summary>
@@ -230,6 +221,18 @@ namespace KouXiaGu.HexTerrain
             }
             return terrainBlock;
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// 放置地图块的父节点;
+        /// </summary>
+        static Transform blockParent;
+
+        static Transform BlockParent
+        {
+            get { return blockParent ?? (blockParent = new GameObject("TerrainBlocks").transform); }
+        }
+#endif
 
         /// <summary>
         /// 将地图块放回池内,备下次使用;
@@ -464,6 +467,13 @@ namespace KouXiaGu.HexTerrain
             mesh.RecalculateNormals();
 
             return mesh;
+        }
+
+        static Mesh terrainMesh;
+
+        static Mesh GetMesh()
+        {
+            return terrainMesh ?? (terrainMesh = CreateMesh());
         }
 
         #endregion
