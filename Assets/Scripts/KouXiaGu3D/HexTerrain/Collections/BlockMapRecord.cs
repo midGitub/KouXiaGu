@@ -47,7 +47,7 @@ namespace KouXiaGu.HexTerrain
             {
                 ShortVector2 coord = mapCollection.GetBlockCoord(position);
                 mapCollection[coord][position] = value;
-                editedBlock.Add(coord);
+                AddChangedCoord(coord);
             }
         }
 
@@ -75,7 +75,7 @@ namespace KouXiaGu.HexTerrain
             var block = mapCollection.TryCreateBlock(coord);
             block.Add(position, item);
 
-            editedBlock.Add(coord);
+            AddChangedCoord(coord);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace KouXiaGu.HexTerrain
             {
                 if (block.Remove(position))
                 {
-                    editedBlock.Add(coord);
+                    AddChangedCoord(coord);
                     return true;
                 }
             }
@@ -134,18 +134,38 @@ namespace KouXiaGu.HexTerrain
 
 
         /// <summary>
-        /// 输出需要保存的字典结构;
+        /// 加入发生变化的块;
         /// </summary>
-        BlockArchive<T>[] Save()
+        void AddChangedCoord(ShortVector2 coord)
+        {
+            editedBlock.Add(coord);
+        }
+
+        /// <summary>
+        /// 返回需要保存的地图块结构;
+        /// </summary>
+        public BlockArchive<T>[] Save()
         {
             BlockArchive<T>[] saveMap = new BlockArchive<T>[editedBlock.Count];
             int index = 0;
             foreach (var coord in editedBlock)
             {
                 Dictionary<CubicHexCoord, T> block = mapCollection[coord];
-                saveMap[index++] = new BlockArchive<T>(coord, block);
+                saveMap[index++] = new BlockArchive<T>(coord, mapCollection.BlockSize, block);
             }
             return saveMap;
+        }
+
+        /// <summary>
+        /// 将存档结构加入到地图内;
+        /// </summary>
+        /// <param name="isCheck">是否在加入时进行检查?</param>
+        public void Load(BlockArchive<T> archive, bool isCheck = true)
+        {
+            if (isCheck && archive.Size != mapCollection.BlockSize)
+                throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockSize + "," + archive.ToString());
+
+            mapCollection.Add(archive.Coord, archive.Map);
         }
 
     }

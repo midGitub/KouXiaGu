@@ -14,10 +14,11 @@ namespace KouXiaGu.HexTerrain
     public struct BlockArchive<T>
     {
 
-        public BlockArchive(ShortVector2 Coord, Dictionary<CubicHexCoord, T> Map)
+        public BlockArchive(ShortVector2 coord, short size, Dictionary<CubicHexCoord, T> map)
         {
-            this.Coord = Coord;
-            this.Map = Map;
+            this.Coord = coord;
+            this.Size = size;
+            this.Map = map;
         }
 
         /// <summary>
@@ -27,10 +28,24 @@ namespace KouXiaGu.HexTerrain
         public ShortVector2 Coord { get; private set; }
 
         /// <summary>
-        /// 块内容;
+        /// 地图块大小;
         /// </summary>
         [ProtoMember(2)]
+        public short Size { get; private set; }
+
+        /// <summary>
+        /// 块内容;
+        /// </summary>
+        [ProtoMember(3)]
         public Dictionary<CubicHexCoord, T> Map { get; private set; }
+
+        public override string ToString()
+        {
+            string str = "坐标:" + Coord
+                + "块尺寸:" + Size
+                + "元素数:" + Map.Count;
+            return str;
+        }
 
     }
 
