@@ -38,7 +38,7 @@ namespace KouXiaGu.HexTerrain
 
 
     /// <summary>
-    /// 游戏六边形网格拓展;
+    /// 六边形网格拓展;
     /// 六边形为平顶的偶数垂直布局;
     /// </summary>
     public static partial class HexGrids
