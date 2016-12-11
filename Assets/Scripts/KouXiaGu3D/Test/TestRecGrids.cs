@@ -58,9 +58,9 @@ namespace KouXiaGu.Test
         }
 
 
-        void Instantiate(IGridPoint position)
+        void Instantiate(ShortVector2 position)
         {
-            Vector3 pos = new Vector3(position.X, 0, position.Y);
+            Vector3 pos = new Vector3(position.x, 0, position.y);
             var gObject = Instantiate(prefab, pos, prefab.transform.rotation, this.transform) as GameObject;
             gObject.SetActive(true);
             Text textObject = gObject.GetComponentInChildren<Text>();

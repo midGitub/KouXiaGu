@@ -57,12 +57,12 @@ namespace KouXiaGu.Test
         {
             Vector3 pixel = MouseConvert.MouseToPixel();
             //ShortVector2 offset = HexGrids.PixelToOffset(pixel);
-            CubicHexCoord cube = HexGrids.ToHexCubic(pixel);
+            CubicHexCoord cube = HexGridConvert.ToHexCubic(pixel);
 
             //Vector3 offsetPixel = HexGrids.OffsetToPixel(offset);
             //CubicHexCoord offsetCube = HexGrids.OffsetToHex(offset);
 
-            Vector3 cubePixel = HexGrids.ToPixel(cube);
+            Vector3 cubePixel = HexGridConvert.ToPixel(cube);
             //ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
             ShortVector2 terrainBlockCoord = Terrain3D.TerrainData.PixelToBlock(pixel);
@@ -103,9 +103,9 @@ namespace KouXiaGu.Test
         {
             string str = "";
 
-            CubicHexCoord hex = HexGrids.ToHexCubic(currentPixelPosition);
+            CubicHexCoord hex = HexGridConvert.ToHexCubic(currentPixelPosition);
 
-            foreach (var item in HexGrids.GetNeighboursAndSelf(hex))
+            foreach (var item in hex.GetNeighboursAndSelf())
             {
                 str += "\n" + item.ToString();
             }

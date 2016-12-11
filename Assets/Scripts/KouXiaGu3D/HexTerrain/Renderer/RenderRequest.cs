@@ -61,7 +61,7 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var coord in cover)
             {
-                Vector3 pixPoint = HexGrids.ToPixel(coord, index--);
+                Vector3 pixPoint = HexGridConvert.ToPixel(coord, index--);
                 if (Map.TryGetValue(coord, out node))
                 {
                     yield return new BakingNode(pixPoint, node);

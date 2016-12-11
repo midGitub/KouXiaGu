@@ -271,12 +271,13 @@ namespace KouXiaGu.Terrain3D
 
         #region 地图块大小定义(静态);
 
+
         /// <summary>
         /// 地图节点所使用的六边形参数;
         /// </summary>
         static Hexagon hexagon
         {
-            get { return HexGrids.hexagon; }
+            get { return HexGridConvert.hexagon; }
         }
         
         /// <summary>
@@ -333,7 +334,7 @@ namespace KouXiaGu.Terrain3D
         internal static CubicHexCoord BlockToHexCenter(ShortVector2 coord)
         {
             Vector3 pixelCenter = BlockToPixelCenter(coord);
-            return HexGrids.ToHexCubic(pixelCenter);
+            return HexGridConvert.ToHexCubic(pixelCenter);
         }
 
 
@@ -389,7 +390,7 @@ namespace KouXiaGu.Terrain3D
         public static IEnumerable<CubicHexCoord> GetBlockCover(ShortVector2 coord)
         {
             CubicHexCoord hexCenter = BlockToHexCenter(coord);
-            CubicHexCoord startCoord = HexGrids.GetDirection(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
+            CubicHexCoord startCoord = CubicHexCoord.GetDirectionOffset(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
 
             for (short endX = (short)(Math.Abs(hexCenter.X - startCoord.X) + hexCenter.X);
                 startCoord.X <= endX;
@@ -413,7 +414,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static ShortVector2[] GetBelongBlocks(Vector3 point)
         {
-            CubicHexCoord coord = HexGrids.ToHexCubic(point);
+            CubicHexCoord coord = HexGridConvert.ToHexCubic(point);
             return GetBelongBlocks(coord);
         }
 
@@ -433,7 +434,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void GetBelongBlocks(CubicHexCoord coord, ref ShortVector2[] blocks)
         {
-            Vector3 point = HexGrids.ToPixel(coord);
+            Vector3 point = HexGridConvert.ToPixel(coord);
             GetBelongBlocks(point, ref blocks);
         }
 

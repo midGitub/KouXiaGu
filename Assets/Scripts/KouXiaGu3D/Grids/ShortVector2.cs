@@ -257,7 +257,7 @@ namespace KouXiaGu
         {
             foreach (var direction in Directions)
             {
-                yield return this.GetDirectionOffset(direction) + this;
+                yield return this.GetDirection(direction);
             }
         }
 
@@ -268,7 +268,7 @@ namespace KouXiaGu
         {
             foreach (var direction in GetDirections(directions))
             {
-                yield return this.GetDirectionOffset(direction);
+                yield return this.GetDirection(direction);
             }
         }
 
@@ -279,21 +279,11 @@ namespace KouXiaGu
         {
             foreach (var direction in DirectionsAndSelf)
             {
-                yield return this.GetDirectionOffset(direction);
+                yield return this.GetDirection(direction);
             }
         }
 
 
-
-        short IGridPoint.X
-        {
-            get { return x; }
-        }
-
-        short IGridPoint.Y
-        {
-            get { return y; }
-        }
 
         IEnumerable<RecDirections> IGridPoint<RecDirections>.Directions
         {

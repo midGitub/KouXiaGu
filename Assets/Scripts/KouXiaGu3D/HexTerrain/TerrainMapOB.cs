@@ -77,7 +77,7 @@ namespace KouXiaGu.Terrain3D
 
             terrainMap.Add(CubicHexCoord.Zero, new TerrainNode(10, 0));
 
-            foreach (var item in HexGrids.GetHexRange(CubicHexCoord.Zero, 10))
+            foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Zero, 10))
             {
                 try
                 {

@@ -8,9 +8,6 @@ namespace KouXiaGu
     /// </summary>
     public interface IGridPoint
     {
-        short X { get; }
-        short Y { get; }
-
         /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>

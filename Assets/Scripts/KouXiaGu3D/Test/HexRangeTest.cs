@@ -47,7 +47,7 @@ namespace KouXiaGu.Test
         [ContextMenu("环")]
         void Raing()
         {
-            foreach (var point in HexGrids.GetHexRing(CubicHexCoord.Zero, radius))
+            foreach (var point in CubicHexCoord.GetHexRing(CubicHexCoord.Zero, radius))
             {
                 Instantiate(point);
             }
@@ -56,7 +56,7 @@ namespace KouXiaGu.Test
         [ContextMenu("螺旋")]
         void Spiral()
         {
-            foreach (var point in HexGrids.GetHexSpiral(CubicHexCoord.Zero, radius))
+            foreach (var point in CubicHexCoord.GetHexSpiral(CubicHexCoord.Zero, radius))
             {
                 Instantiate(point);
             }
@@ -84,7 +84,7 @@ namespace KouXiaGu.Test
         {
             if (!insObjects.ContainsKey(coord))
             {
-                Vector3 point = HexGrids.ToPixel(coord);
+                Vector3 point = HexGridConvert.ToPixel(coord);
                 GameObject gt = Instantiate(textObject, point, Quaternion.identity, parent) as GameObject;
                 gt.SetActive(true);
                 Text t = gt.GetComponentInChildren<Text>();
@@ -98,7 +98,7 @@ namespace KouXiaGu.Test
         string GetText(CubicHexCoord coord)
         {
             return coord.ToString()
-                + "\n" + HexGrids.GetRadius(coord);
+                + "\n" + CubicHexCoord.GetRadius(coord);
         }
 
     }
