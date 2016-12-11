@@ -125,7 +125,7 @@ namespace KouXiaGu.World2D.Map
             ShortVector2 southwestMapPoint = GetSouthwestMapPoint(address);
             ShortVector2 northeastMapPoint = GetNortheastMapPoint(address);
 
-            return ShortVector2.Range(southwestMapPoint, northeastMapPoint);
+            return ShortVector2.RecRange(southwestMapPoint, northeastMapPoint);
         }
 
         /// <summary>

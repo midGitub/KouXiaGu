@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace KouXiaGu.Grids
+namespace KouXiaGu
 {
 
-    public interface IGrids
+
+    public interface IGrids<TCoord, TDirection>
     {
-
-
+        TCoord GetDirection(TDirection direction);
+        TCoord GetDirectionOffset(TDirection direction);
+        IEnumerable<TCoord> GetNeighbours();
+        IEnumerable<TCoord> GetNeighbours(TDirection directions);
+        IEnumerable<TCoord> GetNeighboursAndSelf();
     }
+
 
 }

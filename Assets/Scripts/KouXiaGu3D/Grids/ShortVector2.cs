@@ -9,10 +9,28 @@ namespace KouXiaGu
 {
 
     /// <summary>
+    /// 矩形网格存在的方向;
+    /// </summary>
+    [Flags]
+    public enum RecDirections
+    {
+        North = 1,
+        Northeast = 2,
+        East = 4,
+        Southeast = 8,
+        South = 16,
+        Southwest = 32,
+        West = 64,
+        Northwest = 128,
+        Self = 256,
+    }
+
+
+    /// <summary>
     /// Short类型的向量,保存在哈希表内键值不重复;
     /// </summary>
     [Serializable, ProtoContract]
-    public struct ShortVector2 : IEquatable<ShortVector2>
+    public struct ShortVector2 : IEquatable<ShortVector2>, IGrids<ShortVector2, RecDirections>
     {
 
         public ShortVector2(short x, short y)
@@ -92,17 +110,17 @@ namespace KouXiaGu
         /// <summary>
         /// 将x和y转换成正数;
         /// </summary>
-        public static ShortVector2 Abs(ShortVector2 v1)
+        public ShortVector2 Abs()
         {
-            short x = Math.Abs(v1.x);
-            short y = Math.Abs(v1.y);
+            short x = Math.Abs(this.x);
+            short y = Math.Abs(this.y);
             return new ShortVector2(x, y);
         }
 
         /// <summary>
         /// 获取到这个范围所有的点;
         /// </summary>
-        public static IEnumerable<ShortVector2> Range(ShortVector2 southwest, ShortVector2 northeast)
+        public static IEnumerable<ShortVector2> RecRange(ShortVector2 southwest, ShortVector2 northeast)
         {
             for (short x = southwest.x; x <= northeast.x; x++)
             {
@@ -232,7 +250,6 @@ namespace KouXiaGu
             return new ShortVector2(x, y);
         }
 
-
         /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>
@@ -287,6 +304,7 @@ namespace KouXiaGu
             hashCode += short.MaxValue + y;
             return hashCode;
         }
+
 
         /// <summary>
         /// 根据四舍五入进行转换;

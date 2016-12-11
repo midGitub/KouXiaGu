@@ -215,7 +215,7 @@ namespace KouXiaGu.World2D
             ShortVector2 southwestPoint = GetSouthwestPoint(centerPoint);
             ShortVector2 northeastPoint = GetNortheastPoint(centerPoint);
 
-            return ShortVector2.Range(southwestPoint, northeastPoint);
+            return ShortVector2.RecRange(southwestPoint, northeastPoint);
         }
 
         /// <summary>
