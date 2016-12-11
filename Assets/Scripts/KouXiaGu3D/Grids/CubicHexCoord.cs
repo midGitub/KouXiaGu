@@ -41,7 +41,7 @@ namespace KouXiaGu.Grids
     /// 六边形立方体坐标;
     /// </summary>
     [ProtoContract]
-    public struct CubicHexCoord : IGridPoint, IGridPoint<HexDirections>
+    public struct CubicHexCoord : IGridPoint, IGridPoint<CubicHexCoord, HexDirections>
     {
 
         [ProtoMember(1)]
@@ -439,22 +439,22 @@ namespace KouXiaGu.Grids
 
 
 
-        IEnumerable<HexDirections> IGridPoint<HexDirections>.Directions
+        IEnumerable<HexDirections> IGridPoint<CubicHexCoord, HexDirections>.Directions
         {
             get { return Directions; }
         }
 
-        IEnumerable<HexDirections> IGridPoint<HexDirections>.DirectionsAndSelf
+        IEnumerable<HexDirections> IGridPoint<CubicHexCoord, HexDirections>.DirectionsAndSelf
         {
             get { return DirectionsAndSelf; }
         }
 
-        IEnumerable<HexDirections> IGridPoint<HexDirections>.GetDirections(HexDirections directions)
+        IEnumerable<HexDirections> IGridPoint<CubicHexCoord, HexDirections>.GetDirections(HexDirections directions)
         {
             return GetDirections(directions);
         }
 
-        IGridPoint IGridPoint<HexDirections>.GetDirection(HexDirections direction)
+        IGridPoint IGridPoint<CubicHexCoord, HexDirections>.GetDirection(HexDirections direction)
         {
             return GetDirection(direction);
         }

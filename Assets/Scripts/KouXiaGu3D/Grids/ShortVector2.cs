@@ -30,7 +30,7 @@ namespace KouXiaGu
     /// Short类型的向量,保存在哈希表内键值不重复;
     /// </summary>
     [Serializable, ProtoContract]
-    public struct ShortVector2 : IEquatable<ShortVector2>, IGridPoint, IGridPoint<RecDirections>
+    public struct ShortVector2 : IEquatable<ShortVector2>, IGridPoint, IGridPoint<ShortVector2, RecDirections>
     {
 
         public ShortVector2(short x, short y)
@@ -285,22 +285,22 @@ namespace KouXiaGu
 
 
 
-        IEnumerable<RecDirections> IGridPoint<RecDirections>.Directions
+        IEnumerable<RecDirections> IGridPoint<ShortVector2, RecDirections>.Directions
         {
             get { return Directions; }
         }
 
-        IEnumerable<RecDirections> IGridPoint<RecDirections>.DirectionsAndSelf
+        IEnumerable<RecDirections> IGridPoint<ShortVector2, RecDirections>.DirectionsAndSelf
         {
             get { return DirectionsAndSelf; }
         }
 
-        IEnumerable<RecDirections> IGridPoint<RecDirections>.GetDirections(RecDirections directions)
+        IEnumerable<RecDirections> IGridPoint<ShortVector2, RecDirections>.GetDirections(RecDirections directions)
         {
             return GetDirections(directions);
         }
 
-        IGridPoint IGridPoint<RecDirections>.GetDirection(RecDirections direction)
+        IGridPoint IGridPoint<ShortVector2, RecDirections>.GetDirection(RecDirections direction)
         {
             return GetDirection(direction);
         }

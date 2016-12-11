@@ -9,16 +9,16 @@ namespace KouXiaGu.Grids
     /// <summary>
     /// 坐标 元素 结构;
     /// </summary>
-    public struct CoordPack<TVector, T>
+    public struct CoordPack<TVector, TDirection>
     {
-        public CoordPack(TVector point, T item)
+        public CoordPack(TVector point, TDirection item)
         {
             this.Point = point;
             this.Item = item;
         }
 
         public TVector Point { get; private set; }
-        public T Item { get; private set; }
+        public TDirection Item { get; private set; }
 
         public override string ToString()
         {

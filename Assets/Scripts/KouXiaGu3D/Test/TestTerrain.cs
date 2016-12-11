@@ -105,7 +105,10 @@ namespace KouXiaGu.Test
 
             CubicHexCoord hex = GridConvert.ToHexCubic(currentPixelPosition);
 
-            foreach (var item in hex.GetNeighboursAndSelf())
+            GridsExtensions.GetNeighboursAndSelf(CubicHexCoord.Zero);
+            CubicHexCoord.Zero.GetNeighboursAndSelf<CubicHexCoord, HexDirections>();
+
+            foreach (var item in hex.GetNeighboursAndSelf<CubicHexCoord, HexDirections>())
             {
                 str += "\n" + item.ToString();
             }

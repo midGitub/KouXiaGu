@@ -18,11 +18,37 @@ namespace KouXiaGu.Grids
         /// 获取到目标点的邻居节点;
         /// </summary>
         public static IEnumerable<TC> GetNeighbours<TC, TD>(this TC target, TD directions)
-            where TC : IGridPoint<TD>
+             where TC : IGridPoint<TC, TD>
         {
             foreach (var direction in target.GetDirections(directions))
             {
                 yield return (TC)target.GetDirection(direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标节点邻居节点;
+        /// </summary>
+        public static IEnumerable<CoordPack<TC, TD>> GetNeighbours<TC, TD>(this TC target)
+             where TC : IGridPoint<TC, TD>
+        {
+            foreach (var direction in target.Directions)
+            {
+                TC offsetCoord = (TC)target.GetDirection(direction);
+                yield return new CoordPack<TC, TD>(offsetCoord, direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标节点和其邻居节点;(存在本身方向,且最先返回);
+        /// </summary>
+        public static IEnumerable<CoordPack<TC, TD>> GetNeighboursAndSelf<TC, TD>(this TC target)
+           where TC : IGridPoint<TC, TD>
+        {
+            foreach (var direction in target.DirectionsAndSelf)
+            {
+                TC offsetCoord = (TC)target.GetDirection(direction);
+                yield return new CoordPack<TC, TD>(offsetCoord, direction);
             }
         }
 
@@ -76,7 +102,7 @@ namespace KouXiaGu.Grids
         /// 获取到目标节点邻居节点,若节点不存在则不返回;
         /// </summary>
         public static IEnumerable<CoordPack<TC, TD, T>> GetNeighbours<TC, TD, T>(this IMap<TC, T> map, TC target)
-            where TC : IGridPoint<TD>
+             where TC : IGridPoint<TC, TD>
         {
             T item;
             foreach (var direction in target.Directions)
@@ -93,7 +119,7 @@ namespace KouXiaGu.Grids
         /// 获取到目标节点和其邻居节点,若节点不存在则不返回;(存在本身方向,且最先返回);
         /// </summary>
         public static IEnumerable<CoordPack<TC, TD, T>> GetNeighboursAndSelf<TC, TD, T>(this IMap<TC, T> map, TC target)
-            where TC : IGridPoint<TD>
+             where TC : IGridPoint<TC, TD>
         {
             T item;
             foreach (var direction in target.DirectionsAndSelf)
@@ -111,7 +137,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         /// <param name="capacity">估计返回的节点数</param>
         public static IEnumerable<CoordPack<TC, T>> BreadthTraversal<TC, TD, T>(this IMap<TC, T> map, TC target, int capacity = 81)
-            where TC : IGridPoint<TD>
+             where TC : IGridPoint<TC, TD>
         {
             IEnumerable<TC> breadthTraversalPoints = target.BreadthTraversal(point => !map.Contains(point));
 
@@ -126,7 +152,7 @@ namespace KouXiaGu.Grids
         /// 获取到满足条件的方向;若方向不存在节点则为不满足;
         /// </summary>
         public static int GetNeighboursAndSelfMask<TC, TD, T>(this IMap<TC, T> map, TC target, Func<T, bool> func)
-            where TC : IGridPoint<TD>
+            where TC : IGridPoint<TC, TD>
             where TD : IConvertible
         {
             int directions = 0;

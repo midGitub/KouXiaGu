@@ -23,27 +23,27 @@ namespace KouXiaGu
     /// <summary>
     /// 带方向的网格点;
     /// </summary>
-    public interface IGridPoint<TDirection> : IGridPoint
+    public interface IGridPoint<TC, TD> : IGridPoint
     {
 
         /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
         /// </summary>
-        IEnumerable<TDirection> Directions { get; }
+        IEnumerable<TD> Directions { get; }
 
         /// <summary>
         /// 获取到从 高位到低位 顺序返回的迭代结构;(存在本身方向,且在最高位);
         /// </summary>
-        IEnumerable<TDirection> DirectionsAndSelf { get; }
+        IEnumerable<TD> DirectionsAndSelf { get; }
 
         /// <summary>
         /// 获取到方向集表示的所有方向;
         /// </summary>
-        IEnumerable<TDirection> GetDirections(TDirection directions);
+        IEnumerable<TD> GetDirections(TD directions);
         /// <summary>
         /// 获取到这个方向的坐标;
         /// </summary>
-        IGridPoint GetDirection(TDirection direction);
+        IGridPoint GetDirection(TD direction);
 
     }
 
