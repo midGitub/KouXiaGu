@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.HexTerrain
 {
@@ -34,13 +32,16 @@ namespace KouXiaGu.HexTerrain
         readonly HashSet<ShortVector2> editedBlock;
 
         /// <summary>
-        /// 线程锁;
+        /// 写入锁;
         /// </summary>
-        readonly object syncRoot = new object();
+        readonly object syncWriteRoot = new object();
 
-        public object SyncRoot
+        /// <summary>
+        /// 写入锁;
+        /// </summary>
+        public object SyncWriteRoot
         {
-            get { return syncRoot; }
+            get { return syncWriteRoot; }
         }
 
         public T this[CubicHexCoord position]
@@ -48,9 +49,10 @@ namespace KouXiaGu.HexTerrain
             get { return this.mapCollection[position]; }
             set
             {
-                lock (syncRoot)
+                ShortVector2 coord = mapCollection.GetBlockCoord(position);
+
+                lock (syncWriteRoot)
                 {
-                    ShortVector2 coord = mapCollection.GetBlockCoord(position);
                     mapCollection[coord][position] = value;
                     AddChangedCoord(coord);
                 }
@@ -66,7 +68,7 @@ namespace KouXiaGu.HexTerrain
         {
             get
             {
-                lock (syncRoot)
+                lock (syncWriteRoot)
                 {
                     return this.mapCollection.Nodes;
                 }
@@ -77,7 +79,7 @@ namespace KouXiaGu.HexTerrain
         {
             get
             {
-                lock (syncRoot)
+                lock (syncWriteRoot)
                 {
                     return this.mapCollection.Points;
                 }
@@ -89,9 +91,10 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void Add(CubicHexCoord position, T item)
         {
-            lock (syncRoot)
+            ShortVector2 coord = mapCollection.GetBlockCoord(position);
+
+            lock (syncWriteRoot)
             {
-                ShortVector2 coord = mapCollection.GetBlockCoord(position);
                 var block = mapCollection.TryCreateBlock(coord);
                 block.Add(position, item);
 
@@ -104,11 +107,11 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public bool Remove(CubicHexCoord position)
         {
-            lock (syncRoot)
-            {
-                Dictionary<CubicHexCoord, T> block;
-                ShortVector2 coord = mapCollection.GetBlockCoord(position);
+            Dictionary<CubicHexCoord, T> block;
+            ShortVector2 coord = mapCollection.GetBlockCoord(position);
 
+            lock (syncWriteRoot)
+            {
                 if (mapCollection.TryGetValue(coord, out block))
                 {
                     if (block.Remove(position))
@@ -142,7 +145,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void Clear()
         {
-            lock (syncRoot)
+            lock (syncWriteRoot)
             {
                 this.mapCollection.Clear();
                 editedBlock.Clear();
@@ -159,7 +162,7 @@ namespace KouXiaGu.HexTerrain
 
         public IEnumerator<KeyValuePair<CubicHexCoord, T>> GetEnumerator()
         {
-            lock (syncRoot)
+            lock (syncWriteRoot)
             {
                 return this.mapCollection.GetEnumerator();
             }
@@ -216,7 +219,10 @@ namespace KouXiaGu.HexTerrain
             if (archive.Size != mapCollection.BlockSize)
                 throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockSize + "," + archive.ToString());
 
-            mapCollection.Add(archive.Coord, archive.Map);
+            lock (syncWriteRoot)
+            {
+                mapCollection.Add(archive.Coord, archive.Map);
+            }
         }
 
     }

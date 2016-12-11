@@ -13,6 +13,11 @@ namespace KouXiaGu.HexTerrain
     {
 
         /// <summary>
+        /// 结构的写入锁,防止在保存时其它线程对数据进行变更;
+        /// </summary>
+        object SyncWriteRoot { get; }
+
+        /// <summary>
         /// 确认是否已经存在这个地图块;
         /// </summary>
         bool Contains(ShortVector2 coord);
