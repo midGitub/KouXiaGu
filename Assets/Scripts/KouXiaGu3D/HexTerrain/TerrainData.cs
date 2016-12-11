@@ -277,7 +277,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static Hexagon hexagon
         {
-            get { return HexGridConvert.hexagon; }
+            get { return GridConvert.hexagon; }
         }
         
         /// <summary>
@@ -334,7 +334,7 @@ namespace KouXiaGu.Terrain3D
         internal static CubicHexCoord BlockToHexCenter(ShortVector2 coord)
         {
             Vector3 pixelCenter = BlockToPixelCenter(coord);
-            return HexGridConvert.ToHexCubic(pixelCenter);
+            return GridConvert.ToHexCubic(pixelCenter);
         }
 
 
@@ -414,7 +414,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static ShortVector2[] GetBelongBlocks(Vector3 point)
         {
-            CubicHexCoord coord = HexGridConvert.ToHexCubic(point);
+            CubicHexCoord coord = GridConvert.ToHexCubic(point);
             return GetBelongBlocks(coord);
         }
 
@@ -434,7 +434,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void GetBelongBlocks(CubicHexCoord coord, ref ShortVector2[] blocks)
         {
-            Vector3 point = HexGridConvert.ToPixel(coord);
+            Vector3 point = GridConvert.ToPixel(coord);
             GetBelongBlocks(point, ref blocks);
         }
 
