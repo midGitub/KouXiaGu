@@ -245,9 +245,7 @@ namespace KouXiaGu.Grids
                             }
                         }
                     }
-
                 }
-
             }
         }
 
@@ -263,35 +261,6 @@ namespace KouXiaGu.Grids
             {
                 yield return new CoordPack<ShortVector2, T>(point, map[point]);
             }
-
-
-            //T item;
-
-            //if (map.TryGetValue(target, out item))
-            //{
-            //    yield return new CoordPack<ShortVector2, T>(target, item);
-
-            //    Queue<ShortVector2> waitPoints = new Queue<ShortVector2>(capacity);
-            //    HashSet<ShortVector2> returnedPoints = new HashSet<ShortVector2>();
-
-            //    waitPoints.Enqueue(target);
-            //    returnedPoints.Add(target);
-
-            //    while (waitPoints.Count != 0)
-            //    {
-            //        ShortVector2 point = waitPoints.Dequeue();
-
-            //        foreach (var neighbour in map.GetNeighbours(point))
-            //        {
-            //            if (!returnedPoints.Contains(neighbour.Point))
-            //            {
-            //                yield return neighbour;
-            //                returnedPoints.Add(neighbour.Point);
-            //                waitPoints.Enqueue(neighbour.Point);
-            //            }
-            //        }
-            //    }
-            //}
 
         }
 
