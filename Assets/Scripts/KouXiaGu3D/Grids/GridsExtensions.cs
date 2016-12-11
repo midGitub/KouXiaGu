@@ -13,12 +13,27 @@ namespace KouXiaGu.Grids
     public static class GridsExtensions
     {
 
+
+        /// <summary>
+        /// 获取到目标点的邻居节点;
+        /// </summary>
+        public static IEnumerable<TC> GetNeighbours<TC, TDirection>(this TC target, TDirection directions)
+            where TC : IGridPoint<TDirection>
+        {
+            foreach (var direction in target.GetDirections(directions))
+            {
+                yield return (TC)target.GetDirection(direction);
+            }
+        }
+
+
         /// <summary>
         /// 广度遍历;
         /// </summary>
         /// <param name="close">这个节点是否为关闭状态,若为关闭状态则返回,也不返回其邻居节点;</param>
         /// <param name="capacity">估计返回的节点数</param>
-        public static IEnumerable<IGridPoint> BreadthTraversal(this IGridPoint target, Func<IGridPoint, bool> close, int capacity = 81)
+        public static IEnumerable<TC> BreadthTraversal<TC>(this TC target, Func<TC, bool> close, int capacity = 81)
+             where TC : IGridPoint
         {
             if (!close(target))
             {
@@ -36,15 +51,16 @@ namespace KouXiaGu.Grids
 
                     foreach (var neighbour in point.GetNeighbours())
                     {
+                        TC coord = (TC)neighbour;
                         if (!returnedPoints.Contains(neighbour))
                         {
-                            if (close(neighbour))
+                            if (close(coord))
                             {
                                 returnedPoints.Add(neighbour);
                             }
                             else
                             {
-                                yield return neighbour;
+                                yield return coord;
                                 returnedPoints.Add(neighbour);
                                 waitPoints.Enqueue(neighbour);
                             }
@@ -52,6 +68,58 @@ namespace KouXiaGu.Grids
                     }
                 }
             }
+        }
+
+
+
+        /// <summary>
+        /// 获取到目标节点邻居节点,若节点不存在则不返回;
+        /// </summary>
+        public static IEnumerable<CoordPack<TC, TD, T>> GetNeighbours<TC, TD, T>(this IMap<TC, T> map, TC target)
+            where TC : IGridPoint<TD>
+        {
+            T item;
+            foreach (var direction in target.Directions)
+            {
+                TC offsetCoord = (TC)target.GetDirection(direction);
+                if (map.TryGetValue(offsetCoord, out item))
+                {
+                    yield return new CoordPack<TC, TD, T>(direction, offsetCoord, item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标节点和其邻居节点,若节点不存在则不返回;(存在本身方向,且最先返回);
+        /// </summary>
+        public static IEnumerable<CoordPack<TC, TD, T>> GetNeighboursAndSelf<TC, TD, T>(this IMap<TC, T> map, TC target)
+            where TC : IGridPoint<TD>
+        {
+            T item;
+            foreach (var direction in target.DirectionsAndSelf)
+            {
+                TC offsetCoord = (TC)target.GetDirection(direction);
+                if (map.TryGetValue(offsetCoord, out item))
+                {
+                    yield return new CoordPack<TC, TD, T>(direction, offsetCoord, item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 广度遍历;
+        /// </summary>
+        /// <param name="capacity">估计返回的节点数</param>
+        public static IEnumerable<CoordPack<TC, T>> BreadthTraversal<TC, T>(this IMap<TC, T> map, TC target, int capacity = 81)
+            where TC : IGridPoint<IGridPoint>
+        {
+            IEnumerable<TC> breadthTraversalPoints = target.BreadthTraversal(point => !map.Contains(point));
+
+            foreach (var point in breadthTraversalPoints)
+            {
+                yield return new CoordPack<TC, T>(point, map[point]);
+            }
+
         }
 
     }

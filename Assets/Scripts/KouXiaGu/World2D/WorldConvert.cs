@@ -104,10 +104,10 @@ namespace KouXiaGu.World2D
         public static Vector2 MapToHex(ShortVector2 mapPoint)
         {
             Vector2 position = new Vector2();
-            position.x = hexagon.DistanceX * mapPoint.X;
-            position.y = hexagon.InnerDiameter * mapPoint.Y;
+            position.x = hexagon.DistanceX * mapPoint.x;
+            position.y = hexagon.InnerDiameter * mapPoint.y;
 
-            if ((mapPoint.X & 1) == 1)
+            if ((mapPoint.x & 1) == 1)
                 position.y -= (hexagon.InnerDiameter / 2);
 
             return position;
@@ -243,7 +243,7 @@ namespace KouXiaGu.World2D
         public static ShortVector2 GetVector(ShortVector2 target, HexDirection direction)
         {
             DirectionVector directionVector = DirectionVectorSet[(int)direction];
-            if ((target.X & 1) == 1)
+            if ((target.x & 1) == 1)
             {
                 return directionVector.OddVector;
             }

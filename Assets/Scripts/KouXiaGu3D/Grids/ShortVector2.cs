@@ -30,26 +30,26 @@ namespace KouXiaGu
     /// Short类型的向量,保存在哈希表内键值不重复;
     /// </summary>
     [Serializable, ProtoContract]
-    public struct ShortVector2 : IEquatable<ShortVector2>, IGridPoint
+    public struct ShortVector2 : IEquatable<ShortVector2>, IGridPoint, IGridPoint<RecDirections>
     {
 
         public ShortVector2(short x, short y)
         {
-            this.X = x;
-            this.Y = y;
+            this.x = x;
+            this.y = y;
         }
 
         public ShortVector2(int x, int y)
         {
-            this.X = (short)x;
-            this.Y = (short)y;
+            this.x = (short)x;
+            this.y = (short)y;
         }
 
         [ProtoMember(1)]
-        public short X { get; set; }
+        public short x { get; set; }
 
         [ProtoMember(2)]
-        public short Y { get; set; }
+        public short y { get; set; }
 
 
         static readonly ShortVector2 up = new ShortVector2(0, 1);
@@ -94,7 +94,7 @@ namespace KouXiaGu
         /// </summary>
         public static float Distance(ShortVector2 v1, ShortVector2 v2)
         {
-            float distance = (float)Math.Sqrt(Math.Pow((v1.X - v2.X), 2) + Math.Pow((v1.Y - v2.Y), 2));
+            float distance = (float)Math.Sqrt(Math.Pow((v1.x - v2.x), 2) + Math.Pow((v1.y - v2.y), 2));
             return distance;
         }
 
@@ -103,7 +103,7 @@ namespace KouXiaGu
         /// </summary>
         public static int ManhattanDistance(ShortVector2 v1, ShortVector2 v2)
         {
-            int distance = Math.Abs(v1.X - v2.X) + Math.Abs(v1.Y - v2.Y);
+            int distance = Math.Abs(v1.x - v2.x) + Math.Abs(v1.y - v2.y);
             return distance;
         }
 
@@ -112,8 +112,8 @@ namespace KouXiaGu
         /// </summary>
         public ShortVector2 Abs()
         {
-            short x = Math.Abs(this.X);
-            short y = Math.Abs(this.Y);
+            short x = Math.Abs(this.x);
+            short y = Math.Abs(this.y);
             return new ShortVector2(x, y);
         }
 
@@ -122,9 +122,9 @@ namespace KouXiaGu
         /// </summary>
         public static IEnumerable<ShortVector2> RecRange(ShortVector2 southwest, ShortVector2 northeast)
         {
-            for (short x = southwest.X; x <= northeast.X; x++)
+            for (short x = southwest.x; x <= northeast.x; x++)
             {
-                for (short y = southwest.Y; y <= northeast.Y; y++)
+                for (short y = southwest.y; y <= northeast.y; y++)
                 {
                     yield return new ShortVector2(x, y);
                 }
@@ -245,16 +245,15 @@ namespace KouXiaGu
         /// </summary>
         public ShortVector2 Block(int size)
         {
-            short x = (short)Math.Round(this.X / (float)size);
-            short y = (short)Math.Round(this.Y / (float)size);
+            short x = (short)Math.Round(this.x / (float)size);
+            short y = (short)Math.Round(this.y / (float)size);
             return new ShortVector2(x, y);
         }
-
 
         /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>
-        IEnumerable<IGridPoint> IGridPoint.GetNeighbours()
+        public IEnumerable<ShortVector2> GetNeighbours()
         {
             foreach (var direction in Directions)
             {
@@ -285,6 +284,49 @@ namespace KouXiaGu
         }
 
 
+
+        short IGridPoint.X
+        {
+            get { return x; }
+        }
+
+        short IGridPoint.Y
+        {
+            get { return y; }
+        }
+
+        IEnumerable<RecDirections> IGridPoint<RecDirections>.Directions
+        {
+            get { return Directions; }
+        }
+
+        IEnumerable<RecDirections> IGridPoint<RecDirections>.DirectionsAndSelf
+        {
+            get { return DirectionsAndSelf; }
+        }
+
+        IEnumerable<RecDirections> IGridPoint<RecDirections>.GetDirections(RecDirections directions)
+        {
+            return GetDirections(directions);
+        }
+
+        IGridPoint IGridPoint<RecDirections>.GetDirection(RecDirections direction)
+        {
+            return GetDirection(direction);
+        }
+
+        IEnumerable<IGridPoint> IGridPoint.GetNeighbours()
+        {
+            return GetNeighbours().Cast<IGridPoint>();
+        }
+
+        IEnumerable<IGridPoint> IGridPoint.GetNeighboursAndSelf()
+        {
+            return GetNeighboursAndSelf().Cast<IGridPoint>();
+        }
+
+
+
         /// <summary>
         /// 将哈希值转换成坐标;
         /// </summary>
@@ -301,8 +343,8 @@ namespace KouXiaGu
         /// <returns></returns>
         public override int GetHashCode()
         {
-            int hashCode = X << 16;
-            hashCode += short.MaxValue + Y;
+            int hashCode = x << 16;
+            hashCode += short.MaxValue + y;
             return hashCode;
         }
 
@@ -329,7 +371,7 @@ namespace KouXiaGu
 
         public static explicit operator Vector2(ShortVector2 v)
         {
-            return new Vector2(v.X, v.Y);
+            return new Vector2(v.x, v.y);
         }
 
         /// <summary>
@@ -337,68 +379,68 @@ namespace KouXiaGu
         /// </summary>
         public static explicit operator Vector3(ShortVector2 v)
         {
-            return new Vector3(v.X, 0, v.Y);
+            return new Vector3(v.x, 0, v.y);
         }
 
         public static bool operator ==(ShortVector2 point1, ShortVector2 point2)
         {
-            bool sameX = point1.X == point2.X;
-            bool sameY = point1.Y == point2.Y;
+            bool sameX = point1.x == point2.x;
+            bool sameY = point1.y == point2.y;
             return sameX & sameY;
         }
 
         public static bool operator !=(ShortVector2 point1, ShortVector2 point2)
         {
-            bool sameX = point1.X == point2.X;
-            bool sameY = point1.Y == point2.Y;
+            bool sameX = point1.x == point2.x;
+            bool sameY = point1.y == point2.y;
             return !(sameX & sameY);
         }
 
         public static ShortVector2 operator -(ShortVector2 point1, ShortVector2 point2)
         {
-            point1.X -= point2.X;
-            point1.Y -= point2.Y;
+            point1.x -= point2.x;
+            point1.y -= point2.y;
             return point1;
         }
 
         public static ShortVector2 operator +(ShortVector2 point1, ShortVector2 point2)
         {
-            point1.X += point2.X;
-            point1.Y += point2.Y;
+            point1.x += point2.x;
+            point1.y += point2.y;
             return point1;
         }
 
         public static ShortVector2 operator *(ShortVector2 point1, short n)
         {
-            point1.X *= n;
-            point1.Y *= n;
+            point1.x *= n;
+            point1.y *= n;
             return point1;
         }
 
         public static ShortVector2 operator /(ShortVector2 point1, short n)
         {
-            point1.X /= n;
-            point1.Y /= n;
+            point1.x /= n;
+            point1.y /= n;
             return point1;
         }
 
         public static ShortVector2 operator +(ShortVector2 point1, short n)
         {
-            point1.X += n;
-            point1.Y += n;
+            point1.x += n;
+            point1.y += n;
             return point1;
         }
 
         public static ShortVector2 operator -(ShortVector2 point1, short n)
         {
-            point1.X -= n;
-            point1.Y -= n;
+            point1.x -= n;
+            point1.y -= n;
             return point1;
         }
 
         public override string ToString()
         {
-            return String.Concat("(", X, " , ", Y, ")");
+            return String.Concat("(", x, " , ", y, ")");
         }
 
         public override bool Equals(object obj)
@@ -410,7 +452,7 @@ namespace KouXiaGu
 
         public bool Equals(ShortVector2 other)
         {
-            return X == other.X && Y == other.Y;
+            return x == other.x && y == other.y;
         }
 
     }

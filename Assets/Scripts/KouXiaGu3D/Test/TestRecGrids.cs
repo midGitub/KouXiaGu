@@ -49,7 +49,7 @@ namespace KouXiaGu.Test
         IEnumerator BreadthTraversal2()
         {
             WaitForSeconds wait = new WaitForSeconds(1);
-            foreach (var point in ShortVector2.Zero.BreadthTraversal(point => (point.X & 1) == 1 && point.Y != 2))
+            foreach (var point in ShortVector2.Zero.BreadthTraversal(point => (point.x & 1) == 1 && point.y != 2))
             {
                 Instantiate(point);
                 yield return wait;

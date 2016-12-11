@@ -20,8 +20,8 @@ namespace KouXiaGu.World2D
         private void Update()
         {
             Vector2 point = WorldConvert.PlaneToHex(target.position);
-            point.x = offset.X * WorldConvert.MapHexagon.DistanceX * 2;
-            point.y = offset.Y * WorldConvert.MapHexagon.DistanceY * 2;
+            point.x = offset.x * WorldConvert.MapHexagon.DistanceX * 2;
+            point.y = offset.y * WorldConvert.MapHexagon.DistanceY * 2;
             transform.position = point;
         }
 

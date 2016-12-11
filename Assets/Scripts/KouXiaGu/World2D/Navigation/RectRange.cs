@@ -31,8 +31,8 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         public void SetMaximumRange(ShortVector2 center, ShortVector2 range)
         {
-            this.southwest = new ShortVector2(center.X - range.X, center.Y - range.Y);
-            this.northeast = new ShortVector2(center.X + range.X, center.Y + range.Y);
+            this.southwest = new ShortVector2(center.x - range.x, center.y - range.y);
+            this.northeast = new ShortVector2(center.x + range.x, center.y + range.y);
         }
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         public bool IsOutRange(ShortVector2 point)
         {
-            return point.X < southwest.X || point.Y < southwest.Y ||
-                point.X > northeast.X || point.Y > northeast.Y;
+            return point.x < southwest.x || point.y < southwest.y ||
+                point.x > northeast.x || point.y > northeast.y;
         }
 
     }
