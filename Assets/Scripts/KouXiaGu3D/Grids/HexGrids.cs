@@ -39,7 +39,6 @@ namespace KouXiaGu.Grids
 
     /// <summary>
     /// 六边形网格拓展;
-    /// 六边形为平顶的偶数垂直布局;
     /// </summary>
     public static partial class HexGrids
     {
@@ -284,7 +283,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(CubicHexCoord target)
+        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(this CubicHexCoord target)
         {
             foreach (var direction in GetDirections())
             {
@@ -296,7 +295,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到这个点本身和周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighboursAndSelf(CubicHexCoord target)
+        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighboursAndSelf(this CubicHexCoord target)
         {
             foreach (var direction in GetDirectionsAndSelf())
             {
@@ -308,7 +307,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到这个点这些方向的坐标和方向,从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(CubicHexCoord target, HexDirections directions)
+        public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(this CubicHexCoord target, HexDirections directions)
         {
             foreach (var direction in GetDirections(directions))
             {

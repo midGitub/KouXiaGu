@@ -6,12 +6,12 @@ using System.Text;
 namespace KouXiaGu.Grids
 {
 
-    /// <summary>
-    /// 六边形偏移网格;
-    /// </summary>
-    [Obsolete]
-    public static class HexOffsetGrids
-    {
+    ///// <summary>
+    ///// 六边形偏移网格;
+    ///// </summary>
+    //[Obsolete]
+    //public static class HexOffsetGrids
+    //{
 
 
         ///// <summary>
@@ -308,6 +308,6 @@ namespace KouXiaGu.Grids
         //}
 
 
-    }
+    //}
 
 }

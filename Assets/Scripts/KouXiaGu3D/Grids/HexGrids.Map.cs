@@ -67,8 +67,7 @@ namespace KouXiaGu.Grids
         public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighbours<T>(this IMap<CubicHexCoord, T> map, CubicHexCoord target)
         {
             T item;
-            var aroundPoints = GetNeighbours(target);
-            foreach (var point in aroundPoints)
+            foreach (var point in target.GetNeighbours())
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
@@ -83,8 +82,7 @@ namespace KouXiaGu.Grids
         public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighboursAndSelf<T>(this IMap<CubicHexCoord, T> map, CubicHexCoord target)
         {
             T item;
-            var aroundPoints = GetNeighboursAndSelf(target);
-            foreach (var point in aroundPoints)
+            foreach (var point in target.GetNeighboursAndSelf())
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
@@ -99,8 +97,7 @@ namespace KouXiaGu.Grids
         public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighbours<T>(this IMap<CubicHexCoord, T> map, CubicHexCoord target, HexDirections directions)
         {
             T item;
-            var aroundPoints = GetNeighbours(target, directions);
-            foreach (var point in aroundPoints)
+            foreach (var point in target.GetNeighbours(directions))
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
@@ -116,10 +113,10 @@ namespace KouXiaGu.Grids
         {
             HexDirections directions = 0;
             T item;
-            IEnumerable<HexDirections> aroundDirection = GetDirectionsAndSelf();
+            IEnumerable<HexDirections> aroundDirection = HexGrids.GetDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
-                CubicHexCoord vePoint = GetDirection(direction) + target;
+                CubicHexCoord vePoint = target.GetDirection(direction);
                 if (map.TryGetValue(vePoint, out item))
                 {
                     if (func(item))
