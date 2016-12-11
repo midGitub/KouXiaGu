@@ -14,7 +14,7 @@ namespace KouXiaGu.HexTerrain
     public sealed class TerrainMapOB : UnitySingleton<TerrainMapOB>
     {
 
-        Map<CubicHexCoord, LandformNode> terrainMap;
+        Map<CubicHexCoord, TerrainNode> terrainMap;
 
         void Awake()
         {
@@ -57,30 +57,30 @@ namespace KouXiaGu.HexTerrain
             SerializeHelper.SerializeProtoBuf(filePath, terrainMap);
         }
 
-        Map<CubicHexCoord, LandformNode> LoadMap()
+        Map<CubicHexCoord, TerrainNode> LoadMap()
         {
             string filePath = Path.Combine(Application.dataPath, "MAP.temp");
 
             if (File.Exists(filePath))
             {
-                return SerializeHelper.DeserializeProtoBuf<Map<CubicHexCoord, LandformNode>>(filePath);
+                return SerializeHelper.DeserializeProtoBuf<Map<CubicHexCoord, TerrainNode>>(filePath);
             }
             return null;
         }
 
 
-        Map<CubicHexCoord, LandformNode> RandomMap()
+        Map<CubicHexCoord, TerrainNode> RandomMap()
         {
-            Map<CubicHexCoord, LandformNode> terrainMap = new Map<CubicHexCoord, LandformNode>();
+            Map<CubicHexCoord, TerrainNode> terrainMap = new Map<CubicHexCoord, TerrainNode>();
               int[] aa = new int[] { 10, 20, 30, 20 };
 
-            terrainMap.Add(CubicHexCoord.Zero, new LandformNode(10, 0));
+            terrainMap.Add(CubicHexCoord.Zero, new TerrainNode(10, 0));
 
             foreach (var item in HexGrids.GetHexRange(CubicHexCoord.Zero, 10))
             {
                 try
                 {
-                    terrainMap.Add(item, new LandformNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
+                    terrainMap.Add(item, new TerrainNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
                 }
                 catch (ArgumentException)
                 {

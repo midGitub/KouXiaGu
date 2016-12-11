@@ -13,7 +13,7 @@ namespace KouXiaGu.HexTerrain
     public struct BakingNode
     {
 
-        public BakingNode(Vector3 position, LandformNode mapNode) : this()
+        public BakingNode(Vector3 position, TerrainNode mapNode) : this()
         {
             this.Position = position;
             this.mapNode = mapNode;
@@ -24,7 +24,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地貌地图节点;
         /// </summary>
-        LandformNode mapNode;
+        TerrainNode mapNode;
 
         /// <summary>
         /// 地貌信息;
@@ -68,7 +68,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 根据地貌节点获取到地貌信息;
         /// </summary>
-        Landform GetLandform(LandformNode landformNode)
+        Landform GetLandform(TerrainNode landformNode)
         {
             if (landformNode.ID == 0)
                 return null;

@@ -11,8 +11,11 @@ namespace KouXiaGu.HexTerrain
     /// 提供地形初始化和细节设置;
     /// </summary>
     [DisallowMultipleComponent]
-    public class TerrainController : UnitySingleton<TerrainController>
+    public sealed class TerrainController : UnitySingleton<TerrainController>
     {
+        TerrainController() { }
+
+
 
 
     }

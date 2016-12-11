@@ -15,13 +15,13 @@ namespace KouXiaGu.HexTerrain
     public struct RenderRequest
     {
 
-        public RenderRequest(IReadOnlyMap<CubicHexCoord, LandformNode> map, ShortVector2 blockCoord)
+        public RenderRequest(IReadOnlyMap<CubicHexCoord, TerrainNode> map, ShortVector2 blockCoord)
         {
             this.Map = map;
             this.BlockCoord = blockCoord;
         }
 
-        public IReadOnlyMap<CubicHexCoord, LandformNode> Map { get; set; }
+        public IReadOnlyMap<CubicHexCoord, TerrainNode> Map { get; set; }
 
         /// <summary>
         /// 请求烘焙的地图块位置;
@@ -42,7 +42,7 @@ namespace KouXiaGu.HexTerrain
         public IEnumerable<BakingNode> GetBakingNodes()
         {
             IEnumerable<CubicHexCoord> cover = TerrainData.GetBlockCover(BlockCoord);
-            LandformNode node;
+            TerrainNode node;
 
             float index = -2;
 

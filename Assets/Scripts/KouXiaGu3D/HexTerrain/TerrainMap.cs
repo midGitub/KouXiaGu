@@ -22,7 +22,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地形地图结构;
         /// </summary>
-        static readonly BlockMapRecord<LandformNode> terrainMap = new BlockMapRecord<LandformNode>(MapBlockSize);
+        static readonly BlockMapRecord<TerrainNode> terrainMap = new BlockMapRecord<TerrainNode>(MapBlockSize);
 
         /// <summary>
         /// 地图当前的进行状态;
@@ -41,7 +41,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地形地图;
         /// </summary>
-        public static IMap<CubicHexCoord, LandformNode> Map
+        public static IMap<CubicHexCoord, TerrainNode> Map
         {
             get { return terrainMap; }
         }
@@ -49,7 +49,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 只读的地形地图;
         /// </summary>
-        public static IReadOnlyMap<CubicHexCoord, LandformNode> ReadOnlyMap
+        public static IReadOnlyMap<CubicHexCoord, TerrainNode> ReadOnlyMap
         {
             get { return terrainMap; }
         }
@@ -64,7 +64,7 @@ namespace KouXiaGu.HexTerrain
 
 
         /// <summary>
-        /// 保存需要保存的内容到文件(同步的);
+        /// 保存需要保存为文件;
         /// </summary>
         public static void Save(string directoryPath)
         {
@@ -82,7 +82,26 @@ namespace KouXiaGu.HexTerrain
         }
 
         /// <summary>
-        /// 读取文件夹下的地图(同步的);
+        /// 将所有地图保存为文件;
+        /// </summary>
+        /// <param name="directoryPath"></param>
+        public static void SaveAll(string directoryPath)
+        {
+            ArchiveState currentState = State;
+            try
+            {
+                State = ArchiveState.Writing;
+                terrainMap.SaveAll(directoryPath, FileMode.Create);
+                State = currentState;
+            }
+            finally
+            {
+                State = currentState;
+            }
+        }
+
+        /// <summary>
+        /// 读取文件夹下的地图;
         /// </summary>
         public static void Load(string directoryPath)
         {

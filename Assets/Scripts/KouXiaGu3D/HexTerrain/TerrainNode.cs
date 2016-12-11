@@ -11,9 +11,9 @@ namespace KouXiaGu.HexTerrain
     /// 用于保存的地形节点结构;
     /// </summary>
     [ProtoContract]
-    public struct LandformNode
+    public struct TerrainNode
     {
-        public LandformNode(int id, float rotationAngle)
+        public TerrainNode(int id, float rotationAngle)
         {
             this.ID = id;
             this.RotationAngle = rotationAngle;
