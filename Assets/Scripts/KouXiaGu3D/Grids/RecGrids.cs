@@ -160,7 +160,7 @@ namespace KouXiaGu.Grids
         {
             foreach (var direction in Directions)
             {
-                yield return target.GetDirection(direction);
+                yield return target.GetDirectionOffset(direction);
             }
         }
 
@@ -171,7 +171,7 @@ namespace KouXiaGu.Grids
         {
             foreach (var direction in GetDirections(directions))
             {
-                yield return target.GetDirection(direction);
+                yield return target.GetDirectionOffset(direction);
             }
         }
 
@@ -182,7 +182,7 @@ namespace KouXiaGu.Grids
         {
             foreach (var direction in DirectionsAndSelf)
             {
-                yield return target.GetDirection(direction);
+                yield return target.GetDirectionOffset(direction);
             }
         }
 

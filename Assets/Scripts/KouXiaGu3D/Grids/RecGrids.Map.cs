@@ -19,7 +19,7 @@ namespace KouXiaGu.Grids
             T item;
             foreach (var direction in Directions)
             {
-                ShortVector2 offsetCoord = target.GetDirection(direction);
+                ShortVector2 offsetCoord = target.GetDirectionOffset(direction);
                 if (map.TryGetValue(offsetCoord, out item))
                 {
                     yield return new CoordPack<ShortVector2, RecDirections, T>(direction, offsetCoord, item);
@@ -35,7 +35,7 @@ namespace KouXiaGu.Grids
             T item;
             foreach (var direction in DirectionsAndSelf)
             {
-                ShortVector2 offsetCoord = target.GetDirection(direction);
+                ShortVector2 offsetCoord = target.GetDirectionOffset(direction);
                 if (map.TryGetValue(offsetCoord, out item))
                 {
                     yield return new CoordPack<ShortVector2, RecDirections, T>(direction, offsetCoord, item);

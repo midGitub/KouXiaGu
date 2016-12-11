@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using KouXiaGu.Grids;
 using ProtoBuf;
 using UnityEngine;
 
@@ -110,6 +112,160 @@ namespace KouXiaGu
                 }
             }
         }
+
+
+        #region 方向
+
+        /// <summary>
+        /// 存在方向数;
+        /// </summary>
+        public const int DirectionsNumber = 9;
+
+        /// <summary>
+        /// 方向偏移量;
+        /// </summary>
+        static Dictionary<int, ShortVector2> directions = RecirectionDictionary();
+
+        /// <summary>
+        /// 获取到方向偏移量;
+        /// </summary>
+        static Dictionary<int, ShortVector2> RecirectionDictionary()
+        {
+            Dictionary<int, ShortVector2> directions = new Dictionary<int, ShortVector2>(DirectionsNumber);
+
+            directions.Add((int)RecDirections.North, ShortVector2.Up);
+            directions.Add((int)RecDirections.Northeast, ShortVector2.Up + ShortVector2.Right);
+            directions.Add((int)RecDirections.East, ShortVector2.Right);
+            directions.Add((int)RecDirections.Southeast, ShortVector2.Down + ShortVector2.Right);
+            directions.Add((int)RecDirections.South, ShortVector2.Down);
+            directions.Add((int)RecDirections.Southwest, ShortVector2.Down + ShortVector2.Left);
+            directions.Add((int)RecDirections.West, ShortVector2.Left);
+            directions.Add((int)RecDirections.Northwest, ShortVector2.Up + ShortVector2.Left);
+            directions.Add((int)RecDirections.Self, ShortVector2.Zero);
+
+            return directions;
+        }
+
+        /// <summary>
+        /// 获取到方向偏移量;
+        /// </summary>
+        public ShortVector2 GetDirectionOffset(RecDirections direction)
+        {
+            return directions[(int)direction];
+        }
+
+        /// <summary>
+        /// 获取到这个方向的坐标;
+        /// </summary>
+        public ShortVector2 GetDirection(RecDirections direction)
+        {
+            return this + GetDirectionOffset(direction);
+        }
+
+
+
+        const int maxDirectionMark = (int)RecDirections.Self;
+        const int minDirectionMark = (int)RecDirections.North;
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组;不包含本身
+        /// </summary>
+        static readonly RecDirections[] DirectionsArray = new RecDirections[]
+        {
+            RecDirections.Northwest,
+            RecDirections.West,
+            RecDirections.Southwest,
+            RecDirections.South,
+            RecDirections.Southeast,
+            RecDirections.East,
+            RecDirections.Northeast,
+            RecDirections.North,
+        };
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组(存在本身方向,且在最高位);
+        /// </summary>
+        static readonly RecDirections[] DirectionsAndSelfArray = Enum.GetValues(typeof(RecDirections)).
+            Cast<RecDirections>().Reverse().ToArray();
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
+        /// </summary>
+        public static IEnumerable<RecDirections> Directions
+        {
+            get { return DirectionsArray; }
+        }
+
+        /// <summary>
+        /// 获取到从 高位到低位 顺序返回的迭代结构;(存在本身方向,且在最高位);
+        /// </summary>
+        public static IEnumerable<RecDirections> DirectionsAndSelf
+        {
+            get { return DirectionsAndSelfArray; }
+        }
+
+        /// <summary>
+        /// 获取到方向集表示的所有方向;
+        /// </summary>
+        public static IEnumerable<RecDirections> GetDirections(RecDirections directions)
+        {
+            int mask = (int)directions;
+            for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
+            {
+                if ((intDirection & mask) == 1)
+                {
+                    yield return (RecDirections)intDirection;
+                }
+            }
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// 获取到所属的块编号;
+        /// </summary>
+        public ShortVector2 Block(int size)
+        {
+            short x = (short)Math.Round(this.x / (float)size);
+            short y = (short)Math.Round(this.y / (float)size);
+            return new ShortVector2(x, y);
+        }
+
+
+        /// <summary>
+        /// 获取到目标点的邻居节点;
+        /// </summary>
+        public IEnumerable<ShortVector2> GetNeighbours()
+        {
+            foreach (var direction in Directions)
+            {
+                yield return this.GetDirectionOffset(direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标点的邻居节点;
+        /// </summary>
+        public IEnumerable<ShortVector2> GetNeighbours(RecDirections directions)
+        {
+            foreach (var direction in GetDirections(directions))
+            {
+                yield return this.GetDirectionOffset(direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标点的邻居节点,但是也返回自己本身;
+        /// </summary>
+        public IEnumerable<ShortVector2> GetNeighboursAndSelf()
+        {
+            foreach (var direction in DirectionsAndSelf)
+            {
+                yield return this.GetDirectionOffset(direction);
+            }
+        }
+
 
         /// <summary>
         /// 将哈希值转换成坐标;
