@@ -10,6 +10,7 @@ namespace KouXiaGu.HexTerrain
 
     /// <summary>
     /// 记录修改过的地图块,在保存仅保存修改过的地图块;
+    /// 写入, 迭代 上锁,读操作 不锁;
     /// </summary>
     public class BlockMapRecord<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>, IBlockArchive<CubicHexCoord, T>
         where T : struct
@@ -25,38 +26,62 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 块地图结构;
         /// </summary>
-        BlockMap<T> mapCollection;
+        readonly BlockMap<T> mapCollection;
 
         /// <summary>
         /// 在上次保存之后进行过编辑的块编号;
         /// </summary>
-        HashSet<ShortVector2> editedBlock;
+        readonly HashSet<ShortVector2> editedBlock;
 
+        /// <summary>
+        /// 线程锁;
+        /// </summary>
+        readonly object syncRoot = new object();
+
+        public object SyncRoot
+        {
+            get { return syncRoot; }
+        }
 
         public T this[CubicHexCoord position]
         {
-            get { return ((IMap<CubicHexCoord, T>)this.mapCollection)[position]; }
+            get { return this.mapCollection[position]; }
             set
             {
-                ShortVector2 coord = mapCollection.GetBlockCoord(position);
-                mapCollection[coord][position] = value;
-                AddChangedCoord(coord);
+                lock (syncRoot)
+                {
+                    ShortVector2 coord = mapCollection.GetBlockCoord(position);
+                    mapCollection[coord][position] = value;
+                    AddChangedCoord(coord);
+                }
             }
         }
 
         public int Count
         {
-            get { return ((IMap<CubicHexCoord, T>)this.mapCollection).Count; }
+            get { return this.mapCollection.Count; }
         }
 
         public IEnumerable<T> Nodes
         {
-            get { return ((IMap<CubicHexCoord, T>)this.mapCollection).Nodes; }
+            get
+            {
+                lock (syncRoot)
+                {
+                    return this.mapCollection.Nodes;
+                }
+            }
         }
 
         public IEnumerable<CubicHexCoord> Points
         {
-            get { return ((IMap<CubicHexCoord, T>)this.mapCollection).Points; }
+            get
+            {
+                lock (syncRoot)
+                {
+                    return this.mapCollection.Points;
+                }
+            }
         }
 
         /// <summary>
@@ -64,11 +89,14 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void Add(CubicHexCoord position, T item)
         {
-            ShortVector2 coord = mapCollection.GetBlockCoord(position);
-            var block = mapCollection.TryCreateBlock(coord);
-            block.Add(position, item);
+            lock (syncRoot)
+            {
+                ShortVector2 coord = mapCollection.GetBlockCoord(position);
+                var block = mapCollection.TryCreateBlock(coord);
+                block.Add(position, item);
 
-            AddChangedCoord(coord);
+                AddChangedCoord(coord);
+            }
         }
 
         /// <summary>
@@ -76,18 +104,21 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public bool Remove(CubicHexCoord position)
         {
-            Dictionary<CubicHexCoord, T> block;
-            ShortVector2 coord = mapCollection.GetBlockCoord(position);
-
-            if (mapCollection.TryGetValue(coord, out block))
+            lock (syncRoot)
             {
-                if (block.Remove(position))
+                Dictionary<CubicHexCoord, T> block;
+                ShortVector2 coord = mapCollection.GetBlockCoord(position);
+
+                if (mapCollection.TryGetValue(coord, out block))
                 {
-                    AddChangedCoord(coord);
-                    return true;
+                    if (block.Remove(position))
+                    {
+                        AddChangedCoord(coord);
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         }
 
         /// <summary>
@@ -95,7 +126,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public bool Contains(CubicHexCoord position)
         {
-            return ((IMap<CubicHexCoord, T>)this.mapCollection).Contains(position);
+            return this.mapCollection.Contains(position);
         }
 
         /// <summary>
@@ -103,7 +134,7 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public bool TryGetValue(CubicHexCoord position, out T item)
         {
-            return ((IMap<CubicHexCoord, T>)this.mapCollection).TryGetValue(position, out item);
+            return this.mapCollection.TryGetValue(position, out item);
         }
 
         /// <summary>
@@ -111,8 +142,11 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public void Clear()
         {
-            ((IMap<CubicHexCoord, T>)this.mapCollection).Clear();
-            editedBlock.Clear();
+            lock (syncRoot)
+            {
+                this.mapCollection.Clear();
+                editedBlock.Clear();
+            }
         }
 
         /// <summary>
@@ -125,12 +159,15 @@ namespace KouXiaGu.HexTerrain
 
         public IEnumerator<KeyValuePair<CubicHexCoord, T>> GetEnumerator()
         {
-            return ((IMap<CubicHexCoord, T>)this.mapCollection).GetEnumerator();
+            lock (syncRoot)
+            {
+                return this.mapCollection.GetEnumerator();
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IMap<CubicHexCoord, T>)this.mapCollection).GetEnumerator();
+            return this.mapCollection.GetEnumerator();
         }
 
 

@@ -32,7 +32,6 @@ namespace KouXiaGu.HexTerrain
         }
 
 
-
         /// <summary>
         /// 保存地图到这个文件夹;
         /// </summary>
@@ -41,7 +40,7 @@ namespace KouXiaGu.HexTerrain
             throw new NotImplementedException();
         }
 
-        public static void Load()
+        public static void Load(string directoryPath)
         {
             throw new NotImplementedException();
         }
