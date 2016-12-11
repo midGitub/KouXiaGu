@@ -17,8 +17,8 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>
-        public static IEnumerable<TC> GetNeighbours<TC, TDirection>(this TC target, TDirection directions)
-            where TC : IGridPoint<TDirection>
+        public static IEnumerable<TC> GetNeighbours<TC, TD>(this TC target, TD directions)
+            where TC : IGridPoint<TD>
         {
             foreach (var direction in target.GetDirections(directions))
             {
@@ -110,8 +110,8 @@ namespace KouXiaGu.Grids
         /// 广度遍历;
         /// </summary>
         /// <param name="capacity">估计返回的节点数</param>
-        public static IEnumerable<CoordPack<TC, T>> BreadthTraversal<TC, T>(this IMap<TC, T> map, TC target, int capacity = 81)
-            where TC : IGridPoint<IGridPoint>
+        public static IEnumerable<CoordPack<TC, T>> BreadthTraversal<TC, TD, T>(this IMap<TC, T> map, TC target, int capacity = 81)
+            where TC : IGridPoint<TD>
         {
             IEnumerable<TC> breadthTraversalPoints = target.BreadthTraversal(point => !map.Contains(point));
 
@@ -120,6 +120,28 @@ namespace KouXiaGu.Grids
                 yield return new CoordPack<TC, T>(point, map[point]);
             }
 
+        }
+
+        /// <summary>
+        /// 获取到满足条件的方向;若方向不存在节点则为不满足;
+        /// </summary>
+        public static int GetNeighboursAndSelfMask<TC, TD, T>(this IMap<TC, T> map, TC target, Func<T, bool> func)
+            where TC : IGridPoint<TD>
+            where TD : IConvertible
+        {
+            int directions = 0;
+            T item;
+            IEnumerable<TD> aroundDirection = target.DirectionsAndSelf;
+            foreach (var direction in aroundDirection)
+            {
+                TC vePoint = (TC)target.GetDirection(direction);
+                if (map.TryGetValue(vePoint, out item))
+                {
+                    if (func(item))
+                        directions |= direction.ToInt32(null);
+                }
+            }
+            return directions;
         }
 
     }
