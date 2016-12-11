@@ -195,7 +195,7 @@ namespace KouXiaGu.HexTerrain
         {
             bakingCamera.transform.position = request.CameraPosition;
 
-            IEnumerable<BakingNode> bakingNodes = request.GetBakingNodes();
+            IEnumerable<BakingNode> bakingNodes = request.BakingNodes;
             List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
 
             ovenDisplayMeshPool.RecoveryActive();

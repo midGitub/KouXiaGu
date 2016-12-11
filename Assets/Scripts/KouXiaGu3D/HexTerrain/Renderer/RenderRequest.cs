@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace KouXiaGu.HexTerrain
@@ -15,18 +14,31 @@ namespace KouXiaGu.HexTerrain
     public struct RenderRequest
     {
 
-        public RenderRequest(IReadOnlyMap<CubicHexCoord, TerrainNode> map, ShortVector2 blockCoord)
+        public RenderRequest(IReadOnlyMap<CubicHexCoord, TerrainNode> map, ShortVector2 blockCoord) : this()
         {
             this.Map = map;
             this.BlockCoord = blockCoord;
+            this.BakingNodes = GetBakingNodes().ToArray();
+
+            if (BakingNodes.Length == 0)
+                throw new IndexOutOfRangeException("这个块坐标已经超出了地图的定义;");
         }
 
-        public IReadOnlyMap<CubicHexCoord, TerrainNode> Map { get; set; }
+        /// <summary>
+        /// 地形地图;
+        /// </summary>
+        public IReadOnlyMap<CubicHexCoord, TerrainNode> Map { get; private set; }
 
         /// <summary>
         /// 请求烘焙的地图块位置;
         /// </summary>
-        public ShortVector2 BlockCoord { get; set; }
+        public ShortVector2 BlockCoord { get; private set; }
+
+        /// <summary>
+        /// 范围内请求烘焙的节点;
+        /// </summary>
+        public BakingNode[] BakingNodes { get; set; }
+
 
         /// <summary>
         /// 摄像机位置;
@@ -39,7 +51,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到这次需要烘焙的所有节点;
         /// </summary>
-        public IEnumerable<BakingNode> GetBakingNodes()
+        IEnumerable<BakingNode> GetBakingNodes()
         {
             IEnumerable<CubicHexCoord> cover = TerrainData.GetBlockCover(BlockCoord);
             TerrainNode node;
@@ -60,12 +72,9 @@ namespace KouXiaGu.HexTerrain
             }
         }
 
-        //float GetBakingNodeHeight(CubicHexCoord coord)
-        //{
-        //    float height = coord.GetHashCode();
-        //    return height > 0 ? -height : height;
-        //}
-
+        /// <summary>
+        /// 基本的贴图烘焙完毕时调用;
+        /// </summary>
         public void BasicTextureComplete(Texture2D diffuse, Texture2D height)
         {
             TerrainData.Create(BlockCoord, diffuse, height);

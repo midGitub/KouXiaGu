@@ -15,6 +15,25 @@ namespace KouXiaGu.HexTerrain
     {
         TerrainController() { }
 
+        /// <summary>
+        /// 地形地图的目录;
+        /// </summary>
+        [SerializeField]
+        string mapDirectory;
+
+        /// <summary>
+        /// 初始化地形数据;
+        /// </summary>
+        void Initialize()
+        {
+            InitMap();
+        }
+
+
+        void InitMap()
+        {
+            TerrainMap.Load(mapDirectory);
+        }
 
 
 
