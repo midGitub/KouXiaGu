@@ -69,7 +69,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 从像素坐标获取到所在的 立方体坐标;
         /// </summary>
-        public static CubicHexCoord Pixel2DToHex(Vector2 point)
+        public static CubicHexCoord ToHexCubic(this Vector2 point)
         {
             Vector2 pt = new Vector2((point.x - Origin.x) / OuterRadius, (point.y - Origin.y) / OuterRadius);
             float x = (float)(2.0 / 3.0 * pt.x);
@@ -80,16 +80,16 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 像素转换到立方体坐标;
         /// </summary>
-        public static CubicHexCoord PixelToHex(Vector3 point)
+        public static CubicHexCoord ToHexCubic(this Vector3 point)
         {
             Vector2 v2 = new Vector2(point.x, point.z);
-            return Pixel2DToHex(v2);
+            return ToHexCubic(v2);
         }
 
         /// <summary>
         /// 立方体坐标 转换成 2D像素坐标;
         /// </summary>
-        public static Vector2 HexToPixel2D(this CubicHexCoord hex)
+        public static Vector2 ToPixel2D(this CubicHexCoord hex)
         {
             float x = OuterRadius * 1.5f * hex.X;
             float y = (float)(Math.Sqrt(3.0) / 2.0 * hex.X + Math.Sqrt(3.0) * hex.Y) * OuterRadius;
@@ -99,9 +99,9 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 立方体坐标 转换成 3D像素坐标;
         /// </summary>
-        public static Vector3 HexToPixel(this CubicHexCoord hex, float y = 0)
+        public static Vector3 ToPixel(this CubicHexCoord hex, float y = 0)
         {
-            Vector2 v2 = HexToPixel2D(hex);
+            Vector2 v2 = ToPixel2D(hex);
             return new Vector3(v2.x, y, v2.y);
         }
 
@@ -231,7 +231,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 按标记为从 高位到低位 循序排列的数组;不包含本身
         /// </summary>
-        static readonly HexDirections[] HexDirectionsArray = new HexDirections[]
+        static readonly HexDirections[] DirectionsArray = new HexDirections[]
         {
             HexDirections.Northwest,
             HexDirections.Southwest,
@@ -244,29 +244,29 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 按标记为从 高位到低位 循序排列的数组;
         /// </summary>
-        static readonly HexDirections[] HexDirectionsAndSelfArray = Enum.GetValues(typeof(HexDirections)).
+        static readonly HexDirections[] DirectionsAndSelfArray = Enum.GetValues(typeof(HexDirections)).
             Cast<HexDirections>().Reverse().ToArray();
 
         /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
         /// </summary>
-        public static IEnumerable<HexDirections> GetHexDirections()
+        public static IEnumerable<HexDirections> GetDirections()
         {
-            return HexDirectionsArray;
+            return DirectionsArray;
         }
 
         /// <summary>
         /// 获取到从 高位到低位 顺序返回的迭代结构;包括本身;
         /// </summary>
-        public static IEnumerable<HexDirections> GetHexDirectionsAndSelf()
+        public static IEnumerable<HexDirections> GetDirectionsAndSelf()
         {
-            return HexDirectionsAndSelfArray;
+            return DirectionsAndSelfArray;
         }
 
         /// <summary>
         /// 获取到方向集表示的所有方向;
         /// </summary>
-        public static IEnumerable<HexDirections> GetHexDirections(HexDirections directions)
+        public static IEnumerable<HexDirections> GetDirections(HexDirections directions)
         {
             int mask = (int)directions;
             for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
@@ -286,7 +286,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(CubicHexCoord target)
         {
-            foreach (var direction in GetHexDirections())
+            foreach (var direction in GetDirections())
             {
                 CubicHexCoord point = GetDirection(direction) + target;
                 yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
@@ -298,7 +298,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighboursAndSelf(CubicHexCoord target)
         {
-            foreach (var direction in GetHexDirectionsAndSelf())
+            foreach (var direction in GetDirectionsAndSelf())
             {
                 CubicHexCoord point = GetDirection(direction) + target;
                 yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
@@ -310,16 +310,16 @@ namespace KouXiaGu.Grids
         /// </summary>
         public static IEnumerable<KeyValuePair<HexDirections, CubicHexCoord>> GetNeighbours(CubicHexCoord target, HexDirections directions)
         {
-            foreach (var direction in GetHexDirections(directions))
+            foreach (var direction in GetDirections(directions))
             {
                 CubicHexCoord point = GetDirection(direction) + target;
                 yield return new KeyValuePair<HexDirections, CubicHexCoord>(direction, point);
             }
         }
 
-
         /// <summary>
         /// 获取到六边形的范围;
+        /// 半径覆盖到的节点;
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetHexRange(CubicHexCoord target, int step)
         {
@@ -332,7 +332,6 @@ namespace KouXiaGu.Grids
                 }
             }
         }
-
 
         /// <summary>
         /// 获取到目标所在的半径;
@@ -360,7 +359,7 @@ namespace KouXiaGu.Grids
         {
             var cube = center + (GetDirection(HexDirections.Northeast) * radius);
 
-            foreach(var direction in GetHexDirections())
+            foreach(var direction in GetDirections())
             {
                 for (int j = 0; j < radius; j++)
                 {
@@ -383,6 +382,7 @@ namespace KouXiaGu.Grids
             }
             return coords;
         }
+
 
     }
 

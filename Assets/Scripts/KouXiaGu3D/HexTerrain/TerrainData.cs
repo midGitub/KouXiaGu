@@ -333,7 +333,7 @@ namespace KouXiaGu.Terrain3D
         internal static CubicHexCoord BlockToHexCenter(ShortVector2 coord)
         {
             Vector3 pixelCenter = BlockToPixelCenter(coord);
-            return HexGrids.PixelToHex(pixelCenter);
+            return HexGrids.ToHexCubic(pixelCenter);
         }
 
 
@@ -413,7 +413,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static ShortVector2[] GetBelongBlocks(Vector3 point)
         {
-            CubicHexCoord coord = HexGrids.PixelToHex(point);
+            CubicHexCoord coord = HexGrids.ToHexCubic(point);
             return GetBelongBlocks(coord);
         }
 
@@ -433,7 +433,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void GetBelongBlocks(CubicHexCoord coord, ref ShortVector2[] blocks)
         {
-            Vector3 point = HexGrids.HexToPixel(coord);
+            Vector3 point = HexGrids.ToPixel(coord);
             GetBelongBlocks(point, ref blocks);
         }
 

@@ -84,7 +84,7 @@ namespace KouXiaGu.Test
         {
             if (!insObjects.ContainsKey(coord))
             {
-                Vector3 point = HexGrids.HexToPixel(coord);
+                Vector3 point = HexGrids.ToPixel(coord);
                 GameObject gt = Instantiate(textObject, point, Quaternion.identity, parent) as GameObject;
                 gt.SetActive(true);
                 Text t = gt.GetComponentInChildren<Text>();
