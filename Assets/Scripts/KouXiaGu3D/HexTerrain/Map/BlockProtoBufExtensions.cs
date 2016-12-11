@@ -32,7 +32,10 @@ namespace KouXiaGu.HexTerrain
             IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchives();
             foreach (var block in blocks)
             {
-                block.Save(directoryPath, fileMode);
+                lock (blockArchive.SyncWriteRoot)
+                {
+                    block.Save(directoryPath, fileMode);
+                }
             }
         }
 
@@ -44,7 +47,10 @@ namespace KouXiaGu.HexTerrain
             IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchiveAll();
             foreach (var block in blocks)
             {
-                block.Save(directoryPath, fileMode);
+                lock (blockArchive.SyncWriteRoot)
+                {
+                    block.Save(directoryPath, fileMode);
+                }
             }
         }
 
