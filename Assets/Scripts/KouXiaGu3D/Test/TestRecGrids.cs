@@ -6,6 +6,7 @@ using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.Terrain3D;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KouXiaGu.Test
 {
@@ -18,25 +19,55 @@ namespace KouXiaGu.Test
         GameObject prefab;
 
 
-        [ContextMenu("测试广度遍历")]
-        void TestBreadthTraversal()
+        [ContextMenu("测试广度遍历1")]
+        void TestBreadthTraversal1()
         {
-            StartCoroutine(BreadthTraversal());
+            StartCoroutine(BreadthTraversal1());
         }
 
-        IEnumerator BreadthTraversal()
+        IEnumerator BreadthTraversal1()
         {
+            WaitForSeconds wait = new WaitForSeconds(1);
             foreach (var point in ShortVector2.Zero.BreadthTraversal(_ => true))
             {
                 Instantiate(point);
-                yield return new WaitForSeconds(2);
+                yield return wait;
             }
+            Debug.Log("BreadthTraversal1 _Done");
         }
+
+
+        [ContextMenu("测试广度遍历2")]
+        void TestBreadthTraversal2()
+        {
+            StartCoroutine(BreadthTraversal2());
+        }
+
+        /// <summary>
+        /// 不显示 x轴为奇数 而且 y轴不为2的;
+        /// </summary>
+        IEnumerator BreadthTraversal2()
+        {
+            WaitForSeconds wait = new WaitForSeconds(1);
+            foreach (var point in ShortVector2.Zero.BreadthTraversal(point => (point.x & 1) == 1 && point.y != 2))
+            {
+                Instantiate(point);
+                yield return wait;
+            }
+            Debug.Log("BreadthTraversal2 _Done");
+        }
+
 
         void Instantiate(ShortVector2 position)
         {
-            
+            Vector3 pos = new Vector3(position.x, 0, position.y);
+            var gObject = Instantiate(prefab, pos, prefab.transform.rotation, this.transform) as GameObject;
+            gObject.SetActive(true);
+            Text textObject = gObject.GetComponentInChildren<Text>();
+            textObject.text = position.ToString();
         }
+
+       
 
     }
 

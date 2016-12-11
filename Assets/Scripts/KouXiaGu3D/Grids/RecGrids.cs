@@ -140,6 +140,20 @@ namespace KouXiaGu.Grids
 
 
         /// <summary>
+        /// 获取到所属的块编号;
+        /// </summary>
+        public static ShortVector2 Block(this ShortVector2 target, int size)
+        {
+            short x = (short)Math.Round(target.x / (float)size);
+            short y = (short)Math.Round(target.y / (float)size);
+            return new ShortVector2(x, y);
+        }
+
+        
+
+
+
+        /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>
         public static IEnumerable<ShortVector2> GetNeighbours(this ShortVector2 target)
@@ -201,7 +215,7 @@ namespace KouXiaGu.Grids
         /// <param name="capacity">估计返回的节点数</param>
         public static IEnumerable<ShortVector2> BreadthTraversal(this ShortVector2 target, Func<ShortVector2, bool> close, int capacity = 81)
         {
-            if (close(target))
+            if (!close(target))
             {
                 yield return target;
 
@@ -219,15 +233,22 @@ namespace KouXiaGu.Grids
                     {
                         if (!returnedPoints.Contains(neighbour))
                         {
-                            yield return neighbour;
-                            returnedPoints.Add(neighbour);
-                            waitPoints.Enqueue(neighbour);
+                            if (close(neighbour))
+                            {
+                                returnedPoints.Add(neighbour);
+                            }
+                            else
+                            {
+                                yield return neighbour;
+                                returnedPoints.Add(neighbour);
+                                waitPoints.Enqueue(neighbour);
+                            }
                         }
                     }
 
                 }
-            }
 
+            }
         }
 
         /// <summary>
