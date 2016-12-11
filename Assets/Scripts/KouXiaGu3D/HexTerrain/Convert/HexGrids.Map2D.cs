@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.HexTerrain
+namespace KouXiaGu.Terrain3D
 {
 
     //对 IMap2D 接口的拓展;
@@ -14,7 +14,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<CoordPack<ShortVector2, HexDirections, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             var aroundPoints = GetNeighbours(target);
@@ -24,14 +24,14 @@ namespace KouXiaGu.HexTerrain
                 {
                     item = default(T);
                 }
-                yield return new HexDirectionPack<ShortVector2, T>(point.Key, point.Value, item);
+                yield return new CoordPack<ShortVector2, HexDirections, T>(point.Key, point.Value, item);
             }
         }
 
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighboursAndSelfOrDefault<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<CoordPack<ShortVector2, HexDirections, T>> GetNeighboursAndSelfOrDefault<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             var aroundPoints = GetNeighboursAndSelf(target);
@@ -41,14 +41,14 @@ namespace KouXiaGu.HexTerrain
                 {
                     item = default(T);
                 }
-                yield return new HexDirectionPack<ShortVector2, T>(point.Key, point.Value, item);
+                yield return new CoordPack<ShortVector2, HexDirections, T>(point.Key, point.Value, item);
             }
         }
 
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target, HexDirections directions)
+        public static IEnumerable<CoordPack<ShortVector2, HexDirections, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -58,14 +58,14 @@ namespace KouXiaGu.HexTerrain
                 {
                     item = default(T);
                 }
-                yield return new HexDirectionPack<ShortVector2, T>(point.Key, point.Value, item);
+                yield return new CoordPack<ShortVector2, HexDirections, T>(point.Key, point.Value, item);
             }
         }
 
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighbours<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<CoordPack<ShortVector2, HexDirections, T>> GetNeighbours<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             var aroundPoints = GetNeighbours(target);
@@ -73,7 +73,7 @@ namespace KouXiaGu.HexTerrain
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
-                    yield return new HexDirectionPack<ShortVector2, T>(point.Key, point.Value, item);
+                    yield return new CoordPack<ShortVector2, HexDirections, T>(point.Key, point.Value, item);
                 }
             }
         }
@@ -81,7 +81,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighboursAndSelf<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<CoordPack<ShortVector2, HexDirections, T>> GetNeighboursAndSelf<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target)
         {
             T item;
             var aroundPoints = GetNeighboursAndSelf(target);
@@ -89,7 +89,7 @@ namespace KouXiaGu.HexTerrain
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
-                    yield return new HexDirectionPack<ShortVector2, T>(point.Key, point.Value, item);
+                    yield return new CoordPack<ShortVector2, HexDirections, T>(point.Key, point.Value, item);
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<ShortVector2, T>> GetNeighbours<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target, HexDirections directions)
+        public static IEnumerable<CoordPack<ShortVector2, HexDirections, T>> GetNeighbours<T>(this IReadOnlyMap<ShortVector2, T> map, ShortVector2 target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -105,7 +105,7 @@ namespace KouXiaGu.HexTerrain
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
-                    yield return new HexDirectionPack<ShortVector2, T>(point.Key, point.Value, item);
+                    yield return new CoordPack<ShortVector2, HexDirections, T>(point.Key, point.Value, item);
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
+        public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
         {
             T item;
             var aroundPoints = GetNeighbours(target);
@@ -146,14 +146,14 @@ namespace KouXiaGu.HexTerrain
                 {
                     item = default(T);
                 }
-                yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                yield return new CoordPack<CubicHexCoord, HexDirections, T>(point.Key, point.Value, item);
             }
         }
 
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursAndSelfOrDefault<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
+        public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighboursAndSelfOrDefault<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
         {
             T item;
             var aroundPoints = GetNeighboursAndSelf(target);
@@ -163,14 +163,14 @@ namespace KouXiaGu.HexTerrain
                 {
                     item = default(T);
                 }
-                yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                yield return new CoordPack<CubicHexCoord, HexDirections, T>(point.Key, point.Value, item);
             }
         }
 
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target, HexDirections directions)
+        public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighboursOrDefault<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -180,14 +180,14 @@ namespace KouXiaGu.HexTerrain
                 {
                     item = default(T);
                 }
-                yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                yield return new CoordPack<CubicHexCoord, HexDirections, T>(point.Key, point.Value, item);
             }
         }
 
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighbours<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
+        public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighbours<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
         {
             T item;
             var aroundPoints = GetNeighbours(target);
@@ -195,7 +195,7 @@ namespace KouXiaGu.HexTerrain
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
-                    yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                    yield return new CoordPack<CubicHexCoord, HexDirections, T>(point.Key, point.Value, item);
                 }
             }
         }
@@ -203,7 +203,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighboursAndSelf<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
+        public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighboursAndSelf<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target)
         {
             T item;
             var aroundPoints = GetNeighboursAndSelf(target);
@@ -211,7 +211,7 @@ namespace KouXiaGu.HexTerrain
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
-                    yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                    yield return new CoordPack<CubicHexCoord, HexDirections, T>(point.Key, point.Value, item);
                 }
             }
         }
@@ -219,7 +219,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<HexDirectionPack<CubicHexCoord, T>> GetNeighbours<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target, HexDirections directions)
+        public static IEnumerable<CoordPack<CubicHexCoord, HexDirections, T>> GetNeighbours<T>(this IReadOnlyMap<CubicHexCoord, T> map, CubicHexCoord target, HexDirections directions)
         {
             T item;
             var aroundPoints = GetNeighbours(target, directions);
@@ -227,7 +227,7 @@ namespace KouXiaGu.HexTerrain
             {
                 if (map.TryGetValue(point.Value, out item))
                 {
-                    yield return new HexDirectionPack<CubicHexCoord, T>(point.Key, point.Value, item);
+                    yield return new CoordPack<CubicHexCoord, HexDirections, T>(point.Key, point.Value, item);
                 }
             }
         }

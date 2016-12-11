@@ -4,7 +4,7 @@ using KouXiaGu;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using KouXiaGu.HexTerrain;
+using KouXiaGu.Terrain3D;
 
 namespace KouXiaGu.Test
 {

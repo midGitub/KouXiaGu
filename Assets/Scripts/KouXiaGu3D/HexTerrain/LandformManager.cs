@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 using System;
 using UniRx;
 
-namespace KouXiaGu.HexTerrain
+namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KouXiaGu.HexTerrain
+namespace KouXiaGu.Terrain3D
 {
 
 

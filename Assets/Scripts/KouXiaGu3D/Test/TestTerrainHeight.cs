@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using KouXiaGu.HexTerrain;
+using KouXiaGu.Terrain3D;
 using UnityEngine;
 
 namespace KouXiaGu.Test
@@ -15,7 +15,7 @@ namespace KouXiaGu.Test
 
         void Update()
         {
-            transform.position = new Vector3(transform.position.x, HexTerrain.TerrainData.GetHeight(transform.position), transform.position.z);
+            transform.position = new Vector3(transform.position.x, Terrain3D.TerrainData.GetHeight(transform.position), transform.position.z);
         }
 
 

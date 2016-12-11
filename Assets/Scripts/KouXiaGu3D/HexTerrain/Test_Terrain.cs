@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 
-namespace KouXiaGu.HexTerrain
+namespace KouXiaGu.Terrain3D
 {
 
 

@@ -1,4 +1,4 @@
-﻿using KouXiaGu.HexTerrain;
+﻿using KouXiaGu.Terrain3D;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -64,14 +64,14 @@ namespace KouXiaGu.Test
             Vector3 cubePixel = HexGrids.HexToPixel(cube);
             ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            ShortVector2 terrainBlockCoord = HexTerrain.TerrainData.PixelToBlock(pixel);
-            Vector3 terrainBlockCenter = HexTerrain.TerrainData.BlockToPixelCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = HexTerrain.TerrainData.BlockToHexCenter(terrainBlockCoord);
-            Rect terrainBlockRect = HexTerrain.TerrainData.CenterToRect(terrainBlockCenter);
-            Vector2 terrainBlockLocal = HexTerrain.TerrainData.PixelToLocal(pixel);
-            Vector2 terrainBlockUV = HexTerrain.TerrainData.PixelToUV(pixel);
-            float terrainHeight = HexTerrain.TerrainData.GetHeight(pixel);
-            ShortVector2[] terrainBlocks = HexTerrain.TerrainData.GetBelongBlocks(pixel);
+            ShortVector2 terrainBlockCoord = Terrain3D.TerrainData.PixelToBlock(pixel);
+            Vector3 terrainBlockCenter = Terrain3D.TerrainData.BlockToPixelCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = Terrain3D.TerrainData.BlockToHexCenter(terrainBlockCoord);
+            Rect terrainBlockRect = Terrain3D.TerrainData.CenterToRect(terrainBlockCenter);
+            Vector2 terrainBlockLocal = Terrain3D.TerrainData.PixelToLocal(pixel);
+            Vector2 terrainBlockUV = Terrain3D.TerrainData.PixelToUV(pixel);
+            float terrainHeight = Terrain3D.TerrainData.GetHeight(pixel);
+            ShortVector2[] terrainBlocks = Terrain3D.TerrainData.GetBelongBlocks(pixel);
 
             string str = "";
 

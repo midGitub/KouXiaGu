@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections;
 
 
-namespace KouXiaGu.HexTerrain
+namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>

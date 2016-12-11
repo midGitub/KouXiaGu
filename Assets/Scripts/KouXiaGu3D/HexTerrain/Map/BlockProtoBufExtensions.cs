@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 
 
-namespace KouXiaGu.HexTerrain
+namespace KouXiaGu.Terrain3D
 {
 
 

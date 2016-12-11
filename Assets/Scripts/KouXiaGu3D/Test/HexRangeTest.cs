@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using KouXiaGu.HexTerrain;
+using KouXiaGu.Terrain3D;
 
 namespace KouXiaGu.Test
 {
@@ -73,7 +73,7 @@ namespace KouXiaGu.Test
 
         void Output(ShortVector2 coord)
         {
-            foreach (var item in HexTerrain.TerrainData.GetBlockCover(coord))
+            foreach (var item in Terrain3D.TerrainData.GetBlockCover(coord))
             {
                 this.Instantiate(item);
             }
