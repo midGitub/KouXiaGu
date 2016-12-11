@@ -5,6 +5,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Test
 {

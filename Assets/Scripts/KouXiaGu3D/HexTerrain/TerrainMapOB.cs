@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.IO;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
 {

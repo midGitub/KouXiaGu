@@ -1,7 +1,7 @@
 ﻿using System;
 using ProtoBuf;
 
-namespace KouXiaGu
+namespace KouXiaGu.Grids
 {
 
     /// <summary>

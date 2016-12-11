@@ -5,7 +5,7 @@
 using System;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.Grids
 {
 
     [Serializable]
