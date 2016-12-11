@@ -322,8 +322,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         internal static Vector3 BlockToPixelCenter(ShortVector2 coord)
         {
-            float x = coord.x * BlockWidth;
-            float z = coord.y * BlockHeight;
+            float x = coord.X * BlockWidth;
+            float z = coord.Y * BlockHeight;
             return new Vector3(x, 0, z);
         }
 

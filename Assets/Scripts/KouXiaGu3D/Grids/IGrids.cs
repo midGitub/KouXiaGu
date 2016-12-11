@@ -3,14 +3,26 @@
 namespace KouXiaGu
 {
 
-
-    public interface IGrids<TCoord, TDirection>
+    /// <summary>
+    /// 网格的点结构;
+    /// </summary>
+    public interface IGridPoint
     {
-        TCoord GetDirection(TDirection direction);
-        TCoord GetDirectionOffset(TDirection direction);
-        IEnumerable<TCoord> GetNeighbours();
-        IEnumerable<TCoord> GetNeighbours(TDirection directions);
-        IEnumerable<TCoord> GetNeighboursAndSelf();
+        short X { get; }
+        short Y { get; }
+
+        IEnumerable<IGridPoint> GetNeighbours();
+    }
+
+    /// <summary>
+    /// 带方向的网格点;
+    /// </summary>
+    public interface IGridPoint<TDirection> : IGridPoint
+    {
+        IGridPoint GetDirection(TDirection direction);
+        IGridPoint GetDirectionOffset(TDirection direction);
+        IEnumerable<IGridPoint> GetNeighbours(TDirection directions);
+        IEnumerable<IGridPoint> GetNeighboursAndSelf();
     }
 
 

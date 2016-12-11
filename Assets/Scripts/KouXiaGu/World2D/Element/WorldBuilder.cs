@@ -100,11 +100,11 @@ namespace KouXiaGu.World2D
         /// </summary>
         bool WithinRange(ShortVector2 range, ShortVector2 centerPoint, ShortVector2 current)
         {
-            ShortVector2 southwestPoint = new ShortVector2(centerPoint.x - range.x, centerPoint.y - range.y);
-            ShortVector2 northeastPoint = new ShortVector2(centerPoint.x + range.x, centerPoint.y + range.y);
+            ShortVector2 southwestPoint = new ShortVector2(centerPoint.X - range.X, centerPoint.Y - range.Y);
+            ShortVector2 northeastPoint = new ShortVector2(centerPoint.X + range.X, centerPoint.Y + range.Y);
 
-            return current.x > southwestPoint.x && current.y > southwestPoint.y &&
-                current.x < northeastPoint.x && current.y < northeastPoint.y;
+            return current.X > southwestPoint.X && current.Y > southwestPoint.Y &&
+                current.X < northeastPoint.X && current.Y < northeastPoint.Y;
         }
 
         /// <summary>
@@ -223,8 +223,8 @@ namespace KouXiaGu.World2D
         /// </summary>
         ShortVector2 GetSouthwestPoint(ShortVector2 centerPoint)
         {
-            centerPoint.x -= buildUpdateRange.x;
-            centerPoint.y -= buildUpdateRange.y;
+            centerPoint.X -= buildUpdateRange.X;
+            centerPoint.Y -= buildUpdateRange.Y;
             return centerPoint;
         }
 
@@ -233,8 +233,8 @@ namespace KouXiaGu.World2D
         /// </summary>
         ShortVector2 GetNortheastPoint(ShortVector2 centerPoint)
         {
-            centerPoint.x += buildUpdateRange.x;
-            centerPoint.y += buildUpdateRange.y;
+            centerPoint.X += buildUpdateRange.X;
+            centerPoint.Y += buildUpdateRange.Y;
             return centerPoint;
         }
     }

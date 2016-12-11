@@ -83,8 +83,8 @@ namespace KouXiaGu.World2D.Map
         {
             ShortVector2 address = new ShortVector2();
 
-            address.x = (short)(position.x / partitionSize.x);
-            address.y = (short)(position.y / partitionSize.y);
+            address.X = (short)(position.X / partitionSize.X);
+            address.Y = (short)(position.Y / partitionSize.Y);
 
             return address;
         }
@@ -97,8 +97,8 @@ namespace KouXiaGu.World2D.Map
             ShortVector2 address = new ShortVector2();
             int realPositionX, realPositionY;
 
-            address.x = (short)(Math.DivRem(position.x, partitionSize.x, out realPositionX));
-            address.y = (short)(Math.DivRem(position.y, partitionSize.y, out realPositionY));
+            address.X = (short)(Math.DivRem(position.X, partitionSize.X, out realPositionX));
+            address.Y = (short)(Math.DivRem(position.Y, partitionSize.Y, out realPositionY));
             realPosition = new ShortVector2((short)realPositionX, (short)realPositionY);
 
             return address;
@@ -111,8 +111,8 @@ namespace KouXiaGu.World2D.Map
         {
             ShortVector2 mapPoint = new ShortVector2();
 
-            mapPoint.x = (short)(address.x * partitionSize.x + addressPoint.x);
-            mapPoint.y = (short)(address.y * partitionSize.y + addressPoint.y);
+            mapPoint.X = (short)(address.X * partitionSize.X + addressPoint.X);
+            mapPoint.Y = (short)(address.Y * partitionSize.Y + addressPoint.Y);
 
             return mapPoint;
         }
@@ -151,8 +151,8 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         ShortVector2 GetSouthwestAddressPoint(ShortVector2 address)
         {
-            address.x -= partitionSize.x;
-            address.y -= partitionSize.y;
+            address.X -= partitionSize.X;
+            address.Y -= partitionSize.Y;
             return address;
         }
 
@@ -161,8 +161,8 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         ShortVector2 GetNortheastAddressPoint(ShortVector2 address)
         {
-            address.x += partitionSize.x;
-            address.y += partitionSize.y;
+            address.X += partitionSize.X;
+            address.Y += partitionSize.Y;
             return address;
         }
 

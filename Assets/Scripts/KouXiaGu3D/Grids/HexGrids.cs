@@ -70,7 +70,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public static CubicHexCoord ToHexCubic(this Vector2 point)
         {
-            Vector2 pt = new Vector2((point.x - Origin.x) / OuterRadius, (point.y - Origin.y) / OuterRadius);
+            Vector2 pt = new Vector2((point.x - Origin.X) / OuterRadius, (point.y - Origin.Y) / OuterRadius);
             float x = (float)(2.0 / 3.0 * pt.x);
             float y = (float)(-1.0 / 3.0 * pt.x + Math.Sqrt(3.0) / 3.0 * pt.y);
             return new CubicHexCoord(x, y, (-x - y));

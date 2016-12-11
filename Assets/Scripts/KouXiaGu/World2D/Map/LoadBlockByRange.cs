@@ -87,9 +87,9 @@ namespace KouXiaGu.World2D.Map
             ShortVector2 southwestAddress = GetSouthwestAddress(centerPoint);
             ShortVector2 northeastAddress = GetNortheastAddress(centerPoint);
 
-            for (short x = southwestAddress.x; x <= northeastAddress.x; x++)
+            for (short x = southwestAddress.X; x <= northeastAddress.X; x++)
             {
-                for (short y = southwestAddress.y; y <= northeastAddress.y; y++)
+                for (short y = southwestAddress.Y; y <= northeastAddress.Y; y++)
                 {
                     yield return new ShortVector2(x, y);
                 }
@@ -115,8 +115,8 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         ShortVector2 GetSouthwestPoint(ShortVector2 centerPoint)
         {
-            centerPoint.x -= loadRange.x;
-            centerPoint.y -= loadRange.y;
+            centerPoint.X -= loadRange.X;
+            centerPoint.Y -= loadRange.Y;
             return centerPoint;
         }
 
@@ -125,8 +125,8 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         ShortVector2 GetNortheastPoint(ShortVector2 centerPoint)
         {
-            centerPoint.x += loadRange.x;
-            centerPoint.y += loadRange.y;
+            centerPoint.X += loadRange.X;
+            centerPoint.Y += loadRange.Y;
             return centerPoint;
         }
 
