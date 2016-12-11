@@ -1,7 +1,7 @@
 ﻿using System;
 using ProtoBuf;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu
 {
 
     /// <summary>

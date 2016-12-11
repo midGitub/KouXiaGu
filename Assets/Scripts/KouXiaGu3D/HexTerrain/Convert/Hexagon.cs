@@ -5,7 +5,7 @@
 using System;
 using UnityEngine;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu
 {
 
     [Serializable]
