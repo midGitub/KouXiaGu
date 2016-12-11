@@ -11,7 +11,6 @@ namespace KouXiaGu
         Empty,
         Reading,
         Writing,
-        Complete,
     }
 
 }

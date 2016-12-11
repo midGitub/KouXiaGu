@@ -27,7 +27,7 @@ namespace KouXiaGu.HexTerrain
         /// <summary>
         /// 地图当前的进行状态;
         /// </summary>
-        static readonly ArchiveState state = ArchiveState.Empty;
+        static ArchiveState state = ArchiveState.Empty;
 
         /// <summary>
         /// 地图当前的进行状态;
@@ -35,6 +35,7 @@ namespace KouXiaGu.HexTerrain
         public static ArchiveState State
         {
             get { return state; }
+            private set { state = value; }
         }
 
         /// <summary>
@@ -53,13 +54,31 @@ namespace KouXiaGu.HexTerrain
             get { return terrainMap; }
         }
 
+        /// <summary>
+        /// 地图是否为空?
+        /// </summary>
+        public static bool IsEmpty
+        {
+            get { return terrainMap.Count == 0; }
+        }
+
 
         /// <summary>
         /// 保存需要保存的内容到文件(同步的);
         /// </summary>
         public static void Save(string directoryPath)
         {
-            terrainMap.Save(directoryPath, FileMode.Create);
+            ArchiveState currentState = State;
+            try
+            {
+                State = ArchiveState.Writing;
+                terrainMap.Save(directoryPath, FileMode.Create);
+                State = currentState;
+            }
+            finally
+            {
+                State = currentState;
+            }
         }
 
         /// <summary>
@@ -67,7 +86,17 @@ namespace KouXiaGu.HexTerrain
         /// </summary>
         public static void Load(string directoryPath)
         {
-            terrainMap.Load(directoryPath);
+            ArchiveState currentState = State;
+            try
+            {
+                State = ArchiveState.Reading;
+                terrainMap.Load(directoryPath);
+                State = currentState;
+            }
+            finally
+            {
+                State = currentState;
+            }
         }
 
     }
