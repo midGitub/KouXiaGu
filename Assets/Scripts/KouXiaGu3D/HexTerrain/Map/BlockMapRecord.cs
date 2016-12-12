@@ -19,14 +19,14 @@ namespace KouXiaGu.Terrain3D
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
         public BlockMapRecord(short blockSize)
         {
-            mapCollection = new BlockMap<T>(blockSize);
+            mapCollection = new BlockedMap<T>(blockSize);
             editedBlock = new HashSet<RectCoord>();
         }
 
         /// <summary>
         /// 块地图结构;
         /// </summary>
-        readonly BlockMap<T> mapCollection;
+        readonly BlockedMap<T> mapCollection;
 
         /// <summary>
         /// 在上次保存之后进行过编辑的块编号;

@@ -10,11 +10,11 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 采用分块保存的地图结构;
     /// </summary>
-    public class BlockMap<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>, IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>
+    public class BlockedMap<T> : IMap<CubicHexCoord, T>, IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>
     {
 
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
-        public BlockMap(short blockSize)
+        public BlockedMap(short blockSize)
         {
             this.blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
             this.blockCount = blockSize * blockSize;
