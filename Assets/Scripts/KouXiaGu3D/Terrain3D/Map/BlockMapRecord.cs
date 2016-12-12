@@ -180,7 +180,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         bool IBlockArchive<CubicHexCoord, T>.Contains(RectCoord coord)
         {
-           return mapCollection.ContainsKey(coord);
+           return mapCollection.Contains(coord);
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 采用分块保存的地图结构;
     /// </summary>
-    public class BlockedMap<T> : IMap<CubicHexCoord, T>, IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>
+    public class BlockedMap<T> : IMap<CubicHexCoord, T>, IMap<RectCoord, Dictionary<CubicHexCoord, T>>
     {
 
         CubicHexBlock block;
@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// Key 保存块的编号, Value 保存块内容;
         /// </summary>
-        Dictionary<RectCoord, Dictionary<CubicHexCoord, T>> mapCollection;
+        Map<RectCoord, Dictionary<CubicHexCoord, T>> mapCollection;
 
         public T this[CubicHexCoord position]
         {
@@ -58,7 +58,7 @@ namespace KouXiaGu.Terrain3D
         public BlockedMap(short blockSize)
         {
             block = new CubicHexBlock(blockSize);
-            mapCollection = new Dictionary<RectCoord, Dictionary<CubicHexCoord, T>>();
+            mapCollection = new Map<RectCoord, Dictionary<CubicHexCoord, T>>();
         }
 
         /// <summary>
@@ -186,82 +186,47 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        #region IDictionary
 
-        public Dictionary<CubicHexCoord, T> this[RectCoord key]
+        IEnumerable<RectCoord> IMap<RectCoord, Dictionary<CubicHexCoord, T>>.Keys
         {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key]; }
-            set { ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key] = value; }
+            get { return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Keys; }
         }
 
-        int ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.Count
+        IEnumerable<Dictionary<CubicHexCoord, T>> IMap<RectCoord, Dictionary<CubicHexCoord, T>>.Values
         {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Count; }
+            get { return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Values; }
         }
 
-        ICollection<RectCoord> IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>.Keys
+        public Dictionary<CubicHexCoord, T> this[RectCoord position]
         {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Keys; }
+            get { return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[position]; }
+            set { ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[position] = value; }
         }
 
-        ICollection<Dictionary<CubicHexCoord, T>> IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>.Values
+        public void Add(RectCoord position, Dictionary<CubicHexCoord, T> item)
         {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Values; }
+            ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Add(position, item);
         }
 
-        bool ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.IsReadOnly
+        public bool Remove(RectCoord position)
         {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).IsReadOnly; }
+            return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Remove(position);
         }
 
-
-        public void Add(RectCoord key, Dictionary<CubicHexCoord, T> value)
+        public bool Contains(RectCoord position)
         {
-            ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Add(key, value);
+            return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Contains(position);
         }
 
-        public void Add(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>> item)
+        public bool TryGetValue(RectCoord position, out Dictionary<CubicHexCoord, T> item)
         {
-            ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Add(item);
-        }
-
-        public bool Remove(RectCoord key)
-        {
-            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Remove(key);
-        }
-
-        public bool Remove(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>> item)
-        {
-            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Remove(item);
-        }
-
-        public bool ContainsKey(RectCoord key)
-        {
-            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).ContainsKey(key);
-        }
-
-        public bool Contains(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>> item)
-        {
-            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Contains(item);
-        }
-
-        public bool TryGetValue(RectCoord key, out Dictionary<CubicHexCoord, T> value)
-        {
-            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).TryGetValue(key, out value);
-        }
-
-
-        public void CopyTo(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>[] array, int arrayIndex)
-        {
-            ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).CopyTo(array, arrayIndex);
+            return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).TryGetValue(position, out item);
         }
 
         IEnumerator<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>> IEnumerable<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.GetEnumerator()
         {
-            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).GetEnumerator();
+            return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).GetEnumerator();
         }
-
-        #endregion
 
     }
 

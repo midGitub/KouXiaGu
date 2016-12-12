@@ -6,14 +6,14 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    public interface IReadOnlyMap<TP, T>
-    {
-        T this[TP position] { get; }
-        int Count { get; }
+    //public interface IReadOnlyMap<TP, T>
+    //{
+    //    T this[TP position] { get; }
+    //    int Count { get; }
 
-        bool Contains(TP position);
-        bool TryGetValue(TP position, out T item);
-    }
+    //    bool Contains(TP position);
+    //    bool TryGetValue(TP position, out T item);
+    //}
 
     public interface IMap<TP, T> : IEnumerable<KeyValuePair<TP, T>>
     {

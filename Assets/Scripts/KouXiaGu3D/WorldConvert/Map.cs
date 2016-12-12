@@ -10,7 +10,7 @@ namespace KouXiaGu
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [ProtoContract]
-    public class Map<TP, T> : IMap<TP, T>, IReadOnlyMap<TP, T>
+    public class Map<TP, T> : IMap<TP, T>
     {
 
         /// <summary>
