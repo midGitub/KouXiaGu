@@ -124,7 +124,6 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-
         public override int GetHashCode()
         {
             return Coord.GetHashCode();
@@ -251,11 +250,11 @@ namespace KouXiaGu.Terrain3D
         public static float GetHeight(Vector3 position)
         {
             TerrainData block;
-            RectCoord coord = PixelToBlock(position);
+            RectCoord coord;
+            Vector2 uv = RectGrid.GetUV(position, out coord);
+
             if (activatedBlocks.TryGetValue(coord, out block))
             {
-                Vector2 uv = PixelToUV(position);
-
                 int x = (int)(uv.x * block.HeightTexture.width);
                 int y = (int)(uv.y * block.HeightTexture.height);
 
@@ -281,7 +280,7 @@ namespace KouXiaGu.Terrain3D
         }
         
         /// <summary>
-        /// 地图块大小(需要大于或等于2),根据需要修改;
+        /// 地图块大小(需要大于或等于2);
         /// </summary>
         public const int size = 3;
 
@@ -298,24 +297,10 @@ namespace KouXiaGu.Terrain3D
         public static readonly float BlockHeightHalf = BlockHeight / 2;
 
 
-        /// <summary>
-        /// 从像素节点 获取到所属的地形块;
-        /// </summary>
-        internal static RectCoord PixelToBlock(Vector3 position)
+        static readonly RectGrid rectGrid = new RectGrid(BlockWidth, BlockHeight);
+        public static RectGrid RectGrid
         {
-            short x = (short)Math.Round(position.x / BlockWidth);
-            short y = (short)Math.Round(position.z / BlockHeight);
-            return new RectCoord(x, y);
-        }
-
-
-        /// <summary>
-        /// 从像素坐标 转换为 所在块的中心像素坐标;
-        /// </summary>
-        internal static Vector3 PixelToCenter(Vector3 position)
-        {
-            RectCoord coord = PixelToBlock(position);
-            return BlockToPixelCenter(coord);
+            get { return rectGrid; }
         }
 
         /// <summary>
@@ -333,55 +318,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         internal static CubicHexCoord BlockToHexCenter(RectCoord coord)
         {
-            Vector3 pixelCenter = BlockToPixelCenter(coord);
-            return GridConvert.ToHexCubic(pixelCenter);
+            Vector3 pixelCenter = RectGrid.GetCenter(coord);
+            return GridConvert.Grid.GetCubic(pixelCenter);
         }
-
-
-
-        /// <summary>
-        /// 地图块坐标 到获取到其在场景中的矩形大小;
-        /// </summary>
-        internal static Rect BlockToRect(RectCoord coord)
-        {
-            Vector3 blockCenter = BlockToPixelCenter(coord);
-            return CenterToRect(blockCenter);
-        }
-
-        /// <summary>
-        /// 地图块中心坐标 获取到其在场景中的矩形大小;
-        /// </summary>
-        internal static Rect CenterToRect(Vector3 blockCenter)
-        {
-            Vector2 southwestPoint = new Vector2(blockCenter.x - BlockWidthHalf, blockCenter.z - BlockHeightHalf);
-            Vector2 size = new Vector2(BlockWidth, BlockHeight);
-            return new Rect(southwestPoint, size);
-        }
-
-
-        /// <summary>
-        /// 像素坐标转换成地图块的本地坐标;
-        /// </summary>
-        internal static Vector2 PixelToLocal(Vector3 position)
-        {
-            Vector3 blockCenter = PixelToCenter(position);
-            Rect block = CenterToRect(blockCenter);
-            Vector2 local = new Vector2(position.x - block.xMin, position.z - block.yMin);
-            return local;
-        }
-
-        /// <summary>
-        /// 像素坐标 转换为 地图块的UV坐标;
-        /// </summary>
-        internal static Vector2 PixelToUV(Vector3 position)
-        {
-            Vector3 blockCenter = PixelToCenter(position);
-            Rect block = CenterToRect(blockCenter);
-            Vector2 local = new Vector2(position.x - block.xMin, position.z - block.yMin);
-            Vector2 uv = new Vector2(local.x / block.width, local.y / block.height);
-            return uv;
-        }
-
 
 
         /// <summary>
@@ -414,7 +353,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static RectCoord[] GetBelongBlocks(Vector3 point)
         {
-            CubicHexCoord coord = GridConvert.ToHexCubic(point);
+            CubicHexCoord coord = GridConvert.Grid.GetCubic(point);
             return GetBelongBlocks(coord);
         }
 
@@ -434,7 +373,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void GetBelongBlocks(CubicHexCoord coord, ref RectCoord[] blocks)
         {
-            Vector3 point = GridConvert.ToPixel(coord);
+            Vector3 point = GridConvert.Grid.GetPixel(coord);
             GetBelongBlocks(point, ref blocks);
         }
 
@@ -452,10 +391,10 @@ namespace KouXiaGu.Terrain3D
             try
             {
                 Vector3 point1 = pointCenter + cBelongPoint1;
-                blocks[0] = PixelToBlock(point1);
+                blocks[0] = rectGrid.GetCoord(point1);
 
                 Vector3 point2 = pointCenter + cBelongPoint2;
-                blocks[1] = PixelToBlock(point2);
+                blocks[1] = rectGrid.GetCoord(point2);
             }
             catch (ArgumentOutOfRangeException)
             {

@@ -57,20 +57,21 @@ namespace KouXiaGu.Test
         {
             Vector3 pixel = MouseConvert.MouseToPixel();
             //ShortVector2 offset = HexGrids.PixelToOffset(pixel);
-            CubicHexCoord cube = GridConvert.ToHexCubic(pixel);
+            CubicHexCoord cube = GridConvert.Grid.GetCubic(pixel);
 
             //Vector3 offsetPixel = HexGrids.OffsetToPixel(offset);
             //CubicHexCoord offsetCube = HexGrids.OffsetToHex(offset);
 
-            Vector3 cubePixel = GridConvert.ToPixel(cube);
+            Vector3 cubePixel = GridConvert.Grid.GetPixel(cube);
             //ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            RectCoord terrainBlockCoord = Terrain3D.TerrainData.PixelToBlock(pixel);
-            Vector3 terrainBlockCenter = Terrain3D.TerrainData.BlockToPixelCenter(terrainBlockCoord);
+            RectCoord terrainBlockCoord = Terrain3D.TerrainData.RectGrid.GetCoord(pixel);
+            Vector3 terrainBlockCenter = Terrain3D.TerrainData.RectGrid.GetCenter(terrainBlockCoord);
             CubicHexCoord terrainBlockHexCenter = Terrain3D.TerrainData.BlockToHexCenter(terrainBlockCoord);
-            Rect terrainBlockRect = Terrain3D.TerrainData.CenterToRect(terrainBlockCenter);
-            Vector2 terrainBlockLocal = Terrain3D.TerrainData.PixelToLocal(pixel);
-            Vector2 terrainBlockUV = Terrain3D.TerrainData.PixelToUV(pixel);
+            //Rect terrainBlockRect = Terrain3D.TerrainData.RectGrid.GetRect(terrainBlockCenter);
+
+            Vector2 terrainBlockLocal = Terrain3D.TerrainData.RectGrid.GetLocal(pixel, out terrainBlockCoord);
+            Vector2 terrainBlockUV = Terrain3D.TerrainData.RectGrid.GetUV(pixel, out terrainBlockCoord);
             float terrainHeight = Terrain3D.TerrainData.GetHeight(pixel);
             RectCoord[] terrainBlocks = Terrain3D.TerrainData.GetBelongBlocks(pixel);
 
@@ -89,7 +90,7 @@ namespace KouXiaGu.Test
                 + "\n地貌块: 块编号:" + terrainBlockCoord
                 + "中心:" + terrainBlockCenter
                 + "立方:" + terrainBlockHexCenter
-                + "矩形:" + terrainBlockRect
+                //+ "矩形:" + terrainBlockRect
                 + "\n块坐标:" + terrainBlockLocal
                 + "UV:" + terrainBlockUV
                 + "高度:" + terrainHeight + ";"

@@ -68,11 +68,11 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 立方体坐标 转换成 像素坐标;
         /// </summary>
-        public Vector3 GetPixel(CubicHexCoord hex)
+        public Vector3 GetPixel(CubicHexCoord hex, float y = 0)
         {
             float x = outerRadius * 1.5f * hex.X;
             float z = (float)(Math.Sqrt(3.0) / 2.0 * hex.X + Math.Sqrt(3.0) * hex.Y) * outerRadius;
-            return new Vector3(x, 0, z);
+            return new Vector3(x, y, z);
         }
 
         public static bool operator ==(CubicHexGrid a, CubicHexGrid b)
