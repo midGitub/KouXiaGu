@@ -9,7 +9,8 @@ namespace KouXiaGu.Grids
     /// <summary>
     /// 多个矩形组成一个块;
     /// </summary>
-    public struct RectChunk
+    public struct Chunk<T>
+        where T : IGridCoord, new()
     {
 
         readonly int width;
@@ -35,7 +36,7 @@ namespace KouXiaGu.Grids
         /// 构造函数;
         /// </summary>
         /// <param name="size">需要为奇数</param>
-        public RectChunk(int size)
+        public Chunk(int size)
         {
             if ((size & 1) != 1)
                 throw new ArgumentOutOfRangeException("参数需要为奇数;");
@@ -48,7 +49,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         /// <param name="width">需要为奇数</param>
         /// <param name="height">需要为奇数</param>
-        public RectChunk(int width, int height)
+        public Chunk(int width, int height)
         {
             if ((width & 1) != 1 || (height & 1) != 1)
                 throw new ArgumentOutOfRangeException("参数需要为奇数;");
@@ -59,9 +60,9 @@ namespace KouXiaGu.Grids
 
         public override bool Equals(object obj)
         {
-            if (!(obj is RectChunk))
+            if (!(obj is Chunk<T>))
                 return false;
-            return this == (RectChunk)obj;
+            return this == (Chunk<T>)obj;
         }
 
         public override int GetHashCode()
@@ -77,52 +78,69 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到所属于的块;
         /// </summary>
-        public RectCoord GetChunk(RectCoord coord)
+        public RectCoord GetChunk(T coord)
         {
-            short x = (short)Math.Round(coord.x / (float)width);
-            short y = (short)Math.Round(coord.y / (float)height);
+            short x = (short)Math.Round(coord.X / (float)width);
+            short y = (short)Math.Round(coord.Y / (float)height);
             return new RectCoord(x, y);
         }
 
         /// <summary>
         /// 获取到块的中心;
         /// </summary>
-        public RectCoord GetCenter(RectCoord chunk)
+        public T GetCenter(RectCoord chunk)
         {
             int x = chunk.x * width;
             int y = chunk.y * height;
-            return new RectCoord(x, y);
+            return Get((short)x, (short)y);
         }
 
         /// <summary>
         /// 获取到块内所有的点;
         /// </summary>
-        IEnumerable<RectCoord> ChunkRange(RectCoord chunk)
+        IEnumerable<T> ChunkRange(RectCoord chunk)
         {
-            return RectCoord.RecRange(SouthwestAdge(chunk), NorthEastAdge(chunk));
+            T center = GetCenter(chunk);
+            T southwest = SouthwestAdge(center);
+            T northeast = NorthEastAdge(center);
+
+            for (short x = southwest.X; x <= northeast.X; x++)
+            {
+                for (short y = southwest.Y; y <= northeast.Y; y++)
+                {
+                    yield return Get(x, y);
+                }
+            }
         }
 
-        RectCoord SouthwestAdge(RectCoord coord)
+        T Get(short x, short y)
         {
-            int x = coord.x - width / 2;
-            int y = coord.y - height / 2;
-            return new RectCoord(x, y);
+            T item = new T();
+            item.SetValue(x, y);
+            return item;
         }
 
-        RectCoord NorthEastAdge(RectCoord coord)
+        T SouthwestAdge(T coord)
         {
-            int x = coord.x + width / 2;
-            int y = coord.y + height / 2;
-            return new RectCoord(x, y);
+            int x = coord.X - width / 2;
+            int y = coord.Y - height / 2;
+            return Get((short)x, (short)y);
         }
 
-        public static bool operator ==(RectChunk a, RectChunk b)
+        T NorthEastAdge(T coord)
+        {
+            int x = coord.X + width / 2;
+            int y = coord.Y + height / 2;
+            return Get((short)x, (short)y);
+        }
+
+        public static bool operator ==(Chunk<T> a, Chunk<T> b)
         {
             return a.width == b.width
                 && a.height == b.height;
         }
 
-        public static bool operator !=(RectChunk a, RectChunk b)
+        public static bool operator !=(Chunk<T> a, Chunk<T> b)
         {
             return !(a == b);
         }

@@ -5,6 +5,16 @@ namespace KouXiaGu.Grids
 {
 
     /// <summary>
+    /// 网格坐标;
+    /// </summary>
+    public interface IGridCoord
+    {
+        short X { get; }
+        short Y { get; }
+        void SetValue(short x, short y);
+    }
+
+    /// <summary>
     /// 网格结构;
     /// </summary>
     public interface IGrid
