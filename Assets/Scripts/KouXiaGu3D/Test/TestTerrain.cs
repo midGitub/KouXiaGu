@@ -65,15 +65,15 @@ namespace KouXiaGu.Test
             Vector3 cubePixel = GridConvert.Grid.GetPixel(cube);
             //ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            RectCoord terrainBlockCoord = Terrain3D.TerrainData.RectGrid.GetCoord(pixel);
-            Vector3 terrainBlockCenter = Terrain3D.TerrainData.RectGrid.GetCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = Terrain3D.TerrainData.BlockToHexCenter(terrainBlockCoord);
+            RectCoord terrainBlockCoord = Terrain3D.TerrainData.ChunkGrid.GetCoord(pixel);
+            Vector3 terrainBlockCenter = Terrain3D.TerrainData.ChunkGrid.GetCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = Terrain3D.TerrainData.GetHexCenter(terrainBlockCoord);
             //Rect terrainBlockRect = Terrain3D.TerrainData.RectGrid.GetRect(terrainBlockCenter);
 
-            Vector2 terrainBlockLocal = Terrain3D.TerrainData.RectGrid.GetLocal(pixel, out terrainBlockCoord);
-            Vector2 terrainBlockUV = Terrain3D.TerrainData.RectGrid.GetUV(pixel, out terrainBlockCoord);
+            Vector2 terrainBlockLocal = Terrain3D.TerrainData.ChunkGrid.GetLocal(pixel, out terrainBlockCoord);
+            Vector2 terrainBlockUV = Terrain3D.TerrainData.ChunkGrid.GetUV(pixel, out terrainBlockCoord);
             float terrainHeight = Terrain3D.TerrainData.GetHeight(pixel);
-            RectCoord[] terrainBlocks = Terrain3D.TerrainData.GetBelongBlocks(pixel);
+            RectCoord[] terrainBlocks = Terrain3D.TerrainData.GetBelongChunks(terrainBlockHexCenter);
 
             string str = "";
 

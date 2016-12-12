@@ -286,7 +286,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到这个范围所有的点;
         /// </summary>
-        public static IEnumerable<RectCoord> RecRange(RectCoord southwest, RectCoord northeast)
+        public static IEnumerable<RectCoord> RectRange(RectCoord southwest, RectCoord northeast)
         {
             for (short x = southwest.x; x <= northeast.x; x++)
             {

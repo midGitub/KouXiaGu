@@ -118,6 +118,16 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
+        /// 获取到这个矩形范围内的所有矩形元素;
+        /// </summary>
+        public IEnumerable<RectCoord> RectRange(Rect rect)
+        {
+            RectCoord southwest = GetCoord(rect.min);
+            RectCoord northeast = GetCoord(rect.max);
+            return RectCoord.RectRange(southwest, northeast);
+        }
+
+        /// <summary>
         /// 获取到矩形最左下角的坐标;
         /// </summary>
         Vector2 GetSouthwest(Vector3 blockCenter)

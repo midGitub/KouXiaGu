@@ -216,7 +216,7 @@ namespace KouXiaGu.World2D
             RectCoord southwestPoint = GetSouthwestPoint(centerPoint);
             RectCoord northeastPoint = GetNortheastPoint(centerPoint);
 
-            return RectCoord.RecRange(southwestPoint, northeastPoint);
+            return RectCoord.RectRange(southwestPoint, northeastPoint);
         }
 
         /// <summary>

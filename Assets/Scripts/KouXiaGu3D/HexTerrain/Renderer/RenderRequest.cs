@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Vector3 CameraPosition
         {
-            get { return TerrainData.BlockToPixelCenter(BlockCoord) + new Vector3(0, 5, 0); }
+            get { return TerrainData.ChunkGrid.GetCenter(BlockCoord) + new Vector3(0, 5, 0); }
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<BakingNode> GetBakingNodes()
         {
-            IEnumerable<CubicHexCoord> cover = TerrainData.GetBlockCover(BlockCoord);
+            IEnumerable<CubicHexCoord> cover = TerrainData.GetCover(BlockCoord);
             TerrainNode node;
 
             float index = -2;

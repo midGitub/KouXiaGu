@@ -74,7 +74,7 @@ namespace KouXiaGu.Test
 
         void Output(RectCoord coord)
         {
-            foreach (var item in Terrain3D.TerrainData.GetBlockCover(coord))
+            foreach (var item in Terrain3D.TerrainData.GetCover(coord))
             {
                 this.Instantiate(item);
             }
