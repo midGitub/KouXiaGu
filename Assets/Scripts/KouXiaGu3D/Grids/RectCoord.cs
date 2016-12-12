@@ -244,21 +244,6 @@ namespace KouXiaGu
 
 
         /// <summary>
-        /// 获取到这个范围所有的点;
-        /// </summary>
-        public static IEnumerable<RectCoord> RecRange(RectCoord southwest, RectCoord northeast)
-        {
-            for (short x = southwest.x; x <= northeast.x; x++)
-            {
-                for (short y = southwest.y; y <= northeast.y; y++)
-                {
-                    yield return new RectCoord(x, y);
-                }
-            }
-        }
-
-
-        /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
         /// </summary>
         public static IEnumerable<RecDirections> Directions
@@ -296,7 +281,23 @@ namespace KouXiaGu
                 }
             }
         }
-        
+
+
+        /// <summary>
+        /// 获取到这个范围所有的点;
+        /// </summary>
+        public static IEnumerable<RectCoord> RecRange(RectCoord southwest, RectCoord northeast)
+        {
+            for (short x = southwest.x; x <= northeast.x; x++)
+            {
+                for (short y = southwest.y; y <= northeast.y; y++)
+                {
+                    yield return new RectCoord(x, y);
+                }
+            }
+        }
+
+
         public static bool operator ==(RectCoord point1, RectCoord point2)
         {
             bool sameX = point1.x == point2.x;

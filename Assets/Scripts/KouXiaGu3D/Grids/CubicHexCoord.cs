@@ -42,7 +42,7 @@ namespace KouXiaGu.Grids
     /// 所有有效坐标都满足 X + Y + Z = 0;
     /// </summary>
     [ProtoContract]
-    public struct CubicHexCoord
+    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<HexDirections>
     {
 
         /// <summary>
@@ -145,7 +145,6 @@ namespace KouXiaGu.Grids
         /// </summary>
         public short Z { get; private set; }
 
-
         public CubicHexCoord(short x, short y, short z)
         {
             OutOfRangeException(x, y, z);
@@ -211,6 +210,30 @@ namespace KouXiaGu.Grids
             this.Z = (short)(-this.X - this.Y);
         }
 
+        public override bool Equals(object obj)
+        {
+            if (!(obj is CubicHexCoord))
+                return false;
+            return (CubicHexCoord)obj == this;
+        }
+
+        public bool Equals(CubicHexCoord other)
+        {
+            return other == this;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = X << 16;
+            hashCode += short.MaxValue + Y;
+            return hashCode;
+        }
+
+        public override string ToString()
+        {
+            return string.Concat("(", X, ",", Y, ",", Z, ")");
+        }
+
 
         /// <summary>
         /// 获取到这个方向的坐标;
@@ -226,6 +249,63 @@ namespace KouXiaGu.Grids
         public CubicHexCoord GetDiagonal(HexDiagonals diagonal)
         {
             return this + GetDiagonalOffset(diagonal);
+        }
+
+        /// <summary>
+        /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
+        /// </summary>
+        public IEnumerable<CoordPack<CubicHexCoord, HexDirections>> GetNeighbours()
+        {
+            foreach (var direction in Directions)
+            {
+                CubicHexCoord point = this.GetDirection(direction);
+                yield return new CoordPack<CubicHexCoord, HexDirections>(point, direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标点的邻居节点;
+        /// </summary>
+        public IEnumerable<CoordPack<CubicHexCoord, HexDirections>> GetNeighbours(HexDirections directions)
+        {
+            foreach (var direction in GetDirections(directions))
+            {
+                CubicHexCoord point = this.GetDirection(direction);
+                yield return new CoordPack<CubicHexCoord, HexDirections>(point, direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标点的邻居节点,但是也返回自己本身;
+        /// </summary>
+        public IEnumerable<CoordPack<CubicHexCoord, HexDirections>> GetNeighboursAndSelf()
+        {
+            foreach (var direction in DirectionsAndSelf)
+            {
+                CubicHexCoord point = this.GetDirection(direction);
+                yield return new CoordPack<CubicHexCoord, HexDirections>(point, direction);
+            }
+        }
+
+
+        IEnumerable<IGrid> IGrid.GetNeighbours()
+        {
+            return GetNeighbours().Select(coord => coord.Point).Cast<IGrid>();
+        }
+
+        IEnumerable<IGrid> IGrid.GetNeighboursAndSelf()
+        {
+            return GetNeighboursAndSelf().Select(coord => coord.Point).Cast<IGrid>();
+        }
+
+        IEnumerable<CoordPack<IGrid<HexDirections>, HexDirections>> IGrid<HexDirections>.GetNeighbours()
+        {
+            return GetNeighbours().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Item));
+        }
+
+        IEnumerable<CoordPack<IGrid<HexDirections>, HexDirections>> IGrid<HexDirections>.GetNeighboursAndSelf()
+        {
+            return GetNeighboursAndSelf().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Item));
         }
 
 
@@ -247,6 +327,16 @@ namespace KouXiaGu.Grids
         {
             if ((x + y + z) != 0)
                 throw new ArgumentOutOfRangeException("坐标必须满足 (x + y + z) == 0");
+        }
+
+        /// <summary>
+        /// 将哈希值转换成坐标;
+        /// </summary>
+        public static CubicHexCoord HashCodeToCoord(int hashCode)
+        {
+            short x = (short)(hashCode >> 16);
+            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
+            return new CubicHexCoord(x, y);
         }
 
 
@@ -308,60 +398,6 @@ namespace KouXiaGu.Grids
         }
 
 
-
-        /// <summary>
-        /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
-        /// </summary>
-        public IEnumerable<CubicHexCoord> GetNeighbours()
-        {
-            foreach (var direction in Directions)
-            {
-                CubicHexCoord point = this.GetDirection(direction);
-                yield return point;
-            }
-        }
-
-        /// <summary>
-        /// 获取到目标点的邻居节点;
-        /// </summary>
-        public IEnumerable<CubicHexCoord> GetNeighbours(HexDirections directions)
-        {
-            foreach (var direction in GetDirections(directions))
-            {
-                yield return this.GetDirection(direction);
-            }
-        }
-
-        /// <summary>
-        /// 获取到目标点的邻居节点,但是也返回自己本身;
-        /// </summary>
-        public IEnumerable<CubicHexCoord> GetNeighboursAndSelf()
-        {
-            foreach (var direction in DirectionsAndSelf)
-            {
-                yield return this.GetDirection(direction);
-            }
-        }
-
-
-
-        /// <summary>
-        /// 获取到六边形的范围;
-        /// 半径覆盖到的节点;
-        /// </summary>
-        public static IEnumerable<CubicHexCoord> GetHexRange(CubicHexCoord target, int step)
-        {
-            for (int x = -step; x <= step; x++)
-            {
-                for (int y = Math.Max(-step, -x - step); y <= Math.Min(step, -x + step); y++)
-                {
-                    int z = -x - y;
-                    yield return new CubicHexCoord(x, y, z) + target;
-                }
-            }
-        }
-
-
         /// <summary>
         /// 获取到目标所在的半径;
         /// </summary>
@@ -379,6 +415,21 @@ namespace KouXiaGu.Grids
             return Mathf.Max(Mathf.Abs(target.X), Mathf.Abs(target.Y), Mathf.Abs(target.Z));
         }
 
+        /// <summary>
+        /// 获取到六边形的范围;
+        /// 半径覆盖到的节点;
+        /// </summary>
+        public static IEnumerable<CubicHexCoord> GetHexRange(CubicHexCoord target, int step)
+        {
+            for (int x = -step; x <= step; x++)
+            {
+                for (int y = Math.Max(-step, -x - step); y <= Math.Min(step, -x + step); y++)
+                {
+                    int z = -x - y;
+                    yield return new CubicHexCoord(x, y, z) + target;
+                }
+            }
+        }
 
         /// <summary>
         ///  按 环状 返回点;
@@ -412,36 +463,6 @@ namespace KouXiaGu.Grids
             return coords;
         }
 
-
-
-        /// <summary>
-        /// 将哈希值转换成坐标;
-        /// </summary>
-        public static CubicHexCoord HashCodeToCoord(int hashCode)
-        {
-            short x = (short)(hashCode >> 16);
-            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
-            return new CubicHexCoord(x, y);
-        }
-
-        public override int GetHashCode()
-        {
-            int hashCode = X << 16;
-            hashCode += short.MaxValue + Y;
-            return hashCode;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is CubicHexCoord))
-                return false;
-            return (CubicHexCoord)obj == this;
-        }
-
-        public override string ToString()
-        {
-            return string.Concat("(", X, ",", Y, ",", Z, ")");
-        }
 
         public static bool operator ==(CubicHexCoord a, CubicHexCoord b)
         {
