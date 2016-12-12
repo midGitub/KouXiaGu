@@ -33,24 +33,13 @@ namespace KouXiaGu
     public struct ShortVector2 : IEquatable<ShortVector2>, IGridPoint, IGridPoint<ShortVector2, RecDirections>
     {
 
-        public ShortVector2(short x, short y)
-        {
-            this.x = x;
-            this.y = y;
-        }
+        /// <summary>
+        /// 存在方向数;
+        /// </summary>
+        public const int DirectionsNumber = 9;
 
-        public ShortVector2(int x, int y)
-        {
-            this.x = (short)x;
-            this.y = (short)y;
-        }
-
-        [ProtoMember(1)]
-        public short x { get; set; }
-
-        [ProtoMember(2)]
-        public short y { get; set; }
-
+        const int maxDirectionMark = (int)RecDirections.Self;
+        const int minDirectionMark = (int)RecDirections.North;
 
         static readonly ShortVector2 up = new ShortVector2(0, 1);
         public static ShortVector2 Up
@@ -88,6 +77,84 @@ namespace KouXiaGu
             get { return one; }
         }
 
+        /// <summary>
+        /// 方向偏移量;
+        /// </summary>
+        static Dictionary<int, ShortVector2> directionsVector = new Dictionary<int, ShortVector2>()
+        {
+            { (int)RecDirections.North, ShortVector2.Up },
+            { (int)RecDirections.Northeast, ShortVector2.Up + ShortVector2.Right },
+            { (int)RecDirections.East, ShortVector2.Right},
+            { (int)RecDirections.Southeast, ShortVector2.Down + ShortVector2.Right},
+            { (int)RecDirections.South, ShortVector2.Down},
+            { (int)RecDirections.Southwest, ShortVector2.Down + ShortVector2.Left},
+            { (int)RecDirections.West, ShortVector2.Left},
+            { (int)RecDirections.Northwest, ShortVector2.Up + ShortVector2.Left},
+            { (int)RecDirections.Self, ShortVector2.Zero},
+
+        };
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组;不包含本身
+        /// </summary>
+        static readonly RecDirections[] DirectionsArray = new RecDirections[]
+        {
+            RecDirections.Northwest,
+            RecDirections.West,
+            RecDirections.Southwest,
+            RecDirections.South,
+            RecDirections.Southeast,
+            RecDirections.East,
+            RecDirections.Northeast,
+            RecDirections.North,
+        };
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组(存在本身方向,且在最高位);
+        /// </summary>
+        static readonly RecDirections[] DirectionsAndSelfArray = new RecDirections[]
+        {
+            RecDirections.Self,
+            RecDirections.Northwest,
+            RecDirections.West,
+            RecDirections.Southwest,
+            RecDirections.South,
+            RecDirections.Southeast,
+            RecDirections.East,
+            RecDirections.Northeast,
+            RecDirections.North,
+        };
+
+
+        [ProtoMember(1)]
+        public short x { get; set; }
+
+        [ProtoMember(2)]
+        public short y { get; set; }
+
+        public ShortVector2(short x, short y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public ShortVector2(int x, int y)
+        {
+            this.x = (short)x;
+            this.y = (short)y;
+        }
+
+        /// <summary>
+        /// 将x和y转换成正数;
+        /// </summary>
+        public ShortVector2 Abs()
+        {
+            short x = Math.Abs(this.x);
+            short y = Math.Abs(this.y);
+            return new ShortVector2(x, y);
+        }
+
+
 
         /// <summary>
         /// 获取这两个点的距离;
@@ -108,16 +175,6 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 将x和y转换成正数;
-        /// </summary>
-        public ShortVector2 Abs()
-        {
-            short x = Math.Abs(this.x);
-            short y = Math.Abs(this.y);
-            return new ShortVector2(x, y);
-        }
-
-        /// <summary>
         /// 获取到这个范围所有的点;
         /// </summary>
         public static IEnumerable<ShortVector2> RecRange(ShortVector2 southwest, ShortVector2 northeast)
@@ -132,44 +189,12 @@ namespace KouXiaGu
         }
 
 
-        #region 方向
-
-        /// <summary>
-        /// 存在方向数;
-        /// </summary>
-        public const int DirectionsNumber = 9;
-
-        /// <summary>
-        /// 方向偏移量;
-        /// </summary>
-        static Dictionary<int, ShortVector2> directions = RecirectionDictionary();
-
-        /// <summary>
-        /// 获取到方向偏移量;
-        /// </summary>
-        static Dictionary<int, ShortVector2> RecirectionDictionary()
-        {
-            Dictionary<int, ShortVector2> directions = new Dictionary<int, ShortVector2>(DirectionsNumber);
-
-            directions.Add((int)RecDirections.North, ShortVector2.Up);
-            directions.Add((int)RecDirections.Northeast, ShortVector2.Up + ShortVector2.Right);
-            directions.Add((int)RecDirections.East, ShortVector2.Right);
-            directions.Add((int)RecDirections.Southeast, ShortVector2.Down + ShortVector2.Right);
-            directions.Add((int)RecDirections.South, ShortVector2.Down);
-            directions.Add((int)RecDirections.Southwest, ShortVector2.Down + ShortVector2.Left);
-            directions.Add((int)RecDirections.West, ShortVector2.Left);
-            directions.Add((int)RecDirections.Northwest, ShortVector2.Up + ShortVector2.Left);
-            directions.Add((int)RecDirections.Self, ShortVector2.Zero);
-
-            return directions;
-        }
-
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
         public ShortVector2 GetDirectionOffset(RecDirections direction)
         {
-            return directions[(int)direction];
+            return directionsVector[(int)direction];
         }
 
         /// <summary>
@@ -179,32 +204,6 @@ namespace KouXiaGu
         {
             return this + GetDirectionOffset(direction);
         }
-
-
-
-        const int maxDirectionMark = (int)RecDirections.Self;
-        const int minDirectionMark = (int)RecDirections.North;
-
-        /// <summary>
-        /// 按标记为从 高位到低位 循序排列的数组;不包含本身
-        /// </summary>
-        static readonly RecDirections[] DirectionsArray = new RecDirections[]
-        {
-            RecDirections.Northwest,
-            RecDirections.West,
-            RecDirections.Southwest,
-            RecDirections.South,
-            RecDirections.Southeast,
-            RecDirections.East,
-            RecDirections.Northeast,
-            RecDirections.North,
-        };
-
-        /// <summary>
-        /// 按标记为从 高位到低位 循序排列的数组(存在本身方向,且在最高位);
-        /// </summary>
-        static readonly RecDirections[] DirectionsAndSelfArray = Enum.GetValues(typeof(RecDirections)).
-            Cast<RecDirections>().Reverse().ToArray();
 
         /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
@@ -236,8 +235,6 @@ namespace KouXiaGu
                 }
             }
         }
-
-        #endregion
 
 
         /// <summary>
