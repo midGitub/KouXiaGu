@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
@@ -12,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 记录修改过的地图块,在保存仅保存修改过的地图块;
     /// 写入, 迭代 上锁,读操作 不锁;
     /// </summary>
-    public class BlockMapRecord<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>, IBlockArchive<CubicHexCoord, T>
+    public class BlockMapRecord<T> : IMap<CubicHexCoord, T>, IBlockArchive<CubicHexCoord, T>
         where T : struct
     {
 
@@ -221,10 +220,7 @@ namespace KouXiaGu.Terrain3D
             if (archive.Width != mapCollection.BlockWidth)
                 throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockWidth + "," + archive.ToString());
 
-            lock (syncWriteRoot)
-            {
-                mapCollection.Add(archive.Coord, archive.Map);
-            }
+            mapCollection.Add(archive.Coord, archive.Map);
         }
 
     }
