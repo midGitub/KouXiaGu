@@ -32,10 +32,10 @@ namespace KouXiaGu.Grids
     public struct CoordPack<TVector, TDirection, T>
     {
 
-        public CoordPack(TDirection direction, TVector point, T item)
+        public CoordPack(TVector point, TDirection direction, T item)
         {
-            this.Direction = direction;
             this.Point = point;
+            this.Direction = direction;
             this.Item = item;
         }
 
