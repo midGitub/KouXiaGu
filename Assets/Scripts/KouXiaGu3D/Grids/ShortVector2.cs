@@ -30,7 +30,7 @@ namespace KouXiaGu
     /// Short类型的向量,保存在哈希表内键值不重复;
     /// </summary>
     [Serializable, ProtoContract]
-    public struct ShortVector2 : IEquatable<ShortVector2>, IGridPoint, IGridPoint<ShortVector2, RecDirections>
+    public struct ShortVector2 : IEquatable<ShortVector2>, IGrid, IGrid<RecDirections>
     {
 
         /// <summary>
@@ -126,6 +126,7 @@ namespace KouXiaGu
         };
 
 
+
         [ProtoMember(1)]
         public short x { get; set; }
 
@@ -144,16 +145,108 @@ namespace KouXiaGu
             this.y = (short)y;
         }
 
-        /// <summary>
-        /// 将x和y转换成正数;
-        /// </summary>
-        public ShortVector2 Abs()
+        public override string ToString()
         {
-            short x = Math.Abs(this.x);
-            short y = Math.Abs(this.y);
-            return new ShortVector2(x, y);
+            return String.Concat("(", x, " , ", y, ")");
         }
 
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ShortVector2))
+                return false;
+            return Equals((ShortVector2)obj);
+        }
+
+        public bool Equals(ShortVector2 other)
+        {
+            return x == other.x && y == other.y;
+        }
+
+        /// <summary>
+        /// 根据位置确定哈希值;
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            int hashCode = x << 16;
+            hashCode += short.MaxValue + y;
+            return hashCode;
+        }
+
+
+        /// <summary>
+        /// 获取到这个方向的坐标;
+        /// </summary>
+        public ShortVector2 GetDirection(RecDirections direction)
+        {
+            return this + GetDirectionOffset(direction);
+        }
+
+        /// <summary>
+        /// 获取到目标点的邻居节点;
+        /// </summary>
+        public IEnumerable<CoordPack<ShortVector2, RecDirections>> GetNeighbours()
+        {
+            foreach (var direction in Directions)
+            {
+                yield return new CoordPack<ShortVector2, RecDirections>(this.GetDirection(direction), direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标点的邻居节点;
+        /// </summary>
+        public IEnumerable<CoordPack<ShortVector2, RecDirections>> GetNeighbours(RecDirections directions)
+        {
+            foreach (var direction in GetDirections(directions))
+            {
+                yield return new CoordPack<ShortVector2, RecDirections>(this.GetDirection(direction), direction);
+            }
+        }
+
+        /// <summary>
+        /// 获取到目标点的邻居节点,但是也返回自己本身;
+        /// </summary>
+        public IEnumerable<CoordPack<ShortVector2, RecDirections>> GetNeighboursAndSelf()
+        {
+            foreach (var direction in DirectionsAndSelf)
+            {
+                yield return new CoordPack<ShortVector2, RecDirections>(this.GetDirection(direction), direction);
+            }
+        }
+
+
+        IEnumerable<IGrid> IGrid.GetNeighbours()
+        {
+            return GetNeighbours().Select(coord => coord.Point).Cast<IGrid>();
+        }
+
+        IEnumerable<IGrid> IGrid.GetNeighboursAndSelf()
+        {
+            return GetNeighboursAndSelf().Select(coord => coord.Point).Cast<IGrid>();
+        }
+
+        IEnumerable<CoordPack<IGrid<RecDirections>, RecDirections>> IGrid<RecDirections>.GetNeighbours()
+        {
+            return GetNeighbours().Select(coord => new CoordPack<IGrid<RecDirections>, RecDirections>(coord.Point, coord.Item));
+        }
+
+        IEnumerable<CoordPack<IGrid<RecDirections>, RecDirections>> IGrid<RecDirections>.GetNeighboursAndSelf()
+        {
+            return GetNeighboursAndSelf().Select(coord => new CoordPack<IGrid<RecDirections>, RecDirections>(coord.Point, coord.Item));
+        }
+
+
+
+        /// <summary>
+        /// 将哈希值转换成坐标;
+        /// </summary>
+        public static ShortVector2 HashCodeToVector(int hashCode)
+        {
+            short x = (short)(hashCode >> 16);
+            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
+            return new ShortVector2(x, y);
+        }
 
 
         /// <summary>
@@ -174,6 +267,7 @@ namespace KouXiaGu
             return distance;
         }
 
+
         /// <summary>
         /// 获取到这个范围所有的点;
         /// </summary>
@@ -188,22 +282,6 @@ namespace KouXiaGu
             }
         }
 
-
-        /// <summary>
-        /// 获取到方向偏移量;
-        /// </summary>
-        public ShortVector2 GetDirectionOffset(RecDirections direction)
-        {
-            return directionsVector[(int)direction];
-        }
-
-        /// <summary>
-        /// 获取到这个方向的坐标;
-        /// </summary>
-        public ShortVector2 GetDirection(RecDirections direction)
-        {
-            return this + GetDirectionOffset(direction);
-        }
 
         /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
@@ -222,6 +300,14 @@ namespace KouXiaGu
         }
 
         /// <summary>
+        /// 获取到方向偏移量;
+        /// </summary>
+        public static ShortVector2 GetDirectionOffset(RecDirections direction)
+        {
+            return directionsVector[(int)direction];
+        }
+
+        /// <summary>
         /// 获取到方向集表示的所有方向;
         /// </summary>
         public static IEnumerable<RecDirections> GetDirections(RecDirections directions)
@@ -235,106 +321,6 @@ namespace KouXiaGu
                 }
             }
         }
-
-
-        /// <summary>
-        /// 获取到所属的块编号;
-        /// </summary>
-        public ShortVector2 Block(int size)
-        {
-            short x = (short)Math.Round(this.x / (float)size);
-            short y = (short)Math.Round(this.y / (float)size);
-            return new ShortVector2(x, y);
-        }
-
-        /// <summary>
-        /// 获取到目标点的邻居节点;
-        /// </summary>
-        public IEnumerable<ShortVector2> GetNeighbours()
-        {
-            foreach (var direction in Directions)
-            {
-                yield return this.GetDirection(direction);
-            }
-        }
-
-        /// <summary>
-        /// 获取到目标点的邻居节点;
-        /// </summary>
-        public IEnumerable<ShortVector2> GetNeighbours(RecDirections directions)
-        {
-            foreach (var direction in GetDirections(directions))
-            {
-                yield return this.GetDirection(direction);
-            }
-        }
-
-        /// <summary>
-        /// 获取到目标点的邻居节点,但是也返回自己本身;
-        /// </summary>
-        public IEnumerable<ShortVector2> GetNeighboursAndSelf()
-        {
-            foreach (var direction in DirectionsAndSelf)
-            {
-                yield return this.GetDirection(direction);
-            }
-        }
-
-
-
-        IEnumerable<RecDirections> IGridPoint<ShortVector2, RecDirections>.Directions
-        {
-            get { return Directions; }
-        }
-
-        IEnumerable<RecDirections> IGridPoint<ShortVector2, RecDirections>.DirectionsAndSelf
-        {
-            get { return DirectionsAndSelf; }
-        }
-
-        IEnumerable<RecDirections> IGridPoint<ShortVector2, RecDirections>.GetDirections(RecDirections directions)
-        {
-            return GetDirections(directions);
-        }
-
-        IGridPoint IGridPoint<ShortVector2, RecDirections>.GetDirection(RecDirections direction)
-        {
-            return GetDirection(direction);
-        }
-
-        IEnumerable<IGridPoint> IGridPoint.GetNeighbours()
-        {
-            return GetNeighbours().Cast<IGridPoint>();
-        }
-
-        IEnumerable<IGridPoint> IGridPoint.GetNeighboursAndSelf()
-        {
-            return GetNeighboursAndSelf().Cast<IGridPoint>();
-        }
-
-
-
-        /// <summary>
-        /// 将哈希值转换成坐标;
-        /// </summary>
-        public static ShortVector2 HashCodeToVector(int hashCode)
-        {
-            short x = (short)(hashCode >> 16);
-            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
-            return new ShortVector2(x, y);
-        }
-
-        /// <summary>
-        /// 根据位置确定哈希值;
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode()
-        {
-            int hashCode = x << 16;
-            hashCode += short.MaxValue + y;
-            return hashCode;
-        }
-
 
         /// <summary>
         /// 根据四舍五入进行转换;
@@ -423,23 +409,6 @@ namespace KouXiaGu
             point1.x -= n;
             point1.y -= n;
             return point1;
-        }
-
-        public override string ToString()
-        {
-            return String.Concat("(", x, " , ", y, ")");
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is ShortVector2))
-                return false;
-            return Equals((ShortVector2)obj);
-        }
-
-        public bool Equals(ShortVector2 other)
-        {
-            return x == other.x && y == other.y;
         }
 
     }
