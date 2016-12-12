@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 提供地形初始化和细节设置;
+    /// 用于初始化地形信息;
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class TerrainController : UnitySingleton<TerrainController>

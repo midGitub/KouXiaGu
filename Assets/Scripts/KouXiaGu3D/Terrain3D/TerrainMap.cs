@@ -20,12 +20,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地图分块大小;
         /// </summary>
-        const short MapBlockSize = 501;
+        const short MapBlockSize = 600;
 
         /// <summary>
         /// 地形地图结构;
         /// </summary>
-        static readonly BlockMapRecord<TerrainNode> terrainMap = new BlockMapRecord<TerrainNode>(MapBlockSize);
+        static readonly BlockMapRecord<TerrainNode> terrainMap =
+            new BlockMapRecord<TerrainNode>((MapBlockSize & 1) == 1 ? MapBlockSize : (short)(MapBlockSize + 1));
 
         /// <summary>
         /// 地图当前的进行状态;
