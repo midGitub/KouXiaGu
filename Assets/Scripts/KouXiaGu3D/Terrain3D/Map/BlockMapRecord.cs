@@ -86,7 +86,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        /// <param name="blockSize">必须为奇数,若不是则+1</param>
+        /// <param name="blockSize">必须为奇数</param>
         public BlockMapRecord(short blockSize)
         {
             mapCollection = new BlockedMap<T>(blockSize);
@@ -96,8 +96,15 @@ namespace KouXiaGu.Terrain3D
         public BlockMapRecord(BlockedMap<T> blockedMap)
         {
             mapCollection = blockedMap;
-
             IEnumerable<RectCoord> allCoord = (blockedMap as IMap<RectCoord, Dictionary<CubicHexCoord, T>>).Keys;
+            editedBlock = new HashSet<RectCoord>(allCoord);
+        }
+
+        /// <param name="blockSize">必须为奇数</param>
+        public BlockMapRecord(short blockSize, IEnumerable<KeyValuePair<CubicHexCoord, T>> map)
+        {
+            mapCollection = new BlockedMap<T>(blockSize, map);
+            IEnumerable<RectCoord> allCoord = (mapCollection as IMap<RectCoord, Dictionary<CubicHexCoord, T>>).Keys;
             editedBlock = new HashSet<RectCoord>(allCoord);
         }
 
@@ -114,6 +121,17 @@ namespace KouXiaGu.Terrain3D
                 block.Add(position, item);
 
                 AddChangedCoord(coord);
+            }
+        }
+
+        /// <summary>
+        /// 加入到,若超出地图块,则创建一个新的地图块;
+        /// </summary>
+        public void Add(IEnumerable<KeyValuePair<CubicHexCoord, T>> map)
+        {
+            foreach (var pair in map)
+            {
+                Add(pair.Key, pair.Value);
             }
         }
 
@@ -200,30 +218,26 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 返回需要保存的地图块结构;
         /// </summary>
-        public BlockArchive<CubicHexCoord, T>[] GetArchives()
+        public IEnumerable<BlockArchive<CubicHexCoord, T>> GetArchives()
         {
-            BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[editedBlock.Count];
-            int index = 0;
             foreach (var coord in editedBlock)
             {
                 Dictionary<CubicHexCoord, T> block = mapCollection[coord];
-                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(coord, mapCollection.BlockWidth, block);
+                yield return new BlockArchive<CubicHexCoord, T>(mapCollection, coord, block);
             }
-            return saveMap;
         }
 
         /// <summary>
         /// 返回所有地图块结构;
         /// </summary>
-        public BlockArchive<CubicHexCoord, T>[] GetArchiveAll()
+        public IEnumerable<BlockArchive<CubicHexCoord, T>> GetArchiveAll()
         {
-            BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[mapCollection.Count];
-            int index = 0;
-            foreach (var pair in mapCollection as IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)
+            IMap<RectCoord, Dictionary<CubicHexCoord, T>> map = mapCollection;
+
+            foreach (var pair in map)
             {
-                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(pair.Key, mapCollection.BlockWidth, pair.Value);
+                yield return new BlockArchive<CubicHexCoord, T>(mapCollection, pair.Key, pair.Value);
             }
-            return saveMap;
         }
 
         /// <summary>

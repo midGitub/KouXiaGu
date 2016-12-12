@@ -15,10 +15,10 @@ namespace KouXiaGu.Terrain3D
     public struct BlockArchive<TP, T>
     {
 
-        public BlockArchive(RectCoord coord, int size, Dictionary<TP, T> map)
+        public BlockArchive(BlockedMap<T> blockedMap, RectCoord coord, Dictionary<TP, T> map)
         {
             this.Coord = coord;
-            this.Width = size;
+            this.Width = blockedMap.BlockWidth;
             this.Map = map;
         }
 

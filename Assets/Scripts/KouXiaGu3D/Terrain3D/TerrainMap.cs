@@ -13,13 +13,14 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形地图保存和提供;
     /// </summary>
+    [CustomEditor]
     public class TerrainMap : MonoBehaviour
     {
 
         /// <summary>
         /// 地图分块大小;
         /// </summary>
-        const short MapBlockSize = 1000;
+        const short MapBlockSize = 1001;
 
         /// <summary>
         /// 地形地图结构;
@@ -65,6 +66,10 @@ namespace KouXiaGu.Terrain3D
                 terrainMap.Save(directoryPath, FileMode.Create);
                 State = currentState;
             }
+            catch (Exception e)
+            {
+                throw e;
+            }
             finally
             {
                 State = currentState;
@@ -85,6 +90,10 @@ namespace KouXiaGu.Terrain3D
                 State = ArchiveState.Writing;
                 terrainMap.SaveAll(directoryPath, FileMode.Create);
                 State = currentState;
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
             finally
             {
@@ -107,6 +116,10 @@ namespace KouXiaGu.Terrain3D
                 terrainMap.Load(directoryPath);
                 State = ArchiveState.Complete;
             }
+            catch (Exception e)
+            {
+                throw e;
+            }
             finally
             {
                 State = currentState;
@@ -119,10 +132,23 @@ namespace KouXiaGu.Terrain3D
         public static bool ConfirmDirectory(string directoryPath)
         {
             var paths = BlockProtoBufExtensions.GetFilePaths(directoryPath);
-            return paths.FirstOrDefault() != string.Empty;
+            string path = paths.FirstOrDefault();
+            return path != null;
         }
 
         #region Test
+
+        [ShowOnlyProperty]
+        public ArchiveState currentState
+        {
+            get { return state; }
+        }
+
+        [ShowOnlyProperty]
+        public int Count
+        {
+            get { return Map.Count; }
+        }
 
         /// <summary>
         /// 使用测试的地图文件夹;
@@ -181,7 +207,14 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Self, 10))
             {
-                terrainMap.Add(item, new TerrainNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
+                try
+                {
+                    terrainMap.Add(item, new TerrainNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
+                }
+                catch (ArgumentException)
+                {
+
+                }
             }
             return terrainMap;
         }
@@ -194,13 +227,11 @@ namespace KouXiaGu.Terrain3D
             }
             else
             {
-
+                Debug.Log("随机地图");
+                terrainMap.Add(RandomMap());
+                State = ArchiveState.Complete;
             }
-
-            //if (terrainMap == null)
-            //{
-            //    terrainMap = RandomMap();
-            //}
+            Debug.Log("地图准备完毕");
         }
 
         #endregion

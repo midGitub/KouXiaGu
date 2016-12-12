@@ -153,7 +153,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerable<string> GetFilePaths(string directoryPath)
         {
-            return Directory.GetFiles(directoryPath, searchPattern);
+            var paths = Directory.GetFiles(directoryPath, searchPattern);
+            return paths;
         }
 
 

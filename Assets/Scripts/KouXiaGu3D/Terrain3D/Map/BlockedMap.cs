@@ -54,11 +54,24 @@ namespace KouXiaGu.Terrain3D
             get { return block.Height; }
         }
 
+        /// <summary>
+        /// 构造函数;
+        /// </summary>
         /// <param name="blockSize">必须为奇数</param>
         public BlockedMap(short blockSize)
         {
             block = new CubicHexBlock(blockSize);
             mapCollection = new Map<RectCoord, Dictionary<CubicHexCoord, T>>();
+        }
+
+        /// <summary>
+        /// 构造函数;
+        /// </summary>
+        /// <param name="blockSize">必须为奇数</param>
+        /// <param name="map">加入到地图的结构</param>
+        public BlockedMap(short blockSize, IEnumerable<KeyValuePair<CubicHexCoord, T>> map) : this(blockSize)
+        {
+            Add(map);
         }
 
         /// <summary>
@@ -69,6 +82,17 @@ namespace KouXiaGu.Terrain3D
             RectCoord coord = GetBlockCoord(position);
             var block = TryCreateBlock(coord);
             block.Add(position, item);
+        }
+
+        /// <summary>
+        /// 加入到,若超出地图块,则创建一个新的地图块;
+        /// </summary>
+        void Add(IEnumerable<KeyValuePair<CubicHexCoord, T>> map)
+        {
+            foreach (var pair in map)
+            {
+                Add(pair.Key, pair.Value);
+            }
         }
 
         /// <summary>

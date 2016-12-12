@@ -26,12 +26,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 返回需要保存的地图块存档结构;
         /// </summary>
-        BlockArchive<TP, T>[] GetArchives();
+        IEnumerable<BlockArchive<TP, T>> GetArchives();
 
         /// <summary>
         /// 返回所有地图块存档结构;
         /// </summary>
-        BlockArchive<TP, T>[] GetArchiveAll();
+        IEnumerable<BlockArchive<TP, T>> GetArchiveAll();
 
         /// <summary>
         /// 将存档结构加入到地图内;
