@@ -298,18 +298,14 @@ namespace KouXiaGu
         }
 
 
-        public static bool operator ==(RectCoord point1, RectCoord point2)
+        public static bool operator ==(RectCoord a, RectCoord b)
         {
-            bool sameX = point1.x == point2.x;
-            bool sameY = point1.y == point2.y;
-            return sameX & sameY;
+            return  a.x == b.x && a.y == b.y;
         }
 
-        public static bool operator !=(RectCoord point1, RectCoord point2)
+        public static bool operator !=(RectCoord a, RectCoord b)
         {
-            bool sameX = point1.x == point2.x;
-            bool sameY = point1.y == point2.y;
-            return !(sameX & sameY);
+            return !(a == b);
         }
 
         public static RectCoord operator -(RectCoord point1, RectCoord point2)
