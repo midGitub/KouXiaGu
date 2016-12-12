@@ -16,11 +16,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 六边形起点;
         /// </summary>
-        static readonly Vector2 Origin = Vector2.zero;
-        /// <summary>
-        /// 六边形的像素坐标起点;
-        /// </summary>
-        static readonly Vector3 OriginPixelPoint = Vector3.zero;
+        static readonly Vector3 Origin = Vector3.zero;
 
         readonly float outerRadius;
 
@@ -59,7 +55,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public CubicHexCoord GetCubic(Vector3 position)
         {
-            Vector2 pt = new Vector2((position.x - Origin.x) / outerRadius, (position.z - Origin.y) / outerRadius);
+            Vector2 pt = new Vector2((position.x - Origin.x) / outerRadius, (position.z - Origin.z) / outerRadius);
             float x = (float)(2.0 / 3.0 * pt.x);
             float y = (float)(-1.0 / 3.0 * pt.x + Math.Sqrt(3.0) / 3.0 * pt.y);
             return new CubicHexCoord(x, y, (-x - y));
