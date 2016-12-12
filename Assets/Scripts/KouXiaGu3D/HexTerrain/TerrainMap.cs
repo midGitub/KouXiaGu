@@ -15,6 +15,8 @@ namespace KouXiaGu.Terrain3D
     public static class TerrainMap
     {
 
+
+
         /// <summary>
         /// 地图分块大小;
         /// </summary>
@@ -29,7 +31,7 @@ namespace KouXiaGu.Terrain3D
         /// 地图当前的进行状态;
         /// </summary>
         static ArchiveState state = ArchiveState.Empty;
-
+        
         /// <summary>
         /// 地图当前的进行状态;
         /// </summary>
@@ -43,14 +45,6 @@ namespace KouXiaGu.Terrain3D
         /// 地形地图;
         /// </summary>
         public static IMap<CubicHexCoord, TerrainNode> Map
-        {
-            get { return terrainMap; }
-        }
-
-        /// <summary>
-        /// 只读的地形地图;
-        /// </summary>
-        public static IReadOnlyMap<CubicHexCoord, TerrainNode> ReadOnlyMap
         {
             get { return terrainMap; }
         }
