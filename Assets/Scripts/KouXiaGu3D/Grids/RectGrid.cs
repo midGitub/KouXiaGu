@@ -34,8 +34,12 @@ namespace KouXiaGu.Grids
             get { return height; }
         }
 
-        /// <param name="width">矩形宽度</param>
-        /// <param name="height">矩形高度</param>
+        public RectGrid(float size)
+        {
+            this.width = this.height = size;
+            this.widthHalf = this.heightHalf = size / 2;
+        }
+
         public RectGrid(float width, float height)
         {
             this.width = width;
@@ -65,7 +69,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到所属的矩形;
         /// </summary>
-        public RectCoord ToCoord(Vector3 position)
+        public RectCoord GetCoord(Vector3 position)
         {
             short x = (short)Math.Round(position.x / width);
             short y = (short)Math.Round(position.z / height);
@@ -75,7 +79,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到矩形像素中心点;
         /// </summary>
-        public Vector3 ToCenter(RectCoord coord)
+        public Vector3 GetCenter(RectCoord coord)
         {
             float x = coord.x * width;
             float z = coord.y * height;
@@ -85,19 +89,19 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到矩形节点的矩形表示;
         /// </summary>
-        public Rect ToRect(RectCoord coord)
+        public Rect GetRect(RectCoord coord)
         {
-            Vector3 center = ToCenter(coord);
+            Vector3 center = GetCenter(coord);
             return CenterToRect(center);
         }
 
         /// <summary>
         /// 获取到矩形的本地坐标;
         /// </summary>
-        public Vector2 ToLocal(Vector3 position, out RectCoord coord)
+        public Vector2 GetLocal(Vector3 position, out RectCoord coord)
         {
-            coord = ToCoord(position);
-            Vector3 center = ToCenter(coord);
+            coord = GetCoord(position);
+            Vector3 center = GetCenter(coord);
             Vector2 southwestPoint = new Vector2(center.x - widthHalf, center.z - heightHalf);
             Vector2 local = new Vector2(position.x - southwestPoint.x, position.z - southwestPoint.y);
             return local;
@@ -106,9 +110,9 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到矩形的UV坐标;
         /// </summary>
-        public Vector2 ToUV(Vector3 position, out RectCoord coord)
+        public Vector2 GetUV(Vector3 position, out RectCoord coord)
         {
-            Vector2 local = ToLocal(position, out coord);
+            Vector2 local = GetLocal(position, out coord);
             Vector2 uv = new Vector2(local.x / width, local.y / height);
             return uv;
         }
@@ -116,7 +120,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到矩形最左下角的坐标;
         /// </summary>
-        Vector2 ToSouthwest(Vector3 blockCenter)
+        Vector2 GetSouthwest(Vector3 blockCenter)
         {
             Vector2 southwestPoint = new Vector2(blockCenter.x - widthHalf, blockCenter.z - heightHalf);
             return southwestPoint;
@@ -127,7 +131,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         Rect CenterToRect(Vector3 blockCenter)
         {
-            Vector2 southwestPoint = ToSouthwest(blockCenter);
+            Vector2 southwestPoint = GetSouthwest(blockCenter);
             Vector2 size = new Vector2(width, height);
             return new Rect(southwestPoint, size);
         }
