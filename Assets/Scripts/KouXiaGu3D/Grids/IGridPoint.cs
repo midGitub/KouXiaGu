@@ -24,6 +24,7 @@ namespace KouXiaGu
     /// 带方向的网格点;
     /// </summary>
     public interface IGridPoint<TC, TD> : IGridPoint
+        where TC : IGridPoint
     {
 
         /// <summary>
