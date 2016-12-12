@@ -213,14 +213,14 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 将存档结构加入到地图内;
+        /// 将存档结构加入到地图内,若已存在则替换;
         /// </summary>
-        void IBlockArchive<CubicHexCoord, T>.AddArchives(BlockArchive<CubicHexCoord, T> archive)
+        bool IBlockArchive<CubicHexCoord, T>.AddOrUpdateArchives(BlockArchive<CubicHexCoord, T> archive)
         {
             if (archive.Width != mapCollection.BlockWidth)
                 throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockWidth + "," + archive.ToString());
 
-            mapCollection.Add(archive.Coord, archive.Map);
+            return mapCollection.AddOrUpdate(archive.Coord, archive.Map);
         }
 
     }

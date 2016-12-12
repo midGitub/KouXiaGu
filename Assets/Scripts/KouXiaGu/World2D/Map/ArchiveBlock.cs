@@ -58,7 +58,7 @@ namespace KouXiaGu.World2D.Map
             else
             {
                 haveChangedSet = new HashSet<RectCoord>(archive.Keys);
-                prefab.AddOrReplace(archive);
+                prefab.AddOrUpdate(archive);
                 mapNodeSet = prefab;
             }
         }

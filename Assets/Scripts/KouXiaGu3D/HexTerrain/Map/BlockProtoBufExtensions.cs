@@ -75,7 +75,19 @@ namespace KouXiaGu.Terrain3D
             foreach (var path in paths)
             {
                 var block = Load<TP, T>(path);
-                blockArchive.AddArchives(block);
+                blockArchive.AddOrUpdateArchives(block);
+            }
+        }
+
+        /// <summary>
+        /// 从文件路径读取到地图文件,保存到地图结构内;
+        /// </summary>
+        public static void Load<TP, T>(this IBlockArchive<TP, T> blockArchive, string[] filePaths)
+        {
+            foreach (var path in filePaths)
+            {
+                var block = Load<TP, T>(path);
+                blockArchive.AddOrUpdateArchives(block);
             }
         }
 
@@ -91,10 +103,11 @@ namespace KouXiaGu.Terrain3D
                 if (!blockArchive.Contains(path))
                 {
                     var block = Load<TP, T>(path);
-                    blockArchive.AddArchives(block);
+                    blockArchive.AddOrUpdateArchives(block);
                 }
             }
         }
+
 
         /// <summary>
         /// 从文件读取到;

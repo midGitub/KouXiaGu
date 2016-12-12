@@ -15,8 +15,6 @@ namespace KouXiaGu.Terrain3D
     public static class TerrainMap
     {
 
-
-
         /// <summary>
         /// 地图分块大小;
         /// </summary>
@@ -56,6 +54,7 @@ namespace KouXiaGu.Terrain3D
         {
             get { return terrainMap.Count == 0; }
         }
+
 
 
         /// <summary>
@@ -105,7 +104,7 @@ namespace KouXiaGu.Terrain3D
             {
                 State = ArchiveState.Reading;
                 terrainMap.Load(directoryPath);
-                State = currentState;
+                State = ArchiveState.Complete;
             }
             finally
             {

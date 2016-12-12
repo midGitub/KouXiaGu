@@ -36,7 +36,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将存档结构加入到地图内;
         /// </summary>
-        void AddArchives(BlockArchive<TP, T> archive);
+        bool AddOrUpdateArchives(BlockArchive<TP, T> archive);
 
     }
 

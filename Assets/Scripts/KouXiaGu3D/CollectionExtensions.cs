@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KouXiaGu
 {
 
-    public static class CollectionHelper
+    public static class CollectionExtensions
     {
 
         /// <summary>
@@ -14,7 +13,7 @@ namespace KouXiaGu
         /// ArgumentNullException : key 为 null
         /// NotSupportedException : IDictionary<TKey, TValue> 为只读。
         /// </summary>
-        public static void AddOrReplace<TKey,TValue>(this IDictionary<TKey, TValue> dictionary, 
+        public static void AddOrUpdate<TKey,TValue>(this IDictionary<TKey, TValue> dictionary, 
             IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
             foreach (var pair in collection)
@@ -34,7 +33,7 @@ namespace KouXiaGu
         /// 将元素加入到 IDictionary<TKey, TValue>, 若已经存在,则进行替换;
         /// 若为加入则返回true,替换返回false;
         /// </summary>
-        public static bool AddOrReplace<TKey, TValue>(this IDictionary<TKey, TValue> dictionary,
+        public static bool AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary,
             TKey key, TValue value)
         {
             try

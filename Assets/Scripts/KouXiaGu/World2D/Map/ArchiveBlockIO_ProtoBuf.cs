@@ -227,7 +227,7 @@ namespace KouXiaGu.World2D.Map
             {
                 if (TryLoadMapBlock(filePath2, out blockMap2))
                 {
-                    blockMap1.AddOrReplace(blockMap2);
+                    blockMap1.AddOrUpdate(blockMap2);
                     SaveMapBlockOrNot(outputFilePath, blockMap1);
                 }
                 else
