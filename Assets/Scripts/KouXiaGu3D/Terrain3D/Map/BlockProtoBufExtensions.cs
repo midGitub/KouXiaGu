@@ -67,22 +67,19 @@ namespace KouXiaGu.Terrain3D
 
         /// <summary>
         /// 读取这个目录下的所有地图文件,保存到地图结构内;
-        /// 注意地图内容是否存在重复,这个函数不进行重复块检查;
+        /// 这个函数不进行重复块检查;
         /// </summary>
         public static void Load<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
         {
-            string[] paths = GetFilePaths(directoryPath);
-            foreach (var path in paths)
-            {
-                var block = Load<TP, T>(path);
-                blockArchive.AddOrUpdateArchives(block);
-            }
+            IEnumerable<string> paths = GetFilePaths(directoryPath);
+            blockArchive.Load(paths);
         }
 
         /// <summary>
         /// 从文件路径读取到地图文件,保存到地图结构内;
+        /// 这个函数不进行重复块检查;
         /// </summary>
-        public static void Load<TP, T>(this IBlockArchive<TP, T> blockArchive, string[] filePaths)
+        public static void Load<TP, T>(this IBlockArchive<TP, T> blockArchive, IEnumerable<string> filePaths)
         {
             foreach (var path in filePaths)
             {
@@ -97,7 +94,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void LoadContrastive<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
         {
-            string[] paths = GetFilePaths(directoryPath);
+            IEnumerable<string> paths = GetFilePaths(directoryPath);
             foreach (var path in paths)
             {
                 if (!blockArchive.Contains(path))
@@ -107,7 +104,6 @@ namespace KouXiaGu.Terrain3D
                 }
             }
         }
-
 
         /// <summary>
         /// 从文件读取到;
@@ -143,24 +139,19 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到这个目录下存在的所有地图块文件标号;
         /// </summary>
-        public static RectCoord[] GetCoords(string directoryPath)
+        public static IEnumerable<RectCoord> GetCoords(string directoryPath)
         {
-            string[] paths = GetFilePaths(directoryPath);
-            RectCoord[] coords = new RectCoord[paths.Length];
-            int index = 0;
-
+            IEnumerable<string> paths = GetFilePaths(directoryPath);
             foreach (var path in paths)
             {
-                coords[index] = FilePathToCoord(path);
+                yield return FilePathToCoord(path);
             }
-
-            return coords;
         }
 
         /// <summary>
         /// 获取到这个目录下存在的所有地图块文件;
         /// </summary>
-        public static string[] GetFilePaths(string directoryPath)
+        public static IEnumerable<string> GetFilePaths(string directoryPath)
         {
             return Directory.GetFiles(directoryPath, searchPattern);
         }

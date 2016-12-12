@@ -65,24 +65,24 @@ namespace KouXiaGu.Terrain3D
             get { return this.mapCollection.Count; }
         }
 
-        public IEnumerable<T> Nodes
+        public IEnumerable<T> Values
         {
             get
             {
                 lock (syncWriteRoot)
                 {
-                    return this.mapCollection.Nodes;
+                    return this.mapCollection.Values;
                 }
             }
         }
 
-        public IEnumerable<CubicHexCoord> Points
+        public IEnumerable<CubicHexCoord> Keys
         {
             get
             {
                 lock (syncWriteRoot)
                 {
-                    return this.mapCollection.Points;
+                    return this.mapCollection.Keys;
                 }
             }
         }

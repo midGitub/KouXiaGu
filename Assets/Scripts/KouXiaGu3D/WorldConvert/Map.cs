@@ -19,7 +19,7 @@ namespace KouXiaGu
         [ProtoMember(1)]
         Dictionary<TP, T> mapCollection;
 
-        public IEnumerable<TP> Points
+        public IEnumerable<TP> Keys
         {
             get
             {
@@ -27,7 +27,7 @@ namespace KouXiaGu
             }
         }
 
-        public IEnumerable<T> Nodes
+        public IEnumerable<T> Values
         {
             get
             {

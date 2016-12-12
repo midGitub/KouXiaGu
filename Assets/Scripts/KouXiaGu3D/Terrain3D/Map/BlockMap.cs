@@ -13,22 +13,12 @@ namespace KouXiaGu.Terrain3D
     public class BlockedMap<T> : IMap<CubicHexCoord, T>, IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>
     {
 
-        /// <param name="blockSize">必须为奇数,若不是则+1</param>
-        public BlockedMap(short blockSize)
-        {
-            blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
-            block = new CubicHexBlock(blockSize);
-
-            mapCollection = new Dictionary<RectCoord, Dictionary<CubicHexCoord, T>>();
-        }
-
         CubicHexBlock block;
 
         /// <summary>
         /// Key 保存块的编号, Value 保存块内容;
         /// </summary>
         Dictionary<RectCoord, Dictionary<CubicHexCoord, T>> mapCollection;
-
 
         public T this[CubicHexCoord position]
         {
@@ -44,12 +34,12 @@ namespace KouXiaGu.Terrain3D
             get { return mapCollection.Values.Sum(block => block.Count); }
         }
 
-        public IEnumerable<CubicHexCoord> Points
+        public IEnumerable<CubicHexCoord> Keys
         {
             get { return mapCollection.Values.SelectMany(block => block.Keys); }
         }
 
-        public IEnumerable<T> Nodes
+        public IEnumerable<T> Values
         {
             get { return mapCollection.Values.SelectMany(block => block.Values); }
         }
@@ -59,32 +49,17 @@ namespace KouXiaGu.Terrain3D
             get { return block.Width; }
         }
 
-        public Dictionary<CubicHexCoord, T> this[RectCoord key]
+        public int BlockHeight
         {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key]; }
-            set { ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key] = value; }
+            get { return block.Height; }
         }
 
-        int ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.Count
+        /// <param name="blockSize">必须为奇数</param>
+        public BlockedMap(short blockSize)
         {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Count; }
+            block = new CubicHexBlock(blockSize);
+            mapCollection = new Dictionary<RectCoord, Dictionary<CubicHexCoord, T>>();
         }
-
-        public ICollection<RectCoord> Keys
-        {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Keys; }
-        }
-
-        public ICollection<Dictionary<CubicHexCoord, T>> Values
-        {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Values; }
-        }
-
-        bool ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.IsReadOnly
-        {
-            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).IsReadOnly; }
-        }
-
 
         /// <summary>
         /// 加入到,若超出地图块,则创建一个新的地图块;
@@ -145,7 +120,6 @@ namespace KouXiaGu.Terrain3D
             mapCollection.Clear();
         }
 
-
         /// <summary>
         /// 创建一个新的地图块,并且加入到地图,若地图中已存在这个地图块,则返回其;
         /// </summary>
@@ -201,7 +175,6 @@ namespace KouXiaGu.Terrain3D
             return block.GetChunk(position);
         }
 
-
         public IEnumerator<KeyValuePair<CubicHexCoord, T>> GetEnumerator()
         {
             return mapCollection.Values.SelectMany(block => block).GetEnumerator();
@@ -212,6 +185,34 @@ namespace KouXiaGu.Terrain3D
             return GetEnumerator();
         }
 
+
+        #region IDictionary
+
+        public Dictionary<CubicHexCoord, T> this[RectCoord key]
+        {
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key]; }
+            set { ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key] = value; }
+        }
+
+        int ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.Count
+        {
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Count; }
+        }
+
+        ICollection<RectCoord> IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>.Keys
+        {
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Keys; }
+        }
+
+        ICollection<Dictionary<CubicHexCoord, T>> IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>.Values
+        {
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Values; }
+        }
+
+        bool ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.IsReadOnly
+        {
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).IsReadOnly; }
+        }
 
 
         public void Add(RectCoord key, Dictionary<CubicHexCoord, T> value)
@@ -259,6 +260,8 @@ namespace KouXiaGu.Terrain3D
         {
             return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).GetEnumerator();
         }
+
+        #endregion
 
     }
 

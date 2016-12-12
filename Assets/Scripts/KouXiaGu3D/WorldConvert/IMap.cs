@@ -19,8 +19,8 @@ namespace KouXiaGu
     {
 
         T this[TP position] { get; set; }
-        IEnumerable<TP> Points { get; }
-        IEnumerable<T> Nodes { get; }
+        IEnumerable<TP> Keys { get; }
+        IEnumerable<T> Values { get; }
         int Count { get; }
 
         void Add(TP position, T item);
