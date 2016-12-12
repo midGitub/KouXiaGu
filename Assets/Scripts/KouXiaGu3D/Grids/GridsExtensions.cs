@@ -13,46 +13,6 @@ namespace KouXiaGu.Grids
     public static class GridsExtensions
     {
 
-
-        /// <summary>
-        /// 获取到目标点的邻居节点;
-        /// </summary>
-        public static IEnumerable<TC> GetNeighbours<TC, TD>(this TC target, TD directions)
-             where TC : IGridPoint<TC, TD>
-        {
-            foreach (var direction in target.GetDirections(directions))
-            {
-                yield return (TC)target.GetDirection(direction);
-            }
-        }
-
-        /// <summary>
-        /// 获取到目标节点邻居节点;
-        /// </summary>
-        public static IEnumerable<CoordPack<TC, TD>> GetNeighbours<TC, TD>(this IGridPoint<TC, TD> target)
-             where TC : IGridPoint<TC, TD>
-        {
-            foreach (var direction in target.Directions)
-            {
-                TC offsetCoord = (TC)target.GetDirection(direction);
-                yield return new CoordPack<TC, TD>(offsetCoord, direction);
-            }
-        }
-
-        /// <summary>
-        /// 获取到目标节点和其邻居节点;(存在本身方向,且最先返回);
-        /// </summary>
-        public static IEnumerable<CoordPack<TC, TD>> GetNeighboursAndSelf<TC, TD>(this IGridPoint<TC, TD> target)
-           where TC : IGridPoint<TC, TD>
-        {
-            foreach (var direction in target.DirectionsAndSelf)
-            {
-                TC offsetCoord = (TC)target.GetDirection(direction);
-                yield return new CoordPack<TC, TD>(offsetCoord, direction);
-            }
-        }
-
-
         /// <summary>
         /// 获取到目标节点邻居节点,若节点不存在则不返回;
         /// </summary>
