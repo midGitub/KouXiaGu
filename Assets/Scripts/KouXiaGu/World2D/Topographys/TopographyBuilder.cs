@@ -25,7 +25,7 @@ namespace KouXiaGu.World2D
         MapCollection<Topography> activeWorldNode;
         MapCollection<Road> activeRoad;
 
-        IHexMap<ShortVector2, WorldNode> WorldMap;
+        IHexMap<RectCoord, WorldNode> WorldMap;
 
         void Awake()
         {
@@ -68,7 +68,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         void BuildTopography(MapNodeState<WorldNode> nodeState)
         {
-            ShortVector2 mapPoint = nodeState.MapPoint;
+            RectCoord mapPoint = nodeState.MapPoint;
             BuildTopography(mapPoint, nodeState.WorldNode);
         }
 
@@ -77,7 +77,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         void DestroyTopography(MapNodeState<WorldNode> nodeState)
         {
-            ShortVector2 mapPoint = nodeState.MapPoint;
+            RectCoord mapPoint = nodeState.MapPoint;
             DestroyTopography(mapPoint);
         }
 
@@ -86,13 +86,13 @@ namespace KouXiaGu.World2D
         /// </summary>
         void UpdateTopography(MapNodeState<WorldNode> nodeState)
         {
-            ShortVector2 mapPoint = nodeState.MapPoint;
+            RectCoord mapPoint = nodeState.MapPoint;
             UpdateTopography(mapPoint, nodeState.WorldNode);
         }
 
 
 
-        void BuildTopography(ShortVector2 mapPoint, WorldNode worldNode)
+        void BuildTopography(RectCoord mapPoint, WorldNode worldNode)
         {
             int topographyID = worldNode.TopographyID;
 
@@ -102,7 +102,7 @@ namespace KouXiaGu.World2D
             activeWorldNode.Add(mapPoint, topography);
         }
 
-        void BuildRoad(ShortVector2 mapPoint, WorldNode worldNode, UnityEngine.Component instance)
+        void BuildRoad(RectCoord mapPoint, WorldNode worldNode, UnityEngine.Component instance)
         {
             if (worldNode.Road)
             {
@@ -120,7 +120,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 销毁这个地貌;
         /// </summary>
-        void DestroyTopography(ShortVector2 mapPoint)
+        void DestroyTopography(RectCoord mapPoint)
         {
             Topography topography = activeWorldNode[mapPoint];
             DestroyTopography(mapPoint, topography);
@@ -128,7 +128,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 销毁这个地貌;
         /// </summary>
-        void DestroyTopography(ShortVector2 mapPoint, Topography topography)
+        void DestroyTopography(RectCoord mapPoint, Topography topography)
         {
             DestroyRoad(mapPoint);
             Destroy(topography);
@@ -137,14 +137,14 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 移除这个点的路径预制;
         /// </summary>
-        void DestroyRoad(ShortVector2 mapPoint)
+        void DestroyRoad(RectCoord mapPoint)
         {
             activeRoad.Remove(mapPoint);
             UpdateAroundRoadDirection(mapPoint);
         }
 
 
-        void UpdateTopography(ShortVector2 mapPoint, WorldNode worldNode)
+        void UpdateTopography(RectCoord mapPoint, WorldNode worldNode)
         {
             Topography original = activeWorldNode[mapPoint];
             int topographyID = worldNode.TopographyID;
@@ -157,7 +157,7 @@ namespace KouXiaGu.World2D
             UpdateRoad(mapPoint, worldNode);
         }
 
-        void UpdateRoad(ShortVector2 mapPoint, WorldNode worldNode)
+        void UpdateRoad(RectCoord mapPoint, WorldNode worldNode)
         {
             if (activeRoad[mapPoint].HaveRoad != worldNode.Road)
             {
@@ -169,7 +169,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 更新这个道路的信息;
         /// </summary>
-        void UpdateRoadDirection(ShortVector2 mapPoint, Road instance)
+        void UpdateRoadDirection(RectCoord mapPoint, Road instance)
         {
             HexDirection directionmask = WorldMap.GetAroundAndSelfMask(mapPoint, node => node.Road);
             instance.SetState(directionmask);
@@ -177,7 +177,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 更新这个点周围的信息;
         /// </summary>
-        void UpdateAroundRoadDirection(ShortVector2 mapPoint)
+        void UpdateAroundRoadDirection(RectCoord mapPoint)
         {
             foreach (var road in activeRoad.GetNeighbours(mapPoint))
             {
@@ -189,7 +189,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到地貌预制,若未定义则返回 编号为 0 的预制,并输出警告;
         /// </summary>
-        Topography GetTopographyPrefab(int topographyID, ShortVector2 mapPoint)
+        Topography GetTopographyPrefab(int topographyID, RectCoord mapPoint)
         {
             Topography topographyPrefab;
             try
@@ -208,7 +208,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 实例化;
         /// </summary>
-        Topography Instantiate(ShortVector2 mapPoint, int topographyID)
+        Topography Instantiate(RectCoord mapPoint, int topographyID)
         {
             Topography topographyPrefab = GetTopographyPrefab(topographyID, mapPoint);
             Vector2 planePoint = WorldConvert.MapToHex(mapPoint);

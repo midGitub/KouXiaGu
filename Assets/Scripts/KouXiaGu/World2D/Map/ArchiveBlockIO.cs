@@ -46,17 +46,17 @@ namespace KouXiaGu.World2D.Map
         }
 
 
-        public ArchiveBlock<T> Load(ShortVector2 address)
+        public ArchiveBlock<T> Load(RectCoord address)
         {
             return this.LoadMapBlock<T>(address);
         }
 
-        public void Unload(ShortVector2 address, ArchiveBlock<T> block)
+        public void Unload(RectCoord address, ArchiveBlock<T> block)
         {
             SaveMapBlock(address, block);
         }
 
-        void SaveMapBlock(ShortVector2 address, ArchiveBlock<T> block)
+        void SaveMapBlock(RectCoord address, ArchiveBlock<T> block)
         {
             this.SaveArchiveMapBlockOrNot(address, block);
             if (editPrefab)
@@ -111,7 +111,7 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         void OnSave(BlockMap<ArchiveBlock<T>> blockMap)
         {
-            KeyValuePair<ShortVector2, ArchiveBlock<T>>[] pairs = blockMap.BlocksPair.ToArray();
+            KeyValuePair<RectCoord, ArchiveBlock<T>>[] pairs = blockMap.BlocksPair.ToArray();
             foreach (var pair in pairs)
             {
                 SaveMapBlock(pair.Key, pair.Value);

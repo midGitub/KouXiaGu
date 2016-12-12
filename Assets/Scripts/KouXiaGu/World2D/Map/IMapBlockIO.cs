@@ -11,8 +11,8 @@ namespace KouXiaGu.World2D.Map
     /// </summary>
     public interface IMapBlockIO<TBlock>
     {
-        TBlock Load(ShortVector2 address);
-        void Unload(ShortVector2 address, TBlock block);
+        TBlock Load(RectCoord address);
+        void Unload(RectCoord address, TBlock block);
     }
 
 }

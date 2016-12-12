@@ -27,10 +27,10 @@ namespace KouXiaGu
 
 
     /// <summary>
-    /// Short类型的向量,保存在哈希表内键值不重复;
+    /// 矩形网格的坐标;
     /// </summary>
     [Serializable, ProtoContract]
-    public struct ShortVector2 : IEquatable<ShortVector2>, IGrid, IGrid<RecDirections>
+    public struct RectCoord : IEquatable<RectCoord>, IGrid, IGrid<RecDirections>
     {
 
         /// <summary>
@@ -41,56 +41,31 @@ namespace KouXiaGu
         const int maxDirectionMark = (int)RecDirections.Self;
         const int minDirectionMark = (int)RecDirections.North;
 
-        static readonly ShortVector2 up = new ShortVector2(0, 1);
-        public static ShortVector2 Up
-        {
-            get { return up; }
-        }
+        public static readonly RectCoord North = new RectCoord(0, 1);
+        public static readonly RectCoord South = new RectCoord(0, -1);
+        public static readonly RectCoord West = new RectCoord(-1, 0);
+        public static readonly RectCoord East = new RectCoord(1, 0);
+        public static readonly RectCoord Self = new RectCoord(0, 0);
 
-        static readonly ShortVector2 down = new ShortVector2(0, -1);
-        public static ShortVector2 Down
-        {
-            get { return down; }
-        }
-
-        static readonly ShortVector2 left = new ShortVector2(-1, 0);
-        public static ShortVector2 Left
-        {
-            get { return left; }
-        }
-
-        static readonly ShortVector2 right = new ShortVector2(1, 0);
-        public static ShortVector2 Right
-        {
-            get { return right; }
-        }
-
-        static readonly ShortVector2 zero = new ShortVector2(0, 0);
-        public static ShortVector2 Zero
-        {
-            get { return zero; }
-        }
-
-        static readonly ShortVector2 one = new ShortVector2(1, 1);
-        public static ShortVector2 One
-        {
-            get { return one; }
-        }
+        public static readonly RectCoord Northeast = North + East;
+        public static readonly RectCoord Southeast = South + East;
+        public static readonly RectCoord Southwest = South + West;
+        public static readonly RectCoord Northwest = North + West;
 
         /// <summary>
         /// 方向偏移量;
         /// </summary>
-        static Dictionary<int, ShortVector2> directionsVector = new Dictionary<int, ShortVector2>()
+        static Dictionary<int, RectCoord> directionsVector = new Dictionary<int, RectCoord>()
         {
-            { (int)RecDirections.North, ShortVector2.Up },
-            { (int)RecDirections.Northeast, ShortVector2.Up + ShortVector2.Right },
-            { (int)RecDirections.East, ShortVector2.Right},
-            { (int)RecDirections.Southeast, ShortVector2.Down + ShortVector2.Right},
-            { (int)RecDirections.South, ShortVector2.Down},
-            { (int)RecDirections.Southwest, ShortVector2.Down + ShortVector2.Left},
-            { (int)RecDirections.West, ShortVector2.Left},
-            { (int)RecDirections.Northwest, ShortVector2.Up + ShortVector2.Left},
-            { (int)RecDirections.Self, ShortVector2.Zero},
+            { (int)RecDirections.North, North },
+            { (int)RecDirections.Northeast, Northeast },
+            { (int)RecDirections.East, East},
+            { (int)RecDirections.Southeast, Southeast },
+            { (int)RecDirections.South, South},
+            { (int)RecDirections.Southwest, Southwest },
+            { (int)RecDirections.West, West},
+            { (int)RecDirections.Northwest, Northwest },
+            { (int)RecDirections.Self, Self},
 
         };
 
@@ -133,13 +108,13 @@ namespace KouXiaGu
         [ProtoMember(2)]
         public short y { get; set; }
 
-        public ShortVector2(short x, short y)
+        public RectCoord(short x, short y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public ShortVector2(int x, int y)
+        public RectCoord(int x, int y)
         {
             this.x = (short)x;
             this.y = (short)y;
@@ -152,12 +127,12 @@ namespace KouXiaGu
 
         public override bool Equals(object obj)
         {
-            if (!(obj is ShortVector2))
+            if (!(obj is RectCoord))
                 return false;
-            return Equals((ShortVector2)obj);
+            return Equals((RectCoord)obj);
         }
 
-        public bool Equals(ShortVector2 other)
+        public bool Equals(RectCoord other)
         {
             return x == other.x && y == other.y;
         }
@@ -177,7 +152,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个方向的坐标;
         /// </summary>
-        public ShortVector2 GetDirection(RecDirections direction)
+        public RectCoord GetDirection(RecDirections direction)
         {
             return this + GetDirectionOffset(direction);
         }
@@ -185,33 +160,33 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>
-        public IEnumerable<CoordPack<ShortVector2, RecDirections>> GetNeighbours()
+        public IEnumerable<CoordPack<RectCoord, RecDirections>> GetNeighbours()
         {
             foreach (var direction in Directions)
             {
-                yield return new CoordPack<ShortVector2, RecDirections>(this.GetDirection(direction), direction);
+                yield return new CoordPack<RectCoord, RecDirections>(this.GetDirection(direction), direction);
             }
         }
 
         /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>
-        public IEnumerable<CoordPack<ShortVector2, RecDirections>> GetNeighbours(RecDirections directions)
+        public IEnumerable<CoordPack<RectCoord, RecDirections>> GetNeighbours(RecDirections directions)
         {
             foreach (var direction in GetDirections(directions))
             {
-                yield return new CoordPack<ShortVector2, RecDirections>(this.GetDirection(direction), direction);
+                yield return new CoordPack<RectCoord, RecDirections>(this.GetDirection(direction), direction);
             }
         }
 
         /// <summary>
         /// 获取到目标点的邻居节点,但是也返回自己本身;
         /// </summary>
-        public IEnumerable<CoordPack<ShortVector2, RecDirections>> GetNeighboursAndSelf()
+        public IEnumerable<CoordPack<RectCoord, RecDirections>> GetNeighboursAndSelf()
         {
             foreach (var direction in DirectionsAndSelf)
             {
-                yield return new CoordPack<ShortVector2, RecDirections>(this.GetDirection(direction), direction);
+                yield return new CoordPack<RectCoord, RecDirections>(this.GetDirection(direction), direction);
             }
         }
 
@@ -241,18 +216,18 @@ namespace KouXiaGu
         /// <summary>
         /// 将哈希值转换成坐标;
         /// </summary>
-        public static ShortVector2 HashCodeToVector(int hashCode)
+        public static RectCoord HashCodeToVector(int hashCode)
         {
             short x = (short)(hashCode >> 16);
             short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
-            return new ShortVector2(x, y);
+            return new RectCoord(x, y);
         }
 
 
         /// <summary>
         /// 获取这两个点的距离;
         /// </summary>
-        public static float Distance(ShortVector2 v1, ShortVector2 v2)
+        public static float Distance(RectCoord v1, RectCoord v2)
         {
             float distance = (float)Math.Sqrt(Math.Pow((v1.x - v2.x), 2) + Math.Pow((v1.y - v2.y), 2));
             return distance;
@@ -261,7 +236,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取这两个点的曼哈顿距离;
         /// </summary>
-        public static int ManhattanDistance(ShortVector2 v1, ShortVector2 v2)
+        public static int ManhattanDistance(RectCoord v1, RectCoord v2)
         {
             int distance = Math.Abs(v1.x - v2.x) + Math.Abs(v1.y - v2.y);
             return distance;
@@ -271,13 +246,13 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到这个范围所有的点;
         /// </summary>
-        public static IEnumerable<ShortVector2> RecRange(ShortVector2 southwest, ShortVector2 northeast)
+        public static IEnumerable<RectCoord> RecRange(RectCoord southwest, RectCoord northeast)
         {
             for (short x = southwest.x; x <= northeast.x; x++)
             {
                 for (short y = southwest.y; y <= northeast.y; y++)
                 {
-                    yield return new ShortVector2(x, y);
+                    yield return new RectCoord(x, y);
                 }
             }
         }
@@ -302,7 +277,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到方向偏移量;
         /// </summary>
-        public static ShortVector2 GetDirectionOffset(RecDirections direction)
+        public static RectCoord GetDirectionOffset(RecDirections direction)
         {
             return directionsVector[(int)direction];
         }
@@ -321,90 +296,57 @@ namespace KouXiaGu
                 }
             }
         }
-
-        /// <summary>
-        /// 根据四舍五入进行转换;
-        /// </summary>
-        public static explicit operator ShortVector2(Vector2 vector2)
-        {
-            return new ShortVector2(
-                (short)Math.Round(vector2.x),
-                (short)Math.Round(vector2.y));
-        }
-
-        /// <summary>
-        /// 根据四舍五入进行转换(取 x 和 z 轴);
-        /// </summary>
-        public static explicit operator ShortVector2(Vector3 vector3)
-        {
-            return new ShortVector2(
-                (short)Math.Round(vector3.x),
-                (short)Math.Round(vector3.z));
-        }
-
-        public static explicit operator Vector2(ShortVector2 v)
-        {
-            return new Vector2(v.x, v.y);
-        }
-
-        /// <summary>
-        /// 转换到向量;(设置 x 和 z 轴, y轴设为0);
-        /// </summary>
-        public static explicit operator Vector3(ShortVector2 v)
-        {
-            return new Vector3(v.x, 0, v.y);
-        }
-
-        public static bool operator ==(ShortVector2 point1, ShortVector2 point2)
+        
+        public static bool operator ==(RectCoord point1, RectCoord point2)
         {
             bool sameX = point1.x == point2.x;
             bool sameY = point1.y == point2.y;
             return sameX & sameY;
         }
 
-        public static bool operator !=(ShortVector2 point1, ShortVector2 point2)
+        public static bool operator !=(RectCoord point1, RectCoord point2)
         {
             bool sameX = point1.x == point2.x;
             bool sameY = point1.y == point2.y;
             return !(sameX & sameY);
         }
 
-        public static ShortVector2 operator -(ShortVector2 point1, ShortVector2 point2)
+        public static RectCoord operator -(RectCoord point1, RectCoord point2)
         {
             point1.x -= point2.x;
             point1.y -= point2.y;
             return point1;
         }
 
-        public static ShortVector2 operator +(ShortVector2 point1, ShortVector2 point2)
+        public static RectCoord operator +(RectCoord point1, RectCoord point2)
         {
             point1.x += point2.x;
             point1.y += point2.y;
             return point1;
         }
 
-        public static ShortVector2 operator *(ShortVector2 point1, short n)
+        public static RectCoord operator *(RectCoord point1, short n)
         {
             point1.x *= n;
             point1.y *= n;
             return point1;
         }
 
-        public static ShortVector2 operator /(ShortVector2 point1, short n)
+        public static RectCoord operator /(RectCoord point1, short n)
         {
             point1.x /= n;
             point1.y /= n;
             return point1;
         }
 
-        public static ShortVector2 operator +(ShortVector2 point1, short n)
+        public static RectCoord operator +(RectCoord point1, short n)
         {
             point1.x += n;
             point1.y += n;
             return point1;
         }
 
-        public static ShortVector2 operator -(ShortVector2 point1, short n)
+        public static RectCoord operator -(RectCoord point1, short n)
         {
             point1.x -= n;
             point1.y -= n;

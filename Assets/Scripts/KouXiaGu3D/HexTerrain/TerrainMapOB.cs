@@ -35,15 +35,15 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("烘焙测试")]
         void Test_Baking()
         {
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Zero));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Left));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Right));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Left));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Down + ShortVector2.Right));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Left));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, ShortVector2.Up + ShortVector2.Right));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.Self));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.West));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.East));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.North));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.South));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.South + RectCoord.West));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.South + RectCoord.East));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.North + RectCoord.West));
+            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.North + RectCoord.East));
 
             //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, new ShortVector2(1,0)));
             //BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, new ShortVector2(1, -1)));
@@ -75,9 +75,9 @@ namespace KouXiaGu.Terrain3D
             Map<CubicHexCoord, TerrainNode> terrainMap = new Map<CubicHexCoord, TerrainNode>();
               int[] aa = new int[] { 10, 20, 30, 20 };
 
-            terrainMap.Add(CubicHexCoord.Zero, new TerrainNode(10, 0));
+            terrainMap.Add(CubicHexCoord.Self, new TerrainNode(10, 0));
 
-            foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Zero, 10))
+            foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Self, 10))
             {
                 try
                 {

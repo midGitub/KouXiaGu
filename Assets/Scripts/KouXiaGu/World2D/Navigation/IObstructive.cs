@@ -19,7 +19,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 获取到人物走到这个地图节点的代价值,和距离终点的代价值总和(作为寻路依据);
         /// </summary>
-        float GetCost(TMover mover, ShortVector2 currentPoint, TNode currentNode, ShortVector2 destination);
+        float GetCost(TMover mover, RectCoord currentPoint, TNode currentNode, RectCoord destination);
     }
 
 }

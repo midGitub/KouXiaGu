@@ -15,7 +15,7 @@ namespace KouXiaGu.World2D
         Transform target;
 
         [SerializeField]
-        ShortVector2 offset;
+        RectCoord offset;
 
         private void Update()
         {

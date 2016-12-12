@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 确认是否已经存在这个地图块;
         /// </summary>
-        bool Contains(ShortVector2 coord);
+        bool Contains(RectCoord coord);
 
         /// <summary>
         /// 返回需要保存的地图块存档结构;

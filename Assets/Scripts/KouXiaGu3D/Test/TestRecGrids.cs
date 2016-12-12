@@ -28,7 +28,7 @@ namespace KouXiaGu.Test
         IEnumerator BreadthTraversal1()
         {
             WaitForSeconds wait = new WaitForSeconds(1);
-            foreach (var point in new BreadthTraversal().Traversal(ShortVector2.Zero, _ => false))
+            foreach (var point in new BreadthTraversal().Traversal(RectCoord.Self, _ => false))
             {
                 Instantiate(point);
                 yield return wait;
@@ -49,7 +49,7 @@ namespace KouXiaGu.Test
         IEnumerator BreadthTraversal2()
         {
             WaitForSeconds wait = new WaitForSeconds(1);
-            foreach (var point in new BreadthTraversal().Traversal(ShortVector2.Zero, point => (point.x & 1) == 1 && point.y != 2))
+            foreach (var point in new BreadthTraversal().Traversal(RectCoord.Self, point => (point.x & 1) == 1 && point.y != 2))
             {
                 Instantiate(point);
                 yield return wait;
@@ -58,7 +58,7 @@ namespace KouXiaGu.Test
         }
 
 
-        void Instantiate(ShortVector2 position)
+        void Instantiate(RectCoord position)
         {
             Vector3 pos = new Vector3(position.x, 0, position.y);
             var gObject = Instantiate(prefab, pos, prefab.transform.rotation, this.transform) as GameObject;

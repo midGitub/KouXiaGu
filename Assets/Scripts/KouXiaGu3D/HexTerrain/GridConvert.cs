@@ -26,7 +26,7 @@ namespace KouXiaGu
         /// <summary>
         /// 六边形起点;
         /// </summary>
-        public static readonly ShortVector2 Origin = new ShortVector2(0, 0);
+        public static readonly RectCoord Origin = new RectCoord(0, 0);
         /// <summary>
         /// 六边形的像素坐标起点;
         /// </summary>

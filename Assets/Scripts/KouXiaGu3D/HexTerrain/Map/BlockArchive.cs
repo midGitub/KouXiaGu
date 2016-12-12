@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     public struct BlockArchive<TP, T>
     {
 
-        public BlockArchive(ShortVector2 coord, short size, Dictionary<TP, T> map)
+        public BlockArchive(RectCoord coord, short size, Dictionary<TP, T> map)
         {
             this.Coord = coord;
             this.Size = size;
@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         /// 块坐标;
         /// </summary>
         [ProtoMember(1)]
-        public ShortVector2 Coord { get; private set; }
+        public RectCoord Coord { get; private set; }
 
         /// <summary>
         /// 地图块大小;

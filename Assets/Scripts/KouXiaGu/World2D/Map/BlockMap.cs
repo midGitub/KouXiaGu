@@ -15,7 +15,7 @@ namespace KouXiaGu.World2D.Map
     [Serializable]
     public class BlockMap<TBlock>
     {
-        public BlockMap(ShortVector2 partitionSizes)
+        public BlockMap(RectCoord partitionSizes)
         {
             this.partitionSize = partitionSizes;
         }
@@ -23,15 +23,15 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 块半径;
         /// </summary>
-        ShortVector2 partitionSize;
-        Dictionary<ShortVector2, TBlock> mapCollection = new Dictionary<ShortVector2, TBlock>();
+        RectCoord partitionSize;
+        Dictionary<RectCoord, TBlock> mapCollection = new Dictionary<RectCoord, TBlock>();
 
-        public ShortVector2 PartitionSizes
+        public RectCoord PartitionSizes
         {
             get { return partitionSize; }
         }
 
-        public IEnumerable<ShortVector2> Addresses
+        public IEnumerable<RectCoord> Addresses
         {
             get { return mapCollection.Keys; }
         }
@@ -41,32 +41,32 @@ namespace KouXiaGu.World2D.Map
             get { return mapCollection.Values; }
         }
 
-        public IEnumerable<KeyValuePair<ShortVector2, TBlock>> BlocksPair
+        public IEnumerable<KeyValuePair<RectCoord, TBlock>> BlocksPair
         {
             get { return mapCollection; }
         }
 
-        public TBlock this[ShortVector2 position]
+        public TBlock this[RectCoord position]
         {
             get { return mapCollection[position]; }
         }
 
-        public void Add(ShortVector2 position, TBlock item)
+        public void Add(RectCoord position, TBlock item)
         {
             mapCollection.Add(position, item);
         }
 
-        public bool Remove(ShortVector2 position)
+        public bool Remove(RectCoord position)
         {
             return mapCollection.Remove(position);
         }
 
-        public bool Contains(ShortVector2 position)
+        public bool Contains(RectCoord position)
         {
             return mapCollection.ContainsKey(position);
         }
 
-        public bool TryGetValue(ShortVector2 position, out TBlock item)
+        public bool TryGetValue(RectCoord position, out TBlock item)
         {
             return mapCollection.TryGetValue(position, out item);
         }
@@ -79,9 +79,9 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图坐标转换成地图块的坐标;
         /// </summary>
-        public ShortVector2 MapPointToAddress(ShortVector2 position)
+        public RectCoord MapPointToAddress(RectCoord position)
         {
-            ShortVector2 address = new ShortVector2();
+            RectCoord address = new RectCoord();
 
             address.x = (short)(position.x / partitionSize.x);
             address.y = (short)(position.y / partitionSize.y);
@@ -92,14 +92,14 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图坐标转换成地图块的坐标 和 地图块内的坐标;
         /// </summary>
-        public ShortVector2 MapPointToAddress(ShortVector2 position, out ShortVector2 realPosition)
+        public RectCoord MapPointToAddress(RectCoord position, out RectCoord realPosition)
         {
-            ShortVector2 address = new ShortVector2();
+            RectCoord address = new RectCoord();
             int realPositionX, realPositionY;
 
             address.x = (short)(Math.DivRem(position.x, partitionSize.x, out realPositionX));
             address.y = (short)(Math.DivRem(position.y, partitionSize.y, out realPositionY));
-            realPosition = new ShortVector2((short)realPositionX, (short)realPositionY);
+            realPosition = new RectCoord((short)realPositionX, (short)realPositionY);
 
             return address;
         }
@@ -107,9 +107,9 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 将地图块坐标转换成 地图坐标;
         /// </summary>
-        public ShortVector2 AddressToMapPoint(ShortVector2 address, ShortVector2 addressPoint)
+        public RectCoord AddressToMapPoint(RectCoord address, RectCoord addressPoint)
         {
-            ShortVector2 mapPoint = new ShortVector2();
+            RectCoord mapPoint = new RectCoord();
 
             mapPoint.x = (short)(address.x * partitionSize.x + addressPoint.x);
             mapPoint.y = (short)(address.y * partitionSize.y + addressPoint.y);
@@ -120,36 +120,36 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到这个块包含的所有点;
         /// </summary>
-        public IEnumerable<ShortVector2> GetBlockRange(ShortVector2 address)
+        public IEnumerable<RectCoord> GetBlockRange(RectCoord address)
         {
-            ShortVector2 southwestMapPoint = GetSouthwestMapPoint(address);
-            ShortVector2 northeastMapPoint = GetNortheastMapPoint(address);
+            RectCoord southwestMapPoint = GetSouthwestMapPoint(address);
+            RectCoord northeastMapPoint = GetNortheastMapPoint(address);
 
-            return ShortVector2.RecRange(southwestMapPoint, northeastMapPoint);
+            return RectCoord.RecRange(southwestMapPoint, northeastMapPoint);
         }
 
         /// <summary>
         /// 获取到这个块最西南角的点;
         /// </summary>
-        ShortVector2 GetSouthwestMapPoint(ShortVector2 address)
+        RectCoord GetSouthwestMapPoint(RectCoord address)
         {
-            ShortVector2 southwestAddressPoint = GetSouthwestAddressPoint(address);
+            RectCoord southwestAddressPoint = GetSouthwestAddressPoint(address);
             return AddressToMapPoint(address, southwestAddressPoint);
         }
 
         /// <summary>
         /// 获取到这个块最东北角的点;
         /// </summary>
-        ShortVector2 GetNortheastMapPoint(ShortVector2 address)
+        RectCoord GetNortheastMapPoint(RectCoord address)
         {
-            ShortVector2 northeastAddressPoint = GetNortheastAddressPoint(address);
+            RectCoord northeastAddressPoint = GetNortheastAddressPoint(address);
             return AddressToMapPoint(address, northeastAddressPoint);
         }
 
         /// <summary>
         /// 获取到这个块最西南角的点;
         /// </summary>
-        ShortVector2 GetSouthwestAddressPoint(ShortVector2 address)
+        RectCoord GetSouthwestAddressPoint(RectCoord address)
         {
             address.x -= partitionSize.x;
             address.y -= partitionSize.y;
@@ -159,7 +159,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到这个块最东北角的点;
         /// </summary>
-        ShortVector2 GetNortheastAddressPoint(ShortVector2 address)
+        RectCoord GetNortheastAddressPoint(RectCoord address)
         {
             address.x += partitionSize.x;
             address.y += partitionSize.y;

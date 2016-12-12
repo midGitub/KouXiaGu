@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
             get { return Shader.Find(shaderHeight); }
         }
 
-        ShortVector2 coord;
+        RectCoord coord;
         Material material;
         Texture2D heightTexture;
         Texture2D diffuseTexture;
@@ -41,7 +41,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地图块坐标;
         /// </summary>
-        public ShortVector2 Coord
+        public RectCoord Coord
         {
             get { return coord; }
             private set { transform.position = BlockToPixelCenter(value); coord = value; }
@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
 
         void Clear()
         {
-            Coord = ShortVector2.Zero;
+            Coord = RectCoord.Self;
             DiffuseTexture = null;
             HeightTexture = null;
         }
@@ -141,7 +141,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 在场景中激活的地图块;
         /// </summary>
-        static Dictionary<ShortVector2, TerrainData> activatedBlocks = new Dictionary<ShortVector2, TerrainData>();
+        static Dictionary<RectCoord, TerrainData> activatedBlocks = new Dictionary<RectCoord, TerrainData>();
         /// <summary>
         /// 休眠的地图块;
         /// </summary>
@@ -168,7 +168,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建地图块到场景;
         /// </summary>
-        public static void Create(ShortVector2 coord, Texture2D diffuse, Texture2D height)
+        public static void Create(RectCoord coord, Texture2D diffuse, Texture2D height)
         {
             if (activatedBlocks.ContainsKey(coord))
                 throw new ArgumentException("地图块已经创建到场景;");
@@ -189,7 +189,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 移除这个地图块;
         /// </summary>
-        public static bool Destroy(ShortVector2 coord)
+        public static bool Destroy(RectCoord coord)
         {
             TerrainData terrainBlock;
             if (activatedBlocks.TryGetValue(coord, out terrainBlock))
@@ -251,7 +251,7 @@ namespace KouXiaGu.Terrain3D
         public static float GetHeight(Vector3 position)
         {
             TerrainData block;
-            ShortVector2 coord = PixelToBlock(position);
+            RectCoord coord = PixelToBlock(position);
             if (activatedBlocks.TryGetValue(coord, out block))
             {
                 Vector2 uv = PixelToUV(position);
@@ -301,11 +301,11 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从像素节点 获取到所属的地形块;
         /// </summary>
-        internal static ShortVector2 PixelToBlock(Vector3 position)
+        internal static RectCoord PixelToBlock(Vector3 position)
         {
             short x = (short)Math.Round(position.x / BlockWidth);
             short y = (short)Math.Round(position.z / BlockHeight);
-            return new ShortVector2(x, y);
+            return new RectCoord(x, y);
         }
 
 
@@ -314,14 +314,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         internal static Vector3 PixelToCenter(Vector3 position)
         {
-            ShortVector2 coord = PixelToBlock(position);
+            RectCoord coord = PixelToBlock(position);
             return BlockToPixelCenter(coord);
         }
 
         /// <summary>
         /// 地图块坐标 获取到其像素中心点;
         /// </summary>
-        internal static Vector3 BlockToPixelCenter(ShortVector2 coord)
+        internal static Vector3 BlockToPixelCenter(RectCoord coord)
         {
             float x = coord.x * BlockWidth;
             float z = coord.y * BlockHeight;
@@ -331,7 +331,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地图块坐标 获取到其中心的六边形坐标;
         /// </summary>
-        internal static CubicHexCoord BlockToHexCenter(ShortVector2 coord)
+        internal static CubicHexCoord BlockToHexCenter(RectCoord coord)
         {
             Vector3 pixelCenter = BlockToPixelCenter(coord);
             return GridConvert.ToHexCubic(pixelCenter);
@@ -342,7 +342,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地图块坐标 到获取到其在场景中的矩形大小;
         /// </summary>
-        internal static Rect BlockToRect(ShortVector2 coord)
+        internal static Rect BlockToRect(RectCoord coord)
         {
             Vector3 blockCenter = BlockToPixelCenter(coord);
             return CenterToRect(blockCenter);
@@ -387,7 +387,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到这个地图块覆盖到的所有地图节点坐标;
         /// </summary>
-        public static IEnumerable<CubicHexCoord> GetBlockCover(ShortVector2 coord)
+        public static IEnumerable<CubicHexCoord> GetBlockCover(RectCoord coord)
         {
             CubicHexCoord hexCenter = BlockToHexCenter(coord);
             CubicHexCoord startCoord = CubicHexCoord.GetDirectionOffset(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
@@ -412,7 +412,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地图节点所属的地图块;
         /// </summary>
-        public static ShortVector2[] GetBelongBlocks(Vector3 point)
+        public static RectCoord[] GetBelongBlocks(Vector3 point)
         {
             CubicHexCoord coord = GridConvert.ToHexCubic(point);
             return GetBelongBlocks(coord);
@@ -421,9 +421,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地图节点所属的地图块;
         /// </summary>
-        public static ShortVector2[] GetBelongBlocks(CubicHexCoord coord)
+        public static RectCoord[] GetBelongBlocks(CubicHexCoord coord)
         {
-            ShortVector2[] blocks = new ShortVector2[2];
+            RectCoord[] blocks = new RectCoord[2];
             GetBelongBlocks(coord, ref blocks);
             return blocks;
         }
@@ -432,7 +432,7 @@ namespace KouXiaGu.Terrain3D
         /// 获取到地图节点所属的地图块;
         /// 传入数组容量需要大于或者等于2,所属的地图块编号放置在 0 和 1 下标处;
         /// </summary>
-        public static void GetBelongBlocks(CubicHexCoord coord, ref ShortVector2[] blocks)
+        public static void GetBelongBlocks(CubicHexCoord coord, ref RectCoord[] blocks)
         {
             Vector3 point = GridConvert.ToPixel(coord);
             GetBelongBlocks(point, ref blocks);
@@ -447,7 +447,7 @@ namespace KouXiaGu.Terrain3D
         /// 获取到地图节点所属的地图块;
         /// 传入数组容量需要大于或者等于2,所属的地图块编号放置在 0 和 1 下标处;
         /// </summary>
-        static void GetBelongBlocks(Vector3 pointCenter, ref ShortVector2[] blocks)
+        static void GetBelongBlocks(Vector3 pointCenter, ref RectCoord[] blocks)
         {
             try
             {

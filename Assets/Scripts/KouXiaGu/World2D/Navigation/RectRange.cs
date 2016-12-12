@@ -12,7 +12,7 @@ namespace KouXiaGu.World2D.Navigation
     public struct RectRange
     {
 
-        public RectRange(ShortVector2 center, ShortVector2 range): this()
+        public RectRange(RectCoord center, RectCoord range): this()
         {
             SetMaximumRange(center, range);
         }
@@ -20,25 +20,25 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// x y 值允许的最大值;
         /// </summary>
-        ShortVector2 northeast;
+        RectCoord northeast;
         /// <summary>
         /// x y 值允许的最小值;
         /// </summary>
-        ShortVector2 southwest;
+        RectCoord southwest;
 
         /// <summary>
         /// 设置到最大范围;
         /// </summary>
-        public void SetMaximumRange(ShortVector2 center, ShortVector2 range)
+        public void SetMaximumRange(RectCoord center, RectCoord range)
         {
-            this.southwest = new ShortVector2(center.x - range.x, center.y - range.y);
-            this.northeast = new ShortVector2(center.x + range.x, center.y + range.y);
+            this.southwest = new RectCoord(center.x - range.x, center.y - range.y);
+            this.northeast = new RectCoord(center.x + range.x, center.y + range.y);
         }
 
         /// <summary>
         /// 这个点是否超出了定义的最大范围;超出返回true;
         /// </summary>
-        public bool IsOutRange(ShortVector2 point)
+        public bool IsOutRange(RectCoord point)
         {
             return point.x < southwest.x || point.y < southwest.y ||
                 point.x > northeast.x || point.y > northeast.y;

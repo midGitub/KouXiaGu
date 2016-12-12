@@ -22,10 +22,10 @@ namespace KouXiaGu.World2D.Navigation
         AStar()
         {
             openPointsSet = new OpenDictionary<AStartPathNode>();
-            closePointsSet = new HashSet<ShortVector2>();
+            closePointsSet = new HashSet<RectCoord>();
             maximumRange = new RectRange();
         }
-        public AStar(IObstructive<TNode, TMover> obstructive, IHexMap<ShortVector2, TNode> wroldMap) : this()
+        public AStar(IObstructive<TNode, TMover> obstructive, IHexMap<RectCoord, TNode> wroldMap) : this()
         {
             this.Obstructive = obstructive;
             this.WroldMap = wroldMap;
@@ -38,7 +38,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 地图;
         /// </summary>
-        public IHexMap<ShortVector2, TNode> WroldMap { get; set; }
+        public IHexMap<RectCoord, TNode> WroldMap { get; set; }
 
         /// <summary>
         /// 需要进行搜索的点;
@@ -47,7 +47,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 丢弃点合集;
         /// </summary>
-        private HashSet<ShortVector2> closePointsSet;
+        private HashSet<RectCoord> closePointsSet;
         /// <summary>
         /// 范围限制;
         /// </summary>
@@ -64,16 +64,16 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 起点;
         /// </summary>
-        public ShortVector2 Starting { get; private set; }
+        public RectCoord Starting { get; private set; }
         /// <summary>
         /// 寻路的终点;
         /// </summary>
-        public ShortVector2 Destination { get; private set; }
+        public RectCoord Destination { get; private set; }
 
         /// <summary>
         /// 开始寻路;若无法找到目标点则返回异常;
         /// </summary>
-        public LinkedList<ShortVector2> Start(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange, TMover mover)
+        public LinkedList<RectCoord> Start(RectCoord starting, RectCoord destination, RectCoord maximumRange, TMover mover)
         {
             this.Starting = starting;
             this.Destination = destination;
@@ -105,7 +105,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 是否这个点和周围的点都无法行走?
         /// </summary>
-        bool IsTrapped(ShortVector2 point)
+        bool IsTrapped(RectCoord point)
         {
             TNode worldNode;
             if (WroldMap.TryGetValue(point, out worldNode))
@@ -132,9 +132,9 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 开始寻路循环;
         /// </summary>
-        LinkedList<ShortVector2> Pathfinding()
+        LinkedList<RectCoord> Pathfinding()
         {
-            LinkedList<ShortVector2> wayPath;
+            LinkedList<RectCoord> wayPath;
 
             while (openPointsSet.Count != 0)
             {
@@ -152,11 +152,11 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 将这个点的周围都加入到开放合集;
         /// </summary>
-        void AddAroundToOpenSet(ShortVector2 point)
+        void AddAroundToOpenSet(RectCoord point)
         {
             var around = GetAround(point);
 
-            foreach (KeyValuePair<ShortVector2, TNode> info in around)
+            foreach (KeyValuePair<RectCoord, TNode> info in around)
             {
                 AddToOpenPoints(currentNode, info.Key, info.Value);
             }
@@ -165,7 +165,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 获取到周围的节点;
         /// </summary>
-        IEnumerable<KeyValuePair<ShortVector2, TNode>> GetAround(ShortVector2 point)
+        IEnumerable<KeyValuePair<RectCoord, TNode>> GetAround(RectCoord point)
         {
             return WroldMap.GetNeighbours(point).Where(WhereAddOpenSet);
         }
@@ -173,7 +173,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 加入到开放节点的过滤;
         /// </summary>
-        bool WhereAddOpenSet(KeyValuePair<ShortVector2, TNode> nodePair)
+        bool WhereAddOpenSet(KeyValuePair<RectCoord, TNode> nodePair)
         {
             return !closePointsSet.Contains(nodePair.Key) &&
                 Obstructive.CanWalk(Mover, nodePair.Value) &&
@@ -186,7 +186,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <param name="previous">父节点</param>
         /// <param name="point">当前点的位置</param>
         /// <param name="node">当前节点</param>
-        void AddToOpenPoints(AStartPathNode previous, ShortVector2 point, TNode node)
+        void AddToOpenPoints(AStartPathNode previous, RectCoord point, TNode node)
         {
             AStartPathNode beforeNode;
             AStartPathNode newNode;
@@ -205,7 +205,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 获取到A*寻路的点结构;
         /// </summary>
-        AStartPathNode GetPathNode(AStartPathNode previous, ShortVector2 point, TNode node)
+        AStartPathNode GetPathNode(AStartPathNode previous, RectCoord point, TNode node)
         {
             float cost = Obstructive.GetCost(Mover, point, node, Destination);
             return new AStartPathNode(point, previous, cost);
@@ -228,7 +228,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 尝试在开放点合集中获取到终点;获取到了返回true,否则返回false;
         /// </summary>
-        bool TryFindDestinationInOpenSet(out LinkedList<ShortVector2> wayPath)
+        bool TryFindDestinationInOpenSet(out LinkedList<RectCoord> wayPath)
         {
             AStartPathNode node;
             if (openPointsSet.TryGetValue(Destination, out node))
@@ -238,7 +238,7 @@ namespace KouXiaGu.World2D.Navigation
             }
             else
             {
-                wayPath = default(LinkedList<ShortVector2>);
+                wayPath = default(LinkedList<RectCoord>);
                 return false;
             }
         }
@@ -246,12 +246,12 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 从A*路径点转换成双向链表;
         /// </summary>
-        LinkedList<ShortVector2> PathNodeToWayPath(AStartPathNode node)
+        LinkedList<RectCoord> PathNodeToWayPath(AStartPathNode node)
         {
 #if UNITY_EDITOR_DUBUG
             Debug.Log("路线代价值:" + node.PathCost + "检索的点:" + (openPointsSet.Count + closePointsSet.Count));
 #endif
-            LinkedList<ShortVector2> path = new LinkedList<ShortVector2>();
+            LinkedList<RectCoord> path = new LinkedList<RectCoord>();
             for (; node != null; node = node.Previous)
             {
                 path.AddFirst(node.point);
@@ -264,12 +264,12 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         class AStartPathNode : IComparable<AStartPathNode>
         {
-            public AStartPathNode(ShortVector2 point)
+            public AStartPathNode(RectCoord point)
             {
                 this.point = point;
             }
 
-            public AStartPathNode(ShortVector2 point, AStartPathNode previous, float nodeCost)
+            public AStartPathNode(RectCoord point, AStartPathNode previous, float nodeCost)
             {
                 this.nodeCost = nodeCost;
                 this.point = point;
@@ -294,7 +294,7 @@ namespace KouXiaGu.World2D.Navigation
             /// <summary>
             /// 所指的地图坐标;
             /// </summary>
-            public ShortVector2 point { get; private set; }
+            public RectCoord point { get; private set; }
             /// <summary>
             /// 这个点的父节点;
             /// </summary>

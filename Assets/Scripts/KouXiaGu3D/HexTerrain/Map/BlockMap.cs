@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 采用分块保存的地图结构;
     /// </summary>
-    public class BlockMap<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>, IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>
+    public class BlockMap<T> : IMap<CubicHexCoord, T>, IReadOnlyMap<CubicHexCoord, T>, IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>
     {
 
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
             this.blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
             this.blockCount = blockSize * blockSize;
 
-            mapCollection = new Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>>();
+            mapCollection = new Dictionary<RectCoord, Dictionary<CubicHexCoord, T>>();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// Key 保存块的编号, Value 保存块内容;
         /// </summary>
-        Dictionary<ShortVector2, Dictionary<CubicHexCoord, T>> mapCollection;
+        Dictionary<RectCoord, Dictionary<CubicHexCoord, T>> mapCollection;
 
 
         public T this[CubicHexCoord position]
@@ -70,30 +70,30 @@ namespace KouXiaGu.Terrain3D
             get { return blockSize; }
         }
 
-        public Dictionary<CubicHexCoord, T> this[ShortVector2 key]
+        public Dictionary<CubicHexCoord, T> this[RectCoord key]
         {
-            get { return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key]; }
-            set { ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key] = value; }
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key]; }
+            set { ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection)[key] = value; }
         }
 
-        int ICollection<KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>>>.Count
+        int ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.Count
         {
-            get { return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Count; }
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Count; }
         }
 
-        public ICollection<ShortVector2> Keys
+        public ICollection<RectCoord> Keys
         {
-            get { return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Keys; }
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Keys; }
         }
 
         public ICollection<Dictionary<CubicHexCoord, T>> Values
         {
-            get { return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Values; }
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Values; }
         }
 
-        bool ICollection<KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>>>.IsReadOnly
+        bool ICollection<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.IsReadOnly
         {
-            get { return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).IsReadOnly; }
+            get { return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).IsReadOnly; }
         }
 
 
@@ -102,7 +102,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Add(CubicHexCoord position, T item)
         {
-            ShortVector2 coord = GetBlockCoord(position);
+            RectCoord coord = GetBlockCoord(position);
             var block = TryCreateBlock(coord);
             block.Add(position, item);
         }
@@ -160,7 +160,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建一个新的地图块,并且加入到地图,若地图中已存在这个地图块,则返回其;
         /// </summary>
-        public Dictionary<CubicHexCoord, T> TryCreateBlock(ShortVector2 coord)
+        public Dictionary<CubicHexCoord, T> TryCreateBlock(RectCoord coord)
         {
             Dictionary<CubicHexCoord, T> block;
             if (!mapCollection.TryGetValue(coord, out block))
@@ -184,7 +184,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Dictionary<CubicHexCoord, T> FindBlock(CubicHexCoord position)
         {
-            ShortVector2 coord = GetBlockCoord(position);
+            RectCoord coord = GetBlockCoord(position);
             try
             {
                 return mapCollection[coord];
@@ -200,18 +200,18 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool FindBlock(CubicHexCoord position, out Dictionary<CubicHexCoord, T> block)
         {
-            ShortVector2 coord = GetBlockCoord(position);
+            RectCoord coord = GetBlockCoord(position);
             return mapCollection.TryGetValue(coord, out block);
         }
 
         /// <summary>
         /// 获取到所属的块坐标;
         /// </summary>
-        public ShortVector2 GetBlockCoord(CubicHexCoord position)
+        public RectCoord GetBlockCoord(CubicHexCoord position)
         {
             short x = (short)Math.Round(position.X / (float)BlockSize);
             short y = (short)Math.Round(position.Z / (float)BlockSize);
-            return new ShortVector2(x, y);
+            return new RectCoord(x, y);
         }
 
 
@@ -227,50 +227,50 @@ namespace KouXiaGu.Terrain3D
 
 
 
-        public void Add(ShortVector2 key, Dictionary<CubicHexCoord, T> value)
+        public void Add(RectCoord key, Dictionary<CubicHexCoord, T> value)
         {
-            ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Add(key, value);
+            ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Add(key, value);
         }
 
-        public void Add(KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>> item)
+        public void Add(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>> item)
         {
-            ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Add(item);
+            ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Add(item);
         }
 
-        public bool Remove(ShortVector2 key)
+        public bool Remove(RectCoord key)
         {
-            return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Remove(key);
+            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Remove(key);
         }
 
-        public bool Remove(KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>> item)
+        public bool Remove(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>> item)
         {
-            return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Remove(item);
+            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Remove(item);
         }
 
-        public bool ContainsKey(ShortVector2 key)
+        public bool ContainsKey(RectCoord key)
         {
-            return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).ContainsKey(key);
+            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).ContainsKey(key);
         }
 
-        public bool Contains(KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>> item)
+        public bool Contains(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>> item)
         {
-            return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).Contains(item);
+            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Contains(item);
         }
 
-        public bool TryGetValue(ShortVector2 key, out Dictionary<CubicHexCoord, T> value)
+        public bool TryGetValue(RectCoord key, out Dictionary<CubicHexCoord, T> value)
         {
-            return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).TryGetValue(key, out value);
+            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).TryGetValue(key, out value);
         }
 
 
-        public void CopyTo(KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>[] array, int arrayIndex)
         {
-            ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).CopyTo(array, arrayIndex);
+            ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).CopyTo(array, arrayIndex);
         }
 
-        IEnumerator<KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>>> IEnumerable<KeyValuePair<ShortVector2, Dictionary<CubicHexCoord, T>>>.GetEnumerator()
+        IEnumerator<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>> IEnumerable<KeyValuePair<RectCoord, Dictionary<CubicHexCoord, T>>>.GetEnumerator()
         {
-            return ((IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)this.mapCollection).GetEnumerator();
+            return ((IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).GetEnumerator();
         }
 
     }

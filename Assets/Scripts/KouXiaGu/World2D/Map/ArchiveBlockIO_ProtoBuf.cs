@@ -28,7 +28,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到地图块名;
         /// </summary>
-        public static string GetMapBlockName(this IMapBlockInfo info, ShortVector2 address)
+        public static string GetMapBlockName(this IMapBlockInfo info, RectCoord address)
         {
             return info.AddressPrefix + address.GetHashCode();
         }
@@ -36,7 +36,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到完整的预制地图文件路径;
         /// </summary>
-        public static string GetFullPrefabMapFilePath(this IMapBlockInfo info, ShortVector2 address)
+        public static string GetFullPrefabMapFilePath(this IMapBlockInfo info, RectCoord address)
         {
             string blockName = info.GetMapBlockName(address);
             string fullPrefabMapFilePath = Path.Combine(info.FullPrefabMapDirectoryPath, blockName);
@@ -46,7 +46,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到完整的存档缓存文件路径;
         /// </summary>
-        public static string GetFullArchiveTempFilePath(this IMapBlockInfo info, ShortVector2 address)
+        public static string GetFullArchiveTempFilePath(this IMapBlockInfo info, RectCoord address)
         {
             string blockName = info.GetMapBlockName(address);
             string fullArchiveTempFilePath = Path.Combine(info.FullArchiveTempDirectoryPath, blockName);
@@ -57,7 +57,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 保存这个结构到这个目录;
         /// </summary>
-        public static void SaveMapBlock<T>(string fullFilePath, Dictionary<ShortVector2, T> mapBlock)
+        public static void SaveMapBlock<T>(string fullFilePath, Dictionary<RectCoord, T> mapBlock)
         {
             SerializeHelper.SerializeProtoBuf(fullFilePath, mapBlock);
         }
@@ -65,7 +65,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         ///  保存这个结构到这个目录,若元素小于 0 则不保存;
         /// </summary>
-        public static void SaveMapBlockOrNot<T>(string fullFilePath, Dictionary<ShortVector2, T> mapBlock)
+        public static void SaveMapBlockOrNot<T>(string fullFilePath, Dictionary<RectCoord, T> mapBlock)
         {
             if (mapBlock.Count > 0)
             {
@@ -76,7 +76,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 保存到预制地图;
         /// </summary>
-        public static void SavePrefabMapBlockOrNot<T>(this IMapBlockInfo info, ShortVector2 blockAddress, ArchiveBlock<T> mapBlock)
+        public static void SavePrefabMapBlockOrNot<T>(this IMapBlockInfo info, RectCoord blockAddress, ArchiveBlock<T> mapBlock)
             where T : struct
         {
             string fullPrefabMapFilePath = info.GetFullPrefabMapFilePath(blockAddress);
@@ -86,7 +86,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 保存到存档缓存;
         /// </summary>
-        public static void SaveArchiveMapBlockOrNot<T>(this IMapBlockInfo info, ShortVector2 blockAddress, ArchiveBlock<T> mapBlock)
+        public static void SaveArchiveMapBlockOrNot<T>(this IMapBlockInfo info, RectCoord blockAddress, ArchiveBlock<T> mapBlock)
              where T : struct
         {
             string fullArchiveTempFilePath = info.GetFullArchiveTempFilePath(blockAddress);
@@ -99,16 +99,16 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到这个路径的地图块;
         /// </summary>
-        public static Dictionary<ShortVector2, T> LoadMapBlock<T>(string fullFilePath)
+        public static Dictionary<RectCoord, T> LoadMapBlock<T>(string fullFilePath)
         {
-            var dictionary = SerializeHelper.DeserializeProtoBuf<Dictionary<ShortVector2, T>>(fullFilePath);
+            var dictionary = SerializeHelper.DeserializeProtoBuf<Dictionary<RectCoord, T>>(fullFilePath);
             return dictionary;
         }
 
         /// <summary>
         /// 尝试获取到地图块;
         /// </summary>
-        public static bool TryLoadMapBlock<T>(string fullFilePath, out Dictionary<ShortVector2, T> mapBlock)
+        public static bool TryLoadMapBlock<T>(string fullFilePath, out Dictionary<RectCoord, T> mapBlock)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace KouXiaGu.World2D.Map
             catch(Exception e)
             {
                 Debug.Log(e);
-                mapBlock = default(Dictionary<ShortVector2, T>);
+                mapBlock = default(Dictionary<RectCoord, T>);
                 return false;
             }
         }
@@ -126,7 +126,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 尝试获取到这个区域的存档缓存地图块;
         /// </summary>
-        public static bool TryLoadArchiveMapBlock<T>(this IMapBlockInfo info, ShortVector2 blockAddress, out Dictionary<ShortVector2, T> archiveMap)
+        public static bool TryLoadArchiveMapBlock<T>(this IMapBlockInfo info, RectCoord blockAddress, out Dictionary<RectCoord, T> archiveMap)
         {
             string fullArchiveTempFilePath = info.GetFullArchiveTempFilePath(blockAddress);
             return TryLoadMapBlock(fullArchiveTempFilePath, out archiveMap);
@@ -135,7 +135,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 尝试获取到这个区域的预制地图块;
         /// </summary>
-        public static bool TryLoadPrefabMapBlock<T>(this IMapBlockInfo info, ShortVector2 blockAddress, out Dictionary<ShortVector2, T> archiveMap)
+        public static bool TryLoadPrefabMapBlock<T>(this IMapBlockInfo info, RectCoord blockAddress, out Dictionary<RectCoord, T> archiveMap)
         {
             string fullPrefabMapFilePath = info.GetFullPrefabMapFilePath(blockAddress);
             return TryLoadMapBlock(fullPrefabMapFilePath, out archiveMap);
@@ -144,11 +144,11 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 尝试获取到这个区域的完整地图块信息;
         /// </summary>
-        public static ArchiveBlock<T> LoadMapBlock<T>(this IMapBlockInfo info, ShortVector2 blockAddress)
+        public static ArchiveBlock<T> LoadMapBlock<T>(this IMapBlockInfo info, RectCoord blockAddress)
             where T : struct
         {
-            Dictionary<ShortVector2, T> prefabMap;
-            Dictionary<ShortVector2, T> archiveMap;
+            Dictionary<RectCoord, T> prefabMap;
+            Dictionary<RectCoord, T> archiveMap;
             ArchiveBlock<T> mapBlock;
 
             if (info.TryLoadPrefabMapBlock(blockAddress, out prefabMap))
@@ -219,8 +219,8 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         public static void CombineMapBlock<T>(string filePath1, string filePath2, string outputFilePath)
         {
-            Dictionary<ShortVector2, T> blockMap1;
-            Dictionary<ShortVector2, T> blockMap2;
+            Dictionary<RectCoord, T> blockMap1;
+            Dictionary<RectCoord, T> blockMap2;
 
             if (TryLoadMapBlock(filePath1, out blockMap1))
             {

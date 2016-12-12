@@ -25,7 +25,7 @@ namespace KouXiaGu.World2D
         /// 地图块大小;
         /// </summary>
         [SerializeField]
-        ShortVector2 partitionSizes = new ShortVector2(100, 100);
+        RectCoord partitionSizes = new RectCoord(100, 100);
 
         [SerializeField]
         internal ObservableBlockMap<WorldNode, ArchiveBlock<WorldNode>> worldMap;
@@ -34,7 +34,7 @@ namespace KouXiaGu.World2D
         [SerializeField]
         UseArchiveBlockIO mapBlockIO;
 
-        public IHexMap<ShortVector2, WorldNode> Map
+        public IHexMap<RectCoord, WorldNode> Map
         {
             get { return worldMap; }
         }
@@ -54,7 +54,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 根据中心点更新地图数据;
         /// </summary>
-        public void OnMapDataUpdate(Vector3 targetPlanePoint, ShortVector2 targetMapPoint)
+        public void OnMapDataUpdate(Vector3 targetPlanePoint, RectCoord targetMapPoint)
         {
             loadByRange.UpdateCenterPoint(targetMapPoint);
         }

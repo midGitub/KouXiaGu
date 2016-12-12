@@ -185,7 +185,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 地图坐标转换成平面坐标;
         /// </summary>
-        Vector2 MapPointToPlanePoint(ShortVector2 mapPoint)
+        Vector2 MapPointToPlanePoint(RectCoord mapPoint)
         {
             return WorldConvert.MapToHex(mapPoint);
         }

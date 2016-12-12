@@ -12,8 +12,8 @@ namespace KouXiaGu.World2D.Navigation
     /// </summary>
     public class NavPath
     {
-        public NavPath(LinkedList<ShortVector2> wayPath,
-            IHexMap<ShortVector2, WorldNode> worldMap, 
+        public NavPath(LinkedList<RectCoord> wayPath,
+            IHexMap<RectCoord, WorldNode> worldMap, 
             TopographiessData topographiessData)
         {
             this.wayPath = wayPath;
@@ -26,7 +26,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 行走的地图;
         /// </summary>
-        IHexMap<ShortVector2, WorldNode> worldMap;
+        IHexMap<RectCoord, WorldNode> worldMap;
 
         /// <summary>
         /// 地貌信息;
@@ -36,7 +36,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 当前行走到;
         /// </summary>
-        LinkedListNode<ShortVector2> current;
+        LinkedListNode<RectCoord> current;
 
         /// <summary>
         /// 起点;
@@ -65,7 +65,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 路径点合集;
         /// </summary>
-        LinkedList<ShortVector2> wayPath;
+        LinkedList<RectCoord> wayPath;
 
         /// <summary>
         /// 获取到下一步行走到的点和行走的速度;
@@ -80,7 +80,7 @@ namespace KouXiaGu.World2D.Navigation
                 return false;
             }
 
-            ShortVector2 mapPoint = current.Value;
+            RectCoord mapPoint = current.Value;
             planePoint = GetNextPoint();
             percentage = GetPercentageOfMovement(mapPoint);
 
@@ -131,7 +131,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 获取到这个点的移动百分比;
         /// </summary>
-        float GetPercentageOfMovement(ShortVector2 mapPoint)
+        float GetPercentageOfMovement(RectCoord mapPoint)
         {
             WorldNode worldNode;
             if (worldMap.TryGetValue(mapPoint, out worldNode))
@@ -148,7 +148,7 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 地图坐标转换成平面坐标;
         /// </summary>
-        Vector2 MapPointToPlanePoint(ShortVector2 mapPoint)
+        Vector2 MapPointToPlanePoint(RectCoord mapPoint)
         {
             return WorldConvert.MapToHex(mapPoint);
         }

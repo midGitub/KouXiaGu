@@ -11,11 +11,11 @@ namespace KouXiaGu.World2D.Map
     /// 进行归档的地图块;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ArchiveBlock<T> : IHexMap<ShortVector2, T>
+    public class ArchiveBlock<T> : IHexMap<RectCoord, T>
         where T : struct
     {
 
-        public ArchiveBlock(Dictionary<ShortVector2, T> prefab, Dictionary<ShortVector2, T> archive)
+        public ArchiveBlock(Dictionary<RectCoord, T> prefab, Dictionary<RectCoord, T> archive)
         {
             Load(prefab, archive);
         }
@@ -23,13 +23,13 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 地图节点;
         /// </summary>
-        Dictionary<ShortVector2, T> mapNodeSet;
+        Dictionary<RectCoord, T> mapNodeSet;
         /// <summary>
         /// 存在变化的节点;
         /// </summary>
-        HashSet<ShortVector2> haveChangedSet;
+        HashSet<RectCoord> haveChangedSet;
 
-        public IEnumerable<KeyValuePair<ShortVector2, T>> NodePair
+        public IEnumerable<KeyValuePair<RectCoord, T>> NodePair
         {
             get { return mapNodeSet; }
         }
@@ -37,26 +37,26 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 根据预制地图和存档地图获取到地图块文件;
         /// </summary>
-        void Load(Dictionary<ShortVector2, T> prefab, Dictionary<ShortVector2, T> archive)
+        void Load(Dictionary<RectCoord, T> prefab, Dictionary<RectCoord, T> archive)
         {
             if (archive == null && prefab == null)
             {
-                mapNodeSet = new Dictionary<ShortVector2, T>();
-                haveChangedSet = new HashSet<ShortVector2>();
+                mapNodeSet = new Dictionary<RectCoord, T>();
+                haveChangedSet = new HashSet<RectCoord>();
             }
             else if (prefab == null)
             {
                 mapNodeSet = archive;
-                haveChangedSet = new HashSet<ShortVector2>(archive.Keys);
+                haveChangedSet = new HashSet<RectCoord>(archive.Keys);
             }
             else if (archive == null)
             {
                 mapNodeSet = prefab;
-                haveChangedSet = new HashSet<ShortVector2>();
+                haveChangedSet = new HashSet<RectCoord>();
             }
             else
             {
-                haveChangedSet = new HashSet<ShortVector2>(archive.Keys);
+                haveChangedSet = new HashSet<RectCoord>(archive.Keys);
                 prefab.AddOrReplace(archive);
                 mapNodeSet = prefab;
             }
@@ -65,7 +65,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到所有的更改;
         /// </summary>
-        public Dictionary<ShortVector2, T> AllData()
+        public Dictionary<RectCoord, T> AllData()
         {
             return mapNodeSet;
         }
@@ -73,10 +73,10 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 获取到归档的内容;
         /// </summary>
-        public Dictionary<ShortVector2, T> Archive()
+        public Dictionary<RectCoord, T> Archive()
         {
             T node;
-            Dictionary<ShortVector2, T> dictionary = new Dictionary<ShortVector2, T>();
+            Dictionary<RectCoord, T> dictionary = new Dictionary<RectCoord, T>();
             foreach (var position in haveChangedSet)
             {
                 node = mapNodeSet[position];
@@ -85,7 +85,7 @@ namespace KouXiaGu.World2D.Map
             return dictionary;
         }
 
-        T IHexMap<ShortVector2, T>.this[ShortVector2 position]
+        T IHexMap<RectCoord, T>.this[RectCoord position]
         {
             get
             {
@@ -98,31 +98,31 @@ namespace KouXiaGu.World2D.Map
             }
         }
 
-        void IHexMap<ShortVector2, T>.Add(ShortVector2 position, T item)
+        void IHexMap<RectCoord, T>.Add(RectCoord position, T item)
         {
             mapNodeSet.Add(position, item);
             haveChangedSet.Add(position);
         }
 
-        void IHexMap<ShortVector2, T>.Clear()
+        void IHexMap<RectCoord, T>.Clear()
         {
             mapNodeSet.Clear();
             haveChangedSet.Clear();
         }
 
-        bool IHexMap<ShortVector2, T>.Contains(ShortVector2 position)
+        bool IHexMap<RectCoord, T>.Contains(RectCoord position)
         {
             return mapNodeSet.ContainsKey(position);
         }
 
-        bool IHexMap<ShortVector2, T>.Remove(ShortVector2 position)
+        bool IHexMap<RectCoord, T>.Remove(RectCoord position)
         {
             bool isRemove = mapNodeSet.Remove(position);
             haveChangedSet.Remove(position);
             return isRemove;
         }
 
-        bool IHexMap<ShortVector2, T>.TryGetValue(ShortVector2 position, out T item)
+        bool IHexMap<RectCoord, T>.TryGetValue(RectCoord position, out T item)
         {
             return mapNodeSet.TryGetValue(position, out item);
         }

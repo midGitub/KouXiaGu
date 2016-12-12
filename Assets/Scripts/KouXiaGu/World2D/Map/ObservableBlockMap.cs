@@ -14,13 +14,13 @@ namespace KouXiaGu.World2D.Map
     /// </summary>
     /// <typeparam name="T">节点</typeparam>
     /// <typeparam name="TBlock">地图块类型</typeparam>
-    public class ObservableBlockMap<T, TBlock> : IHexMap<ShortVector2, T>
+    public class ObservableBlockMap<T, TBlock> : IHexMap<RectCoord, T>
         where T : struct
-        where TBlock : IHexMap<ShortVector2, T>
+        where TBlock : IHexMap<RectCoord, T>
     {
         protected ObservableBlockMap() { }
 
-        public ObservableBlockMap(ShortVector2 partitionSizes)
+        public ObservableBlockMap(RectCoord partitionSizes)
         {
             blockMap = new BlockMap<TBlock>(partitionSizes);
         }
@@ -38,7 +38,7 @@ namespace KouXiaGu.World2D.Map
             get { return nodeChangingReporter; }
         }
 
-        public IEnumerable<KeyValuePair<ShortVector2, T>> NodePair
+        public IEnumerable<KeyValuePair<RectCoord, T>> NodePair
         {
             get
             {
@@ -46,24 +46,24 @@ namespace KouXiaGu.World2D.Map
                 {
                     foreach (var node in block.Value.NodePair)
                     {
-                        ShortVector2 position = blockMap.AddressToMapPoint(block.Key, node.Key);
-                        yield return new KeyValuePair<ShortVector2, T>(position, node.Value);
+                        RectCoord position = blockMap.AddressToMapPoint(block.Key, node.Key);
+                        yield return new KeyValuePair<RectCoord, T>(position, node.Value);
                     }
                 }
             }
         }
 
-        public T this[ShortVector2 position]
+        public T this[RectCoord position]
         {
             get
             {
-                ShortVector2 realPosition;
+                RectCoord realPosition;
                 TBlock block = TransformToBlock(position, out realPosition);
                 return block[realPosition];
             }
             set
             {
-                ShortVector2 realPosition;
+                RectCoord realPosition;
                 TBlock block = TransformToBlock(position, out realPosition);
                 block[realPosition] = value;
 
@@ -71,18 +71,18 @@ namespace KouXiaGu.World2D.Map
             }
         }
 
-        public void Add(ShortVector2 position, T item)
+        public void Add(RectCoord position, T item)
         {
-            ShortVector2 realPosition;
+            RectCoord realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
             block.Add(realPosition, item);
 
             nodeChangingReporter.NodeDataUpdate(ChangeType.Add, position, item);
         }
 
-        public bool Remove(ShortVector2 position)
+        public bool Remove(RectCoord position)
         {
-            ShortVector2 realPosition;
+            RectCoord realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
             if (block.Remove(realPosition))
             {
@@ -92,9 +92,9 @@ namespace KouXiaGu.World2D.Map
             return false;
         }
 
-        public bool Contains(ShortVector2 position)
+        public bool Contains(RectCoord position)
         {
-            ShortVector2 realPosition;
+            RectCoord realPosition;
             TBlock block = TransformToBlock(position, out realPosition);
             return block.Contains(realPosition);
         }
@@ -102,11 +102,11 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 尝试获取到此值;
         /// </summary>
-        public bool TryGetValue(ShortVector2 position, out T item)
+        public bool TryGetValue(RectCoord position, out T item)
         {
-            ShortVector2 realPosition;
+            RectCoord realPosition;
             TBlock block;
-            ShortVector2 address = blockMap.MapPointToAddress(position, out realPosition);
+            RectCoord address = blockMap.MapPointToAddress(position, out realPosition);
 
             if (blockMap.TryGetValue(address, out block))
             {
@@ -120,10 +120,10 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 转换成块的信息;
         /// </summary>
-        TBlock TransformToBlock(ShortVector2 position, out ShortVector2 realPosition)
+        TBlock TransformToBlock(RectCoord position, out RectCoord realPosition)
         {
             TBlock block;
-            ShortVector2 address = blockMap.MapPointToAddress(position, out realPosition);
+            RectCoord address = blockMap.MapPointToAddress(position, out realPosition);
 
             if (blockMap.TryGetValue(address, out block))
             {
@@ -136,7 +136,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 实质清除块内容;
         /// </summary>
-        void IHexMap<ShortVector2, T>.Clear()
+        void IHexMap<RectCoord, T>.Clear()
         {
             blockMap.Clear();
         }
@@ -144,7 +144,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 返回地图块错误信息;
         /// </summary>
-        BlockNotFoundException BlockNotFoundException(ShortVector2 address)
+        BlockNotFoundException BlockNotFoundException(RectCoord address)
         {
             return new BlockNotFoundException(address.ToString() + "地图块未载入!");
         }

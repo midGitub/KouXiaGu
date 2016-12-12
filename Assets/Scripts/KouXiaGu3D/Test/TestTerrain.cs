@@ -65,14 +65,14 @@ namespace KouXiaGu.Test
             Vector3 cubePixel = GridConvert.ToPixel(cube);
             //ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            ShortVector2 terrainBlockCoord = Terrain3D.TerrainData.PixelToBlock(pixel);
+            RectCoord terrainBlockCoord = Terrain3D.TerrainData.PixelToBlock(pixel);
             Vector3 terrainBlockCenter = Terrain3D.TerrainData.BlockToPixelCenter(terrainBlockCoord);
             CubicHexCoord terrainBlockHexCenter = Terrain3D.TerrainData.BlockToHexCenter(terrainBlockCoord);
             Rect terrainBlockRect = Terrain3D.TerrainData.CenterToRect(terrainBlockCenter);
             Vector2 terrainBlockLocal = Terrain3D.TerrainData.PixelToLocal(pixel);
             Vector2 terrainBlockUV = Terrain3D.TerrainData.PixelToUV(pixel);
             float terrainHeight = Terrain3D.TerrainData.GetHeight(pixel);
-            ShortVector2[] terrainBlocks = Terrain3D.TerrainData.GetBelongBlocks(pixel);
+            RectCoord[] terrainBlocks = Terrain3D.TerrainData.GetBelongBlocks(pixel);
 
             string str = "";
 
@@ -103,15 +103,15 @@ namespace KouXiaGu.Test
         {
             string str = "";
 
-            CubicHexCoord hex = GridConvert.ToHexCubic(currentPixelPosition);
+            //CubicHexCoord hex = GridConvert.ToHexCubic(currentPixelPosition);
 
-            GridsExtensions.GetNeighboursAndSelf(CubicHexCoord.Zero);
-            CubicHexCoord.Zero.GetNeighboursAndSelf<CubicHexCoord, HexDirections>();
+            //GridsExtensions.GetNeighboursAndSelf(CubicHexCoord.Self);
+            //CubicHexCoord.Self.GetNeighboursAndSelf<CubicHexCoord, HexDirections>();
 
-            foreach (var item in hex.GetNeighboursAndSelf<CubicHexCoord, HexDirections>())
-            {
-                str += "\n" + item.ToString();
-            }
+            //foreach (var item in hex.GetNeighboursAndSelf<CubicHexCoord, HexDirections>())
+            //{
+            //    str += "\n" + item.ToString();
+            //}
 
             return str;
         }

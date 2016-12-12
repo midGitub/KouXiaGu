@@ -17,12 +17,12 @@ namespace KouXiaGu.Test
            get { return (short)random.Next(short.MinValue, short.MaxValue); }
         }
 
-        public static ShortVector2 RandomShortVector2
+        public static RectCoord RandomShortVector2
         {
-            get { return new ShortVector2(RandomShort, RandomShort); }
+            get { return new RectCoord(RandomShort, RandomShort); }
         }
 
-        public static IEnumerable<ShortVector2> RandomShortVector2s(uint number)
+        public static IEnumerable<RectCoord> RandomShortVector2s(uint number)
         {
             for (uint i = 0; i < number; i++)
             {

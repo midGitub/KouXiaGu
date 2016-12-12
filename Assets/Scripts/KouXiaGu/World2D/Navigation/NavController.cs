@@ -15,7 +15,7 @@ namespace KouXiaGu.World2D.Navigation
     {
 
         Obstruction obstruction;
-        IHexMap<ShortVector2, WorldNode> worldMap;
+        IHexMap<RectCoord, WorldNode> worldMap;
 
         void Start()
         {
@@ -26,10 +26,10 @@ namespace KouXiaGu.World2D.Navigation
         /// <summary>
         /// 获取到导航路径;
         /// </summary>
-        public NavPath NavigateTo(ShortVector2 starting, ShortVector2 destination, ShortVector2 maximumRange, INavAction mover)
+        public NavPath NavigateTo(RectCoord starting, RectCoord destination, RectCoord maximumRange, INavAction mover)
         {
             AStar<WorldNode, INavAction> astarNav = new AStar<WorldNode, INavAction>(obstruction, worldMap);
-            LinkedList<ShortVector2> path = astarNav.Start(starting, destination, maximumRange, mover);
+            LinkedList<RectCoord> path = astarNav.Start(starting, destination, maximumRange, mover);
             astarNav.Clear();
             return new NavPath(path, WorldMapData.GetInstance.Map, TopographiessData.GetInstance);
         }

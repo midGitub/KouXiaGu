@@ -16,7 +16,7 @@ namespace KouXiaGu.World2D.Map
 
         List<IObserver<MapNodeState<T>>> observers = new List<IObserver<MapNodeState<T>>>();
 
-        public void NodeDataUpdate(ChangeType eventType, ShortVector2 mapPoint, T node)
+        public void NodeDataUpdate(ChangeType eventType, RectCoord mapPoint, T node)
         {
             if (observers.Count != 0)
             {

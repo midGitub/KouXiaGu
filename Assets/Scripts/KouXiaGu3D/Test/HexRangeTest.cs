@@ -33,21 +33,21 @@ namespace KouXiaGu.Test
         [ContextMenu("块输出")]
         void Output()
         {
-            Output(ShortVector2.Zero);
-            Output(ShortVector2.Up);
-            Output(ShortVector2.Down);
-            Output(ShortVector2.Left);
-            Output(ShortVector2.Right);
-            Output(ShortVector2.Down + ShortVector2.Left);
-            Output(ShortVector2.Down + ShortVector2.Right);
-            Output(ShortVector2.Up + ShortVector2.Left);
-            Output(ShortVector2.Up + ShortVector2.Right);
+            Output(RectCoord.Self);
+            Output(RectCoord.North);
+            Output(RectCoord.South);
+            Output(RectCoord.West);
+            Output(RectCoord.East);
+            Output(RectCoord.South + RectCoord.West);
+            Output(RectCoord.South + RectCoord.East);
+            Output(RectCoord.North + RectCoord.West);
+            Output(RectCoord.North + RectCoord.East);
         }
 
         [ContextMenu("环")]
         void Raing()
         {
-            foreach (var point in CubicHexCoord.GetHexRing(CubicHexCoord.Zero, radius))
+            foreach (var point in CubicHexCoord.GetHexRing(CubicHexCoord.Self, radius))
             {
                 Instantiate(point);
             }
@@ -56,7 +56,7 @@ namespace KouXiaGu.Test
         [ContextMenu("螺旋")]
         void Spiral()
         {
-            foreach (var point in CubicHexCoord.GetHexSpiral(CubicHexCoord.Zero, radius))
+            foreach (var point in CubicHexCoord.GetHexSpiral(CubicHexCoord.Self, radius))
             {
                 Instantiate(point);
             }
@@ -72,7 +72,7 @@ namespace KouXiaGu.Test
             insObjects.Clear();
         }
 
-        void Output(ShortVector2 coord)
+        void Output(RectCoord coord)
         {
             foreach (var item in Terrain3D.TerrainData.GetBlockCover(coord))
             {

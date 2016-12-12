@@ -13,7 +13,7 @@ namespace KouXiaGu.World2D.Navigation
     public class NavMouseTo : Navigate
     {
         [SerializeField]
-        ShortVector2 maximumRange = new ShortVector2(100,100);
+        RectCoord maximumRange = new RectCoord(100,100);
 
         NavController navController;
 
@@ -32,8 +32,8 @@ namespace KouXiaGu.World2D.Navigation
 
         void NavToMouseMapPoint()
         {
-            ShortVector2 starting = WorldConvert.PlaneToHexPair(transform.position);
-            ShortVector2 mouseMapPoint = WorldConvert.MouseToHexPair();
+            RectCoord starting = WorldConvert.PlaneToHexPair(transform.position);
+            RectCoord mouseMapPoint = WorldConvert.MouseToHexPair();
             NavPath navPath = navController.NavigateTo(starting, mouseMapPoint, maximumRange, null);
             StartFollow(navPath);
         }

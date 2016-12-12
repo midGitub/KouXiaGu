@@ -10,23 +10,23 @@ namespace KouXiaGu.World2D.Map
     /// 地图结构;
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MapCollection<T> : IHexMap<ShortVector2, T>
+    public class MapCollection<T> : IHexMap<RectCoord, T>
     {
 
         public MapCollection()
         {
-            mapCollection = new Dictionary<ShortVector2, T>();
+            mapCollection = new Dictionary<RectCoord, T>();
         }
-        public MapCollection(Dictionary<ShortVector2, T> mapCollection)
+        public MapCollection(Dictionary<RectCoord, T> mapCollection)
         {
             this.mapCollection = mapCollection;
         }
 
 
-        Dictionary<ShortVector2, T> mapCollection;
+        Dictionary<RectCoord, T> mapCollection;
 
 
-        public T this[ShortVector2 position]
+        public T this[RectCoord position]
         {
             get { return mapCollection[position]; }
             set { mapCollection[position] = value; }
@@ -37,12 +37,12 @@ namespace KouXiaGu.World2D.Map
             get { return mapCollection.Values; }
         }
 
-        public IEnumerable<KeyValuePair<ShortVector2, T>> NodePair
+        public IEnumerable<KeyValuePair<RectCoord, T>> NodePair
         {
             get { return mapCollection; }
         }
 
-        public void Add(ShortVector2 position, T item)
+        public void Add(RectCoord position, T item)
         {
             mapCollection.Add(position, item);
         }
@@ -52,17 +52,17 @@ namespace KouXiaGu.World2D.Map
             mapCollection.Clear();
         }
 
-        public bool Contains(ShortVector2 position)
+        public bool Contains(RectCoord position)
         {
             return mapCollection.ContainsKey(position);
         }
 
-        public bool Remove(ShortVector2 position)
+        public bool Remove(RectCoord position)
         {
             return mapCollection.Remove(position);
         }
 
-        public bool TryGetValue(ShortVector2 position, out T item)
+        public bool TryGetValue(RectCoord position, out T item)
         {
             return mapCollection.TryGetValue(position, out item);
         }

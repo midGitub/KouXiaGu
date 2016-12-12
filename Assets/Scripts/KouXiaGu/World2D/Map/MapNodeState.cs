@@ -11,7 +11,7 @@ namespace KouXiaGu.World2D.Map
     /// </summary>
     public struct MapNodeState<T>
     {
-        public MapNodeState(ChangeType eventType, ShortVector2 mapPoint, T worldNode)
+        public MapNodeState(ChangeType eventType, RectCoord mapPoint, T worldNode)
         {
             this.EventType = eventType;
             this.MapPoint = mapPoint;
@@ -26,7 +26,7 @@ namespace KouXiaGu.World2D.Map
         /// <summary>
         /// 变化点的坐标;
         /// </summary>
-        public ShortVector2 MapPoint { get; private set; }
+        public RectCoord MapPoint { get; private set; }
 
         /// <summary>
         /// 变化后的点信息;

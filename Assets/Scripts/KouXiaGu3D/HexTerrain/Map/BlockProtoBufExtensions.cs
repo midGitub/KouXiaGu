@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从文件读取到;
         /// </summary>
-        public static BlockArchive<TP, T> Load<TP, T>(ShortVector2 coord, string directoryPath)
+        public static BlockArchive<TP, T> Load<TP, T>(RectCoord coord, string directoryPath)
         {
             string filePath = coord.GetFilePath(directoryPath);
             return Load<TP, T>(filePath);
@@ -130,10 +130,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到这个目录下存在的所有地图块文件标号;
         /// </summary>
-        public static ShortVector2[] GetCoords(string directoryPath)
+        public static RectCoord[] GetCoords(string directoryPath)
         {
             string[] paths = GetFilePaths(directoryPath);
-            ShortVector2[] coords = new ShortVector2[paths.Length];
+            RectCoord[] coords = new RectCoord[paths.Length];
             int index = 0;
 
             foreach (var path in paths)
@@ -165,7 +165,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到保存到的文件路径;
         /// </summary>
-        static string GetFilePath(this ShortVector2 coord, string directoryPath)
+        static string GetFilePath(this RectCoord coord, string directoryPath)
         {
             string filePath = Path.Combine(directoryPath, CoordToFileName(coord));
             return filePath;
@@ -182,18 +182,18 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 文件路径转换为块坐标;
         /// </summary>
-        public static ShortVector2 FilePathToCoord(string filePath)
+        public static RectCoord FilePathToCoord(string filePath)
         {
             string fileName = Path.GetFileNameWithoutExtension(filePath);
             int hashCode = Convert.ToInt32(fileName);
-            ShortVector2 coord = ShortVector2.HashCodeToVector(hashCode);
+            RectCoord coord = RectCoord.HashCodeToVector(hashCode);
             return coord;
         }
 
         /// <summary>
         /// 转换为保存到的文件名;
         /// </summary>
-        public static string CoordToFileName(ShortVector2 blockCoord)
+        public static string CoordToFileName(RectCoord blockCoord)
         {
             string fileName = string.Concat(blockCoord.GetHashCode(), fileSuffix);
             return fileName;

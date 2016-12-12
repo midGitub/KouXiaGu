@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
     public struct RenderRequest
     {
 
-        public RenderRequest(IReadOnlyMap<CubicHexCoord, TerrainNode> map, ShortVector2 blockCoord) : this()
+        public RenderRequest(IReadOnlyMap<CubicHexCoord, TerrainNode> map, RectCoord blockCoord) : this()
         {
             this.Map = map;
             this.BlockCoord = blockCoord;
@@ -33,7 +33,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 请求烘焙的地图块位置;
         /// </summary>
-        public ShortVector2 BlockCoord { get; private set; }
+        public RectCoord BlockCoord { get; private set; }
 
         /// <summary>
         /// 范围内请求烘焙的节点;

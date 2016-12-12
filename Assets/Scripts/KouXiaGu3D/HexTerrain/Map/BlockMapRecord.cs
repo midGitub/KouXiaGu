@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         public BlockMapRecord(short blockSize)
         {
             mapCollection = new BlockMap<T>(blockSize);
-            editedBlock = new HashSet<ShortVector2>();
+            editedBlock = new HashSet<RectCoord>();
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 在上次保存之后进行过编辑的块编号;
         /// </summary>
-        readonly HashSet<ShortVector2> editedBlock;
+        readonly HashSet<RectCoord> editedBlock;
 
         /// <summary>
         /// 写入锁;
@@ -51,7 +51,7 @@ namespace KouXiaGu.Terrain3D
             get { return this.mapCollection[position]; }
             set
             {
-                ShortVector2 coord = mapCollection.GetBlockCoord(position);
+                RectCoord coord = mapCollection.GetBlockCoord(position);
 
                 lock (syncWriteRoot)
                 {
@@ -93,7 +93,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Add(CubicHexCoord position, T item)
         {
-            ShortVector2 coord = mapCollection.GetBlockCoord(position);
+            RectCoord coord = mapCollection.GetBlockCoord(position);
 
             lock (syncWriteRoot)
             {
@@ -110,7 +110,7 @@ namespace KouXiaGu.Terrain3D
         public bool Remove(CubicHexCoord position)
         {
             Dictionary<CubicHexCoord, T> block;
-            ShortVector2 coord = mapCollection.GetBlockCoord(position);
+            RectCoord coord = mapCollection.GetBlockCoord(position);
 
             lock (syncWriteRoot)
             {
@@ -157,7 +157,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 加入发生变化的块;
         /// </summary>
-        void AddChangedCoord(ShortVector2 coord)
+        void AddChangedCoord(RectCoord coord)
         {
             editedBlock.Add(coord);
         }
@@ -179,7 +179,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 确认是否已经存在这个地图块;
         /// </summary>
-        bool IBlockArchive<CubicHexCoord, T>.Contains(ShortVector2 coord)
+        bool IBlockArchive<CubicHexCoord, T>.Contains(RectCoord coord)
         {
            return mapCollection.ContainsKey(coord);
         }
@@ -206,7 +206,7 @@ namespace KouXiaGu.Terrain3D
         {
             BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[mapCollection.Count];
             int index = 0;
-            foreach (var pair in mapCollection as IDictionary<ShortVector2, Dictionary<CubicHexCoord, T>>)
+            foreach (var pair in mapCollection as IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)
             {
                 saveMap[index++] = new BlockArchive<CubicHexCoord, T>(pair.Key, mapCollection.BlockSize, pair.Value);
             }

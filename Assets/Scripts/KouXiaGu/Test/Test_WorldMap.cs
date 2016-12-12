@@ -52,13 +52,13 @@ namespace KouXiaGu.Test
 
         private string ReadMap(Vector2 planePoint)
         {
-            ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
+            RectCoord mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             WorldNode node;
 
             string LandformType = "Null";
             string Road = "Null";
             int RoadMask = 0;
-            ShortVector2 mapBlockAddress = worldMap.worldMap.BlockMap.MapPointToAddress(mapPoint);
+            RectCoord mapBlockAddress = worldMap.worldMap.BlockMap.MapPointToAddress(mapPoint);
             string mapBlockName = mapBlockAddress.ToString();
             try
             {
@@ -90,7 +90,7 @@ namespace KouXiaGu.Test
         private void AddMapNode(IList<long> down)
         {
             var planePoint = WorldConvert.MouseToPlane();
-            ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
+            RectCoord mapPoint = WorldConvert.PlaneToHexPair(planePoint);
             WorldNode node = new WorldNode();
             node.TopographyID = Landform;
             node.Road = Road;
@@ -108,13 +108,13 @@ namespace KouXiaGu.Test
         void RemoveMapNode(IList<long> down)
         {
             var planePoint = WorldConvert.MouseToPlane();
-            ShortVector2 mapPoint = WorldConvert.PlaneToHexPair(planePoint);
+            RectCoord mapPoint = WorldConvert.PlaneToHexPair(planePoint);
 
             worldMap.Map.Remove(mapPoint);
             Debug.Log("Remove " + mapPoint);
         }
 
-        int GetMask(ShortVector2 mapPoint)
+        int GetMask(RectCoord mapPoint)
         {
             return (int)worldMap.Map.GetAroundAndSelfMask(mapPoint, node => node.Road);
         }

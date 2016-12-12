@@ -101,7 +101,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 将 六边形编号 转换成 六边形中心点;
         /// </summary>
-        public static Vector2 MapToHex(ShortVector2 mapPoint)
+        public static Vector2 MapToHex(RectCoord mapPoint)
         {
             Vector2 position = new Vector2();
             position.x = hexagon.DistanceX * mapPoint.x;
@@ -128,11 +128,11 @@ namespace KouXiaGu.World2D
         {
             public PointPair(Hexagon hexagon, int mapX, int mapY)
             {
-                MapPoint = new ShortVector2(mapX, mapY);
+                MapPoint = new RectCoord(mapX, mapY);
                 HexCenter = MapToHex(MapPoint);
             }
 
-            public ShortVector2 MapPoint { get; private set; }
+            public RectCoord MapPoint { get; private set; }
             public Vector2 HexCenter { get; private set; }
 
             public override string ToString()
@@ -141,7 +141,7 @@ namespace KouXiaGu.World2D
                 return str;
             }
 
-            public static implicit operator ShortVector2(PointPair item)
+            public static implicit operator RectCoord(PointPair item)
             {
                 return item.MapPoint;
             }
@@ -219,19 +219,19 @@ namespace KouXiaGu.World2D
         {
             var directionVectorSet = new Dictionary<int, DirectionVector>(DirectionNumber);
 
-            directionVectorSet.AddIn(HexDirection.North, new ShortVector2(0, 1), new ShortVector2(0, 1));
-            directionVectorSet.AddIn(HexDirection.Northeast, new ShortVector2(1, 0), new ShortVector2(1, 1));
-            directionVectorSet.AddIn(HexDirection.Southeast, new ShortVector2(1, -1), new ShortVector2(1, 0));
-            directionVectorSet.AddIn(HexDirection.South, new ShortVector2(0, -1), new ShortVector2(0, -1));
-            directionVectorSet.AddIn(HexDirection.Southwest, new ShortVector2(-1, -1), new ShortVector2(-1, 0));
-            directionVectorSet.AddIn(HexDirection.Northwest, new ShortVector2(-1, 0), new ShortVector2(-1, 1));
-            directionVectorSet.AddIn(HexDirection.Self, new ShortVector2(0, 0), new ShortVector2(0, 0));
+            directionVectorSet.AddIn(HexDirection.North, new RectCoord(0, 1), new RectCoord(0, 1));
+            directionVectorSet.AddIn(HexDirection.Northeast, new RectCoord(1, 0), new RectCoord(1, 1));
+            directionVectorSet.AddIn(HexDirection.Southeast, new RectCoord(1, -1), new RectCoord(1, 0));
+            directionVectorSet.AddIn(HexDirection.South, new RectCoord(0, -1), new RectCoord(0, -1));
+            directionVectorSet.AddIn(HexDirection.Southwest, new RectCoord(-1, -1), new RectCoord(-1, 0));
+            directionVectorSet.AddIn(HexDirection.Northwest, new RectCoord(-1, 0), new RectCoord(-1, 1));
+            directionVectorSet.AddIn(HexDirection.Self, new RectCoord(0, 0), new RectCoord(0, 0));
 
             return directionVectorSet;
         }
 
         static void AddIn(this Dictionary<int, DirectionVector> directionVectorDictionary,
-            HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
+            HexDirection direction, RectCoord oddVector, RectCoord evenVector)
         {
             DirectionVector directionVector = new DirectionVector(direction, oddVector, evenVector);
             directionVectorDictionary.Add((int)direction, directionVector);
@@ -240,7 +240,7 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图坐标这个方向需要偏移的量;
         /// </summary>
-        public static ShortVector2 GetVector(ShortVector2 target, HexDirection direction)
+        public static RectCoord GetVector(RectCoord target, HexDirection direction)
         {
             DirectionVector directionVector = DirectionVectorSet[(int)direction];
             if ((target.x & 1) == 1)
@@ -258,7 +258,7 @@ namespace KouXiaGu.World2D
         /// </summary>
         struct DirectionVector
         {
-            public DirectionVector(HexDirection direction, ShortVector2 oddVector, ShortVector2 evenVector)
+            public DirectionVector(HexDirection direction, RectCoord oddVector, RectCoord evenVector)
             {
                 this.Direction = direction;
                 this.OddVector = oddVector;
@@ -266,8 +266,8 @@ namespace KouXiaGu.World2D
             }
 
             public HexDirection Direction { get; private set; }
-            public ShortVector2 OddVector { get; private set; }
-            public ShortVector2 EvenVector { get; private set; }
+            public RectCoord OddVector { get; private set; }
+            public RectCoord EvenVector { get; private set; }
         }
 
 
@@ -332,10 +332,10 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<RectCoord, T> map, RectCoord target)
         {
             T item;
-            IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target);
+            IEnumerable<RectCoord> aroundPoints = GetNeighboursPoints(target);
             foreach (var point in aroundPoints)
             {
                 if (!map.TryGetValue(point, out item))
@@ -349,10 +349,10 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<T> GetNeighboursAndSelfOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<T> GetNeighboursAndSelfOrDefault<T>(this IHexMap<RectCoord, T> map, RectCoord target)
         {
             T item;
-            IEnumerable<ShortVector2> aroundPoints = GetNeighboursAndSelfPoints(target);
+            IEnumerable<RectCoord> aroundPoints = GetNeighboursAndSelfPoints(target);
             foreach (var point in aroundPoints)
             {
                 if (!map.TryGetValue(point, out item))
@@ -366,10 +366,10 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点 不存在的点返回返回默认值;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        public static IEnumerable<T> GetNeighboursOrDefault<T>(this IHexMap<RectCoord, T> map, RectCoord target, HexDirection directions)
         {
             T item;
-            IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target, directions);
+            IEnumerable<RectCoord> aroundPoints = GetNeighboursPoints(target, directions);
             foreach (var point in aroundPoints)
             {
                 if (!map.TryGetValue(point, out item))
@@ -383,15 +383,15 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<KeyValuePair<RectCoord, T>> GetNeighbours<T>(this IHexMap<RectCoord, T> map, RectCoord target)
         {
             T item;
-            IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target);
+            IEnumerable<RectCoord> aroundPoints = GetNeighboursPoints(target);
             foreach (var point in aroundPoints)
             {
                 if (map.TryGetValue(point, out item))
                 {
-                    yield return new KeyValuePair<ShortVector2, T>(point, item);
+                    yield return new KeyValuePair<RectCoord, T>(point, item);
                 }
             }
         }
@@ -399,15 +399,15 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighboursAndSelf<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target)
+        public static IEnumerable<KeyValuePair<RectCoord, T>> GetNeighboursAndSelf<T>(this IHexMap<RectCoord, T> map, RectCoord target)
         {
             T item;
-            IEnumerable<ShortVector2> aroundPoints = GetNeighboursAndSelfPoints(target);
+            IEnumerable<RectCoord> aroundPoints = GetNeighboursAndSelfPoints(target);
             foreach (var point in aroundPoints)
             {
                 if (map.TryGetValue(point, out item))
                 {
-                    yield return new KeyValuePair<ShortVector2, T>(point, item);
+                    yield return new KeyValuePair<RectCoord, T>(point, item);
                 }
             }
         }
@@ -415,15 +415,15 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个地图结构周围的点,若不存在则不返回;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<KeyValuePair<ShortVector2, T>> GetNeighbours<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, HexDirection directions)
+        public static IEnumerable<KeyValuePair<RectCoord, T>> GetNeighbours<T>(this IHexMap<RectCoord, T> map, RectCoord target, HexDirection directions)
         {
             T item;
-            IEnumerable<ShortVector2> aroundPoints = GetNeighboursPoints(target, directions);
+            IEnumerable<RectCoord> aroundPoints = GetNeighboursPoints(target, directions);
             foreach (var point in aroundPoints)
             {
                 if (map.TryGetValue(point, out item))
                 {
-                    yield return new KeyValuePair<ShortVector2, T>(point, item);
+                    yield return new KeyValuePair<RectCoord, T>(point, item);
                 }
             }
         }
@@ -431,11 +431,11 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个点周围的坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<ShortVector2> GetNeighboursPoints(ShortVector2 target)
+        public static IEnumerable<RectCoord> GetNeighboursPoints(RectCoord target)
         {
             foreach (var direction in HexDirections())
             {
-                ShortVector2 point = GetVector(target, direction);
+                RectCoord point = GetVector(target, direction);
                 yield return point + target;
             }
         }
@@ -443,11 +443,11 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个点本身和周围的坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
-        public static IEnumerable<ShortVector2> GetNeighboursAndSelfPoints(ShortVector2 target)
+        public static IEnumerable<RectCoord> GetNeighboursAndSelfPoints(RectCoord target)
         {
             foreach (var direction in HexDirectionsAndSelf())
             {
-                ShortVector2 point = GetVector(target, direction);
+                RectCoord point = GetVector(target, direction);
                 yield return point + target;
             }
         }
@@ -455,11 +455,11 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到这个点这些范围内的坐标;
         /// </summary>
-        public static IEnumerable<ShortVector2> GetNeighboursPoints(ShortVector2 target, HexDirection directions)
+        public static IEnumerable<RectCoord> GetNeighboursPoints(RectCoord target, HexDirection directions)
         {
             foreach (var direction in HexDirections(directions))
             {
-                ShortVector2 point = GetVector(target, direction);
+                RectCoord point = GetVector(target, direction);
                 yield return point + target;
             }
         }
@@ -471,14 +471,14 @@ namespace KouXiaGu.World2D
         /// <summary>
         /// 获取到满足条件的方向;若方向不存在节点则为不满足;
         /// </summary>
-        public static HexDirection GetAroundAndSelfMask<T>(this IHexMap<ShortVector2, T> map, ShortVector2 target, Func<T, bool> func)
+        public static HexDirection GetAroundAndSelfMask<T>(this IHexMap<RectCoord, T> map, RectCoord target, Func<T, bool> func)
         {
             HexDirection directions = 0;
             T item;
             IEnumerable<HexDirection> aroundDirection = HexDirectionsAndSelf();
             foreach (var direction in aroundDirection)
             {
-                ShortVector2 vePoint = GetVector(target, direction) + target;
+                RectCoord vePoint = GetVector(target, direction) + target;
                 if (map.TryGetValue(vePoint, out item))
                 {
                     if (func(item))
