@@ -7,9 +7,9 @@ namespace KouXiaGu.Grids
 {
 
     /// <summary>
-    /// 多个矩形组成一个块;
+    /// 将网格的多个元素分为块;
     /// </summary>
-    public struct Chunk<T>
+    public struct Block<T>
         where T : IGridCoord, new()
     {
 
@@ -33,10 +33,18 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
+        /// 块内元素个数;
+        /// </summary>
+        public int ChunkElementCount
+        {
+            get { return width * height; }
+        }
+
+        /// <summary>
         /// 构造函数;
         /// </summary>
         /// <param name="size">需要为奇数</param>
-        public Chunk(int size)
+        public Block(int size)
         {
             if ((size & 1) != 1)
                 throw new ArgumentOutOfRangeException("参数需要为奇数;");
@@ -49,7 +57,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         /// <param name="width">需要为奇数</param>
         /// <param name="height">需要为奇数</param>
-        public Chunk(int width, int height)
+        public Block(int width, int height)
         {
             if ((width & 1) != 1 || (height & 1) != 1)
                 throw new ArgumentOutOfRangeException("参数需要为奇数;");
@@ -60,9 +68,9 @@ namespace KouXiaGu.Grids
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Chunk<T>))
+            if (!(obj is Block<T>))
                 return false;
-            return this == (Chunk<T>)obj;
+            return this == (Block<T>)obj;
         }
 
         public override int GetHashCode()
@@ -90,8 +98,8 @@ namespace KouXiaGu.Grids
         /// </summary>
         public T GetCenter(RectCoord chunk)
         {
-            int x = chunk.x * width;
-            int y = chunk.y * height;
+            int x = chunk.X * width;
+            int y = chunk.Y * height;
             return Get((short)x, (short)y);
         }
 
@@ -134,13 +142,13 @@ namespace KouXiaGu.Grids
             return Get((short)x, (short)y);
         }
 
-        public static bool operator ==(Chunk<T> a, Chunk<T> b)
+        public static bool operator ==(Block<T> a, Block<T> b)
         {
             return a.width == b.width
                 && a.height == b.height;
         }
 
-        public static bool operator !=(Chunk<T> a, Chunk<T> b)
+        public static bool operator !=(Block<T> a, Block<T> b)
         {
             return !(a == b);
         }

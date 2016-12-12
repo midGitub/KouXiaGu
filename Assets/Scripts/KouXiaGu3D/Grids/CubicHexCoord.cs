@@ -42,7 +42,7 @@ namespace KouXiaGu.Grids
     /// 所有有效坐标都满足 X + Y + Z = 0;
     /// </summary>
     [ProtoContract]
-    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<HexDirections>
+    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<HexDirections>, IGridCoord
     {
 
         /// <summary>
@@ -135,7 +135,6 @@ namespace KouXiaGu.Grids
         };
 
 
-
         [ProtoMember(1)]
         public short X { get; private set; }
         [ProtoMember(2)]
@@ -154,11 +153,9 @@ namespace KouXiaGu.Grids
             this.Z = z;
         }
 
-        public CubicHexCoord(short x, short y)
+        public CubicHexCoord(short x, short y) : this()
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = (short)(-x - y);
+            SetValue(x, y);
         }
 
         public CubicHexCoord(int x, int y, int z)
@@ -210,6 +207,13 @@ namespace KouXiaGu.Grids
             this.Z = (short)(-this.X - this.Y);
         }
 
+        public void SetValue(short x, short y)
+        {
+            this.X = x;
+            this.Y = y;
+            this.Z = (short)(-x - y);
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is CubicHexCoord))
@@ -233,7 +237,6 @@ namespace KouXiaGu.Grids
         {
             return string.Concat("(", X, ",", Y, ",", Z, ")");
         }
-
 
         /// <summary>
         /// 获取到这个方向的坐标;

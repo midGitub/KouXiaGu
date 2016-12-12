@@ -81,8 +81,8 @@ namespace KouXiaGu.Grids
         /// </summary>
         public Vector3 GetCenter(RectCoord coord)
         {
-            float x = coord.x * width;
-            float z = coord.y * height;
+            float x = coord.X * width;
+            float z = coord.Y * height;
             return new Vector3(x, 0, z);
         }
 
