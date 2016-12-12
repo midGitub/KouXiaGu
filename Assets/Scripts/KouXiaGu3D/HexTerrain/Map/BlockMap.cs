@@ -16,21 +16,13 @@ namespace KouXiaGu.Terrain3D
         /// <param name="blockSize">必须为奇数,若不是则+1</param>
         public BlockedMap(short blockSize)
         {
-            this.blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
-            this.blockCount = blockSize * blockSize;
+            blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
+            block = new Block<CubicHexCoord>(blockSize);
 
             mapCollection = new Dictionary<RectCoord, Dictionary<CubicHexCoord, T>>();
         }
 
-        /// <summary>
-        /// 块大小(需要是奇数);
-        /// </summary>
-        readonly short blockSize;
-
-        /// <summary>
-        /// 一个块存在的元素个数;
-        /// </summary>
-        readonly int blockCount;
+        Block<CubicHexCoord> block;
 
         /// <summary>
         /// Key 保存块的编号, Value 保存块内容;
@@ -62,12 +54,9 @@ namespace KouXiaGu.Terrain3D
             get { return mapCollection.Values.SelectMany(block => block.Values); }
         }
 
-        /// <summary>
-        /// 块大小(需要是奇数);
-        /// </summary>
-        public short BlockSize
+        public int BlockWidth
         {
-            get { return blockSize; }
+            get { return block.Width; }
         }
 
         public Dictionary<CubicHexCoord, T> this[RectCoord key]
@@ -176,7 +165,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Dictionary<CubicHexCoord, T> CreateBlock()
         {
-            return new Dictionary<CubicHexCoord, T>(blockCount);
+            return new Dictionary<CubicHexCoord, T>(block.ChunkElementCount);
         }
 
         /// <summary>
@@ -209,9 +198,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public RectCoord GetBlockCoord(CubicHexCoord position)
         {
-            short x = (short)Math.Round(position.X / (float)BlockSize);
-            short y = (short)Math.Round(position.Z / (float)BlockSize);
-            return new RectCoord(x, y);
+            return block.GetChunk(position);
         }
 
 

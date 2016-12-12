@@ -194,7 +194,7 @@ namespace KouXiaGu.Terrain3D
             foreach (var coord in editedBlock)
             {
                 Dictionary<CubicHexCoord, T> block = mapCollection[coord];
-                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(coord, mapCollection.BlockSize, block);
+                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(coord, mapCollection.BlockWidth, block);
             }
             return saveMap;
         }
@@ -208,7 +208,7 @@ namespace KouXiaGu.Terrain3D
             int index = 0;
             foreach (var pair in mapCollection as IDictionary<RectCoord, Dictionary<CubicHexCoord, T>>)
             {
-                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(pair.Key, mapCollection.BlockSize, pair.Value);
+                saveMap[index++] = new BlockArchive<CubicHexCoord, T>(pair.Key, mapCollection.BlockWidth, pair.Value);
             }
             return saveMap;
         }
@@ -218,8 +218,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void IBlockArchive<CubicHexCoord, T>.AddArchives(BlockArchive<CubicHexCoord, T> archive)
         {
-            if (archive.Size != mapCollection.BlockSize)
-                throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockSize + "," + archive.ToString());
+            if (archive.Width != mapCollection.BlockWidth)
+                throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockWidth + "," + archive.ToString());
 
             lock (syncWriteRoot)
             {

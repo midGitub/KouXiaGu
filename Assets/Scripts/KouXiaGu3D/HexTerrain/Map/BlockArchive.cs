@@ -15,10 +15,10 @@ namespace KouXiaGu.Terrain3D
     public struct BlockArchive<TP, T>
     {
 
-        public BlockArchive(RectCoord coord, short size, Dictionary<TP, T> map)
+        public BlockArchive(RectCoord coord, int size, Dictionary<TP, T> map)
         {
             this.Coord = coord;
-            this.Size = size;
+            this.Width = size;
             this.Map = map;
         }
 
@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
         /// 地图块大小;
         /// </summary>
         [ProtoMember(2)]
-        public short Size { get; private set; }
+        public int Width { get; private set; }
 
         /// <summary>
         /// 块内容;
@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
         public override string ToString()
         {
             string str = "坐标:" + Coord
-                + "块尺寸:" + Size
+                + "块尺寸:" + Width
                 + "元素数:" + Map.Count;
             return str;
         }
