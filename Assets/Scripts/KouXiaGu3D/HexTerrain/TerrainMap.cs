@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -12,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形地图保存和提供;
     /// </summary>
-    public static class TerrainMap
+    public class TerrainMap : MonoBehaviour
     {
 
         /// <summary>
@@ -47,14 +48,6 @@ namespace KouXiaGu.Terrain3D
             get { return terrainMap; }
         }
 
-        /// <summary>
-        /// 地图是否为空?
-        /// </summary>
-        public static bool IsEmpty
-        {
-            get { return terrainMap.Count == 0; }
-        }
-
 
 
         /// <summary>
@@ -62,6 +55,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Save(string directoryPath)
         {
+            if (State != ArchiveState.Complete)
+                throw new ArgumentOutOfRangeException("地图尚未准备完毕;");
+
             ArchiveState currentState = State;
             try
             {
@@ -78,9 +74,11 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将所有地图保存为文件;
         /// </summary>
-        /// <param name="directoryPath"></param>
         public static void SaveAll(string directoryPath)
         {
+            if (State != ArchiveState.Complete)
+                throw new ArgumentOutOfRangeException("地图尚未准备完毕;");
+
             ArchiveState currentState = State;
             try
             {
@@ -94,11 +92,15 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+
         /// <summary>
         /// 读取文件夹下的地图;
         /// </summary>
         public static void Load(string directoryPath)
         {
+            if (State == ArchiveState.Complete)
+                throw new ArgumentOutOfRangeException("地图尚未准备完毕;");
+
             ArchiveState currentState = State;
             try
             {

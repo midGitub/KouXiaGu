@@ -17,12 +17,12 @@ namespace KouXiaGu.Terrain3D
         public BlockedMap(short blockSize)
         {
             blockSize = (blockSize & 1) == 1 ? blockSize : ++blockSize;
-            block = new Block<CubicHexCoord>(blockSize);
+            block = new CubicHexBlock(blockSize);
 
             mapCollection = new Dictionary<RectCoord, Dictionary<CubicHexCoord, T>>();
         }
 
-        Block<CubicHexCoord> block;
+        CubicHexBlock block;
 
         /// <summary>
         /// Key 保存块的编号, Value 保存块内容;
