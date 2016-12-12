@@ -15,13 +15,6 @@ namespace KouXiaGu.Terrain3D
         where T : struct
     {
 
-        /// <param name="blockSize">必须为奇数,若不是则+1</param>
-        public BlockMapRecord(short blockSize)
-        {
-            mapCollection = new BlockedMap<T>(blockSize);
-            editedBlock = new HashSet<RectCoord>();
-        }
-
         /// <summary>
         /// 块地图结构;
         /// </summary>
@@ -85,6 +78,27 @@ namespace KouXiaGu.Terrain3D
                     return this.mapCollection.Keys;
                 }
             }
+        }
+
+        public BlockedMap<T> BlockedMap
+        {
+            get { return mapCollection; }
+        }
+
+
+        /// <param name="blockSize">必须为奇数,若不是则+1</param>
+        public BlockMapRecord(short blockSize)
+        {
+            mapCollection = new BlockedMap<T>(blockSize);
+            editedBlock = new HashSet<RectCoord>();
+        }
+
+        public BlockMapRecord(BlockedMap<T> blockedMap)
+        {
+            mapCollection = blockedMap;
+
+            IEnumerable<RectCoord> allCoord = (blockedMap as IMap<RectCoord, Dictionary<CubicHexCoord, T>>).Keys;
+            editedBlock = new HashSet<RectCoord>(allCoord);
         }
 
         /// <summary>
@@ -186,7 +200,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 返回需要保存的地图块结构;
         /// </summary>
-        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.GetArchives()
+        public BlockArchive<CubicHexCoord, T>[] GetArchives()
         {
             BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[editedBlock.Count];
             int index = 0;
@@ -201,7 +215,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 返回所有地图块结构;
         /// </summary>
-        BlockArchive<CubicHexCoord, T>[] IBlockArchive<CubicHexCoord, T>.GetArchiveAll()
+        public BlockArchive<CubicHexCoord, T>[] GetArchiveAll()
         {
             BlockArchive<CubicHexCoord, T>[] saveMap = new BlockArchive<CubicHexCoord, T>[mapCollection.Count];
             int index = 0;
@@ -215,7 +229,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将存档结构加入到地图内,若已存在则替换;
         /// </summary>
-        bool IBlockArchive<CubicHexCoord, T>.AddOrUpdateArchives(BlockArchive<CubicHexCoord, T> archive)
+        public bool AddOrUpdateArchives(BlockArchive<CubicHexCoord, T> archive)
         {
             if (archive.Width != mapCollection.BlockWidth)
                 throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockWidth + "," + archive.ToString());

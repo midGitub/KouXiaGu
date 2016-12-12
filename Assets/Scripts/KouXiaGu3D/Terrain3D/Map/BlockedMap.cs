@@ -186,7 +186,6 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-
         IEnumerable<RectCoord> IMap<RectCoord, Dictionary<CubicHexCoord, T>>.Keys
         {
             get { return ((IMap<RectCoord, Dictionary<CubicHexCoord, T>>)this.mapCollection).Keys; }
