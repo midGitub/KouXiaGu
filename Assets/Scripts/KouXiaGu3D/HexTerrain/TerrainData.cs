@@ -28,25 +28,25 @@ namespace KouXiaGu.Terrain3D
         }
         
         /// <summary>
-        /// 地图块大小(需要大于或等于2);
+        /// 地形块大小(需要大于或等于2);
         /// </summary>
         public const int size = 3;
 
         /// <summary>
-        /// 地图块宽度;
+        /// 地形块宽度;
         /// </summary>
         public static readonly float ChunkWidth = (float)(hexagon.OuterDiameters * 1.5f * (size - 1));
         public static readonly float ChunkWidthHalf = ChunkWidth / 2;
 
         /// <summary>
-        /// 地图块高度;
+        /// 地形块高度;
         /// </summary>
         public static readonly float ChunkHeight = (float)hexagon.InnerDiameters * size;
         public static readonly float ChunkHeightHalf = ChunkHeight / 2;
 
         static readonly RectGrid chunkGrid = new RectGrid(ChunkWidth, ChunkHeight);
         /// <summary>
-        /// 矩形网格结构,用于地图块的排列;
+        /// 矩形网格结构,用于地形块的排列;
         /// </summary>
         public static RectGrid ChunkGrid
         {
@@ -62,7 +62,7 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
-        /// 地图块坐标 获取到其中心的六边形坐标;
+        /// 地形块坐标 获取到其中心的六边形坐标;
         /// </summary>
         public static CubicHexCoord GetHexCenter(RectCoord coord)
         {
@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 获取到这个地图块覆盖到的所有地图节点坐标;
+        /// 获取到这个地形块覆盖到的所有地图节点坐标;
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetCover(RectCoord coord)
         {
@@ -96,7 +96,7 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
-        /// 获取到地图节点所属的地图块;
+        /// 获取到地图节点所属的地形块;
         /// </summary>
         public static RectCoord[] GetBelongChunks(CubicHexCoord coord)
         {
@@ -106,8 +106,8 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 获取到地图节点所属的地图块;
-        /// 传入数组容量需要大于或者等于2,所属的地图块编号放置在 0 和 1 下标处;
+        /// 获取到地图节点所属的地形块;
+        /// 传入数组容量需要大于或者等于2,所属的地形块编号放置在 0 和 1 下标处;
         /// </summary>
         public static void GetBelongChunks(CubicHexCoord coord, ref RectCoord[] chunks)
         {
@@ -116,8 +116,8 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 获取到地图节点所属的地图块;
-        /// 传入数组容量需要大于或者等于2,所属的地图块编号放置在 0 和 1 下标处;
+        /// 获取到地图节点所属的地形块;
+        /// 传入数组容量需要大于或者等于2,所属的地形块编号放置在 0 和 1 下标处;
         /// </summary>
         static void GetBelongChunks(Vector3 pointCenter, ref RectCoord[] chunks)
         {
@@ -234,7 +234,7 @@ namespace KouXiaGu.Terrain3D
         float displacement;
 
         /// <summary>
-        /// 地图块坐标;
+        /// 地形块坐标;
         /// </summary>
         public RectCoord Coord
         {
@@ -320,20 +320,36 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        #region 地图块实例管理(静态)
+        #region 地形块实例管理(静态)
 
         static float globalTessellation = 16f;
         static float globalDisplacement = 3f;
 
         /// <summary>
-        /// 在场景中激活的地图块;
+        /// 在场景中激活的地形块;
         /// </summary>
         static Dictionary<RectCoord, TerrainData> activatedChunks = new Dictionary<RectCoord, TerrainData>();
 
         /// <summary>
-        /// 休眠的地图块;
+        /// 休眠的地形块;
         /// </summary>
         static Queue<TerrainData> restingChunks = new Queue<TerrainData>();
+
+        /// <summary>
+        /// 激活在场景的地形块数目;
+        /// </summary>
+        public static int ActivatedChunkCount
+        {
+            get { return activatedChunks.Count; }
+        }
+
+        /// <summary>
+        /// 重置的\休眠的地形块数目;
+        /// </summary>
+        public static int RestingChunkCount
+        {
+            get { return restingChunks.Count; }
+        }
 
         /// <summary>
         /// 全局的网格细分程度;
@@ -368,12 +384,12 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 创建地图块到场景;
+        /// 创建地形块到场景;
         /// </summary>
         public static void Create(RectCoord coord, Texture2D diffuse, Texture2D height)
         {
             if (activatedChunks.ContainsKey(coord))
-                throw new ArgumentException("地图块已经创建到场景;");
+                throw new ArgumentException("地形块已经创建到场景;");
             if (diffuse == null || height == null)
                 throw new NullReferenceException("空的贴图!");
 
@@ -389,7 +405,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 移除这个地图块;
+        /// 移除这个地形块;
         /// </summary>
         public static bool Destroy(RectCoord coord)
         {
@@ -443,10 +459,9 @@ namespace KouXiaGu.Terrain3D
 
 #if UNITY_EDITOR
         /// <summary>
-        /// 放置地图块的父节点;
+        /// 放置地形块的父节点;
         /// </summary>
         static Transform chunkParent;
-
         static Transform ChunkParent
         {
             get { return chunkParent ?? (chunkParent = new GameObject("TerrainChunks").transform); }
@@ -454,7 +469,7 @@ namespace KouXiaGu.Terrain3D
 #endif
 
         /// <summary>
-        /// 将地图块放回池内,备下次使用;
+        /// 将地形块放回池内,备下次使用;
         /// </summary>
         static void ReleaseTerrainChunk(TerrainData terrainChunk)
         {

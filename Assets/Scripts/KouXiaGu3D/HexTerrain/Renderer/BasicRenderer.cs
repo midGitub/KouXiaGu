@@ -27,7 +27,7 @@ namespace KouXiaGu.Terrain3D
         RenderDisplayMeshPool ovenDisplayMeshPool;
 
         [SerializeField, HideInInspector]
-        BakingParameter parameter = BakingParameter.Default;
+        BakingParameter parameter = new BakingParameter(150);
 
         [SerializeField]
         Shader mixer;
@@ -459,12 +459,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
-        public static readonly float CameraSize = (TerrainData.BlockHeight / 2);
+        public static readonly float CameraSize = (TerrainData.ChunkHeight / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
-        public static readonly float CameraAspect = TerrainData.BlockWidth / TerrainData.BlockHeight;
+        public static readonly float CameraAspect = TerrainData.ChunkWidth / TerrainData.ChunkHeight;
 
         [SerializeField]
         float textureSize;
@@ -491,22 +491,11 @@ namespace KouXiaGu.Terrain3D
 
         void SetTextureSize(float size)
         {
-            this.DiffuseMapWidth = (int)(TerrainData.BlockWidth * size);
-            this.DiffuseMapHeight = (int)(TerrainData.BlockHeight * size);
-            this.HeightMapWidth = (int)(TerrainData.BlockWidth * size);
-            this.HeightMapHeight = (int)(TerrainData.BlockHeight * size);
+            this.DiffuseMapWidth = (int)(TerrainData.ChunkWidth * size);
+            this.DiffuseMapHeight = (int)(TerrainData.ChunkHeight * size);
+            this.HeightMapWidth = (int)(TerrainData.ChunkWidth * size);
+            this.HeightMapHeight = (int)(TerrainData.ChunkHeight * size);
             this.TextureSize = size;
-        }
-
-
-        readonly static BakingParameter defaultParameter = new BakingParameter(150);
-
-        /// <summary>
-        /// 默认的参数;
-        /// </summary>
-        public static BakingParameter Default
-        {
-            get { return defaultParameter; }
         }
 
     }
