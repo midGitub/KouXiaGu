@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Collections;
+using KouXiaGu.Grids;
 
 #if UNITY_EDITOR_DUBUG
 using UnityEngine;

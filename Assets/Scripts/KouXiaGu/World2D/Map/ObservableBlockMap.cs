@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UniRx;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.World2D.Map
 {

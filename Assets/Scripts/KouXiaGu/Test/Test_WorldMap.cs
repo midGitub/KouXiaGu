@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using KouXiaGu.World2D;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Test
 {

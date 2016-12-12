@@ -5,6 +5,7 @@ using UnityEngine;
 using UniRx;
 using KouXiaGu.World2D.Map;
 using System.Collections;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.World2D
 {

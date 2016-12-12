@@ -5,7 +5,7 @@ using KouXiaGu.Grids;
 using ProtoBuf;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.Grids
 {
 
     /// <summary>
