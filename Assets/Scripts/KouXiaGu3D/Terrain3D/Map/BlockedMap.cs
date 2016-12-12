@@ -79,7 +79,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Add(CubicHexCoord position, T item)
         {
-            RectCoord coord = GetBlockCoord(position);
+            RectCoord coord = GetChunkCoord(position);
             var block = TryCreateBlock(coord);
             block.Add(position, item);
         }
@@ -171,7 +171,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Dictionary<CubicHexCoord, T> FindBlock(CubicHexCoord position)
         {
-            RectCoord coord = GetBlockCoord(position);
+            RectCoord coord = GetChunkCoord(position);
             try
             {
                 return mapCollection[coord];
@@ -187,14 +187,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool FindBlock(CubicHexCoord position, out Dictionary<CubicHexCoord, T> block)
         {
-            RectCoord coord = GetBlockCoord(position);
+            RectCoord coord = GetChunkCoord(position);
             return mapCollection.TryGetValue(coord, out block);
         }
 
         /// <summary>
         /// 获取到所属的块坐标;
         /// </summary>
-        public RectCoord GetBlockCoord(CubicHexCoord position)
+        public RectCoord GetChunkCoord(CubicHexCoord position)
         {
             return block.GetChunk(position);
         }
@@ -209,6 +209,11 @@ namespace KouXiaGu.Terrain3D
             return GetEnumerator();
         }
 
+
+        int IMap<RectCoord, Dictionary<CubicHexCoord, T>>.Count
+        {
+            get { return this.mapCollection.Count; }
+        }
 
         IEnumerable<RectCoord> IMap<RectCoord, Dictionary<CubicHexCoord, T>>.Keys
         {

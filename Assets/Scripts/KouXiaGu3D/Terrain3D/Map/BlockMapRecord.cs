@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
             get { return this.mapCollection[position]; }
             set
             {
-                RectCoord coord = mapCollection.GetBlockCoord(position);
+                RectCoord coord = mapCollection.GetChunkCoord(position);
 
                 lock (syncWriteRoot)
                 {
@@ -80,7 +80,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        public BlockedMap<T> BlockedMap
+        internal BlockedMap<T> BlockedMap
         {
             get { return mapCollection; }
         }
@@ -113,7 +113,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Add(CubicHexCoord position, T item)
         {
-            RectCoord coord = mapCollection.GetBlockCoord(position);
+            RectCoord coord = mapCollection.GetChunkCoord(position);
 
             lock (syncWriteRoot)
             {
@@ -141,7 +141,7 @@ namespace KouXiaGu.Terrain3D
         public bool Remove(CubicHexCoord position)
         {
             Dictionary<CubicHexCoord, T> block;
-            RectCoord coord = mapCollection.GetBlockCoord(position);
+            RectCoord coord = mapCollection.GetChunkCoord(position);
 
             lock (syncWriteRoot)
             {
@@ -246,7 +246,7 @@ namespace KouXiaGu.Terrain3D
         public bool AddOrUpdateArchives(BlockArchive<CubicHexCoord, T> archive)
         {
             if (archive.Width != mapCollection.BlockWidth)
-                throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + mapCollection.BlockWidth + "," + archive.ToString());
+                throw new ArgumentOutOfRangeException("传入地图块大小和定义的不同!" + "定义为:" + mapCollection.BlockWidth + ",实际:" + archive.ToString());
 
             return mapCollection.AddOrUpdate(archive.Coord, archive.Map);
         }

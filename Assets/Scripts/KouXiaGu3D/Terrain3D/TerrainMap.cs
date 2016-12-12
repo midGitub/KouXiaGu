@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地图分块大小;
         /// </summary>
-        const short MapBlockSize = 1001;
+        const short MapBlockSize = 501;
 
         /// <summary>
         /// 地形地图结构;
@@ -150,6 +150,12 @@ namespace KouXiaGu.Terrain3D
             get { return Map.Count; }
         }
 
+        [ShowOnlyProperty]
+        public int ChunkCount
+        {
+            get { return (terrainMap.BlockedMap as IMap<RectCoord, Dictionary<CubicHexCoord, TerrainNode>>).Count; }
+        }
+
         /// <summary>
         /// 使用测试的地图文件夹;
         /// </summary>
@@ -203,9 +209,7 @@ namespace KouXiaGu.Terrain3D
             Map<CubicHexCoord, TerrainNode> terrainMap = new Map<CubicHexCoord, TerrainNode>();
             int[] aa = new int[] { 10, 20, 30, 20 };
 
-            terrainMap.Add(CubicHexCoord.Self, new TerrainNode(10, 0));
-
-            foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Self, 10))
+            foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Self, 50))
             {
                 try
                 {
