@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
@@ -292,11 +290,24 @@ namespace KouXiaGu.Terrain3D
             GetComponent<MeshRenderer>().material = Material;
         }
 
-        void Clear()
+        /// <summary>
+        /// 清空贴图引用,但是不销毁;
+        /// </summary>
+        void ClearTextures()
         {
             Coord = RectCoord.Self;
             DiffuseTexture = null;
             HeightTexture = null;
+        }
+
+        /// <summary>
+        /// 销毁所有贴图;
+        /// </summary>
+        void DestroyTextures()
+        {
+            Coord = RectCoord.Self;
+            Destroy(DiffuseTexture);
+            Destroy(HeightTexture);
         }
 
 
@@ -386,7 +397,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建地形块到场景;
         /// </summary>
-        public static void Create(RectCoord coord, Texture2D diffuse, Texture2D height)
+        public static TerrainData Create(RectCoord coord, Texture2D diffuse, Texture2D height)
         {
             if (activatedChunks.ContainsKey(coord))
                 throw new ArgumentException("地形块已经创建到场景;");
@@ -402,6 +413,8 @@ namespace KouXiaGu.Terrain3D
             terrainChunk.Displacement = GlobalDisplacement;
 
             activatedChunks.Add(coord, terrainChunk);
+
+            return terrainChunk;
         }
 
         /// <summary>
@@ -412,10 +425,33 @@ namespace KouXiaGu.Terrain3D
             TerrainData terrainChunk;
             if (activatedChunks.TryGetValue(coord, out terrainChunk))
             {
+                terrainChunk.DestroyTextures();
+
                 ReleaseTerrainChunk(terrainChunk);
                 activatedChunks.Remove(coord);
                 return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// 移除这个地形块,但是返回其贴图信息;
+        /// </summary>
+        public static bool Destroy(RectCoord coord, out Texture2D diffuse, out Texture2D height)
+        {
+            TerrainData terrainChunk;
+            if (activatedChunks.TryGetValue(coord, out terrainChunk))
+            {
+                diffuse = terrainChunk.DiffuseTexture;
+                height = terrainChunk.HeightTexture;
+                terrainChunk.ClearTextures();
+
+                ReleaseTerrainChunk(terrainChunk);
+                activatedChunks.Remove(coord);
+                return true;
+            }
+            diffuse = default(Texture2D);
+            height = default(Texture2D);
             return false;
         }
 
@@ -473,7 +509,6 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static void ReleaseTerrainChunk(TerrainData terrainChunk)
         {
-            terrainChunk.Clear();
             terrainChunk.gameObject.SetActive(false);
             restingChunks.Enqueue(terrainChunk);
         }

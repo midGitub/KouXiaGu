@@ -9,6 +9,7 @@ namespace KouXiaGu
     public enum ArchiveState
     {
         Empty,
+        Waiting,
         Reading,
         Writing,
         Complete,

@@ -40,16 +40,28 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         Shader blur;
 
-        Material mixerMaterial;
-        Material heightMaterial;
-        Material heightToAlphaMaterial;
-        Material diffuseMaterial;
-        Material blurMaterial;
+        static Material mixerMaterial;
+        static Material heightMaterial;
+        static Material heightToAlphaMaterial;
+        static Material diffuseMaterial;
+        static Material blurMaterial;
 
-        Queue<TerrainCreater> bakingQueue;
-        Coroutine bakingCoroutine;
+        static Coroutine bakingCoroutine;
 
-        public bool IsRunning
+        /// <summary>
+        /// 将要进行烘焙的队列(对外只提供查询,以允许移除;);
+        /// </summary>
+        static readonly Queue<IBakeRequest<BakingNode>> bakingQueue = new Queue<IBakeRequest<BakingNode>>();
+
+        /// <summary>
+        /// 请求烘焙的节点;
+        /// </summary>
+        public static IEnumerable<IBakeRequest<BakingNode>> BakingRequests
+        {
+            get { return bakingQueue; }
+        }
+
+        public static bool IsRunning
         {
             get { return bakingCoroutine != null; }
         }
@@ -65,7 +77,6 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             ovenDisplayMeshPool.Awake();
-            bakingQueue = new Queue<TerrainCreater>();
         }
 
         void Start()
@@ -74,6 +85,14 @@ namespace KouXiaGu.Terrain3D
             InitMaterial();
 
             StartCoroutine();
+        }
+
+        /// <summary>
+        /// 加入到烘焙队列;
+        /// </summary>
+        public static void Enqueue(IBakeRequest<BakingNode> request)
+        {
+            bakingQueue.Enqueue(request);
         }
 
         /// <summary>
@@ -94,14 +113,6 @@ namespace KouXiaGu.Terrain3D
         {
             StopCoroutine(bakingCoroutine);
             bakingQueue.Clear();
-        }
-
-        /// <summary>
-        /// 加入到烘焙队列;
-        /// </summary>
-        public void Enqueue(TerrainCreater request)
-        {
-            bakingQueue.Enqueue(request);
         }
 
         /// <summary>
@@ -132,8 +143,6 @@ namespace KouXiaGu.Terrain3D
             blurMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
 
-        //static readonly YieldInstruction TestWiat = new WaitForSeconds(0);
-
         /// <summary>
         /// 在协程内队列中进行烘焙;
         /// </summary>
@@ -148,8 +157,7 @@ namespace KouXiaGu.Terrain3D
 
                 try
                 {
-                    TerrainCreater request = bakingQueue.Dequeue();
-
+                    var request = bakingQueue.Dequeue();
                     Baking(request);
                 }
                 catch (Exception e)
@@ -162,7 +170,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 立即烘焙这个请求;
         /// </summary>
-        public void Baking(TerrainCreater request)
+        public void Baking(IBakeRequest<BakingNode> request)
         {
             IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
 
@@ -179,7 +187,7 @@ namespace KouXiaGu.Terrain3D
             Texture2D height = GetHeightTexture(alphaHeightRT);
             Texture2D diffuse = GetDiffuseTexture(diffuseRT);
 
-            request.BasicTextureComplete(diffuse, height);
+            request.TextureComplete(diffuse, height);
 
             RenderTexture.ReleaseTemporary(mixerRT);
             RenderTexture.ReleaseTemporary(heightRT);
@@ -191,7 +199,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(TerrainCreater request)
+        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest<BakingNode> request)
         {
             bakingCamera.transform.position = request.CameraPosition;
 
