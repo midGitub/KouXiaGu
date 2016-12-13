@@ -28,16 +28,15 @@ namespace KouXiaGu
         /// <summary>
         /// 射线最大距离;
         /// </summary>
-        const float RayMaxDistance = 5000;
+        const float RayMaxDistance = 5000f;
 
         /// <summary>
-        /// 获取视窗鼠标所在水平面上的坐标;
+        /// 从屏幕坐标获取到 y 轴 为 0 的平面坐标;
         /// </summary>
-        public static Vector3 MouseToPlane(this Camera camera)
+        public static Vector3 ScreenToPixel(this Camera camera, Vector3 screenPoint)
         {
             Start:
-
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = camera.ScreenPointToRay(screenPoint);
             RaycastHit raycastHit;
             if (Physics.Raycast(ray, out raycastHit, RayMaxDistance, layerMask, QueryTriggerInteraction.Collide))
             {
@@ -57,6 +56,22 @@ namespace KouXiaGu
         }
 
         /// <summary>
+        /// 获取视窗鼠标所在水平面上的坐标;
+        /// </summary>
+        public static Vector3 MouseToPixel(this Camera camera)
+        {
+            return camera.ScreenToPixel(Input.mousePosition);
+        }
+
+        /// <summary>
+        /// 获取主摄像机视窗鼠标所在水平面上的坐标;
+        /// </summary>
+        public static Vector3 MouseToPixel()
+        {
+            return MouseToPixel(Camera.main);
+        }
+
+        /// <summary>
         /// 创建一个碰撞器跟随相机;
         /// </summary>
         static void CreateCollider(Transform camera)
@@ -70,14 +85,6 @@ namespace KouXiaGu
 
             var component = camera.gameObject.AddComponent<FollowY0>();
             component.Target = collider.transform;
-        }
-
-        /// <summary>
-        /// 获取主摄像机视窗鼠标所在水平面上的坐标;
-        /// </summary>
-        public static Vector3 MouseToPixel()
-        {
-            return MouseToPlane(Camera.main);
         }
 
     }

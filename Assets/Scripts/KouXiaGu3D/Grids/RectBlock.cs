@@ -7,9 +7,9 @@ namespace KouXiaGu.Grids
 {
 
     /// <summary>
-    /// 将网格的多个元素分为块;
+    /// 将一个网格的多个元素分为块;
     /// </summary>
-    public struct RecBlock
+    public struct RectBlock
     {
 
         readonly int width;
@@ -43,7 +43,7 @@ namespace KouXiaGu.Grids
         /// 构造函数;
         /// </summary>
         /// <param name="size">需要为奇数</param>
-        public RecBlock(int size)
+        public RectBlock(int size)
         {
             if ((size & 1) != 1)
                 throw new ArgumentOutOfRangeException("参数需要为奇数;");
@@ -56,7 +56,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         /// <param name="width">需要为奇数</param>
         /// <param name="height">需要为奇数</param>
-        public RecBlock(int width, int height)
+        public RectBlock(int width, int height)
         {
             if ((width & 1) != 1 || (height & 1) != 1)
                 throw new ArgumentOutOfRangeException("参数需要为奇数;");
@@ -67,9 +67,9 @@ namespace KouXiaGu.Grids
 
         public override bool Equals(object obj)
         {
-            if (!(obj is RecBlock))
+            if (!(obj is RectBlock))
                 return false;
-            return this == (RecBlock)obj;
+            return this == (RectBlock)obj;
         }
 
         public override int GetHashCode()
@@ -95,7 +95,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到块的中心;
         /// </summary>
-        public RectCoord GetCenter(Grids.RectCoord chunk)
+        public RectCoord GetCenter(RectCoord chunk)
         {
             int x = chunk.x * width;
             int y = chunk.y * height;
@@ -105,7 +105,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到块内所有的点;
         /// </summary>
-        IEnumerable<RectCoord> ChunkRange(Grids.RectCoord chunk)
+        IEnumerable<RectCoord> ChunkRange(RectCoord chunk)
         {
             RectCoord center = GetCenter(chunk);
             RectCoord southwest = SouthwestAdge(center);
@@ -134,13 +134,13 @@ namespace KouXiaGu.Grids
             return new RectCoord((short)x, (short)y);
         }
 
-        public static bool operator ==(RecBlock a, RecBlock b)
+        public static bool operator ==(RectBlock a, RectBlock b)
         {
             return a.width == b.width
                 && a.height == b.height;
         }
 
-        public static bool operator !=(RecBlock a, RecBlock b)
+        public static bool operator !=(RectBlock a, RectBlock b)
         {
             return !(a == b);
         }

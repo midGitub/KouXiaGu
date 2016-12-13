@@ -198,6 +198,7 @@ namespace KouXiaGu.Terrain3D
         Vector3 position
         {
             get { return transform.position; }
+            set { transform.position = value; }
         }
 
         void Awake()
@@ -207,20 +208,31 @@ namespace KouXiaGu.Terrain3D
 
         void Update()
         {
+            RectCoord center = TerrainData.ChunkGrid.GetCoord(position);
+            IEnumerable<RectCoord> pp = GetDisplayCoords(center);
 
+            foreach (var item in pp)
+            {
+                Create(item);
+            }
         }
 
         /// <summary>
         /// 获取到需要显示到场景的坐标;
         /// </summary>
-        IEnumerable<RectCoord> GetDisplayCoords()
+        IEnumerable<RectCoord> GetDisplayCoords(RectCoord center)
         {
-            RectCoord southwest = TerrainData.ChunkGrid.GetCoord(position);
+            RectCoord southwest = center - minRadius;
+            RectCoord northeast = center + minRadius;
 
+            Func<RectCoord, bool> IsOutMinRange = delegate (RectCoord coord)
+            {
+                return coord.x < southwest.x || coord.x > northeast.x ||
+                        coord.y < southwest.y || coord.y > northeast.y;
+            };
 
-            return null;
+            return breadthTraversal.Traversal(center, IsOutMinRange);
         }
-
 
         #endregion
 
