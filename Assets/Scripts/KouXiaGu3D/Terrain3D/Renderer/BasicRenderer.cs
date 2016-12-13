@@ -200,11 +200,14 @@ namespace KouXiaGu.Terrain3D
 
             ovenDisplayMeshPool.RecoveryActive();
 
+            int indexY = -2;
+
             foreach (var node in bakingNodes)
             {
                 if (node.NotBoundary)
                 {
-                    var mesh = ovenDisplayMeshPool.Dequeue(node.Position, node.RotationY);
+                    Vector3 position = new Vector3(node.Position.x, indexY--, node.Position.z);
+                    var mesh = ovenDisplayMeshPool.Dequeue(position, node.RotationY);
 
                     list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
                 }

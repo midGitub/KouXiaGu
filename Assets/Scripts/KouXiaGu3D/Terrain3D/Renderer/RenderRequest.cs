@@ -57,11 +57,9 @@ namespace KouXiaGu.Terrain3D
             IEnumerable<CubicHexCoord> cover = TerrainData.GetCover(BlockCoord);
             TerrainNode node;
 
-            float index = -2;
-
             foreach (var coord in cover)
             {
-                Vector3 pixPoint = GridConvert.Grid.GetPixel(coord, index--);
+                Vector3 pixPoint = GridConvert.Grid.GetPixel(coord);
                 if (Map.TryGetValue(coord, out node))
                 {
                     yield return new BakingNode(pixPoint, node);
