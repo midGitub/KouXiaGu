@@ -7,15 +7,13 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
-
     /// <summary>
-    /// 地形烘焙请求;
-    /// 烘焙的为一个正六边形网格内的区域;
+    /// 地形创建;
     /// </summary>
-    public struct RenderRequest
+    public class TerrainCreater
     {
 
-        public RenderRequest(IMap<CubicHexCoord, TerrainNode> map, RectCoord blockCoord) : this()
+        public TerrainCreater(IMap<CubicHexCoord, TerrainNode> map, RectCoord blockCoord)
         {
             this.Map = map;
             this.BlockCoord = blockCoord;
@@ -40,13 +38,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public BakingNode[] BakingNodes { get; set; }
 
-
         /// <summary>
         /// 摄像机位置;
         /// </summary>
         public Vector3 CameraPosition
         {
-            get { return TerrainData.ChunkGrid.GetCenter(BlockCoord) + new Vector3(0, 5, 0); }
+            get { return TerrainData.ChunkGrid.GetCenter(BlockCoord); }
         }
 
         /// <summary>
@@ -78,6 +75,10 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainData.Create(BlockCoord, diffuse, height);
         }
+
+
+
+
 
     }
 

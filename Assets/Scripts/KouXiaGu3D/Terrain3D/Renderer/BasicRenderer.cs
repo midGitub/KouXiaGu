@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         Material diffuseMaterial;
         Material blurMaterial;
 
-        Queue<RenderRequest> bakingQueue;
+        Queue<TerrainCreater> bakingQueue;
         Coroutine bakingCoroutine;
 
         public bool IsRunning
@@ -65,7 +65,7 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             ovenDisplayMeshPool.Awake();
-            bakingQueue = new Queue<RenderRequest>();
+            bakingQueue = new Queue<TerrainCreater>();
         }
 
         void Start()
@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 加入到烘焙队列;
         /// </summary>
-        public void Enqueue(RenderRequest request)
+        public void Enqueue(TerrainCreater request)
         {
             bakingQueue.Enqueue(request);
         }
@@ -148,7 +148,7 @@ namespace KouXiaGu.Terrain3D
 
                 try
                 {
-                    RenderRequest request = bakingQueue.Dequeue();
+                    TerrainCreater request = bakingQueue.Dequeue();
 
                     Baking(request);
                 }
@@ -162,7 +162,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 立即烘焙这个请求;
         /// </summary>
-        public void Baking(RenderRequest request)
+        public void Baking(TerrainCreater request)
         {
             IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
 
@@ -191,7 +191,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(RenderRequest request)
+        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(TerrainCreater request)
         {
             bakingCamera.transform.position = request.CameraPosition;
 

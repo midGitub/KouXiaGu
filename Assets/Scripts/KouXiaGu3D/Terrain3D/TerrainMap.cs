@@ -69,11 +69,8 @@ namespace KouXiaGu.Terrain3D
             }
             catch (Exception e)
             {
-                throw e;
-            }
-            finally
-            {
                 State = currentState;
+                throw e;
             }
         }
 
@@ -94,11 +91,8 @@ namespace KouXiaGu.Terrain3D
             }
             catch (Exception e)
             {
-                throw e;
-            }
-            finally
-            {
                 State = currentState;
+                throw e;
             }
         }
 
@@ -119,11 +113,8 @@ namespace KouXiaGu.Terrain3D
             }
             catch (Exception e)
             {
-                throw e;
-            }
-            finally
-            {
                 State = currentState;
+                throw e;
             }
         }
 
@@ -166,15 +157,15 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("烘焙测试")]
         void Test_Baking()
         {
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.Self));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.West));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.East));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.North));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.South));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.South + RectCoord.West));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.South + RectCoord.East));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.North + RectCoord.West));
-            BasicRenderer.GetInstance.Enqueue(new RenderRequest(terrainMap, RectCoord.North + RectCoord.East));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.Self));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.West));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.East));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.North));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.South));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.South + RectCoord.West));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.South + RectCoord.East));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.North + RectCoord.West));
+            BasicRenderer.GetInstance.Enqueue(new TerrainCreater(terrainMap, RectCoord.North + RectCoord.East));
         }
 
         [ContextMenu("保存修改的地图")]
