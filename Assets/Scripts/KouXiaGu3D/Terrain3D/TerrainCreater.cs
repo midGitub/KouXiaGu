@@ -13,17 +13,8 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public sealed class TerrainCreater : MonoBehaviour
     {
-        TerrainCreater() { }
 
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                Destroy(TerrainData.ChunkGrid.GetCoord(MouseConvert.MouseToPixel()));
-            }
-        }
-
+        #region 静态
 
         /// <summary>
         /// 地形地图;
@@ -81,6 +72,24 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 是否为空的地形块;
+        /// </summary>
+        static bool IsEmtpyChunk(RectCoord chunkCoord)
+        {
+            IEnumerable<CubicHexCoord> cover = TerrainData.GetCover(chunkCoord);
+            try
+            {
+                cover.First();
+                return false;
+            }
+            catch (InvalidOperationException)
+            {
+                return true;
+            }
+        }
+
+
+        /// <summary>
         /// 创建地形到场景;
         /// </summary>
         static void Create(RectCoord chunkCoord, Texture2D diffuse, Texture2D height)
@@ -94,7 +103,6 @@ namespace KouXiaGu.Terrain3D
 
             TerrainData.Create(chunkCoord, diffuse, height);
         }
-
 
         struct BakeRequest : IBakeRequest<BakingNode>
         {
@@ -162,6 +170,59 @@ namespace KouXiaGu.Terrain3D
             }
 
         }
+
+        #endregion
+
+
+        #region 实例
+
+        TerrainCreater() { }
+
+        /// <summary>
+        /// 最小显示半径,在这个半径内的地形块会创建并显示;
+        /// </summary>
+        [SerializeField]
+        RectCoord minRadius;
+
+        /// <summary>
+        /// 最大缓存半径,超出这个半径的地形块贴图将会销毁;
+        /// </summary>
+        [SerializeField]
+        RectCoord maxRadius;
+
+        BreadthTraversal breadthTraversal;
+
+        /// <summary>
+        /// 中心点;
+        /// </summary>
+        Vector3 position
+        {
+            get { return transform.position; }
+        }
+
+        void Awake()
+        {
+            breadthTraversal = new BreadthTraversal();
+        }
+
+        void Update()
+        {
+
+        }
+
+        /// <summary>
+        /// 获取到需要显示到场景的坐标;
+        /// </summary>
+        IEnumerable<RectCoord> GetDisplayCoords()
+        {
+            RectCoord southwest = TerrainData.ChunkGrid.GetCoord(position);
+
+
+            return null;
+        }
+
+
+        #endregion
 
     }
 

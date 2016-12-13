@@ -49,7 +49,7 @@ namespace KouXiaGu.Test
         IEnumerator BreadthTraversal2()
         {
             WaitForSeconds wait = new WaitForSeconds(1);
-            foreach (var point in new BreadthTraversal().Traversal(RectCoord.Self, point => (point.X & 1) == 1 && point.Y != 2))
+            foreach (var point in new BreadthTraversal().Traversal(RectCoord.Self, point => (point.x & 1) == 1 && point.y != 2))
             {
                 Instantiate(point);
                 yield return wait;
@@ -60,7 +60,7 @@ namespace KouXiaGu.Test
 
         void Instantiate(RectCoord position)
         {
-            Vector3 pos = new Vector3(position.X, 0, position.Y);
+            Vector3 pos = new Vector3(position.x, 0, position.y);
             var gObject = Instantiate(prefab, pos, prefab.transform.rotation, this.transform) as GameObject;
             gObject.SetActive(true);
             Text textObject = gObject.GetComponentInChildren<Text>();

@@ -101,11 +101,11 @@ namespace KouXiaGu.World2D
         /// </summary>
         bool WithinRange(RectCoord range, RectCoord centerPoint, RectCoord current)
         {
-            RectCoord southwestPoint = new RectCoord(centerPoint.X - range.X, centerPoint.Y - range.Y);
-            RectCoord northeastPoint = new RectCoord(centerPoint.X + range.X, centerPoint.Y + range.Y);
+            RectCoord southwestPoint = new RectCoord(centerPoint.x - range.x, centerPoint.y - range.y);
+            RectCoord northeastPoint = new RectCoord(centerPoint.x + range.x, centerPoint.y + range.y);
 
-            return current.X > southwestPoint.X && current.Y > southwestPoint.Y &&
-                current.X < northeastPoint.X && current.Y < northeastPoint.Y;
+            return current.x > southwestPoint.x && current.y > southwestPoint.y &&
+                current.x < northeastPoint.x && current.y < northeastPoint.y;
         }
 
         /// <summary>
@@ -224,8 +224,8 @@ namespace KouXiaGu.World2D
         /// </summary>
         RectCoord GetSouthwestPoint(RectCoord centerPoint)
         {
-            centerPoint.X -= buildUpdateRange.X;
-            centerPoint.Y -= buildUpdateRange.Y;
+            centerPoint.x -= buildUpdateRange.x;
+            centerPoint.y -= buildUpdateRange.y;
             return centerPoint;
         }
 
@@ -234,8 +234,8 @@ namespace KouXiaGu.World2D
         /// </summary>
         RectCoord GetNortheastPoint(RectCoord centerPoint)
         {
-            centerPoint.X += buildUpdateRange.X;
-            centerPoint.Y += buildUpdateRange.Y;
+            centerPoint.x += buildUpdateRange.x;
+            centerPoint.y += buildUpdateRange.y;
             return centerPoint;
         }
     }

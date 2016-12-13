@@ -30,7 +30,7 @@ namespace KouXiaGu.Grids
     /// 矩形网格的坐标;
     /// </summary>
     [Serializable, ProtoContract]
-    public struct RectCoord : IEquatable<RectCoord>, IGrid, IGrid<RecDirections>, IGridCoord
+    public struct RectCoord : IEquatable<RectCoord>, IGrid, IGrid<RecDirections>
     {
 
         /// <summary>
@@ -100,34 +100,33 @@ namespace KouXiaGu.Grids
             RecDirections.North,
         };
 
-
         [ProtoMember(1)]
-        public short X { get; set; }
+        public short x;
 
         [ProtoMember(2)]
-        public short Y { get; set; }
+        public short y;
 
         public RectCoord(short x, short y)
         {
-            this.X = x;
-            this.Y = y;
+            this.x = x;
+            this.y = y;
         }
 
         public RectCoord(int x, int y)
         {
-            this.X = (short)x;
-            this.Y = (short)y;
+            this.x = (short)x;
+            this.y = (short)y;
         }
 
         public void SetValue(short x, short y)
         {
-            this.X = x;
-            this.Y = y;
+            this.x = x;
+            this.y = y;
         }
 
         public override string ToString()
         {
-            return String.Concat("(", X, " , ", Y, ")");
+            return String.Concat("(", x, " , ", y, ")");
         }
 
         public override bool Equals(object obj)
@@ -139,7 +138,7 @@ namespace KouXiaGu.Grids
 
         public bool Equals(RectCoord other)
         {
-            return X == other.X && Y == other.Y;
+            return x == other.x && y == other.y;
         }
 
         /// <summary>
@@ -148,8 +147,8 @@ namespace KouXiaGu.Grids
         /// <returns></returns>
         public override int GetHashCode()
         {
-            int hashCode = X << 16;
-            hashCode += short.MaxValue + Y;
+            int hashCode = x << 16;
+            hashCode += short.MaxValue + y;
             return hashCode;
         }
 
@@ -234,7 +233,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public static float Distance(RectCoord v1, RectCoord v2)
         {
-            float distance = (float)Math.Sqrt(Math.Pow((v1.X - v2.X), 2) + Math.Pow((v1.Y - v2.Y), 2));
+            float distance = (float)Math.Sqrt(Math.Pow((v1.x - v2.x), 2) + Math.Pow((v1.y - v2.y), 2));
             return distance;
         }
 
@@ -243,7 +242,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public static int ManhattanDistance(RectCoord v1, RectCoord v2)
         {
-            int distance = Math.Abs(v1.X - v2.X) + Math.Abs(v1.Y - v2.Y);
+            int distance = Math.Abs(v1.x - v2.x) + Math.Abs(v1.y - v2.y);
             return distance;
         }
 
@@ -293,9 +292,9 @@ namespace KouXiaGu.Grids
         /// </summary>
         public static IEnumerable<RectCoord> RectRange(RectCoord southwest, RectCoord northeast)
         {
-            for (short x = southwest.X; x <= northeast.X; x++)
+            for (short x = southwest.x; x <= northeast.x; x++)
             {
-                for (short y = southwest.Y; y <= northeast.Y; y++)
+                for (short y = southwest.y; y <= northeast.y; y++)
                 {
                     yield return new RectCoord(x, y);
                 }
@@ -304,7 +303,7 @@ namespace KouXiaGu.Grids
 
         public static bool operator ==(RectCoord a, RectCoord b)
         {
-            return  a.X == b.X && a.Y == b.Y;
+            return  a.x == b.x && a.y == b.y;
         }
 
         public static bool operator !=(RectCoord a, RectCoord b)
@@ -314,43 +313,43 @@ namespace KouXiaGu.Grids
 
         public static RectCoord operator -(RectCoord point1, RectCoord point2)
         {
-            point1.X -= point2.X;
-            point1.Y -= point2.Y;
+            point1.x -= point2.x;
+            point1.y -= point2.y;
             return point1;
         }
 
         public static RectCoord operator +(RectCoord point1, RectCoord point2)
         {
-            point1.X += point2.X;
-            point1.Y += point2.Y;
+            point1.x += point2.x;
+            point1.y += point2.y;
             return point1;
         }
 
         public static RectCoord operator *(RectCoord point1, short n)
         {
-            point1.X *= n;
-            point1.Y *= n;
+            point1.x *= n;
+            point1.y *= n;
             return point1;
         }
 
         public static RectCoord operator /(RectCoord point1, short n)
         {
-            point1.X /= n;
-            point1.Y /= n;
+            point1.x /= n;
+            point1.y /= n;
             return point1;
         }
 
         public static RectCoord operator +(RectCoord point1, short n)
         {
-            point1.X += n;
-            point1.Y += n;
+            point1.x += n;
+            point1.y += n;
             return point1;
         }
 
         public static RectCoord operator -(RectCoord point1, short n)
         {
-            point1.X -= n;
-            point1.Y -= n;
+            point1.x -= n;
+            point1.y -= n;
             return point1;
         }
 

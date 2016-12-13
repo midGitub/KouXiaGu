@@ -88,9 +88,9 @@ namespace KouXiaGu.World2D.Map
             RectCoord southwestAddress = GetSouthwestAddress(centerPoint);
             RectCoord northeastAddress = GetNortheastAddress(centerPoint);
 
-            for (short x = southwestAddress.X; x <= northeastAddress.X; x++)
+            for (short x = southwestAddress.x; x <= northeastAddress.x; x++)
             {
-                for (short y = southwestAddress.Y; y <= northeastAddress.Y; y++)
+                for (short y = southwestAddress.y; y <= northeastAddress.y; y++)
                 {
                     yield return new RectCoord(x, y);
                 }
@@ -116,8 +116,8 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         RectCoord GetSouthwestPoint(RectCoord centerPoint)
         {
-            centerPoint.X -= loadRange.X;
-            centerPoint.Y -= loadRange.Y;
+            centerPoint.x -= loadRange.x;
+            centerPoint.y -= loadRange.y;
             return centerPoint;
         }
 
@@ -126,8 +126,8 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         RectCoord GetNortheastPoint(RectCoord centerPoint)
         {
-            centerPoint.X += loadRange.X;
-            centerPoint.Y += loadRange.Y;
+            centerPoint.x += loadRange.x;
+            centerPoint.y += loadRange.y;
             return centerPoint;
         }
 

@@ -42,7 +42,7 @@ namespace KouXiaGu.Grids
     /// 所有有效坐标都满足 X + Y + Z = 0;
     /// </summary>
     [ProtoContract]
-    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<HexDirections>, IGridCoord
+    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<HexDirections>
     {
 
         /// <summary>

@@ -32,8 +32,8 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         public void SetMaximumRange(RectCoord center, RectCoord range)
         {
-            this.southwest = new RectCoord(center.X - range.X, center.Y - range.Y);
-            this.northeast = new RectCoord(center.X + range.X, center.Y + range.Y);
+            this.southwest = new RectCoord(center.x - range.x, center.y - range.y);
+            this.northeast = new RectCoord(center.x + range.x, center.y + range.y);
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace KouXiaGu.World2D.Navigation
         /// </summary>
         public bool IsOutRange(RectCoord point)
         {
-            return point.X < southwest.X || point.Y < southwest.Y ||
-                point.X > northeast.X || point.Y > northeast.Y;
+            return point.x < southwest.x || point.y < southwest.y ||
+                point.x > northeast.x || point.y > northeast.y;
         }
 
     }
