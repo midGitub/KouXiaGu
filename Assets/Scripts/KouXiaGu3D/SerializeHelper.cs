@@ -18,7 +18,7 @@ namespace KouXiaGu
         {
             using (Stream fStream = new FileStream(filePath, fileMode, FileAccess.Write))
             {
-                SerializeXml(fStream, item);
+                serializer.Serialize(fStream, item);
             }
         }
 
@@ -29,39 +29,6 @@ namespace KouXiaGu
                 return serializer.Deserialize(fStream);
             }
         }
-
-
-        public static void SerializeXml<T>(Stream stream, T t)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-            serializer.Serialize(stream, t);
-        }
-
-        public static void SerializeXml<T>(string filePath, T t, FileMode fileMode = FileMode.Create)
-        {
-            using (Stream fStream = new FileStream(filePath, fileMode))
-            {
-                SerializeXml(fStream, t);
-            }
-        }
-
-
-        public static T DeserializeXml<T>(Stream stream)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-            return (T)serializer.Deserialize(stream);
-        }
-
-        public static T DeserializeXml<T>(string filePath , FileMode fileMode = FileMode.Open)
-        {
-            T t;
-            using (Stream fStream = new FileStream(filePath, fileMode))
-            {
-                t = DeserializeXml<T>(fStream);
-            }
-            return t;
-        }
-
 
         #endregion
 

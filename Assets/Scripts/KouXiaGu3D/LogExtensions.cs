@@ -18,7 +18,7 @@ namespace KouXiaGu
             int index = 0;
             foreach (var item in collection)
             {
-                log += Log(index, item);
+                log += Log(index++, item);
             }
             return log;
         }

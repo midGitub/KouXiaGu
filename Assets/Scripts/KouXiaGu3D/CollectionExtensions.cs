@@ -63,6 +63,21 @@ namespace KouXiaGu
             }
         }
 
+        /// <summary>
+        /// 转换成字典,若存在相同的元素则返回异常;
+        /// </summary>
+        public static Dictionary<TKey, TValue> ToDictionary<T, TKey, TValue>(this IEnumerable<T> collection, Func<T, KeyValuePair<TKey,TValue>> func)
+        {
+            Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
+            IDictionary<TKey, TValue> dictionaryI = dictionary;
+            foreach (var key in collection)
+            {
+                var pair = func(key);
+                dictionaryI.Add(pair);
+            }
+            return dictionary;
+        }
+
     }
 
 }
