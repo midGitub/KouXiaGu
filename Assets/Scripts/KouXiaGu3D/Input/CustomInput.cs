@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using System.Xml.Serialization;
 using System.IO;
@@ -115,7 +114,7 @@ namespace KouXiaGu
         /// </summary>
         public static void Save()
         {
-            string filePath = GetDefaultCustomKeyFilePath();
+            string filePath = GetDefaultFilePath();
 
             if (!Directory.Exists(Path.GetDirectoryName(filePath)))
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
@@ -128,14 +127,14 @@ namespace KouXiaGu
         /// </summary>
         public static void Load()
         {
-            string filePath = GetDefaultCustomKeyFilePath();
+            string filePath = GetDefaultFilePath();
             Load(filePath);
         }
 
         /// <summary>
         /// 获取到默认存放到的文件路径;
         /// </summary>
-        static string GetDefaultCustomKeyFilePath()
+        static string GetDefaultFilePath()
         {
             return ResourcePath.CombineConfiguration(CUSTIM_KEY_FILE_NAME);
         }
@@ -173,7 +172,7 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 更新按键映射字典,并且输出为 None 的按键;
+        /// 更新按键映射字典;
         /// </summary>
         public static void UpdateKeyMap(IEnumerable<CustomKey> customKeys)
         {
@@ -231,6 +230,12 @@ namespace KouXiaGu
             try
             {
                 Load();
+                var emptyKeys = EmptyKeys();
+                if (emptyKeys.Count != 0)
+                {
+                    Debug.LogWarning("未定义的按键:" + emptyKeys.ToLog());
+                }
+                emptyKeys.Clear();
             }
             catch (Exception e)
             {
