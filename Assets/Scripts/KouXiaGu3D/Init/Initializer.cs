@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-namespace KouXiaGu
+namespace KouXiaGu.Initialization
 {
 
     /// <summary>
