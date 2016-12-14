@@ -31,14 +31,13 @@ namespace KouXiaGu.EditorTool
                 KeyCode keycode;
                 try
                 {
-                    keycode = CustomInput.Convert(item);
+                    keycode = CustomInput.GetKey(item);
                 }
                 catch (KeyNotFoundException)
                 {
                     keycode = KeyCode.None;
                 }
                 CustomInput.keyMap[(int)item] = (KeyCode)EditorGUILayout.EnumPopup(item.ToString(), keycode);
-
             }
 
             GUILayout.BeginHorizontal();

@@ -67,14 +67,22 @@ namespace KouXiaGu
             keyMap[(int)function] = keyCode;
         }
 
-        #region 功能按键;
+        /// <summary>
+        /// 对按键进行转换;
+        /// </summary>
+        public static KeyCode GetKey(Function function)
+        {
+            KeyCode keycode = keyMap[(int)function];
+            return keycode;
+        }
+
 
         /// <summary>
         /// 用户有按着 相关按键 时一直返回true;
         /// </summary>
-        public static bool GetKey(Function function)
+        public static bool GetKeyHoldDown(Function function)
         {
-            KeyCode keycode = Convert(function);
+            KeyCode keycode = GetKey(function);
             return Input.GetKey(keycode);
         }
 
@@ -83,7 +91,7 @@ namespace KouXiaGu
         /// </summary>
         public static bool GetKeyDown(Function function)
         {
-            KeyCode keycode = Convert(function);
+            KeyCode keycode = GetKey(function);
             return Input.GetKeyDown(keycode);
         }
 
@@ -92,20 +100,9 @@ namespace KouXiaGu
         /// </summary>
         public static bool GetKeyUp(Function function)
         {
-            KeyCode keycode = Convert(function);
+            KeyCode keycode = GetKey(function);
             return Input.GetKeyUp(keycode);
         }
-
-        /// <summary>
-        /// 对按键进行转换;
-        /// </summary>
-        public static KeyCode Convert(Function function)
-        {
-            KeyCode keycode = keyMap[(int)function];
-            return keycode;
-        }
-
-        #endregion
 
 
         #region 按键映射储存为XML
@@ -210,8 +207,9 @@ namespace KouXiaGu
 
         #endregion
 
-
         #region 实例部分;
+
+        CustomInput() { }
 
         static bool initialized = false;
 
@@ -239,14 +237,6 @@ namespace KouXiaGu
             {
                 Debug.LogWarning("按键初始化失败;" + e);
             }
-        }
-
-
-
-        [ContextMenu("保存所有按键")]
-        void SaveKeys()
-        {
-            Save();
         }
 
         #endregion
