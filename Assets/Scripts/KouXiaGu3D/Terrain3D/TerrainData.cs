@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地图节点所使用的六边形参数;
         /// </summary>
-        static Hexagon hexagon
+        static Hexagon MAP_HEXAGON
         {
             get { return GridConvert.hexagon; }
         }
@@ -28,36 +28,28 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形块大小(需要大于或等于2);
         /// </summary>
-        public const int size = 3;
+        public static readonly int CHUNK_SIZE = 3;
 
         /// <summary>
         /// 地形块宽度;
         /// </summary>
-        public static readonly float ChunkWidth = (float)(hexagon.OuterDiameters * 1.5f * (size - 1));
-        public static readonly float ChunkWidthHalf = ChunkWidth / 2;
+        public static readonly float CHUNK_WIDTH = (float)(MAP_HEXAGON.OuterDiameters * 1.5f * (CHUNK_SIZE - 1));
+        public static readonly float CHUNK_WIDTH_HALF = CHUNK_WIDTH / 2;
 
         /// <summary>
         /// 地形块高度;
         /// </summary>
-        public static readonly float ChunkHeight = (float)hexagon.InnerDiameters * size;
-        public static readonly float ChunkHeightHalf = ChunkHeight / 2;
+        public static readonly float CHUNK_HEIGHT = (float)MAP_HEXAGON.InnerDiameters * CHUNK_SIZE;
+        public static readonly float CHUNK_HEIGHT_HALF = CHUNK_HEIGHT / 2;
 
-        static readonly RectGrid chunkGrid = new RectGrid(ChunkWidth, ChunkHeight);
+        static readonly RectGrid CHUNK_GRID = new RectGrid(CHUNK_WIDTH, CHUNK_HEIGHT);
         /// <summary>
         /// 矩形网格结构,用于地形块的排列;
         /// </summary>
         public static RectGrid ChunkGrid
         {
-            get { return chunkGrid; }
+            get { return CHUNK_GRID; }
         }
-
-        //检测六边形节点所在块 的两个点;
-        static readonly Vector3 CheckBelongChunkPoint1 =
-            new Vector3((float)hexagon.OuterRadius / 2, 0, (float)hexagon.InnerRadius / 2);
-        static readonly Vector3 CheckBelongChunkPoint2 =
-            new Vector3(-(float)hexagon.OuterRadius / 2, 0, -(float)hexagon.InnerRadius / 2);
-
-
 
         /// <summary>
         /// 地形块坐标 获取到其中心的六边形坐标;
@@ -71,16 +63,16 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到这个地形块覆盖到的所有地图节点坐标;
         /// </summary>
-        public static IEnumerable<CubicHexCoord> GetCover(RectCoord coord)
+        public static IEnumerable<CubicHexCoord> GetChunkCover(RectCoord coord)
         {
             CubicHexCoord hexCenter = GetHexCenter(coord);
-            CubicHexCoord startCoord = CubicHexCoord.GetDirectionOffset(HexDirections.Southwest) * size + hexCenter + CubicHexCoord.DIR_South;
+            CubicHexCoord startCoord = CubicHexCoord.GetDirectionOffset(HexDirections.Southwest) * CHUNK_SIZE + hexCenter + CubicHexCoord.DIR_South;
 
             for (short endX = (short)(Math.Abs(hexCenter.X - startCoord.X) + hexCenter.X);
                 startCoord.X <= endX;
                 startCoord += (startCoord.X & 1) == 0 ?
-                (((size & 1) == 0) ? CubicHexCoord.DIR_Northeast : CubicHexCoord.DIR_Southeast) :
-                (((size & 1) == 0) ? CubicHexCoord.DIR_Southeast : CubicHexCoord.DIR_Northeast))
+                (((CHUNK_SIZE & 1) == 0) ? CubicHexCoord.DIR_Northeast : CubicHexCoord.DIR_Southeast) :
+                (((CHUNK_SIZE & 1) == 0) ? CubicHexCoord.DIR_Southeast : CubicHexCoord.DIR_Northeast))
             {
                 CubicHexCoord startRow = startCoord;
                 for (short endY = (short)(Math.Abs(hexCenter.Z - startCoord.Z) + hexCenter.Y);
@@ -113,6 +105,12 @@ namespace KouXiaGu.Terrain3D
             GetBelongChunks(point, ref chunks);
         }
 
+        //检测六边形节点所在块 的两个点;
+        static readonly Vector3 CheckBelongChunkPoint1 =
+            new Vector3((float)MAP_HEXAGON.OuterRadius / 2, 0, (float)MAP_HEXAGON.InnerRadius / 2);
+        static readonly Vector3 CheckBelongChunkPoint2 =
+            new Vector3(-(float)MAP_HEXAGON.OuterRadius / 2, 0, -(float)MAP_HEXAGON.InnerRadius / 2);
+
         /// <summary>
         /// 获取到地图节点所属的地形块;
         /// 传入数组容量需要大于或者等于2,所属的地形块编号放置在 0 和 1 下标处;
@@ -122,10 +120,10 @@ namespace KouXiaGu.Terrain3D
             try
             {
                 Vector3 point1 = pointCenter + CheckBelongChunkPoint1;
-                chunks[0] = chunkGrid.GetCoord(point1);
+                chunks[0] = CHUNK_GRID.GetCoord(point1);
 
                 Vector3 point2 = pointCenter + CheckBelongChunkPoint2;
-                chunks[1] = chunkGrid.GetCoord(point2);
+                chunks[1] = CHUNK_GRID.GetCoord(point2);
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -138,32 +136,32 @@ namespace KouXiaGu.Terrain3D
 
         #region 地形块网格(静态)
 
-        const string meshName = "Terrain Mesh";
+        const string MESH_NAME = "Terrain Mesh";
 
         //为了地形相接的地方不存在明显的缝隙,所以加上 小数 的数值;
-        static readonly float meshHalfWidth = ChunkWidthHalf + 0.005f;
-        static readonly float meshHalfHeight = ChunkHeightHalf + 0.005f;
+        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF + 0.005f;
+        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF + 0.005f;
 
         /// <summary>
         /// 网格生成的高度;
         /// </summary>
-        const float altitude = 0;
+        const float ALTITUDE = 0;
 
         /// <summary>
         /// 网格顶点数据;
         /// </summary>
-        static readonly Vector3[] vertices = new Vector3[]
+        static readonly Vector3[] VERTICES = new Vector3[]
             {
-                new Vector3(-meshHalfWidth , altitude, meshHalfHeight),
-                new Vector3(meshHalfWidth, altitude, meshHalfHeight),
-                new Vector3(meshHalfWidth, altitude, -meshHalfHeight),
-                new Vector3(-meshHalfWidth, altitude, -meshHalfHeight),
+                new Vector3(-MESH_HALF_WIDTH , ALTITUDE, MESH_HALF_HEIGHT),
+                new Vector3(MESH_HALF_WIDTH, ALTITUDE, MESH_HALF_HEIGHT),
+                new Vector3(MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
+                new Vector3(-MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
             };
 
         /// <summary>
         /// 网格三角形数据;
         /// </summary>
-        static readonly int[] triangles = new int[]
+        static readonly int[] TRIANGLES = new int[]
            {
                 0,1,2,
                 0,2,3,
@@ -172,7 +170,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 网格UV坐标数据;
         /// </summary>
-        static readonly Vector2[] uv = new Vector2[]
+        static readonly Vector2[] UV = new Vector2[]
            {
                 new Vector2(0f, 1f),
                 new Vector2(1f, 1f),
@@ -187,10 +185,10 @@ namespace KouXiaGu.Terrain3D
         {
             Mesh mesh = new Mesh();
 
-            mesh.name = meshName;
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.uv = uv;
+            mesh.name = MESH_NAME;
+            mesh.vertices = VERTICES;
+            mesh.triangles = TRIANGLES;
+            mesh.uv = UV;
             mesh.RecalculateNormals();
 
             return mesh;
@@ -211,17 +209,17 @@ namespace KouXiaGu.Terrain3D
 
         #region 地形块(实例)
 
-        const string shaderTerrain = "HexTerrain/Terrain";
-        const string shaderHeight = "HexTerrain/Heigt";
+        const string SHADER_TERRAIN_NAME = "HexTerrain/Terrain";
+        const string SHADER_HEIGHT_NAME = "HexTerrain/Heigt";
 
         static Shader terrainShader
         {
-            get { return Shader.Find(shaderTerrain); }
+            get { return Shader.Find(SHADER_TERRAIN_NAME); }
         }
 
         static Shader heightShader
         {
-            get { return Shader.Find(shaderHeight); }
+            get { return Shader.Find(SHADER_HEIGHT_NAME); }
         }
 
         RectCoord coord;

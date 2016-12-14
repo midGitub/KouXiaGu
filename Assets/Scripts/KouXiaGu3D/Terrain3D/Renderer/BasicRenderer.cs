@@ -470,12 +470,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
-        public static readonly float CameraSize = (TerrainData.ChunkHeight / 2);
+        public static readonly float CameraSize = (TerrainData.CHUNK_HEIGHT / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
-        public static readonly float CameraAspect = TerrainData.ChunkWidth / TerrainData.ChunkHeight;
+        public static readonly float CameraAspect = TerrainData.CHUNK_WIDTH / TerrainData.CHUNK_HEIGHT;
 
         [SerializeField]
         float textureSize;
@@ -502,10 +502,10 @@ namespace KouXiaGu.Terrain3D
 
         void SetTextureSize(float size)
         {
-            this.DiffuseMapWidth = (int)(TerrainData.ChunkWidth * size);
-            this.DiffuseMapHeight = (int)(TerrainData.ChunkHeight * size);
-            this.HeightMapWidth = (int)(TerrainData.ChunkWidth * size);
-            this.HeightMapHeight = (int)(TerrainData.ChunkHeight * size);
+            this.DiffuseMapWidth = (int)(TerrainData.CHUNK_WIDTH * size);
+            this.DiffuseMapHeight = (int)(TerrainData.CHUNK_HEIGHT * size);
+            this.HeightMapWidth = (int)(TerrainData.CHUNK_WIDTH * size);
+            this.HeightMapHeight = (int)(TerrainData.CHUNK_HEIGHT * size);
             this.TextureSize = size;
         }
 

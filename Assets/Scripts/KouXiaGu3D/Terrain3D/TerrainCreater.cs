@@ -76,7 +76,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static bool IsEmtpyChunk(RectCoord chunkCoord)
         {
-            IEnumerable<CubicHexCoord> cover = TerrainData.GetCover(chunkCoord);
+            IEnumerable<CubicHexCoord> cover = TerrainData.GetChunkCover(chunkCoord);
             try
             {
                 cover.First();
@@ -143,7 +143,7 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             IEnumerable<BakingNode> GetBakingNodes(IMap<CubicHexCoord, TerrainNode> map, RectCoord blockCoord)
             {
-                IEnumerable<CubicHexCoord> cover = TerrainData.GetCover(blockCoord);
+                IEnumerable<CubicHexCoord> cover = TerrainData.GetChunkCover(blockCoord);
                 TerrainNode node;
                 Vector3 pixPoint;
 
