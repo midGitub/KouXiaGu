@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿
 using UnityEngine;
-using UnityEditor;
+using System.Collections.Generic;
+
 
 namespace KouXiaGu.EditorTool
 {
+
+#if UNITY_EDITOR
+
+    using UnityEditor;
 
     [CustomEditor(typeof(CustomInput), true)]
     public class CustomInputEditor : Editor
@@ -56,5 +58,7 @@ namespace KouXiaGu.EditorTool
         }
 
     }
+
+#endif
 
 }
