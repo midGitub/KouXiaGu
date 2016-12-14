@@ -1,44 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
 namespace KouXiaGu
 {
-
-    /// <summary>
-    /// 进行的阶段;
-    /// </summary>
-    public interface IPeriod
-    {
-        /// <summary>
-        /// 代表当前游戏进行的阶段;
-        /// </summary>
-        GameStages Deputy { get; }
-
-        /// <summary>
-        /// 一个瞬时的状态,如保存游戏,和读取游戏;
-        /// 值执行 OnEnter() ,执行完毕后恢复之前的状态;
-        /// </summary>
-        bool Instant { get; }
-
-        /// <summary>
-        /// 是否允许进入当前阶段?允许返回true;
-        /// </summary>
-        bool Premise();
-
-        /// <summary>
-        /// 当进入状态栈时调用;
-        /// </summary>
-        IEnumerator OnEnter();
-
-        /// <summary>
-        /// 当弹出状态栈时调用;
-        /// </summary>
-        IEnumerator OnLeave();
-    }
-
 
     /// <summary>
     /// 游戏阶段初始化器;
@@ -51,15 +17,26 @@ namespace KouXiaGu
         /// </summary>
         static readonly Stack<IPeriod> stageStack = new Stack<IPeriod>();
 
+        /// <summary>
+        /// 保存在栈中的所有状态;
+        /// </summary>
         static GameStages stages = GameStages.Empty;
 
         /// <summary>
-        /// 正在进行的状态;
+        /// 保存在栈中的所有状态;
         /// </summary>
         public static GameStages Stages
         {
             get { return stages; }
             private set { stages = value; }
+        }
+
+        /// <summary>
+        /// 是正在进行状态切换?
+        /// </summary>
+        public static bool IsRunning
+        {
+            get { return Contains(GameStages.Running); }
         }
 
         /// <summary>
@@ -72,7 +49,7 @@ namespace KouXiaGu
 
         public void Add(IPeriod item)
         {
-            if (ContainsStage(GameStages.Running))
+            if (IsRunning)
                 throw new InvalidOperationException("当前状态不允许加入任何状态;");
             if (!item.Premise())
                 throw new PremiseNotInvalidException(item.Deputy + "的前提不满足;");
@@ -89,7 +66,7 @@ namespace KouXiaGu
 
         public void Remove(IPeriod item)
         {
-            if (ContainsStage(GameStages.Running))
+            if (IsRunning)
                 throw new InvalidOperationException("当前状态不允许移除任何状态;");
             if (Activated != item)
                 throw new ArgumentException("与当前激活的状态不符;现有" + Activated.Deputy + "; 请求:" + item.Deputy);
@@ -102,16 +79,16 @@ namespace KouXiaGu
         /// </summary>
         static void EnterInstant(IPeriod item)
         {
-            AddStage(GameStages.Running);
-            AddStage(item.Deputy);
+            Add(GameStages.Running);
+            Add(item.Deputy);
 
             Action<Exception> onError = e => {
                 OnError(item, e);
-                RemoveStage(GameStages.Running);
+                Remove(GameStages.Running);
             };
             Action onCompleted = () => {
-                RemoveStage(GameStages.Running);
-                RemoveStage(item.Deputy);
+                Remove(GameStages.Running);
+                Remove(item.Deputy);
             };
 
             Observable.FromMicroCoroutine(item.OnEnter).
@@ -123,14 +100,14 @@ namespace KouXiaGu
         /// </summary>
         static void Enter(IPeriod item)
         {
-            AddStage(GameStages.Running);
+            Add(GameStages.Running);
 
             Action<Exception> onError = e => {
                 OnError(item, e);
-                RemoveStage(GameStages.Running);
+                Remove(GameStages.Running);
             };
             Action onCompleted = () => {
-                RemoveStage(GameStages.Running);
+                Remove(GameStages.Running);
                 Push(item);
             };
 
@@ -143,14 +120,14 @@ namespace KouXiaGu
         /// </summary>
         static void Leave(IPeriod item)
         {
-            RemoveStage(GameStages.Running);
+            Remove(GameStages.Running);
 
             Action<Exception> onError = e => {
                 OnError(item, e);
-                RemoveStage(GameStages.Running);
+                Remove(GameStages.Running);
             };
             Action onCompleted = () => {
-                RemoveStage(GameStages.Running);
+                Remove(GameStages.Running);
                 Pop(item);
             };
 
@@ -175,30 +152,34 @@ namespace KouXiaGu
         static void Push(IPeriod item)
         {
             stageStack.Push(item);
-            AddStage(item.Deputy);
+            Add(item.Deputy);
         }
 
         /// <summary>
-        /// 弹出栈定元素;
+        /// 弹出栈顶元素;
         /// </summary>
         static void Pop(IPeriod item)
         {
             var value = stageStack.Pop();
-            RemoveStage(item.Deputy);
+            Remove(item.Deputy);
         }
 
+        public static bool Contains(IPeriod item)
+        {
+            return stageStack.Contains(item);
+        }
 
-        static void AddStage(GameStages stage)
+        static void Add(GameStages stage)
         {
             Stages |= stage;
         }
 
-        static void RemoveStage(GameStages stage)
+        static void Remove(GameStages stage)
         {
             Stages &= ~stage;
         }
 
-        static bool ContainsStage(GameStages stage)
+        public static bool Contains(GameStages stage)
         {
             bool contains = (Stages & stage) != GameStages.Empty;
             return contains;
