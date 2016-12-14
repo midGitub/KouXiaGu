@@ -30,7 +30,7 @@ namespace KouXiaGu
         /// <summary>
         /// 按键映射表;
         /// </summary>
-        internal static readonly Dictionary<int, KeyCode> keyMap = 
+        static readonly Dictionary<int, KeyCode> keyMap = 
             Functions.ToDictionary(function => new KeyValuePair<int, KeyCode>((int)function, KeyCode.None));
 
 
@@ -103,7 +103,6 @@ namespace KouXiaGu
             KeyCode keycode = GetKey(function);
             return Input.GetKeyUp(keycode);
         }
-
 
         #region 按键映射储存为XML
 

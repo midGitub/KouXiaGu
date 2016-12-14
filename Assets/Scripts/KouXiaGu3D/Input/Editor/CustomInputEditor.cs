@@ -37,7 +37,7 @@ namespace KouXiaGu.EditorTool
                 {
                     keycode = KeyCode.None;
                 }
-                CustomInput.keyMap[(int)item] = (KeyCode)EditorGUILayout.EnumPopup(item.ToString(), keycode);
+                CustomInput.SetKey(item, (KeyCode)EditorGUILayout.EnumPopup(item.ToString(), keycode));
             }
 
             GUILayout.BeginHorizontal();
