@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形地图保存和提供;
     /// </summary>
-    [CustomEditor]
+    [CustomEditorTool]
     public class TerrainMap : MonoBehaviour
     {
 

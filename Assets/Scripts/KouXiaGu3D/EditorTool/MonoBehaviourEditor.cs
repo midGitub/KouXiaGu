@@ -14,7 +14,7 @@ namespace KouXiaGu
     /// <summary>
     /// 编辑器类,用于重写 MonoBehaviour 的编辑器(仅在存在 CustomEditorAttribute 特性的类上有效);
     /// </summary>
-    [@CustomEditor(typeof(MonoBehaviour), true)]
+    [CustomEditor(typeof(MonoBehaviour), true)]
     public class MonoBehaviourEditor : Editor
     {
         protected MonoBehaviourEditor() { }
@@ -23,7 +23,7 @@ namespace KouXiaGu
 
         public void OnEnable()
         {
-            var editorClass = Attribute.GetCustomAttribute(target.GetType(), typeof(CustomEditorAttribute));
+            var editorClass = Attribute.GetCustomAttribute(target.GetType(), typeof(CustomEditorToolAttribute));
 
             if (editorClass != null)
             {
@@ -58,7 +58,7 @@ namespace KouXiaGu
 
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public sealed class CustomEditorAttribute : Attribute
+    public sealed class CustomEditorToolAttribute : Attribute
     {
 
     }

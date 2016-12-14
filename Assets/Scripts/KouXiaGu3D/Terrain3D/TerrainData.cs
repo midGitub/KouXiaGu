@@ -404,15 +404,44 @@ namespace KouXiaGu.Terrain3D
 
             TerrainData terrainChunk = GetTerrainChunk(coord.ToString());
 
-            terrainChunk.Coord = coord;
-            terrainChunk.DiffuseTexture = diffuse;
-            terrainChunk.HeightTexture = height;
-            terrainChunk.Tessellation = GlobalTessellation;
-            terrainChunk.Displacement = GlobalDisplacement;
+            SetChunk(terrainChunk, coord, diffuse, height);
 
             activatedChunks.Add(coord, terrainChunk);
 
             return terrainChunk;
+        }
+
+        /// <summary>
+        /// 创建地形块到场景,若已经存在,则更新其贴图;
+        /// </summary>
+        public static TerrainData CreateOrUpdate(RectCoord coord, Texture2D diffuse, Texture2D height)
+        {
+            if (diffuse == null || height == null)
+                throw new NullReferenceException("空的贴图!");
+
+            TerrainData chunk;
+
+            if (TryGetChunk(coord, out chunk))
+            {
+                SetChunk(chunk, coord, diffuse, height);
+            }
+            else
+            {
+                chunk = Create(coord, diffuse, height);
+            }
+            return chunk;
+        }
+
+        /// <summary>
+        /// 设置参数到地形块;
+        /// </summary>
+        static void SetChunk(TerrainData chunk, RectCoord coord, Texture2D diffuse, Texture2D height)
+        {
+            chunk.Coord = coord;
+            chunk.DiffuseTexture = diffuse;
+            chunk.HeightTexture = height;
+            chunk.Tessellation = GlobalTessellation;
+            chunk.Displacement = GlobalDisplacement;
         }
 
         /// <summary>

@@ -52,6 +52,8 @@ namespace KouXiaGu.GameScene
         void Update()
         {
             cameraComponent.transform.LookAt(target);
+            cameraComponent.transform.RotateAround(target.position, Vector3.up, 1 * Input.GetAxis("Mouse X"));
+
             Vector3 position = GetCameraPos();
             position.y += Input.GetAxis("Mouse ScrollWheel") * 1f;
 
@@ -79,8 +81,8 @@ namespace KouXiaGu.GameScene
 
         void LateUpdate()
         {
-            cameraComponent.transform.LookAt(target);
-            cameraComponent.transform.RotateAround(target.position, Vector3.up, 1 * Input.GetAxis("Mouse X"));
+            //cameraComponent.transform.LookAt(target);
+            //cameraComponent.transform.RotateAround(target.position, Vector3.up, 1 * Input.GetAxis("Mouse X"));
         }
 
 
