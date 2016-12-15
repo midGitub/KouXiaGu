@@ -7,17 +7,10 @@ namespace KouXiaGu.Initialization
 {
 
     /// <summary>
-    /// 保存游戏状态;
+    /// 保存游戏;
     /// </summary>
-    public class ArchiveStage : StageObservable<Archiver>, IStageObserver<Archiver>
+    public class ArchiveStage : StageObservable<ArchiveFile>, IStageObserver<ArchiveFile>
     {
-        static readonly ArchiveStage instance = new ArchiveStage();
-
-        public static ArchiveStage GetInstance
-        {
-            get { return instance; }
-        }
-
 
         const Stages DEPUTY = Stages.Saving;
         const bool INSTANT = true;
@@ -34,71 +27,92 @@ namespace KouXiaGu.Initialization
 
         public override bool Premise(Stages current)
         {
-            return (current & Stages.Game) > 0;
+            return (current & Stages.Game) > 0 ||
+                archive == null;
         }
 
 
-        static Archiver archive;
+        static ArchiveFile archive;
 
-        protected override Archiver Resource
+        static readonly HashSet<IStageObserver<ArchiveFile>> observerSet = new HashSet<IStageObserver<ArchiveFile>>();
+
+        static readonly ArchiveStage instance = new ArchiveStage();
+
+        protected override ArchiveFile Resource
         {
             get { return archive; }
         }
 
+        protected override IEnumerable<IStageObserver<ArchiveFile>> Observers
+        {
+            get { return observerSet; }
+        }
+
         ArchiveStage()
         {
-            this.Subscribe(this);
+            Subscribe(this);
         }
 
-        IEnumerator IStageObserver<Archiver>.OnEnter(Archiver item)
+        public static bool Subscribe(IStageObserver<ArchiveFile> observer)
         {
-            yield break;
+            return observerSet.Add(observer);
         }
 
-        IEnumerator IStageObserver<Archiver>.OnLeave(Archiver item)
+        public static bool Unsubscribe(IStageObserver<ArchiveFile> observer)
         {
-            yield break;
+            return observerSet.Add(observer);
         }
-
-        IEnumerator IStageObserver<Archiver>.OnEnterRollBack(Archiver item)
-        {
-            yield break;
-        }
-
-        IEnumerator IStageObserver<Archiver>.OnLeaveRollBack(Archiver item)
-        {
-            yield break;
-        }
-
-        void IStageObserver<Archiver>.OnEnterCompleted()
-        {
-            archive.OnComplete();
-        }
-
-        void IStageObserver<Archiver>.OnLeaveCompleted()
-        {
-            return;
-        }
-
 
         /// <summary>
         /// 保存游戏为新的存档;
         /// </summary>
-        public static Archiver Save()
+        public static ArchiveFile Start()
         {
-            Archiver archive = new Archiver();
-            Save(archive);
+            ArchiveFile archive = new ArchiveFile();
+            Start(archive);
             return archive;
         }
 
         /// <summary>
         /// 保存游戏到存档;
         /// </summary>
-        public static void Save(Archiver archive)
+        public static void Start(ArchiveFile archive)
         {
             ArchiveStage.archive = archive;
-            archive.OnSave();
+            archive.Create();
             Initializer.Add(instance);
+        }
+
+
+        IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
+        {
+            yield break;
+        }
+
+        IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
+        {
+            yield break;
+        }
+
+        IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
+        {
+            archive.Destroy();
+            yield break;
+        }
+
+        IEnumerator IStageObserver<ArchiveFile>.OnLeaveRollBack(ArchiveFile item)
+        {
+            yield break;
+        }
+
+        void IStageObserver<ArchiveFile>.OnEnterCompleted()
+        {
+            archive.OnComplete();
+        }
+
+        void IStageObserver<ArchiveFile>.OnLeaveCompleted()
+        {
+            return;
         }
 
     }

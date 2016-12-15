@@ -11,7 +11,7 @@ namespace KouXiaGu.Initialization
 {
 
     [DisallowMultipleComponent, CustomEditorTool]
-    public class TestInitializer : MonoBehaviour, IStageObserver<Archiver>
+    public class TestInitializer : MonoBehaviour, IStageObserver<ArchiveFile>
     {
 
         public int time = 1000;
@@ -24,61 +24,61 @@ namespace KouXiaGu.Initialization
 
         void Awake()
         {
-            ArchiveStage.GetInstance.Subscribe(this);
+            ArchiveStage.Subscribe(this);
         }
 
         [ContextMenu("初始化游戏;")]
         void ON_START()
         {
-            Initializer.Add(StartStage.GetInstance);
+            InitialStage.Start();
         }
 
         [ContextMenu("进行游戏;")]
         void ON_GAME()
         {
-            Initializer.Add(GameStage.GetInstance);
+            GameStage.Start(new ArchiveFile());
         }
 
         [ContextMenu("进行存档;")]
         void ON_SAVE()
         {
-            ArchiveStage.Save();
+            ArchiveStage.Start();
         }
 
-        IEnumerator IStageObserver<Archiver>.OnEnter(Archiver item)
+        IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
         {
             while (time != 0)
             {
                 time--;
                 yield return null;
             }
-
+            throw new Exception("妈妈");
             Directory.CreateDirectory(Path.Combine(item.DirectoryPath, "123"));
             yield break;
         }
 
-        IEnumerator IStageObserver<Archiver>.OnLeave(Archiver item)
+        IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerator IStageObserver<Archiver>.OnEnterRollBack(Archiver item)
+        IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
         {
             Debug.Log("OnEnterRollBack");
             yield break;
         }
 
-        IEnumerator IStageObserver<Archiver>.OnLeaveRollBack(Archiver item)
+        IEnumerator IStageObserver<ArchiveFile>.OnLeaveRollBack(ArchiveFile item)
         {
             throw new NotImplementedException();
         }
 
-        void IStageObserver<Archiver>.OnEnterCompleted()
+        void IStageObserver<ArchiveFile>.OnEnterCompleted()
         {
             Debug.Log("OnEnterCompleted");
         }
 
-        void IStageObserver<Archiver>.OnLeaveCompleted()
+        void IStageObserver<ArchiveFile>.OnLeaveCompleted()
         {
             throw new NotImplementedException();
         }

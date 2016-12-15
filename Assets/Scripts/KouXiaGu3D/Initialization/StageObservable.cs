@@ -5,28 +5,30 @@ using System.Collections.Generic;
 namespace KouXiaGu.Initialization
 {
 
-
+    /// <summary>
+    /// 阶段切换方法抽象类;
+    /// </summary>
     public abstract class StageObservable<T> : IPeriod
     {
 
-        readonly HashSet<IStageObserver<T>> observerSet = new HashSet<IStageObserver<T>>();
         readonly CoroutineList<IStageObserver<T>> coroutineList = new CoroutineList<IStageObserver<T>>();
 
         public abstract Stages Deputy { get; }
         public abstract bool Instant { get; }
         protected abstract T Resource { get; }
+        protected abstract IEnumerable<IStageObserver<T>> Observers { get; }
 
         public abstract bool Premise(Stages current);
 
-        public bool Subscribe(IStageObserver<T> observer)
-        {
-            return observerSet.Add(observer);
-        }
+        //public bool _Subscribe(IStageObserver<T> observer)
+        //{
+        //    return Observers.Add(observer);
+        //}
 
-        public bool Unsubscribe(IStageObserver<T> observer)
-        {
-            return observerSet.Remove(observer);
-        }
+        //public bool _Unsubscribe(IStageObserver<T> observer)
+        //{
+        //    return Observers.Remove(observer);
+        //}
 
         IEnumerator IPeriod.OnEnter()
         {
@@ -52,7 +54,7 @@ namespace KouXiaGu.Initialization
             Action<IStageObserver<T>> completed)
         {
             Exception error = null;
-            coroutineList.SetCoroutines(observerSet, next);
+            coroutineList.SetCoroutines(Observers, next);
 
             while (coroutineList.WaitCount > 0)
             {
@@ -64,8 +66,9 @@ namespace KouXiaGu.Initialization
                 catch (Exception e)
                 {
                     error = e;
-                    var completes = coroutineList.GetCompletes();
+                    var completes = coroutineList.GetCompletesAndCurrent();
                     coroutineList.SetCoroutines(completes, rollBack);
+                    continue;
                 }
 
                 if (moveNext)
@@ -84,7 +87,7 @@ namespace KouXiaGu.Initialization
             }
             else
             {
-                foreach (var observer in observerSet)
+                foreach (var observer in Observers)
                 {
                     completed(observer);
                 }
@@ -93,7 +96,5 @@ namespace KouXiaGu.Initialization
         }
 
     }
-
-
 
 }

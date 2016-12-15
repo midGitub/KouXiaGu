@@ -9,7 +9,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏阶段初始化器;
     /// </summary>
-    public class Initializer
+    public static class Initializer
     {
 
         /// <summary>
@@ -85,6 +85,7 @@ namespace KouXiaGu.Initialization
             Action<Exception> onError = e => {
                 OnError(item, e);
                 Remove(Stages.Running);
+                Remove(item.Deputy);
             };
             Action onCompleted = () => {
                 Remove(Stages.Running);
@@ -160,7 +161,7 @@ namespace KouXiaGu.Initialization
         /// </summary>
         static void Pop(IPeriod item)
         {
-            var value = stageStack.Pop();
+            stageStack.Pop();
             Remove(item.Deputy);
         }
 

@@ -110,9 +110,9 @@ namespace KouXiaGu.Initialization
         }
 
         /// <summary>
-        /// 获取到所有正在等待中的任务;
+        /// 获取到所有正在等待中的任务和当前正在执行的任务;
         /// </summary>
-        public KeyValuePair<T, IEnumerator>[] GetWaits()
+        public KeyValuePair<T, IEnumerator>[] GetWaitsAndCurrent()
         {
             int waitCount = WaitCount;
             KeyValuePair<T, IEnumerator>[] waits = new KeyValuePair<T, IEnumerator>[waitCount];
@@ -126,6 +126,17 @@ namespace KouXiaGu.Initialization
         public KeyValuePair<T, IEnumerator>[] GetCompletes()
         {
             int completeCount = CompleteCount;
+            KeyValuePair<T, IEnumerator>[] completes = new KeyValuePair<T, IEnumerator>[completeCount];
+            coroutineList.CopyTo(0, completes, 0, completeCount);
+            return completes;
+        }
+
+        /// <summary>
+        /// 获取到所有已经完成的任务和当前正在执行的任务;
+        /// </summary>
+        public KeyValuePair<T, IEnumerator>[] GetCompletesAndCurrent()
+        {
+            int completeCount = CompleteCount + 1;
             KeyValuePair<T, IEnumerator>[] completes = new KeyValuePair<T, IEnumerator>[completeCount];
             coroutineList.CopyTo(0, completes, 0, completeCount);
             return completes;

@@ -20,7 +20,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 起始场景\界面;
         /// </summary>
-        Start = 2,
+        Initial = 2,
 
         /// <summary>
         /// 游戏进行中;

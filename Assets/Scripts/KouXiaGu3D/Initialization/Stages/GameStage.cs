@@ -11,15 +11,8 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏初始化,通过存档初始化游戏;
     /// </summary>
-    public class GameStage : StageObservable<Archiver>
+    public class GameStage : StageObservable<ArchiveFile>
     {
-        static readonly GameStage instance = new GameStage();
-
-        public static GameStage GetInstance
-        {
-            get { return instance; }
-        }
-
 
         const Stages DEPUTY = Stages.Game;
         const bool INSTANT = false;
@@ -36,15 +29,25 @@ namespace KouXiaGu.Initialization
 
         public override bool Premise(Stages current)
         {
-            return (current & DEPUTY) == 0;
+            return (current & DEPUTY) == 0 ||
+                archive == null;
         }
 
 
-        static Archiver archive;
+        static ArchiveFile archive;
 
-        protected override Archiver Resource
+        static readonly HashSet<IStageObserver<ArchiveFile>> observerSet = new HashSet<IStageObserver<ArchiveFile>>();
+
+        static readonly GameStage instance = new GameStage();
+
+        protected override ArchiveFile Resource
         {
             get { return archive; }
+        }
+
+        protected override IEnumerable<IStageObserver<ArchiveFile>> Observers
+        {
+            get { return observerSet; }
         }
 
         GameStage()
@@ -52,6 +55,21 @@ namespace KouXiaGu.Initialization
 
         }
 
+        public static bool Subscribe(IStageObserver<ArchiveFile> observer)
+        {
+            return observerSet.Add(observer);
+        }
+
+        public static bool Unsubscribe(IStageObserver<ArchiveFile> observer)
+        {
+            return observerSet.Remove(observer);
+        }
+
+        public static void Start(ArchiveFile archive)
+        {
+            GameStage.archive = archive;
+            Initializer.Add(instance);
+        }
 
     }
 

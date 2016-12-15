@@ -8,7 +8,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏存档管理;
     /// </summary>
-    public class Archiver
+    public class ArchiveFile
     {
 
         /// <summary>
@@ -57,11 +57,11 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 获取到所有的存档路径;
         /// </summary>
-        public static IEnumerable<Archiver> GetArchives()
+        public static IEnumerable<ArchiveFile> GetArchives()
         {
             foreach (var path in GetArchivedPaths())
             {
-                yield return new Archiver(path);
+                yield return new ArchiveFile(path);
             }
         }
 
@@ -75,23 +75,31 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 创建一个新的存档;
         /// </summary>
-        public Archiver()
+        public ArchiveFile()
         {
             DirectoryPath = Path.Combine(ArchivesPath, GetRandomDirectoryName());
         }
 
-        Archiver(string directoryPath)
+        ArchiveFile(string directoryPath)
         {
             this.DirectoryPath = directoryPath;
         }
 
         /// <summary>
-        /// 开始保存调用;
+        /// 创建存档目录到磁盘;
         /// </summary>
-        public void OnSave()
+        public void Create()
         {
             if (!Directory.Exists(DirectoryPath))
                 Directory.CreateDirectory(DirectoryPath);
+        }
+
+        /// <summary>
+        /// 销毁磁盘上的存档内容;
+        /// </summary>
+        public void Destroy()
+        {
+            throw new System.Exception();
         }
 
         /// <summary>

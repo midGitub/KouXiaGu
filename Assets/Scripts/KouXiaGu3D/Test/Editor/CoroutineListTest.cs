@@ -45,7 +45,7 @@ namespace KouXiaGu.Test
             CoroutineList<Unit> list = GetCoroutineList();
 
             list.MoveNext();
-            var waits = list.GetWaits();
+            var waits = list.GetWaitsAndCurrent();
             Assert.AreEqual(unitArray.Length - 1, waits.Length);
 
             int index = 1;
