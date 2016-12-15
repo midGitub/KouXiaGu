@@ -47,7 +47,7 @@ namespace KouXiaGu.Initialization
             get { return stageStack.Peek(); }
         }
 
-        public void Add(IPeriod item)
+        public static void Add(IPeriod item)
         {
             if (IsRunning)
                 throw new InvalidOperationException("当前状态不允许加入任何状态;");
@@ -64,7 +64,7 @@ namespace KouXiaGu.Initialization
             }
         }
 
-        public void Remove(IPeriod item)
+        public static void Remove(IPeriod item)
         {
             if (IsRunning)
                 throw new InvalidOperationException("当前状态不允许移除任何状态;");
@@ -73,9 +73,6 @@ namespace KouXiaGu.Initialization
 
             Leave(item);
         }
-
-
-        static IDisposable disposable;
 
         /// <summary>
         /// 执行中为 Running 和 其状态 ,执行完毕后移除 Running 和 其状态;
@@ -94,10 +91,8 @@ namespace KouXiaGu.Initialization
                 Remove(item.Deputy);
             };
 
-            IAsyncOperate async = item.OnEnter();
-
-            disposable = Observable.EveryUpdate().
-                Subscribe(_ => OnNext(async, onError, onCompleted));
+            Observable.FromMicroCoroutine(item.OnEnter).
+                Subscribe(OnNext, onError, onCompleted);
         }
 
         /// <summary>
@@ -116,9 +111,8 @@ namespace KouXiaGu.Initialization
                 Push(item);
             };
 
-            IAsyncOperate async = item.OnEnter();
-            disposable = Observable.EveryUpdate().
-                Subscribe(_ => OnNext(async, onError, onCompleted));
+            Observable.FromMicroCoroutine(item.OnEnter).
+              Subscribe(OnNext, onError, onCompleted);
         }
 
         /// <summary>
@@ -137,25 +131,13 @@ namespace KouXiaGu.Initialization
                 Pop(item);
             };
 
-            IAsyncOperate async = item.OnLeave();
-            disposable = Observable.EveryUpdate().
-                Subscribe(_ => OnNext(async, onError, onCompleted));
+            Observable.FromMicroCoroutine(item.OnEnter).
+             Subscribe(OnNext, onError, onCompleted);
         }
 
-        static void OnNext(IAsyncOperate async, Action<Exception> onError, Action onCompleted)
-        {
-            if (async.IsCompleted)
-            {
-                if (async.IsError)
-                {
-                    onError(async.Error);
-                    disposable.Dispose();
-                    return;
-                }
 
-                onCompleted();
-                disposable.Dispose();
-            }
+        static void OnNext(Unit unit)
+        {
         }
 
         static void OnError(IPeriod item, Exception e)
