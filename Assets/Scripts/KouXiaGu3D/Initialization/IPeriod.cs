@@ -11,7 +11,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 代表当前游戏进行的阶段;
         /// </summary>
-        GameStages Deputy { get; }
+        Stages Deputy { get; }
 
         /// <summary>
         /// 一个瞬时的状态,如保存游戏,和读取游戏;
@@ -22,7 +22,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 是否允许进入当前阶段?允许返回true;
         /// </summary>
-        bool Premise();
+        bool Premise(Stages current);
 
         /// <summary>
         /// 当进入状态栈时调用;

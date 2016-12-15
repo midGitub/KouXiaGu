@@ -4,7 +4,7 @@ namespace KouXiaGu.Initialization
 {
 
     [Flags]
-    public enum GameStages
+    public enum Stages
     {
 
         /// <summary>

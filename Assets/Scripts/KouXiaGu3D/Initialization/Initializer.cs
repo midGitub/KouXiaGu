@@ -20,12 +20,12 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 保存在栈中的所有状态;
         /// </summary>
-        static GameStages stages = GameStages.Empty;
+        static Stages stages = Stages.Empty;
 
         /// <summary>
         /// 保存在栈中的所有状态;
         /// </summary>
-        public static GameStages Stages
+        public static Stages Stages
         {
             get { return stages; }
             private set { stages = value; }
@@ -36,7 +36,7 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public static bool IsRunning
         {
-            get { return Contains(GameStages.Running); }
+            get { return Contains(Stages.Running); }
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace KouXiaGu.Initialization
         {
             if (IsRunning)
                 throw new InvalidOperationException("当前状态不允许加入任何状态;");
-            if (!item.Premise())
+            if (!item.Premise(Stages))
                 throw new PremiseNotInvalidException(item.Deputy + "的前提不满足;");
 
             if (item.Instant)
@@ -79,15 +79,15 @@ namespace KouXiaGu.Initialization
         /// </summary>
         static void EnterInstant(IPeriod item)
         {
-            Add(GameStages.Running);
+            Add(Stages.Running);
             Add(item.Deputy);
 
             Action<Exception> onError = e => {
                 OnError(item, e);
-                Remove(GameStages.Running);
+                Remove(Stages.Running);
             };
             Action onCompleted = () => {
-                Remove(GameStages.Running);
+                Remove(Stages.Running);
                 Remove(item.Deputy);
             };
 
@@ -100,14 +100,14 @@ namespace KouXiaGu.Initialization
         /// </summary>
         static void Enter(IPeriod item)
         {
-            Add(GameStages.Running);
+            Add(Stages.Running);
 
             Action<Exception> onError = e => {
                 OnError(item, e);
-                Remove(GameStages.Running);
+                Remove(Stages.Running);
             };
             Action onCompleted = () => {
-                Remove(GameStages.Running);
+                Remove(Stages.Running);
                 Push(item);
             };
 
@@ -120,14 +120,14 @@ namespace KouXiaGu.Initialization
         /// </summary>
         static void Leave(IPeriod item)
         {
-            Remove(GameStages.Running);
+            Remove(Stages.Running);
 
             Action<Exception> onError = e => {
                 OnError(item, e);
-                Remove(GameStages.Running);
+                Remove(Stages.Running);
             };
             Action onCompleted = () => {
-                Remove(GameStages.Running);
+                Remove(Stages.Running);
                 Pop(item);
             };
 
@@ -169,19 +169,19 @@ namespace KouXiaGu.Initialization
             return stageStack.Contains(item);
         }
 
-        static void Add(GameStages stage)
+        static void Add(Stages stage)
         {
             Stages |= stage;
         }
 
-        static void Remove(GameStages stage)
+        static void Remove(Stages stage)
         {
             Stages &= ~stage;
         }
 
-        public static bool Contains(GameStages stage)
+        public static bool Contains(Stages stage)
         {
-            bool contains = (Stages & stage) != GameStages.Empty;
+            bool contains = (Stages & stage) != Stages.Empty;
             return contains;
         }
 

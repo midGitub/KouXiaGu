@@ -10,29 +10,29 @@ namespace KouXiaGu.Initialization
 {
 
     [DisallowMultipleComponent, CustomEditorTool]
-    public class TestInitializer : MonoBehaviour, IPreservable
+    public class TestInitializer : MonoBehaviour, IStageEnter<Archiver>
     {
 
         public int time = 1000;
 
         [ShowOnlyProperty]
-        GameStages Stages
+        Stages Stages
         {
             get { return Initializer.Stages; }
         }
 
         void Awake()
         {
-            ArchiveStages.Subscribe(this);
+            ArchiveStage.GetInstance.Subscribe(this);
         }
 
         [ContextMenu("进行存档;")]
         void ON_SAVE()
         {
-            ArchiveStages.Save();
+            ArchiveStage.Save();
         }
 
-        public IEnumerator OnSave(Archiver archive)
+        public IEnumerator OnEnter(Archiver archive)
         {
             while (time != 0)
             {
