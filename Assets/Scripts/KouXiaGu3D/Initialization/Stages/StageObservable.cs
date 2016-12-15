@@ -1,110 +1,22 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace KouXiaGu.Initialization
 {
 
 
-    /// <summary>
-    /// 存在进入和离开的阶段;
-    /// </summary>
     public abstract class StageObservable<T> : IPeriod
     {
-        const bool INSTANT = false;
 
         readonly HashSet<IStageObserver<T>> observerSet = new HashSet<IStageObserver<T>>();
-        readonly Queue<IEnumerator> coroutineQueue = new Queue<IEnumerator>();
+        readonly CoroutineList<IStageObserver<T>> coroutineList = new CoroutineList<IStageObserver<T>>();
 
+        public abstract Stages Deputy { get; }
+        public abstract bool Instant { get; }
         protected abstract T Resource { get; }
-        protected abstract Stages Deputy { get; }
-        protected abstract bool Premise(Stages current);
 
-        /// <summary>
-        /// 当成功进入到这个状态时调用;
-        /// </summary>
-        protected abstract void LastEnter();
-
-        Stages IPeriod.Deputy
-        {
-            get { return Deputy; }
-        }
-
-        bool IPeriod.Instant
-        {
-            get { return INSTANT; }
-        }
-
-        bool IPeriod.Premise(Stages current)
-        {
-            return Premise(current);
-        }
-
-        IEnumerator IPeriod.OnEnter()
-        {
-            IEnumerator coroutine;
-            Queue<IEnumerator> coroutineQueue = GetEnterCoroutineQueue();
-
-            while (coroutineQueue.Count != 0)
-            {
-                coroutine = coroutineQueue.Dequeue();
-
-                while (coroutine.MoveNext())
-                {
-                    yield return null;
-                }
-            }
-
-            LastEnter();
-            yield break;
-        }
-
-        Queue<IEnumerator> GetEnterCoroutineQueue()
-        {
-            IEnumerator coroutine;
-            coroutineQueue.Clear();
-
-            foreach (var observer in observerSet)
-            {
-                coroutine = observer.OnEnter(Resource);
-                coroutineQueue.Enqueue(coroutine);
-            }
-
-            return coroutineQueue;
-        }
-
-
-        IEnumerator IPeriod.OnLeave()
-        {
-            IEnumerator coroutine;
-            Queue<IEnumerator> coroutineQueue = GetLeaveCoroutineQueue();
-
-            while (coroutineQueue.Count != 0)
-            {
-                coroutine = coroutineQueue.Dequeue();
-
-                while (coroutine.MoveNext())
-                {
-                    yield return null;
-                }
-            }
-
-            yield break;
-        }
-
-        Queue<IEnumerator> GetLeaveCoroutineQueue()
-        {
-            IEnumerator coroutine;
-            coroutineQueue.Clear();
-
-            foreach (var observer in observerSet)
-            {
-                coroutine = observer.OnLeave(Resource);
-                coroutineQueue.Enqueue(coroutine);
-            }
-
-            return coroutineQueue;
-        }
-
+        public abstract bool Premise(Stages current);
 
         public bool Subscribe(IStageObserver<T> observer)
         {
@@ -116,6 +28,72 @@ namespace KouXiaGu.Initialization
             return observerSet.Remove(observer);
         }
 
+        IEnumerator IPeriod.OnEnter()
+        {
+            Func<IStageObserver<T>, IEnumerator> onNext = observer => observer.OnEnter(Resource);
+            Func<IStageObserver<T>, IEnumerator> onRollBack = observer => observer.OnEnterRollBack(Resource);
+            Action<IStageObserver<T>> completed = observer => observer.OnEnterCompleted();
+
+            return OnNext(onNext, onRollBack, completed);
+        }
+
+        IEnumerator IPeriod.OnLeave()
+        {
+            Func<IStageObserver<T>, IEnumerator> onNext = observer => observer.OnLeave(Resource);
+            Func<IStageObserver<T>, IEnumerator> onRollBack = observer => observer.OnLeaveRollBack(Resource);
+            Action<IStageObserver<T>> completed = observer => observer.OnLeaveCompleted();
+
+            return OnNext(onNext, onRollBack, completed);
+        }
+
+        IEnumerator OnNext(
+            Func<IStageObserver<T>, IEnumerator> next,
+            Func<IStageObserver<T>, IEnumerator> rollBack,
+            Action<IStageObserver<T>> completed)
+        {
+            Exception error = null;
+            coroutineList.SetCoroutines(observerSet, next);
+
+            while (coroutineList.WaitCount > 0)
+            {
+                bool moveNext = false;
+                try
+                {
+                    moveNext = coroutineList.Coroutine.MoveNext();
+                }
+                catch (Exception e)
+                {
+                    error = e;
+                    var completes = coroutineList.GetCompletes();
+                    coroutineList.SetCoroutines(completes, rollBack);
+                }
+
+                if (moveNext)
+                {
+                    yield return null;
+                }
+                else
+                {
+                    coroutineList.MoveNext();
+                }
+            }
+
+            if (error != null)
+            {
+                throw error;
+            }
+            else
+            {
+                foreach (var observer in observerSet)
+                {
+                    completed(observer);
+                }
+            }
+            yield break;
+        }
+
     }
+
+
 
 }

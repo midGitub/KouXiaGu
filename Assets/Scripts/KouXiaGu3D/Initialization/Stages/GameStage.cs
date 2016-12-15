@@ -13,8 +13,6 @@ namespace KouXiaGu.Initialization
     /// </summary>
     public class GameStage : StageObservable<Archiver>
     {
-        GameStage() { }
-
         static readonly GameStage instance = new GameStage();
 
         public static GameStage GetInstance
@@ -24,28 +22,37 @@ namespace KouXiaGu.Initialization
 
 
         const Stages DEPUTY = Stages.Game;
+        const bool INSTANT = false;
 
-        static Archiver archive;
-
-        protected override Stages Deputy
+        public override Stages Deputy
         {
             get { return DEPUTY; }
         }
+
+        public override bool Instant
+        {
+            get { return INSTANT; }
+        }
+
+        public override bool Premise(Stages current)
+        {
+            return (current & DEPUTY) == 0;
+        }
+
+
+        static Archiver archive;
 
         protected override Archiver Resource
         {
             get { return archive; }
         }
 
-        protected override void LastEnter()
+        GameStage()
         {
-            return;
+
         }
 
-        protected override bool Premise(Stages current)
-        {
-            return (current & DEPUTY) == 0;
-        }
+
     }
 
 }

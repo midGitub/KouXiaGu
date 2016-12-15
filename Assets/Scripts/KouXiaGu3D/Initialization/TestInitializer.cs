@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.Initialization
 {
 
     [DisallowMultipleComponent, CustomEditorTool]
-    public class TestInitializer : MonoBehaviour, IStageEnter<Archiver>
+    public class TestInitializer : MonoBehaviour, IStageObserver<Archiver>
     {
 
         public int time = 1000;
@@ -44,8 +45,7 @@ namespace KouXiaGu.Initialization
             ArchiveStage.Save();
         }
 
-
-        public IEnumerator OnEnter(Archiver archive)
+        IEnumerator IStageObserver<Archiver>.OnEnter(Archiver item)
         {
             while (time != 0)
             {
@@ -53,8 +53,34 @@ namespace KouXiaGu.Initialization
                 yield return null;
             }
 
-            Directory.CreateDirectory(Path.Combine(archive.DirectoryPath, "123"));
+            Directory.CreateDirectory(Path.Combine(item.DirectoryPath, "123"));
             yield break;
+        }
+
+        IEnumerator IStageObserver<Archiver>.OnLeave(Archiver item)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IStageObserver<Archiver>.OnEnterRollBack(Archiver item)
+        {
+            Debug.Log("OnEnterRollBack");
+            yield break;
+        }
+
+        IEnumerator IStageObserver<Archiver>.OnLeaveRollBack(Archiver item)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IStageObserver<Archiver>.OnEnterCompleted()
+        {
+            Debug.Log("OnEnterCompleted");
+        }
+
+        void IStageObserver<Archiver>.OnLeaveCompleted()
+        {
+            throw new NotImplementedException();
         }
 
     }

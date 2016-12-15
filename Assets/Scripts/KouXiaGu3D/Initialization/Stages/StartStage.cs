@@ -11,7 +11,6 @@ namespace KouXiaGu.Initialization
     /// </summary>
     public class StartStage : StageObservable<object>
     {
-        StartStage() { }
 
         static readonly StartStage instance = new StartStage();
 
@@ -22,25 +21,32 @@ namespace KouXiaGu.Initialization
 
 
         const Stages DEPUTY = Stages.Start;
+        const bool INSTANT = true;
 
-        protected override Stages Deputy
+        public override Stages Deputy
         {
             get { return DEPUTY; }
         }
+
+        public override bool Instant
+        {
+            get { return INSTANT; }
+        }
+
+        public override bool Premise(Stages current)
+        {
+            return (current & DEPUTY) == 0;
+        }
+
 
         protected override object Resource
         {
             get { return null; }
         }
 
-        protected override void LastEnter()
+        StartStage()
         {
-            return;
-        }
 
-        protected override bool Premise(Stages current)
-        {
-            return (current & DEPUTY) == 0;
         }
 
     }
