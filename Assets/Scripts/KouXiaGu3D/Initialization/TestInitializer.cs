@@ -26,11 +26,24 @@ namespace KouXiaGu.Initialization
             ArchiveStage.GetInstance.Subscribe(this);
         }
 
+        [ContextMenu("初始化游戏;")]
+        void ON_START()
+        {
+            Initializer.Add(StartStage.GetInstance);
+        }
+
+        [ContextMenu("进行游戏;")]
+        void ON_GAME()
+        {
+            Initializer.Add(GameStage.GetInstance);
+        }
+
         [ContextMenu("进行存档;")]
         void ON_SAVE()
         {
             ArchiveStage.Save();
         }
+
 
         public IEnumerator OnEnter(Archiver archive)
         {

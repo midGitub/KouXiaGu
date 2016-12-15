@@ -11,15 +11,19 @@ namespace KouXiaGu.Initialization
     /// </summary>
     public class ArchiveStage : InstantObservable<Archiver>
     {
-        const Stages DEPUTY = Stages.Saving;
+        ArchiveStage() { }
 
         static readonly ArchiveStage instance = new ArchiveStage();
-        static Archiver archive;
 
         public static ArchiveStage GetInstance
         {
             get { return instance; }
         }
+
+
+        const Stages DEPUTY = Stages.Saving;
+
+        static Archiver archive;
 
         protected override Stages Deputy
         {
@@ -38,7 +42,7 @@ namespace KouXiaGu.Initialization
 
         protected override bool Premise(Stages current)
         {
-            return current == Stages.Game;
+            return (current & Stages.Game) > 0;
         }
 
         /// <summary>

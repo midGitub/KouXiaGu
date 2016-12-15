@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,34 +6,31 @@ using System.Text;
 namespace KouXiaGu.Initialization
 {
 
-
     /// <summary>
-    /// 游戏初始化,通过存档初始化游戏;
+    /// 游戏起始界面;
     /// </summary>
-    public class GameStage : StageObservable<Archiver>
+    public class StartStage : StageObservable<object>
     {
-        GameStage() { }
+        StartStage() { }
 
-        static readonly GameStage instance = new GameStage();
+        static readonly StartStage instance = new StartStage();
 
-        public static GameStage GetInstance
+        public static StartStage GetInstance
         {
             get { return instance; }
         }
 
 
-        const Stages DEPUTY = Stages.Game;
-
-        static Archiver archive;
+        const Stages DEPUTY = Stages.Start;
 
         protected override Stages Deputy
         {
             get { return DEPUTY; }
         }
 
-        protected override Archiver Resource
+        protected override object Resource
         {
-            get { return archive; }
+            get { return null; }
         }
 
         protected override void LastEnter()
@@ -46,6 +42,7 @@ namespace KouXiaGu.Initialization
         {
             return (current & DEPUTY) == 0;
         }
+
     }
 
 }

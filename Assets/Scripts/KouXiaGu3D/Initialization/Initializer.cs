@@ -9,7 +9,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏阶段初始化器;
     /// </summary>
-    public static class Initializer
+    public class Initializer
     {
 
         /// <summary>
@@ -184,6 +184,7 @@ namespace KouXiaGu.Initialization
             bool contains = (Stages & stage) != Stages.Empty;
             return contains;
         }
+
 
     }
 

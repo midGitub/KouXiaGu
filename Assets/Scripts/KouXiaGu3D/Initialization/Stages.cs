@@ -18,9 +18,9 @@ namespace KouXiaGu.Initialization
         Running = 1,
 
         /// <summary>
-        /// 开始界面;
+        /// 起始场景\界面;
         /// </summary>
-        StartScreen = 2,
+        Start = 2,
 
         /// <summary>
         /// 游戏进行中;
