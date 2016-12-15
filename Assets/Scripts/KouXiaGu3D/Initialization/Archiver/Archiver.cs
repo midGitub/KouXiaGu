@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UniRx;
 
 namespace KouXiaGu.Initialization
 {
@@ -88,6 +83,15 @@ namespace KouXiaGu.Initialization
         Archiver(string directoryPath)
         {
             this.DirectoryPath = directoryPath;
+        }
+
+        /// <summary>
+        /// 开始保存调用;
+        /// </summary>
+        public void OnSave()
+        {
+            if (!Directory.Exists(DirectoryPath))
+                Directory.CreateDirectory(DirectoryPath);
         }
 
         /// <summary>

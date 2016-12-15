@@ -1,14 +1,13 @@
 ﻿
+#if UNITY_EDITOR
+
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor;
 
 
 namespace KouXiaGu.EditorTool
 {
-
-#if UNITY_EDITOR
-
-    using UnityEditor;
 
     [CustomEditor(typeof(CustomInput), true)]
     public class CustomInputEditor : Editor
@@ -59,6 +58,8 @@ namespace KouXiaGu.EditorTool
 
     }
 
+}
+
+
 #endif
 
-}

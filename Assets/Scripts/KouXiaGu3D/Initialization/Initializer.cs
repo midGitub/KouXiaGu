@@ -9,7 +9,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏阶段初始化器;
     /// </summary>
-    public class Initializer
+    public static class Initializer
     {
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace KouXiaGu.Initialization
             if (!item.Premise())
                 throw new PremiseNotInvalidException(item.Deputy + "的前提不满足;");
 
-            if (Activated.Instant)
+            if (item.Instant)
             {
                 EnterInstant(item);
             }

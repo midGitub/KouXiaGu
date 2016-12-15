@@ -7,6 +7,9 @@ using System.Text;
 namespace KouXiaGu.Initialization
 {
 
+    /// <summary>
+    /// 保存游戏状态;
+    /// </summary>
     public class ArchiveStages : IPeriod
     {
         ArchiveStages() { }
@@ -41,6 +44,7 @@ namespace KouXiaGu.Initialization
         {
             IEnumerator coroutine;
             Queue<IEnumerator> coroutineQueue = InitCoroutineQueue();
+            archive.OnSave();
 
             while (coroutineQueue.Count != 0)
             {
