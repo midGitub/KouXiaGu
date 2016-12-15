@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace KouXiaGu.Initialization
 {
@@ -19,16 +20,6 @@ namespace KouXiaGu.Initialization
         protected abstract IEnumerable<IStageObserver<T>> Observers { get; }
 
         public abstract bool Premise(Stages current);
-
-        //public bool _Subscribe(IStageObserver<T> observer)
-        //{
-        //    return Observers.Add(observer);
-        //}
-
-        //public bool _Unsubscribe(IStageObserver<T> observer)
-        //{
-        //    return Observers.Remove(observer);
-        //}
 
         IEnumerator IPeriod.OnEnter()
         {
@@ -65,10 +56,18 @@ namespace KouXiaGu.Initialization
                 }
                 catch (Exception e)
                 {
-                    error = e;
-                    var completes = coroutineList.GetCompletesAndCurrent();
-                    coroutineList.SetCoroutines(completes, rollBack);
-                    continue;
+                    if (error == null)
+                    {
+                        error = e;
+                        var completes = coroutineList.GetCompletesAndCurrent();
+                        coroutineList.SetCoroutines(completes, rollBack);
+                        continue;
+                    }
+                    else
+                    {
+                        Debug.LogError("回滚时出现错误,跳过这个回滚;\n" + coroutineList.Item.ToString() + "\n" + e);
+                        coroutineList.MoveNext();
+                    }
                 }
 
                 if (moveNext)

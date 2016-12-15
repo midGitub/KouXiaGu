@@ -60,6 +60,14 @@ namespace KouXiaGu.Initialization
             get { return coroutineList[Pointer].Value; }
         }
 
+        /// <summary>
+        /// 当前指向的元素,若不存在则为NULL;
+        /// </summary>
+        public T Item
+        {
+            get { return coroutineList[Pointer].Key; }
+        }
+
         public CoroutineList()
         {
             coroutineList = new List<KeyValuePair<T, IEnumerator>>();
