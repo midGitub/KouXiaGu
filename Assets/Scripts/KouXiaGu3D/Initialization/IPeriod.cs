@@ -27,12 +27,12 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 当进入状态栈时调用;
         /// </summary>
-        IEnumerator OnEnter();
+        IAsyncOperate OnEnter();
 
         /// <summary>
         /// 当弹出状态栈时调用;
         /// </summary>
-        IEnumerator OnLeave();
+        IAsyncOperate OnLeave();
     }
 
 

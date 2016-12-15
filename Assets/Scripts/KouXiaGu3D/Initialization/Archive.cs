@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.Initialization
 {
@@ -14,7 +15,7 @@ namespace KouXiaGu.Initialization
     /// </summary>
     public interface IPreservable
     {
-        IEnumerator OnSave(Archive archive);
+        IAsyncOperate OnSave(Archive archive);
     }
 
     /// <summary>
@@ -103,14 +104,44 @@ namespace KouXiaGu.Initialization
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// 从这个存档初始化游戏;
-        /// </summary>
-        public static void Load(Archive archive)
-        {
-            throw new NotImplementedException();
-        }
 
+        class ArchiveStages : Initializer
+        {
+            const GameStages DEPUTY = GameStages.Saving;
+            const bool INSTANT = true;
+
+            public GameStages Deputy
+            {
+                get { return DEPUTY; }
+            }
+
+            public bool Instant
+            {
+                get { return INSTANT; }
+            }
+
+            public bool Premise()
+            {
+                return Stages == GameStages.Game;
+            }
+
+            public IAsyncOperate OnEnter()
+            {
+                throw new NotImplementedException();
+            }
+
+            public IAsyncOperate OnLeave()
+            {
+                throw new NotImplementedException();
+            }
+
+
+            public IDisposable Subscribe(IPreservable observer)
+            {
+                throw new NotImplementedException();
+            }
+
+        }
 
 
         #region 实例部分;
@@ -128,11 +159,6 @@ namespace KouXiaGu.Initialization
         Archive(string directoryPath)
         {
             this.DirectoryPath = directoryPath;
-        }
-
-        public string Combine(string fileName)
-        {
-            return Path.Combine(DirectoryPath, fileName);
         }
 
         #endregion

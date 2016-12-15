@@ -74,6 +74,9 @@ namespace KouXiaGu.Initialization
             Leave(item);
         }
 
+
+        static IDisposable disposable;
+
         /// <summary>
         /// 执行中为 Running 和 其状态 ,执行完毕后移除 Running 和 其状态;
         /// </summary>
@@ -91,8 +94,10 @@ namespace KouXiaGu.Initialization
                 Remove(item.Deputy);
             };
 
-            Observable.FromMicroCoroutine(item.OnEnter).
-                Subscribe(OnNext, onError, onCompleted);
+            IAsyncOperate async = item.OnEnter();
+
+            disposable = Observable.EveryUpdate().
+                Subscribe(_ => OnNext(async, onError, onCompleted));
         }
 
         /// <summary>
@@ -111,8 +116,9 @@ namespace KouXiaGu.Initialization
                 Push(item);
             };
 
-            Observable.FromMicroCoroutine(item.OnEnter).
-                Subscribe(OnNext, onError, onCompleted);
+            IAsyncOperate async = item.OnEnter();
+            disposable = Observable.EveryUpdate().
+                Subscribe(_ => OnNext(async, onError, onCompleted));
         }
 
         /// <summary>
@@ -131,13 +137,25 @@ namespace KouXiaGu.Initialization
                 Pop(item);
             };
 
-            Observable.FromMicroCoroutine(item.OnLeave).
-                Subscribe(OnNext, onError, onCompleted);
+            IAsyncOperate async = item.OnLeave();
+            disposable = Observable.EveryUpdate().
+                Subscribe(_ => OnNext(async, onError, onCompleted));
         }
 
-
-        static void OnNext(Unit unit)
+        static void OnNext(IAsyncOperate async, Action<Exception> onError, Action onCompleted)
         {
+            if (async.IsCompleted)
+            {
+                if (async.IsError)
+                {
+                    onError(async.Error);
+                    disposable.Dispose();
+                    return;
+                }
+
+                onCompleted();
+                disposable.Dispose();
+            }
         }
 
         static void OnError(IPeriod item, Exception e)
