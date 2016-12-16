@@ -1,17 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UniRx;
+using UnityEditor;
 
 namespace KouXiaGu.Initialization
 {
 
     [DisallowMultipleComponent, CustomEditorTool]
-    public class TestInitializer : MonoBehaviour, IStageObserver<ArchiveFile>
+    public class InitializerTest : MonoBehaviour, IStageObserver<ArchiveFile>
     {
 
         public int time = 1000;

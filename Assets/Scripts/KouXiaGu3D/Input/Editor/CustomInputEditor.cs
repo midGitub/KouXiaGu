@@ -1,10 +1,9 @@
 ﻿
-#if UNITY_EDITOR
-
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor;
-
+using System;
+using System.Linq;
 
 namespace KouXiaGu.EditorTool
 {
@@ -12,6 +11,8 @@ namespace KouXiaGu.EditorTool
     [CustomEditor(typeof(CustomInput), true)]
     public class CustomInputEditor : Editor
     {
+
+        static readonly Function[] Functions = Enum.GetValues(typeof(Function)).Cast<Function>().ToArray();
 
         bool isLoad = false;
 
@@ -27,7 +28,7 @@ namespace KouXiaGu.EditorTool
         {
             //base.OnInspectorGUI();
 
-            foreach(var item in CustomInput.Functions)
+            foreach(var item in Functions)
             {
                 KeyCode keycode;
                 try
@@ -59,7 +60,4 @@ namespace KouXiaGu.EditorTool
     }
 
 }
-
-
-#endif
 

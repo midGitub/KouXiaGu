@@ -76,6 +76,11 @@ namespace KouXiaGu.Initialization
             Initializer.Add(instance);
         }
 
+        public static void End()
+        {
+            Initializer.Remove(instance);
+        }
+
     }
 
 }

@@ -9,8 +9,14 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏阶段初始化器;
     /// </summary>
-    public static class Initializer
+    public class Initializer
+#if UNITY_EDITOR
+        : MonoBehaviour
+#endif
     {
+        Initializer() { }
+
+        #region 静态;
 
         /// <summary>
         /// 存储游戏进行阶段的栈;
@@ -185,6 +191,8 @@ namespace KouXiaGu.Initialization
             bool contains = (Stages & stage) != Stages.Empty;
             return contains;
         }
+
+        #endregion
 
 
     }
