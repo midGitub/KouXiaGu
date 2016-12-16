@@ -30,8 +30,9 @@ namespace KouXiaGu.Initialization
 
         public override bool Premise(Stages current)
         {
-            return (current & DEPUTY) == 0 ||
-                archive == null;
+            return (current & DEPUTY) == 0 &&
+                archive != null &&
+                (current & Stages.Initial) > 0;
         }
 
 

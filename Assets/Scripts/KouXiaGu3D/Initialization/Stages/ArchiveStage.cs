@@ -27,8 +27,8 @@ namespace KouXiaGu.Initialization
 
         public override bool Premise(Stages current)
         {
-            return (current & Stages.Game) > 0 ||
-                archive == null;
+            return (current & Stages.Game) > 0 &&
+                archive != null;
         }
 
 

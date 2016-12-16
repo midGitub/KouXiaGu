@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections;
 using System.Xml.Serialization;
+using UnityEngine;
 
 namespace KouXiaGu.Initialization
 {
@@ -9,7 +10,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 存档描述文件;
     /// </summary>
-    public class ArchiveDescription
+    public sealed class ArchiveDescription : MonoBehaviour
     {
         /// <summary>
         /// 存档文件名;
@@ -57,6 +58,12 @@ namespace KouXiaGu.Initialization
         }
 
 
+        void Awake()
+        {
+            ArchiveStage.Subscribe(ArchiveObserver.Instance);
+        }
+
+
         [XmlType("Description")]
         public struct Description
         {
@@ -84,12 +91,11 @@ namespace KouXiaGu.Initialization
 
         class ArchiveObserver : IStageObserver<ArchiveFile>
         {
-            static readonly ArchiveObserver Instance = new ArchiveObserver();
+            public static readonly ArchiveObserver Instance = new ArchiveObserver();
 
             static ArchiveObserver()
             {
                 Activated = DefalutDescription;
-                ArchiveStage.Subscribe(Instance);
             }
 
             /// <summary>

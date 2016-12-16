@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections;
 using KouXiaGu.Initialization;
 using UnityEngine;
 
@@ -12,6 +8,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形资源初始化;
     /// </summary>
+    [DisallowMultipleComponent]
     public sealed class TerrainStageObserver : MonoBehaviour
     {
 
