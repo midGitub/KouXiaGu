@@ -16,9 +16,17 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
+        /// 当未指定地图时使用随机的地图,而不是抛出异常;
+        /// </summary>
+        [SerializeField]
+        bool orRandomMap;
+
+        static TerrainMap currentMap;
+
+        /// <summary>
         /// 使用的地图;
         /// </summary>
-        public static TerrainMap CurrentMap { get; private set; }
+        public static TerrainMap CurrentMap { get; set; }
 
         /// <summary>
         /// 当前游戏使用的地图;
@@ -110,7 +118,7 @@ namespace KouXiaGu.Terrain3D
             IEnumerator GetMapInit()
             {
                 if (CurrentMap == null)
-                    throw new NullReferenceException("未指定地图;");
+                    throw new NullReferenceException("未指定具体地图;");
 
                 return CurrentMap.LoadAsync();
             }
@@ -145,7 +153,13 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
             {
-                return CurrentMap.SaveAsync();
+                IEnumerator enumerator;
+
+                enumerator = GetMapSave();
+                while (enumerator.MoveNext())
+                    yield return null;
+
+                yield break;
             }
 
             IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
@@ -158,6 +172,14 @@ namespace KouXiaGu.Terrain3D
                 return;
             }
 
+
+            public IEnumerator GetMapSave()
+            {
+                if (CurrentMap == null)
+                    throw new NullReferenceException("未指定具体地图!");
+
+                return CurrentMap.SaveAsync();
+            }
 
 
             IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
