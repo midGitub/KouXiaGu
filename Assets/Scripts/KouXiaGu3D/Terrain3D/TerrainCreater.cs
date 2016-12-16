@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IMap<CubicHexCoord, TerrainNode> terrainMap
         {
-            get { return TerrainMap.Map; }
+            get { return TerrainMap.ActivatedMap; }
         }
 
         /// <summary>

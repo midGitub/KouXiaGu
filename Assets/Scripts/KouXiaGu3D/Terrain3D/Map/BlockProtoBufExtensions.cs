@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using KouXiaGu.Grids;
+using System.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -26,31 +27,29 @@ namespace KouXiaGu.Terrain3D
 
         /// <summary>
         /// 将需要保存的地图块,保存到这个文件夹下;
+        /// 返回下一步保存的内容;
         /// </summary>
-        public static void Save<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
+        public static IEnumerator<BlockArchive<TP, T>> SaveAsync<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
         {
             IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchives();
             foreach (var block in blocks)
             {
-                lock (blockArchive.SyncWriteRoot)
-                {
-                    block.Save(directoryPath, fileMode);
-                }
+                yield return block;
+                block.Save(directoryPath, fileMode);
             }
         }
 
         /// <summary>
         /// 保存所有地图到这个文件夹下;
+        /// 返回下一步保存的内容;
         /// </summary>
-        public static void SaveAll<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
+        public static IEnumerator<BlockArchive<TP, T>> SaveAllAsync<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
         {
             IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchiveAll();
             foreach (var block in blocks)
             {
-                lock (blockArchive.SyncWriteRoot)
-                {
-                    block.Save(directoryPath, fileMode);
-                }
+                yield return block;
+                block.Save(directoryPath, fileMode);
             }
         }
 
@@ -64,44 +63,55 @@ namespace KouXiaGu.Terrain3D
         }
 
 
+        /// <summary>
+        /// 将需要保存的地图块,保存到这个文件夹下;
+        /// </summary>
+        [Obsolete]
+        public static void Save<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
+        {
+            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchives();
+            foreach (var block in blocks)
+            {
+                block.Save(directoryPath, fileMode);
+            }
+        }
+
+        /// <summary>
+        /// 保存所有地图到这个文件夹下;
+        /// </summary>
+        [Obsolete]
+        public static void SaveAll<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath, FileMode fileMode)
+        {
+            IEnumerable<BlockArchive<TP, T>> blocks = blockArchive.GetArchiveAll();
+            foreach (var block in blocks)
+            {
+                block.Save(directoryPath, fileMode);
+            }
+        }
+
+
 
         /// <summary>
         /// 读取这个目录下的所有地图文件,保存到地图结构内;
-        /// 这个函数不进行重复块检查;
+        /// 若存在相同的则进行替换;
         /// </summary>
-        public static void Load<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
+        public static IEnumerator LoadAsync<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
         {
             IEnumerable<string> paths = GetFilePaths(directoryPath);
-            blockArchive.Load(paths);
+            return blockArchive.LoadAsync(paths);
         }
 
         /// <summary>
         /// 从文件路径读取到地图文件,保存到地图结构内;
-        /// 这个函数不进行重复块检查;
+        /// 若存在相同的则进行替换;
         /// </summary>
-        public static void Load<TP, T>(this IBlockArchive<TP, T> blockArchive, IEnumerable<string> filePaths)
+        public static IEnumerator LoadAsync<TP, T>(this IBlockArchive<TP, T> blockArchive, IEnumerable<string> filePaths)
         {
             foreach (var path in filePaths)
             {
                 var block = Load<TP, T>(path);
                 blockArchive.AddOrUpdateArchives(block);
-            }
-        }
-
-        /// <summary>
-        /// 读取这个目录下的所有地图文件,保存到地图结构内;
-        /// 若地图内已经存在这个地图块,则跳过这个块的读取;
-        /// </summary>
-        public static void LoadContrastive<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
-        {
-            IEnumerable<string> paths = GetFilePaths(directoryPath);
-            foreach (var path in paths)
-            {
-                if (!blockArchive.Contains(path))
-                {
-                    var block = Load<TP, T>(path);
-                    blockArchive.AddOrUpdateArchives(block);
-                }
+                yield return null;
             }
         }
 
@@ -123,6 +133,21 @@ namespace KouXiaGu.Terrain3D
             return block;
         }
 
+
+        /// <summary>
+        /// 读取这个目录下的所有地图文件,保存到地图结构内;
+        /// 若地图内已经存在这个地图块,则跳过这个块的读取;
+        /// </summary>
+        [Obsolete]
+        public static void LoadContrastive<TP, T>(this IBlockArchive<TP, T> blockArchive, string directoryPath)
+        {
+            IEnumerable<string> paths = GetFilePaths(directoryPath);
+            foreach (var path in paths)
+            {
+                var block = Load<TP, T>(path);
+                blockArchive.AddOrUpdateArchives(block);
+            }
+        }
 
 
         /// <summary>

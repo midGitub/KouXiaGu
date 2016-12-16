@@ -10,7 +10,7 @@ namespace KouXiaGu.Initialization
 
 
     /// <summary>
-    /// 游戏初始化,通过存档初始化游戏;
+    /// 游戏初始化,通过存档初始化游戏,等于开始一个新的游戏;
     /// </summary>
     public class GameStage : StageObservable<ArchiveFile>
     {

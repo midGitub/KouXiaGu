@@ -7,7 +7,7 @@ namespace KouXiaGu.Initialization
 {
 
     /// <summary>
-    /// 游戏起始阶段;
+    /// 游戏起始阶段,整个游戏生命周期仅初始化一次;
     /// </summary>
     public class InitialStage : StageObservable<object>
     {

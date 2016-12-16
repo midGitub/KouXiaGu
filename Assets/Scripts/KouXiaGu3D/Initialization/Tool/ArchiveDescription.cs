@@ -71,7 +71,7 @@ namespace KouXiaGu.Initialization
             /// <summary>
             /// 存档名;
             /// </summary>
-            [XmlAttribute("Name")]
+            [XmlAttribute("name")]
             public string Name;
 
             /// <summary>

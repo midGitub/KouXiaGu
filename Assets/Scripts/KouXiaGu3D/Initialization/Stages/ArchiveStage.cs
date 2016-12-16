@@ -7,7 +7,7 @@ namespace KouXiaGu.Initialization
 {
 
     /// <summary>
-    /// 保存游戏;
+    /// 保存游戏,在开始游戏后对游戏进行存档;
     /// </summary>
     public class ArchiveStage : StageObservable<ArchiveFile>, IStageObserver<ArchiveFile>
     {
