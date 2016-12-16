@@ -12,6 +12,22 @@ namespace KouXiaGu.Terrain3D
     public class Landform
     {
 
+        #region 地貌管理(静态)
+
+        /// <summary>
+        /// 已经初始化完毕的地貌信息;
+        /// </summary>
+        static Dictionary<int, Landform> initializedLandforms;
+
+
+
+
+        #endregion
+
+
+
+
+
         public Landform()
         {
         }
@@ -24,23 +40,23 @@ namespace KouXiaGu.Terrain3D
         /// 地形名;
         /// </summary>
         [XmlAttribute("name")]
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
         /// <summary>
         /// 地形唯一标示(0,-1作为保留);
         /// </summary>
         [XmlAttribute("id")]
-        public int ID { get; set; }
+        public int ID { get; private set; }
 
         // 贴图名或路径定义;
         [XmlElement("diffusePath")]
-        public string diffusePath { get; set; }
+        public string diffusePath { get; private set; }
 
         [XmlElement("heightPath")]
-        public string heightPath { get; set; }
+        public string heightPath { get; private set; }
 
         [XmlElement("mixerPath")]
-        public string mixerPath { get; set; }
+        public string mixerPath { get; private set; }
 
         /// <summary>
         /// 漫反射贴图;
