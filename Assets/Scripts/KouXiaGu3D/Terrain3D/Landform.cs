@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D
 
         public static string StateLog()
         {
-            string log = "地貌合集初始化完毕:\n" + initializedLandforms.Values.ToLog();
+            string log = "地貌合集初始化完毕:\n" + initializedLandforms.Values.ToEnumerableLog();
             return log;
         }
 

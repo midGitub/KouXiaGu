@@ -233,7 +233,7 @@ namespace KouXiaGu
                 var emptyKeys = EmptyKeys();
                 if (emptyKeys.Count != 0)
                 {
-                    Debug.LogWarning("未定义的按键:" + emptyKeys.ToLog());
+                    Debug.LogWarning("未定义的按键:" + emptyKeys.ToEnumerableLog());
                 }
                 emptyKeys.Clear();
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using KouXiaGu.Grids;
 using KouXiaGu.Initialization;
 using UnityEngine;
 
@@ -8,15 +9,24 @@ namespace KouXiaGu.Terrain3D
 
     /// <summary>
     /// 地形资源初始化,负责初始化次序;
+    /// 控制整个地形初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class TerrainStageObserver : MonoBehaviour
+    public sealed class TerrainController : MonoBehaviour
     {
 
         /// <summary>
-        /// 是否为允许编辑状态?若为 true 则在保存游戏时,对地图进行保存;
+        /// 使用的地图;
         /// </summary>
-        public static bool EditMode { get; private set; }
+        public static TerrainMap CurrentMap { get; private set; }
+
+        /// <summary>
+        /// 当前游戏使用的地图;
+        /// </summary>
+        public static IMap<CubicHexCoord, TerrainNode> ActivatedMap
+        {
+            get { return CurrentMap.Map; }
+        }
 
         void Awake()
         {
@@ -76,23 +86,40 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
             {
-                yield break;
+                IEnumerator enumerator;
+
+                enumerator = GetMapInit();
+                while (enumerator.MoveNext())
+                    yield return null;
+
             }
 
             IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
             {
+                CurrentMap.Clear();
                 yield break;
             }
 
             void IStageObserver<ArchiveFile>.OnEnterCompleted()
             {
+                Debug.Log("地图读取完毕;" + ActivatedMap.ToLog());
                 return;
+            }
+
+
+            IEnumerator GetMapInit()
+            {
+                if (CurrentMap == null)
+                    throw new NullReferenceException("未指定地图;");
+
+                return CurrentMap.LoadAsync();
             }
 
 
 
             IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
             {
+                CurrentMap.Clear();
                 yield break;
             }
 
@@ -118,7 +145,7 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
             {
-                yield break;
+                return CurrentMap.SaveAsync();
             }
 
             IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)

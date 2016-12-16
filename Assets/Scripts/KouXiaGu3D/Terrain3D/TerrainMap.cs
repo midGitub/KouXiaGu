@@ -5,6 +5,7 @@ using System.Linq;
 using KouXiaGu.Grids;
 using System.Collections;
 using System.Xml.Serialization;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -15,6 +16,16 @@ namespace KouXiaGu.Terrain3D
     [XmlType(TypeName = "TerrainMap")]
     public sealed class TerrainMap
     {
+
+        /// <summary>
+        /// 是否为允许编辑状态?若为 true 则在保存游戏时,对地图进行保存;
+        /// </summary>
+        public static bool AllowEdit { get; private set; }
+
+        static TerrainMap()
+        {
+            AllowEdit = false;
+        }
 
         #region 实例部分;
 
@@ -111,7 +122,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerator SaveAsync()
         {
-            return map.SaveAsync(DirectoryPath, FileMode.Create);
+            if (AllowEdit)
+            {
+                return map.SaveAsync(DirectoryPath, FileMode.Create);
+            }
+            else
+            {
+                return DontSaveRetrun();
+            }
         }
 
         /// <summary>
@@ -119,7 +137,23 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerator SaveAllAsync()
         {
-            return map.SaveAllAsync(DirectoryPath, FileMode.Create);
+            if (AllowEdit)
+            {
+                return map.SaveAllAsync(DirectoryPath, FileMode.Create);
+            }
+            else
+            {
+                return DontSaveRetrun();
+            }
+        }
+
+        /// <summary>
+        /// 不保存地图并且返回一个空的迭代结构;
+        /// </summary>
+        static IEnumerator DontSaveRetrun()
+        {
+            Debug.Log("跳过地形地图保存;");
+            return EmptyEnumerator.GetInstance;
         }
 
         /// <summary>
@@ -218,24 +252,6 @@ namespace KouXiaGu.Terrain3D
 
         #endregion
 
-
-        #region 游戏地图
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static TerrainMap Current;
-
-        /// <summary>
-        /// 当前游戏使用的地图;
-        /// </summary>
-        public static IMap<CubicHexCoord, TerrainNode> ActivatedMap
-        {
-            get { return Current.map; }
-        }
-
-
-        #endregion
 
         #region Test
 
