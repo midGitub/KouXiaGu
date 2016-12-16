@@ -3,10 +3,10 @@
 //异步的实例化地貌信息;
 #define INIT_LANDFORM_ASYNC
 
-using System.Collections.Generic;
-using UnityEngine;
-using System.Xml.Serialization;
 using System.Collections;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地貌定义;
     /// </summary>
-    public sealed class Landform
+    public class Landform
     {
 
         #region 地貌管理(静态)
@@ -48,11 +48,16 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+        public static string StateLog()
+        {
+            string log = "地貌合集初始化完毕:\n" + initializedLandforms.Values.ToLog();
+            return log;
+        }
 
         #endregion
 
 
-        #region 地貌序列化
+        #region 地貌序列化(静态)
 
         /// <summary>
         /// 地貌信息描述文件文件名;
@@ -105,12 +110,22 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 对这些资源进行初始化;
+        /// 对资源进行初始化;
         /// </summary>
-        static IEnumerator Initialize(IEnumerable<Landform> landforms)
+        public static IEnumerator Initialize()
+        {
+            Landform[] landforms = Deserialize();
+            return Initialize(landforms);
+        }
+
+        /// <summary>
+        /// 对这些资源进行初始化,并且加入到合集;
+        /// </summary>
+        public static IEnumerator Initialize(IEnumerable<Landform> landforms)
         {
             var bundleLoadRequest = AssetBundle.LoadFromFileAsync(TextureAssetBundleFilePath);
-            yield return bundleLoadRequest;
+            while (!bundleLoadRequest.isDone)
+                yield return null;
 
             AssetBundle assetBundle = bundleLoadRequest.assetBundle;
             if (assetBundle == null)
@@ -128,7 +143,10 @@ namespace KouXiaGu.Terrain3D
                 }
 
 #if INIT_LANDFORM_ASYNC
-                yield return landform.InitializeAsync(assetBundle);
+                var customYieldInstruction = landform.LoadTexturesAsync(assetBundle);
+
+                while (customYieldInstruction.keepWaiting)
+                    yield return null;
 #else
                 landform.Initialize(assetBundle);
                 yield return null;
@@ -144,9 +162,22 @@ namespace KouXiaGu.Terrain3D
             }
 
             assetBundle.Unload(false);
+            Debug.Log(StateLog());
             yield break;
         }
 
+        /// <summary>
+        /// 对初始化的资源进行清除;
+        /// </summary>
+        public static IEnumerator ClearRes()
+        {
+            foreach (var item in initializedLandforms.Values)
+            {
+                item.Destroy();
+            }
+            initializedLandforms.Clear();
+            yield break;
+        }
 
         #endregion
 
@@ -157,23 +188,23 @@ namespace KouXiaGu.Terrain3D
         /// 地形名;
         /// </summary>
         [XmlAttribute("name")]
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 地形唯一标示(0,-1作为保留);
         /// </summary>
         [XmlAttribute("id")]
-        public int ID { get; private set; }
+        public int ID { get; set; }
 
         // 贴图名或路径定义;
         [XmlElement("diffusePath")]
-        public string diffusePath { get; private set; }
+        public string diffusePath { get; set; }
 
         [XmlElement("heightPath")]
-        public string heightPath { get; private set; }
+        public string heightPath { get; set; }
 
         [XmlElement("mixerPath")]
-        public string mixerPath { get; private set; }
+        public string mixerPath { get; set; }
 
         /// <summary>
         /// 漫反射贴图;
@@ -204,6 +235,13 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+        void Destroy()
+        {
+            GameObject.Destroy(DiffuseTexture);
+            GameObject.Destroy(HeightTexture);
+            GameObject.Destroy(MixerTexture);
+        }
+
         public override string ToString()
         {
             string info = string.Concat(
@@ -217,7 +255,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 同步初始化设置到贴图;
         /// </summary>
-        public void Initialize(AssetBundle assetBundle)
+        public void LoadTextures(AssetBundle assetBundle)
         {
             Texture diffuse = assetBundle.LoadAsset<Texture>(diffusePath);
             Texture height = assetBundle.LoadAsset<Texture>(heightPath);
@@ -231,16 +269,16 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 异步初始化设置到贴图信息;
         /// </summary>
-        public CustomYieldInstruction InitializeAsync(AssetBundle assetBundle)
+        public CustomYieldInstruction LoadTexturesAsync(AssetBundle assetBundle)
         {
-            var asyncRequest = new LandformInitializeRequest(this, assetBundle);
+            var asyncRequest = new LoadTexturesRequest(this, assetBundle);
             return asyncRequest;
         }
 
         /// <summary>
         /// 异步读取需要的贴图;
         /// </summary>
-        class LandformInitializeRequest : CustomYieldInstruction
+        class LoadTexturesRequest : CustomYieldInstruction
         {
             Landform landform;
 
@@ -248,7 +286,7 @@ namespace KouXiaGu.Terrain3D
             AssetBundleRequest heightRequest;
             AssetBundleRequest mixerRequest;
 
-            public LandformInitializeRequest(Landform landform, AssetBundle assetBundle)
+            public LoadTexturesRequest(Landform landform, AssetBundle assetBundle)
             {
                 this.landform = landform;
                 LoadTexture(assetBundle, landform);
@@ -292,6 +330,8 @@ namespace KouXiaGu.Terrain3D
         }
 
         #endregion
+
+
     }
 
 }

@@ -149,7 +149,7 @@ namespace KouXiaGu.Initialization
 
         static void OnError(IPeriod item, Exception e)
         {
-            Debug.LogError("初始化失败;" + item.Deputy + "\n" + e);
+            Debug.LogError(item.Deputy + " 阶段初始化失败;" + "\n" + e);
         }
 
 

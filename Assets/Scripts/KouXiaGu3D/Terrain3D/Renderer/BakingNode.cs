@@ -71,9 +71,9 @@ namespace KouXiaGu.Terrain3D
         Landform GetLandform(TerrainNode landformNode)
         {
             if (landformNode.ID == 0)
-                return null;
+                return default(Landform);
 
-            Landform landform = LandformManager.GetInstance[landformNode.ID];
+            Landform landform = Landform.GetLandform(landformNode.ID);
             return landform;
         }
 
