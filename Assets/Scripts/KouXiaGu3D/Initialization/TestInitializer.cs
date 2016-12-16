@@ -52,7 +52,6 @@ namespace KouXiaGu.Initialization
                 time--;
                 yield return null;
             }
-            throw new Exception("妈妈");
             Directory.CreateDirectory(Path.Combine(item.DirectoryPath, "123"));
             yield break;
         }

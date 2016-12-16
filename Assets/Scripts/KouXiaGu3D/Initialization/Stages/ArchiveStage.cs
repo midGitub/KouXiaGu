@@ -60,7 +60,12 @@ namespace KouXiaGu.Initialization
 
         public static bool Unsubscribe(IStageObserver<ArchiveFile> observer)
         {
-            return observerSet.Add(observer);
+            return observerSet.Remove(observer);
+        }
+
+        public static bool Contains(IStageObserver<ArchiveFile> observer)
+        {
+            return observerSet.Contains(observer);
         }
 
         /// <summary>

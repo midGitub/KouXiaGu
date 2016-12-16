@@ -60,6 +60,11 @@ namespace KouXiaGu.Initialization
             return observerSet.Remove(observer);
         }
 
+        public static bool Contains(IStageObserver<object> observer)
+        {
+            return observerSet.Contains(observer);
+        }
+
         public static void Start()
         {
             Initializer.Add(instance);
