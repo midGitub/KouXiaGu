@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿
+
+//异步的实例化地貌信息;
+#define INIT_LANDFORM_ASYNC
+
+using System.Collections.Generic;
 using UnityEngine;
 using System.Xml.Serialization;
 using System.Collections;
@@ -9,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地貌定义;
     /// </summary>
-    public class Landform
+    public sealed class Landform
     {
 
         #region 地貌管理(静态)
@@ -17,24 +22,136 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 已经初始化完毕的地貌信息;
         /// </summary>
-        static Dictionary<int, Landform> initializedLandforms;
+        static readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
 
+        /// <summary>
+        /// 已经初始化完毕的地貌数量;
+        /// </summary>
+        public static int Count
+        {
+            get { return initializedLandforms.Count; }
+        }
 
+        /// <summary>
+        /// 获取到地貌信息;
+        /// </summary>
+        public static Landform GetLandform(int id)
+        {
+            try
+            {
+                return initializedLandforms[id];
+            }
+            catch (KeyNotFoundException e)
+            {
+                Debug.LogWarning("获取到不存在的地貌ID: " + id);
+                throw e;
+            }
+        }
 
 
         #endregion
 
 
+        #region 地貌序列化
 
+        /// <summary>
+        /// 地貌信息描述文件文件名;
+        /// </summary>
+        const string ConfigFileName = "LandformDefinition.xml";
 
-
-        public Landform()
+        /// <summary>
+        /// 地貌信息描述文件路径;
+        /// </summary>
+        static string ConfigFilePath
         {
+            get { return ResourcePath.CombineConfiguration(ConfigFileName); }
         }
-        public Landform(int id) : this()
+
+        static readonly XmlSerializer serializerArray = new XmlSerializer(typeof(Landform[]));
+
+        /// <summary>
+        /// 序列化到地貌描述文件;
+        /// </summary>
+        public static void Serialize(Landform[] landforms)
         {
-            this.ID = id;
+            serializerArray.Serialize(ConfigFilePath, landforms);
         }
+
+        /// <summary>
+        /// 从地貌描述文件反序列化;
+        /// </summary>
+        public static Landform[] Deserialize()
+        {
+            Landform[] landforms = (Landform[])serializerArray.Deserialize(ConfigFilePath);
+            return landforms;
+        }
+
+        #endregion
+
+
+        #region 资源初始化(静态)
+
+        /// <summary>
+        /// 地貌贴图资源包名;
+        /// </summary>
+        const string TextureAssetBundleFileName = "terrain";
+
+        /// <summary>
+        /// 地貌贴图资源包文件路径;
+        /// </summary>
+        static string TextureAssetBundleFilePath
+        {
+            get { return ResourcePath.CombineAssetBundle(TextureAssetBundleFileName); }
+        }
+
+        /// <summary>
+        /// 对这些资源进行初始化;
+        /// </summary>
+        static IEnumerator Initialize(IEnumerable<Landform> landforms)
+        {
+            var bundleLoadRequest = AssetBundle.LoadFromFileAsync(TextureAssetBundleFilePath);
+            yield return bundleLoadRequest;
+
+            AssetBundle assetBundle = bundleLoadRequest.assetBundle;
+            if (assetBundle == null)
+            {
+                Debug.LogError("目录不存在贴图资源包或者在编辑器中进行读取,地貌资源初始化失败;" + TextureAssetBundleFilePath);
+                yield break;
+            }
+
+            foreach (var landform in landforms)
+            {
+                if (initializedLandforms.ContainsKey(landform.ID))
+                {
+                    Debug.LogWarning("相同的地貌ID,跳过 :" + landform.ToString());
+                    continue;
+                }
+
+#if INIT_LANDFORM_ASYNC
+                yield return landform.InitializeAsync(assetBundle);
+#else
+                landform.Initialize(assetBundle);
+                yield return null;
+#endif
+                if (landform.IsInitialized)
+                {
+                    initializedLandforms.Add(landform.ID, landform);
+                }
+                else
+                {
+                    Debug.LogWarning("剔除未能初始化成功的地貌 : " + landform.ToString());
+                }
+            }
+
+            assetBundle.Unload(false);
+            yield break;
+        }
+
+
+        #endregion
+
+
+        #region 实例部分;
 
         /// <summary>
         /// 地形名;
@@ -96,9 +213,6 @@ namespace KouXiaGu.Terrain3D
                 " ,IsInitialized:", IsInitialized);
             return info;
         }
-
-
-        #region 地貌资源初始化;
 
         /// <summary>
         /// 同步初始化设置到贴图;
@@ -178,8 +292,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         #endregion
-
-
     }
 
 }

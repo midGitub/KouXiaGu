@@ -6,7 +6,7 @@ namespace KouXiaGu.Collections
 {
 
     /// <summary>
-    /// 二叉堆;
+    /// 二叉堆,随机的迭代顺序;
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class BinaryHeap<T> : ICollection<T>, IEnumerable<T>
@@ -20,6 +20,13 @@ namespace KouXiaGu.Collections
         {
             collection = new List<T>(capacity);
             collection.Add(default(T));
+        }
+        /// <summary>
+        /// 克隆;
+        /// </summary>
+        public BinaryHeap(BinaryHeap<T> binaryHeap)
+        {
+            this.collection = new List<T>(binaryHeap.collection);
         }
 
         /// <summary>
@@ -200,7 +207,7 @@ namespace KouXiaGu.Collections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return collection.GetEnumerator();
+            return GetEnumerator();
         }
 
     }
