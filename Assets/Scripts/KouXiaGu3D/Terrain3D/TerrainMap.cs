@@ -10,11 +10,45 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    [Serializable, XmlType("TerrainMap")]
+    public struct MapDescription
+    {
+
+        [XmlElement("id")]
+        public int id;
+
+        [XmlElement("Name")]
+        public string name;
+
+        [XmlElement("Time")]
+        public long time;
+
+        [XmlElement("Version")]
+        public int version;
+
+        [XmlElement("Description")]
+        public string description;
+
+        static readonly XmlSerializer TerrainMapInfoSerializer = new XmlSerializer(typeof(MapDescription));
+
+        public static void Serialize(string filePath, MapDescription data)
+        {
+            TerrainMapInfoSerializer.Serialize(filePath, data);
+        }
+
+        public static MapDescription Deserialize(string filePath)
+        {
+            MapDescription data = (MapDescription)TerrainMapInfoSerializer.Deserialize(filePath);
+            return data;
+        }
+
+    }
+
+
     /// <summary>
     /// 地形地图保存和提供;
     /// </summary>
-    [XmlType(TypeName = "TerrainMap")]
-    public sealed class TerrainMap
+    public class TerrainMap
     {
 
         /// <summary>
@@ -24,8 +58,111 @@ namespace KouXiaGu.Terrain3D
 
         static TerrainMap()
         {
-            AllowEdit = false;
+            AllowEdit = true;
         }
+
+
+        #region 地图资源管理
+
+        /// <summary>
+        /// 保存所有地图的文件路径;
+        /// </summary>
+        const string MAPS_DIRECTORY_NAME = "TerrainMaps";
+
+        /// <summary>
+        /// 描述文件名;
+        /// </summary>
+        public const string MAP_DESCRIPTION_FILE_NAME = "TerrainMap.xml";
+
+
+        /// <summary>
+        /// 预定义的的地图存放路径;
+        /// </summary>
+        public static string PredefinedDirectory
+        {
+            get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, MAPS_DIRECTORY_NAME); }
+        }
+
+        /// <summary>
+        /// 获取到预定义目录下的所有地图;
+        /// </summary>
+        public static IEnumerable<TerrainMap> GetMaps()
+        {
+            return GetMaps(PredefinedDirectory);
+        }
+
+        /// <summary>
+        /// 获取到目录下一级的所有地图;
+        /// </summary>
+        public static IEnumerable<TerrainMap> GetMaps(string directoryPath)
+        {
+            var paths = Directory.GetDirectories(directoryPath);
+            TerrainMap data;
+
+            foreach (var mapPath in paths)
+            {
+                try
+                {
+                    data = GetMap(mapPath);
+                }
+                catch (FileNotFoundException)
+                {
+                    Debug.LogWarning("无法获取到描述文件 ;地图目录 :" + mapPath + " ; 跳过此文件夹;");
+                    continue;
+                }
+                yield return data;
+            }
+        }
+
+        /// <summary>
+        /// 获取到目录下所保存的地图;
+        /// </summary>
+        public static TerrainMap GetMap(string directoryPath)
+        {
+            string filePath = GetDescriptionFilePath(directoryPath);
+            var data = MapDescription.Deserialize(filePath);
+            TerrainMap map = new TerrainMap(data, directoryPath);
+            return map;
+        }
+
+        /// <summary>
+        /// 寻找这个地图并且返回,若不存在则返回异常 InvalidOperationException;
+        /// </summary>
+        public static TerrainMap FindMap(int id)
+        {
+            return FindMap(id, PredefinedDirectory);
+        }
+
+        /// <summary>
+        /// 寻找这个地图并且返回,若不存在则返回异常 InvalidOperationException;
+        /// </summary>
+        public static TerrainMap FindMap(int id, string directoryPaths)
+        {
+            TerrainMap map = GetMaps(directoryPaths).First(tmap => tmap.ID == id);
+            return map;
+        }
+
+        /// <summary>
+        /// 确认这个文件夹下是否存在地图文件;
+        /// </summary>
+        public static bool ConfirmDirectory(string directoryPath)
+        {
+            var paths = BlockProtoBufExtensions.GetFilePaths(directoryPath);
+            string path = paths.FirstOrDefault();
+            return path != null;
+        }
+
+        /// <summary>
+        /// 获取到目录下的描述文件路径;
+        /// </summary>
+        static string GetDescriptionFilePath(string directoryPath)
+        {
+            string filePath = Path.Combine(directoryPath, MAP_DESCRIPTION_FILE_NAME);
+            return filePath;
+        }
+
+        #endregion
+
 
         #region 实例部分;
 
@@ -34,31 +171,31 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         const short MapBlockSize = 600;
 
-        [XmlAttribute("id")]
-        public uint ID;
+        MapDescription description;
 
-        [XmlElement("Name")]
-        public string Name;
-
-        [XmlElement("Time")]
-        public long Time;
-
-        [XmlElement("Version")]
-        public int Version;
-
-        [XmlElement("Description")]
-        public string Description;
-
-        /// <summary>
-        /// 地形地图结构;
-        /// </summary>
-        [XmlIgnore]
         BlockMapRecord<TerrainNode> map;
 
         /// <summary>
         /// 是否已经读取过了?
         /// </summary>
         public bool IsLoaded { get; private set; }
+
+        /// <summary>
+        /// 完整的地图存放路径;
+        /// </summary>
+        public string DirectoryPath { get; private set; }
+
+        public int ID
+        {
+            get { return description.id; }
+            private set { description.id = value; }
+        }
+
+        public MapDescription Description
+        {
+            get { return description; }
+            set { description = value; }
+        }
 
         /// <summary>
         /// 地形地图;
@@ -68,29 +205,41 @@ namespace KouXiaGu.Terrain3D
             get { return map; }
         }
 
-        /// <summary>
-        /// 完整的地图存放路径;
-        /// </summary>
-        [XmlIgnore]
-        public string DirectoryPath { get; private set; }
-
         TerrainMap()
         {
             IsLoaded = false;
         }
 
         /// <summary>
-        /// 创建一个新的地形到这个目录之下;
+        /// 创建一个新地图到预定义的目录下;
         /// </summary>
-        public TerrainMap(string directoryPath) : this()
+        public TerrainMap(MapDescription description) : this()
         {
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
+            this.description = description;
+            this.DirectoryPath = Path.Combine(PredefinedDirectory, description.id.ToString());
+            UpdateDescription();
+        }
 
-            string filePath = GetDescriptionFilePath(directoryPath);
-            Serialize(filePath, this);
-
+        /// <summary>
+        /// 创建一个新地图到目录下;
+        /// </summary>
+        public TerrainMap(MapDescription description, string directoryPath) : this()
+        {
+            this.description = description;
             this.DirectoryPath = directoryPath;
+            UpdateDescription();
+        }
+
+        /// <summary>
+        /// 更新描述文件;
+        /// </summary>
+        public void UpdateDescription()
+        {
+            if (!Directory.Exists(DirectoryPath))
+                Directory.CreateDirectory(DirectoryPath);
+
+            string filePath = GetDescriptionFilePath(DirectoryPath);
+            MapDescription.Serialize(filePath, description);
         }
 
         public override bool Equals(object obj)
@@ -116,7 +265,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         BlockMapRecord<TerrainNode> CreateMapOrReturn()
         {
-            return  map ?? 
+            return map ??
                 (map = new BlockMapRecord<TerrainNode>((MapBlockSize & 1) == 1 ? MapBlockSize : (short)(MapBlockSize + 1)));
         }
 
@@ -169,126 +318,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         #endregion
-
-
-        #region 地图资源管理
-
-        /// <summary>
-        /// 保存所有地图的文件路径;
-        /// </summary>
-        const string MAPS_DIRECTORY_NAME = "TerrainMaps";
-
-        /// <summary>
-        /// 描述文件名;
-        /// </summary>
-        public const string MAP_DESCRIPTION_FILE_NAME = "TerrainMap.xml";
-
-        static readonly XmlSerializer terrainMapInfoSerializer = new XmlSerializer(typeof(TerrainMap));
-
-        public static XmlSerializer TerrainMapInfoSerializer
-        {
-            get { return terrainMapInfoSerializer; }
-        }
-
-        /// <summary>
-        /// 预定义的的地图存放路径;
-        /// </summary>
-        public static string PredefinedDirectory
-        {
-            get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, MAPS_DIRECTORY_NAME); }
-        }
-
-        /// <summary>
-        /// 获取到预定义目录下的所有地图;
-        /// </summary>
-        public static IEnumerable<TerrainMap> GetMaps()
-        {
-            return GetMaps(PredefinedDirectory);
-        }
-
-        /// <summary>
-        /// 获取到目录下一级的所有地图;
-        /// </summary>
-        public static IEnumerable<TerrainMap> GetMaps(string directoryPath)
-        {
-            var paths = Directory.GetDirectories(directoryPath);
-            TerrainMap data;
-
-            foreach (var mapPath in paths)
-            {
-                try
-                {
-                    data = GetMap(mapPath);
-                }
-                catch (FileNotFoundException)
-                {
-                    Debug.LogWarning("无法获取到描述文件 ;地图目录 :" + mapPath + " ; 跳过此文件夹;");
-                    continue;
-                }
-                yield return data;
-            }
-        }
-
-        /// <summary>
-        /// 获取到目录下所保存的地图;
-        /// </summary>
-        public static TerrainMap GetMap(string directoryPath)
-        {
-            string filePath = GetDescriptionFilePath(directoryPath);
-            TerrainMap data = Deserialize(filePath);
-            data.DirectoryPath = directoryPath;
-            return data;
-        }
-
-        /// <summary>
-        /// 寻找这个地图并且返回,若不存在则返回异常 InvalidOperationException;
-        /// </summary>
-        public static TerrainMap FindMap(uint id)
-        {
-            return FindMap(id, PredefinedDirectory);
-        }
-
-        /// <summary>
-        /// 寻找这个地图并且返回,若不存在则返回异常 InvalidOperationException;
-        /// </summary>
-        public static TerrainMap FindMap(uint id, string directoryPaths)
-        {
-            TerrainMap map = GetMaps(directoryPaths).First(tmap => tmap.ID == id);
-            return map;
-        }
-
-        /// <summary>
-        /// 确认这个文件夹下是否存在地图文件;
-        /// </summary>
-        public static bool ConfirmDirectory(string directoryPath)
-        {
-            var paths = BlockProtoBufExtensions.GetFilePaths(directoryPath);
-            string path = paths.FirstOrDefault();
-            return path != null;
-        }
-
-        /// <summary>
-        /// 获取到目录下的描述文件路径;
-        /// </summary>
-        static string GetDescriptionFilePath(string directoryPath)
-        {
-            string filePath = Path.Combine(directoryPath, MAP_DESCRIPTION_FILE_NAME);
-            return filePath;
-        }
-
-        static void Serialize(string filePath, TerrainMap data)
-        {
-            TerrainMapInfoSerializer.Serialize(filePath, data);
-        }
-
-        static TerrainMap Deserialize(string filePath)
-        {
-            TerrainMap data = (TerrainMap)TerrainMapInfoSerializer.Deserialize(filePath);
-            return data;
-        }
-
-        #endregion
-
 
         #region Test
 

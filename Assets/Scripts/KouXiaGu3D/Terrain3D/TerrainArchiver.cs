@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// 使用的地形地图ID;
         /// </summary>
         [XmlElement("UseMapID")]
-        public uint UseMapID { get; set; }
+        public int UseMapID { get; set; }
 
         /// <summary>
         /// 保存为的文件名;
@@ -93,7 +93,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        static uint GetTerrainMapID()
+        static int GetTerrainMapID()
         {
             return TerrainController.CurrentMap.ID;
         }
