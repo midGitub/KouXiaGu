@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -17,22 +18,51 @@ namespace KouXiaGu.Initialization
         const string ARCHIVES_DIRECTORY_NAME = "Saves";
 
         /// <summary>
-        /// 临时存档文件夹名,先将存档保存到此路径,保存完毕后再复制到真正的存档目录;
+        /// 默认存档位置;
         /// </summary>
-        const string TEMP_ARCHIVES_DIRECTORY_NAME = "Saves_Temp";
+        const string DEFAULT_ARCHIVE_DIRECTORY_NANE = "Templet\\DEFAULT";
 
         /// <summary>
-        /// 用于编辑的默认存档位置,修改具体内容用于初始化游戏;
+        /// 用于编辑的存档位置,修改具体内容用于初始化游戏;
         /// </summary>
-        const string DEFAULT_ARCHIVE_DIRECTORY_Name = "Saves\\DEFAULT";
+        const string TEMP_ARCHIVE_DIRECTORY_NANE = "Templet\\Temp";
 
         /// <summary>
-        /// 用于编辑的默认存档;
+        /// 默认存档;
         /// </summary>
         static ArchiveFile defaultArchived;
 
         /// <summary>
-        /// 用于编辑的默认存档;
+        /// 用于编辑的存档位置,修改具体内容用于初始化游戏;
+        /// </summary>
+        static ArchiveFile tempArchived;
+
+        /// <summary>
+        /// 获取到保存所有存档的文件夹路径;
+        /// </summary>
+        static string ArchivesDirectory
+        {
+            get { return Path.Combine(Application.persistentDataPath, ARCHIVES_DIRECTORY_NAME); }
+        }
+
+        /// <summary>
+        /// 默认存档;
+        /// </summary>
+        static string DefaultArchivedDirectory
+        {
+            get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, DEFAULT_ARCHIVE_DIRECTORY_NANE); }
+        }
+
+        /// <summary>
+        /// 用于编辑的存档位置,修改具体内容用于初始化游戏的存档路径;
+        /// </summary>
+        static string TempArchivedDirectory
+        {
+            get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, TEMP_ARCHIVE_DIRECTORY_NANE); }
+        }
+
+        /// <summary>
+        /// 默认存档;
         /// </summary>
         public static ArchiveFile DefaultArchived
         {
@@ -40,28 +70,13 @@ namespace KouXiaGu.Initialization
         }
 
         /// <summary>
-        /// 获取到保存所有存档的文件夹路径;
+        /// 用于编辑的存档;
         /// </summary>
-        public static string ArchivesDirectory
+        public static ArchiveFile TempArchived
         {
-            get { return Path.Combine(Application.persistentDataPath, ARCHIVES_DIRECTORY_NAME); }
+            get { return tempArchived ?? (tempArchived = new ArchiveFile(TempArchivedDirectory, true)); }
         }
 
-        /// <summary>
-        /// 临时存档文件夹名,先将存档保存到此路径,保存完毕后再复制到真正的存档目录;
-        /// </summary>
-        public static string TempDirectory
-        {
-            get { return Path.Combine(Application.temporaryCachePath, TEMP_ARCHIVES_DIRECTORY_NAME); }
-        }
-
-        /// <summary>
-        /// 用于编辑的默认存档位置,修改具体内容用于初始化游戏的存档路径;
-        /// </summary>
-        public static string DefaultArchivedDirectory
-        {
-            get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, TEMP_ARCHIVES_DIRECTORY_NAME); }
-        }
 
         /// <summary>
         /// 获取到所有存档文件夹下的所有文件夹路径;
@@ -81,13 +96,13 @@ namespace KouXiaGu.Initialization
         }
 
         /// <summary>
-        /// 获取到所有的存档路径;
+        /// 获取到所有的存档;
         /// </summary>
         public static IEnumerable<ArchiveFile> GetArchives()
         {
             foreach (var path in GetArchivedPaths())
             {
-                yield return new ArchiveFile(path);
+                yield return new ArchiveFile(path, true);
             }
         }
 
@@ -113,12 +128,6 @@ namespace KouXiaGu.Initialization
             AllowEdit = true;
         }
 
-        ArchiveFile(string directoryPath)
-        {
-            this.DirectoryPath = directoryPath;
-            AllowEdit = true;
-        }
-
         ArchiveFile(string directoryPath, bool allowEdit)
         {
             this.DirectoryPath = directoryPath;
@@ -131,8 +140,7 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public void Create()
         {
-            if(!AllowEdit)
-                throw new System.Exception();
+            AuthorizationCheck();
 
             if (!Directory.Exists(DirectoryPath))
                 Directory.CreateDirectory(DirectoryPath);
@@ -143,8 +151,9 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public void Destroy()
         {
-            if(!AllowEdit)
-                throw new System.Exception();
+            AuthorizationCheck();
+
+            Directory.Delete(DirectoryPath, true);
         }
 
         /// <summary>
@@ -152,8 +161,19 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public void OnComplete()
         {
+            AuthorizationCheck();
+
             Debug.Log("保存完成;路径:" + DirectoryPath);
             return;
+        }
+
+        /// <summary>
+        /// 若为不允许编辑的存档则返回异常 UnauthorizedAccessException;
+        /// </summary>
+        void AuthorizationCheck()
+        {
+            if (!AllowEdit)
+                throw new UnauthorizedAccessException("不允许编辑的存档内容;");
         }
 
         #endregion
