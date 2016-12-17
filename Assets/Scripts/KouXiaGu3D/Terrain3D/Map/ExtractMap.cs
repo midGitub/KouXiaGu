@@ -33,19 +33,29 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+        public int Count
+        {
+            get { return this.mapCollection.Count; }
+        }
+
         public ICollection<TKey> Keys
         {
-            get { return ((IDictionary<TKey, TValue>)this.mapCollection).Keys; }
+            get { return this.mapCollection.Keys; }
         }
 
         public ICollection<TValue> Values
         {
-            get { return ((IDictionary<TKey, TValue>)this.mapCollection).Values; }
+            get { return this.mapCollection.Values; }
         }
 
-        public int Count
+        public int ArchiveCount
         {
-            get { return this.mapCollection.Count; }
+            get { return this.archiveMap.Count; }
+        }
+
+        public ICollection<TKey> ArchiveKeys
+        {
+            get { return this.archiveMap.Keys; }
         }
 
         public bool IsReadOnly
@@ -63,9 +73,9 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 读取地图数据,若存档地图不存在则返回 false;
+        /// 读取预制地图数据,并且清空存档信息;
         /// </summary>
-        public bool Load(string prefabMapPath, string archiveMapPath)
+        public void Load(string prefabMapPath)
         {
             if (this.mapCollection != null)
                 this.mapCollection.Clear();
@@ -73,18 +83,21 @@ namespace KouXiaGu.Terrain3D
                 this.archiveMap.Clear();
 
             this.mapCollection = LoadMapData(prefabMapPath);
+        }
 
-            try
-            {
-                this.archiveMap = LoadMapData(archiveMapPath);
-                this.mapCollection.AddOrUpdate(archiveMap);
-                return true;
-            }
-            catch (FileNotFoundException)
-            {
-                this.archiveMap = new Dictionary<TKey, TValue>();
-                return false;
-            }
+        /// <summary>
+        /// 读取地图数据,若存档地图不存在则返回 异常;
+        /// </summary>
+        public void Load(string prefabMapPath, string archiveMapPath)
+        {
+            if (this.mapCollection != null)
+                this.mapCollection.Clear();
+            if (this.archiveMap != null)
+                this.archiveMap.Clear();
+
+            this.mapCollection = LoadMapData(prefabMapPath);
+            this.archiveMap = LoadMapData(archiveMapPath);
+            this.mapCollection.AddOrUpdate(archiveMap);
         }
 
         /// <summary>
@@ -127,26 +140,6 @@ namespace KouXiaGu.Terrain3D
         {
             SerializeHelper.SerializeProtoBuf(filePath, map);
         }
-
-
-        ///// <summary>
-        ///// 从预制地图初始化;
-        ///// </summary>
-        //public ExtractMap(Dictionary<TKey, TValue> map)
-        //{
-        //    this.mapCollection = map;
-        //    this.archive = new Dictionary<TKey, TValue>();
-        //}
-
-        ///// <summary>
-        ///// 从预制地图 和 存档初始化;
-        ///// </summary>
-        //public ExtractMap(Dictionary<TKey, TValue> map, Dictionary<TKey, TValue> archived)
-        //{
-        //    this.mapCollection = map;
-        //    map.AddOrUpdate(archived);
-        //    this.archive = archived;
-        //}
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {

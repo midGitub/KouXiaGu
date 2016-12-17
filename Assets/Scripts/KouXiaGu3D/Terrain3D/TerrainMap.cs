@@ -153,6 +153,12 @@ namespace KouXiaGu.Terrain3D
             get { return map; }
         }
 
+        [Obsolete]
+        public int ArchiveCount
+        {
+            get { return map.ArchiveCount; }
+        }
+
         TerrainMap()
         {
             map = new ExtractMap<CubicHexCoord, TerrainNode>();
@@ -209,10 +215,11 @@ namespace KouXiaGu.Terrain3D
         public void Load(string archiveFilePath)
         {
             string prefabFilePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
-            if (map.Load(prefabFilePath, archiveFilePath))
-            {
-                Debug.LogWarning("初始化时未找到存档地图;");
-            }
+
+            if (File.Exists(archiveFilePath))
+                map.Load(prefabFilePath, archiveFilePath);
+            else
+                map.Load(prefabFilePath);
         }
 
         public void Unload()

@@ -17,10 +17,12 @@ namespace KouXiaGu.Terrain3D
     public sealed class TerrainController : MonoBehaviour
     {
 
+        const string MAP_ARCHIVED_DIRECTORY_NAME = "Maps";
+
         /// <summary>
         /// 存档的地图数据文件;
         /// </summary>
-        const string MAP_ARCHIVED_FILE_NAME = "Maps\\TerrainMap.MAPP";
+        const string MAP_ARCHIVED_FILE_NAME = "TerrainMap.MAPP";
 
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
-        public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
+        static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
         {
             get { return CurrentMap.Map; }
         }
@@ -41,7 +43,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static void SaveArchiveMap(string archiveDirectory)
         {
+            archiveDirectory = Path.Combine(archiveDirectory, MAP_ARCHIVED_DIRECTORY_NAME);
             string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
+
+            if (!Directory.Exists(archiveDirectory))
+                Directory.CreateDirectory(archiveDirectory);
+
             CurrentMap.SaveArchive(filePath);
         }
 

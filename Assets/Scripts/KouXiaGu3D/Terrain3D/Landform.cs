@@ -24,6 +24,16 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
 
+        public static IEnumerable<int> Identifications
+        {
+            get { return initializedLandforms.Keys; }
+        }
+
+        public static IEnumerable<Landform> Landforms
+        {
+            get { return initializedLandforms.Values; }
+        }
+
         /// <summary>
         /// 已经初始化完毕的地貌数量;
         /// </summary>
