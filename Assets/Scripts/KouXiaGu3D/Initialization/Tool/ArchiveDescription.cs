@@ -89,7 +89,7 @@ namespace KouXiaGu.Initialization
         }
 
 
-        class ArchiveObserver : IStageObserver<ArchiveFile>
+        class ArchiveObserver : IStageObserver<ArchiveDirectory>
         {
             public static readonly ArchiveObserver Instance = new ArchiveObserver();
 
@@ -114,33 +114,33 @@ namespace KouXiaGu.Initialization
                 }
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
             {
                 Save(item.DirectoryPath);
                 yield break;
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
             {
                 yield break;
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnEnterRollBack(ArchiveDirectory item)
             {
                 yield break;
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnLeaveRollBack(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)
             {
                 yield break;
             }
 
-            void IStageObserver<ArchiveFile>.OnEnterCompleted()
+            void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
             {
                 Activated = DefalutDescription;
             }
 
-            void IStageObserver<ArchiveFile>.OnLeaveCompleted()
+            void IStageObserver<ArchiveDirectory>.OnLeaveCompleted()
             {
                 return;
             }

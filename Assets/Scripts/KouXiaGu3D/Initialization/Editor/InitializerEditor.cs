@@ -23,7 +23,7 @@ namespace KouXiaGu.Initialization
 
             if (GUILayout.Button("开始游戏"))
             {
-                GameStage.Start(new ArchiveFile());
+                GameStage.Start(ArchiveTemplet.DefaultArchived);
             }
 
             if (GUILayout.Button("结束游戏"))
@@ -35,6 +35,19 @@ namespace KouXiaGu.Initialization
             {
                 ArchiveStage.Start();
             }
+
+            GUILayout.EndVertical();
+
+
+            GUILayout.BeginVertical();
+
+            EditorGUILayout.LabelField("功能");
+
+            if (GUILayout.Button("导出空模板"))
+            {
+                ArchiveTemplet.TempletOutput();
+            }
+
 
             GUILayout.EndVertical();
 

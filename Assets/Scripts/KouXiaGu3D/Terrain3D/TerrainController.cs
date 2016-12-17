@@ -16,14 +16,6 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
-        /// 当未指定地图时使用随机的地图,而不是抛出异常;
-        /// </summary>
-        [SerializeField]
-        bool orRandomMap;
-
-        static TerrainMap currentMap;
-
-        /// <summary>
         /// 使用的地图;
         /// </summary>
         public static TerrainMap CurrentMap { get; set; }
@@ -87,14 +79,17 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 在进入游戏阶段初始化;
         /// </summary>
-        class GameStageInit : IStageObserver<ArchiveFile>
+        class GameStageInit : IStageObserver<ArchiveDirectory>
         {
             GameStageInit() { }
             public static readonly GameStageInit instance = new GameStageInit();
 
-            IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
             {
                 IEnumerator enumerator;
+
+                TerrainArchive.Load(item);
+                yield return null;
 
                 enumerator = GetMapInit();
                 while (enumerator.MoveNext())
@@ -102,13 +97,13 @@ namespace KouXiaGu.Terrain3D
 
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnEnterRollBack(ArchiveDirectory item)
             {
                 CurrentMap.Clear();
                 yield break;
             }
 
-            void IStageObserver<ArchiveFile>.OnEnterCompleted()
+            void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
             {
                 Debug.Log("地图读取完毕;" + ActivatedMap.ToLog());
                 return;
@@ -125,18 +120,18 @@ namespace KouXiaGu.Terrain3D
 
 
 
-            IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
             {
                 CurrentMap.Clear();
                 yield break;
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnLeaveRollBack(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)
             {
                 yield break;
             }
 
-            void IStageObserver<ArchiveFile>.OnLeaveCompleted()
+            void IStageObserver<ArchiveDirectory>.OnLeaveCompleted()
             {
                 return;
             }
@@ -146,14 +141,17 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 存档时调用;
         /// </summary>
-        class ArchiveStageInit : IStageObserver<ArchiveFile>
+        class ArchiveStageInit : IStageObserver<ArchiveDirectory>
         {
             ArchiveStageInit() { }
             public static readonly ArchiveStageInit instance = new ArchiveStageInit();
 
-            IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
             {
                 IEnumerator enumerator;
+
+                TerrainArchive.Save(item);
+                yield return null;
 
                 enumerator = GetMapSave();
                 while (enumerator.MoveNext())
@@ -162,12 +160,12 @@ namespace KouXiaGu.Terrain3D
                 yield break;
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnEnterRollBack(ArchiveDirectory item)
             {
                 yield break;
             }
 
-            void IStageObserver<ArchiveFile>.OnEnterCompleted()
+            void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
             {
                 return;
             }
@@ -182,17 +180,17 @@ namespace KouXiaGu.Terrain3D
             }
 
 
-            IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
             {
                 yield break;
             }
 
-            IEnumerator IStageObserver<ArchiveFile>.OnLeaveRollBack(ArchiveFile item)
+            IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)
             {
                 yield break;
             }
 
-            void IStageObserver<ArchiveFile>.OnLeaveCompleted()
+            void IStageObserver<ArchiveDirectory>.OnLeaveCompleted()
             {
                 return;
             }

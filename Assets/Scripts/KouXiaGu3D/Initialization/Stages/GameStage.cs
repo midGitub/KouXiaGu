@@ -12,7 +12,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏初始化,通过存档初始化游戏,等于开始一个新的游戏;
     /// </summary>
-    public class GameStage : StageObservable<ArchiveFile>
+    public class GameStage : StageObservable<ArchiveDirectory>
     {
 
         const Stages DEPUTY = Stages.Game;
@@ -36,18 +36,18 @@ namespace KouXiaGu.Initialization
         }
 
 
-        static ArchiveFile archive;
+        static ArchiveDirectory archive;
 
-        static readonly HashSet<IStageObserver<ArchiveFile>> observerSet = new HashSet<IStageObserver<ArchiveFile>>();
+        static readonly HashSet<IStageObserver<ArchiveDirectory>> observerSet = new HashSet<IStageObserver<ArchiveDirectory>>();
 
         static readonly GameStage instance = new GameStage();
 
-        protected override ArchiveFile Resource
+        protected override ArchiveDirectory Resource
         {
             get { return archive; }
         }
 
-        protected override IEnumerable<IStageObserver<ArchiveFile>> Observers
+        protected override IEnumerable<IStageObserver<ArchiveDirectory>> Observers
         {
             get { return observerSet; }
         }
@@ -57,22 +57,22 @@ namespace KouXiaGu.Initialization
 
         }
 
-        public static bool Subscribe(IStageObserver<ArchiveFile> observer)
+        public static bool Subscribe(IStageObserver<ArchiveDirectory> observer)
         {
             return observerSet.Add(observer);
         }
 
-        public static bool Unsubscribe(IStageObserver<ArchiveFile> observer)
+        public static bool Unsubscribe(IStageObserver<ArchiveDirectory> observer)
         {
             return observerSet.Remove(observer);
         }
 
-        public static bool Contains(IStageObserver<ArchiveFile> observer)
+        public static bool Contains(IStageObserver<ArchiveDirectory> observer)
         {
             return observerSet.Contains(observer);
         }
 
-        public static void Start(ArchiveFile archive)
+        public static void Start(ArchiveDirectory archive)
         {
             GameStage.archive = archive;
             Initializer.Add(instance);

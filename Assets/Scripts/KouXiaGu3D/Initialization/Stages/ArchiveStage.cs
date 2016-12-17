@@ -9,7 +9,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 保存游戏,在开始游戏后对游戏进行存档;
     /// </summary>
-    public class ArchiveStage : StageObservable<ArchiveFile>, IStageObserver<ArchiveFile>
+    public class ArchiveStage : StageObservable<ArchiveDirectory>, IStageObserver<ArchiveDirectory>
     {
 
         const Stages DEPUTY = Stages.Saving;
@@ -32,18 +32,18 @@ namespace KouXiaGu.Initialization
         }
 
 
-        static ArchiveFile archive;
+        static ArchiveDirectory archive;
 
-        static readonly HashSet<IStageObserver<ArchiveFile>> observerSet = new HashSet<IStageObserver<ArchiveFile>>();
+        static readonly HashSet<IStageObserver<ArchiveDirectory>> observerSet = new HashSet<IStageObserver<ArchiveDirectory>>();
 
         static readonly ArchiveStage instance = new ArchiveStage();
 
-        protected override ArchiveFile Resource
+        protected override ArchiveDirectory Resource
         {
             get { return archive; }
         }
 
-        protected override IEnumerable<IStageObserver<ArchiveFile>> Observers
+        protected override IEnumerable<IStageObserver<ArchiveDirectory>> Observers
         {
             get { return observerSet; }
         }
@@ -53,17 +53,17 @@ namespace KouXiaGu.Initialization
             Subscribe(this);
         }
 
-        public static bool Subscribe(IStageObserver<ArchiveFile> observer)
+        public static bool Subscribe(IStageObserver<ArchiveDirectory> observer)
         {
             return observerSet.Add(observer);
         }
 
-        public static bool Unsubscribe(IStageObserver<ArchiveFile> observer)
+        public static bool Unsubscribe(IStageObserver<ArchiveDirectory> observer)
         {
             return observerSet.Remove(observer);
         }
 
-        public static bool Contains(IStageObserver<ArchiveFile> observer)
+        public static bool Contains(IStageObserver<ArchiveDirectory> observer)
         {
             return observerSet.Contains(observer);
         }
@@ -71,9 +71,9 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 保存游戏为新的存档;
         /// </summary>
-        public static ArchiveFile Start()
+        public static ArchiveDirectory Start()
         {
-            ArchiveFile archive = new ArchiveFile();
+            ArchiveDirectory archive = new ArchiveDirectory();
             Start(archive);
             return archive;
         }
@@ -81,7 +81,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 保存游戏到存档;
         /// </summary>
-        public static void Start(ArchiveFile archive)
+        public static void Start(ArchiveDirectory archive)
         {
             ArchiveStage.archive = archive;
             archive.Create();
@@ -89,33 +89,33 @@ namespace KouXiaGu.Initialization
         }
 
 
-        IEnumerator IStageObserver<ArchiveFile>.OnEnter(ArchiveFile item)
+        IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
         {
             yield break;
         }
 
-        IEnumerator IStageObserver<ArchiveFile>.OnLeave(ArchiveFile item)
+        IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
         {
             yield break;
         }
 
-        IEnumerator IStageObserver<ArchiveFile>.OnEnterRollBack(ArchiveFile item)
+        IEnumerator IStageObserver<ArchiveDirectory>.OnEnterRollBack(ArchiveDirectory item)
         {
             archive.Destroy();
             yield break;
         }
 
-        IEnumerator IStageObserver<ArchiveFile>.OnLeaveRollBack(ArchiveFile item)
+        IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)
         {
             yield break;
         }
 
-        void IStageObserver<ArchiveFile>.OnEnterCompleted()
+        void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
         {
             archive.OnComplete();
         }
 
-        void IStageObserver<ArchiveFile>.OnLeaveCompleted()
+        void IStageObserver<ArchiveDirectory>.OnLeaveCompleted()
         {
             return;
         }
