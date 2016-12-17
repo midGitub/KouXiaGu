@@ -34,10 +34,14 @@ namespace KouXiaGu.Terrain3D
         const string MAPS_DIRECTORY_NAME = "TerrainMaps";
 
         /// <summary>
-        /// 描述文件名;
+        /// 预制地图描述文件名;
         /// </summary>
-        public const string MAP_DESCRIPTION_FILE_NAME = "TerrainMap.xml";
+        const string MAP_DESCRIPTION_FILE_NAME = "TerrainMap.xml";
 
+        /// <summary>
+        /// 预制地图数据文件;
+        /// </summary>
+        const string MAP_DATA_FILE_NAME = "Map.MAPP";
 
         /// <summary>
         /// 预定义的的地图存放路径;
@@ -107,16 +111,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 确认这个文件夹下是否存在地图文件;
-        /// </summary>
-        public static bool ConfirmDirectory(string directoryPath)
-        {
-            var paths = BlockProtoBufExtensions.GetFilePaths(directoryPath);
-            string path = paths.FirstOrDefault();
-            return path != null;
-        }
-
-        /// <summary>
         /// 获取到目录下的描述文件路径;
         /// </summary>
         static string GetDescriptionFilePath(string directoryPath)
@@ -130,19 +124,9 @@ namespace KouXiaGu.Terrain3D
 
         #region 实例部分;
 
-        /// <summary>
-        /// 地图分块大小;
-        /// </summary>
-        const short MapBlockSize = 600;
-
         MapDescription description;
 
-        BlockMapRecord<TerrainNode> map;
-
-        /// <summary>
-        /// 是否已经读取过了?
-        /// </summary>
-        public bool IsLoaded { get; private set; }
+        ExtractMap<CubicHexCoord, TerrainNode> map;
 
         /// <summary>
         /// 完整的地图存放路径;
@@ -161,22 +145,17 @@ namespace KouXiaGu.Terrain3D
             set { description = value; }
         }
 
-        internal BlockMapRecord<TerrainNode> MapEdit
-        {
-            get { return map; }
-        }
-
         /// <summary>
         /// 地形地图;
         /// </summary>
-        public IMap<CubicHexCoord, TerrainNode> Map
+        public IDictionary<CubicHexCoord, TerrainNode> Map
         {
             get { return map; }
         }
 
         TerrainMap()
         {
-            IsLoaded = false;
+            map = new ExtractMap<CubicHexCoord, TerrainNode>();
         }
 
         /// <summary>
@@ -223,67 +202,43 @@ namespace KouXiaGu.Terrain3D
             return this.DirectoryPath.GetHashCode();
         }
 
-        public void Clear()
+        /// <summary>
+        /// 读取地图数据到内存;
+        /// </summary>
+        /// <param name="archiveFilePath"></param>
+        public void Load(string archiveFilePath)
+        {
+            string prefabFilePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
+            if (map.Load(prefabFilePath, archiveFilePath))
+            {
+                Debug.LogWarning("初始化时未找到存档地图;");
+            }
+        }
+
+        public void Unload()
         {
             map.Clear();
-            IsLoaded = false;
         }
 
         /// <summary>
-        /// 若地图为空,则创建一个地图实例;
+        /// 保存地图;
         /// </summary>
-        BlockMapRecord<TerrainNode> CreateMapOrReturn()
+        /// <param name="resetArchive">是否重置归档数据?</param>
+        public void SavePrefab(bool resetArchive)
         {
-            return map ??
-                (map = new BlockMapRecord<TerrainNode>((MapBlockSize & 1) == 1 ? MapBlockSize : (short)(MapBlockSize + 1)));
+            string filePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
+            map.SavePrefab(filePath);
+
+            if (resetArchive)
+                map.ClearArchive();
         }
 
         /// <summary>
-        /// 保存上次保存之后修改过的地图;
+        /// 保存存档到;
         /// </summary>
-        public IEnumerator SaveAsync()
+        public void SaveArchive(string filePath)
         {
-            if (AllowEdit)
-            {
-                return map.SaveAsync(DirectoryPath, FileMode.Create);
-            }
-            else
-            {
-                return DontSaveRetrun();
-            }
-        }
-
-        /// <summary>
-        /// 保存所有地图;
-        /// </summary>
-        public IEnumerator SaveAllAsync()
-        {
-            if (AllowEdit)
-            {
-                return map.SaveAllAsync(DirectoryPath, FileMode.Create);
-            }
-            else
-            {
-                return DontSaveRetrun();
-            }
-        }
-
-        /// <summary>
-        /// 不保存地图并且返回一个空的迭代结构;
-        /// </summary>
-        static IEnumerator DontSaveRetrun()
-        {
-            Debug.Log("跳过地形地图保存;");
-            return EmptyEnumerator.GetInstance;
-        }
-
-        /// <summary>
-        /// 读取地图 或 若已经读取过了,则为重新加载地图;
-        /// </summary>
-        public IEnumerator LoadAsync()
-        {
-            var map = CreateMapOrReturn();
-            return map.LoadAsync(DirectoryPath);
+            map.SaveArchive(filePath);
         }
 
         #endregion

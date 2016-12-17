@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using KouXiaGu.Grids;
 using KouXiaGu.Initialization;
 using UnityEngine;
@@ -16,6 +18,12 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
+        /// 存档的地图数据文件;
+        /// </summary>
+        const string MAP_ARCHIVED_FILE_NAME = "Maps\\TerrainMap.MAPP";
+
+
+        /// <summary>
         /// 使用的地图;
         /// </summary>
         public static TerrainMap CurrentMap { get; set; }
@@ -23,10 +31,29 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
-        public static IMap<CubicHexCoord, TerrainNode> ActivatedMap
+        public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
         {
             get { return CurrentMap.Map; }
         }
+
+        /// <summary>
+        /// 对地图进行存档;
+        /// </summary>
+        static void SaveArchiveMap(string archiveDirectory)
+        {
+            string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
+            CurrentMap.SaveArchive(filePath);
+        }
+
+        /// <summary>
+        /// 读取地图 或 若已经读取过了,则为重新加载地图;
+        /// </summary>
+        static void LoadMap(string archiveDirectory)
+        {
+            string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
+            CurrentMap.Load(filePath);
+        }
+
 
         void Awake()
         {
@@ -86,43 +113,29 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
             {
-                IEnumerator enumerator;
-
                 TerrainArchive.Load(item);
                 yield return null;
 
-                enumerator = GetMapInit();
-                while (enumerator.MoveNext())
-                    yield return null;
-
+                LoadMap(item.DirectoryPath);
+                yield return null;
             }
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnEnterRollBack(ArchiveDirectory item)
             {
-                CurrentMap.Clear();
+                CurrentMap.Unload();
                 yield break;
             }
 
             void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
             {
-                Debug.Log("地图读取完毕;" + ActivatedMap.ToLog());
+                Debug.Log("地图读取完毕;" + ActivatedMap.ToCollectionLog());
                 return;
             }
 
 
-            IEnumerator GetMapInit()
-            {
-                if (CurrentMap == null)
-                    throw new NullReferenceException("未指定具体地图;");
-
-                return CurrentMap.LoadAsync();
-            }
-
-
-
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
             {
-                CurrentMap.Clear();
+                CurrentMap.Unload();
                 yield break;
             }
 
@@ -148,16 +161,11 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
             {
-                IEnumerator enumerator;
-
                 TerrainArchive.Save(item);
                 yield return null;
 
-                enumerator = GetMapSave();
-                while (enumerator.MoveNext())
-                    yield return null;
-
-                yield break;
+                SaveArchiveMap(item.DirectoryPath);
+                yield return null;
             }
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnEnterRollBack(ArchiveDirectory item)
@@ -168,15 +176,6 @@ namespace KouXiaGu.Terrain3D
             void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
             {
                 return;
-            }
-
-
-            public IEnumerator GetMapSave()
-            {
-                if (CurrentMap == null)
-                    throw new NullReferenceException("未指定具体地图!");
-
-                return CurrentMap.SaveAsync();
             }
 
 

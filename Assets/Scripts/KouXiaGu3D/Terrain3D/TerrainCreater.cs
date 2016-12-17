@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形地图;
         /// </summary>
-        public static IMap<CubicHexCoord, TerrainNode> terrainMap
+        public static IDictionary<CubicHexCoord, TerrainNode> terrainMap
         {
             get { return TerrainController.ActivatedMap; }
         }
@@ -128,7 +128,7 @@ namespace KouXiaGu.Terrain3D
                 get { return cameraPosition; }
             }
 
-            public BakeRequest(IMap<CubicHexCoord, TerrainNode> map, RectCoord chunkCoord) : this()
+            public BakeRequest(IDictionary<CubicHexCoord, TerrainNode> map, RectCoord chunkCoord) : this()
             {
                 this.ChunkCoord = chunkCoord;
                 this.cameraPosition = TerrainData.ChunkGrid.GetCenter(chunkCoord);
@@ -141,7 +141,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 获取到这次需要烘焙的所有节点;
             /// </summary>
-            IEnumerable<BakingNode> GetBakingNodes(IMap<CubicHexCoord, TerrainNode> map, RectCoord blockCoord)
+            IEnumerable<BakingNode> GetBakingNodes(IDictionary<CubicHexCoord, TerrainNode> map, RectCoord blockCoord)
             {
                 IEnumerable<CubicHexCoord> cover = TerrainData.GetChunkCover(blockCoord);
                 TerrainNode node;
