@@ -1,49 +1,13 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Grids;
 using System.Collections;
-using System.Xml.Serialization;
 using UnityEngine;
+using System;
 
 namespace KouXiaGu.Terrain3D
 {
-
-    [Serializable, XmlType("TerrainMap")]
-    public struct MapDescription
-    {
-
-        [XmlElement("id")]
-        public int id;
-
-        [XmlElement("Name")]
-        public string name;
-
-        [XmlElement("Time")]
-        public long time;
-
-        [XmlElement("Version")]
-        public int version;
-
-        [XmlElement("Description")]
-        public string description;
-
-        static readonly XmlSerializer TerrainMapInfoSerializer = new XmlSerializer(typeof(MapDescription));
-
-        public static void Serialize(string filePath, MapDescription data)
-        {
-            TerrainMapInfoSerializer.Serialize(filePath, data);
-        }
-
-        public static MapDescription Deserialize(string filePath)
-        {
-            MapDescription data = (MapDescription)TerrainMapInfoSerializer.Deserialize(filePath);
-            return data;
-        }
-
-    }
-
 
     /// <summary>
     /// 地形地图保存和提供;
@@ -197,6 +161,11 @@ namespace KouXiaGu.Terrain3D
             set { description = value; }
         }
 
+        internal BlockMapRecord<TerrainNode> MapEdit
+        {
+            get { return map; }
+        }
+
         /// <summary>
         /// 地形地图;
         /// </summary>
@@ -211,12 +180,12 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 创建一个新地图到预定义的目录下;
+        /// 根据ID创建一个新地图到预定义的目录下;
         /// </summary>
         public TerrainMap(MapDescription description) : this()
         {
-            this.description = description;
             this.DirectoryPath = Path.Combine(PredefinedDirectory, description.id.ToString());
+            this.description = description;
             UpdateDescription();
         }
 
