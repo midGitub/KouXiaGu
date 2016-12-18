@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形编辑工具;
+    /// 地形编辑工具(仅编辑模式);
     /// </summary>
     public class TerrainEditor : MonoBehaviour
     {
