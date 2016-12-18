@@ -25,6 +25,9 @@ namespace KouXiaGu.World
         Transform followTarget;
 
         [SerializeField]
+        Vector3 offset;
+
+        [SerializeField]
         float minHeight = 0;
         [SerializeField]
         float maxHeight = 500;
@@ -34,15 +37,32 @@ namespace KouXiaGu.World
 
         void Update()
         {
-            newPos = new Vector3();
-            currentPos = transform.position;
+            //newPos = new Vector3();
+            //currentPos = transform.position;
 
-            newPos.y = currentPos.y - Input.GetAxis(MOUSE_SCROLL_WHEEL);
-            newPos.y = Mathf.Clamp(newPos.y, minHeight, maxHeight);
+            //newPos.y = currentPos.y - Input.GetAxis(MOUSE_SCROLL_WHEEL);
+            //newPos.y = Mathf.Clamp(newPos.y, minHeight, maxHeight);
 
-            transform.position = newPos;
+            transform.position = CameraTargetPoint();
         }
 
+
+        /// <summary>
+        /// 获取到相机的目标点;
+        /// </summary>
+        Vector3 CameraTargetPoint()
+        {
+            Vector3 targetPosition = followTarget.position;
+            Vector3 camerzPosition = transform.position;
+            Vector3 camerzEulerAngles = transform.rotation.eulerAngles;
+            float camerzHeight = camerzPosition.y;
+            float camerzX = targetPosition.x;
+
+            float radius = (float)Math.Abs(Math.Tan(camerzEulerAngles.x * (Math.PI / 180)) * camerzHeight);
+            float camerzZ = targetPosition.z - radius;
+
+            return new Vector3(camerzX + offset.x, camerzHeight, camerzZ + offset.z);
+        }
 
     }
 

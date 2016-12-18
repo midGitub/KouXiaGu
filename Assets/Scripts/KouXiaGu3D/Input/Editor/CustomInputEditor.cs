@@ -12,7 +12,7 @@ namespace KouXiaGu.EditorTool
     public class CustomInputEditor : Editor
     {
 
-        static readonly Function[] Functions = Enum.GetValues(typeof(Function)).Cast<Function>().ToArray();
+        static readonly KeyFunction[] Functions = Enum.GetValues(typeof(KeyFunction)).Cast<KeyFunction>().ToArray();
 
         bool isLoad = false;
 

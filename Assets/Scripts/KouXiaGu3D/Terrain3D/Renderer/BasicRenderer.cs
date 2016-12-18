@@ -123,7 +123,7 @@ namespace KouXiaGu.Terrain3D
             bakingCamera.aspect = BakingParameter.CameraAspect;
             bakingCamera.orthographicSize = BakingParameter.CameraSize;
             bakingCamera.transform.rotation = BakingParameter.CameraRotation;
-            bakingCamera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色
+            bakingCamera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
 
             bakingCamera.backgroundColor = Color.black;
         }

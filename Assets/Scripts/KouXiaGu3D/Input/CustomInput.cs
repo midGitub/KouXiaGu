@@ -9,22 +9,13 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 游戏内定义的
-    /// </summary>
-    public enum Function
-    {
-        Camera_L,
-        Camera_R,
-    }
-
-    /// <summary>
     /// 对 UnityEngine.Input 进行包装;
     /// </summary>
     [DisallowMultipleComponent]
     public class CustomInput : MonoBehaviour
     {
 
-        internal static readonly Function[] Functions = Enum.GetValues(typeof(Function)).Cast<Function>().ToArray();
+        internal static readonly KeyFunction[] Functions = Enum.GetValues(typeof(KeyFunction)).Cast<KeyFunction>().ToArray();
 
         /// <summary>
         /// 按键映射表;
@@ -36,12 +27,12 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到所有按键值为空的功能键;
         /// </summary>
-        public static List<Function> EmptyKeys()
+        public static List<KeyFunction> EmptyKeys()
         {
-            List<Function> noneFunctionKeys = new List<Function>();
+            List<KeyFunction> noneFunctionKeys = new List<KeyFunction>();
             foreach (var key in keyMap)
             {
-                Function function = (Function)key.Key;
+                KeyFunction function = (KeyFunction)key.Key;
 
                 if (IsEmptyKes(function))
                     noneFunctionKeys.Add(function);
@@ -52,7 +43,7 @@ namespace KouXiaGu
         /// <summary>
         /// 是为未设置 具体按键的 功能键;
         /// </summary>
-        public static bool IsEmptyKes(Function function)
+        public static bool IsEmptyKes(KeyFunction function)
         {
             KeyCode keyCode = keyMap[(int)function];
             return keyCode == KeyCode.None;
@@ -61,7 +52,7 @@ namespace KouXiaGu
         /// <summary>
         /// 设置按键到映射表(但是不做保存);
         /// </summary>
-        public static void SetKey(Function function, KeyCode keyCode)
+        public static void SetKey(KeyFunction function, KeyCode keyCode)
         {
             keyMap[(int)function] = keyCode;
         }
@@ -69,7 +60,7 @@ namespace KouXiaGu
         /// <summary>
         /// 对按键进行转换;
         /// </summary>
-        public static KeyCode GetKey(Function function)
+        public static KeyCode GetKey(KeyFunction function)
         {
             KeyCode keycode = keyMap[(int)function];
             return keycode;
@@ -79,7 +70,7 @@ namespace KouXiaGu
         /// <summary>
         /// 用户有按着 相关按键 时一直返回true;
         /// </summary>
-        public static bool GetKeyHoldDown(Function function)
+        public static bool GetKeyHoldDown(KeyFunction function)
         {
             KeyCode keycode = GetKey(function);
             return Input.GetKey(keycode);
@@ -88,7 +79,7 @@ namespace KouXiaGu
         /// <summary>
         /// 用户开始按下 相关按键 关键帧时返回true。
         /// </summary>
-        public static bool GetKeyDown(Function function)
+        public static bool GetKeyDown(KeyFunction function)
         {
             KeyCode keycode = GetKey(function);
             return Input.GetKeyDown(keycode);
@@ -97,7 +88,7 @@ namespace KouXiaGu
         /// <summary>
         /// 用户释放 相关按键 的关键帧时返回true。
         /// </summary>
-        public static bool GetKeyUp(Function function)
+        public static bool GetKeyUp(KeyFunction function)
         {
             KeyCode keycode = GetKey(function);
             return Input.GetKeyUp(keycode);
@@ -108,6 +99,11 @@ namespace KouXiaGu
         const string CUSTIM_KEY_FILE_NAME = "Input\\Keyboard.xml";
 
         static readonly XmlSerializer customKeyListSerializer = new XmlSerializer(typeof(List<CustomKey>));
+
+        public static XmlSerializer CustomKeyListSerializer
+        {
+            get { return customKeyListSerializer; }
+        }
 
         /// <summary>
         /// 将按键信息已XML格式,保存到预定义的目录下;
