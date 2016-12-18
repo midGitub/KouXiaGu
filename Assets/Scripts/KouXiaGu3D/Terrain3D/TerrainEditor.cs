@@ -54,7 +54,7 @@ namespace KouXiaGu.Terrain3D
         {
             Dictionary<CubicHexCoord, TerrainNode> terrainMap = new Dictionary<CubicHexCoord, TerrainNode>();
 
-            foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Self, size))
+            foreach (var item in CubicHexCoord.Range(CubicHexCoord.Self, size))
             {
                 try
                 {

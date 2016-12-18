@@ -126,7 +126,7 @@ namespace KouXiaGu.World2D.Map
             RectCoord southwestMapPoint = GetSouthwestMapPoint(address);
             RectCoord northeastMapPoint = GetNortheastMapPoint(address);
 
-            return RectCoord.RectRange(southwestMapPoint, northeastMapPoint);
+            return RectCoord.Range(southwestMapPoint, northeastMapPoint);
         }
 
         /// <summary>

@@ -422,8 +422,11 @@ namespace KouXiaGu.Grids
         /// 获取到六边形的范围;
         /// 半径覆盖到的节点;
         /// </summary>
-        public static IEnumerable<CubicHexCoord> GetHexRange(CubicHexCoord target, int step)
+        public static IEnumerable<CubicHexCoord> Range(CubicHexCoord target, int step)
         {
+            if (step < 0)
+                throw new ArgumentOutOfRangeException();
+
             for (int x = -step; x <= step; x++)
             {
                 for (int y = Math.Max(-step, -x - step); y <= Math.Min(step, -x + step); y++)
@@ -438,7 +441,7 @@ namespace KouXiaGu.Grids
         ///  按 环状 返回点;
         /// </summary>
         /// <param name="radius">需要大于0</param>
-        public static IEnumerable<CubicHexCoord> GetHexRing(CubicHexCoord center, int radius)
+        public static IEnumerable<CubicHexCoord> Ring(CubicHexCoord center, int radius)
         {
             var cube = center + (CubicHexCoord.GetDirectionOffset(HexDirections.Northeast) * radius);
 
@@ -456,12 +459,12 @@ namespace KouXiaGu.Grids
         /// 按 螺旋 形状返回点;
         /// </summary>
         /// <param name="radius">需要大于0</param>
-        public static List<CubicHexCoord> GetHexSpiral(CubicHexCoord center, int radius)
+        public static List<CubicHexCoord> Spiral(CubicHexCoord center, int radius)
         {
             List<CubicHexCoord> coords = new List<CubicHexCoord>();
             for (int k = 1; k <= radius; k++)
             {
-                coords.AddRange(GetHexRing(center, k));
+                coords.AddRange(Ring(center, k));
             }
             return coords;
         }

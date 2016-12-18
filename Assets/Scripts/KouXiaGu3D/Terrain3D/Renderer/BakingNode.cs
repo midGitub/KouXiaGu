@@ -18,7 +18,6 @@ namespace KouXiaGu.Terrain3D
             this.Position = position;
             this.mapNode = mapNode;
             this.landform = GetLandform(mapNode);
-            NotBoundary = true;
         }
 
         /// <summary>
@@ -30,11 +29,6 @@ namespace KouXiaGu.Terrain3D
         /// 地貌信息;
         /// </summary>
         Landform landform;
-
-        /// <summary>
-        /// 这个点不为边界(超出地图范围)?
-        /// </summary>
-        public bool NotBoundary { get; private set; }
 
         /// <summary>
         /// 节点的位置;

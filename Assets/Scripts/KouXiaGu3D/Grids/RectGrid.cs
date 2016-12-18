@@ -124,7 +124,7 @@ namespace KouXiaGu.Grids
         {
             RectCoord southwest = GetCoord(rect.min);
             RectCoord northeast = GetCoord(rect.max);
-            return RectCoord.RectRange(southwest, northeast);
+            return RectCoord.Range(southwest, northeast);
         }
 
         /// <summary>

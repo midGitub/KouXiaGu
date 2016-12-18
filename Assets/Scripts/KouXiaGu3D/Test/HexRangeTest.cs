@@ -47,7 +47,7 @@ namespace KouXiaGu.Test
         [ContextMenu("环")]
         void Raing()
         {
-            foreach (var point in CubicHexCoord.GetHexRing(CubicHexCoord.Self, radius))
+            foreach (var point in CubicHexCoord.Ring(CubicHexCoord.Self, radius))
             {
                 Instantiate(point);
             }
@@ -56,7 +56,7 @@ namespace KouXiaGu.Test
         [ContextMenu("螺旋")]
         void Spiral()
         {
-            foreach (var point in CubicHexCoord.GetHexSpiral(CubicHexCoord.Self, radius))
+            foreach (var point in CubicHexCoord.Spiral(CubicHexCoord.Self, radius))
             {
                 Instantiate(point);
             }

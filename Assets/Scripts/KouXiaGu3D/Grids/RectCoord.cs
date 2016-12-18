@@ -290,7 +290,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到这个范围所有的点;
         /// </summary>
-        public static IEnumerable<RectCoord> RectRange(RectCoord southwest, RectCoord northeast)
+        public static IEnumerable<RectCoord> Range(RectCoord southwest, RectCoord northeast)
         {
             for (short x = southwest.x; x <= northeast.x; x++)
             {
@@ -299,6 +299,19 @@ namespace KouXiaGu.Grids
                     yield return new RectCoord(x, y);
                 }
             }
+        }
+
+        /// <summary>
+        /// 围绕坐标返回所有半径内的点;step 应该为正数;
+        /// </summary>
+        public static IEnumerable<RectCoord> Range(RectCoord center, short step)
+        {
+            if (step < 0)
+                throw new ArgumentOutOfRangeException();
+
+            RectCoord southwest = center - step;
+            RectCoord northeast = center + step;
+            return Range(southwest, northeast);
         }
 
         public static bool operator ==(RectCoord a, RectCoord b)

@@ -123,6 +123,9 @@ namespace KouXiaGu.Terrain3D
             bakingCamera.aspect = BakingParameter.CameraAspect;
             bakingCamera.orthographicSize = BakingParameter.CameraSize;
             bakingCamera.transform.rotation = BakingParameter.CameraRotation;
+            bakingCamera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色
+
+            bakingCamera.backgroundColor = Color.black;
         }
 
         void InitMaterial()
@@ -212,13 +215,9 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var node in bakingNodes)
             {
-                if (node.NotBoundary)
-                {
-                    Vector3 position = new Vector3(node.Position.x, indexY--, node.Position.z);
-                    var mesh = ovenDisplayMeshPool.Dequeue(position, node.RotationY);
-
-                    list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
-                }
+                Vector3 position = new Vector3(node.Position.x, indexY--, node.Position.z);
+                var mesh = ovenDisplayMeshPool.Dequeue(position, node.RotationY);
+                list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
             }
 
             return list;
@@ -328,6 +327,8 @@ namespace KouXiaGu.Terrain3D
 
             height_Alpha8.SetPixels32(data);
             height_Alpha8.Apply();
+
+            GameObject.Destroy(height_ARGB32);
 
             return height_Alpha8;
         }

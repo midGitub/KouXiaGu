@@ -135,7 +135,8 @@ namespace KouXiaGu.Terrain3D
                 this.bakingNodes = GetBakingNodes(map, chunkCoord).ToArray();
 
                 if (bakingNodes.Length == 0)
-                    throw new IndexOutOfRangeException("这个块坐标已经超出了地图的定义;");
+                    //throw new IndexOutOfRangeException("请求渲染地图块:" +chunkCoord + " ;超出了地图的定义;");
+                    Debug.LogWarning("请求渲染地图块:" + chunkCoord + " ;超出了地图的定义;");
             }
 
             /// <summary>
@@ -153,10 +154,6 @@ namespace KouXiaGu.Terrain3D
                     if (map.TryGetValue(coord, out node))
                     {
                         yield return new BakingNode(pixPoint, node);
-                    }
-                    else
-                    {
-                        yield return default(BakingNode);
                     }
                 }
             }
@@ -232,6 +229,22 @@ namespace KouXiaGu.Terrain3D
             };
 
             return breadthTraversal.Traversal(center, IsOutMinRange);
+        }
+
+        [ContextMenu("渲染所有")]
+        void BakingAll()
+        {
+            foreach (var item in RectCoord.Range(RectCoord.Self, 4))
+            {
+                try
+                {
+                    Create(item);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    continue;
+                }
+            }
         }
 
         #endregion

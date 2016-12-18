@@ -24,7 +24,6 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         const string MAP_ARCHIVED_FILE_NAME = "TerrainMap.MAPP";
 
-
         /// <summary>
         /// 使用的地图;
         /// </summary>
