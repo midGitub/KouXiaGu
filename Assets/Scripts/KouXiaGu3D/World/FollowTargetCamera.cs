@@ -27,16 +27,6 @@ namespace KouXiaGu.GameScene
         }
 
         /// <summary>
-        /// 在当前的目标位置放置一个假象的目标,若传入的当前目标也为假象的,则直接返回;
-        /// </summary>
-        static Transform GetImaginaryTarget()
-        {
-            GameObject obj = new GameObject(ImaginaryTargetName);
-            Transform imaginaryTarget = obj.transform;
-            return imaginaryTarget;
-        }
-
-        /// <summary>
         /// 更随目标;
         /// </summary>
         [SerializeField]
@@ -52,7 +42,7 @@ namespace KouXiaGu.GameScene
         TargetAroundCamera targetCamera;
 
         [SerializeField]
-        FreeMovementCamera movementCamera;
+        CameraMovement cameraMovement;
 
         /// <summary>
         /// 本 GameObject 绑定的摄像机;
@@ -63,6 +53,10 @@ namespace KouXiaGu.GameScene
         /// 摄像机需要移动到的点;
         /// </summary>
         Vector3 cameraTagetPoint;
+
+        /// <summary>
+        /// 相机当前移动速度;
+        /// </summary>
         Vector3 currentVelocity;
 
         Transform imaginaryTarget;
@@ -98,18 +92,10 @@ namespace KouXiaGu.GameScene
             get { return target; }
             set
             {
-                Transform newTarget;
                 if (value == null)
-                {
-                    newTarget = ImaginaryTarget;
-                    isFollowMode = false;
-                }
+                    UnFollowTarget();
                 else
-                {
-                    newTarget = value;
-                    isFollowMode = true;
-                }
-                this.target = newTarget;
+                    FollowTarget(value);
             }
         }
 
@@ -120,23 +106,76 @@ namespace KouXiaGu.GameScene
 
         void Start()
         {
-            if (Target == null)
-                Target = null;
+            if (this.target == null)
+                FollowTarget(ImaginaryTarget);
         }
+
+        public float aaa;
 
         void Update()
         {
             Vector3 temp_cameraPoint = cameraPoint;
             Vector3 temp_targetPoint = targetPoint;
 
-            targetCamera.RotationInput();
-            movementCamera.MovementInput(ref temp_targetPoint);
+            if (targetCamera.RotationInput())
+            {
+                //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
+            }
 
+            transform.LookAt(target.position);
             cameraTagetPoint = targetCamera.GetCameranPosition(temp_targetPoint);
-            cameraComponent.transform.LookAt(temp_targetPoint);
+            //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
+
+            if (cameraMovement.MovementInput(this.target, transform, ref temp_targetPoint))
+            {
+                //UnFollowTarget();
+            }
+            else
+            {
+                //transform.rotation = cameraTagetRotation;
+            }
+
+            //cameraTagetPoint = targetCamera.GetCameranPosition(temp_targetPoint);
+            //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
 
             targetPoint = temp_targetPoint;
-            cameraPoint = Vector3.SmoothDamp(temp_cameraPoint, cameraTagetPoint, ref currentVelocity, 0.1f);
+            cameraPoint = Vector3.SmoothDamp(temp_cameraPoint, cameraTagetPoint, ref currentVelocity, 0.5f);
+        }
+
+        void OnValidate()
+        {
+            if(this.target == null)
+                FollowTarget(ImaginaryTarget);
+        }
+
+        /// <summary>
+        /// 创建一个假象的目标;
+        /// </summary>
+        Transform GetImaginaryTarget()
+        {
+            GameObject obj = new GameObject(ImaginaryTargetName);
+            Transform imaginaryTarget = obj.transform;
+            return imaginaryTarget;
+        }
+
+        /// <summary>
+        /// 开始更随目标;
+        /// </summary>
+        /// <param name="target"></param>
+        void FollowTarget(Transform newTarget)
+        {
+            this.target = newTarget;
+            isFollowMode = true;
+        }
+
+        /// <summary>
+        /// 停止更随目标;
+        /// </summary>
+        void UnFollowTarget()
+        {
+            ImaginaryTarget.position = this.target.position;
+            this.target = ImaginaryTarget;
+            isFollowMode = false;
         }
 
         /// <summary>
@@ -212,8 +251,11 @@ namespace KouXiaGu.GameScene
 
         }
 
+        /// <summary>
+        /// 摄像机移动;
+        /// </summary>
         [Serializable]
-        public class FreeMovementCamera
+        public class CameraMovement
         {
             /// <summary>
             /// 相机运动速度;
@@ -233,9 +275,12 @@ namespace KouXiaGu.GameScene
             /// <summary>
             /// 输入更新,若存在输入则返回true;
             /// </summary>
-            public bool MovementInput(ref Vector3 movement)
+            public bool MovementInput(Transform target, Transform camera, ref Vector3 movement0)
             {
                 bool isInput = false;
+
+                Vector3 movement = new Vector3();
+                //target.forward = camera.forward;
 
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Up))
                 {
@@ -257,6 +302,16 @@ namespace KouXiaGu.GameScene
                     movement.x -= movementSpeed * InputOnUpdate;
                     isInput = true;
                 }
+
+                if (isInput)
+                {
+                    float y = camera.rotation.eulerAngles.y;
+                    movement = Quaternion.Euler(0, y, 0) * movement;
+
+                    target.Translate(movement, Space.World);
+                }
+
+                movement0 = target.position;
                 return isInput;
             }
 
