@@ -115,18 +115,18 @@ namespace KouXiaGu.GameScene
         void Update()
         {
             Vector3 temp_cameraPoint = cameraPoint;
-            Vector3 temp_targetPoint = targetPoint;
+            //Vector3 temp_targetPoint = targetPoint;
 
-            if (targetCamera.RotationInput())
-            {
-                //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
-            }
+            //if (targetCamera.RotationInput())
+            //{
+            //    //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
+            //}
 
-            transform.LookAt(target.position);
-            cameraTagetPoint = targetCamera.GetCameranPosition(temp_targetPoint);
-            //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
+            //transform.LookAt(target.position);
+            //cameraTagetPoint = targetCamera.GetCameranPosition(temp_targetPoint);
+            ////transform.rotation = Quaternion.LookRotation(target.position - transform.position);
 
-            if (cameraMovement.MovementInput(this.target, transform, ref temp_targetPoint))
+            if (cameraMovement.Movement(transform))
             {
                 //UnFollowTarget();
             }
@@ -138,8 +138,9 @@ namespace KouXiaGu.GameScene
             //cameraTagetPoint = targetCamera.GetCameranPosition(temp_targetPoint);
             //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
 
-            targetPoint = temp_targetPoint;
-            cameraPoint = Vector3.SmoothDamp(temp_cameraPoint, cameraTagetPoint, ref currentVelocity, 0.5f);
+            //targetPoint = temp_targetPoint;
+            //cameraTagetPoint = temp_cameraPoint;
+            //cameraPoint = Vector3.SmoothDamp(cameraPoint, cameraTagetPoint, ref currentVelocity, 0.5f);
         }
 
         void OnValidate()
@@ -273,14 +274,32 @@ namespace KouXiaGu.GameScene
             }
 
             /// <summary>
-            /// 输入更新,若存在输入则返回true;
+            /// 对摄像机进行移动;
             /// </summary>
-            public bool MovementInput(Transform target, Transform camera, ref Vector3 movement0)
+            public bool Movement(Transform camera)
+            {
+                Vector3 movement;
+                bool isInput = MovementInput(out movement);
+
+                if (isInput)
+                {
+                    float y = camera.rotation.eulerAngles.y;
+                    movement = Quaternion.Euler(0, y, 0) * movement;
+
+                    camera.Translate(movement, Space.World);
+                }
+
+                return isInput;
+            }
+
+
+            /// <summary>
+            /// 获取到输入的偏移量,若存在输入则返回 true;
+            /// </summary>
+            bool MovementInput(out Vector3 movement)
             {
                 bool isInput = false;
-
-                Vector3 movement = new Vector3();
-                //target.forward = camera.forward;
+                movement = new Vector3();
 
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Up))
                 {
@@ -303,15 +322,6 @@ namespace KouXiaGu.GameScene
                     isInput = true;
                 }
 
-                if (isInput)
-                {
-                    float y = camera.rotation.eulerAngles.y;
-                    movement = Quaternion.Euler(0, y, 0) * movement;
-
-                    target.Translate(movement, Space.World);
-                }
-
-                movement0 = target.position;
                 return isInput;
             }
 
