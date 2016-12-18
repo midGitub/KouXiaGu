@@ -89,7 +89,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Serialize(Landform[] landforms)
         {
-            serializerArray.Serialize(ConfigFilePath, landforms);
+            serializerArray.SerializeFile(ConfigFilePath, landforms);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static Landform[] Deserialize()
         {
-            Landform[] landforms = (Landform[])serializerArray.Deserialize(ConfigFilePath);
+            Landform[] landforms = (Landform[])serializerArray.DeserializeFile(ConfigFilePath);
             return landforms;
         }
 

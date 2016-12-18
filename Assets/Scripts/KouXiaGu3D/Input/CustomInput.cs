@@ -141,7 +141,7 @@ namespace KouXiaGu
         public static void Save(string filePath)
         {
             var customKeyList = GetCustomKeyList();
-            customKeyListSerializer.Serialize(filePath, customKeyList, FileMode.Create);
+            customKeyListSerializer.SerializeFile(filePath, customKeyList, FileMode.Create);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace KouXiaGu
         /// </summary>
         public static void Load(string filePath)
         {
-            var customKeys = (List<CustomKey>)customKeyListSerializer.Deserialize(filePath);
+            var customKeys = (List<CustomKey>)customKeyListSerializer.DeserializeFile(filePath);
             UpdateKeyMap(customKeys);
         }
 

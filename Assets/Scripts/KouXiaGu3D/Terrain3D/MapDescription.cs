@@ -31,12 +31,12 @@ namespace KouXiaGu.Terrain3D
 
         public static void Serialize(string filePath, MapDescription data)
         {
-            TerrainMapInfoSerializer.Serialize(filePath, data);
+            TerrainMapInfoSerializer.SerializeFile(filePath, data);
         }
 
         public static MapDescription Deserialize(string filePath)
         {
-            MapDescription data = (MapDescription)TerrainMapInfoSerializer.Deserialize(filePath);
+            MapDescription data = (MapDescription)TerrainMapInfoSerializer.DeserializeFile(filePath);
             return data;
         }
 

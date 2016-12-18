@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 using ProtoBuf;
 
@@ -14,21 +15,38 @@ namespace KouXiaGu
 
         #region XML
 
+        static readonly XmlQualifiedName[] namespaces = new XmlQualifiedName[]
+            {
+                new XmlQualifiedName("XiaGu", "KouXiaGu"),
+            };
+
+        static readonly XmlSerializerNamespaces xmlSerializerNamespaces = new XmlSerializerNamespaces(namespaces);
+
+        static readonly XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+        {
+            Indent = true,
+            NewLineChars = Environment.NewLine,
+            NewLineOnAttributes = false,
+        };
+
         /// <summary>
-        /// 序列化到文件;
+        /// 序列化为 自定义的 utf-8 格式;
         /// </summary>
-        public static void Serialize(this XmlSerializer serializer, string filePath, object item, FileMode fileMode = FileMode.Create)
+        public static void SerializeFile(this XmlSerializer serializer, string filePath, object item, FileMode fileMode = FileMode.Create)
         {
             using (FileStream fStream = new FileStream(filePath, fileMode, FileAccess.Write))
             {
-                serializer.Serialize(fStream, item);
+                using (XmlWriter xmlWriter = XmlWriter.Create(fStream, xmlWriterSettings))
+                {
+                    serializer.Serialize(xmlWriter, item, xmlSerializerNamespaces);
+                }
             }
         }
 
         /// <summary>
-        /// 从文件反序列化为;
+        /// 反序列化;
         /// </summary>
-        public static object Deserialize(this XmlSerializer serializer, string filePath, FileMode fileMode = FileMode.Open)
+        public static object DeserializeFile(this XmlSerializer serializer, string filePath, FileMode fileMode = FileMode.Open)
         {
             using (FileStream fStream = new FileStream(filePath, fileMode, FileAccess.Read))
             {
