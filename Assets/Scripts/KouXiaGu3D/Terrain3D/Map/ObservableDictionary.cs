@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ProtoBuf;
 using UniRx;
 
 namespace KouXiaGu.Terrain3D
@@ -10,6 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 可以监视变化的字典结构;
     /// </summary>
+    [ProtoContract]
     public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>
     {
 
@@ -55,16 +57,11 @@ namespace KouXiaGu.Terrain3D
             get {  return this.dictionary.Values; }
         }
 
+
         public ObservableDictionary()
         {
             this.dictionary = new Dictionary<TKey, TValue>();
             this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>();
-        }
-
-        public ObservableDictionary(IEnumerable<IObserver<DictionaryChange<TKey, TValue>>> observers)
-        {
-            this.dictionary = new Dictionary<TKey, TValue>();
-            this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>(observers);
         }
 
         public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
@@ -73,19 +70,12 @@ namespace KouXiaGu.Terrain3D
             this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>();
         }
 
-        public ObservableDictionary(
-            IDictionary<TKey, TValue> dictionary,
-            IEnumerable<IObserver<DictionaryChange<TKey, TValue>>> observers)
-        {
-            this.dictionary = new Dictionary<TKey, TValue>(dictionary);
-            this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>(observers);
-        }
-
         public ObservableDictionary(int capacity)
         {
             this.dictionary = new Dictionary<TKey, TValue>(capacity);
             this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>();
         }
+
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
