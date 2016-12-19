@@ -138,7 +138,7 @@ namespace KouXiaGu.Initialization
                 Pop(item);
             };
 
-            Observable.FromMicroCoroutine(item.OnEnter).
+            Observable.FromMicroCoroutine(item.OnLeave).
              Subscribe(OnNext, onError, onCompleted);
         }
 

@@ -10,7 +10,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 存档描述文件;
     /// </summary>
-    public sealed class ArchiveDescription : MonoBehaviour
+    public sealed class ArchiveDescr : MonoBehaviour
     {
         /// <summary>
         /// 存档文件名;

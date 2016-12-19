@@ -27,7 +27,7 @@ namespace KouXiaGu.Terrain3D
         public static void SaveMap(string archiveDirectory)
         {
             if (ArchiveMap == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("存档地图未初始化");
 
             string filePath = Archiver.CreateDirectory(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
 
@@ -61,6 +61,19 @@ namespace KouXiaGu.Terrain3D
                 throw new NullReferenceException("地形地图还未初始化;");
 
             MapArchiver.ArchiveMap.Subscribe(terrainMap.Map);
+        }
+
+        /// <summary>
+        /// 清空数据;
+        /// </summary>
+        public static void UnLoad()
+        {
+            if (ArchiveMap != null)
+            {
+                ArchiveMap.Unsubscribe();
+                ArchiveMap.Clear();
+                ArchiveMap = null;
+            }
         }
 
     }

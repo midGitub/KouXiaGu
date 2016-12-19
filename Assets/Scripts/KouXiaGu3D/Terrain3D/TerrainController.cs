@@ -117,7 +117,12 @@ namespace KouXiaGu.Terrain3D
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
             {
                 CurrentMap.Unload();
-                yield break;
+                CurrentMap = null;
+                yield return null;
+
+                MapArchiver.UnLoad();
+                yield return null;
+
             }
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)
@@ -127,6 +132,7 @@ namespace KouXiaGu.Terrain3D
 
             void IStageObserver<ArchiveDirectory>.OnLeaveCompleted()
             {
+                Debug.Log("清除地形数据;");
                 return;
             }
 

@@ -217,6 +217,7 @@ namespace KouXiaGu.Terrain3D
             if (map != null)
             {
                 map.Clear();
+                map.EndTransmission();
                 map = null;
             }
         }

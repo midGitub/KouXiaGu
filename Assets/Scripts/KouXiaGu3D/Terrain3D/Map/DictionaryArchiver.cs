@@ -171,7 +171,11 @@ namespace KouXiaGu.Terrain3D
 
         public void Unsubscribe()
         {
-            unsubscriber.Dispose();
+            if (unsubscriber != null)
+            {
+                unsubscriber.Dispose();
+                unsubscriber = null;
+            }
         }
 
     }
