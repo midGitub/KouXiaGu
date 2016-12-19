@@ -7,7 +7,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     [Flags]
-    public enum CollectionOperation
+    public enum Operation
     {
         Unknown = 0,
         Add = 1,

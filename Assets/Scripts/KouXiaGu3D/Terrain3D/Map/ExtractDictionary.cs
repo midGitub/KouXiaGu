@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace KouXiaGu.Terrain3D
@@ -7,6 +8,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 对修改的节点进行保存;
     /// </summary>
+    [Obsolete]
     public class ExtractDictionary<TKey, TValue> : IDictionary<TKey,TValue>
         where TValue : struct
     {

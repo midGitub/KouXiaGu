@@ -5,7 +5,7 @@ using System.Linq;
 namespace KouXiaGu
 {
 
-    public static class CollectionExtensions
+    public static class DictionaryExtensions
     {
 
         /// <summary>
@@ -78,33 +78,6 @@ namespace KouXiaGu
             return dictionary;
         }
 
-
-
-        public static List<TR> ToList<T, TR>(this IEnumerable<T> collection, Func<T, TR> func)
-        {
-            List<TR> list = new List<TR>();
-
-            foreach (var item in collection)
-            {
-                TR tr = func(item);
-                list.Add(tr);
-            }
-
-            return list;
-        }
-
-        public static Queue<TR> ToQueue<T, TR>(this IEnumerable<T> collection, Func<T, TR> func)
-        {
-            Queue<TR> queue = new Queue<TR>();
-
-            foreach (var item in collection)
-            {
-                TR tr = func(item);
-                queue.Enqueue(tr);
-            }
-
-            return queue;
-        }
 
     }
 

@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D
             if (TerrainController.CurrentMap != null)
             {
                 EditorGUILayout.IntField("地图容量:", TerrainController.CurrentMap.Map.Count);
-                EditorGUILayout.IntField("归档容量:", TerrainController.CurrentMap.ArchiveCount);
+                EditorGUILayout.IntField("归档容量:", MapArchiver.ArchiveMap.Count);
             }
             else
                 EditorGUILayout.IntField("地图容量:", 0);
@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
 
             if (GUILayout.Button("保存预制"))
             {
-                TerrainController.CurrentMap.SavePrefab(edit.resetArchiveMap);
+                TerrainController.CurrentMap.Save();
             }
 
             if (GUILayout.Button("随机地图"))

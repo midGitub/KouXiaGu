@@ -17,13 +17,6 @@ namespace KouXiaGu.Terrain3D
     public sealed class TerrainController : MonoBehaviour
     {
 
-        const string MAP_ARCHIVED_DIRECTORY_NAME = "Maps";
-
-        /// <summary>
-        /// 存档的地图数据文件;
-        /// </summary>
-        const string MAP_ARCHIVED_FILE_NAME = "TerrainMap.MAPP";
-
         /// <summary>
         /// 使用的地图;
         /// </summary>
@@ -36,30 +29,6 @@ namespace KouXiaGu.Terrain3D
         {
             get { return CurrentMap.Map; }
         }
-
-        /// <summary>
-        /// 对地图进行存档;
-        /// </summary>
-        static void SaveArchiveMap(string archiveDirectory)
-        {
-            archiveDirectory = Path.Combine(archiveDirectory, MAP_ARCHIVED_DIRECTORY_NAME);
-            string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
-
-            if (!Directory.Exists(archiveDirectory))
-                Directory.CreateDirectory(archiveDirectory);
-
-            CurrentMap.SaveArchive(filePath);
-        }
-
-        /// <summary>
-        /// 读取地图 或 若已经读取过了,则为重新加载地图;
-        /// </summary>
-        static void LoadMap(string archiveDirectory)
-        {
-            string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
-            CurrentMap.Load(filePath);
-        }
-
 
         void Awake()
         {
@@ -122,7 +91,13 @@ namespace KouXiaGu.Terrain3D
                 TerrainArchive.Load(item);
                 yield return null;
 
-                LoadMap(item.DirectoryPath);
+                CurrentMap.Load();
+                yield return null;
+
+                MapArchiver.LoadMap(item.DirectoryPath);
+                yield return null;
+
+                MapArchiver.Subscribe(CurrentMap);
                 yield return null;
             }
 
@@ -170,7 +145,7 @@ namespace KouXiaGu.Terrain3D
                 TerrainArchive.Save(item);
                 yield return null;
 
-                SaveArchiveMap(item.DirectoryPath);
+                MapArchiver.SaveMap(item.DirectoryPath);
                 yield return null;
             }
 

@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         public static TerrainMap CreateMap(MapDescription description)
         {
             var map = new TerrainMap(description);
-            map.SavePrefab(true);
+            map.Save();
             return map;
         }
 

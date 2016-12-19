@@ -106,7 +106,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static TerrainMap FindMap(int id, string directoryPaths)
         {
-            TerrainMap map = GetMaps(directoryPaths).First(tmap => tmap.ID == id);
+            TerrainMap map = GetMaps(directoryPaths).First(tmap => tmap.Description.id == id);
             return map;
         }
 
@@ -126,18 +126,12 @@ namespace KouXiaGu.Terrain3D
 
         MapDescription description;
 
-        ExtractDictionary<CubicHexCoord, TerrainNode> map;
+        ObservableDictionary<CubicHexCoord, TerrainNode> map;
 
         /// <summary>
         /// 完整的地图存放路径;
         /// </summary>
         public string DirectoryPath { get; private set; }
-
-        public int ID
-        {
-            get { return description.id; }
-            private set { description.id = value; }
-        }
 
         public MapDescription Description
         {
@@ -148,26 +142,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形地图;
         /// </summary>
-        public IDictionary<CubicHexCoord, TerrainNode> Map
+        public ObservableDictionary<CubicHexCoord, TerrainNode> Map
         {
             get { return map; }
-        }
-
-        [Obsolete]
-        public int ArchiveCount
-        {
-            get { return map.ArchiveCount; }
-        }
-
-        TerrainMap()
-        {
-            map = new ExtractDictionary<CubicHexCoord, TerrainNode>();
         }
 
         /// <summary>
         /// 根据ID创建一个新地图到预定义的目录下;
         /// </summary>
-        public TerrainMap(MapDescription description) : this()
+        public TerrainMap(MapDescription description)
         {
             this.DirectoryPath = Path.Combine(PredefinedDirectory, description.id.ToString());
             this.description = description;
@@ -177,7 +160,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建一个新地图到目录下;
         /// </summary>
-        public TerrainMap(MapDescription description, string directoryPath) : this()
+        public TerrainMap(MapDescription description, string directoryPath)
         {
             this.description = description;
             this.DirectoryPath = directoryPath;
@@ -211,42 +194,64 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 读取地图数据到内存;
         /// </summary>
-        /// <param name="archiveFilePath"></param>
-        public void Load(string archiveFilePath)
+        public void Load()
         {
             string prefabFilePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
-
-            if (File.Exists(archiveFilePath))
-                map.Load(prefabFilePath, archiveFilePath);
-            else
-                map.Load(prefabFilePath);
+            map = LoadMap(prefabFilePath);
         }
 
+        /// <summary>
+        /// 保存地图数据;
+        /// </summary>
+        public void Save()
+        {
+            string prefabFilePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
+            SaveMap(map, prefabFilePath);
+        }
+
+        /// <summary>
+        /// 卸载读取的地图;
+        /// </summary>
         public void Unload()
         {
-            map.Clear();
+            if (map != null)
+            {
+                map.Clear();
+                map = null;
+            }
         }
 
-        /// <summary>
-        /// 保存地图;
-        /// </summary>
-        /// <param name="resetArchive">是否重置归档数据?</param>
-        public void SavePrefab(bool resetArchive)
+        ObservableDictionary<CubicHexCoord, TerrainNode> LoadMap(string filePath)
         {
-            string filePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
-            map.SavePrefab(filePath);
-
-            if (resetArchive)
-                map.ClearArchive();
+            return SerializeHelper.DeserializeProtoBuf<ObservableDictionary<CubicHexCoord, TerrainNode>>(filePath);
         }
 
-        /// <summary>
-        /// 保存存档到;
-        /// </summary>
-        public void SaveArchive(string filePath)
+        void SaveMap(ObservableDictionary<CubicHexCoord, TerrainNode> map, string filePath)
         {
-            map.SaveArchive(filePath);
+            SerializeHelper.SerializeProtoBuf(filePath, map);
         }
+
+
+        ///// <summary>
+        ///// 保存地图;
+        ///// </summary>
+        ///// <param name="resetArchive">是否重置归档数据?</param>
+        //public void SavePrefab(bool resetArchive)
+        //{
+        //    string filePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
+        //    map.SavePrefab(filePath);
+
+        //    if (resetArchive)
+        //        map.ClearArchive();
+        //}
+
+        ///// <summary>
+        ///// 保存存档到;
+        ///// </summary>
+        //public void SaveArchive(string filePath)
+        //{
+        //    map.SaveArchive(filePath);
+        //}
 
         #endregion
 

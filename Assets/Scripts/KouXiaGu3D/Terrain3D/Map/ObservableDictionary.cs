@@ -169,19 +169,19 @@ namespace KouXiaGu.Terrain3D
 
         void TrackAdd(TKey key, TValue newValue)
         {
-            var change = new DictionaryChange<TKey, TValue>(CollectionOperation.Add, key, default(TValue), newValue);
+            var change = new DictionaryChange<TKey, TValue>(Operation.Add, key, default(TValue), newValue);
             TrackChange(change);
         }
 
         void TrackRemove(TKey key, TValue original)
         {
-            var change = new DictionaryChange<TKey, TValue>(CollectionOperation.Remove, key, original, default(TValue));
+            var change = new DictionaryChange<TKey, TValue>(Operation.Remove, key, original, default(TValue));
             TrackChange(change);
         }
 
         void TrackUpdate(TKey key, TValue original, TValue newValue)
         {
-            var change = new DictionaryChange<TKey, TValue>(CollectionOperation.Update, key, original, newValue);
+            var change = new DictionaryChange<TKey, TValue>(Operation.Update, key, original, newValue);
             TrackChange(change);
         }
 

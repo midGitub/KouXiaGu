@@ -96,7 +96,7 @@ namespace KouXiaGu.Terrain3D
 
         static int GetTerrainMapID()
         {
-            return TerrainController.CurrentMap.ID;
+            return TerrainController.CurrentMap.Description.id;
         }
 
         static void SetTerrainMapID(TerrainArchive archive)

@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
     public struct DictionaryChange<TKey, TValue>
     {
 
-        public DictionaryChange(CollectionOperation operation, TKey key, TValue value, TValue newValue)
+        public DictionaryChange(Operation operation, TKey key, TValue value, TValue newValue)
         {
             this.Operation = operation;
             this.Key = key;
@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 操作的类型;
         /// </summary>
-        public CollectionOperation Operation { get; private set; }
+        public Operation Operation { get; private set; }
 
         /// <summary>
         /// 索引值;

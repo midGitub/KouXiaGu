@@ -132,13 +132,13 @@ namespace KouXiaGu.Terrain3D
         {
             switch (value.Operation)
             {
-                case CollectionOperation.Add:
+                case Operation.Add:
                     Add(value);
                     break;
-                case CollectionOperation.Remove:
+                case Operation.Remove:
                     Remove(value);
                     break;
-                case CollectionOperation.Update:
+                case Operation.Update:
                     Update(value);
                     break;
             }
