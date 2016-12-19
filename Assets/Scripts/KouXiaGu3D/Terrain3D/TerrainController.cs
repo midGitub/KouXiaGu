@@ -168,17 +168,17 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
             {
-                yield break;
+                throw new NotImplementedException();
             }
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)
             {
-                yield break;
+                throw new NotImplementedException();
             }
 
             void IStageObserver<ArchiveDirectory>.OnLeaveCompleted()
             {
-                return;
+                throw new NotImplementedException();
             }
         }
 
