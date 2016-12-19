@@ -7,7 +7,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 对修改的节点进行保存;
     /// </summary>
-    public class ExtractMap<TKey, TValue> : IDictionary<TKey,TValue>
+    public class ExtractDictionary<TKey, TValue> : IDictionary<TKey,TValue>
         where TValue : struct
     {
 
@@ -61,7 +61,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建一个空地图;
         /// </summary>
-        public ExtractMap()
+        public ExtractDictionary()
         {
             this.mapCollection = new Dictionary<TKey, TValue>();
             this.archiveMap = new Dictionary<TKey, TValue>();

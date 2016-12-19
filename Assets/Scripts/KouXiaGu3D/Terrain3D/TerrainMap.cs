@@ -126,7 +126,7 @@ namespace KouXiaGu.Terrain3D
 
         MapDescription description;
 
-        ExtractMap<CubicHexCoord, TerrainNode> map;
+        ExtractDictionary<CubicHexCoord, TerrainNode> map;
 
         /// <summary>
         /// 完整的地图存放路径;
@@ -161,7 +161,7 @@ namespace KouXiaGu.Terrain3D
 
         TerrainMap()
         {
-            map = new ExtractMap<CubicHexCoord, TerrainNode>();
+            map = new ExtractDictionary<CubicHexCoord, TerrainNode>();
         }
 
         /// <summary>
