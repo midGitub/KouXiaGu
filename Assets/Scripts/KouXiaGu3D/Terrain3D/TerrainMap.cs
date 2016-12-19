@@ -88,7 +88,7 @@ namespace KouXiaGu.Terrain3D
         public static TerrainMap GetMap(string directoryPath)
         {
             string filePath = GetDescriptionFilePath(directoryPath);
-            var data = MapDescription.Deserialize(filePath);
+            var data = TerrainMapDescr.Deserialize(filePath);
             TerrainMap map = new TerrainMap(data, directoryPath);
             return map;
         }
@@ -124,7 +124,7 @@ namespace KouXiaGu.Terrain3D
 
         #region 实例部分;
 
-        MapDescription description;
+        TerrainMapDescr description;
 
         ObservableDictionary<CubicHexCoord, TerrainNode> map;
 
@@ -133,7 +133,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public string DirectoryPath { get; private set; }
 
-        public MapDescription Description
+        public TerrainMapDescr Description
         {
             get { return description; }
             set { description = value; }
@@ -150,7 +150,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 根据ID创建一个新地图到预定义的目录下;
         /// </summary>
-        public TerrainMap(MapDescription description)
+        public TerrainMap(TerrainMapDescr description)
         {
             this.DirectoryPath = Path.Combine(PredefinedDirectory, description.id.ToString());
             this.description = description;
@@ -160,7 +160,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建一个新地图到目录下;
         /// </summary>
-        public TerrainMap(MapDescription description, string directoryPath)
+        public TerrainMap(TerrainMapDescr description, string directoryPath)
         {
             this.description = description;
             this.DirectoryPath = directoryPath;
@@ -176,7 +176,7 @@ namespace KouXiaGu.Terrain3D
                 Directory.CreateDirectory(DirectoryPath);
 
             string filePath = GetDescriptionFilePath(DirectoryPath);
-            MapDescription.Serialize(filePath, description);
+            TerrainMapDescr.Serialize(filePath, description);
         }
 
         public override bool Equals(object obj)

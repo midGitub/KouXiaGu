@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
 
         public int randomMapSize = 10;
 
-        public MapDescription description;
+        public TerrainMapDescr description;
 
         public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
         {
@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建地图到预制目录下;
         /// </summary>
-        public static TerrainMap CreateMap(MapDescription description)
+        public static TerrainMap CreateMap(TerrainMapDescr description)
         {
             var map = new TerrainMap(description);
             map.Save();

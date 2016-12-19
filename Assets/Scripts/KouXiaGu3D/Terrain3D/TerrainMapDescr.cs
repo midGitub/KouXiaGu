@@ -7,9 +7,11 @@ using System.Xml.Serialization;
 namespace KouXiaGu.Terrain3D
 {
 
-
+    /// <summary>
+    /// 对地形地图的描述;
+    /// </summary>
     [Serializable, XmlType("TerrainMap")]
-    public struct MapDescription
+    public struct TerrainMapDescr
     {
 
         [XmlElement("id")]
@@ -27,16 +29,16 @@ namespace KouXiaGu.Terrain3D
         [XmlElement("Description")]
         public string description;
 
-        static readonly XmlSerializer TerrainMapInfoSerializer = new XmlSerializer(typeof(MapDescription));
+        static readonly XmlSerializer TerrainMapInfoSerializer = new XmlSerializer(typeof(TerrainMapDescr));
 
-        public static void Serialize(string filePath, MapDescription data)
+        public static void Serialize(string filePath, TerrainMapDescr data)
         {
             TerrainMapInfoSerializer.SerializeFile(filePath, data);
         }
 
-        public static MapDescription Deserialize(string filePath)
+        public static TerrainMapDescr Deserialize(string filePath)
         {
-            MapDescription data = (MapDescription)TerrainMapInfoSerializer.DeserializeFile(filePath);
+            TerrainMapDescr data = (TerrainMapDescr)TerrainMapInfoSerializer.DeserializeFile(filePath);
             return data;
         }
 

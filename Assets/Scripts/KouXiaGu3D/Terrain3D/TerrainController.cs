@@ -88,7 +88,7 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
             {
-                TerrainArchive.Load(item);
+                TerrainArchiver.Load(item.DirectoryPath);
                 yield return null;
 
                 CurrentMap.Load();
@@ -142,7 +142,7 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnEnter(ArchiveDirectory item)
             {
-                TerrainArchive.Save(item);
+                TerrainArchiver.Save(item.DirectoryPath);
                 yield return null;
 
                 MapArchiver.SaveMap(item.DirectoryPath);

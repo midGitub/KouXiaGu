@@ -12,11 +12,6 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
-        /// 保存到的存档目录;
-        /// </summary>
-        const string MAP_ARCHIVED_DIRECTORY_NAME = "Maps";
-
-        /// <summary>
         /// 存档的地图数据文件;
         /// </summary>
         const string MAP_ARCHIVED_FILE_NAME = "TerrainMap.MAPP";
@@ -34,10 +29,7 @@ namespace KouXiaGu.Terrain3D
             if (ArchiveMap == null)
                 throw new ArgumentNullException();
 
-            string filePath = GetMapArchivedFilePath(archiveDirectory);
-
-            if (!Directory.Exists(archiveDirectory))
-                Directory.CreateDirectory(archiveDirectory);
+            string filePath = CreateArchivedFilePath(archiveDirectory);
 
             SerializeHelper.SerializeProtoBuf(filePath, ArchiveMap);
         }
@@ -48,7 +40,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void LoadMap(string archiveDirectory)
         {
-            string filePath = GetMapArchivedFilePath(archiveDirectory);
+            string filePath = GetArchivedFilePath(archiveDirectory);
 
             if (File.Exists(filePath))
             {
@@ -72,11 +64,25 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 创建到存档地图保存的路径;
+        /// </summary>
+        static string CreateArchivedFilePath(string archiveDirectory)
+        {
+            archiveDirectory = Path.Combine(archiveDirectory, Archiver.MAP_ARCHIVED_DIRECTORY_NAME);
+            string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
+
+            if (!Directory.Exists(archiveDirectory))
+                Directory.CreateDirectory(archiveDirectory);
+
+            return filePath;
+        }
+
+        /// <summary>
         /// 获取到存档地图保存到的文件路径;
         /// </summary>
-        static string GetMapArchivedFilePath(string archiveDirectory)
+        static string GetArchivedFilePath(string archiveDirectory)
         {
-            archiveDirectory = Path.Combine(archiveDirectory, MAP_ARCHIVED_DIRECTORY_NAME);
+            archiveDirectory = Path.Combine(archiveDirectory, Archiver.MAP_ARCHIVED_DIRECTORY_NAME);
             string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
 
             return filePath;
