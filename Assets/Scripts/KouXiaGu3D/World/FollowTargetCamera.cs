@@ -295,8 +295,6 @@ namespace KouXiaGu.GameScene
 
             #region 移动
 
-            public Vector3 axis;
-
             /// <summary>
             /// 对摄像机进行移动;
             /// </summary>
