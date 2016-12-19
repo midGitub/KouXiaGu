@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
             if (ArchiveMap == null)
                 throw new ArgumentNullException();
 
-            string filePath = CreateArchivedFilePath(archiveDirectory);
+            string filePath = Archiver.CreateDirectory(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
 
             SerializeHelper.SerializeProtoBuf(filePath, ArchiveMap);
         }
@@ -40,7 +40,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void LoadMap(string archiveDirectory)
         {
-            string filePath = GetArchivedFilePath(archiveDirectory);
+            string filePath = Archiver.CombineDirectory(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
 
             if (File.Exists(filePath))
             {
@@ -61,31 +61,6 @@ namespace KouXiaGu.Terrain3D
                 throw new NullReferenceException("地形地图还未初始化;");
 
             MapArchiver.ArchiveMap.Subscribe(terrainMap.Map);
-        }
-
-        /// <summary>
-        /// 创建到存档地图保存的路径;
-        /// </summary>
-        static string CreateArchivedFilePath(string archiveDirectory)
-        {
-            archiveDirectory = Path.Combine(archiveDirectory, Archiver.MAP_ARCHIVED_DIRECTORY_NAME);
-            string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
-
-            if (!Directory.Exists(archiveDirectory))
-                Directory.CreateDirectory(archiveDirectory);
-
-            return filePath;
-        }
-
-        /// <summary>
-        /// 获取到存档地图保存到的文件路径;
-        /// </summary>
-        static string GetArchivedFilePath(string archiveDirectory)
-        {
-            archiveDirectory = Path.Combine(archiveDirectory, Archiver.MAP_ARCHIVED_DIRECTORY_NAME);
-            string filePath = Path.Combine(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
-
-            return filePath;
         }
 
     }

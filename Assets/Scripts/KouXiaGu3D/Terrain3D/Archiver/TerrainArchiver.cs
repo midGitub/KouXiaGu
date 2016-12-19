@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void TempletOutput(string archiveDirectory)
         {
-            string filePath = GetDescriptionFilePath(archiveDirectory);
+            string filePath = Archiver.CreateDirectory(archiveDirectory, ARCHIVED_FILE_NAME);
             ArchiveDescr data = new ArchiveDescr()
             {
                 UseMapID = 0,
@@ -36,7 +36,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Save(string archiveDirectory)
         {
-            string filePath = GetDescriptionFilePath(archiveDirectory);
+            string filePath = Archiver.CreateDirectory(archiveDirectory, ARCHIVED_FILE_NAME);
             ArchiveDescr data = Export();
             ArchiveDescr.Serializer.SerializeFile(filePath, data);
         }
@@ -46,19 +46,11 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static ArchiveDescr Load(string archiveDirectory)
         {
-            string filePath = GetDescriptionFilePath(archiveDirectory);
+            string filePath = Archiver.CombineDirectory(archiveDirectory, ARCHIVED_FILE_NAME);
             ArchiveDescr data = (ArchiveDescr)ArchiveDescr.Serializer.DeserializeFile(filePath);
             Import(data);
             return data;
         }
-
-        public static string GetDescriptionFilePath(string archiveDirectory)
-        {
-            archiveDirectory = Path.Combine(archiveDirectory, Archiver.MAP_ARCHIVED_DIRECTORY_NAME);
-            string filePath = Path.Combine(archiveDirectory, ARCHIVED_FILE_NAME);
-            return filePath;
-        }
-
 
         /// <summary>
         /// 从当前游戏状态返回一个存档格式;

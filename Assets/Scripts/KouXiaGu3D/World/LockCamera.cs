@@ -21,11 +21,6 @@ namespace KouXiaGu.World
             get { return Time.deltaTime; }
         }
 
-        /// <summary>
-        /// 指定的摄像机;
-        /// </summary>
-        Camera cameraComponent;
-
         [SerializeField, Range(2f, 20)]
         float height = 5;
 
@@ -57,11 +52,6 @@ namespace KouXiaGu.World
         float MouseScrollWheel
         {
             get { return Input.GetAxis("Mouse ScrollWheel"); }
-        }
-
-        void Awake()
-        {
-            cameraComponent = GetComponent<Camera>();
         }
 
         void Start()

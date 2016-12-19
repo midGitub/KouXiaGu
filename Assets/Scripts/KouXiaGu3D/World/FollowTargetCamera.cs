@@ -29,10 +29,6 @@ namespace KouXiaGu.GameScene
         {
             get { return Time.deltaTime; }
         }
-        /// <summary>
-        /// 指定的摄像机;
-        /// </summary>
-        Camera cameraComponent;
 
         /// <summary>
         /// 摄像机当前工作的模式
@@ -81,11 +77,6 @@ namespace KouXiaGu.GameScene
                 else
                     FollowTarget(value);
             }
-        }
-
-        void Awake()
-        {
-            cameraComponent = GetComponent<Camera>();
         }
 
         void Start()
