@@ -16,8 +16,6 @@ namespace KouXiaGu.GameScene
     {
         FollowTargetCamera() { }
 
-        const string ImaginaryTargetName = "CameraImaginaryTarget";
-
         /// <summary>
         /// 在Update 内更新的值输入需要乘上的数值;
         /// </summary>
@@ -59,8 +57,6 @@ namespace KouXiaGu.GameScene
         /// </summary>
         Vector3 currentVelocity;
 
-        Transform imaginaryTarget;
-
         /// <summary>
         /// 摄像机位置;
         /// </summary>
@@ -77,11 +73,6 @@ namespace KouXiaGu.GameScene
         {
             get { return target.position; }
             set { target.position = value; }
-        }
-
-        Transform ImaginaryTarget
-        {
-            get { return imaginaryTarget ?? (imaginaryTarget = GetImaginaryTarget()); }
         }
 
         /// <summary>
@@ -106,11 +97,8 @@ namespace KouXiaGu.GameScene
 
         void Start()
         {
-            if (this.target == null)
-                FollowTarget(ImaginaryTarget);
-        }
 
-        public float aaa;
+        }
 
         void Update()
         {
@@ -121,7 +109,7 @@ namespace KouXiaGu.GameScene
             //{
             //    //transform.rotation = Quaternion.LookRotation(target.position - transform.position);
             //}
-
+            targetCamera.RotateAround(transform, target.position);
             //transform.LookAt(target.position);
             //cameraTagetPoint = targetCamera.GetCameranPosition(temp_targetPoint);
             ////transform.rotation = Quaternion.LookRotation(target.position - transform.position);
@@ -143,22 +131,6 @@ namespace KouXiaGu.GameScene
             //cameraPoint = Vector3.SmoothDamp(cameraPoint, cameraTagetPoint, ref currentVelocity, 0.5f);
         }
 
-        void OnValidate()
-        {
-            if(this.target == null)
-                FollowTarget(ImaginaryTarget);
-        }
-
-        /// <summary>
-        /// 创建一个假象的目标;
-        /// </summary>
-        Transform GetImaginaryTarget()
-        {
-            GameObject obj = new GameObject(ImaginaryTargetName);
-            Transform imaginaryTarget = obj.transform;
-            return imaginaryTarget;
-        }
-
         /// <summary>
         /// 开始更随目标;
         /// </summary>
@@ -174,80 +146,107 @@ namespace KouXiaGu.GameScene
         /// </summary>
         void UnFollowTarget()
         {
-            ImaginaryTarget.position = this.target.position;
-            this.target = ImaginaryTarget;
             isFollowMode = false;
         }
 
         /// <summary>
-        /// 围绕目标旋转的摄像机;
+        /// 围绕目标旋转的摄像机方法集;
         /// </summary>
         [Serializable]
         public class TargetAroundCamera
         {
 
             /// <summary>
-            /// 摄像机旋转角度;
-            /// </summary>
-            [SerializeField, Range(0f, (float)Math.PI)]
-            float rotation = (float)Math.PI;
-
-            /// <summary>
             /// 摄像机旋转时,每个周期的旋转量;
             /// </summary>
             [SerializeField, Range((float)(Math.PI / 180), (float)(Math.PI))]
-            float rotationSpeed = (float)(Math.PI / 180);
-
-            /// <summary>
-            /// 地平线角度;
-            /// </summary>
-            [SerializeField, Range(0.1f, 90)]
-            float withHorizonAngle = 50f;
-
-            /// <summary>
-            /// 高度;
-            /// </summary>
-            [SerializeField, Range(2f, 20)]
-            float cameraHeight = 7f;
+            float rotationAngle = (float)(Math.PI / 180);
 
             /// <summary>
             /// 设置旋转速度;
             /// </summary>
-            public float RotationSpeed
+            public float RotationAngle
             {
-                get { return rotationSpeed; }
-                set { rotationSpeed = value; }
+                get { return rotationAngle; }
+                set { rotationAngle = value; }
             }
 
             /// <summary>
-            /// 根据信息获取到摄像机应该放置的位置;
+            /// 摄像机本身旋转;
             /// </summary>
-            public Vector3 GetCameranPosition(Vector3 targetPoint)
+            public bool RotateAround(Transform camera)
             {
-                double currentRadius = (cameraHeight) / Math.Tan(withHorizonAngle * (Math.PI / 180));
-                double x = targetPoint.x + Math.Sin(rotation) * currentRadius;
-                double z = targetPoint.z + Math.Cos(rotation) * currentRadius;
-                return new Vector3((float)x, cameraHeight, (float)z);
+                Vector3 axis;
+                bool isInput = RotationInput(out axis);
+                if (isInput)
+                {
+                    camera.Rotate(axis, RotationAngle, Space.World);
+                }
+                return isInput;
+            }
+
+            /// <summary>
+            /// 摄像机围绕着目标点旋转;
+            /// </summary>
+            public bool RotateAround(Transform camera, Vector3 targetPoint)
+            {
+                Vector3 axis;
+                bool isInput = RotationInput(out axis);
+                if (isInput)
+                {
+                    camera.RotateAround(targetPoint, axis, RotationAngle);
+                }
+                return isInput;
             }
 
             /// <summary>
             /// 输入更新,若存在输入则返回 true;
             /// </summary>
-            public bool RotationInput()
+            public bool RotationInput(out Vector3 axis)
             {
                 bool isInput = false;
+                axis = new Vector3();
 
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Rotate_Left))
                 {
-                    rotation -= rotationSpeed * InputOnUpdate;
+                    axis.y -= rotationAngle * InputOnUpdate;
                     isInput = true;
                 }
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Rotate_Right))
                 {
-                    rotation += rotationSpeed * InputOnUpdate;
+                    axis.y += rotationAngle * InputOnUpdate;
                     isInput = true;
                 }
                 return isInput;
+            }
+
+            /// <summary>
+            /// 获取到摄像机应该放置的位置;
+            /// </summary>
+            public Vector3 CameraPosition(Vector3 target, float angle, float cameraHeight, float withHorizonAngle)
+            {
+                double currentRadius = (cameraHeight) / Math.Tan(withHorizonAngle * (Math.PI / 180));
+                double x = target.x + Math.Sin(angle) * currentRadius;
+                double z = target.z + Math.Cos(angle) * currentRadius;
+                return new Vector3((float)x, cameraHeight, (float)z);
+            }
+
+            /// <summary>
+            /// 获取到相机望向目标的旋转量,类似 LookAt();
+            /// </summary>
+            public Quaternion LookRotation(Vector3 camera, Vector3 target)
+            {
+                return Quaternion.LookRotation(target - camera);
+            }
+
+            /// <summary>
+            /// 获取到两个点的角度,基准在正y轴上;
+            /// </summary>
+            public double AngleY(Vector3 target, Vector3 current)
+            {
+                double angle = -(Math.Atan2((target.z - current.z), (target.x - current.x)) *
+                   (180 / Math.PI) + 90) * (Math.PI / 180);
+                return angle;
             }
 
         }
@@ -278,15 +277,15 @@ namespace KouXiaGu.GameScene
             /// </summary>
             public bool Movement(Transform camera)
             {
-                Vector3 movement;
-                bool isInput = MovementInput(out movement);
+                Vector3 axis;
+                bool isInput = MovementInput(out axis);
 
                 if (isInput)
                 {
                     float y = camera.rotation.eulerAngles.y;
-                    movement = Quaternion.Euler(0, y, 0) * movement;
+                    axis = Quaternion.Euler(0, y, 0) * axis;
 
-                    camera.Translate(movement, Space.World);
+                    camera.Translate(axis, Space.World);
                 }
 
                 return isInput;
@@ -296,29 +295,29 @@ namespace KouXiaGu.GameScene
             /// <summary>
             /// 获取到输入的偏移量,若存在输入则返回 true;
             /// </summary>
-            bool MovementInput(out Vector3 movement)
+            bool MovementInput(out Vector3 axis)
             {
                 bool isInput = false;
-                movement = new Vector3();
+                axis = new Vector3();
 
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Up))
                 {
-                    movement.z += movementSpeed * InputOnUpdate;
+                    axis.z += movementSpeed * InputOnUpdate;
                     isInput = true;
                 }
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Down))
                 {
-                    movement.z -= movementSpeed * InputOnUpdate;
+                    axis.z -= movementSpeed * InputOnUpdate;
                     isInput = true;
                 }
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Right))
                 {
-                    movement.x += movementSpeed * InputOnUpdate;
+                    axis.x += movementSpeed * InputOnUpdate;
                     isInput = true;
                 }
                 if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Left))
                 {
-                    movement.x -= movementSpeed * InputOnUpdate;
+                    axis.x -= movementSpeed * InputOnUpdate;
                     isInput = true;
                 }
 
