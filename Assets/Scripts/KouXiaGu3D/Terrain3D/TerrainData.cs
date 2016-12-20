@@ -400,8 +400,6 @@ namespace KouXiaGu.Terrain3D
         {
             if (activatedChunks.ContainsKey(coord))
                 throw new ArgumentException("地形块已经创建到场景;");
-            if (diffuse == null || height == null)
-                throw new NullReferenceException("空的贴图!");
 
             TerrainData terrainChunk = GetTerrainChunk(coord.ToString());
 

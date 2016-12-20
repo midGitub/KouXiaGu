@@ -8,17 +8,10 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    //public interface IBakeRequest<T>
-    //{
-    //    Vector3 CameraPosition { get; }
-    //    IEnumerable<T> BakingNodes { get; }
-    //    void TextureComplete(Texture2D diffuse, Texture2D height);
-    //}
-
     /// <summary>
     /// 地形烘焙请求;
     /// </summary>
-    public struct BakeRequest
+    public struct BakeRequest : IEquatable<BakeRequest>
     {
 
         BakingNode[] bakingNodes;
@@ -52,6 +45,11 @@ namespace KouXiaGu.Terrain3D
                 throw new IndexOutOfRangeException("请求渲染地图块:" +chunkCoord + " ;超出了地图的定义;");
         }
 
+        public bool Equals(BakeRequest other)
+        {
+            return ChunkCoord == other.ChunkCoord;
+        }
+
         /// <summary>
         /// 获取到这次需要烘焙的所有节点;
         /// </summary>
@@ -78,7 +76,6 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainData.Create(ChunkCoord, diffuse, height);
         }
-
 
     }
 

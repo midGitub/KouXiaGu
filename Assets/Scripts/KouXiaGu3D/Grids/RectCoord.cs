@@ -287,8 +287,9 @@ namespace KouXiaGu.Grids
         }
 
 
+
         /// <summary>
-        /// 获取到这个范围所有的点;
+        /// 返回矩形内的所有的点;step 应该为正数;
         /// </summary>
         public static IEnumerable<RectCoord> Range(RectCoord southwest, RectCoord northeast)
         {
@@ -302,7 +303,7 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
-        /// 围绕坐标返回所有半径内的点;step 应该为正数;
+        /// 返回矩形内的所有的点;step 应该为正数;
         /// </summary>
         public static IEnumerable<RectCoord> Range(RectCoord center, short step)
         {
@@ -311,6 +312,19 @@ namespace KouXiaGu.Grids
 
             RectCoord southwest = center - step;
             RectCoord northeast = center + step;
+            return Range(southwest, northeast);
+        }
+
+        /// <summary>
+        /// 返回矩形内的所有的点;step 应该为正数;
+        /// </summary>
+        public static IEnumerable<RectCoord> Range(RectCoord center, short stepX, short stepY)
+        {
+            if (stepX < 0 || stepY < 0)
+                throw new ArgumentOutOfRangeException();
+
+            RectCoord southwest = new RectCoord(center.x - stepX, center.y - stepY);
+            RectCoord northeast = new RectCoord(center.x + stepX, center.y + stepY);
             return Range(southwest, northeast);
         }
 

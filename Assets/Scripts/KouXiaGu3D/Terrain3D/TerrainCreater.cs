@@ -72,6 +72,9 @@ namespace KouXiaGu.Terrain3D
             if (!IsCreated(chunkCoord))
                 return false;
 
+            if(!TerrainData.Destroy(chunkCoord))
+                BasicRenderer.BakingRequests.Remove(item => item.ChunkCoord == chunkCoord);
+
             onSceneChunk.Remove(chunkCoord);
             RemoveOnScene(chunkCoord);
             return true;
@@ -139,6 +142,11 @@ namespace KouXiaGu.Terrain3D
                 Create(item);
             }
 
+            foreach (var item in onSceneChunk.ToArray())
+            {
+                if(!displayCoords.Contains(item))
+                    Destroy(item);
+            }
 
         }
 
@@ -147,13 +155,13 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<RectCoord> GetDisplayCoords(RectCoord center)
         {
-            return RectCoord.Range(center, radius.x);
+            return RectCoord.Range(center, radius.x, radius.y);
         }
 
-        IEnumerable<RectCoord> GetDestoryCoords(RectCoord center)
-        {
-            return RectCoord.Range(center, radius.y);
-        }
+        //IEnumerable<RectCoord> GetDestoryCoords(RectCoord center)
+        //{
+        //    return RectCoord.Range(center, radius.y);
+        //}
 
         [ContextMenu("渲染所有")]
         void BakingAll()

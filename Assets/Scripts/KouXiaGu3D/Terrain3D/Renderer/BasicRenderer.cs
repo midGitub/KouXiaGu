@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
@@ -53,17 +54,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Queue<BakeRequest> bakingQueue = new Queue<BakeRequest>();
 
-        /// <summary>
-        /// 请求烘焙的节点;
-        /// </summary>
-        public static IEnumerable<BakeRequest> BakingRequests
-        {
-            get { return bakingQueue; }
-        }
-
         public static bool IsRunning
         {
             get { return bakingCoroutine != null; }
+        }
+
+        public static Queue<BakeRequest> BakingRequests
+        {
+            get { return bakingQueue; }
         }
 
         [ExposeProperty]
@@ -157,12 +155,10 @@ namespace KouXiaGu.Terrain3D
         IEnumerator Baking()
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
-            var YieldInstruction = new WaitForEndOfFrame();
 
             while (true)
             {
                 yield return bakingYieldInstruction;
-                yield return new WaitForSecondsRealtime(0.5f);
 
                 var request = bakingQueue.Dequeue();
 
@@ -172,14 +168,16 @@ namespace KouXiaGu.Terrain3D
                 RenderTexture heightRT;
                 RenderTexture alphaHeightRT;
                 RenderTexture diffuseRT;
+                Texture2D height;
+                Texture2D diffuse;
 
                 mixerRT = BakingMixer(bakingNodes);
                 heightRT = BakingHeight(bakingNodes, mixerRT);
                 alphaHeightRT = BakingHeightToAlpha(heightRT);
                 diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
 
-                Texture2D height = GetHeightTexture(alphaHeightRT);
-                Texture2D diffuse = GetDiffuseTexture(diffuseRT);
+                height = GetHeightTexture(alphaHeightRT);
+                diffuse = GetDiffuseTexture(diffuseRT);
 
                 request.TextureComplete(diffuse, height);
 
@@ -451,58 +449,68 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        //void BlurTexture(RenderTexture texture, int downSample, int size, int interations)
-        //{
-        //    float widthMod = 1.0f / (1.0f * (1 << downSample));
+        public class Queue<T> : IEnumerable<T>
+        {
+            readonly LinkedList<T> linkedList = new LinkedList<T>();
 
-        //    Material material = new Material(blurMaterial);
-        //    material.SetVector("_Parameter", new Vector4(size * widthMod, -size * widthMod, 0.0f, 0.0f));
-        //    texture.filterMode = FilterMode.Bilinear;
+            public int Count
+            {
+                get { return linkedList.Count; }
+            }
 
+            public T Dequeue()
+            {
+                T item = linkedList.First.Value;
+                linkedList.Remove(linkedList.First);
+                return item;
+            }
 
-        //    int rtW = texture.width >> downSample;
-        //    int rtH = texture.height >> downSample;
+            public void Enqueue(T item)
+            {
+                linkedList.AddLast(item);
+            }
 
-        //    // downsample
-        //    RenderTexture rt = new RenderTexture(rtW, rtH, 0, texture.format);
-        //    //RenderTexture rt = RenderTargetManager.GetNewTexture(rtW, rtH, 0, texture.format);
-        //    rt.filterMode = FilterMode.Bilinear;
+            public bool Remove(T item)
+            {
+                return linkedList.Remove(item);
+            }
 
-        //    Graphics.Blit(texture, rt, material, 0);
+            public bool Remove(Func<T, bool> func)
+            {
+                var current = linkedList.First;
 
-        //    for (int i = 0; i < interations; i++)
-        //    {
-        //        float iterationOffs = (i * 1.0f);
-        //        material.SetVector("_Parameter", new Vector4(size * widthMod + iterationOffs, -size * widthMod - iterationOffs, 0.0f, 0.0f));
+                while (current != null)
+                {
+                    if (func(current.Value))
+                    {
+                        linkedList.Remove(current);
+                        return true;
+                    }
+                    current = current.Next;
+                }
+                return false;
+            }
 
-        //        // vertical blur
-        //        RenderTexture rt2 = new RenderTexture(rtW, rtH, 0, texture.format);
-        //        //RenderTexture rt2 = RenderTargetManager.GetNewTexture(rtW, rtH, 0, texture.format);
-        //        rt2.filterMode = FilterMode.Bilinear;
+            public bool Contains(T item)
+            {
+                return linkedList.Contains(item);
+            }
 
-        //        Graphics.Blit(rt, rt2, material, 1);
-        //        rt.Release();
-        //        //RenderTargetManager.ReleaseTexture(rt);
-        //        rt = rt2;
+            public void Clear()
+            {
+                linkedList.Clear();
+            }
 
-        //        // horizontal blur
-        //        rt2 = new RenderTexture(rtW, rtH, 0, texture.format);
-        //        //rt2 = RenderTargetManager.GetNewTexture(rtW, rtH, 0, texture.format);
-        //        rt2.filterMode = FilterMode.Bilinear;
+            public IEnumerator<T> GetEnumerator()
+            {
+                return ((IEnumerable<T>)this.linkedList).GetEnumerator();
+            }
 
-        //        Graphics.Blit(rt, rt2, material, 2);
-        //        rt.Release();
-        //        //RenderTargetManager.ReleaseTexture(rt);
-        //        rt = rt2;
-        //    }
-
-        //    GameObject.Destroy(material);
-
-        //    Graphics.Blit(rt, texture);
-
-        //    rt.Release();
-        //    //RenderTargetManager.ReleaseTexture(rt);
-        //}
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return ((IEnumerable<T>)this.linkedList).GetEnumerator();
+            }
+        }
 
     }
 

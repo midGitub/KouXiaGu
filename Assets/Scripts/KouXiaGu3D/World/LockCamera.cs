@@ -111,6 +111,7 @@ namespace KouXiaGu.World
             }
 
             axis += (transform.forward * MouseScrollWheel * movementSpeed);
+
             return isInput;
         }
 
