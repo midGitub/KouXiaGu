@@ -187,8 +187,6 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         RectCoord maxRadius;
 
-        BreadthTraversal breadthTraversal;
-
         /// <summary>
         /// 中心点;
         /// </summary>
@@ -196,11 +194,6 @@ namespace KouXiaGu.Terrain3D
         {
             get { return transform.position; }
             set { transform.position = value; }
-        }
-
-        void Awake()
-        {
-            breadthTraversal = new BreadthTraversal();
         }
 
         void Update()
@@ -219,16 +212,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<RectCoord> GetDisplayCoords(RectCoord center)
         {
-            RectCoord southwest = center - minRadius;
-            RectCoord northeast = center + minRadius;
-
-            Func<RectCoord, bool> IsOutMinRange = delegate (RectCoord coord)
-            {
-                return coord.x < southwest.x || coord.x > northeast.x ||
-                        coord.y < southwest.y || coord.y > northeast.y;
-            };
-
-            return breadthTraversal.Traversal(center, IsOutMinRange);
+            return RectCoord.Range(center, minRadius.x);
         }
 
         [ContextMenu("渲染所有")]
