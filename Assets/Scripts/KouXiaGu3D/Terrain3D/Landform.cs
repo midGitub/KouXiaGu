@@ -3,6 +3,7 @@
 //异步的实例化地貌信息;
 #define INIT_LANDFORM_ASYNC
 
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
@@ -24,6 +25,11 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
 
+        /// <summary>
+        /// 保存所有ID;
+        /// </summary>
+        static int[] landformID;
+
         public static IEnumerable<int> Identifications
         {
             get { return initializedLandforms.Keys; }
@@ -32,6 +38,19 @@ namespace KouXiaGu.Terrain3D
         public static IEnumerable<Landform> Landforms
         {
             get { return initializedLandforms.Values; }
+        }
+
+        /// <summary>
+        /// 所有有效ID;
+        /// </summary>
+        static int[] LandformID
+        {
+            get
+            {
+                if (landformID == null || landformID.Length != initializedLandforms.Count)
+                    landformID = initializedLandforms.Keys.ToArray();
+                return landformID;
+            }
         }
 
         /// <summary>
@@ -47,15 +66,17 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static Landform GetLandform(int id)
         {
-            try
-            {
-                return initializedLandforms[id];
-            }
-            catch (KeyNotFoundException e)
-            {
-                Debug.LogWarning("获取到不存在的地貌ID: " + id);
-                throw e;
-            }
+            return initializedLandforms[id];
+        }
+
+        /// <summary>
+        /// 获取到一个随机的地形;
+        /// </summary>
+        public static Landform GetRandomLandform()
+        {
+            int randomID = Random.Range(0, LandformID.Length);
+            int id = LandformID[randomID];
+            return GetLandform(id);
         }
 
         public static string StateLog()

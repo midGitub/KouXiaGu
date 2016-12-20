@@ -36,6 +36,7 @@ namespace KouXiaGu.Terrain3D
             if (GUILayout.Button("保存预制"))
             {
                 TerrainController.CurrentMap.Save();
+                MapArchiver.ArchiveMap.Clear();
             }
 
             if (GUILayout.Button("随机地图"))

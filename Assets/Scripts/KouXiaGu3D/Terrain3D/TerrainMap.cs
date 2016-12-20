@@ -128,6 +128,8 @@ namespace KouXiaGu.Terrain3D
 
         ObservableDictionary<CubicHexCoord, TerrainNode> map;
 
+        LandformObserver landformObserver;
+
         /// <summary>
         /// 完整的地图存放路径;
         /// </summary>
@@ -136,7 +138,7 @@ namespace KouXiaGu.Terrain3D
         public TerrainMapDescr Description
         {
             get { return description; }
-            set { description = value; }
+            private set { description = value; }
         }
 
         /// <summary>
@@ -148,23 +150,31 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 根据ID创建一个新地图到预定义的目录下;
+        /// 根据ID创建一个新地图到预定义的目录下,若已经存在则返回异常;;
         /// </summary>
         public TerrainMap(TerrainMapDescr description)
         {
             this.DirectoryPath = Path.Combine(PredefinedDirectory, description.id.ToString());
+
+            if (Directory.Exists(this.DirectoryPath))
+                throw new IOException("为此ID的地图已经存在;");
+
             this.description = description;
             UpdateDescription();
         }
 
         /// <summary>
-        /// 创建一个新地图到目录下;
+        /// 初始化地图信息;
         /// </summary>
-        public TerrainMap(TerrainMapDescr description, string directoryPath)
+        TerrainMap(TerrainMapDescr description, string directoryPath)
         {
             this.description = description;
             this.DirectoryPath = directoryPath;
-            UpdateDescription();
+
+            if (description.landformRecord != null)
+                landformObserver = new LandformObserver(description.landformRecord);
+            else
+                landformObserver = new LandformObserver();
         }
 
         /// <summary>
@@ -176,6 +186,10 @@ namespace KouXiaGu.Terrain3D
                 Directory.CreateDirectory(DirectoryPath);
 
             string filePath = GetDescriptionFilePath(DirectoryPath);
+
+            if (landformObserver != null)
+                description.landformRecord = landformObserver.ToLandformRecord().ToArray();
+
             TerrainMapDescr.Serialize(filePath, description);
         }
 
@@ -198,6 +212,8 @@ namespace KouXiaGu.Terrain3D
         {
             string prefabFilePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
             map = LoadMap(prefabFilePath);
+
+            landformObserver.Subscribe(map);
         }
 
         /// <summary>
@@ -207,6 +223,8 @@ namespace KouXiaGu.Terrain3D
         {
             string prefabFilePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
             SaveMap(map, prefabFilePath);
+
+            UpdateDescription();
         }
 
         /// <summary>
@@ -231,28 +249,6 @@ namespace KouXiaGu.Terrain3D
         {
             SerializeHelper.SerializeProtoBuf(filePath, map);
         }
-
-
-        ///// <summary>
-        ///// 保存地图;
-        ///// </summary>
-        ///// <param name="resetArchive">是否重置归档数据?</param>
-        //public void SavePrefab(bool resetArchive)
-        //{
-        //    string filePath = Path.Combine(DirectoryPath, MAP_DATA_FILE_NAME);
-        //    map.SavePrefab(filePath);
-
-        //    if (resetArchive)
-        //        map.ClearArchive();
-        //}
-
-        ///// <summary>
-        ///// 保存存档到;
-        ///// </summary>
-        //public void SaveArchive(string filePath)
-        //{
-        //    map.SaveArchive(filePath);
-        //}
 
         #endregion
 

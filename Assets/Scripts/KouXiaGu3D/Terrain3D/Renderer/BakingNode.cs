@@ -13,13 +13,6 @@ namespace KouXiaGu.Terrain3D
     public struct BakingNode
     {
 
-        public BakingNode(Vector3 position, TerrainNode mapNode) : this()
-        {
-            this.Position = position;
-            this.mapNode = mapNode;
-            this.landform = GetLandform(mapNode);
-        }
-
         /// <summary>
         /// 地貌地图节点;
         /// </summary>
@@ -58,6 +51,12 @@ namespace KouXiaGu.Terrain3D
             get { return landform.MixerTexture; }
         }
 
+        public BakingNode(Vector3 position, TerrainNode mapNode) : this()
+        {
+            this.Position = position;
+            this.mapNode = mapNode;
+            this.landform = GetLandform(mapNode);
+        }
 
         /// <summary>
         /// 根据地貌节点获取到地貌信息;
@@ -67,7 +66,16 @@ namespace KouXiaGu.Terrain3D
             if (landformNode.ID == 0)
                 return default(Landform);
 
-            Landform landform = Landform.GetLandform(landformNode.ID);
+            Landform landform;
+            try
+            {
+                landform = Landform.GetLandform(landformNode.ID);
+            }
+            catch (KeyNotFoundException)
+            {
+                landform = Landform.GetRandomLandform();
+                Debug.LogWarning("获取到不存在的地貌ID: " + landformNode.ID + ";随机替换为: " + landform.ID);
+            }
             return landform;
         }
 

@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
 
         Dictionary<TKey, TValue> dictionary;
 
-        HashSet<IObserver<DictionaryChange<TKey, TValue>>> observers;
+        List<IObserver<DictionaryChange<TKey, TValue>>> observers;
 
         public TValue this[TKey key]
         {
@@ -61,19 +61,19 @@ namespace KouXiaGu.Terrain3D
         public ObservableDictionary()
         {
             this.dictionary = new Dictionary<TKey, TValue>();
-            this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>();
+            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
         }
 
         public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
         {
             this.dictionary = new Dictionary<TKey, TValue>(dictionary);
-            this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>();
+            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
         }
 
         public ObservableDictionary(int capacity)
         {
             this.dictionary = new Dictionary<TKey, TValue>(capacity);
-            this.observers = new HashSet<IObserver<DictionaryChange<TKey, TValue>>>();
+            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
         }
 
 
@@ -151,8 +151,9 @@ namespace KouXiaGu.Terrain3D
             if (observer == null)
                 throw new ArgumentNullException("订阅者为null;");
 
-            if (observers.Add(observer))
+            if (!observers.Contains(observer))
             {
+                observers.Add(observer);
                 Unsubscriber unsubscriber = new Unsubscriber(observers, observer);
                 return unsubscriber;
             }

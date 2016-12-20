@@ -60,6 +60,7 @@ namespace KouXiaGu.Terrain3D
             if (MapArchiver.ArchiveMap == null)
                 throw new NullReferenceException("地形地图还未初始化;");
 
+            terrainMap.Map.AddOrUpdate(MapArchiver.ArchiveMap);
             MapArchiver.ArchiveMap.Subscribe(terrainMap.Map);
         }
 
