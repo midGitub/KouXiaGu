@@ -32,6 +32,10 @@ namespace KouXiaGu.Terrain3D
         {
             creater.enabled = false;
             creater = null;
+
+            onSceneChunk.Clear();
+            TerrainData.DestroyAll();
+            BasicRenderer.Clear();
         }
 
         /// <summary>

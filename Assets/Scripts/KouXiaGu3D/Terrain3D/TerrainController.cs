@@ -121,10 +121,6 @@ namespace KouXiaGu.Terrain3D
             {
                 TerrainCreater.Unload();
 
-                TerrainData.DestroyAll();
-
-                BasicRenderer.Clear();
-
                 CurrentMap.Unload();
                 CurrentMap = null;
 

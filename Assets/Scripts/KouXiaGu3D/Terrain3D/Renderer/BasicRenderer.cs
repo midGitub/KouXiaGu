@@ -157,20 +157,46 @@ namespace KouXiaGu.Terrain3D
         IEnumerator Baking()
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
+            var YieldInstruction = new WaitForEndOfFrame();
 
             while (true)
             {
                 yield return bakingYieldInstruction;
 
-                try
-                {
-                    var request = bakingQueue.Dequeue();
-                    Baking(request);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("地形烘焙错误:" + e);
-                }
+                var request = bakingQueue.Dequeue();
+
+                IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
+
+                RenderTexture mixerRT;
+                RenderTexture heightRT;
+                RenderTexture alphaHeightRT;
+                RenderTexture diffuseRT;
+
+                mixerRT = BakingMixer(bakingNodes);
+                yield return YieldInstruction;
+
+                heightRT = BakingHeight(bakingNodes, mixerRT);
+                yield return YieldInstruction;
+
+                alphaHeightRT = BakingHeightToAlpha(heightRT);
+                yield return YieldInstruction;
+
+                diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
+                yield return YieldInstruction;
+
+                Texture2D height = GetHeightTexture(alphaHeightRT);
+                Texture2D diffuse = GetDiffuseTexture(diffuseRT);
+                yield return YieldInstruction;
+
+                request.TextureComplete(diffuse, height);
+                yield return YieldInstruction;
+
+                RenderTexture.ReleaseTemporary(mixerRT);
+                RenderTexture.ReleaseTemporary(heightRT);
+                RenderTexture.ReleaseTemporary(alphaHeightRT);
+                RenderTexture.ReleaseTemporary(diffuseRT);
+
+                yield return YieldInstruction;
             }
         }
 
