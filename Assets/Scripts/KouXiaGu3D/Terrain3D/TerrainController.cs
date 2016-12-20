@@ -99,12 +99,16 @@ namespace KouXiaGu.Terrain3D
 
                 MapArchiver.Subscribe(CurrentMap);
                 yield return null;
+
+
+
+                TerrainCreater.Load();
+                yield return null;
             }
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnEnterRollBack(ArchiveDirectory item)
             {
-                CurrentMap.Unload();
-                yield break;
+                return (this as IStageObserver<ArchiveDirectory>).OnLeave(item);
             }
 
             void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
@@ -123,6 +127,7 @@ namespace KouXiaGu.Terrain3D
                 MapArchiver.UnLoad();
                 yield return null;
 
+                TerrainCreater.Unload();
             }
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)

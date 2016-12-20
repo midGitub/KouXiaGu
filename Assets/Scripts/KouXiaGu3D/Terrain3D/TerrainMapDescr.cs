@@ -133,7 +133,7 @@ namespace KouXiaGu.Terrain3D
                 {
                     landformID[id] = count;
                 }
-
+                return;
             }
 
             if (count == 0)
