@@ -43,13 +43,19 @@ namespace KouXiaGu
         /// 与地平线的角度;
         /// </summary>
         [SerializeField, Range(0f, 90f)]
-        float horizonAngle;
+        float horizonAngle = 53f;
 
         /// <summary>
-        /// 摄像机离地平线的高度;
+        /// 摄像机离人物的高度;
         /// </summary>
         [SerializeField]
-        float height;
+        float height = 5f;
+
+        /// <summary>
+        /// 摄像机离人物的高度限制;
+        /// </summary>
+        [SerializeField]
+        Vector2 heightRange = new Vector2(4,6);
 
         /// <summary>
         /// 摄像机需要移动到的点;
@@ -65,6 +71,11 @@ namespace KouXiaGu
         /// 相机当前移动速度;
         /// </summary>
         Vector3 currentVelocity;
+
+        public float Height
+        {
+            get { return height + target.position.y; }
+        }
 
         void Start()
         {
@@ -94,7 +105,9 @@ namespace KouXiaGu
             float cameraHeight = this.height;
             float withHorizonAngle = this.horizonAngle;
 
-            return CameraPosition(target.position, angle, cameraHeight, withHorizonAngle);
+            Vector3 position = CameraPosition(target.position, angle, cameraHeight, withHorizonAngle);
+            position.y = this.Height;
+            return position;
         }
 
         /// <summary>
@@ -129,6 +142,7 @@ namespace KouXiaGu
         void HeightInput()
         {
             this.height -= Input.GetAxis("Mouse ScrollWheel");
+            this.height = Mathf.Clamp(this.height, heightRange.x, heightRange.y);
         }
 
         /// <summary>
