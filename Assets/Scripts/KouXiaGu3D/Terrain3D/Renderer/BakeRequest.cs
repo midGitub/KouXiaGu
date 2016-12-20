@@ -8,17 +8,17 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public interface IBakeRequest<T>
-    {
-        Vector3 CameraPosition { get; }
-        IEnumerable<T> BakingNodes { get; }
-        void TextureComplete(Texture2D diffuse, Texture2D height);
-    }
+    //public interface IBakeRequest<T>
+    //{
+    //    Vector3 CameraPosition { get; }
+    //    IEnumerable<T> BakingNodes { get; }
+    //    void TextureComplete(Texture2D diffuse, Texture2D height);
+    //}
 
     /// <summary>
     /// 地形烘焙请求;
     /// </summary>
-    public struct BakeRequest : IBakeRequest<BakingNode>
+    public struct BakeRequest
     {
 
         BakingNode[] bakingNodes;
@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 范围内请求烘焙的节点;
         /// </summary>
-        IEnumerable<BakingNode> IBakeRequest<BakingNode>.BakingNodes
+        public IEnumerable<BakingNode> BakingNodes
         {
             get { return bakingNodes; }
         }
@@ -37,7 +37,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 摄像机位置;
         /// </summary>
-        Vector3 IBakeRequest<BakingNode>.CameraPosition
+        public Vector3 CameraPosition
         {
             get { return cameraPosition; }
         }
@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 基本的贴图烘焙完毕时调用;
         /// </summary>
-        void IBakeRequest<BakingNode>.TextureComplete(Texture2D diffuse, Texture2D height)
+        public void TextureComplete(Texture2D diffuse, Texture2D height)
         {
             TerrainData.Create(ChunkCoord, diffuse, height);
         }

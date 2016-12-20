@@ -51,12 +51,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将要进行烘焙的队列(对外只提供查询,以允许移除;);
         /// </summary>
-        static readonly Queue<IBakeRequest<BakingNode>> bakingQueue = new Queue<IBakeRequest<BakingNode>>();
+        static readonly Queue<BakeRequest> bakingQueue = new Queue<BakeRequest>();
 
         /// <summary>
         /// 请求烘焙的节点;
         /// </summary>
-        public static IEnumerable<IBakeRequest<BakingNode>> BakingRequests
+        public static IEnumerable<BakeRequest> BakingRequests
         {
             get { return bakingQueue; }
         }
@@ -94,7 +94,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 加入到烘焙队列;
         /// </summary>
-        public static void Enqueue(IBakeRequest<BakingNode> request)
+        public static void Enqueue(BakeRequest request)
         {
             bakingQueue.Enqueue(request);
         }
@@ -193,7 +193,7 @@ namespace KouXiaGu.Terrain3D
         ///// <summary>
         ///// 立即烘焙这个请求;
         ///// </summary>
-        //public void Baking(IBakeRequest<BakingNode> request)
+        //public void Baking(BakeRequest request)
         //{
         //    IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
 
@@ -222,7 +222,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest<BakingNode> request)
+        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(BakeRequest request)
         {
             bakingCamera.transform.position = request.CameraPosition;
 
