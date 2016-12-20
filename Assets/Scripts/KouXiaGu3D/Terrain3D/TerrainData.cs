@@ -14,6 +14,19 @@ namespace KouXiaGu.Terrain3D
     {
         TerrainData() { }
 
+        const string SHADER_TERRAIN_NAME = "HexTerrain/Terrain";
+        const string SHADER_HEIGHT_NAME = "HexTerrain/Heigt";
+
+        static Shader terrainShader
+        {
+            get { return Shader.Find(SHADER_TERRAIN_NAME); }
+        }
+
+        static Shader heightShader
+        {
+            get { return Shader.Find(SHADER_HEIGHT_NAME); }
+        }
+
 
         #region 地形块大小(静态)
 
@@ -208,19 +221,6 @@ namespace KouXiaGu.Terrain3D
 
 
         #region 地形块(实例)
-
-        const string SHADER_TERRAIN_NAME = "HexTerrain/Terrain";
-        const string SHADER_HEIGHT_NAME = "HexTerrain/Heigt";
-
-        static Shader terrainShader
-        {
-            get { return Shader.Find(SHADER_TERRAIN_NAME); }
-        }
-
-        static Shader heightShader
-        {
-            get { return Shader.Find(SHADER_HEIGHT_NAME); }
-        }
 
         RectCoord coord;
         Material material;
