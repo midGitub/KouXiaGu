@@ -14,19 +14,106 @@ namespace KouXiaGu.Terrain3D
     public sealed class TerrainCreater : MonoBehaviour
     {
 
+
+        #region 静态
+
+        static TerrainCreater creater;
+
+        public static void Load()
+        {
+            if (creater != null)
+                throw new Exception("已经进行游戏?");
+
+            creater = GameObject.FindObjectOfType<TerrainCreater>();
+            creater.enabled = true;
+        }
+
+        public static void Unload()
+        {
+            creater.enabled = false;
+            creater = null;
+        }
+
+        /// <summary>
+        /// 地形地图;
+        /// </summary>
+        static IDictionary<CubicHexCoord, TerrainNode> terrainMap
+        {
+            get { return TerrainController.CurrentMap.Map; }
+        }
+
+        /// <summary>
+        /// 请求创建到场景的块;
+        /// </summary>
+        static readonly HashSet<RectCoord> onSceneChunk = new HashSet<RectCoord>();
+
+        /// <summary>
+        /// 创建地形到场景,若已经在场景则返回false;
+        /// </summary>
+        static bool Create(RectCoord chunkCoord)
+        {
+            if (IsCreated(chunkCoord))
+                return false;
+
+            onSceneChunk.Add(chunkCoord);
+            BasicRenderer.Enqueue(new BakeRequest(terrainMap, chunkCoord));
+            return true;
+        }
+
+        /// <summary>
+        /// 从场景移除地形,若不存在这个地形则返回false;
+        /// </summary>
+        static bool Destroy(RectCoord chunkCoord)
+        {
+            if (!IsCreated(chunkCoord))
+                return false;
+
+            onSceneChunk.Remove(chunkCoord);
+            RemoveOnScene(chunkCoord);
+            return true;
+        }
+
+        /// <summary>
+        /// 从场景移除地形;
+        /// </summary>
+        static void RemoveOnScene(RectCoord chunkCoord)
+        {
+            TerrainData.Destroy(chunkCoord);
+        }
+
+        /// <summary>
+        /// 是否已经创建到场景?
+        /// </summary>
+        static bool IsCreated(RectCoord chunkCoord)
+        {
+            return onSceneChunk.Contains(chunkCoord);
+        }
+
+        /// <summary>
+        /// 创建地形到场景;
+        /// </summary>
+        static void Create(RectCoord chunkCoord, Texture2D diffuse, Texture2D height)
+        {
+            if (!onSceneChunk.Contains(chunkCoord))
+            {
+                GameObject.Destroy(diffuse);
+                GameObject.Destroy(height);
+                return;
+            }
+
+            TerrainData.Create(chunkCoord, diffuse, height);
+        }
+
+        #endregion
+
+
         TerrainCreater() { }
 
         /// <summary>
-        /// 最小显示半径,在这个半径内的地形块会创建并显示;
+        /// 显示半径,在这个半径内的地形块会创建并显示;
         /// </summary>
         [SerializeField]
-        RectCoord minRadius;
-
-        /// <summary>
-        /// 最大缓存半径,超出这个半径的地形块贴图将会销毁;
-        /// </summary>
-        [SerializeField]
-        RectCoord maxRadius;
+        RectCoord radius;
 
         /// <summary>
         /// 中心点;
@@ -44,7 +131,7 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var item in pp)
             {
-                BakeRequest.Create(item);
+                Create(item);
             }
         }
 
@@ -53,7 +140,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<RectCoord> GetDisplayCoords(RectCoord center)
         {
-            return RectCoord.Range(center, minRadius.x);
+            return RectCoord.Range(center, radius.x);
         }
 
         [ContextMenu("渲染所有")]
@@ -63,30 +150,13 @@ namespace KouXiaGu.Terrain3D
             {
                 try
                 {
-                    BakeRequest.Create(item);
+                    Create(item);
                 }
                 catch (IndexOutOfRangeException)
                 {
                     continue;
                 }
             }
-        }
-
-        static TerrainCreater creater;
-
-        public static void Load()
-        {
-            if (creater != null)
-                throw new Exception("已经进行游戏?");
-
-            creater = GameObject.FindObjectOfType<TerrainCreater>();
-            creater.enabled = true;
-        }
-
-        public static void Unload()
-        {
-            creater.enabled = false;
-            creater = null;
         }
 
     }

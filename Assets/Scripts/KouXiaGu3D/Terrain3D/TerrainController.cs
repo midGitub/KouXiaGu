@@ -117,17 +117,19 @@ namespace KouXiaGu.Terrain3D
                 return;
             }
 
-
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeave(ArchiveDirectory item)
             {
+                TerrainCreater.Unload();
+
+                TerrainData.DestroyAll();
+
+                BasicRenderer.Clear();
+
                 CurrentMap.Unload();
                 CurrentMap = null;
-                yield return null;
 
                 MapArchiver.UnLoad();
                 yield return null;
-
-                TerrainCreater.Unload();
             }
 
             IEnumerator IStageObserver<ArchiveDirectory>.OnLeaveRollBack(ArchiveDirectory item)

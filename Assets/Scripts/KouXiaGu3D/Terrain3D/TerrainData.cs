@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using KouXiaGu.Grids;
 using UnityEngine;
@@ -480,6 +481,18 @@ namespace KouXiaGu.Terrain3D
             diffuse = default(Texture2D);
             height = default(Texture2D);
             return false;
+        }
+
+        /// <summary>
+        /// 移除所有的地图块;
+        /// </summary>
+        public static void DestroyAll()
+        {
+            RectCoord[] coords = activatedChunks.Keys.ToArray();
+            foreach (var coord in coords)
+            {
+                Destroy(coord);
+            }
         }
 
         /// <summary>

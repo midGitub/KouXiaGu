@@ -73,6 +73,10 @@ namespace KouXiaGu.Terrain3D
             set { parameter = new BakingParameter(value); }
         }
 
+        public static void Clear()
+        {
+            bakingQueue.Clear();
+        }
 
         void Awake()
         {
