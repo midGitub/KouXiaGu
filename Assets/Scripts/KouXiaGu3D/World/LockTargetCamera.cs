@@ -21,6 +21,9 @@ namespace KouXiaGu
             get { return Time.deltaTime; }
         }
 
+        /// <summary>
+        /// 更随的目标;
+        /// </summary>
         [SerializeField]
         Transform target;
 
@@ -30,17 +33,32 @@ namespace KouXiaGu
         [SerializeField, Range((float)(Math.PI / 180), (float)(Math.PI))]
         float rotationAngle = (float)(Math.PI / 2);
 
-        [SerializeField, Range(-(float)Math.PI, (float)Math.PI)]
-        float angle = (float)Math.PI;
-
+        /// <summary>
+        /// 当前与目标形成的角度;
+        /// </summary>
         [SerializeField]
-        TargetAroundCamera targetAround;
+        float currentAngle = (float)Math.PI;
+
+        /// <summary>
+        /// 与地平线的角度;
+        /// </summary>
+        [SerializeField, Range(0f, 90f)]
+        float horizonAngle;
+
+        /// <summary>
+        /// 摄像机离地平线的高度;
+        /// </summary>
+        [SerializeField]
+        float height;
 
         /// <summary>
         /// 摄像机需要移动到的点;
         /// </summary>
         Vector3 cameraTagetPoint;
 
+        /// <summary>
+        /// 摄像机需要旋转到的角度;
+        /// </summary>
         Quaternion cameraTagetQuaternion;
 
         /// <summary>
@@ -56,26 +74,25 @@ namespace KouXiaGu
         void Update()
         {
             RotationInput();
-            //targetAround.RotateAround(transform, target.position);
+            HeightInput();
+
             cameraTagetPoint = CameraPosition();
-            //transform.LookAt(target);
-
             cameraTagetQuaternion = LookRotation(transform.position, target.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, cameraTagetQuaternion, 1f);
 
-            transform.position = Vector3.SmoothDamp(transform.position, cameraTagetPoint, ref currentVelocity, 0.5f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, cameraTagetQuaternion, 0.25f);
+            transform.position = Vector3.SmoothDamp(transform.position, cameraTagetPoint, ref currentVelocity, 0.1f);
         }
 
         /// <summary>
         /// 获取到当前摄像机应该放置的位置;
         /// </summary>
-        public Vector3 CameraPosition()
+        Vector3 CameraPosition()
         {
             Vector3 cameraPoint = transform.position;
 
-            float angle = this.angle;
-            float cameraHeight = cameraPoint.y;
-            float withHorizonAngle = transform.rotation.eulerAngles.x;
+            float angle = this.currentAngle;
+            float cameraHeight = this.height;
+            float withHorizonAngle = this.horizonAngle;
 
             return CameraPosition(target.position, angle, cameraHeight, withHorizonAngle);
         }
@@ -83,7 +100,7 @@ namespace KouXiaGu
         /// <summary>
         /// 根据摄像机与地平线的角度获取到摄像机应该放置的位置;
         /// </summary>
-        public Vector3 CameraPosition(Vector3 target, float angle, float cameraHeight, float withHorizonAngle)
+        Vector3 CameraPosition(Vector3 target, float angle, float cameraHeight, float withHorizonAngle)
         {
             double currentRadius = (cameraHeight) / Math.Tan(withHorizonAngle * (Math.PI / 180));
             double x = target.x + Math.Sin(angle) * currentRadius;
@@ -91,26 +108,27 @@ namespace KouXiaGu
             return new Vector3((float)x, cameraHeight, (float)z);
         }
 
-
         /// <summary>
-        /// 输入更新,若存在输入则返回 true;
+        /// 旋转量输入更新;
         /// </summary>
-        public void RotationInput()
+        void RotationInput()
         {
             if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Rotate_Left))
             {
-                angle -= rotationAngle * InputOnUpdate;
+                currentAngle -= rotationAngle * InputOnUpdate;
             }
             if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Rotate_Right))
             {
-                angle += rotationAngle * InputOnUpdate;
+                currentAngle += rotationAngle * InputOnUpdate;
             }
         }
 
-        [ContextMenu("LookAt")]
-        public void LookAt()
+        /// <summary>
+        /// 高度输入更新;
+        /// </summary>
+        void HeightInput()
         {
-            transform.LookAt(target);
+            this.height -= Input.GetAxis("Mouse ScrollWheel");
         }
 
         /// <summary>
