@@ -16,10 +16,18 @@ namespace KouXiaGu.UI
         [SerializeField]
         Button startGame;
 
+        [SerializeField]
+        Button returnStart;
+
         void Start()
         {
             startGame.OnClickAsObservable().
                 Subscribe(_ => GameStage.Start(ArchiveTemplet.DefaultArchived));
+
+            returnStart.OnClickAsObservable().
+                Subscribe(_ => GameStage.End());
+
+            return;
         }
 
 
