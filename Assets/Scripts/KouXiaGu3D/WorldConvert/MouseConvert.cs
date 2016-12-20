@@ -28,7 +28,7 @@ namespace KouXiaGu
         /// <summary>
         /// 射线最大距离;
         /// </summary>
-        const float RayMaxDistance = 5000f;
+        const float RayMaxDistance = 800000f;
 
         /// <summary>
         /// 从屏幕坐标获取到 y 轴 为 0 的平面坐标;

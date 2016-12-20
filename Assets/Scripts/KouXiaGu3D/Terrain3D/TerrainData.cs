@@ -333,7 +333,7 @@ namespace KouXiaGu.Terrain3D
         #region 地形块实例管理(静态)
 
         static float globalTessellation = 16f;
-        static float globalDisplacement = 2f;
+        static float globalDisplacement = 3f;
 
         /// <summary>
         /// 在场景中激活的地形块;

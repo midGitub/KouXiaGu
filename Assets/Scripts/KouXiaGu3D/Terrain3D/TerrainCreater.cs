@@ -114,7 +114,8 @@ namespace KouXiaGu.Terrain3D
         TerrainCreater() { }
 
         /// <summary>
-        /// 显示半径,在这个半径内的地形块会创建并显示;
+        /// x 显示半径,在这个半径内的地形块会创建并显示;
+        /// y 最大半径,超出这个半径内的将会销毁;
         /// </summary>
         [SerializeField]
         RectCoord radius;
@@ -131,12 +132,14 @@ namespace KouXiaGu.Terrain3D
         void Update()
         {
             RectCoord center = TerrainData.ChunkGrid.GetCoord(position);
-            IEnumerable<RectCoord> pp = GetDisplayCoords(center);
+            HashSet<RectCoord> displayCoords = new HashSet<RectCoord>(GetDisplayCoords(center));
 
-            foreach (var item in pp)
+            foreach (var item in displayCoords)
             {
                 Create(item);
             }
+
+
         }
 
         /// <summary>
@@ -145,6 +148,11 @@ namespace KouXiaGu.Terrain3D
         IEnumerable<RectCoord> GetDisplayCoords(RectCoord center)
         {
             return RectCoord.Range(center, radius.x);
+        }
+
+        IEnumerable<RectCoord> GetDestoryCoords(RectCoord center)
+        {
+            return RectCoord.Range(center, radius.y);
         }
 
         [ContextMenu("渲染所有")]
