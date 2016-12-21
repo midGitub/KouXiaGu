@@ -18,14 +18,18 @@ namespace KouXiaGu.Terrain3D
         const string SHADER_TERRAIN_NAME = "HexTerrain/Terrain";
         const string SHADER_HEIGHT_NAME = "HexTerrain/Heigt";
 
-        static Shader terrainShader
+        static Shader terrainShader;
+
+        static Shader heightShader;
+
+        static Shader TerrainShader
         {
-            get { return Shader.Find(SHADER_TERRAIN_NAME); }
+            get { return terrainShader ?? (terrainShader = Shader.Find(SHADER_TERRAIN_NAME)); }
         }
 
-        static Shader heightShader
+        static Shader HeightShader
         {
-            get { return Shader.Find(SHADER_HEIGHT_NAME); }
+            get { return heightShader ?? (heightShader = Shader.Find(SHADER_HEIGHT_NAME)); }
         }
 
 
@@ -244,7 +248,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         Material Material
         {
-            get { return material ?? (material = new Material(terrainShader)); }
+            get { return material ?? (material = new Material(TerrainShader)); }
         }
 
         /// <summary>
@@ -313,7 +317,7 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("显示地形模式")]
         void TerrainDisplay()
         {
-            Material.shader = terrainShader;
+            Material.shader = TerrainShader;
 
             DiffuseTexture = diffuseTexture;
             HeightTexture = heightTexture;
@@ -324,7 +328,7 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("显示高度模式")]
         void HeightDisplay()
         {
-            Material.shader = heightShader;
+            Material.shader = HeightShader;
         }
 
         #endregion
