@@ -188,35 +188,6 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        ///// <summary>
-        ///// 立即烘焙这个请求;
-        ///// </summary>
-        //public void Baking(BakeRequest request)
-        //{
-        //    IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
-
-        //    RenderTexture mixerRT;
-        //    RenderTexture heightRT;
-        //    RenderTexture alphaHeightRT;
-        //    RenderTexture diffuseRT;
-
-        //    mixerRT = BakingMixer(bakingNodes);
-        //    heightRT = BakingHeight(bakingNodes, mixerRT);
-        //    alphaHeightRT = BakingHeightToAlpha(heightRT);
-        //    diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
-
-        //    Texture2D height = GetHeightTexture(alphaHeightRT);
-        //    Texture2D diffuse = GetDiffuseTexture(diffuseRT);
-
-        //    request.TextureComplete(diffuse, height);
-
-        //    RenderTexture.ReleaseTemporary(mixerRT);
-        //    RenderTexture.ReleaseTemporary(heightRT);
-        //    RenderTexture.ReleaseTemporary(alphaHeightRT);
-        //    RenderTexture.ReleaseTemporary(diffuseRT);
-        //}
-
-
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
@@ -264,37 +235,6 @@ namespace KouXiaGu.Terrain3D
             return mixerRT;
         }
 
-
-        /// <summary>
-        /// 对混合贴图进行烘焙;传入需要设置到的地貌节点;
-        /// </summary>
-        IEnumerator BakingMixer(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, out RenderTexture mixerRT)
-        {
-            foreach (var pair in bakingNodes)
-            {
-                BakingNode node = pair.Key;
-                MeshRenderer hexMesh = pair.Value;
-
-                if (hexMesh.material != null)
-                    GameObject.Destroy(hexMesh.material);
-
-                hexMesh.material = mixerMaterial;
-                hexMesh.material.mainTexture = node.MixerTexture;
-            }
-
-            mixerRT = RenderTexture.GetTemporary(parameter.DiffuseMapWidth, parameter.DiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
-            return WaitRender(mixerRT);
-        }
-
-        IEnumerator WaitRender(RenderTexture rt)
-        {
-            bakingCamera.enabled = true;
-            bakingCamera.targetTexture = rt;
-            yield return new WaitForEndOfFrame();
-            bakingCamera.targetTexture = null;
-            bakingCamera.enabled = false;
-        }
-
         /// <summary>
         /// 混合高度贴图;
         /// </summary>
@@ -333,7 +273,6 @@ namespace KouXiaGu.Terrain3D
             return alphaHeightRT;
         }
 
-
         RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture globalMixer, Texture globalHeight)
         {
             foreach (var pair in bakingNodes)
@@ -349,9 +288,9 @@ namespace KouXiaGu.Terrain3D
                 hexMesh.material.SetTexture("_MainTex", node.DiffuseTexture);
                 hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
                 hexMesh.material.SetTexture("_Height", node.HeightTexture);
-                hexMesh.material.SetTexture("_GlobalMixer", globalMixer);
-                hexMesh.material.SetTexture("_ShadowsAndHeight", globalHeight);
-                hexMesh.material.SetFloat("_Sea", 0f);
+                //hexMesh.material.SetTexture("_GlobalMixer", globalMixer);
+                //hexMesh.material.SetTexture("_ShadowsAndHeight", globalHeight);
+                //hexMesh.material.SetFloat("_Sea", 0f);
                 hexMesh.material.SetFloat("_Centralization", 1.0f);
             }
 
@@ -359,8 +298,6 @@ namespace KouXiaGu.Terrain3D
             Render(diffuseRT);
             return diffuseRT;
         }
-
-
 
         Texture2D GetHeightTexture(RenderTexture renderTexture)
         {
@@ -399,6 +336,7 @@ namespace KouXiaGu.Terrain3D
             bakingCamera.Render();
             bakingCamera.targetTexture = null;
         }
+
 
         /// <summary>
         /// 模糊贴图;

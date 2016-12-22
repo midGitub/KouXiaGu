@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
         TerrainData() { }
 
         const string SHADER_TERRAIN_NAME = "HexTerrain/Terrain";
-        const string SHADER_HEIGHT_NAME = "HexTerrain/Heigt";
+        const string SHADER_HEIGHT_NAME = "HexTerrain/HeigtDisplay";
 
         static Shader terrainShader;
 
@@ -157,8 +157,8 @@ namespace KouXiaGu.Terrain3D
         const string MESH_NAME = "Terrain Mesh";
 
         //为了地形相接的地方不存在明显的缝隙,所以加上 小数 的数值;
-        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF + 0.005f;
-        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF + 0.005f;
+        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF + 0.0005f;
+        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF + 0.0005f;
 
         /// <summary>
         /// 网格生成的高度;
@@ -336,8 +336,8 @@ namespace KouXiaGu.Terrain3D
 
         #region 地形块实例管理(静态)
 
-        static float globalTessellation = 16f;
-        static float globalDisplacement = 3f;
+        static float globalTessellation = 32f;
+        static float globalDisplacement = 2f;
 
         /// <summary>
         /// 在场景中激活的地形块;
