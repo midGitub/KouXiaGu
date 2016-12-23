@@ -7,6 +7,9 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// unity单例;
+    /// </summary>
     public class UnitySingleton<T> : MonoBehaviour
         where T : UnitySingleton<T>
     {

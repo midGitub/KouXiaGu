@@ -475,6 +475,11 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static readonly float CameraAspect = TerrainData.CHUNK_WIDTH / TerrainData.CHUNK_HEIGHT;
 
+        /// <summary>
+        /// 烘焙时得到的结果边框(需要裁剪的部分,单位 像素);
+        /// </summary>
+        public static readonly int Outline = 10;
+
         [SerializeField]
         float textureSize;
 

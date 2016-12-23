@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
     {
         TerrainData() { }
 
-        const string SHADER_TERRAIN_NAME = "HexTerrain/Terrain";
+        const string SHADER_TERRAIN_NAME = "HexTerrain/TerrainSnow";
         const string SHADER_HEIGHT_NAME = "HexTerrain/HeigtDisplay";
 
         static Shader terrainShader;
@@ -157,8 +157,8 @@ namespace KouXiaGu.Terrain3D
         const string MESH_NAME = "Terrain Mesh";
 
         //为了地形相接的地方不存在明显的缝隙,所以加上 小数 的数值;
-        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF + 0.0005f;
-        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF + 0.0005f;
+        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF + 0.005f;
+        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF + 0.005f;
 
         /// <summary>
         /// 网格生成的高度;
@@ -313,6 +313,11 @@ namespace KouXiaGu.Terrain3D
             Destroy(HeightTexture);
         }
 
+        [ContextMenu("初始化网格")]
+        void SetMesh()
+        {
+            GetComponent<MeshFilter>().mesh = CreateTerrainMesh();
+        }
 
         [ContextMenu("显示地形模式")]
         void TerrainDisplay()
