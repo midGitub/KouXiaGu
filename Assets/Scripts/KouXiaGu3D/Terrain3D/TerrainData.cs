@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
     {
         TerrainData() { }
 
-        const string SHADER_TERRAIN_NAME = "HexTerrain/TerrainSnow";
+        const string SHADER_TERRAIN_NAME = "HexTerrain/Terrain";
         const string SHADER_HEIGHT_NAME = "HexTerrain/HeigtDisplay";
 
         static Shader terrainShader;
