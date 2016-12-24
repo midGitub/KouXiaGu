@@ -37,18 +37,9 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("Shader")]
         void Test_Shader()
         {
-            RenderTexture normalMapRT = RenderTexture.GetTemporary(texture.width, texture.height, 0, RenderTextureFormat.ARGB32);
-
-            texture.filterMode = FilterMode.Bilinear;
-            normalMapRT.filterMode = FilterMode.Bilinear;
-
-            Graphics.Blit(texture, normalMapRT, material, 0);
-
-            var rt = ImageEffect.GaussianBlur(normalMapRT, 1, 1, 1);
-
+            RenderTexture normalMapRT = BasicRenderer.GetInstance.normalMapper.Rander(texture);
             normalMapRT.SavePNG(@"123");
             RenderTexture.ReleaseTemporary(normalMapRT);
-            RenderTexture.ReleaseTemporary(rt);
         }
 
         void Test_NormalMap2()

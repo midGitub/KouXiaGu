@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
-
+using KouXiaGu.ImageEffects;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -27,17 +27,15 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         RenderDisplayMeshPool ovenDisplayMeshPool;
 
-        [SerializeField, HideInInspector]
-        BakingParameter prm = new BakingParameter(150);
+        [SerializeField]
+        BakingParameter prm = new BakingParameter(120, 0, 1);
 
         [SerializeField]
         Shader mixer;
         [SerializeField]
         Shader height;
         [SerializeField]
-        Shader normalMap;
-        [SerializeField]
-        NormalMapper normalMapper;
+        internal NormalMapper normalMapper;
         [SerializeField]
         Shader heightToAlpha;
         [SerializeField]
@@ -47,7 +45,6 @@ namespace KouXiaGu.Terrain3D
 
         static Material mixerMaterial;
         static Material heightMaterial;
-        static Material normalMapMaterial;
         static Material heightToAlphaMaterial;
         static Material diffuseMaterial;
         static Material blurMaterial;
@@ -55,7 +52,7 @@ namespace KouXiaGu.Terrain3D
         static Coroutine bakingCoroutine;
 
         /// <summary>
-        /// 将要进行烘焙的队列(对外只提供查询,以允许移除;);
+        /// 将要进行烘焙的队列;
         /// </summary>
         static readonly LinkedList<BakeRequest> bakingQueue = new LinkedList<BakeRequest>();
 
@@ -69,13 +66,6 @@ namespace KouXiaGu.Terrain3D
             get { return bakingQueue; }
         }
 
-        [ExposeProperty]
-        public float TextureSize
-        {
-            get { return prm.TextureSize; }
-            set { prm = new BakingParameter(value); }
-        }
-
         public static void Clear()
         {
             bakingQueue.Clear();
@@ -83,6 +73,7 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
+            prm.Reset();
             ovenDisplayMeshPool.Awake();
         }
 
@@ -144,9 +135,6 @@ namespace KouXiaGu.Terrain3D
             heightMaterial = new Material(height);
             heightMaterial.hideFlags = HideFlags.HideAndDontSave;
 
-            normalMapMaterial = new Material(normalMap);
-            normalMapMaterial.hideFlags = HideFlags.HideAndDontSave;
-
             heightToAlphaMaterial = new Material(heightToAlpha);
             heightToAlphaMaterial.hideFlags = HideFlags.HideAndDontSave;
 
@@ -175,6 +163,7 @@ namespace KouXiaGu.Terrain3D
 
                 RenderTexture mixerRT = null;
                 RenderTexture heightRT = null;
+                RenderTexture blueHeightRT = null;
                 RenderTexture normalMapRT = null;
                 RenderTexture diffuseRT = null;
                 Texture2D normalMap;
@@ -185,24 +174,21 @@ namespace KouXiaGu.Terrain3D
                 {
                     mixerRT = BakingMixer(bakingNodes);
                     heightRT = BakingHeight(bakingNodes, mixerRT);
-                    normalMapRT = BakingNormalMap(heightRT);
-                    diffuseRT = BakingDiffuse(bakingNodes, mixerRT, normalMapRT);
+                    blueHeightRT = ImageEffect.BlurOptimized(heightRT, 3, 0, 1, ImageEffect.BlurType.StandardGauss);
+                    normalMapRT = BakingNormalMap(blueHeightRT);
+                    diffuseRT = BakingDiffuse(bakingNodes, mixerRT, blueHeightRT);
 
                     normalMap = GetNormalMap(normalMapRT);
-                    heightMap = GetHeightMap(heightRT);
+                    heightMap = GetHeightMap(blueHeightRT);
                     diffuse = GetDiffuseTexture(diffuseRT);
 
                     request.TextureComplete(diffuse, heightMap, normalMap);
-
-                    //diffuse.SavePNG(@"123");
-                    //heightMap.SavePNG(@"123");
-                    //normalMap.SavePNG(@"123");
-
                 }
                 finally
                 {
                     RenderTexture.ReleaseTemporary(mixerRT);
                     RenderTexture.ReleaseTemporary(heightRT);
+                    RenderTexture.ReleaseTemporary(blueHeightRT);
                     RenderTexture.ReleaseTemporary(normalMapRT);
                     RenderTexture.ReleaseTemporary(diffuseRT);
                 }
@@ -251,7 +237,7 @@ namespace KouXiaGu.Terrain3D
                 hexMesh.material.mainTexture = node.MixerTexture;
             }
 
-            RenderTexture mixerRT = RenderTexture.GetTemporary(prm.rDiffuseMapWidth, prm.rDiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            RenderTexture mixerRT = RenderTexture.GetTemporary(prm.rDiffuseTexWidth, prm.rDiffuseTexHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
             Render(mixerRT);
             return mixerRT;
         }
@@ -327,7 +313,7 @@ namespace KouXiaGu.Terrain3D
                 hexMesh.material.SetFloat("_Centralization", 1.0f);
             }
 
-            RenderTexture diffuseRT = RenderTexture.GetTemporary(prm.rDiffuseMapWidth, prm.rDiffuseMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
+            RenderTexture diffuseRT = RenderTexture.GetTemporary(prm.rDiffuseTexWidth, prm.rDiffuseTexHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
             Render(diffuseRT);
             return diffuseRT;
         }
@@ -357,7 +343,7 @@ namespace KouXiaGu.Terrain3D
         Texture2D GetDiffuseTexture(RenderTexture renderTexture)
         {
             RenderTexture.active = renderTexture;
-            Texture2D diffuse = new Texture2D(prm.DiffuseMapWidth, prm.DiffuseMapHeight, TextureFormat.RGB24, false);
+            Texture2D diffuse = new Texture2D(prm.DiffuseTexWidth, prm.DiffuseTexHeight, TextureFormat.RGB24, false);
             diffuse.ReadPixels(prm.DiffuseReadPixel, 0, 0, false);
             diffuse.wrapMode = TextureWrapMode.Clamp;
             diffuse.Apply();
@@ -405,8 +391,14 @@ namespace KouXiaGu.Terrain3D
             (TerrainChunk.CHUNK_WIDTH + TerrainChunk.CHUNK_WIDTH * OutlineScale) / 
             (TerrainChunk.CHUNK_HEIGHT + TerrainChunk.CHUNK_HEIGHT * OutlineScale);
 
-        [SerializeField]
+        [SerializeField, Range(50, 500)]
         float textureSize;
+
+        [SerializeField, Range(0,3)]
+        int diffuseTexDownsample;
+
+        [SerializeField, Range(0, 3)]
+        int heightMapDownsample;
 
         /// <summary>
         /// 贴图大小;
@@ -420,16 +412,16 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 图片裁剪后的尺寸;
         /// </summary>
-        public int DiffuseMapWidth { get; private set; }
-        public int DiffuseMapHeight { get; private set; }
+        public int DiffuseTexWidth { get; private set; }
+        public int DiffuseTexHeight { get; private set; }
         public int HeightMapWidth { get; private set; }
         public int HeightMapHeight { get; private set; }
 
         /// <summary>
         /// 烘焙时的尺寸;
         /// </summary>
-        public int rDiffuseMapWidth { get; private set; }
-        public int rDiffuseMapHeight { get; private set; }
+        public int rDiffuseTexWidth { get; private set; }
+        public int rDiffuseTexHeight { get; private set; }
         public int rHeightMapWidth { get; private set; }
         public int rHeightMapHeight { get; private set; }
 
@@ -439,9 +431,16 @@ namespace KouXiaGu.Terrain3D
         public Rect DiffuseReadPixel { get; private set; }
         public Rect HeightReadPixel { get; private set; }
 
-        public BakingParameter(float textureSize) : this()
+        public BakingParameter(float textureSize, int diffuseTexDownsample, int heightMapDownsample) : this()
         {
+            this.diffuseTexDownsample = diffuseTexDownsample;
+            this.heightMapDownsample = heightMapDownsample;
             SetTextureSize(textureSize);
+        }
+
+        public void Reset()
+        {
+            SetTextureSize(this.textureSize);
         }
 
         void SetTextureSize(float size)
@@ -449,22 +448,22 @@ namespace KouXiaGu.Terrain3D
             float chunkWidth = TerrainChunk.CHUNK_WIDTH * size;
             float chunkHeight = TerrainChunk.CHUNK_HEIGHT * size;
 
-            this.DiffuseMapWidth = (int)(chunkWidth);
-            this.DiffuseMapHeight = (int)(chunkHeight);
-            this.HeightMapWidth = (int)(chunkWidth);
-            this.HeightMapHeight = (int)(chunkHeight);
+            this.DiffuseTexWidth = (int)(chunkWidth) >> diffuseTexDownsample;
+            this.DiffuseTexHeight = (int)(chunkHeight) >> diffuseTexDownsample;
+            this.HeightMapWidth = (int)(chunkWidth) >> heightMapDownsample;
+            this.HeightMapHeight = (int)(chunkHeight) >> heightMapDownsample;
 
-            this.rDiffuseMapWidth = (int)(DiffuseMapWidth + DiffuseMapWidth * OutlineScale);
-            this.rDiffuseMapHeight = (int)(DiffuseMapHeight + DiffuseMapHeight * OutlineScale);
+            this.rDiffuseTexWidth = (int)(DiffuseTexWidth + DiffuseTexWidth * OutlineScale);
+            this.rDiffuseTexHeight = (int)(DiffuseTexHeight + DiffuseTexHeight * OutlineScale);
             this.rHeightMapWidth = (int)(HeightMapWidth + HeightMapWidth * OutlineScale);
             this.rHeightMapHeight = (int)(HeightMapHeight + HeightMapHeight * OutlineScale);
 
             this.DiffuseReadPixel = 
                 new Rect(
-                    DiffuseMapWidth * OutlineScale / 2,
-                    DiffuseMapHeight * OutlineScale / 2, 
-                    DiffuseMapWidth,
-                    DiffuseMapHeight);
+                    DiffuseTexWidth * OutlineScale / 2,
+                    DiffuseTexHeight * OutlineScale / 2, 
+                    DiffuseTexWidth,
+                    DiffuseTexHeight);
 
             this.HeightReadPixel = 
                 new Rect(

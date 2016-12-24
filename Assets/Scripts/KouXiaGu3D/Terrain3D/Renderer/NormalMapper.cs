@@ -22,16 +22,16 @@ namespace KouXiaGu.Terrain3D
         /// 法线图取样半径;
         /// </summary>
         [SerializeField]
-        float normalMapRadius = 5;
+        float normalMapRadius = 2;
 
         [SerializeField]
         bool isBlur = true;
         [SerializeField, Range(0, 10)]
-        float blurRadius = 1;
-        [SerializeField, Range(0,5)]
-        int downSample = 0;
-        [SerializeField, Range(0, 8)]
-        int iteration = 2;
+        float blurSize;
+        [SerializeField, Range(0, 3)]
+        int downsample = 0;
+        [SerializeField, Range(0, 10)]
+        int blurIterations;
 
         Material _normalMapMaterial;
 
@@ -93,10 +93,10 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        RenderTexture Blur(Texture texture)
+        RenderTexture Blur(RenderTexture rt)
         {
-            var blur = ImageEffect.GaussianBlur(texture, blurRadius, downSample, iteration);
-            return blur;
+            var blurRT = ImageEffect.BlurOptimized(rt, blurSize, downsample, blurIterations, ImageEffect.BlurType.StandardGauss);
+            return blurRT;
         }
 
     }

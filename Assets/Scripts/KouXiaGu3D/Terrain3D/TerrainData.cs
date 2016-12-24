@@ -54,6 +54,13 @@ namespace KouXiaGu.Terrain3D
             set { Shader.SetGlobalFloat("_TerrainSnow", value); snowLevel = value; }
         }
 
+        void Start()
+        {
+            Tessellation = tessellation;
+            Displacement = displacement;
+            SnowLevel = snowLevel;
+        }
+
         #region 地形方法(静态)
 
         /// <summary>
