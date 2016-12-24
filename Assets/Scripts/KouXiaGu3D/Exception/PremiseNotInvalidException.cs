@@ -4,6 +4,9 @@ using System.Runtime.Serialization;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 前提不满足;
+    /// </summary>
     public class PremiseNotInvalidException : Exception
     {
         public PremiseNotInvalidException() : base() { }

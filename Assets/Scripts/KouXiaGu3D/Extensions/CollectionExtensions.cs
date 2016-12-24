@@ -6,10 +6,5 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    //public static class CollectionExtensions
-    //{
-
-
-    //}
 
 }

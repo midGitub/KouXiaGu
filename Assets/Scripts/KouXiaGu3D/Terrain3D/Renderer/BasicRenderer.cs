@@ -35,6 +35,10 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         Shader height;
         [SerializeField]
+        Shader normalMap;
+        [SerializeField]
+        NormalMapper normalMapper;
+        [SerializeField]
         Shader heightToAlpha;
         [SerializeField]
         Shader diffuse;
@@ -43,6 +47,7 @@ namespace KouXiaGu.Terrain3D
 
         static Material mixerMaterial;
         static Material heightMaterial;
+        static Material normalMapMaterial;
         static Material heightToAlphaMaterial;
         static Material diffuseMaterial;
         static Material blurMaterial;
@@ -138,6 +143,9 @@ namespace KouXiaGu.Terrain3D
 
             heightMaterial = new Material(height);
             heightMaterial.hideFlags = HideFlags.HideAndDontSave;
+
+            normalMapMaterial = new Material(normalMap);
+            normalMapMaterial.hideFlags = HideFlags.HideAndDontSave;
 
             heightToAlphaMaterial = new Material(heightToAlpha);
             heightToAlphaMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -280,6 +288,24 @@ namespace KouXiaGu.Terrain3D
             return alphaHeightRT;
         }
 
+        /// <summary>
+        /// 根据高度图生成法线贴图,把高度图的高度信息转移到输出的 阿尔法通道上;
+        /// </summary>
+        RenderTexture BakingNormalMap(Texture height)
+        {
+            RenderTexture nromalMapRT = RenderTexture.GetTemporary(height.width, height.height, 0, RenderTextureFormat.ARGB32);
+
+            height.filterMode = FilterMode.Bilinear;
+            nromalMapRT.filterMode = FilterMode.Bilinear;
+
+            Graphics.Blit(height, nromalMapRT, normalMapMaterial, 0);
+            return nromalMapRT;
+        }
+
+
+        /// <summary>
+        /// 烘焙材质贴图;
+        /// </summary>
         RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture globalMixer, Texture globalHeight)
         {
             foreach (var pair in bakingNodes)
@@ -354,10 +380,10 @@ namespace KouXiaGu.Terrain3D
     public struct BakingParameter
     {
 
-        ///// <summary>
-        ///// 烘焙时得到的结果边框(需要裁剪的部分,单位 像素);
-        ///// </summary>
-        //public static readonly float Outline = (TerrainData.CHUNK_HEIGHT / 12);
+        /// <summary>
+        /// 烘焙时的边框比例(需要裁剪的部分比例);
+        /// </summary>
+        public static readonly float OutlineScale = 1f / 12f;
 
         /// <summary>
         /// 完整预览整个地图块的摄像机旋转角度;
@@ -367,12 +393,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
-        public static readonly float CameraSize = ((TerrainData.CHUNK_HEIGHT) / 2);
+        public static readonly float CameraSize = 
+            ((TerrainData.CHUNK_HEIGHT + (TerrainData.CHUNK_HEIGHT * OutlineScale)) / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
-        public static readonly float CameraAspect = ((TerrainData.CHUNK_WIDTH )) / (TerrainData.CHUNK_HEIGHT);
+        public static readonly float CameraAspect = 
+            (TerrainData.CHUNK_WIDTH + TerrainData.CHUNK_WIDTH * OutlineScale) / 
+            (TerrainData.CHUNK_HEIGHT + TerrainData.CHUNK_HEIGHT * OutlineScale);
 
         [SerializeField]
         float textureSize;
@@ -415,18 +444,32 @@ namespace KouXiaGu.Terrain3D
 
         void SetTextureSize(float size)
         {
-            this.DiffuseMapWidth = (int)(TerrainData.CHUNK_WIDTH * size);
-            this.DiffuseMapHeight = (int)(TerrainData.CHUNK_HEIGHT * size);
-            this.HeightMapWidth = (int)(TerrainData.CHUNK_WIDTH * size);
-            this.HeightMapHeight = (int)(TerrainData.CHUNK_HEIGHT * size);
+            float chunkWidth = TerrainData.CHUNK_WIDTH * size;
+            float chunkHeight = TerrainData.CHUNK_HEIGHT * size;
 
-            this.rDiffuseMapWidth = (int)(TerrainData.CHUNK_WIDTH * size);
-            this.rDiffuseMapHeight = (int)(TerrainData.CHUNK_HEIGHT * size);
-            this.rHeightMapWidth = (int)(TerrainData.CHUNK_WIDTH * size);
-            this.rHeightMapHeight = (int)(TerrainData.CHUNK_HEIGHT * size);
+            this.DiffuseMapWidth = (int)(chunkWidth);
+            this.DiffuseMapHeight = (int)(chunkHeight);
+            this.HeightMapWidth = (int)(chunkWidth);
+            this.HeightMapHeight = (int)(chunkHeight);
 
-            this.DiffuseReadPixel = new Rect(0, 0, DiffuseMapWidth, DiffuseMapHeight);
-            this.HeightReadPixel = new Rect(0, 0, HeightMapWidth, HeightMapHeight);
+            this.rDiffuseMapWidth = (int)(DiffuseMapWidth + DiffuseMapWidth * OutlineScale);
+            this.rDiffuseMapHeight = (int)(DiffuseMapHeight + DiffuseMapHeight * OutlineScale);
+            this.rHeightMapWidth = (int)(HeightMapWidth + HeightMapWidth * OutlineScale);
+            this.rHeightMapHeight = (int)(HeightMapHeight + HeightMapHeight * OutlineScale);
+
+            this.DiffuseReadPixel = 
+                new Rect(
+                    DiffuseMapWidth * OutlineScale / 2,
+                    DiffuseMapHeight * OutlineScale / 2, 
+                    DiffuseMapWidth,
+                    DiffuseMapHeight);
+
+            this.HeightReadPixel = 
+                new Rect(
+                    HeightMapWidth * OutlineScale / 2,
+                    HeightMapHeight * OutlineScale / 2,
+                    HeightMapWidth,
+                    HeightMapHeight);
 
             this.TextureSize = size;
         }
