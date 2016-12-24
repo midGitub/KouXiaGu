@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
         float blurSize;
         [SerializeField, Range(0, 3)]
         int downsample = 0;
-        [SerializeField, Range(0, 10)]
+        [SerializeField, Range(1, 6)]
         int blurIterations;
 
         Material _normalMapMaterial;

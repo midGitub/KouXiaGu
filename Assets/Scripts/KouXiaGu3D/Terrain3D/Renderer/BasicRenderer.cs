@@ -308,6 +308,15 @@ namespace KouXiaGu.Terrain3D
             [SerializeField]
             Shader heightShader;
 
+            [SerializeField]
+            bool isBlur = true;
+            [SerializeField, Range(0, 10)]
+            float blurSize = 3;
+            [SerializeField, Range(0, 3)]
+            int downsample = 0;
+            [SerializeField, Range(1, 6)]
+            int blurIterations = 1;
+
             Material _heightMaterial;
 
             Material heightMaterial
@@ -334,7 +343,7 @@ namespace KouXiaGu.Terrain3D
                 RenderTexture heightRT = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
                 Render(heightRT);
 
-                var blueHeightRT = ImageEffect.BlurOptimized(heightRT, 3, 0, 1, ImageEffect.BlurType.StandardGauss);
+                var blueHeightRT = ImageEffect.BlurOptimized(heightRT, blurSize, downsample, blurIterations, ImageEffect.BlurType.StandardGauss);
                 RenderTexture.ReleaseTemporary(heightRT);
 
                 return blueHeightRT;
