@@ -52,14 +52,14 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将要进行烘焙的队列(对外只提供查询,以允许移除;);
         /// </summary>
-        static readonly Queue<BakeRequest> bakingQueue = new Queue<BakeRequest>();
+        static readonly LinkedList<BakeRequest> bakingQueue = new LinkedList<BakeRequest>();
 
         public static bool IsRunning
         {
             get { return bakingCoroutine != null; }
         }
 
-        public static Queue<BakeRequest> BakingRequests
+        public static LinkedList<BakeRequest> BakingRequests
         {
             get { return bakingQueue; }
         }
@@ -94,7 +94,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Enqueue(BakeRequest request)
         {
-            bakingQueue.Enqueue(request);
+            bakingQueue.AddLast(request);
         }
 
         /// <summary>
@@ -342,69 +342,6 @@ namespace KouXiaGu.Terrain3D
             bakingCamera.targetTexture = rt;
             bakingCamera.Render();
             bakingCamera.targetTexture = null;
-        }
-
-        public class Queue<T> : IEnumerable<T>
-        {
-            readonly LinkedList<T> linkedList = new LinkedList<T>();
-
-            public int Count
-            {
-                get { return linkedList.Count; }
-            }
-
-            public T Dequeue()
-            {
-                T item = linkedList.First.Value;
-                linkedList.Remove(linkedList.First);
-                return item;
-            }
-
-            public void Enqueue(T item)
-            {
-                linkedList.AddLast(item);
-            }
-
-            public bool Remove(T item)
-            {
-                return linkedList.Remove(item);
-            }
-
-            public bool Remove(Func<T, bool> func)
-            {
-                var current = linkedList.First;
-
-                while (current != null)
-                {
-                    if (func(current.Value))
-                    {
-                        linkedList.Remove(current);
-                        return true;
-                    }
-                    current = current.Next;
-                }
-                return false;
-            }
-
-            public bool Contains(T item)
-            {
-                return linkedList.Contains(item);
-            }
-
-            public void Clear()
-            {
-                linkedList.Clear();
-            }
-
-            public IEnumerator<T> GetEnumerator()
-            {
-                return ((IEnumerable<T>)this.linkedList).GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable<T>)this.linkedList).GetEnumerator();
-            }
         }
 
     }
