@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
         public BakeRequest(IDictionary<CubicHexCoord, TerrainNode> map, RectCoord chunkCoord) : this()
         {
             this.ChunkCoord = chunkCoord;
-            this.cameraPosition = TerrainData.ChunkGrid.GetCenter(chunkCoord);
+            this.cameraPosition = TerrainChunk.ChunkGrid.GetCenter(chunkCoord);
             this.bakingNodes = GetBakingNodes(map, chunkCoord).ToArray();
 
             if (bakingNodes.Length == 0)
@@ -55,7 +55,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<BakingNode> GetBakingNodes(IDictionary<CubicHexCoord, TerrainNode> map, RectCoord blockCoord)
         {
-            IEnumerable<CubicHexCoord> cover = TerrainData.GetChunkCover(blockCoord);
+            IEnumerable<CubicHexCoord> cover = TerrainChunk.GetChunkCover(blockCoord);
             TerrainNode node;
             Vector3 pixPoint;
 
@@ -72,9 +72,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 基本的贴图烘焙完毕时调用;
         /// </summary>
-        public void TextureComplete(Texture2D diffuse, Texture2D height)
+        public void TextureComplete(Texture2D diffuse, Texture2D height, Texture2D normal)
         {
-            TerrainData.Create(ChunkCoord, diffuse, height);
+            TerrainChunk.Create(ChunkCoord, diffuse, height, normal);
         }
 
     }

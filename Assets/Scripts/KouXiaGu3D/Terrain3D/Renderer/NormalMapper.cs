@@ -18,8 +18,11 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Shader normalMapShader;
-
-        float normalMap;
+        /// <summary>
+        /// 法线图取样半径;
+        /// </summary>
+        [SerializeField]
+        float normalMapRadius = 5;
 
         [SerializeField]
         bool isBlur = true;
@@ -49,6 +52,7 @@ namespace KouXiaGu.Terrain3D
             get { return _normalMapMaterial ?? (_normalMapMaterial = new Material(normalMapShader)); }
         }
 
+
         public RenderTexture Rander(Texture heightMap)
         {
             var rt = NormalMapFormHeight(heightMap);
@@ -75,6 +79,8 @@ namespace KouXiaGu.Terrain3D
 
                 heightMap.filterMode = FilterMode.Bilinear;
                 normalMapRT.filterMode = FilterMode.Bilinear;
+
+                normalMapMaterial.SetFloat("_Radius", normalMapRadius);
 
                 Graphics.Blit(heightMap, normalMapRT, normalMapMaterial, 0);
                 return normalMapRT;

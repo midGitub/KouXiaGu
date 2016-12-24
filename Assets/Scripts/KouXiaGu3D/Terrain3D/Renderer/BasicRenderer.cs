@@ -175,29 +175,35 @@ namespace KouXiaGu.Terrain3D
 
                 RenderTexture mixerRT = null;
                 RenderTexture heightRT = null;
-                RenderTexture alphaHeightRT = null;
+                RenderTexture normalMapRT = null;
                 RenderTexture diffuseRT = null;
-                Texture2D height;
+                Texture2D normalMap;
+                Texture2D heightMap;
                 Texture2D diffuse;
 
                 try
                 {
                     mixerRT = BakingMixer(bakingNodes);
                     heightRT = BakingHeight(bakingNodes, mixerRT);
-                    alphaHeightRT = BakingHeightToAlpha(heightRT);
-                    diffuseRT = BakingDiffuse(bakingNodes, mixerRT, alphaHeightRT);
+                    normalMapRT = BakingNormalMap(heightRT);
+                    diffuseRT = BakingDiffuse(bakingNodes, mixerRT, normalMapRT);
 
-                    height = GetHeightTexture(alphaHeightRT);
+                    normalMap = GetNormalMap(normalMapRT);
+                    heightMap = GetHeightMap(heightRT);
                     diffuse = GetDiffuseTexture(diffuseRT);
 
-                    request.TextureComplete(diffuse, height);
+                    request.TextureComplete(diffuse, heightMap, normalMap);
+
+                    //diffuse.SavePNG(@"123");
+                    //heightMap.SavePNG(@"123");
+                    //normalMap.SavePNG(@"123");
 
                 }
                 finally
                 {
                     RenderTexture.ReleaseTemporary(mixerRT);
                     RenderTexture.ReleaseTemporary(heightRT);
-                    RenderTexture.ReleaseTemporary(alphaHeightRT);
+                    RenderTexture.ReleaseTemporary(normalMapRT);
                     RenderTexture.ReleaseTemporary(diffuseRT);
                 }
             }
@@ -277,6 +283,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将高度图从灰度通道转到阿尔法通道上;
         /// </summary>
+        [Obsolete]
         RenderTexture BakingHeightToAlpha(Texture height)
         {
             RenderTexture alphaHeightRT = RenderTexture.GetTemporary(height.width, height.height, 0, RenderTextureFormat.ARGB32);
@@ -293,15 +300,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         RenderTexture BakingNormalMap(Texture height)
         {
-            RenderTexture nromalMapRT = RenderTexture.GetTemporary(height.width, height.height, 0, RenderTextureFormat.ARGB32);
-
-            height.filterMode = FilterMode.Bilinear;
-            nromalMapRT.filterMode = FilterMode.Bilinear;
-
-            Graphics.Blit(height, nromalMapRT, normalMapMaterial, 0);
-            return nromalMapRT;
+            return normalMapper.Rander(height);
         }
-
 
         /// <summary>
         /// 烘焙材质贴图;
@@ -332,24 +332,26 @@ namespace KouXiaGu.Terrain3D
             return diffuseRT;
         }
 
-        Texture2D GetHeightTexture(RenderTexture renderTexture)
+        Texture2D GetHeightMap(RenderTexture rt)
         {
-            RenderTexture.active = renderTexture;
-            Texture2D height_ARGB32 = new Texture2D(prm.HeightMapWidth, prm.HeightMapHeight, TextureFormat.ARGB32, false);
-            height_ARGB32.ReadPixels(prm.HeightReadPixel, 0, 0, false);
-            height_ARGB32.wrapMode = TextureWrapMode.Clamp;
-            height_ARGB32.Apply();
+            RenderTexture.active = rt;
+            Texture2D heightMap = new Texture2D(prm.HeightMapWidth, prm.HeightMapHeight, TextureFormat.ARGB32, false);
+            heightMap.ReadPixels(prm.HeightReadPixel, 0, 0, false);
+            heightMap.wrapMode = TextureWrapMode.Clamp;
+            heightMap.Apply();
 
-            Texture2D height_Alpha8 = new Texture2D(prm.HeightMapWidth, prm.HeightMapHeight, TextureFormat.Alpha8, false);
-            height_Alpha8.wrapMode = TextureWrapMode.Clamp;
-            Color32[] data = height_ARGB32.GetPixels32();
+            return heightMap;
+        }
 
-            height_Alpha8.SetPixels32(data);
-            height_Alpha8.Apply();
-
-            GameObject.Destroy(height_ARGB32);
-
-            return height_Alpha8;
+        Texture2D GetNormalMap(RenderTexture rt)
+        {
+            RenderTexture.active = rt;
+            Texture2D normalMap = new Texture2D(prm.HeightMapWidth, prm.HeightMapHeight, TextureFormat.ARGB32, false);
+            normalMap.ReadPixels(prm.HeightReadPixel, 0, 0, false);
+            normalMap.wrapMode = TextureWrapMode.Clamp;
+            normalMap.Apply();
+            
+            return normalMap;
         }
 
         Texture2D GetDiffuseTexture(RenderTexture renderTexture)
@@ -394,14 +396,14 @@ namespace KouXiaGu.Terrain3D
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
         public static readonly float CameraSize = 
-            ((TerrainData.CHUNK_HEIGHT + (TerrainData.CHUNK_HEIGHT * OutlineScale)) / 2);
+            ((TerrainChunk.CHUNK_HEIGHT + (TerrainChunk.CHUNK_HEIGHT * OutlineScale)) / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
         public static readonly float CameraAspect = 
-            (TerrainData.CHUNK_WIDTH + TerrainData.CHUNK_WIDTH * OutlineScale) / 
-            (TerrainData.CHUNK_HEIGHT + TerrainData.CHUNK_HEIGHT * OutlineScale);
+            (TerrainChunk.CHUNK_WIDTH + TerrainChunk.CHUNK_WIDTH * OutlineScale) / 
+            (TerrainChunk.CHUNK_HEIGHT + TerrainChunk.CHUNK_HEIGHT * OutlineScale);
 
         [SerializeField]
         float textureSize;
@@ -444,8 +446,8 @@ namespace KouXiaGu.Terrain3D
 
         void SetTextureSize(float size)
         {
-            float chunkWidth = TerrainData.CHUNK_WIDTH * size;
-            float chunkHeight = TerrainData.CHUNK_HEIGHT * size;
+            float chunkWidth = TerrainChunk.CHUNK_WIDTH * size;
+            float chunkHeight = TerrainChunk.CHUNK_HEIGHT * size;
 
             this.DiffuseMapWidth = (int)(chunkWidth);
             this.DiffuseMapHeight = (int)(chunkHeight);

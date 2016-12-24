@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
             creater = null;
 
             onSceneChunk.Clear();
-            TerrainData.DestroyAll();
+            TerrainChunk.DestroyAll();
             BasicRenderer.Clear();
         }
 
@@ -72,7 +72,7 @@ namespace KouXiaGu.Terrain3D
             if (!IsCreated(chunkCoord))
                 return false;
 
-            if(!TerrainData.Destroy(chunkCoord))
+            if(!TerrainChunk.Destroy(chunkCoord))
                 BasicRenderer.BakingRequests.Remove(item => item.ChunkCoord == chunkCoord);
 
             onSceneChunk.Remove(chunkCoord);
@@ -85,7 +85,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static void RemoveOnScene(RectCoord chunkCoord)
         {
-            TerrainData.Destroy(chunkCoord);
+            TerrainChunk.Destroy(chunkCoord);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建地形到场景;
         /// </summary>
-        static void Create(RectCoord chunkCoord, Texture2D diffuse, Texture2D height)
+        static void Create(RectCoord chunkCoord, Texture2D diffuse, Texture2D height, Texture2D normal)
         {
             if (!onSceneChunk.Contains(chunkCoord))
             {
@@ -108,7 +108,7 @@ namespace KouXiaGu.Terrain3D
                 return;
             }
 
-            TerrainData.Create(chunkCoord, diffuse, height);
+            TerrainChunk.Create(chunkCoord, diffuse, height, normal);
         }
 
         #endregion
@@ -134,7 +134,7 @@ namespace KouXiaGu.Terrain3D
 
         void Update()
         {
-            RectCoord center = TerrainData.ChunkGrid.GetCoord(position);
+            RectCoord center = TerrainChunk.ChunkGrid.GetCoord(position);
             HashSet<RectCoord> displayCoords = new HashSet<RectCoord>(GetDisplayCoords(center));
 
             foreach (var item in displayCoords)
