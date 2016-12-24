@@ -233,7 +233,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 根据高度图生成法线贴图,把高度图的高度信息转移到输出的 阿尔法通道上;
+        /// 根据高度图生成法线贴图;
         /// </summary>
         RenderTexture BakingNormalMap(Texture height)
         {
@@ -243,7 +243,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘焙材质贴图;
         /// </summary>
-        RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture globalMixer, Texture globalHeight)
+        RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer, Texture height)
         {
             foreach (var pair in bakingNodes)
             {
@@ -266,6 +266,9 @@ namespace KouXiaGu.Terrain3D
             return diffuseRT;
         }
 
+        /// <summary>
+        /// 获取到法线贴图;
+        /// </summary>
         Texture2D GetNormalMap(RenderTexture rt)
         {
             RenderTexture.active = rt;
