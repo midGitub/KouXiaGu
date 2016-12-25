@@ -31,8 +31,8 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         BakingParameter parameter = new BakingParameter(120, 0, 1);
 
-        [SerializeField]
-        MixerTex mixer;
+        //[SerializeField]
+        //MixerTex mixer;
         [SerializeField]
         HeightRenderer heightRenderer;
         [SerializeField]
@@ -125,7 +125,7 @@ namespace KouXiaGu.Terrain3D
 
         /// <summary>
         /// 在协程内队列中进行烘焙;
-        /// 流程:混合->高度->建筑,道路地形平整->法线->贴图->完成
+        /// 流程:高度->建筑,道路地形平整->法线->贴图->完成
         /// </summary>
         IEnumerator Baking()
         {
@@ -133,7 +133,6 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes;
             IBakeRequest request = null;
-            RenderTexture mixerRT = null;
             RenderTexture heightMapRT = null;
             RenderTexture normalMapRT = null;
             RenderTexture diffuseRT = null;
@@ -150,10 +149,9 @@ namespace KouXiaGu.Terrain3D
                     request = bakingQueue.Dequeue();
                     bakingNodes = PrepareBaking(request);
 
-                    mixerRT = mixer.Baking(bakingNodes);
-                    heightMapRT = heightRenderer.Baking(bakingNodes, mixerRT);
+                    heightMapRT = heightRenderer.Baking(bakingNodes);
                     normalMapRT = normalMapper.Rander(heightMapRT);
-                    diffuseRT = diffuser.Baking(bakingNodes, mixerRT, heightMapRT);
+                    diffuseRT = diffuser.Baking(bakingNodes);
 
                     heightMap = heightRenderer.GetTexture(heightMapRT);
                     normalMap = normalMapper.GetTexture(normalMapRT);
@@ -175,7 +173,6 @@ namespace KouXiaGu.Terrain3D
                 }
                 finally
                 {
-                    RenderTexture.ReleaseTemporary(mixerRT);
                     RenderTexture.ReleaseTemporary(heightMapRT);
                     RenderTexture.ReleaseTemporary(normalMapRT);
                     RenderTexture.ReleaseTemporary(diffuseRT);

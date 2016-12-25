@@ -1,4 +1,4 @@
-﻿Shader "HexTerrain/DiffuseShader" {
+﻿Shader "HexTerrain/DiffuseBlend" {
 Properties {
 	_MainTex ("Base", 2D) = "black" {}
     _Blend ("Mixer", 2D) = "black" {}

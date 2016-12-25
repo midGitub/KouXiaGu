@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 烘焙材质贴图;
             /// </summary>
-            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer, Texture height)
+            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
             {
                 foreach (var pair in bakingNodes)
                 {

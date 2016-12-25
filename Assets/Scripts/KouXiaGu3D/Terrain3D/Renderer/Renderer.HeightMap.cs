@@ -42,9 +42,8 @@ namespace KouXiaGu.Terrain3D
             /// 烘焙高度图;
             /// </summary>
             /// <param name="bakingNodes">烘焙的节点和对应的网格;</param>
-            /// <param name="mixer">混合贴图</param>
             /// <returns>高度图结果;</returns>
-            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer)
+            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
             {
                 foreach (var pair in bakingNodes)
                 {
