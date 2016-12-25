@@ -22,34 +22,28 @@ SubShader {
 			struct appdata_t {
 				float4 vertex : POSITION;
 				float2 texcoord : TEXCOORD0;
-                fixed4 color : COLOR;
-
 			};
 
 			struct v2f {
 				float4 vertex : SV_POSITION;                
 				half2 texcoord : TEXCOORD0;
-                fixed4 color : COLOR;
 			};
 
 			sampler2D _MainTex;
             sampler2D _Blend;  
-			float4 _MainTex_ST;
             
-			
 			v2f vert (appdata_t v)
 			{
 				v2f o;
 				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-				o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-                o.color = v.color;
+				o.texcoord = v.texcoord;
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-                fixed4 col          = tex2D(_MainTex, i.texcoord);
-                fixed4 mixer        = tex2D(_Blend, i.texcoord);
+                fixed4 col = tex2D(_MainTex, i.texcoord);
+                fixed4 mixer = tex2D(_Blend, i.texcoord);
 
 				col.a = mixer.r;
 
