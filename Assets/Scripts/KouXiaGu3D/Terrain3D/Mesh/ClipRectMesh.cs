@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 大小为六边形外直径;
+    /// 大小为六边形外直径,大小为:外直径;
     /// </summary>
     public class ClipRectMesh : CustomMesh
     {
