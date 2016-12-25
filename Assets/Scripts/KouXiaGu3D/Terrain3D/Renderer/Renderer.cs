@@ -20,11 +20,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [SerializeField]
         Camera bakingCamera;
+
         /// <summary>
-        /// 在烘焙过程中放置在场景内的物体;
+        /// 用于烘焙放置节点内容的网格;
         /// </summary>
         [SerializeField]
-        RenderDisplayMeshPool ovenDisplayMeshPool;
+        RenderDisplayMeshPool widerRectMeshPool;
 
         [SerializeField]
         BakingParameter parameter = new BakingParameter(120, 0, 1);
@@ -78,7 +79,7 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             parameter.Reset();
-            ovenDisplayMeshPool.Awake();
+            widerRectMeshPool.Awake();
         }
 
         void Start()
@@ -191,14 +192,14 @@ namespace KouXiaGu.Terrain3D
             IEnumerable<BakingNode> bakingNodes = request.BakingNodes;
             List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
 
-            ovenDisplayMeshPool.RecoveryActive();
+            widerRectMeshPool.RecoveryActive();
 
             int indexY = -2;
 
             foreach (var node in bakingNodes)
             {
                 Vector3 position = new Vector3(node.Position.x, indexY--, node.Position.z);
-                var mesh = ovenDisplayMeshPool.Dequeue(position, node.RotationY);
+                var mesh = widerRectMeshPool.Dequeue(position, node.RotationY);
                 list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
             }
 

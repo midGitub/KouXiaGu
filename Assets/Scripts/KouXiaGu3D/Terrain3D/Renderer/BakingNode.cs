@@ -24,7 +24,7 @@ namespace KouXiaGu.Terrain3D
         Landform landform;
 
         /// <summary>
-        /// 节点的位置;
+        /// 节点的世界坐标;
         /// </summary>
         public Vector3 Position { get; private set; }
 
