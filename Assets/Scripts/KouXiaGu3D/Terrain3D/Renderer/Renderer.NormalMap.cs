@@ -31,8 +31,7 @@ namespace KouXiaGu.Terrain3D
             bool isBlur = true;
             [SerializeField, Range(0, 10)]
             float blurSize;
-            [SerializeField, Range(0, 3)]
-            int downsample = 0;
+            const int downsample = 0;
             [SerializeField, Range(1, 6)]
             int blurIterations;
 

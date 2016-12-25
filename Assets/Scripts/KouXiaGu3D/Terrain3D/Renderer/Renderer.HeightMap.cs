@@ -24,8 +24,10 @@ namespace KouXiaGu.Terrain3D
             bool isBlur = true;
             [SerializeField, Range(0, 10)]
             float blurSize = 3;
-            [SerializeField, Range(0, 3)]
-            int downsample = 0;
+            /// <summary>
+            /// 降低分辨率;
+            /// </summary>
+            const int downsample = 0;
             [SerializeField, Range(1, 6)]
             int blurIterations = 1;
 
@@ -61,10 +63,14 @@ namespace KouXiaGu.Terrain3D
                 RenderTexture heightRT = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
                 Render(heightRT);
 
-                var blueHeightRT = ImageEffect.BlurOptimized(heightRT, blurSize, downsample, blurIterations, ImageEffect.BlurType.StandardGauss);
-                RenderTexture.ReleaseTemporary(heightRT);
+                if (isBlur)
+                {
+                    var blueHeightRT = ImageEffect.BlurOptimized(heightRT, blurSize, downsample, blurIterations, ImageEffect.BlurType.StandardGauss);
+                    RenderTexture.ReleaseTemporary(heightRT);
+                    heightRT = blueHeightRT;
+                }
 
-                return blueHeightRT;
+                return heightRT;
             }
 
             /// <summary>
