@@ -72,7 +72,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 基本的贴图烘焙完毕时调用;
         /// </summary>
-        public void TextureComplete(Texture2D diffuse, Texture2D height, Texture2D normal)
+        public void OnComplete(Texture2D diffuse, Texture2D height, Texture2D normal)
         {
             TerrainChunk.Create(ChunkCoord, diffuse, height, normal);
         }

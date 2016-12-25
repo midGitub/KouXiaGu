@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         HeightRenderer heightRenderer;
         [SerializeField]
-        internal NormalMapper normalMapper;
+        NormalMapper normalMapper;
         [SerializeField]
         DiffuseTex diffuser;
 
@@ -153,7 +153,7 @@ namespace KouXiaGu.Terrain3D
                     normalMapRT = normalMapper.Rander(heightMapRT);
                     diffuseRT = diffuser.Baking(bakingNodes, mixerRT, heightMapRT);
 
-                    normalMap = GetNormalMap(normalMapRT);
+                    normalMap = normalMapper.GetTexture(normalMapRT);
                     heightMap = heightRenderer.GetTexture(heightMapRT);
                     diffuse = diffuser.GetTexture(diffuseRT);
 
@@ -203,20 +203,6 @@ namespace KouXiaGu.Terrain3D
             }
 
             return list;
-        }
-
-        /// <summary>
-        /// 获取到法线贴图;
-        /// </summary>
-        Texture2D GetNormalMap(RenderTexture rt)
-        {
-            RenderTexture.active = rt;
-            Texture2D normalMap = new Texture2D(parameter.HeightMapWidth, parameter.HeightMapHeight, TextureFormat.ARGB32, false);
-            normalMap.ReadPixels(parameter.HeightReadPixel, 0, 0, false);
-            normalMap.wrapMode = TextureWrapMode.Clamp;
-            normalMap.Apply();
-            
-            return normalMap;
         }
 
         static void Render(RenderTexture rt)
