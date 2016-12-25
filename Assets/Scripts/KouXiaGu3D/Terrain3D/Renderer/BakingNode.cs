@@ -47,12 +47,17 @@ namespace KouXiaGu.Terrain3D
             get { return landform.DiffuseTexture; }
         }
 
+        public Texture DiffuseBlendTex
+        {
+            get { return landform.MixerTexture; }
+        }
+
         public Texture HeightTex
         {
             get { return landform.HeightTexture; }
         }
 
-        public Texture MixerTex
+        public Texture HeightBlendTex
         {
             get { return landform.MixerTexture; }
         }

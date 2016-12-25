@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
                         GameObject.Destroy(hexMesh.material);
 
                     hexMesh.material = mixerMaterial;
-                    hexMesh.material.mainTexture = node.MixerTex;
+                    hexMesh.material.mainTexture = node.HeightBlendTex;
                 }
 
                 RenderTexture mixerRT = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
