@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形烘焙请求;
     /// </summary>
-    public struct BakeRequest : IEquatable<BakeRequest>
+    public struct BakeRequest : IEquatable<BakeRequest>, IBakeRequest
     {
 
         BakingNode[] bakingNodes;
@@ -75,6 +75,14 @@ namespace KouXiaGu.Terrain3D
         public void TextureComplete(Texture2D diffuse, Texture2D height, Texture2D normal)
         {
             TerrainChunk.Create(ChunkCoord, diffuse, height, normal);
+        }
+
+        /// <summary>
+        /// 当烘焙时出现出错调用;
+        /// </summary>
+        public void OnError(Exception ex)
+        {
+
         }
 
     }

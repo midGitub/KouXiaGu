@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将要进行烘焙的队列;
         /// </summary>
-        static readonly LinkedList<BakeRequest> bakingQueue = new LinkedList<BakeRequest>();
+        static readonly LinkedList<IBakeRequest> bakingQueue = new LinkedList<IBakeRequest>();
 
         /// <summary>
         /// 是否运行中?
@@ -65,7 +65,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘焙请求队列;
         /// </summary>
-        public static LinkedList<BakeRequest> BakingRequests
+        public static LinkedList<IBakeRequest> BakingRequests
         {
             get { return bakingQueue; }
         }
@@ -130,13 +130,14 @@ namespace KouXiaGu.Terrain3D
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
 
             IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes;
+            IBakeRequest request = null;
             RenderTexture mixerRT = null;
             RenderTexture heightMapRT = null;
             RenderTexture normalMapRT = null;
             RenderTexture diffuseRT = null;
-            Texture2D normalMap;
-            Texture2D heightMap;
-            Texture2D diffuse;
+            Texture2D normalMap = null;
+            Texture2D heightMap = null;
+            Texture2D diffuse = null;
 
             while (true)
             {
@@ -144,7 +145,7 @@ namespace KouXiaGu.Terrain3D
 
                 try
                 {
-                    var request = bakingQueue.Dequeue();
+                    request = bakingQueue.Dequeue();
                     bakingNodes = PrepareBaking(request);
 
                     mixerRT = mixer.Baking(bakingNodes);
@@ -156,11 +157,19 @@ namespace KouXiaGu.Terrain3D
                     heightMap = heightRenderer.GetTexture(heightMapRT);
                     diffuse = diffuser.GetTexture(diffuseRT);
 
-                    request.TextureComplete(diffuse, heightMap, normalMap);
+                    request.OnComplete(diffuse, heightMap, normalMap);
                 }
                 catch (Exception ex)
                 {
                     Debug.LogWarning("烘焙时出现错误:" + ex);
+
+                    Destroy(diffuse);
+                    Destroy(heightMap);
+                    Destroy(normalMap);
+                    Destroy(null);
+
+                    if(request != null)
+                        request.OnError(ex);
                 }
                 finally
                 {
@@ -175,7 +184,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(BakeRequest request)
+        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest request)
         {
             bakingCamera.transform.position = request.CameraPosition;
 
