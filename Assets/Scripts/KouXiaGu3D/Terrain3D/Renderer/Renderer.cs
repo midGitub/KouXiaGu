@@ -129,32 +129,32 @@ namespace KouXiaGu.Terrain3D
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
 
+            IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes;
+            RenderTexture mixerRT = null;
+            RenderTexture heightMapRT = null;
+            RenderTexture normalMapRT = null;
+            RenderTexture diffuseRT = null;
+            Texture2D normalMap;
+            Texture2D heightMap;
+            Texture2D diffuse;
+
             while (true)
             {
                 yield return bakingYieldInstruction;
 
-                var request = bakingQueue.Dequeue();
-
-                IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes = PrepareBaking(request);
-
-                RenderTexture mixerRT = null;
-                RenderTexture heightMapRT = null;
-                RenderTexture normalMapRT = null;
-                RenderTexture diffuseRT = null;
-                Texture2D normalMap;
-                Texture2D heightMap;
-                Texture2D diffuse;
-
                 try
                 {
-                    mixerRT = mixer.BakingMixer(bakingNodes);
-                    heightMapRT = heightRenderer.BakingHeight(bakingNodes, mixerRT);
+                    var request = bakingQueue.Dequeue();
+                    bakingNodes = PrepareBaking(request);
+
+                    mixerRT = mixer.Baking(bakingNodes);
+                    heightMapRT = heightRenderer.Baking(bakingNodes, mixerRT);
                     normalMapRT = normalMapper.Rander(heightMapRT);
-                    diffuseRT = diffuser.BakingDiffuse(bakingNodes, mixerRT, heightMapRT);
+                    diffuseRT = diffuser.Baking(bakingNodes, mixerRT, heightMapRT);
 
                     normalMap = GetNormalMap(normalMapRT);
-                    heightMap = heightRenderer.GetHeightMap(heightMapRT);
-                    diffuse = diffuser.GetDiffuseTexture(diffuseRT);
+                    heightMap = heightRenderer.GetTexture(heightMapRT);
+                    diffuse = diffuser.GetTexture(diffuseRT);
 
                     request.TextureComplete(diffuse, heightMap, normalMap);
                 }

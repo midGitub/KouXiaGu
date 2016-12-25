@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
             /// <param name="bakingNodes">烘焙的节点和对应的网格;</param>
             /// <param name="mixer">混合贴图</param>
             /// <returns>高度图结果;</returns>
-            public RenderTexture BakingHeight(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer)
+            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer)
             {
                 foreach (var pair in bakingNodes)
                 {
@@ -70,7 +70,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 获取到高度图;
             /// </summary>
-            public Texture2D GetHeightMap(RenderTexture rt)
+            public Texture2D GetTexture(RenderTexture rt)
             {
                 RenderTexture.active = rt;
                 Texture2D heightMap = new Texture2D(Parameter.HeightMapWidth, Parameter.HeightMapHeight, TextureFormat.ARGB32, false);

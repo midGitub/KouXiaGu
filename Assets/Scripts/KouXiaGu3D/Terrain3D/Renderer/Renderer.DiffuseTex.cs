@@ -11,6 +11,9 @@ namespace KouXiaGu.Terrain3D
     public sealed partial class Renderer : UnitySingleton<Renderer>
     {
 
+        /// <summary>
+        /// 漫反射贴图烘焙;
+        /// </summary>
         [Serializable]
         class DiffuseTex
         {
@@ -28,7 +31,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 烘焙材质贴图;
             /// </summary>
-            public RenderTexture BakingDiffuse(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer, Texture height)
+            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes, Texture mixer, Texture height)
             {
                 foreach (var pair in bakingNodes)
                 {
@@ -51,8 +54,7 @@ namespace KouXiaGu.Terrain3D
                 return diffuseRT;
             }
 
-
-            public Texture2D GetDiffuseTexture(RenderTexture renderTexture)
+            public Texture2D GetTexture(RenderTexture renderTexture)
             {
                 RenderTexture.active = renderTexture;
                 Texture2D diffuse = new Texture2D(Parameter.DiffuseTexWidth, Parameter.DiffuseTexHeight, TextureFormat.RGB24, false);
