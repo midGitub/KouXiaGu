@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using KouXiaGu.Grids;
 using System.Collections;
 
 namespace KouXiaGu.Terrain3D
@@ -124,8 +125,8 @@ namespace KouXiaGu.Terrain3D
 
         /// <summary>
         /// 在协程内队列中进行烘焙;
+        /// 流程:混合->高度->建筑,道路地形平整->法线->贴图->完成
         /// </summary>
-        /// <returns></returns>
         IEnumerator Baking()
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
@@ -154,8 +155,8 @@ namespace KouXiaGu.Terrain3D
                     normalMapRT = normalMapper.Rander(heightMapRT);
                     diffuseRT = diffuser.Baking(bakingNodes, mixerRT, heightMapRT);
 
-                    normalMap = normalMapper.GetTexture(normalMapRT);
                     heightMap = heightRenderer.GetTexture(heightMapRT);
+                    normalMap = normalMapper.GetTexture(normalMapRT);
                     diffuse = diffuser.GetTexture(diffuseRT);
 
                     request.OnComplete(diffuse, heightMap, normalMap);
@@ -182,6 +183,18 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+        static void Render(RenderTexture rt)
+        {
+            Camera bakingCamera = GetInstance.bakingCamera;
+
+            bakingCamera.targetTexture = rt;
+            bakingCamera.Render();
+            bakingCamera.targetTexture = null;
+        }
+
+
+        Dictionary<CubicHexCoord, MeshRenderer> active;
+
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
@@ -206,14 +219,47 @@ namespace KouXiaGu.Terrain3D
             return list;
         }
 
-        static void Render(RenderTexture rt)
+        /// <summary>
+        /// 场景内的网格控制;
+        /// </summary>
+        [Serializable]
+        class MeshDisplay
         {
-            Camera bakingCamera = GetInstance.bakingCamera;
+            /// <summary>
+            /// 中心点,根据传入坐标位置转换到此中心点附近;
+            /// </summary>
+            CubicHexCoord center;
 
-            bakingCamera.targetTexture = rt;
-            bakingCamera.Render();
-            bakingCamera.targetTexture = null;
+            Queue<MeshRenderer> sleep;
+            Dictionary<CubicHexCoord, MeshRenderer> active;
+
+            public void Awake()
+            {
+                sleep = new Queue<MeshRenderer>();
+                active = new Dictionary<CubicHexCoord, MeshRenderer>();
+            }
+
+            /// <summary>
+            /// 布置到场景;
+            /// </summary>
+            public MeshRenderer Dequeue(CubicHexCoord coord)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// 回收所有在场景中的网格;
+            /// </summary>
+            public void RecoveryActive()
+            {
+            }
+
+            public void Render(RenderTexture rt)
+            {
+
+            }
         }
+
 
     }
 

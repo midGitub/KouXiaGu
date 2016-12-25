@@ -17,6 +17,9 @@ namespace KouXiaGu.Terrain3D
         BakingNode[] bakingNodes;
         Vector3 cameraPosition;
 
+        /// <summary>
+        /// 地图块坐标;
+        /// </summary>
         public RectCoord ChunkCoord { get; private set; }
 
         /// <summary>
@@ -25,6 +28,14 @@ namespace KouXiaGu.Terrain3D
         public IEnumerable<BakingNode> BakingNodes
         {
             get { return bakingNodes; }
+        }
+
+        /// <summary>
+        /// 地图块中心坐标;
+        /// </summary>
+        public CubicHexCoord ChunkCenterCoord
+        {
+            get { return TerrainChunk.GetHexCenter(ChunkCoord); }
         }
 
         /// <summary>

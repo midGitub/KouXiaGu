@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -27,6 +28,11 @@ namespace KouXiaGu.Terrain3D
         /// 节点的世界坐标;
         /// </summary>
         public Vector3 Position { get; private set; }
+
+        /// <summary>
+        /// 节点在地图上的坐标;
+        /// </summary>
+        public CubicHexCoord MapPosition { get; private set; }
 
         /// <summary>
         /// 地形贴图旋转角度;
