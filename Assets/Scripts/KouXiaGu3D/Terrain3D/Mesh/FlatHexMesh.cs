@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -10,7 +7,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 平顶的六边形网格结构;
     /// </summary>
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
     public sealed class FlatHexMesh : MonoBehaviour
     {
         FlatHexMesh() { }
@@ -20,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 六边形外半径;
         /// </summary>
-        const float outerRadius = 1f;
+        const float outerRadius = GridConvert.OuterRadius;
         static readonly float innerRadius = (float)(Math.Sqrt(3) / 2 * outerRadius);
         const float halfOuterRadius = outerRadius / 2;
         const float altitude = 0;
