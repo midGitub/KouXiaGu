@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
 
             onSceneChunk.Clear();
             TerrainChunk.DestroyAll();
-            BasicRenderer.Clear();
+            Renderer.Clear();
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace KouXiaGu.Terrain3D
                 return false;
 
             onSceneChunk.Add(chunkCoord);
-            BasicRenderer.Enqueue(new BakeRequest(terrainMap, chunkCoord));
+            Renderer.BakingRequests.AddLast(new BakeRequest(terrainMap, chunkCoord));
             return true;
         }
 
@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D
                 return false;
 
             if(!TerrainChunk.Destroy(chunkCoord))
-                BasicRenderer.BakingRequests.Remove(item => item.ChunkCoord == chunkCoord);
+                Renderer.BakingRequests.Remove(item => item.ChunkCoord == chunkCoord);
 
             onSceneChunk.Remove(chunkCoord);
             RemoveOnScene(chunkCoord);
