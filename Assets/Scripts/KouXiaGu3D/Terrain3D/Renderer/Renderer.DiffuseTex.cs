@@ -43,9 +43,9 @@ namespace KouXiaGu.Terrain3D
 
                     hexMesh.material = diffuseMaterial;
 
-                    hexMesh.material.SetTexture("_MainTex", node.DiffuseTexture);
-                    hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
-                    hexMesh.material.SetTexture("_Height", node.HeightTexture);
+                    hexMesh.material.SetTexture("_MainTex", node.DiffuseTex);
+                    hexMesh.material.SetTexture("_Mixer", node.MixerTex);
+                    hexMesh.material.SetTexture("_Height", node.HeightTex);
                     hexMesh.material.SetFloat("_Centralization", 1.0f);
                 }
 

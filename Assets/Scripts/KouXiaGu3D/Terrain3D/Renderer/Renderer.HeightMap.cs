@@ -55,8 +55,8 @@ namespace KouXiaGu.Terrain3D
                         GameObject.Destroy(hexMesh.material);
 
                     hexMesh.material = heightMaterial;
-                    hexMesh.material.SetTexture("_MainTex", node.HeightTexture);
-                    hexMesh.material.SetTexture("_Mixer", node.MixerTexture);
+                    hexMesh.material.SetTexture("_MainTex", node.HeightTex);
+                    hexMesh.material.SetTexture("_Mixer", node.MixerTex);
                     hexMesh.material.SetTexture("_GlobalMixer", mixer);
                 }
 

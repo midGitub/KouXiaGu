@@ -29,24 +29,24 @@ namespace KouXiaGu.Terrain3D
         public Vector3 Position { get; private set; }
 
         /// <summary>
-        /// 贴图旋转角度;
+        /// 地形贴图旋转角度;
         /// </summary>
         public float RotationY
         {
             get { return mapNode.RotationAngle; }
         }
 
-        public Texture DiffuseTexture
+        public Texture DiffuseTex
         {
             get { return landform.DiffuseTexture; }
         }
 
-        public Texture HeightTexture
+        public Texture HeightTex
         {
             get { return landform.HeightTexture; }
         }
 
-        public Texture MixerTexture
+        public Texture MixerTex
         {
             get { return landform.MixerTexture; }
         }
