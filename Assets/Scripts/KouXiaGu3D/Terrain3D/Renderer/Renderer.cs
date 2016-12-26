@@ -194,7 +194,6 @@ namespace KouXiaGu.Terrain3D
             bakingCamera.targetTexture = null;
         }
 
-
         /// <summary>
         /// 获取到所有需要烘焙的地图节点;
         /// </summary>
