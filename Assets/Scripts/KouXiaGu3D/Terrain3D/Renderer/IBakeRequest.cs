@@ -17,14 +17,9 @@ namespace KouXiaGu.Terrain3D
         RectCoord ChunkCoord { get; }
 
         /// <summary>
-        /// 地图块内包括边界上所有的节点;
+        /// 地形使用的地图;
         /// </summary>
-        IEnumerable<BakingNode> BakingNodes { get; }
-
-        /// <summary>
-        /// 摄像机架设位置;
-        /// </summary>
-        Vector3 CameraPosition { get; }
+        IDictionary<CubicHexCoord, TerrainNode> Map { get; }
 
         /// <summary>
         /// 贴图烘焙完成;

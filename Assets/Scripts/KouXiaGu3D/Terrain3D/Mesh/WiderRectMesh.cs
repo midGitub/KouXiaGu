@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 宽于六边形的矩形,大小为:内直径+内半径;
+    /// 宽于六边形的矩形,大小为:外直径+外半径;
     /// </summary>
     public class WiderRectMesh : CustomMesh
     {

@@ -11,71 +11,25 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形烘焙请求;
     /// </summary>
-    public struct BakeRequest : IEquatable<BakeRequest>, IBakeRequest
+    public class BakeRequest : IEquatable<BakeRequest>, IBakeRequest
     {
-
-        BakingNode[] bakingNodes;
-        Vector3 cameraPosition;
 
         /// <summary>
         /// 地图块坐标;
         /// </summary>
         public RectCoord ChunkCoord { get; private set; }
 
-        /// <summary>
-        /// 范围内请求烘焙的节点;
-        /// </summary>
-        public IEnumerable<BakingNode> BakingNodes
-        {
-            get { return bakingNodes; }
-        }
+        public IDictionary<CubicHexCoord, TerrainNode> Map { get; private set; }
 
-        /// <summary>
-        /// 地图块中心坐标;
-        /// </summary>
-        public CubicHexCoord ChunkCenterCoord
-        {
-            get { return TerrainChunk.GetHexCenter(ChunkCoord); }
-        }
-
-        /// <summary>
-        /// 摄像机位置;
-        /// </summary>
-        public Vector3 CameraPosition
-        {
-            get { return cameraPosition; }
-        }
-
-        public BakeRequest(IDictionary<CubicHexCoord, TerrainNode> map, RectCoord chunkCoord) : this()
+        public BakeRequest(IDictionary<CubicHexCoord, TerrainNode> map, RectCoord chunkCoord)
         {
             this.ChunkCoord = chunkCoord;
-            this.cameraPosition = TerrainChunk.ChunkGrid.GetCenter(chunkCoord);
-            this.bakingNodes = GetBakingNodes(map, chunkCoord).ToArray();
-
-            if (bakingNodes.Length == 0)
-                throw new IndexOutOfRangeException("请求渲染地图块:" +chunkCoord + " ;超出了地图的定义;");
+            this.Map = map;
         }
 
         public bool Equals(BakeRequest other)
         {
             return ChunkCoord == other.ChunkCoord;
-        }
-
-        /// <summary>
-        /// 获取到这次需要烘焙的所有节点;
-        /// </summary>
-        IEnumerable<BakingNode> GetBakingNodes(IDictionary<CubicHexCoord, TerrainNode> map, RectCoord blockCoord)
-        {
-            IEnumerable<CubicHexCoord> cover = TerrainChunk.GetChunkCover(blockCoord);
-            TerrainNode node;
-
-            foreach (var coord in cover)
-            {
-                if (map.TryGetValue(coord, out node))
-                {
-                    yield return new BakingNode(coord, TerrainChunk.GetHexCenter(blockCoord), node);
-                }
-            }
         }
 
         /// <summary>

@@ -190,49 +190,27 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        Dictionary<CubicHexCoord, MeshRenderer> active;
-
-        ///// <summary>
-        ///// 烘焙前的准备,返回烘焙对应的网格;
-        ///// </summary>
-        //List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest request)
-        //{
-        //    bakingCamera.transform.position = request.CameraPosition;
-
-        //    IEnumerable<BakingNode> bakingNodes = request.BakingNodes;
-        //    List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
-
-        //    widerRectMeshPool.RecoveryActive();
-
-        //    int indexY = -2;
-
-        //    foreach (var node in bakingNodes)
-        //    {
-        //        Vector3 position = new Vector3(node.Position.x, indexY--, node.Position.z);
-        //        var mesh = widerRectMeshPool.Dequeue(position, node.RotationY);
-        //        list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
-        //    }
-
-        //    return list;
-        //}
-
-
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
         List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest request)
         {
-            bakingCamera.transform.position = new Vector3();
-
-            IEnumerable<BakingNode> bakingNodes = request.BakingNodes;
             List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
+
+            IEnumerable<CubicHexCoord> cover = TerrainChunk.GetChunkCover(request.ChunkCoord);
+            CubicHexCoord center = TerrainChunk.GetHexCenter(request.ChunkCoord);
+            TerrainNode mapNode;
 
             widerRectMeshPool.RecoveryActive();
 
-            foreach (var node in bakingNodes)
+            foreach (var point in cover)
             {
-                var mesh = widerRectMeshPool.Dequeue(node.MapPosition, node.MapCenter, node.RotationY);
-                list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
+                if (request.Map.TryGetValue(point, out mapNode))
+                {
+                    BakingNode bakingNode = new BakingNode(point, mapNode);
+                    var mesh = widerRectMeshPool.Dequeue(point, center, bakingNode.RotationY);
+                    list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
+                }
             }
 
             return list;
