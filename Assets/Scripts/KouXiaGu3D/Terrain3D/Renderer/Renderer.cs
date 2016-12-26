@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
         /// 用于烘焙放置节点内容的网格;
         /// </summary>
         [SerializeField]
-        RenderDisplayMeshPool widerRectMeshPool;
+        MeshDisplay widerRectMeshPool;
 
         [SerializeField]
         BakingParameter parameter = new BakingParameter(120, 0, 1);
@@ -192,29 +192,52 @@ namespace KouXiaGu.Terrain3D
 
         Dictionary<CubicHexCoord, MeshRenderer> active;
 
+        ///// <summary>
+        ///// 烘焙前的准备,返回烘焙对应的网格;
+        ///// </summary>
+        //List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest request)
+        //{
+        //    bakingCamera.transform.position = request.CameraPosition;
+
+        //    IEnumerable<BakingNode> bakingNodes = request.BakingNodes;
+        //    List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
+
+        //    widerRectMeshPool.RecoveryActive();
+
+        //    int indexY = -2;
+
+        //    foreach (var node in bakingNodes)
+        //    {
+        //        Vector3 position = new Vector3(node.Position.x, indexY--, node.Position.z);
+        //        var mesh = widerRectMeshPool.Dequeue(position, node.RotationY);
+        //        list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
+        //    }
+
+        //    return list;
+        //}
+
+
         /// <summary>
         /// 烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
         List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest request)
         {
-            bakingCamera.transform.position = request.CameraPosition;
+            bakingCamera.transform.position = new Vector3();
 
             IEnumerable<BakingNode> bakingNodes = request.BakingNodes;
             List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
 
             widerRectMeshPool.RecoveryActive();
 
-            int indexY = -2;
-
             foreach (var node in bakingNodes)
             {
-                Vector3 position = new Vector3(node.Position.x, indexY--, node.Position.z);
-                var mesh = widerRectMeshPool.Dequeue(position, node.RotationY);
+                var mesh = widerRectMeshPool.Dequeue(node.MapPosition, node.MapCenter, node.RotationY);
                 list.Add(new KeyValuePair<BakingNode, MeshRenderer>(node, mesh));
             }
 
             return list;
         }
+
 
         /// <summary>
         /// 场景内的网格控制;
@@ -222,9 +245,16 @@ namespace KouXiaGu.Terrain3D
         [Serializable]
         class MeshDisplay
         {
+            [SerializeField]
+            Transform parent;
+
+            [SerializeField]
+            MeshRenderer ovenDisplayPrefab;
+
             /// <summary>
             /// 中心点,根据传入坐标位置转换到此中心点附近;
             /// </summary>
+            [SerializeField]
             CubicHexCoord center;
 
             Queue<MeshRenderer> sleep;
@@ -239,9 +269,33 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 布置到场景;
             /// </summary>
-            public MeshRenderer Dequeue(CubicHexCoord coord)
+            public MeshRenderer Dequeue(CubicHexCoord coord, CubicHexCoord center, float rotationY)
             {
-                throw new NotImplementedException();
+                MeshRenderer mesh;
+                Quaternion rotation = Quaternion.Euler(0, rotationY, 0);
+                Vector3 position = PositionConvert(coord, center);
+                if (sleep.Count == 0)
+                {
+                    mesh = GameObject.Instantiate(ovenDisplayPrefab, position, rotation, parent) as MeshRenderer;
+                    mesh.gameObject.SetActive(true);
+                }
+                else
+                {
+                    mesh = sleep.Dequeue();
+                    mesh.transform.position = position;
+                    mesh.transform.rotation = rotation;
+                    mesh.gameObject.SetActive(true);
+                }
+
+                active.Add(coord, mesh);
+                return mesh;
+            }
+
+            Vector3 PositionConvert(CubicHexCoord coord, CubicHexCoord center)
+            {
+                CubicHexCoord oCoord = coord - center;
+                CubicHexCoord rCoord = oCoord + this.center;
+                return GridConvert.Grid.GetPixel(rCoord, -active.Count);
             }
 
             /// <summary>
@@ -249,12 +303,19 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             public void RecoveryActive()
             {
+                foreach (var item in active.Values)
+                {
+                    Destroy(item);
+                }
+                active.Clear();
             }
 
-            public void Render(RenderTexture rt)
+            void Destroy(MeshRenderer mesh)
             {
-
+                mesh.gameObject.SetActive(false);
+                sleep.Enqueue(mesh);
             }
+
         }
 
 

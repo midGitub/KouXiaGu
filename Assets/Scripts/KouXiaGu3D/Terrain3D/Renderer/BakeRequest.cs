@@ -68,14 +68,12 @@ namespace KouXiaGu.Terrain3D
         {
             IEnumerable<CubicHexCoord> cover = TerrainChunk.GetChunkCover(blockCoord);
             TerrainNode node;
-            Vector3 pixPoint;
 
             foreach (var coord in cover)
             {
-                pixPoint = GridConvert.Grid.GetPixel(coord);
                 if (map.TryGetValue(coord, out node))
                 {
-                    yield return new BakingNode(pixPoint, node);
+                    yield return new BakingNode(coord, TerrainChunk.GetHexCenter(blockCoord), node);
                 }
             }
         }

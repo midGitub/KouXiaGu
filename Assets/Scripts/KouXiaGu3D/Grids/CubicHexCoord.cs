@@ -41,7 +41,7 @@ namespace KouXiaGu.Grids
     /// 六边形立方体坐标;
     /// 所有有效坐标都满足 X + Y + Z = 0;
     /// </summary>
-    [ProtoContract]
+    [ProtoContract, Serializable]
     public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<HexDirections>
     {
 
@@ -134,23 +134,41 @@ namespace KouXiaGu.Grids
             HexDirections.North,
         };
 
+        [ProtoMember(1), SerializeField]
+        short x;
+        [ProtoMember(2), SerializeField]
+        short y;
+        [SerializeField]
+        short z;
 
-        [ProtoMember(1)]
-        public short X { get; private set; }
-        [ProtoMember(2)]
-        public short Y { get; private set; }
+        public short X
+        {
+            get { return x; }
+            private set { x = value; }
+        }
+
+        public short Y
+        {
+            get { return y; }
+            private set { y = value; }
+        }
+
         /// <summary>
         /// Z = - X - Y;
         /// </summary>
-        public short Z { get; private set; }
+        public short Z
+        {
+            get { return z; }
+            private set { z = value; }
+        }
 
         public CubicHexCoord(short x, short y, short z)
         {
             OutOfRangeException(x, y, z);
 
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
 
         public CubicHexCoord(short x, short y) : this()
@@ -161,9 +179,9 @@ namespace KouXiaGu.Grids
         public CubicHexCoord(int x, int y, int z)
         {
             OutOfRangeException((short)x, (short)y, (short)z);
-            this.X = (short)x;
-            this.Y = (short)y;
-            this.Z = (short)z;
+            this.x = (short)x;
+            this.y = (short)y;
+            this.z = (short)z;
         }
 
         public CubicHexCoord(float x, float y, float z)
@@ -192,11 +210,10 @@ namespace KouXiaGu.Grids
 
             OutOfRangeException((short)intQ, (short)intR, (short)intS);
 
-            this.X = (short)intQ;
-            this.Y = (short)intR;
-            this.Z = (short)intS;
+            this.x = (short)intQ;
+            this.y = (short)intR;
+            this.z = (short)intS;
         }
-
 
         /// <summary>
         /// 在反序列化后调用;
@@ -204,7 +221,7 @@ namespace KouXiaGu.Grids
         [ProtoAfterDeserialization]
         void ProtoAfterDeserialization()
         {
-            this.Z = (short)(-this.X - this.Y);
+            this.z = (short)(-this.x - this.y);
         }
 
         public void SetValue(short x, short y)

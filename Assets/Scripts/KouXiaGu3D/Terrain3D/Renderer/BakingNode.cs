@@ -25,14 +25,11 @@ namespace KouXiaGu.Terrain3D
         Landform landform;
 
         /// <summary>
-        /// 节点的世界坐标;
-        /// </summary>
-        public Vector3 Position { get; private set; }
-
-        /// <summary>
         /// 节点在地图上的坐标;
         /// </summary>
         public CubicHexCoord MapPosition { get; private set; }
+
+        public CubicHexCoord MapCenter { get; private set; }
 
         /// <summary>
         /// 地形贴图旋转角度;
@@ -62,9 +59,10 @@ namespace KouXiaGu.Terrain3D
             get { return landform.MixerTexture; }
         }
 
-        public BakingNode(Vector3 position, TerrainNode mapNode) : this()
+        public BakingNode(CubicHexCoord position, CubicHexCoord center, TerrainNode mapNode) : this()
         {
-            this.Position = position;
+            this.MapPosition = position;
+            this.MapCenter = center;
             this.mapNode = mapNode;
             this.landform = GetLandform(mapNode);
         }
