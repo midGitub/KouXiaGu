@@ -147,7 +147,7 @@ namespace KouXiaGu.Terrain3D
                 try
                 {
                     request = bakingQueue.Dequeue();
-                    bakingNodes = PrepareBaking(request);
+                    bakingNodes = PrepareTerrainBaking(request);
 
                     heightMapRT = heightRenderer.Baking(bakingNodes);
                     normalMapRT = normalMapper.Rander(heightMapRT);
@@ -191,9 +191,9 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
-        /// 烘焙前的准备,返回烘焙对应的网格;
+        /// 地形烘焙前的准备,返回烘焙对应的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareBaking(IBakeRequest request)
+        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareTerrainBaking(IBakeRequest request)
         {
             List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
 
