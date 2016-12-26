@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KouXiaGu.Grids;
+﻿using KouXiaGu.Grids;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -11,11 +7,11 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 略宽于六边形的矩形;
     /// </summary>
-    public class WiderRectMesh : CustomMesh
+    public class WiderOuterMesh : CustomMesh
     {
-        WiderRectMesh() { }
+        WiderOuterMesh() { }
 
-        const string MESH_NAME = "WiderRectMesh";
+        const string MESH_NAME = "WiderOuterMesh";
 
         /// <summary>
         /// 游戏使用的六边形参数;

@@ -135,7 +135,8 @@ namespace KouXiaGu.Terrain3D
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
 
-            IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes;
+            List<BakingNode> bakingNodes;
+            List<KeyValuePair<BakingNode, MeshRenderer>> terrainDisplayMesh;
             IBakeRequest request = null;
             RenderTexture heightMapRT = null;
             RenderTexture normalMapRT = null;
@@ -151,11 +152,12 @@ namespace KouXiaGu.Terrain3D
                 try
                 {
                     request = bakingQueue.Dequeue();
-                    bakingNodes = PrepareTerrainBaking(request);
+                    bakingNodes = GetBakingNodes(request);
+                    terrainDisplayMesh = GetTerrainDisplayMesh(request, bakingNodes);
 
-                    heightMapRT = heightRenderer.Baking(bakingNodes);
+                    heightMapRT = heightRenderer.Baking(terrainDisplayMesh);
                     normalMapRT = normalMapper.Rander(heightMapRT);
-                    diffuseRT = diffuser.Baking(bakingNodes);
+                    diffuseRT = diffuser.Baking(terrainDisplayMesh);
 
                     heightMap = heightRenderer.GetTexture(heightMapRT);
                     normalMap = normalMapper.GetTexture(normalMapRT);
@@ -216,48 +218,22 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地形烘焙显示的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> GetTerrainMeshDisplay(IBakeRequest request, List<BakingNode> bakingNodes)
+        List<KeyValuePair<BakingNode, MeshRenderer>> GetTerrainDisplayMesh(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
         {
             List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
             CubicHexCoord center = TerrainChunk.GetHexCenter(request.ChunkCoord);
 
+            widerRectMeshPool.RecoveryActive();
+
             foreach (var bakingNode in bakingNodes)
             {
                 CubicHexCoord crood = bakingNode.Position;
-                var mesh = widerRectMeshPool.Dequeue(crood, center, 0);
+                var mesh = widerRectMeshPool.Dequeue(crood, center, bakingNode.RotationY);
                 list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
             }
 
             return list;
         }
-
-
-        /// <summary>
-        /// 地形烘焙前的准备,返回地形烘焙对应的网格;
-        /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> PrepareTerrainBaking(IBakeRequest request)
-        {
-            List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
-
-            IEnumerable<CubicHexCoord> cover = TerrainChunk.GetChunkCover(request.ChunkCoord);
-            CubicHexCoord center = TerrainChunk.GetHexCenter(request.ChunkCoord);
-            TerrainNode mapNode;
-
-            widerRectMeshPool.RecoveryActive();
-
-            foreach (var point in cover)
-            {
-                if (request.Map.TryGetValue(point, out mapNode))
-                {
-                    BakingNode bakingNode = new BakingNode(point, mapNode);
-                    var mesh = widerRectMeshPool.Dequeue(point, center, bakingNode.RotationY);
-                    list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
-                }
-            }
-
-            return list;
-        }
-
 
         /// <summary>
         /// 场景内的网格控制;

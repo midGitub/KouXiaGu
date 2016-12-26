@@ -295,10 +295,19 @@ namespace KouXiaGu.Terrain3D
             Destroy(NormalMap);
         }
 
-        [ContextMenu("初始化网格")]
-        void SetMesh()
+        void Reset()
         {
             GetComponent<MeshFilter>().mesh = CreateTerrainMesh();
+        }
+
+        [ContextMenu("保存贴图")]
+        void SAVE_Tex()
+        {
+            string path = Application.dataPath + "\\TestTex";
+
+            diffuseTexture.SavePNG(path);
+            heightTexture.SavePNG(path);
+            normalMap.SavePNG(path);
         }
 
         [ContextMenu("显示地形模式")]
