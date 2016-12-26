@@ -39,22 +39,22 @@ namespace KouXiaGu.Terrain3D
 
         public Texture DiffuseTex
         {
-            get { return landform.DiffuseTexture; }
+            get { return landform.DiffuseTex; }
         }
 
         public Texture DiffuseBlendTex
         {
-            get { return landform.MixerTexture; }
+            get { return landform.DiffuseBlendTex; }
         }
 
         public Texture HeightTex
         {
-            get { return landform.HeightTexture; }
+            get { return landform.HeightTex; }
         }
 
         public Texture HeightBlendTex
         {
-            get { return landform.MixerTexture; }
+            get { return landform.HeightBlendTex; }
         }
 
         public BakingNode(CubicHexCoord position, TerrainNode mapNode) : this()

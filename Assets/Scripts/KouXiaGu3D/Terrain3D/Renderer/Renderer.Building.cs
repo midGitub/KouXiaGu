@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         class BuildingDecorate
         {
 
-            public RenderTexture Render(RenderTexture heightMap)
+            public RenderTexture Render()
             {
                 throw new NotImplementedException();
             }

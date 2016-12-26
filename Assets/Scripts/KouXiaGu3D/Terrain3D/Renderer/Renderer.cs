@@ -125,7 +125,11 @@ namespace KouXiaGu.Terrain3D
 
         /// <summary>
         /// 在协程内队列中进行烘焙;
-        /// 流程:高度->建筑,道路地形平整->法线->贴图->完成
+        /// 流程:
+        /// 建筑高度平整图->建筑地表图->
+        /// 地形高度图->地形地表图->
+        /// 混合高度->混合地表->
+        /// 高度生成法线图->完成
         /// </summary>
         IEnumerator Baking()
         {
@@ -166,7 +170,6 @@ namespace KouXiaGu.Terrain3D
                     Destroy(diffuse);
                     Destroy(heightMap);
                     Destroy(normalMap);
-                    Destroy(null);
 
                     if(request != null)
                         request.OnError(ex);
@@ -191,7 +194,46 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
-        /// 地形烘焙前的准备,返回烘焙对应的网格;
+        /// 获取到所有需要烘焙的地图节点;
+        /// </summary>
+        List<BakingNode> GetBakingNodes(IBakeRequest request)
+        {
+            List<BakingNode> bakingNodes = new List<BakingNode>();
+            IEnumerable<CubicHexCoord> cover = TerrainChunk.GetChunkCover(request.ChunkCoord);
+            TerrainNode mapNode;
+
+            foreach (var point in cover)
+            {
+                if (request.Map.TryGetValue(point, out mapNode))
+                {
+                    BakingNode bakingNode = new BakingNode(point, mapNode);
+                    bakingNodes.Add(bakingNode);
+                }
+            }
+            return bakingNodes;
+        }
+
+        /// <summary>
+        /// 获取到地形烘焙显示的网格;
+        /// </summary>
+        List<KeyValuePair<BakingNode, MeshRenderer>> GetTerrainMeshDisplay(IBakeRequest request, List<BakingNode> bakingNodes)
+        {
+            List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
+            CubicHexCoord center = TerrainChunk.GetHexCenter(request.ChunkCoord);
+
+            foreach (var bakingNode in bakingNodes)
+            {
+                CubicHexCoord crood = bakingNode.Position;
+                var mesh = widerRectMeshPool.Dequeue(crood, center, bakingNode.RotationY);
+                list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
+            }
+
+            return list;
+        }
+
+
+        /// <summary>
+        /// 地形烘焙前的准备,返回地形烘焙对应的网格;
         /// </summary>
         List<KeyValuePair<BakingNode, MeshRenderer>> PrepareTerrainBaking(IBakeRequest request)
         {
@@ -236,12 +278,12 @@ namespace KouXiaGu.Terrain3D
             CubicHexCoord center;
 
             Queue<MeshRenderer> sleep;
-            Dictionary<CubicHexCoord, MeshRenderer> active;
+            Queue<MeshRenderer> active;
 
             public void Awake()
             {
                 sleep = new Queue<MeshRenderer>();
-                active = new Dictionary<CubicHexCoord, MeshRenderer>();
+                active = new Queue<MeshRenderer>();
             }
 
             /// <summary>
@@ -265,7 +307,7 @@ namespace KouXiaGu.Terrain3D
                     mesh.gameObject.SetActive(true);
                 }
 
-                active.Add(coord, mesh);
+                active.Enqueue(mesh);
                 return mesh;
             }
 
@@ -281,11 +323,11 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             public void RecoveryActive()
             {
-                foreach (var item in active.Values)
+                while (active.Count != 0)
                 {
+                    var item = active.Dequeue();
                     Destroy(item);
                 }
-                active.Clear();
             }
 
             void Destroy(MeshRenderer mesh)

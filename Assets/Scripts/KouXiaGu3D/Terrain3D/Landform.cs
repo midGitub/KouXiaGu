@@ -228,49 +228,44 @@ namespace KouXiaGu.Terrain3D
         public int ID { get; set; }
 
         // 贴图名或路径定义;
-        [XmlElement("diffusePath")]
+        [XmlElement("Diffuse")]
         public string diffusePath { get; set; }
 
-        [XmlElement("heightPath")]
+        [XmlElement("DiffuseBlend")]
+        public string diffuseBlendPath { get; set; }
+
+        [XmlElement("Height")]
         public string heightPath { get; set; }
 
-        [XmlElement("mixerPath")]
-        public string mixerPath { get; set; }
+        [XmlElement("HeightBlend")]
+        public string heightBlendPath { get; set; }
 
-        /// <summary>
-        /// 漫反射贴图;
-        /// </summary>
         [XmlIgnore]
-        public Texture DiffuseTexture { get; private set; }
+        public Texture DiffuseTex { get; private set; }
 
-        /// <summary>
-        /// 高度贴图;
-        /// </summary>
         [XmlIgnore]
-        public Texture HeightTexture { get; private set; }
+        public Texture DiffuseBlendTex { get; private set; }
 
-        /// <summary>
-        /// 混合贴图;
-        /// </summary>
         [XmlIgnore]
-        public Texture MixerTexture { get; private set; }
+        public Texture HeightTex { get; private set; }
+
+        [XmlIgnore]
+        public Texture HeightBlendTex { get; private set; }
 
         /// <summary>
         /// 是否已经初始化完毕?
         /// </summary>
         public bool IsInitialized
         {
-            get
-            {
-                return DiffuseTexture != null || HeightTexture != null || MixerTexture != null;
-            }
+            get { return DiffuseTex != null || HeightTex != null || DiffuseBlendTex != null || HeightBlendTex != null; }
         }
 
         void Destroy()
         {
-            GameObject.Destroy(DiffuseTexture);
-            GameObject.Destroy(HeightTexture);
-            GameObject.Destroy(MixerTexture);
+            GameObject.Destroy(DiffuseTex);
+            GameObject.Destroy(HeightTex);
+            GameObject.Destroy(DiffuseBlendTex);
+            GameObject.Destroy(HeightBlendTex);
         }
 
         public override string ToString()
@@ -290,11 +285,13 @@ namespace KouXiaGu.Terrain3D
         {
             Texture diffuse = assetBundle.LoadAsset<Texture>(diffusePath);
             Texture height = assetBundle.LoadAsset<Texture>(heightPath);
-            Texture mixer = assetBundle.LoadAsset<Texture>(mixerPath);
+            Texture diffuseBlend = assetBundle.LoadAsset<Texture>(diffuseBlendPath);
+            Texture heightBlend = assetBundle.LoadAsset<Texture>(heightBlendPath);
 
-            this.DiffuseTexture = diffuse;
-            this.HeightTexture = height;
-            this.MixerTexture = mixer;
+            this.DiffuseTex = diffuse;
+            this.HeightTex = height;
+            this.DiffuseBlendTex = diffuseBlend;
+            this.HeightBlendTex = heightBlend;
         }
 
         /// <summary>
@@ -315,7 +312,8 @@ namespace KouXiaGu.Terrain3D
 
             AssetBundleRequest diffuseRequest;
             AssetBundleRequest heightRequest;
-            AssetBundleRequest mixerRequest;
+            AssetBundleRequest diffuseBlendRequest;
+            AssetBundleRequest heightBlendRequest;
 
             public LoadTexturesRequest(Landform landform, AssetBundle assetBundle)
             {
@@ -325,15 +323,12 @@ namespace KouXiaGu.Terrain3D
 
             public override bool keepWaiting
             {
-                get
-                {
-                    return KeepWaiting();
-                }
+                get { return KeepWaiting(); }
             }
 
             bool KeepWaiting()
             {
-                if (!diffuseRequest.isDone || !heightRequest.isDone || !mixerRequest.isDone)
+                if (!diffuseRequest.isDone || !heightRequest.isDone || !diffuseBlendRequest.isDone || !heightBlendRequest.isDone)
                 {
                     return true;
                 }
@@ -341,11 +336,13 @@ namespace KouXiaGu.Terrain3D
                 {
                     Texture diffuse = (Texture)diffuseRequest.asset;
                     Texture height = (Texture)heightRequest.asset;
-                    Texture mixer = (Texture)mixerRequest.asset;
+                    Texture diffuseBlend = (Texture)diffuseBlendRequest.asset;
+                    Texture heightBlend = (Texture)heightBlendRequest.asset;
 
-                    landform.DiffuseTexture = diffuse;
-                    landform.HeightTexture = height;
-                    landform.MixerTexture = mixer;
+                    landform.DiffuseTex = diffuse;
+                    landform.HeightTex = height;
+                    landform.DiffuseBlendTex = diffuseBlend;
+                    landform.HeightBlendTex = heightBlend;
 
                     return false;
                 }
@@ -355,7 +352,8 @@ namespace KouXiaGu.Terrain3D
             {
                 diffuseRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.diffusePath);
                 heightRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.heightPath);
-                mixerRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.mixerPath);
+                diffuseBlendRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.diffuseBlendPath);
+                heightBlendRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.heightBlendPath);
             }
 
         }
