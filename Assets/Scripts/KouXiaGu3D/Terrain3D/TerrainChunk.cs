@@ -116,11 +116,8 @@ namespace KouXiaGu.Terrain3D
             GetBelongChunks(point, ref chunks);
         }
 
-        //检测六边形节点所在块 的两个点;
-        static readonly Vector3 CheckBelongChunkPoint1 =
+        static readonly Vector3 CheckBelongChunkPoint =
             new Vector3((float)MAP_HEXAGON.OuterRadius / 2, 0, (float)MAP_HEXAGON.InnerRadius / 2);
-        static readonly Vector3 CheckBelongChunkPoint2 =
-            new Vector3(-(float)MAP_HEXAGON.OuterRadius / 2, 0, -(float)MAP_HEXAGON.InnerRadius / 2);
 
         /// <summary>
         /// 获取到地图节点所属的地形块;
@@ -130,10 +127,10 @@ namespace KouXiaGu.Terrain3D
         {
             try
             {
-                Vector3 point1 = pointCenter + CheckBelongChunkPoint1;
+                Vector3 point1 = pointCenter + CheckBelongChunkPoint;
                 chunks[0] = CHUNK_GRID.GetCoord(point1);
 
-                Vector3 point2 = pointCenter + CheckBelongChunkPoint2;
+                Vector3 point2 = pointCenter - CheckBelongChunkPoint;
                 chunks[1] = CHUNK_GRID.GetCoord(point2);
             }
             catch (ArgumentOutOfRangeException)

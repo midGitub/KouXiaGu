@@ -73,7 +73,7 @@ namespace KouXiaGu.Test
             Vector2 terrainBlockLocal = Terrain3D.TerrainChunk.ChunkGrid.GetLocal(pixel, out terrainBlockCoord);
             Vector2 terrainBlockUV = Terrain3D.TerrainChunk.ChunkGrid.GetUV(pixel, out terrainBlockCoord);
             float terrainHeight = Terrain3D.TerrainData.GetHeight(pixel);
-            RectCoord[] terrainBlocks = Terrain3D.TerrainChunk.GetBelongChunks(terrainBlockHexCenter);
+            RectCoord[] terrainBlocks = Terrain3D.TerrainChunk.GetBelongChunks(cube);
 
             string str = "";
 

@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 宽于六边形的矩形,大小为:外直径+外半径;
+    /// 略宽于六边形的矩形;
     /// </summary>
     public class WiderRectMesh : CustomMesh
     {
@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 矩形大小;
         /// </summary>
-        static readonly float SIZE = (float)(HEXAGON.OuterDiameters + HEXAGON.OuterRadius);
+        static readonly float SIZE = (float)(HEXAGON.OuterDiameters + HEXAGON.OuterRadius) - (float)(HEXAGON.OuterDiameters + HEXAGON.OuterRadius) * 1/12;
         static readonly float HALF_SIZE = SIZE / 2;
         const float ALTITUDE = 0;
 

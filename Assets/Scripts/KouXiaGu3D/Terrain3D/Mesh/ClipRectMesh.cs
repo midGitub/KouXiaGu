@@ -9,13 +9,13 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 大小为六边形外直径,大小为:外直径;
+    /// 大小为六边形外直径和内直径,宽高比约为 "1.154701";
     /// </summary>
     public class ClipRectMesh : CustomMesh
     {
         ClipRectMesh() { }
 
-        const string MESH_NAME = "WiderRectMesh";
+        const string MESH_NAME = "ClipRectMesh";
 
         /// <summary>
         /// 游戏使用的六边形参数;
@@ -25,8 +25,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 矩形大小;
         /// </summary>
-        static readonly float SIZE = (float)(HEXAGON.OuterDiameters);
-        static readonly float HALF_SIZE = SIZE / 2;
+        static readonly float WIDTH = (float)(HEXAGON.OuterDiameters);
+        static readonly float HALF_WIDTH = WIDTH / 2;
+        static readonly float HEIGHT = (float)(HEXAGON.InnerDiameters);
+        static readonly float HALF_HEIGHT = HEIGHT / 2;
         const float ALTITUDE = 0;
 
         /// <summary>
@@ -34,10 +36,10 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Vector3[] VERTICES = new Vector3[]
             {
-                new Vector3(-HALF_SIZE , ALTITUDE, HALF_SIZE),
-                new Vector3(HALF_SIZE, ALTITUDE, HALF_SIZE),
-                new Vector3(HALF_SIZE, ALTITUDE, -HALF_SIZE),
-                new Vector3(-HALF_SIZE, ALTITUDE, -HALF_SIZE),
+                new Vector3(-HALF_WIDTH , ALTITUDE, HALF_HEIGHT),
+                new Vector3(HALF_WIDTH, ALTITUDE, HALF_HEIGHT),
+                new Vector3(HALF_WIDTH, ALTITUDE, -HALF_HEIGHT),
+                new Vector3(-HALF_WIDTH, ALTITUDE, -HALF_HEIGHT),
             };
 
         /// <summary>
