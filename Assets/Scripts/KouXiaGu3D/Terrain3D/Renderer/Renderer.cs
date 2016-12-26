@@ -224,7 +224,7 @@ namespace KouXiaGu.Terrain3D
             foreach (var bakingNode in bakingNodes)
             {
                 CubicHexCoord crood = bakingNode.Position;
-                var mesh = widerRectMeshPool.Dequeue(crood, center, bakingNode.RotationY);
+                var mesh = widerRectMeshPool.Dequeue(crood, center, 0);
                 list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
             }
 

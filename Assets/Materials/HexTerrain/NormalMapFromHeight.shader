@@ -47,44 +47,53 @@ Shader "HexTerrain/NormalMapFromHeight"
 
 	void NromalMapFromHeightMap(float2 uv, out float dX, out float dY)
 	{
-		
-	}
-
-	fixed4 frag (v2f i) : SV_Target
-	{
-		fixed4 col = tex2D(_MainTex, i.uv);
+		fixed4 col = tex2D(_MainTex, uv);
 
 		float wDelta = _MainTex_TexelSize.x * _Radius;
 		float hDelta = _MainTex_TexelSize.y * _Radius;
 
-		float topLeft = tex2D(_MainTex, float2(Clamp1(i.uv.x - wDelta), Clamp1(i.uv.y + hDelta))).r;
-		float top = tex2D(_MainTex, float2(Clamp1(i.uv.x), Clamp1(i.uv.y + hDelta))).r;
-		float topRight = tex2D(_MainTex, float2(Clamp1(i.uv.x + wDelta), Clamp1(i.uv.y + hDelta))).r;
-		float left = tex2D(_MainTex, float2(Clamp1(i.uv.x - wDelta), Clamp1(i.uv.y))).r;
+		float topLeft = tex2D(_MainTex, float2(Clamp1(uv.x - wDelta), Clamp1(uv.y + hDelta))).r;
+		float top = tex2D(_MainTex, float2(Clamp1(uv.x), Clamp1(uv.y + hDelta))).r;
+		float topRight = tex2D(_MainTex, float2(Clamp1(uv.x + wDelta), Clamp1(uv.y + hDelta))).r;
+		float left = tex2D(_MainTex, float2(Clamp1(uv.x - wDelta), Clamp1(uv.y))).r;
 		float self = col.r;
-		float right = tex2D(_MainTex, float2(Clamp1(i.uv.x + wDelta), Clamp1(i.uv.y))).r;
-		float bottomLeft = tex2D(_MainTex, float2(Clamp1(i.uv.x - wDelta), Clamp1(i.uv.y - hDelta))).r;
-		float bottom = tex2D(_MainTex, float2(Clamp1(i.uv.x), Clamp1(i.uv.y - hDelta))).r;
-		float bottomRight = tex2D(_MainTex, float2(Clamp1(i.uv.x + wDelta), Clamp1(i.uv.y - hDelta))).r;
+		float right = tex2D(_MainTex, float2(Clamp1(uv.x + wDelta), Clamp1(uv.y))).r;
+		float bottomLeft = tex2D(_MainTex, float2(Clamp1(uv.x - wDelta), Clamp1(uv.y - hDelta))).r;
+		float bottom = tex2D(_MainTex, float2(Clamp1(uv.x), Clamp1(uv.y - hDelta))).r;
+		float bottomRight = tex2D(_MainTex, float2(Clamp1(uv.x + wDelta), Clamp1(uv.y - hDelta))).r;
 
-		float dX = (topRight + 2 * right + bottomRight) - (topLeft + 2 * left + bottomLeft);
-		float dY = (bottomLeft + 2 * bottom + bottomRight) - (topLeft + 2 * top + topRight);
-		float dZ = 1;
+		dX = (topRight + 2 * right + bottomRight) - (topLeft + 2 * left + bottomLeft);
+		dY = (bottomLeft + 2 * bottom + bottomRight) - (topLeft + 2 * top + topRight);
 
 		dX = (dX + 1) * 0.5;
 		dY = (dY + 1) * 0.5;
-			
-		//fixed4 c = fixed4(dX , dY, dZ, self);
-		//fixed4 c = fixed4(dX , dY, dZ, 1);
+	}
 
-		//Unity需要设置这样式才能正常使用;
-		fixed4 c = fixed4(dY , dY, dX, dX);
+	fixed4 frag_Unity (v2f i) : SV_Target
+	{
+		float dX;
+		float dY;
+		
+		NromalMapFromHeightMap(i.uv, dX, dY);
 
+		fixed4 c = fixed4(dX , dX, dY, dY);
+		return c;
+	}
+
+	fixed4 frag_NromalMap(v2f i) : SV_Target
+	{
+		float dX;
+		float dY;
+		
+		NromalMapFromHeightMap(i.uv, dX, dY);
+
+		fixed4 c = fixed4(dX , dY, 1, 1);
 		return c;
 	}
 
 	ENDCG
 
+	//0
 	//Unity使用的法线;
 	SubShader
 	{
@@ -97,7 +106,25 @@ Shader "HexTerrain/NormalMapFromHeight"
 
 			CGPROGRAM
 			#pragma vertex vert
-			#pragma fragment frag
+			#pragma fragment frag_Unity
+			ENDCG
+		}
+	}
+
+	//1
+	//蓝色背景的法线;
+	SubShader
+	{
+		Pass
+		{
+            ZTest Always  
+            Cull Off  
+            ZWrite Off  
+            Fog{ Mode Off }  
+
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag_NromalMap
 			ENDCG
 		}
 	}
