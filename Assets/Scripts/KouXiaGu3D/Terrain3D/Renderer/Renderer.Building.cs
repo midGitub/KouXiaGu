@@ -17,7 +17,10 @@ namespace KouXiaGu.Terrain3D
         class BuildingDecorate
         {
 
-            public RenderTexture Render()
+            /// <summary>
+            /// 建筑混合高度平整图;
+            /// </summary>
+            public RenderTexture HeightMapRender()
             {
                 throw new NotImplementedException();
             }

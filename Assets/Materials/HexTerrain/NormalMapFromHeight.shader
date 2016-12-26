@@ -44,6 +44,12 @@ Shader "HexTerrain/NormalMapFromHeight"
 		return clamp(value, 0, 1);
 	}
 
+
+	void NromalMapFromHeightMap(float2 uv, out float dX, out float dY)
+	{
+		
+	}
+
 	fixed4 frag (v2f i) : SV_Target
 	{
 		fixed4 col = tex2D(_MainTex, i.uv);
@@ -79,6 +85,7 @@ Shader "HexTerrain/NormalMapFromHeight"
 
 	ENDCG
 
+	//Unity使用的法线;
 	SubShader
 	{
 		Pass

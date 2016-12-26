@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 矩形大小;
         /// </summary>
-        static readonly float SIZE = (float)(HEXAGON.OuterDiameters + HEXAGON.OuterRadius) - (float)(HEXAGON.OuterDiameters + HEXAGON.OuterRadius) * 1/12;
+        static readonly float SIZE = (float)(HEXAGON.InnerDiameters + HEXAGON.InnerRadius);
         static readonly float HALF_SIZE = SIZE / 2;
         const float ALTITUDE = 0;
 
