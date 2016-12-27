@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 using UnityEngine;
+using System.IO;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -26,27 +28,27 @@ namespace KouXiaGu.Terrain3D
         /// 地貌配置文件名;
         /// </summary>
         [SerializeField]
-        string landformDescrFile = "LandformDescr.xml";
+        string landformDescrName = "LandformDescr.xml";
 
         /// <summary>
         /// 道路配置文件名;
         /// </summary>
         [SerializeField]
-        string roadDescrFile = "RoadDescr.xml";
+        string roadDescrName = "RoadDescr.xml";
 
-        public static string ResAssetBundleName
+        public static string ResAssetBundleFile
         {
-            get { return GetInstance.resAssetBundleName; }
+            get { return ResourcePath.CombineAssetBundle(GetInstance.resAssetBundleName); }
         }
 
         public static string LandformDescrFile
         {
-            get { return GetInstance.landformDescrFile; }
+            get { return TerrainResPath.Combine(GetInstance.landformDescrName); }
         }
 
         public static string RoadDescrFile
         {
-            get { return GetInstance.roadDescrFile; }
+            get { return TerrainResPath.Combine(GetInstance.roadDescrName); }
         }
 
         /// <summary>
@@ -84,8 +86,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static AssetBundleCreateRequest LoadAssetAsync()
         {
-            string filePath = ResourcePath.CombineAssetBundle(ResAssetBundleName);
-            var bundleLoadRequest = AssetBundle.LoadFromFileAsync(filePath);
+            var bundleLoadRequest = AssetBundle.LoadFromFileAsync(ResAssetBundleFile);
             return bundleLoadRequest;
         }
 
@@ -94,8 +95,16 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static IEnumerator LoadLandformRes(AssetBundle assetBundle)
         {
-            string descrFilePath = TerrainResPath.Combine(LandformDescrFile);
+            LandformDescr[] landformDescrs;
 
+            if (TryDeserialize(LandformDescr.ArraySerializer, LandformDescrFile, out landformDescrs))
+            {
+                LandformRes.Load(landformDescrs, assetBundle);
+            }
+            else
+            {
+                throw new LackOfResourcesException("地貌:缺少必要的资源用于初始化;");
+            }
 
             yield break;
         }
@@ -106,8 +115,36 @@ namespace KouXiaGu.Terrain3D
         /// <returns></returns>
         static IEnumerator LoadRoadRes(AssetBundle assetBundle)
         {
+            RoadDescr[] roadDescrs;
+
+            if (TryDeserialize(LandformDescr.ArraySerializer, RoadDescrFile, out roadDescrs))
+            {
+                RoadRes.Load(roadDescrs, assetBundle);
+            }
+            else
+            {
+                throw new LackOfResourcesException("道路:缺少必要的资源用于初始化;");
+            }
 
             yield break;
+        }
+
+        /// <summary>
+        /// 反序列化,若无法序列化则返回false;
+        /// </summary>
+        static bool TryDeserialize<T>(XmlSerializer serializer, string filePath, out T item)
+        {
+            try
+            {
+                item = (T)serializer.DeserializeFile(filePath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("地形:无法找到文件或读取文件:" + filePath + ";\n" + ex);
+                item = default(T);
+                return false;
+            }
         }
 
         /// <summary>
@@ -115,7 +152,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Clear()
         {
-
+            LandformRes.Clear();
+            RoadRes.Clear();
         }
 
     }

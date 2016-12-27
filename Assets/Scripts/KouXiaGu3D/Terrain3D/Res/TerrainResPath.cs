@@ -18,12 +18,22 @@ namespace KouXiaGu.Terrain3D
         public const string ResDirectory = "Terrain";
 
         /// <summary>
-        /// 路径组合到地形资源文件夹下;
+        /// 路径组合到地形资源文件夹下(非资源包);
         /// </summary>
         public static string Combine(string path)
         {
             string resPath = Path.Combine(ResourcePath.ConfigurationDirectoryPath, ResDirectory);
             return Path.Combine(resPath, path);
+        }
+
+        /// <summary>
+        /// 路径组合到所有地形资源文件夹下(非资源包路径);
+        /// </summary>
+        [Obsolete]
+        public static string[] CombineAll(string path)
+        {
+            string resPath = Path.Combine(ResourcePath.ConfigurationDirectoryPath, ResDirectory);
+            return new string[] { Path.Combine(resPath, path) };
         }
 
     }
