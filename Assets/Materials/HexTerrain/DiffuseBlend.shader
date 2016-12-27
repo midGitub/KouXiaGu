@@ -1,19 +1,27 @@
-﻿Shader "HexTerrain/DiffuseBlend" {
-Properties {
-	_MainTex ("Base", 2D) = "black" {}
-    _Blend ("Mixer", 2D) = "black" {}
-}
+﻿
+
+Shader "HexTerrain/DiffuseBlend"
+{
 
 
-SubShader {
-	Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-	LOD 100
+	Properties
+	{
+		_MainTex ("Base", 2D) = "black" {}
+		_BlendTex ("BlendTex", 2D) = "black" {}
+	}
+
+
+	SubShader 
+	{
+		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+		LOD 100
 	
-	ZWrite Off
-	Blend SrcAlpha OneMinusSrcAlpha 
+		ZWrite Off
+		Blend SrcAlpha OneMinusSrcAlpha 
     	
-	Pass {  
-		CGPROGRAM
+		Pass
+		{  
+			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
 			
@@ -30,7 +38,7 @@ SubShader {
 			};
 
 			sampler2D _MainTex;
-            sampler2D _Blend;  
+			sampler2D _BlendTex;  
             
 			v2f vert (appdata_t v)
 			{
@@ -42,15 +50,15 @@ SubShader {
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-                fixed4 col = tex2D(_MainTex, i.texcoord);
-                fixed4 mixer = tex2D(_Blend, i.texcoord);
+				fixed4 col = tex2D(_MainTex, i.texcoord);
+				fixed4 bCol = tex2D(_BlendTex, i.texcoord);
 
-				col.a = mixer.r;
+				col.a = bCol.r;
 
 				return col;
 			}
-		ENDCG
-	}
-}
 
+			ENDCG
+		}
+	}
 }
