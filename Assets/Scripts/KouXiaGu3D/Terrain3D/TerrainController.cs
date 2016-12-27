@@ -47,12 +47,13 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<object>.OnEnter(object item)
             {
-                return Landform123.Initialize();
+                return TerrainRes.Initialize();
             }
 
             IEnumerator IStageObserver<object>.OnEnterRollBack(object item)
             {
-                return Landform123.ClearRes();
+                TerrainRes.Clear();
+                yield break;
             }
 
             void IStageObserver<object>.OnEnterCompleted()
@@ -63,7 +64,8 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<object>.OnLeave(object item)
             {
-                return Landform123.ClearRes();
+                TerrainRes.Clear();
+                yield break;
             }
 
             IEnumerator IStageObserver<object>.OnLeaveRollBack(object item)
