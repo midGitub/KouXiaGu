@@ -14,11 +14,11 @@ namespace KouXiaGu.Terrain3D
     public struct RoadDescr
     {
 
-        static readonly XmlSerializer serializerArray = new XmlSerializer(typeof(RoadDescr[]));
+        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(RoadDescr[]));
 
-        public static XmlSerializer SerializerArray
+        public static XmlSerializer ArraySerializer
         {
-            get { return serializerArray; }
+            get { return arraySerializer; }
         }
 
         /// <summary>

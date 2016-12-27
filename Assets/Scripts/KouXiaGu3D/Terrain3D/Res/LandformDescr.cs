@@ -11,14 +11,14 @@ namespace KouXiaGu.Terrain3D
     /// 地貌信息;
     /// </summary>
     [XmlType("Landform")]
-    public class LandformDescr
+    public struct LandformDescr
     {
 
-        static readonly XmlSerializer serializerArray = new XmlSerializer(typeof(LandformDescr[]));
+        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(LandformDescr[]));
 
-        public static XmlSerializer SerializerArray
+        public static XmlSerializer ArraySerializer
         {
-            get { return serializerArray; }
+            get { return arraySerializer; }
         }
 
         /// <summary>
