@@ -47,7 +47,12 @@ namespace KouXiaGu.Terrain3D
 
             IEnumerator IStageObserver<object>.OnEnter(object item)
             {
-                return TerrainRes.Initialize();
+                IEnumerator loader;
+
+                loader = TerrainRes.Initialize();
+                while (loader.MoveNext())
+                    yield return null;
+
             }
 
             IEnumerator IStageObserver<object>.OnEnterRollBack(object item)

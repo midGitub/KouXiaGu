@@ -95,7 +95,11 @@ namespace KouXiaGu.Terrain3D
 
             if (TryDeserialize(LandformDescr.ArraySerializer, LandformDescrFile, out landformDescrs))
             {
-                LandformRes.Load(landformDescrs, assetBundle);
+                IEnumerator loader = LandformRes.Load(landformDescrs, assetBundle);
+                while (loader.MoveNext())
+                    yield return null;
+
+                Debug.Log(LandformRes.initializedInstances.ToEnumerableLog());
             }
             else
             {
@@ -113,9 +117,13 @@ namespace KouXiaGu.Terrain3D
         {
             RoadDescr[] roadDescrs;
 
-            if (TryDeserialize(LandformDescr.ArraySerializer, RoadDescrFile, out roadDescrs))
+            if (TryDeserialize(RoadDescr.ArraySerializer, RoadDescrFile, out roadDescrs))
             {
-                RoadRes.Load(roadDescrs, assetBundle);
+                IEnumerator loader = RoadRes.Load(roadDescrs, assetBundle);
+                while (loader.MoveNext())
+                    yield return null;
+
+                Debug.Log(RoadRes.initializedInstances.ToEnumerableLog());
             }
             else
             {

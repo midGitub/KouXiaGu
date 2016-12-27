@@ -139,7 +139,7 @@ namespace KouXiaGu.Terrain3D
                 Texture diffuse = LoadTexture(assetBundle, Description.DiffuseTex);
                 Texture height = LoadTexture(assetBundle, Description.HeightTex);
                 Texture diffuseBlend = LoadTexture(assetBundle, Description.DiffuseBlendTex);
-                Texture heightBlend = LoadTexture(assetBundle, Description.HeightTex);
+                Texture heightBlend = LoadTexture(assetBundle, Description.HeightBlendTex);
 
                 this.DiffuseTex = diffuse;
                 this.HeightTex = height;

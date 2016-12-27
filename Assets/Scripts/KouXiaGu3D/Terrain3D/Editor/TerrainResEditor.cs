@@ -1,5 +1,4 @@
 ﻿
-#if UNITY_EDITOR
 
 using UnityEditor;
 using UnityEngine;
@@ -16,18 +15,26 @@ namespace KouXiaGu.Terrain3D
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("导出模板"))
+            GUILayout.BeginVertical();
+            GUILayout.Label("拓展:");
+
+            if (GUILayout.Button("导出缺失模板"))
             {
                 OutputTemplet();
             }
 
+            GUILayout.EndVertical();
         }
 
         public static void OutputTemplet()
         {
             TerrainResPath.Create();
-            RoadDescr.ArraySerializer.SerializeFile(TerrainRes.RoadDescrFile, RoadTemplets);
-            LandformDescr.ArraySerializer.SerializeFile(TerrainRes.LandformDescrFile, LandformTemplets);
+
+            if(!File.Exists(TerrainRes.RoadDescrFile))
+                RoadDescr.ArraySerializer.SerializeFile(TerrainRes.RoadDescrFile, RoadTemplets);
+
+            if (!File.Exists(TerrainRes.LandformDescrFile))
+                LandformDescr.ArraySerializer.SerializeFile(TerrainRes.LandformDescrFile, LandformTemplets);
         }
 
 
@@ -77,5 +84,3 @@ namespace KouXiaGu.Terrain3D
     }
 
 }
-
-#endif

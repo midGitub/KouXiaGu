@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void RandomMap(int randomMapSize)
         {
-            Dictionary<CubicHexCoord, TerrainNode> map = RandomMap(randomMapSize, Landform123.Identifications.ToArray());
+            Dictionary<CubicHexCoord, TerrainNode> map = RandomMap(randomMapSize, LandformRes.initializedInstances.Keys.ToArray());
             ActivatedMap.AddOrUpdate(map);
         }
 
