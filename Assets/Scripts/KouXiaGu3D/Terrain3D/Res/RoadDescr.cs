@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路资源定义;
     /// </summary>
-    [XmlType("Road")]
+    [XmlType("Road"), XmlRoot("Roads")]
     public struct RoadDescr
     {
 
@@ -20,20 +20,6 @@ namespace KouXiaGu.Terrain3D
         {
             get { return arraySerializer; }
         }
-
-        //public static RoadDescr Templet()
-        //{
-        //    var descr = new RoadDescr()
-        //    {
-        //        ID = 0,
-        //        Name = "defalut",
-        //        HeightAdjustTex = "texture",
-        //        HeightAdjustBlendTex = "texture",
-        //        DiffuseTex = "texture",
-        //        DiffuseBlendTex = "texture",
-        //    };
-        //    return descr;
-        //}
 
         /// <summary>
         /// 唯一标示(0,-1作为保留);
