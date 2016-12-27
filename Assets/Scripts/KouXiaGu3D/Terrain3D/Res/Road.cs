@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
-
+    /// <summary>
+    /// 道路贴图资源;
+    /// </summary>
     public sealed class Road
     {
 
@@ -33,24 +32,53 @@ namespace KouXiaGu.Terrain3D
 
         #region 初始化方法;
 
-
         /// <summary>
         /// 初始化所有信息;
         /// </summary>
-        public IEnumerator LoadAll(IEnumerable<RoadDescr> descriptions, AssetBundle asset)
+        public static IEnumerator LoadAll(IEnumerable<RoadDescr> descriptions, AssetBundle asset)
         {
-
             foreach (var description in descriptions)
             {
+                if (initializedDictionary.ContainsKey(description.ID))
+                {
+                    Debug.LogWarning("道路:已经存在相同的ID;跳过此:" + description.ToString());
+                    continue;
+                }
+
                 Road road = new Road(description);
                 road.Load(asset);
-            }
 
-            yield return null;
+                if (road.IsLoadComplete)
+                {
+                    initializedDictionary.Add(description.ID, road);
+                }
+                else
+                {
+                    Debug.LogWarning("道路:初始化失败,跳过此:" + description.ToString());
+                    road.Destroy();
+                    continue;
+                }
+                yield return null;
+            }
+            yield break;
         }
 
+        /// <summary>
+        /// 清除所有已经初始化的道路信息;
+        /// </summary>
+        public static void ClearAll()
+        {
+            foreach (var road in initializedDictionary.Values)
+            {
+                road.Destroy();
+            }
+            initializedDictionary.Clear();
+        }
 
         #endregion
+
+
+        #region 实例部分;
 
         Road(RoadDescr description)
         {
@@ -141,65 +169,7 @@ namespace KouXiaGu.Terrain3D
             return info;
         }
 
-
-        [XmlType("Road")]
-        public struct RoadDescr
-        {
-
-            /// <summary>
-            /// 唯一标示(0,-1作为保留);
-            /// </summary>
-            [XmlAttribute("id")]
-            public int ID { get; set; }
-
-            /// <summary>
-            /// 定义名,允许为空;
-            /// </summary>
-            [XmlAttribute("name")]
-            public string Name { get; set; }
-
-            /// <summary>
-            /// 高度调整贴图名;
-            /// </summary>
-            [XmlElement("HeightTex")]
-            public string HeightAdjustTex { get; set; }
-
-            /// <summary>
-            /// 高度调整的权重贴图;
-            /// </summary>
-            [XmlElement("HeightBlendTex")]
-            public string HeightAdjustBlendTex { get; set; }
-
-            /// <summary>
-            /// 漫反射贴图名;
-            /// </summary>
-            [XmlElement("DiffuseTex")]
-            public string DiffuseTex { get; set; }
-
-            /// <summary>
-            /// 漫反射混合贴图名;
-            /// </summary>
-            [XmlElement("DiffuseBlendTex")]
-            public string DiffuseBlendTex { get; set; }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is RoadDescr))
-                    return false;
-                return ID == ((RoadDescr)obj).ID;
-            }
-
-            public override int GetHashCode()
-            {
-                return ID.GetHashCode();
-            }
-
-            public override string ToString()
-            {
-                return "[ID:" + ID.ToString() + ",Name:" + Name.ToString() + "]";
-            }
-
-        }
+        #endregion
 
     }
 
