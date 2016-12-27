@@ -25,12 +25,14 @@ Shader "HexTerrain/HeightBlend"
 			
 			#include "UnityCG.cginc"
 
-			struct appdata_t {
+			struct appdata_t 
+			{
 				float4 vertex : POSITION;
 				float2 texcoord : TEXCOORD0;
 			};
 
-			struct v2f {
+			struct v2f 
+			{
 				float4 vertex : SV_POSITION;                
 				half2 texcoord : TEXCOORD0;
 			};

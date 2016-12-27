@@ -26,19 +26,17 @@ namespace KouXiaGu.Terrain3D
         /// 用于烘焙放置节点内容的网格;
         /// </summary>
         [SerializeField]
-        MeshDisplay widerRectMeshPool;
+        MeshDisplay terDisplayMeshPool;
 
         [SerializeField]
         BakingParameter parameter = new BakingParameter(120, 0, 1);
 
-        //[SerializeField]
-        //MixerTex mixer;
         [SerializeField]
         HeightRenderer heightRenderer;
         [SerializeField]
         NormalMapper normalMapper;
         [SerializeField]
-        DiffuseTex diffuser;
+        DiffuseTex diffuseRenderer;
 
         static Coroutine bakingCoroutine;
 
@@ -79,14 +77,18 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
-            parameter.Reset();
-            widerRectMeshPool.Awake();
+            terDisplayMeshPool.Awake();
         }
 
         void Start()
         {
             InitBakingCamera();
             StartCoroutine();
+        }
+
+        void OnValidate()
+        {
+            parameter.Reset();
         }
 
         /// <summary>
@@ -155,13 +157,17 @@ namespace KouXiaGu.Terrain3D
                     bakingNodes = GetBakingNodes(request);
                     terrainDisplayMesh = GetTerrainDisplayMesh(request, bakingNodes);
 
+
+
+                    SetBakingCamera(terDisplayMeshPool);
                     heightMapRT = heightRenderer.Baking(terrainDisplayMesh);
+                    diffuseRT = diffuseRenderer.Baking(terrainDisplayMesh);
+
                     normalMapRT = normalMapper.Rander(heightMapRT);
-                    diffuseRT = diffuser.Baking(terrainDisplayMesh);
 
                     heightMap = heightRenderer.GetTexture(heightMapRT);
                     normalMap = normalMapper.GetTexture(normalMapRT);
-                    diffuse = diffuser.GetTexture(diffuseRT);
+                    diffuse = diffuseRenderer.GetTexture(diffuseRT);
 
                     request.OnComplete(diffuse, heightMap, normalMap);
                 }
@@ -195,6 +201,16 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 设置烘焙相机到对应位置;
+        /// </summary>
+        static void SetBakingCamera(MeshDisplay display)
+        {
+            Camera bakingCamera = GetInstance.bakingCamera;
+            Vector3 cameraPoint = GridConvert.Grid.GetPixel(display.Center, 5);
+            bakingCamera.transform.position = cameraPoint;
+        }
+
+        /// <summary>
         /// 获取到所有需要烘焙的地图节点;
         /// </summary>
         List<BakingNode> GetBakingNodes(IBakeRequest request)
@@ -222,12 +238,12 @@ namespace KouXiaGu.Terrain3D
             List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
             CubicHexCoord center = TerrainChunk.GetHexCenter(request.ChunkCoord);
 
-            widerRectMeshPool.RecoveryActive();
+            terDisplayMeshPool.RecoveryActive();
 
             foreach (var bakingNode in bakingNodes)
             {
                 CubicHexCoord crood = bakingNode.Position;
-                var mesh = widerRectMeshPool.Dequeue(crood, center, bakingNode.RotationY);
+                var mesh = terDisplayMeshPool.Dequeue(crood, center, bakingNode.RotationY);
                 list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
             }
 
@@ -254,6 +270,11 @@ namespace KouXiaGu.Terrain3D
 
             Queue<MeshRenderer> sleep;
             Queue<MeshRenderer> active;
+
+            public CubicHexCoord Center
+            {
+                get { return center; }
+            }
 
             public void Awake()
             {

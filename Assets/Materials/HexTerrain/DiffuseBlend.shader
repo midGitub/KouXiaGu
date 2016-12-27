@@ -3,13 +3,11 @@
 Shader "HexTerrain/DiffuseBlend"
 {
 
-
 	Properties
 	{
 		_MainTex ("Base", 2D) = "black" {}
 		_BlendTex ("BlendTex", 2D) = "black" {}
 	}
-
 
 	SubShader 
 	{
@@ -27,12 +25,14 @@ Shader "HexTerrain/DiffuseBlend"
 			
 			#include "UnityCG.cginc"
 
-			struct appdata_t {
+			struct appdata_t 
+			{
 				float4 vertex : POSITION;
 				float2 texcoord : TEXCOORD0;
 			};
 
-			struct v2f {
+			struct v2f 
+			{
 				float4 vertex : SV_POSITION;                
 				half2 texcoord : TEXCOORD0;
 			};

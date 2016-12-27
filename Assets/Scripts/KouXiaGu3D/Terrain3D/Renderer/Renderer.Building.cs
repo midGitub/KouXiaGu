@@ -11,16 +11,33 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
-        /// 建筑物(道路 建筑地形 之类的),
-        /// 平整地形;
+        /// 获取到对地形进行改变的参数;
         /// </summary>
         class BuildingDecorate
         {
 
+            [SerializeField]
+            MeshDisplay displayMeshPool;
+
             /// <summary>
-            /// 建筑混合高度平整图;
+            /// 高度微调;
             /// </summary>
-            public RenderTexture HeightMapRender()
+            [SerializeField]
+            Shader heightAdjust;
+
+
+            /// <summary>
+            /// 获取到需要显示到场景的内容和网格;
+            /// </summary>
+            public List<KeyValuePair<BakingNode, MeshRenderer>> GetDisplayMeshs(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// 高度调整图烘焙;
+            /// </summary>
+            public RenderTexture HeightAdjustMapRender(Texture heightMap)
             {
                 throw new NotImplementedException();
             }

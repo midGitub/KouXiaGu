@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -10,30 +11,31 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形之上的建筑物;
     /// </summary>
-    public class Building : UnitySingleton<Building>
+    public class Building
     {
 
-        public Shader shader;
-        public Texture heightMap;
-        public Texture buildMap;
-
-        public Material material;
-
-        [ContextMenu("输出")]
-        void Test()
+        /// <summary>
+        /// 建筑信息描述;
+        /// </summary>
+        public struct BuildingDescr
         {
-            material = material != null ? material : new Material(shader);
 
-            var rt = RenderTexture.GetTemporary(heightMap.width, heightMap.height);
+            [XmlAttribute("name")]
+            public string Name;
 
-            material.SetTexture("_MainTex", heightMap);
-            material.SetTexture("_HeightMap", buildMap);
-            Graphics.Blit(heightMap, rt, material);
+            /// <summary>
+            /// 唯一标示(0,-1作为保留);
+            /// </summary>
+            [XmlAttribute("id")]
+            public int ID;
 
-            rt.SavePNG("F:\\My_Code\\Unity5\\KouXiaGu\\Assets\\Textrue\\Test");
-            RenderTexture.ReleaseTemporary(rt);
+            /// <summary>
+            /// 高度调整贴图名;
+            /// </summary>
+            [XmlElement("HeightAdjustTex")]
+            public string HeightAdjustTex;
+
         }
-
 
     }
 
