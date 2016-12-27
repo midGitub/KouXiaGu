@@ -33,13 +33,6 @@ namespace KouXiaGu
             return log;
         }
 
-        public static string ToLog<T, TP>(this IMap<TP, T> map)
-        {
-            string log = map.GetType().Name;
-            log += "元素总数:" + map.Count;
-            return log;
-        }
-
         public static string Log<T>(int index, T item)
         {
             return string.Concat("\n", "[", index, "]", "{", item.ToString(), "}");

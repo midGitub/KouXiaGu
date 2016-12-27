@@ -1,104 +1,104 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using ProtoBuf;
+﻿//using System.Collections;
+//using System.Collections.Generic;
+//using ProtoBuf;
 
-namespace KouXiaGu
-{
+//namespace KouXiaGu
+//{
 
-    /// <summary>
-    /// 游戏地图结构;
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [ProtoContract]
-    public class Map<TP, T> : IMap<TP, T>
-    {
+//    /// <summary>
+//    /// 游戏地图结构;
+//    /// </summary>
+//    /// <typeparam name="T"></typeparam>
+//    [ProtoContract]
+//    public class Map<TP, T> : IMap<TP, T>
+//    {
 
-        /// <summary>
-        /// 地图结构;
-        /// </summary>
-        [ProtoMember(1)]
-        Dictionary<TP, T> mapCollection;
+//        /// <summary>
+//        /// 地图结构;
+//        /// </summary>
+//        [ProtoMember(1)]
+//        Dictionary<TP, T> mapCollection;
 
-        public IEnumerable<TP> Keys
-        {
-            get
-            {
-                return mapCollection.Keys;
-            }
-        }
+//        public IEnumerable<TP> Keys
+//        {
+//            get
+//            {
+//                return mapCollection.Keys;
+//            }
+//        }
 
-        public IEnumerable<T> Values
-        {
-            get
-            {
-                return mapCollection.Values;
-            }
-        }
+//        public IEnumerable<T> Values
+//        {
+//            get
+//            {
+//                return mapCollection.Values;
+//            }
+//        }
 
-        public int Count
-        {
-            get
-            {
-                return mapCollection.Count;
-            }
-        }
+//        public int Count
+//        {
+//            get
+//            {
+//                return mapCollection.Count;
+//            }
+//        }
 
-        public T this[TP position]
-        {
-            get
-            {
-                return mapCollection[position];
-            }
-            set
-            {
-                mapCollection[position] = value;
-            }
-        }
+//        public T this[TP position]
+//        {
+//            get
+//            {
+//                return mapCollection[position];
+//            }
+//            set
+//            {
+//                mapCollection[position] = value;
+//            }
+//        }
 
-        public Map()
-        {
-            mapCollection = new Dictionary<TP, T>();
-        }
+//        public Map()
+//        {
+//            mapCollection = new Dictionary<TP, T>();
+//        }
 
-        public void Add(TP position, T item)
-        {
-            mapCollection.Add(position, item);
-        }
+//        public void Add(TP position, T item)
+//        {
+//            mapCollection.Add(position, item);
+//        }
 
-        public void Add(KeyValuePair<TP, T> pair)
-        {
-            mapCollection.Add(pair.Key, pair.Value);
-        }
+//        public void Add(KeyValuePair<TP, T> pair)
+//        {
+//            mapCollection.Add(pair.Key, pair.Value);
+//        }
 
-        public bool Remove(TP position)
-        {
-            return mapCollection.Remove(position);
-        }
+//        public bool Remove(TP position)
+//        {
+//            return mapCollection.Remove(position);
+//        }
 
-        public bool Contains(TP position)
-        {
-            return mapCollection.ContainsKey(position);
-        }
+//        public bool Contains(TP position)
+//        {
+//            return mapCollection.ContainsKey(position);
+//        }
 
-        public bool TryGetValue(TP position, out T item)
-        {
-            return mapCollection.TryGetValue(position, out item);
-        }
+//        public bool TryGetValue(TP position, out T item)
+//        {
+//            return mapCollection.TryGetValue(position, out item);
+//        }
 
-        public void Clear()
-        {
-            mapCollection.Clear();
-        }
+//        public void Clear()
+//        {
+//            mapCollection.Clear();
+//        }
 
-        public IEnumerator<KeyValuePair<TP, T>> GetEnumerator()
-        {
-            return mapCollection.GetEnumerator();
-        }
+//        public IEnumerator<KeyValuePair<TP, T>> GetEnumerator()
+//        {
+//            return mapCollection.GetEnumerator();
+//        }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
+//        IEnumerator IEnumerable.GetEnumerator()
+//        {
+//            return GetEnumerator();
+//        }
+//    }
 
-}
+//}
