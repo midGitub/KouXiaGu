@@ -136,10 +136,10 @@ namespace KouXiaGu.Terrain3D
 
             try
             {
-                Texture diffuse = assetBundle.LoadAsset<Texture>(Description.DiffuseTex);
-                Texture height = assetBundle.LoadAsset<Texture>(Description.HeightAdjustTex);
-                Texture diffuseBlend = assetBundle.LoadAsset<Texture>(Description.DiffuseBlendTex);
-                Texture heightBlend = assetBundle.LoadAsset<Texture>(Description.HeightAdjustTex);
+                Texture diffuse = LoadTexture(assetBundle, Description.DiffuseTex);
+                Texture height = LoadTexture(assetBundle, Description.HeightAdjustTex);
+                Texture diffuseBlend = LoadTexture(assetBundle, Description.DiffuseBlendTex);
+                Texture heightBlend = LoadTexture(assetBundle, Description.HeightAdjustTex);
 
                 this.DiffuseTex = diffuse;
                 this.HeightAdjustTex = height;
@@ -151,6 +151,11 @@ namespace KouXiaGu.Terrain3D
                 Destroy();
                 throw e;
             }
+        }
+
+        Texture LoadTexture(AssetBundle assetBundle, string name)
+        {
+            return assetBundle.LoadAsset<Texture>(name);
         }
 
         public override bool Equals(object obj)
