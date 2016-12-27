@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路贴图资源;
     /// </summary>
-    public sealed class Road
+    public sealed class RoadRes
     {
 
         #region 已初始化合集(静态);
@@ -17,12 +17,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 所有已经初始化完毕的道路信息;
         /// </summary>
-        static readonly CustomDictionary<int, Road> initializedDictionary = new CustomDictionary<int, Road>();
+        static readonly CustomDictionary<int, RoadRes> initializedDictionary = new CustomDictionary<int, RoadRes>();
 
         /// <summary>
         /// 所有已经初始化完毕的道路信息;
         /// </summary>
-        public static IReadOnlyDictionary<int, Road> initializedInstances
+        public static IReadOnlyDictionary<int, RoadRes> initializedInstances
         {
             get { return initializedDictionary; }
         }
@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化所有信息;
         /// </summary>
-        public static IEnumerator LoadAll(IEnumerable<RoadDescr> descriptions, AssetBundle asset)
+        public static IEnumerator Load(IEnumerable<RoadDescr> descriptions, AssetBundle asset)
         {
             foreach (var description in descriptions)
             {
@@ -45,17 +45,17 @@ namespace KouXiaGu.Terrain3D
                     continue;
                 }
 
-                Road road = new Road(description);
-                road.Load(asset);
+                RoadRes res = new RoadRes(description);
+                res.Load(asset);
 
-                if (road.IsLoadComplete)
+                if (res.IsLoadComplete)
                 {
-                    initializedDictionary.Add(description.ID, road);
+                    initializedDictionary.Add(description.ID, res);
                 }
                 else
                 {
                     Debug.LogWarning("道路:初始化失败,跳过此:" + description.ToString());
-                    road.Destroy();
+                    res.Destroy();
                     continue;
                 }
                 yield return null;
@@ -66,7 +66,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 清除所有已经初始化的道路信息;
         /// </summary>
-        public static void ClearAll()
+        public static void Clear()
         {
             foreach (var road in initializedDictionary.Values)
             {
@@ -80,7 +80,7 @@ namespace KouXiaGu.Terrain3D
 
         #region 实例部分;
 
-        Road(RoadDescr description)
+        RoadRes(RoadDescr description)
         {
             this.Description = description;
         }

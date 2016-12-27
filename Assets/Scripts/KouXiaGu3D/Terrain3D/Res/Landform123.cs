@@ -3,6 +3,7 @@
 //异步的实例化地貌信息;
 #define INIT_LANDFORM_ASYNC
 
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地貌定义;
     /// </summary>
-    public class Landform
+    [Obsolete]
+    public class Landform123
     {
 
         #region 地貌管理(静态)
@@ -23,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 已经初始化完毕的地貌信息;
         /// </summary>
-        static readonly Dictionary<int, Landform> initializedLandforms = new Dictionary<int, Landform>();
+        static readonly Dictionary<int, Landform123> initializedLandforms = new Dictionary<int, Landform123>();
 
         /// <summary>
         /// 保存所有ID;
@@ -35,7 +37,7 @@ namespace KouXiaGu.Terrain3D
             get { return initializedLandforms.Keys; }
         }
 
-        public static IEnumerable<Landform> Landforms
+        public static IEnumerable<Landform123> Landforms
         {
             get { return initializedLandforms.Values; }
         }
@@ -64,7 +66,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地貌信息;
         /// </summary>
-        public static Landform GetLandform(int id)
+        public static Landform123 GetLandform(int id)
         {
             return initializedLandforms[id];
         }
@@ -72,9 +74,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到一个随机的地形;
         /// </summary>
-        public static Landform GetRandomLandform()
+        public static Landform123 GetRandomLandform()
         {
-            int randomID = Random.Range(0, LandformID.Length);
+            int randomID = UnityEngine.Random.Range(0, LandformID.Length);
             int id = LandformID[randomID];
             return GetLandform(id);
         }
@@ -103,12 +105,12 @@ namespace KouXiaGu.Terrain3D
             get { return ResourcePath.CombineConfiguration(ConfigFileName); }
         }
 
-        static readonly XmlSerializer serializerArray = new XmlSerializer(typeof(Landform[]));
+        static readonly XmlSerializer serializerArray = new XmlSerializer(typeof(Landform123[]));
 
         /// <summary>
         /// 序列化到地貌描述文件;
         /// </summary>
-        public static void Serialize(Landform[] landforms)
+        public static void Serialize(Landform123[] landforms)
         {
             serializerArray.SerializeFile(ConfigFilePath, landforms);
         }
@@ -116,9 +118,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从地貌描述文件反序列化;
         /// </summary>
-        public static Landform[] Deserialize()
+        public static Landform123[] Deserialize()
         {
-            Landform[] landforms = (Landform[])serializerArray.DeserializeFile(ConfigFilePath);
+            Landform123[] landforms = (Landform123[])serializerArray.DeserializeFile(ConfigFilePath);
             return landforms;
         }
 
@@ -145,14 +147,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerator Initialize()
         {
-            Landform[] landforms = Deserialize();
+            Landform123[] landforms = Deserialize();
             return Initialize(landforms);
         }
 
         /// <summary>
         /// 对这些资源进行初始化,并且加入到合集;
         /// </summary>
-        public static IEnumerator Initialize(IEnumerable<Landform> landforms)
+        public static IEnumerator Initialize(IEnumerable<Landform123> landforms)
         {
             var bundleLoadRequest = AssetBundle.LoadFromFileAsync(TextureAssetBundleFilePath);
             while (!bundleLoadRequest.isDone)
@@ -308,14 +310,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         class LoadTexturesRequest : CustomYieldInstruction
         {
-            Landform landform;
+            Landform123 landform;
 
             AssetBundleRequest diffuseRequest;
             AssetBundleRequest heightRequest;
             AssetBundleRequest diffuseBlendRequest;
             AssetBundleRequest heightBlendRequest;
 
-            public LoadTexturesRequest(Landform landform, AssetBundle assetBundle)
+            public LoadTexturesRequest(Landform123 landform, AssetBundle assetBundle)
             {
                 this.landform = landform;
                 LoadTexture(assetBundle, landform);
@@ -348,7 +350,7 @@ namespace KouXiaGu.Terrain3D
                 }
             }
 
-            void LoadTexture(AssetBundle assetBundle, Landform landformXml)
+            void LoadTexture(AssetBundle assetBundle, Landform123 landformXml)
             {
                 diffuseRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.diffusePath);
                 heightRequest = assetBundle.LoadAssetAsync<Texture>(landformXml.heightPath);

@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地貌信息;
         /// </summary>
-        Landform landform;
+        Landform123 landform;
 
         /// <summary>
         /// 节点在地图上的坐标;
@@ -67,19 +67,19 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 根据地貌节点获取到地貌信息;
         /// </summary>
-        Landform GetLandform(TerrainNode landformNode)
+        Landform123 GetLandform(TerrainNode landformNode)
         {
             if (landformNode.ID == 0)
-                return default(Landform);
+                return default(Landform123);
 
-            Landform landform;
+            Landform123 landform;
             try
             {
-                landform = Landform.GetLandform(landformNode.ID);
+                landform = Landform123.GetLandform(landformNode.ID);
             }
             catch (KeyNotFoundException)
             {
-                landform = Landform.GetRandomLandform();
+                landform = Landform123.GetRandomLandform();
                 Debug.LogWarning("获取到不存在的地貌ID: " + landformNode.ID + ";随机替换为: " + landform.ID);
             }
             return landform;
