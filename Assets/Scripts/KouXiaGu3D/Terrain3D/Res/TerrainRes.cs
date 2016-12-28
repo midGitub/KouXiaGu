@@ -123,7 +123,7 @@ namespace KouXiaGu.Terrain3D
                 while (loader.MoveNext())
                     yield return null;
 
-                Debug.Log(RoadRes.initializedInstances.ToEnumerableLog("道路资源初始化完成;"));
+                Debug.Log(RoadRes.initializedInstances.ToLog("道路资源初始化完成;"));
             }
             else
             {

@@ -67,6 +67,15 @@ namespace KouXiaGu.Terrain3D
             DestroyImmediate(blendHeightMaterial);
         }
 
+        [ContextMenu("烘焙平整高度;")]
+        void RanderHeigt()
+        {
+            RenderTexture rt = RenderTexture.GetTemporary(512, 512, 24);
+            Renderer.CameraRender(rt, new Color(128f/ 255f, 128f/255f, 128f/255f, 1f));
+            rt.SavePNG(savePath);
+            RenderTexture.ReleaseTemporary(rt);
+        }
+
     }
 
 }

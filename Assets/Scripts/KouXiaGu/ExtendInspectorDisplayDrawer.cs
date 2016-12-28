@@ -1,17 +1,13 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UniRx;
-
 namespace KouXiaGu
 {
+    using System;
+    using UniRx;
 
 #if UNITY_EDITOR
     [UnityEditor.CustomPropertyDrawer(typeof(uLongReactiveProperty))]
     [UnityEditor.CustomPropertyDrawer(typeof(GameStatusReactiveProperty))]
-    public class ExtendInspectorDisplayDrawer : InspectorDisplayDrawer
+    public class ExtendInspectorDisplayDrawer : UniRx.InspectorDisplayDrawer
     {
     }
 #endif

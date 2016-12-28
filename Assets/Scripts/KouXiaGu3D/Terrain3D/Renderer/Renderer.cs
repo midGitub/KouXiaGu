@@ -204,7 +204,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用摄像机烘焙;
         /// </summary>
-        static void CameraRender(RenderTexture rt)
+        public static void CameraRender(RenderTexture rt)
         {
             BakingCamera.targetTexture = rt;
             BakingCamera.Render();
@@ -214,7 +214,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用摄像机指定背景颜色烘焙;
         /// </summary>
-        static void CameraRender(RenderTexture rt, Color backgroundColor)
+        public static void CameraRender(RenderTexture rt, Color backgroundColor)
         {
             Color current = BakingCamera.backgroundColor;
             BakingCamera.backgroundColor = backgroundColor;
