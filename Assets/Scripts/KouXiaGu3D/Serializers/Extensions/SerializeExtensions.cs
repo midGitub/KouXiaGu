@@ -10,7 +10,7 @@ namespace KouXiaGu
     /// <summary>
     /// 序列化工具类;
     /// </summary>
-    public static class SerializeHelper
+    public static class SerializeExtensions
     {
 
         #region XML
@@ -30,9 +30,25 @@ namespace KouXiaGu
         };
 
         /// <summary>
+        /// XML命名空间;
+        /// </summary>
+        public static XmlSerializerNamespaces XmlNamespaces
+        {
+            get { return xmlSerializerNamespaces; }
+        }
+
+        /// <summary>
+        /// 自定义的 utf-8 格式;
+        /// </summary>
+        public static XmlWriterSettings XmlWriterSettings
+        {
+            get { return xmlWriterSettings; }
+        }
+
+        /// <summary>
         /// 序列化为 自定义的 utf-8 格式;
         /// </summary>
-        public static void SerializeFile(this XmlSerializer serializer, string filePath, object item, FileMode fileMode = FileMode.Create)
+        public static void SerializeXiaGu(this XmlSerializer serializer, string filePath, object item, FileMode fileMode = FileMode.Create)
         {
             using (FileStream fStream = new FileStream(filePath, fileMode, FileAccess.Write))
             {
@@ -46,7 +62,7 @@ namespace KouXiaGu
         /// <summary>
         /// 反序列化;
         /// </summary>
-        public static object DeserializeFile(this XmlSerializer serializer, string filePath, FileMode fileMode = FileMode.Open)
+        public static object DeserializeXiaGu(this XmlSerializer serializer, string filePath, FileMode fileMode = FileMode.Open)
         {
             using (FileStream fStream = new FileStream(filePath, fileMode, FileAccess.Read))
             {

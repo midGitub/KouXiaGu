@@ -29,10 +29,10 @@ namespace KouXiaGu.Terrain3D
             TerrainResPath.Create();
 
             if(!File.Exists(TerrainRes.RoadDescrFile))
-                RoadDescr.ArraySerializer.SerializeFile(TerrainRes.RoadDescrFile, RoadTemplets);
+                RoadDescr.ArraySerializer.SerializeXiaGu(TerrainRes.RoadDescrFile, RoadTemplets);
 
             if (!File.Exists(TerrainRes.LandformDescrFile))
-                LandformDescr.ArraySerializer.SerializeFile(TerrainRes.LandformDescrFile, LandformTemplets);
+                LandformDescr.ArraySerializer.SerializeXiaGu(TerrainRes.LandformDescrFile, LandformTemplets);
         }
 
 

@@ -243,12 +243,12 @@ namespace KouXiaGu.Terrain3D
 
         ObservableDictionary<CubicHexCoord, TerrainNode> LoadMap(string filePath)
         {
-            return SerializeHelper.DeserializeProtoBuf<ObservableDictionary<CubicHexCoord, TerrainNode>>(filePath);
+            return SerializeExtensions.DeserializeProtoBuf<ObservableDictionary<CubicHexCoord, TerrainNode>>(filePath);
         }
 
         void SaveMap(ObservableDictionary<CubicHexCoord, TerrainNode> map, string filePath)
         {
-            SerializeHelper.SerializeProtoBuf(filePath, map);
+            SerializeExtensions.SerializeProtoBuf(filePath, map);
         }
 
         #endregion

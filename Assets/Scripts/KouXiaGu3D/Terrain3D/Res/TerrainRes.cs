@@ -140,7 +140,7 @@ namespace KouXiaGu.Terrain3D
         {
             try
             {
-                item = (T)serializer.DeserializeFile(filePath);
+                item = (T)serializer.DeserializeXiaGu(filePath);
                 return true;
             }
             catch (Exception ex)

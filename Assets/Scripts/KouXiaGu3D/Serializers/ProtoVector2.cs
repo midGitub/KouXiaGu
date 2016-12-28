@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using ProtoBuf;
+using System.Xml.Serialization;
 
-namespace KouXiaGu
+namespace KouXiaGu.Serialization
 {
 
     /// <summary>
     /// 提供序列化保存的二维向量;
     /// </summary>
-    [ProtoContract]
+    [ProtoContract, XmlType("Vector2")]
     public struct ProtoVector2
     {
         public ProtoVector2(float x, float y)
@@ -16,9 +17,9 @@ namespace KouXiaGu
             this.y = y;
         }
 
-        [ProtoMember(1)]
+        [ProtoMember(1), XmlAttribute("x")]
         public float x;
-        [ProtoMember(2)]
+        [ProtoMember(2), XmlAttribute("y")]
         public float y;
 
         public static implicit operator Vector2(ProtoVector2 v)

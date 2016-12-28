@@ -38,7 +38,7 @@ namespace KouXiaGu.Initialization
         public static void Save(string directoryPath)
         {
             string filePath = GetFilePath(directoryPath);
-            descriptionSerializer.SerializeFile(filePath, Activated);
+            descriptionSerializer.SerializeXiaGu(filePath, Activated);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace KouXiaGu.Initialization
         public static Description Load(string directoryPath)
         {
             string filePath = GetFilePath(directoryPath);
-            Description description = (Description)descriptionSerializer.DeserializeFile(filePath);
+            Description description = (Description)descriptionSerializer.DeserializeXiaGu(filePath);
             return description;
         }
 

@@ -27,7 +27,7 @@ namespace KouXiaGu.Terrain3D
             {
                 UseMapID = 0,
             };
-            ArchiveDescr.Serializer.SerializeFile(filePath, data);
+            ArchiveDescr.Serializer.SerializeXiaGu(filePath, data);
         }
 
 
@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
         {
             string filePath = Archiver.CreateDirectory(archiveDirectory, ARCHIVED_FILE_NAME);
             ArchiveDescr data = Export();
-            ArchiveDescr.Serializer.SerializeFile(filePath, data);
+            ArchiveDescr.Serializer.SerializeXiaGu(filePath, data);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
         public static ArchiveDescr Load(string archiveDirectory)
         {
             string filePath = Archiver.CombineDirectory(archiveDirectory, ARCHIVED_FILE_NAME);
-            ArchiveDescr data = (ArchiveDescr)ArchiveDescr.Serializer.DeserializeFile(filePath);
+            ArchiveDescr data = (ArchiveDescr)ArchiveDescr.Serializer.DeserializeXiaGu(filePath);
             Import(data);
             return data;
         }
