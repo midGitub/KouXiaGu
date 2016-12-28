@@ -5,7 +5,7 @@ using System.Linq;
 using ProtoBuf;
 using UniRx;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.Collections
 {
 
     /// <summary>

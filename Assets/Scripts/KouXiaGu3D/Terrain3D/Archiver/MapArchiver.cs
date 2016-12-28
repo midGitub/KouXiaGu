@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D

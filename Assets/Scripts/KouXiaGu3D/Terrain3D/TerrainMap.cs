@@ -5,6 +5,7 @@ using KouXiaGu.Grids;
 using System.Collections;
 using UnityEngine;
 using System;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.Terrain3D
 {

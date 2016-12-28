@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UniRx;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.Collections
 {
 
     public interface IObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,

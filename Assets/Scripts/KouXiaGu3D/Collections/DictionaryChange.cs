@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.Collections
 {
 
     public struct DictionaryChange<TKey, TValue>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UniRx;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.Collections
 {
 
     public abstract class DictionaryObserver<TKey, TValue> : IObserver<DictionaryChange<TKey, TValue>>
