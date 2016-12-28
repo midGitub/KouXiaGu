@@ -43,8 +43,8 @@ namespace KouXiaGu.Terrain3D
 
                     hexMesh.material = diffuseMaterial;
 
-                    hexMesh.material.SetTexture("_MainTex", node.DiffuseTex);
-                    hexMesh.material.SetTexture("_BlendTex", node.DiffuseBlendTex);
+                    hexMesh.material.SetTexture("_MainTex", node.Landform.DiffuseTex);
+                    hexMesh.material.SetTexture("_BlendTex", node.Landform.DiffuseBlendTex);
                 }
 
                 RenderTexture diffuseRT = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);

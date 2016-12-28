@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 基本贴图信息渲染,负责将传入的请求渲染出基本的高度图和地貌贴图;
     /// </summary>
-    [DisallowMultipleComponent, CustomEditorTool]
+    [DisallowMultipleComponent]
     public sealed partial class Renderer : UnitySington<Renderer>
     {
         Renderer() { }

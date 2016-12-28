@@ -54,8 +54,8 @@ namespace KouXiaGu.Terrain3D
                         GameObject.Destroy(hexMesh.material);
 
                     hexMesh.material = heightMaterial;
-                    hexMesh.material.SetTexture("_MainTex", node.HeightTex);
-                    hexMesh.material.SetTexture("_BlendTex", node.HeightBlendTex);
+                    hexMesh.material.SetTexture("_MainTex", node.Landform.HeightTex);
+                    hexMesh.material.SetTexture("_BlendTex", node.Landform.HeightBlendTex);
                 }
 
                 RenderTexture heightRT = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);

@@ -30,6 +30,14 @@ namespace KouXiaGu.Terrain3D
         public CubicHexCoord Position { get; private set; }
 
         /// <summary>
+        /// 地貌资源;
+        /// </summary>
+        public LandformRes Landform
+        {
+            get { return landform; }
+        }
+
+        /// <summary>
         /// 地形贴图旋转角度;
         /// </summary>
         public float RotationY
@@ -37,25 +45,25 @@ namespace KouXiaGu.Terrain3D
             get { return mapNode.RotationAngle; }
         }
 
-        public Texture DiffuseTex
-        {
-            get { return landform.DiffuseTex; }
-        }
+        //public Texture DiffuseTex
+        //{
+        //    get { return landform.DiffuseTex; }
+        //}
 
-        public Texture DiffuseBlendTex
-        {
-            get { return landform.DiffuseBlendTex; }
-        }
+        //public Texture DiffuseBlendTex
+        //{
+        //    get { return landform.DiffuseBlendTex; }
+        //}
 
-        public Texture HeightTex
-        {
-            get { return landform.HeightTex; }
-        }
+        //public Texture HeightTex
+        //{
+        //    get { return landform.HeightTex; }
+        //}
 
-        public Texture HeightBlendTex
-        {
-            get { return landform.HeightBlendTex; }
-        }
+        //public Texture HeightBlendTex
+        //{
+        //    get { return landform.HeightBlendTex; }
+        //}
 
         public BakingNode(CubicHexCoord position, TerrainNode mapNode) : this()
         {
