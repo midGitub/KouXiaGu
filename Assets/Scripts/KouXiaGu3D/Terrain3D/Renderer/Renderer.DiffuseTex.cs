@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public sealed partial class Renderer : UnitySingleton<Renderer>
+    public sealed partial class Renderer : UnitySington<Renderer>
     {
 
         /// <summary>
