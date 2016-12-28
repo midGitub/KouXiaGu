@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using System.Xml.Serialization;
 using System.IO;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu
 {

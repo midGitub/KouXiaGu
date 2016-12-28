@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.World2D.Map
 {
