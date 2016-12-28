@@ -26,28 +26,25 @@ namespace KouXiaGu.Terrain3D
             get { return GetInstance.heightShader; }
         }
 
-        [SerializeField, HideInInspector]
+        [SerializeField, Range(0, 32)]
         float tessellation = 32f;
-        [SerializeField, HideInInspector]
+        [SerializeField, Range(0, 5)]
         float displacement = 2f;
-        [SerializeField, HideInInspector]
+        [SerializeField, Range(0,20)]
         float snowLevel = 0f;
 
-        [ExposeProperty]
         public float Tessellation
         {
             get { return tessellation; }
             set { Shader.SetGlobalFloat("_TerrainTess", value); tessellation = value; }
         }
 
-        [ExposeProperty]
         public float Displacement
         {
             get { return displacement; }
             set { Shader.SetGlobalFloat("_TerrainDisplacement", value); displacement = value; }
         }
 
-        [ExposeProperty]
         public float SnowLevel
         {
             get { return snowLevel; }
@@ -59,6 +56,11 @@ namespace KouXiaGu.Terrain3D
             Tessellation = tessellation;
             Displacement = displacement;
             SnowLevel = snowLevel;
+        }
+
+        void OnValidate()
+        {
+            Start();
         }
 
         #region 地形方法(静态)
