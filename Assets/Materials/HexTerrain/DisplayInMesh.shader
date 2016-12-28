@@ -1,6 +1,6 @@
 ﻿
 
-Shader "HexTerrain/DiffuseBlend"
+Shader "HexTerrain/DisplayInMesh"
 {
 
 	Properties

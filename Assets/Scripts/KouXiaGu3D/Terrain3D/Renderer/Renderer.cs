@@ -32,6 +32,9 @@ namespace KouXiaGu.Terrain3D
         BakingParameter parameter = new BakingParameter(120, 0, 1);
 
         [SerializeField]
+        BuildingDecorate buildingRenderer;
+
+        [SerializeField]
         HeightRenderer heightRenderer;
         [SerializeField]
         NormalMapper normalMapper;
@@ -62,6 +65,11 @@ namespace KouXiaGu.Terrain3D
             set { GetInstance.parameter = value; }
         }
 
+        static Camera BakingCamera
+        {
+            get { return GetInstance.bakingCamera; }
+        }
+
         /// <summary>
         /// 烘焙请求队列;
         /// </summary>
@@ -78,6 +86,7 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             terDisplayMeshPool.Awake();
+            buildingRenderer.Awake();
         }
 
         void Start()
@@ -151,13 +160,14 @@ namespace KouXiaGu.Terrain3D
             {
                 yield return bakingYieldInstruction;
 
+                request = bakingQueue.Dequeue();
+                bakingNodes = GetBakingNodes(request);
+
+                yield return buildingRenderer.Rander(request, bakingNodes);
+
                 try
                 {
-                    request = bakingQueue.Dequeue();
-                    bakingNodes = GetBakingNodes(request);
                     terrainDisplayMesh = GetTerrainDisplayMesh(request, bakingNodes);
-
-
 
                     SetBakingCamera(terDisplayMeshPool);
                     heightMapRT = heightRenderer.Baking(terrainDisplayMesh);
@@ -191,13 +201,25 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        static void Render(RenderTexture rt)
+        /// <summary>
+        /// 使用摄像机烘焙;
+        /// </summary>
+        static void CameraRender(RenderTexture rt)
         {
-            Camera bakingCamera = GetInstance.bakingCamera;
+            BakingCamera.targetTexture = rt;
+            BakingCamera.Render();
+            BakingCamera.targetTexture = null;
+        }
 
-            bakingCamera.targetTexture = rt;
-            bakingCamera.Render();
-            bakingCamera.targetTexture = null;
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
+        static void CameraRender(RenderTexture rt, Color backgroundColor)
+        {
+            Color current = BakingCamera.backgroundColor;
+            BakingCamera.backgroundColor = backgroundColor;
+            CameraRender(rt);
+            BakingCamera.backgroundColor = current;
         }
 
         /// <summary>
@@ -211,12 +233,20 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 获取到覆盖到的坐标;
+        /// </summary>
+        IEnumerable<CubicHexCoord> GetCover(IBakeRequest request)
+        {
+            return TerrainChunk.GetChunkCover(request.ChunkCoord);
+        }
+
+        /// <summary>
         /// 获取到所有需要烘焙的地图节点;
         /// </summary>
         List<BakingNode> GetBakingNodes(IBakeRequest request)
         {
             List<BakingNode> bakingNodes = new List<BakingNode>();
-            IEnumerable<CubicHexCoord> cover = TerrainChunk.GetChunkCover(request.ChunkCoord);
+            IEnumerable<CubicHexCoord> cover = GetCover(request);
             TerrainNode mapNode;
 
             foreach (var point in cover)

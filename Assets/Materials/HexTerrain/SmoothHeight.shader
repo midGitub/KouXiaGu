@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SmoothHeight"
+﻿Shader "Hidden/HeightAdjustDisplay"
 {
 	Properties
 	{

@@ -59,7 +59,7 @@ namespace KouXiaGu.Terrain3D
                 }
 
                 RenderTexture heightRT = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
-                Render(heightRT);
+                CameraRender(heightRT);
 
                 if (isBlur)
                 {

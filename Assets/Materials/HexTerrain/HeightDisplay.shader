@@ -1,6 +1,6 @@
 ﻿
 
-Shader "HexTerrain/HeightBlend" 
+Shader "HexTerrain/HeightDisplay" 
 {
 
 	Properties 

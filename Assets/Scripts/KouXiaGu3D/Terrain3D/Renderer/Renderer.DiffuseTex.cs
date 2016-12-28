@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D
                 }
 
                 RenderTexture diffuseRT = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
-                Render(diffuseRT);
+                CameraRender(diffuseRT);
                 return diffuseRT;
             }
 
