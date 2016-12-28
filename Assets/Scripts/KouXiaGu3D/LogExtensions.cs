@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu
 {
@@ -17,7 +18,7 @@ namespace KouXiaGu
         /// </summary>
         public static string ToEnumerableLog<T>(this IEnumerable<T> enumerable)
         {
-            return ToEnumerableLog(enumerable, "EnumerableLog:");
+            return ToEnumerableLog(enumerable, enumerable.GetType().Name);
         }
 
         /// <summary>
@@ -47,6 +48,15 @@ namespace KouXiaGu
         /// 输出所有元素内容;
         /// </summary>
         public static string ToLog<T>(this ICollection<T> collection, string descr)
+        {
+            string log = descr + "\nCount:" + collection.Count;
+            return collection.ToEnumerableLog(log);
+        }
+
+        /// <summary>
+        /// 输出所有元素内容;
+        /// </summary>
+        public static string ToLog<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> collection, string descr)
         {
             string log = descr + "\nCount:" + collection.Count;
             return collection.ToEnumerableLog(log);

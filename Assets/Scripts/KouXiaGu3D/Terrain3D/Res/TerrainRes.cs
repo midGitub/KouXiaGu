@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
                 while (loader.MoveNext())
                     yield return null;
 
-                Debug.Log(LandformRes.initializedInstances.ToEnumerableLog());
+                Debug.Log(LandformRes.initializedInstances.ToLog("地貌资源初始化完成;"));
             }
             else
             {
@@ -123,7 +123,7 @@ namespace KouXiaGu.Terrain3D
                 while (loader.MoveNext())
                     yield return null;
 
-                Debug.Log(RoadRes.initializedInstances.ToEnumerableLog());
+                Debug.Log(RoadRes.initializedInstances.ToEnumerableLog("道路资源初始化完成;"));
             }
             else
             {
