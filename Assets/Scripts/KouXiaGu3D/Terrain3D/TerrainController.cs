@@ -120,7 +120,7 @@ namespace KouXiaGu.Terrain3D
 
             void IStageObserver<ArchiveDirectory>.OnEnterCompleted()
             {
-                Debug.Log("地图读取完毕;" + ActivatedMap.ToCollectionLog());
+                Debug.Log("地图读取完毕;" + ActivatedMap.ToLog());
                 return;
             }
 
