@@ -9,21 +9,21 @@ namespace KouXiaGu.Terrain3D
 {
 
     [DisallowMultipleComponent, CustomEditorTool]
-    public class TerrainData : UnitySingleton<TerrainData>
+    public class TerrainData : UnitySington<TerrainData>
     {
         [SerializeField]
         Shader terrainShader;
         [SerializeField]
         Shader heightShader;
 
-        public Shader TerrainShader
+        public static Shader TerrainShader
         {
-            get { return terrainShader; }
+            get { return GetInstance.terrainShader; }
         }
 
-        public Shader HeightShader
+        public static Shader HeightShader
         {
-            get { return heightShader; }
+            get { return GetInstance.heightShader; }
         }
 
         [SerializeField, HideInInspector]

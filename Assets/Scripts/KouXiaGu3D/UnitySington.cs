@@ -8,19 +8,21 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 只允许内部访问的单例;
+    /// 只允许内部访问的,延迟实例化的单例;
     /// </summary>
     public class UnitySington<T> : MonoBehaviour
         where T : UnitySington<T>
     {
-        static UnitySington<T> instance;
+        protected UnitySington() { }
+
+        static T instance;
 
         protected static T GetInstance
         {
-            get { return (T)(instance ?? Initialize()); }
+            get { return instance ?? Initialize(); }
         }
 
-        static UnitySington<T> Initialize()
+        static T Initialize()
         {
             UnityEngine.Object[] instances = GameObject.FindObjectsOfType(typeof(T));
             if (instances.Length == 0)
@@ -34,7 +36,7 @@ namespace KouXiaGu
             else
             {
                 instance = instances[0] as T;
-                Debug.LogWarning(instances.ToLog("存在多个单例在场景!"));
+                Debug.LogError(instances.ToLog("存在多个单例在场景!"));
             }
             return instance;
         }

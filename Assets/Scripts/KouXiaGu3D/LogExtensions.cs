@@ -12,11 +12,17 @@ namespace KouXiaGu
     public static class LogExtensions
     {
 
+        /// <summary>
+        /// 输出所有元素内容;
+        /// </summary>
         public static string ToEnumerableLog<T>(this IEnumerable<T> enumerable)
         {
             return ToEnumerableLog(enumerable, "EnumerableLog:");
         }
 
+        /// <summary>
+        /// 输出所有元素内容;
+        /// </summary>
         public static string ToEnumerableLog<T>(this IEnumerable<T> enumerable, string descr)
         {
             string log = descr;
@@ -28,12 +34,18 @@ namespace KouXiaGu
             return log;
         }
 
+        /// <summary>
+        /// 输出所有元素内容;
+        /// </summary>
         public static string ToLog<T>(this ICollection<T> collection)
         {
             string log = collection.GetType().Name + ",Count:" + collection.Count;
             return collection.ToEnumerableLog(log);
         }
 
+        /// <summary>
+        /// 输出所有元素内容;
+        /// </summary>
         public static string ToLog<T>(this ICollection<T> collection, string descr)
         {
             string log = descr + "\nCount:" + collection.Count;

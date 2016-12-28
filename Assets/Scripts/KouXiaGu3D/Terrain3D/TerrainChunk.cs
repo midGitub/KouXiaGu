@@ -17,12 +17,12 @@ namespace KouXiaGu.Terrain3D
 
         static Shader TerrainShader
         {
-            get { return TerrainData.GetInstance.TerrainShader; }
+            get { return TerrainData.TerrainShader; }
         }
 
         static Shader HeightShader
         {
-            get { return TerrainData.GetInstance.HeightShader; }
+            get { return TerrainData.HeightShader; }
         }
 
 

@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形资源初始化控制;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class TerrainRes : UnitySingleton<TerrainRes>
+    public sealed class TerrainRes : UnitySington<TerrainRes>
     {
         TerrainRes() { }
 
