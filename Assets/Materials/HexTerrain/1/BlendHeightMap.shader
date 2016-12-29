@@ -1,6 +1,6 @@
 ﻿
 /*
-	混合高度贴图,且模糊化贴图;
+	混合高度贴图,且模糊化贴图, r通道 为提高高度, g通道 为降低高度;
 */
 
 Shader "HexTerrain/BlendHeightMap"
@@ -45,7 +45,8 @@ Shader "HexTerrain/BlendHeightMap"
 	float GetHeightWith(float2 uv)
 	{
 		float heigt = tex2D(_HeightMap, uv).r;
-		heigt += tex2D(_HeightAdjustMap, uv).r - 0.5;
+		fixed4 adjustCol = tex2D(_HeightAdjustMap, uv);
+		heigt += adjustCol.r - adjustCol.b;
 		return heigt;
 	}
 
@@ -54,11 +55,11 @@ Shader "HexTerrain/BlendHeightMap"
 		float wDelta = _HeightMap_TexelSize.x * _SmoothWidth;
 		float hDelta = _HeightMap_TexelSize.y * _SmoothWidth;
 
-		float2 p0 = float2(i.uv.x, i.uv.y);
-		float2 p1 = float2(i.uv.x, saturate(i.uv.y + hDelta));
-		float2 p2 = float2(i.uv.x, saturate(i.uv.y - hDelta));
-		float2 p3 = float2(saturate(i.uv.x - wDelta), i.uv.y);
-		float2 p4 = float2(saturate(i.uv.x + wDelta), i.uv.y);
+		half2 p0 = half2(i.uv.x, i.uv.y);
+		half2 p1 = half2(i.uv.x, saturate(i.uv.y + hDelta));
+		half2 p2 = half2(i.uv.x, saturate(i.uv.y - hDelta));
+		half2 p3 = half2(saturate(i.uv.x - wDelta), i.uv.y);
+		half2 p4 = half2(saturate(i.uv.x + wDelta), i.uv.y);
 
 		float height = 0;
 		height += GetHeightWith(p0);
