@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 进行烘焙时的最小单位,代表地图节点;
+    /// 地形进行烘焙时的最小单位;
     /// </summary>
     public struct BakingNode
     {
@@ -44,26 +44,6 @@ namespace KouXiaGu.Terrain3D
         {
             get { return mapNode.RotationAngle; }
         }
-
-        //public Texture DiffuseTex
-        //{
-        //    get { return landform.DiffuseTex; }
-        //}
-
-        //public Texture DiffuseBlendTex
-        //{
-        //    get { return landform.DiffuseBlendTex; }
-        //}
-
-        //public Texture HeightTex
-        //{
-        //    get { return landform.HeightTex; }
-        //}
-
-        //public Texture HeightBlendTex
-        //{
-        //    get { return landform.HeightBlendTex; }
-        //}
 
         public BakingNode(CubicHexCoord position, TerrainNode mapNode) : this()
         {

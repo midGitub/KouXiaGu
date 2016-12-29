@@ -23,40 +23,36 @@ namespace KouXiaGu.Terrain3D
             MeshDisplay displayMeshPool;
 
             /// <summary>
-            /// 高度微调;
+            /// 高度调整;
             /// </summary>
             [SerializeField]
-            Shader heightAdjustShader;
+            Shader heightAdjustInMesh;
 
             Material heightAdjustMaterial;
 
             /// <summary>
-            /// 高度调整图;
+            /// 高度调整;
             /// </summary>
             public RenderTexture HeightAdjustRT { get; private set; }
             /// <summary>
-            /// 漫反射调整图;
+            /// 区域平滑;
+            /// </summary>
+            public RenderTexture RegionSmoothRT { get; private set; }
+            /// <summary>
+            /// 漫反射调整;
             /// </summary>
             public RenderTexture DiffuseAdjustRT { get; private set; }
-
-            /// <summary>
-            /// 最终的高度图;
-            /// </summary>
-            public RenderTexture HeightMap { get; private set; }
-            /// <summary>
-            /// 最终的漫反射图;
-            /// </summary>
-            public RenderTexture DiffuseMap { get; private set; }
 
             public void Awake()
             {
                 displayMeshPool.Awake();
 
-                heightAdjustMaterial = new Material(heightAdjustShader);
+                heightAdjustMaterial = new Material(heightAdjustInMesh);
             }
 
             /// <summary>
             /// 烘焙需要的调整图;
+            /// 地形提升图 -> 平滑区域图 -> 漫反射贴图; 
             /// </summary>
             public IEnumerator Rander(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
             {
@@ -70,9 +66,6 @@ namespace KouXiaGu.Terrain3D
 
                 yield break;
             }
-
-
-            static readonly Color HeightRanderBackgroundColor = new Color(0.5f, 0.5f, 0.5f);
 
             void RanderHeightAdjust(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> displayMeshs)
             {
@@ -88,7 +81,33 @@ namespace KouXiaGu.Terrain3D
                 }
 
                 HeightAdjustRT = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 1);
-                CameraRender(HeightAdjustRT, HeightRanderBackgroundColor);
+                CameraRender(HeightAdjustRT);
+            }
+
+            /// <summary>
+            /// 准备好烘焙高度平整的场景;
+            /// </summary>
+            IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> PrepareMeshInScene(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
+            {
+
+
+                yield break;
+            }
+
+            /// <summary>
+            /// 准备建筑物内容;
+            /// </summary>
+            void PrepareBuildingMesh(CubicHexCoord center, IEnumerable<BakingNode> bakingNodes)
+            {
+
+            }
+
+            /// <summary>
+            /// 将道路布置到场景
+            /// </summary>
+            void PrepareRoadMesh(CubicHexCoord center, IEnumerable<BakingNode> bakingNodes)
+            {
+
             }
 
             /// <summary>
@@ -135,6 +154,8 @@ namespace KouXiaGu.Terrain3D
             {
                 throw new NotImplementedException();
             }
+
+
 
         }
 
