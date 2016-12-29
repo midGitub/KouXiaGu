@@ -9,7 +9,6 @@ Shader "HexTerrain/HeightAdjustInMesh"
 	Properties
 	{
 		_MainTex ("Base", 2D) = "black" {}
-		_BlendTex ("BlendTex", 2D) = "black" {}
 	}
 
 	SubShader 
@@ -41,7 +40,6 @@ Shader "HexTerrain/HeightAdjustInMesh"
 			};
 
 			sampler2D _MainTex;
-			sampler2D _BlendTex;
             
 			v2f vert (appdata_t v)
 			{
@@ -54,10 +52,6 @@ Shader "HexTerrain/HeightAdjustInMesh"
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 col = tex2D(_MainTex, i.texcoord);
-				fixed4 bCol = tex2D(_BlendTex, i.texcoord);
-
-				col.a = bCol.r;
-
 				return col;
 			}
 
