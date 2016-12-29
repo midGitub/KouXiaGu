@@ -361,6 +361,15 @@ namespace KouXiaGu.Grids
 
 
         /// <summary>
+        /// 使其根据(0,0,0)坐标进行翻转\类似镜像,一般对方向变量使用,获取到其相反方向;
+        /// </summary>
+        public static CubicHexCoord Invert(CubicHexCoord coord)
+        {
+            return coord * -1;
+        }
+
+
+        /// <summary>
         /// 曼哈顿距离;
         /// </summary>
         public static int ManhattanDistances(CubicHexCoord a, CubicHexCoord b)

@@ -27,10 +27,18 @@ namespace KouXiaGu.Terrain3D
         public float RotationAngle;
 
         /// <summary>
-        /// 是否存在道路?不存在则为0,否则为道路类型编号;
+        /// 道路类型编号?不存在则为0,否则为道路类型编号;
         /// </summary>
         [ProtoMember(3)]
         public int Road;
+
+        /// <summary>
+        /// 存在道路?
+        /// </summary>
+        public bool ExistRoad
+        {
+            get { return Road != 0; }
+        }
 
     }
 
