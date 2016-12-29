@@ -58,7 +58,7 @@ namespace KouXiaGu.Terrain3D
             {
                 try
                 {
-                    terrainMap.Add(item, new TerrainNode(id[UnityEngine.Random.Range(0, id.Length)], UnityEngine.Random.Range(0, 360)));
+                    terrainMap.Add(item, GetRandomNode(id));
                 }
                 catch (ArgumentException)
                 {
@@ -66,6 +66,16 @@ namespace KouXiaGu.Terrain3D
                 }
             }
             return terrainMap;
+        }
+
+        static TerrainNode GetRandomNode(int[] id)
+        {
+            return new TerrainNode()
+            {
+                ID = id[UnityEngine.Random.Range(0, id.Length)],
+                RotationAngle = UnityEngine.Random.Range(0, 360),
+                Road = 0,
+            };
         }
 
     }

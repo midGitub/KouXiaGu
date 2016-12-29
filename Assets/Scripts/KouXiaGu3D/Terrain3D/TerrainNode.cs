@@ -13,11 +13,6 @@ namespace KouXiaGu.Terrain3D
     [ProtoContract]
     public struct TerrainNode
     {
-        public TerrainNode(int id, float rotationAngle)
-        {
-            this.ID = id;
-            this.RotationAngle = rotationAngle;
-        }
 
         /// <summary>
         /// 代表的地形ID((0,-1作为保留);
@@ -30,6 +25,13 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [ProtoMember(2)]
         public float RotationAngle;
+
+        /// <summary>
+        /// 是否存在道路?不存在则为0,否则为道路类型编号;
+        /// </summary>
+        [ProtoMember(3)]
+        public int Road;
+
     }
 
 }

@@ -8,7 +8,7 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 网格坐标转换;
+    /// 地图网格信息转换;
     /// </summary>
     public static class GridConvert
     {
@@ -40,6 +40,52 @@ namespace KouXiaGu
         public static CubicHexGrid Grid
         {
             get { return grid; }
+        }
+
+
+        /// <summary>
+        /// 六边形方向对应的欧拉角;
+        /// </summary>
+        static readonly Dictionary<int, float> hexAngleDictionary = new Dictionary<int, float>()
+        {
+            {(int)HexDirections.North, 0},
+            {(int)HexDirections.Northeast, 60},
+            {(int)HexDirections.Southeast, 120},
+            {(int)HexDirections.South, 160},
+            {(int)HexDirections.Southwest, 240},
+            {(int)HexDirections.Northwest, 300},
+        };
+
+        /// <summary>
+        /// 获取到六边形对应方向的角度(z轴指向),本身返回异常;
+        /// </summary>
+        public static float GetAngle(HexDirections direction)
+        {
+            return hexAngleDictionary[(int)direction];
+        }
+
+
+        /// <summary>
+        /// 矩形方向对应的欧拉角;
+        /// </summary>
+        static readonly Dictionary<int, float> rectAngleDictionary = new Dictionary<int, float>()
+        {
+            {(int)RecDirections.North, 0},
+            {(int)RecDirections.Northeast, 45},
+            {(int)RecDirections.East, 90},
+            {(int)RecDirections.Southeast, 135},
+            {(int)RecDirections.South, 180},
+            {(int)RecDirections.Southwest, 225},
+            {(int)RecDirections.West, 270},
+            {(int)RecDirections.Northwest, 315},
+        };
+
+        /// <summary>
+        /// 获取到矩形对应方向的角度(z轴指向),本身返回异常;
+        /// </summary>
+        public static float GetAngle(RecDirections direction)
+        {
+            return rectAngleDictionary[(int)direction];
         }
 
     }
