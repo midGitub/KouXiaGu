@@ -78,59 +78,6 @@ namespace KouXiaGu.Terrain3D
             return angles;
         }
 
-
-        ///// <summary>
-        ///// 获取到这个地图节点应该放置的道路贴图;
-        ///// </summary>
-        ///// <param name="map">使用的地图</param>
-        ///// <param name="coord">所在的位置;</param>
-        ///// <returns></returns>
-        //public static RoadNode GetRoadTexs(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
-        //{
-        //    TerrainNode node;
-        //    if (map.TryGetValue(coord, out node))
-        //    {
-        //        List<RoadNode> list = new List<RoadNode>();
-
-        //        foreach (var dir in CubicHexCoord.Directions)
-        //        {
-        //            RoadNode road;
-        //            if (TryGetRoadNode(map, coord, dir, out road))
-        //            {
-        //                list.Add(road);
-        //            }
-        //        }
-
-        //        return list;
-        //    }
-        //    else
-        //    {
-        //        throw new KeyNotFoundException();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 确认这个方向是否存在道路,若存在则返回标记;
-        ///// </summary>
-        //static bool TryGetRoadNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord, HexDirections direction, out RoadNode road)
-        //{
-        //    TerrainNode node;
-        //    if (map.TryGetValue(coord.GetDirection(direction), out node))
-        //    {
-        //        if (node.Road != 0)
-        //        {
-        //            road = new RoadNode()
-        //            {
-        //                Road = GetRoadRes(node.Road),
-        //                RotationY = GridConvert.GetAngle(direction),
-        //            };
-        //            return true;
-        //        }
-        //    }
-        //    road = default(RoadNode);
-        //    return false;
-        //}
-
     }
 
 }
