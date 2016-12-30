@@ -11,18 +11,8 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形进行烘焙时的最小单位;
     /// </summary>
-    public struct BakingNode
+    public class LandformNode
     {
-
-        /// <summary>
-        /// 地貌地图节点;
-        /// </summary>
-        TerrainNode mapNode;
-
-        /// <summary>
-        /// 地貌信息;
-        /// </summary>
-        LandformRes landform;
 
         /// <summary>
         /// 节点在地图上的坐标;
@@ -32,24 +22,32 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地貌资源;
         /// </summary>
-        public LandformRes Landform
-        {
-            get { return landform; }
-        }
+        public LandformRes Landform { get; private set; }
 
         /// <summary>
         /// 地形贴图旋转角度;
         /// </summary>
-        public float RotationY
-        {
-            get { return mapNode.RotationAngle; }
-        }
+        public float LandformAngle { get; private set; }
 
-        public BakingNode(CubicHexCoord position, TerrainNode mapNode) : this()
+        /// <summary>
+        ///  初始化该节点建地貌信息;
+        /// </summary>
+        public LandformNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
         {
-            this.Position = position;
-            this.mapNode = mapNode;
-            this.landform = GetLandform(mapNode);
+            var node = map[coord];
+
+            if (node.ExistLandform)
+            {
+                this.Landform = GetLandform(node);
+                this.LandformAngle = node.LandformAngle;
+            }
+            else
+            {
+                this.Landform = default(LandformRes);
+                this.LandformAngle = default(float);
+            }
+
+            this.Position = coord;
         }
 
         /// <summary>
@@ -60,12 +58,12 @@ namespace KouXiaGu.Terrain3D
             LandformRes landform;
             try
             {
-                landform = LandformRes.initializedInstances[landformNode.ID];
+                landform = LandformRes.initializedInstances[landformNode.Landform];
                 return landform;
             }
             catch (KeyNotFoundException)
             {
-                Debug.LogWarning("获取到不存在的地貌ID: " + landformNode.ID + ";");
+                Debug.LogWarning("获取到不存在的地貌ID: " + landformNode.Landform + ";");
                 return default(LandformRes);
             }
         }

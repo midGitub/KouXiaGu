@@ -18,13 +18,22 @@ namespace KouXiaGu.Terrain3D
         /// 代表的地形ID((0,-1作为保留);
         /// </summary>
         [ProtoMember(1)]
-        public int ID;
+        public int Landform;
 
         /// <summary>
         /// 地形旋转角度;
         /// </summary>
         [ProtoMember(2)]
-        public float RotationAngle;
+        public float LandformAngle;
+
+        /// <summary>
+        /// 存在地貌信息?
+        /// </summary>
+        public bool ExistLandform
+        {
+            get { return Landform != 0; }
+        }
+
 
         /// <summary>
         /// 道路类型编号?不存在则为0,否则为道路类型编号;
@@ -40,18 +49,25 @@ namespace KouXiaGu.Terrain3D
             get { return Road != 0; }
         }
 
+
         /// <summary>
         /// 建筑物类型编号;
         /// </summary>
         [ProtoMember(4)]
-        public int Build;
+        public int Building;
+
+        /// <summary>
+        /// 建筑物旋转的角度;
+        /// </summary>
+        [ProtoMember(5)]
+        public float BuildingAngle;
 
         /// <summary>
         /// 存在建筑物?
         /// </summary>
         public bool ExistBuild
         {
-            get { return Build != 0; }
+            get { return Building != 0; }
         }
 
     }

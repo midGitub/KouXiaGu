@@ -43,11 +43,11 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             /// <param name="bakingNodes">烘焙的节点和对应的网格;</param>
             /// <returns>高度图结果;</returns>
-            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
+            public RenderTexture Baking(IEnumerable<KeyValuePair<LandformNode, MeshRenderer>> bakingNodes)
             {
                 foreach (var pair in bakingNodes)
                 {
-                    BakingNode node = pair.Key;
+                    LandformNode node = pair.Key;
                     MeshRenderer hexMesh = pair.Value;
 
                     if (hexMesh.material != null)

@@ -31,11 +31,11 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 烘焙材质贴图;
             /// </summary>
-            public RenderTexture Baking(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> bakingNodes)
+            public RenderTexture Baking(IEnumerable<KeyValuePair<LandformNode, MeshRenderer>> bakingNodes)
             {
                 foreach (var pair in bakingNodes)
                 {
-                    BakingNode node = pair.Key;
+                    LandformNode node = pair.Key;
                     MeshRenderer hexMesh = pair.Value;
 
                     if (hexMesh.material != null)

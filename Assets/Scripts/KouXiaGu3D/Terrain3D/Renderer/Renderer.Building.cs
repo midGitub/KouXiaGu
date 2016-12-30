@@ -71,11 +71,11 @@ namespace KouXiaGu.Terrain3D
 
 
 
-            void RanderHeightAdjust(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> displayMeshs)
+            void RanderHeightAdjust(IEnumerable<KeyValuePair<LandformNode, MeshRenderer>> displayMeshs)
             {
                 foreach (var pair in displayMeshs)
                 {
-                    BakingNode node = pair.Key;
+                    LandformNode node = pair.Key;
                     MeshRenderer mesh = pair.Value;
 
                     if (mesh.material != null)
@@ -91,7 +91,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 准备好烘焙高度平整的场景;
             /// </summary>
-            IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> PrepareMeshInScene(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
+            IEnumerable<KeyValuePair<LandformNode, MeshRenderer>> PrepareMeshInScene(IBakeRequest request, IEnumerable<LandformNode> bakingNodes)
             {
 
 
@@ -101,7 +101,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 准备建筑物内容;
             /// </summary>
-            void PrepareBuildingMesh(CubicHexCoord center, IEnumerable<BakingNode> bakingNodes)
+            void PrepareBuildingMesh(CubicHexCoord center, IEnumerable<LandformNode> bakingNodes)
             {
 
             }
@@ -109,7 +109,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 将道路布置到场景
             /// </summary>
-            void PrepareRoadMesh(CubicHexCoord center, IEnumerable<BakingNode> bakingNodes)
+            void PrepareRoadMesh(CubicHexCoord center, IEnumerable<LandformNode> bakingNodes)
             {
 
             }
@@ -134,9 +134,9 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 获取到需要显示到场景的内容和网格;
             /// </summary>
-            public List<KeyValuePair<BakingNode, MeshRenderer>> GetDisplayMeshs(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
+            public List<KeyValuePair<LandformNode, MeshRenderer>> GetDisplayMeshs(IBakeRequest request, IEnumerable<LandformNode> bakingNodes)
             {
-                List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
+                List<KeyValuePair<LandformNode, MeshRenderer>> list = new List<KeyValuePair<LandformNode, MeshRenderer>>();
                 CubicHexCoord center = TerrainChunk.GetHexCenter(request.ChunkCoord);
 
                 displayMeshPool.RecoveryActive();
@@ -145,7 +145,7 @@ namespace KouXiaGu.Terrain3D
                 {
                     CubicHexCoord crood = bakingNode.Position;
                     var mesh = displayMeshPool.Dequeue(crood, center, 0);
-                    list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
+                    list.Add(new KeyValuePair<LandformNode, MeshRenderer>(bakingNode, mesh));
                 }
 
                 return list;

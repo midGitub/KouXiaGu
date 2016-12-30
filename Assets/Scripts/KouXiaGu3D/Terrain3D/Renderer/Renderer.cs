@@ -146,8 +146,8 @@ namespace KouXiaGu.Terrain3D
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
 
-            List<BakingNode> bakingNodes;
-            List<KeyValuePair<BakingNode, MeshRenderer>> terrainDisplayMesh;
+            List<LandformNode> bakingNodes;
+            List<KeyValuePair<LandformNode, MeshRenderer>> terrainDisplayMesh;
             IBakeRequest request = null;
             RenderTexture heightMapRT = null;
             RenderTexture normalMapRT = null;
@@ -163,7 +163,7 @@ namespace KouXiaGu.Terrain3D
                 request = bakingQueue.Dequeue();
                 bakingNodes = GetBakingNodes(request);
 
-                yield return buildingRenderer.Rander(request, bakingNodes);
+                //yield return buildingRenderer.Rander(request, bakingNodes);
 
                 try
                 {
@@ -243,9 +243,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到所有需要烘焙的地图节点;
         /// </summary>
-        List<BakingNode> GetBakingNodes(IBakeRequest request)
+        List<LandformNode> GetBakingNodes(IBakeRequest request)
         {
-            List<BakingNode> bakingNodes = new List<BakingNode>();
+            List<LandformNode> bakingNodes = new List<LandformNode>();
             IEnumerable<CubicHexCoord> cover = GetCover(request);
             TerrainNode mapNode;
 
@@ -253,7 +253,7 @@ namespace KouXiaGu.Terrain3D
             {
                 if (request.Map.TryGetValue(point, out mapNode))
                 {
-                    BakingNode bakingNode = new BakingNode(point, mapNode);
+                    LandformNode bakingNode = new LandformNode(request.Map, point);
                     bakingNodes.Add(bakingNode);
                 }
             }
@@ -263,9 +263,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地形烘焙显示的网格;
         /// </summary>
-        List<KeyValuePair<BakingNode, MeshRenderer>> GetTerrainDisplayMesh(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
+        List<KeyValuePair<LandformNode, MeshRenderer>> GetTerrainDisplayMesh(IBakeRequest request, IEnumerable<LandformNode> bakingNodes)
         {
-            List<KeyValuePair<BakingNode, MeshRenderer>> list = new List<KeyValuePair<BakingNode, MeshRenderer>>();
+            List<KeyValuePair<LandformNode, MeshRenderer>> list = new List<KeyValuePair<LandformNode, MeshRenderer>>();
             CubicHexCoord center = TerrainChunk.GetHexCenter(request.ChunkCoord);
 
             terDisplayMeshPool.RecoveryActive();
@@ -273,8 +273,8 @@ namespace KouXiaGu.Terrain3D
             foreach (var bakingNode in bakingNodes)
             {
                 CubicHexCoord crood = bakingNode.Position;
-                var mesh = terDisplayMeshPool.Dequeue(crood, center, bakingNode.RotationY);
-                list.Add(new KeyValuePair<BakingNode, MeshRenderer>(bakingNode, mesh));
+                var mesh = terDisplayMeshPool.Dequeue(crood, center, bakingNode.LandformAngle);
+                list.Add(new KeyValuePair<LandformNode, MeshRenderer>(bakingNode, mesh));
             }
 
             return list;

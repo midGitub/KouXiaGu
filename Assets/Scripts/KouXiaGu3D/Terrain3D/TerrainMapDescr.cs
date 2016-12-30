@@ -103,7 +103,7 @@ namespace KouXiaGu.Terrain3D
 
         protected override void Add(CubicHexCoord key, TerrainNode newValue)
         {
-            int id = newValue.ID;
+            int id = newValue.Landform;
             int count;
             if (landformID.TryGetValue(id, out count))
             {
@@ -117,7 +117,7 @@ namespace KouXiaGu.Terrain3D
 
         protected override void Remove(CubicHexCoord key, TerrainNode originalValue)
         {
-            int id = originalValue.ID;
+            int id = originalValue.Landform;
             int count;
             if (landformID.TryGetValue(id, out count))
             {

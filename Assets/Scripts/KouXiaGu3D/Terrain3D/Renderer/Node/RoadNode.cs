@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
@@ -8,8 +11,10 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路节点;分别检测点周围是否存在道路,若存在道路则标记;
     /// </summary>
-    public class BuildingNode
+    public class RoadNode
     {
+
+        public CubicHexCoord Position { get; private set; }
 
         /// <summary>
         /// 道路使用的贴图;
@@ -22,16 +27,6 @@ namespace KouXiaGu.Terrain3D
         public IEnumerable<float> RoadAngles { get; private set; }
 
         /// <summary>
-        /// 建筑物使用的贴图;
-        /// </summary>
-        public BuildingRes BuildingRes { get; private set; }
-
-        /// <summary>
-        /// 建筑物旋转的方向;
-        /// </summary>
-        public float BuildingAngle { get; private set; }
-
-        /// <summary>
         /// 存在道路?
         /// </summary>
         public bool ExistRoad
@@ -40,26 +35,9 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 存在建筑物?
+        /// 初始化该节点道路信息;
         /// </summary>
-        public bool ExistBuild
-        {
-            get { return BuildingRes != null; }
-        }
-
-        /// <summary>
-        /// 创建该节点的道路信息,若无法创建则返回异常;
-        /// </summary>
-        public BuildingNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
-        {
-            InitRoad(map, coord);
-            InitBuilding(map, coord);
-        }
-
-        /// <summary>
-        /// 初始化道路信息;
-        /// </summary>
-        void InitRoad(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+        public RoadNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
         {
             var node = map[coord];
 
@@ -73,6 +51,8 @@ namespace KouXiaGu.Terrain3D
                 this.Road = null;
                 this.RoadAngles = null;
             }
+
+            this.Position = coord;
         }
 
         /// <summary>
@@ -105,23 +85,6 @@ namespace KouXiaGu.Terrain3D
             return angles;
         }
 
-        /// <summary>
-        /// 初始化建筑信息;
-        /// </summary>
-        void InitBuilding(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
-        {
-            var node = map[coord];
-
-            if (node.ExistBuild)
-            {
-
-            }
-            else
-            {
-                this.BuildingRes = null;
-                this.BuildingAngle = default(float);
-            }
-        }
 
     }
 
