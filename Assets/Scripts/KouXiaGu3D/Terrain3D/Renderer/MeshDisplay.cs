@@ -1,65 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using KouXiaGu.Grids;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 烘焙时使用的网格池;
+    /// 场景内的网格控制;
     /// </summary>
     [Serializable]
-    public class RenderDisplayMeshPool
+    public class MeshDisplay
     {
-        RenderDisplayMeshPool() { }
-
         [SerializeField]
         Transform parent;
 
         [SerializeField]
         MeshRenderer ovenDisplayPrefab;
 
+        /// <summary>
+        /// 中心点,根据传入坐标位置转换到此中心点附近;
+        /// </summary>
+        [SerializeField]
+        CubicHexCoord center;
+
         Queue<MeshRenderer> sleep;
         Queue<MeshRenderer> active;
 
-        float rotationX;
-
-        /// <summary>
-        /// 激活在场景的物体;
-        /// </summary>
-        public IEnumerable<MeshRenderer> Active
+        public CubicHexCoord Center
         {
-            get { return active; }
+            get { return center; }
         }
 
         public void Awake()
         {
             sleep = new Queue<MeshRenderer>();
             active = new Queue<MeshRenderer>();
-            rotationX = ovenDisplayPrefab.transform.rotation.eulerAngles.x;
         }
 
         /// <summary>
-        /// 回收所有激活的物体(将所有激活的物体设为睡眠模式);
+        /// 布置到场景;
         /// </summary>
-        public void RecoveryActive()
-        {
-            while (active.Count != 0)
-            {
-                var item = active.Dequeue();
-                Destroy(item);
-            }
-        }
-
-        /// <summary>
-        /// 获取到一个网格物体;
-        /// </summary>
-        public MeshRenderer Dequeue(Vector3 position, float rotationY)
+        public MeshRenderer Dequeue(CubicHexCoord coord, CubicHexCoord center, float rotationY)
         {
             MeshRenderer mesh;
-            Quaternion rotation = Quaternion.Euler(rotationX, rotationY, 0);
+            Quaternion rotation = Quaternion.Euler(0, rotationY, 0);
+            Vector3 position = PositionConvert(coord, center);
             if (sleep.Count == 0)
             {
                 mesh = GameObject.Instantiate(ovenDisplayPrefab, position, rotation, parent) as MeshRenderer;
@@ -77,6 +63,25 @@ namespace KouXiaGu.Terrain3D
             return mesh;
         }
 
+        Vector3 PositionConvert(CubicHexCoord coord, CubicHexCoord center)
+        {
+            CubicHexCoord oCoord = coord - center;
+            CubicHexCoord rCoord = oCoord + this.center;
+            return GridConvert.Grid.GetPixel(rCoord, -active.Count);
+        }
+
+        /// <summary>
+        /// 回收所有在场景中的网格;
+        /// </summary>
+        public void RecoveryActive()
+        {
+            while (active.Count != 0)
+            {
+                var item = active.Dequeue();
+                Destroy(item);
+            }
+        }
+
         void Destroy(MeshRenderer mesh)
         {
             mesh.gameObject.SetActive(false);
@@ -84,6 +89,5 @@ namespace KouXiaGu.Terrain3D
         }
 
     }
-
 
 }
