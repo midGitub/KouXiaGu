@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路贴图资源;
     /// </summary>
-    public sealed class RoadRes
+    public sealed class RoadRes : IDisposable
     {
 
         #region 已初始化合集(静态);
@@ -56,7 +56,7 @@ namespace KouXiaGu.Terrain3D
                 else
                 {
                     Debug.LogWarning("道路:初始化失败,跳过此:" + description.ToString());
-                    res.Destroy();
+                    res.Dispose();
                     continue;
                 }
                 yield return null;
@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var road in initializedDictionary.Values)
             {
-                road.Destroy();
+                road.Dispose();
             }
             initializedDictionary.Clear();
         }
@@ -111,7 +111,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 清除所有资源;
         /// </summary>
-        void Destroy()
+        public void Dispose()
         {
             if (IsNotEmpty)
             {
@@ -149,7 +149,7 @@ namespace KouXiaGu.Terrain3D
             }
             catch (Exception e)
             {
-                Destroy();
+                Dispose();
                 throw e;
             }
         }

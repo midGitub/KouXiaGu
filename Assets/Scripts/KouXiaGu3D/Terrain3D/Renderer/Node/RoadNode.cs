@@ -27,6 +27,11 @@ namespace KouXiaGu.Terrain3D
         public IEnumerable<float> RoadAngles { get; private set; }
 
         /// <summary>
+        /// 存在道路的方向;
+        /// </summary>
+        public HexDirections RoadDirections { get; private set; }
+
+        /// <summary>
         /// 存在道路?
         /// </summary>
         public bool ExistRoad
@@ -35,7 +40,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 初始化该节点道路信息;
+        /// 初始化该节点道路信息,若不存在道路信息则返回异常;;
         /// </summary>
         public RoadNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
         {
@@ -44,12 +49,12 @@ namespace KouXiaGu.Terrain3D
             if (node.ExistRoad)
             {
                 this.Road = GetRoadRes(node.Road);
-                this.RoadAngles = GetRoadAngles(map, coord);
+                this.RoadDirections = GetRoadDirections(map, coord);
+                this.RoadAngles = GetRoadAngles(this.RoadDirections);
             }
             else
             {
-                this.Road = null;
-                this.RoadAngles = null;
+                throw new ObjectNotExistedException("该节点不存在道路;");
             }
 
             this.Position = coord;
@@ -64,11 +69,11 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 获取到这个点周围存在道路的方向角度;
+        /// 获取到存在道路的方向;
         /// </summary>
-        List<float> GetRoadAngles(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+        HexDirections GetRoadDirections(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
         {
-            List<float> angles = new List<float>();
+            HexDirections roadDirections = 0;
             TerrainNode node;
             foreach (var dir in CubicHexCoord.Directions)
             {
@@ -77,10 +82,45 @@ namespace KouXiaGu.Terrain3D
                 {
                     if (node.ExistRoad)
                     {
-                        float angle = GridConvert.GetAngle(dir);
-                        angles.Add(angle);
+                        roadDirections |= dir;
                     }
                 }
+            }
+            return roadDirections;
+        }
+
+        ///// <summary>
+        ///// 获取到这个点周围存在道路的方向角度;
+        ///// </summary>
+        //List<float> GetRoadAngles(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+        //{
+        //    List<float> angles = new List<float>();
+        //    TerrainNode node;
+        //    foreach (var dir in CubicHexCoord.Directions)
+        //    {
+        //        CubicHexCoord dirCoord = coord.GetDirection(dir);
+        //        if (map.TryGetValue(dirCoord, out node))
+        //        {
+        //            if (node.ExistRoad)
+        //            {
+        //                float angle = GridConvert.GetAngle(dir);
+        //                angles.Add(angle);
+        //            }
+        //        }
+        //    }
+        //    return angles;
+        //}
+
+        /// <summary>
+        /// 获取到方向对应的角度;
+        /// </summary>
+        List<float> GetRoadAngles(HexDirections roadDirections)
+        {
+            List<float> angles = new List<float>();
+            foreach (var dir in CubicHexCoord.GetDirections(roadDirections))
+            {
+                float angle = GridConvert.GetAngle(dir);
+                angles.Add(angle);
             }
             return angles;
         }

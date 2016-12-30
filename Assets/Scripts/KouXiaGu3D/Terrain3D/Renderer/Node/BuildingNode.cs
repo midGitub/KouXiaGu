@@ -41,8 +41,7 @@ namespace KouXiaGu.Terrain3D
             }
             else
             {
-                this.BuildingRes = null;
-                this.BuildingAngle = default(float);
+                throw new ObjectNotExistedException("该节点不存在建筑物;");
             }
 
             this.Position = coord;

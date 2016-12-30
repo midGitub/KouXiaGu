@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Collections;
 using UnityEngine;
 
@@ -10,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public class LandformRes
+    public class LandformRes : IDisposable
     {
 
         #region 已初始化合集(静态);
@@ -56,7 +54,7 @@ namespace KouXiaGu.Terrain3D
                 else
                 {
                     Debug.LogWarning("地貌:初始化失败,跳过此:" + description.ToString());
-                    res.Destroy();
+                    res.Dispose();
                     continue;
                 }
                 yield return null;
@@ -71,7 +69,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var road in initializedDictionary.Values)
             {
-                road.Destroy();
+                road.Dispose();
             }
             initializedDictionary.Clear();
         }
@@ -111,7 +109,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 清除所有资源;
         /// </summary>
-        void Destroy()
+        public void Dispose()
         {
             if (IsNotEmpty)
             {
@@ -149,7 +147,7 @@ namespace KouXiaGu.Terrain3D
             }
             catch (Exception e)
             {
-                Destroy();
+                Dispose();
                 throw e;
             }
         }

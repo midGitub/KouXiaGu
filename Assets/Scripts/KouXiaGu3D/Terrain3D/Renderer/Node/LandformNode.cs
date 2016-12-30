@@ -43,8 +43,7 @@ namespace KouXiaGu.Terrain3D
             }
             else
             {
-                this.Landform = default(LandformRes);
-                this.LandformAngle = default(float);
+                throw new ObjectNotExistedException("该节点不存在地貌信息;");
             }
 
             this.Position = coord;

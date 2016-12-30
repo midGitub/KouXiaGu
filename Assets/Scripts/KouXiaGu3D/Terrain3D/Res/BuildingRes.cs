@@ -7,10 +7,12 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public class BuildingRes
+    public class BuildingRes : IDisposable
     {
-
-
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
