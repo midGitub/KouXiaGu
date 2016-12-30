@@ -24,10 +24,31 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<float> Angles { get; private set; }
 
+        /// <summary>
+        /// 创建该节点的道路信息,若无法创建则返回异常;
+        /// </summary>
         public RoadNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
         {
             this.Road = GetRoadRes(map, coord);
             this.Angles = GetRoadAngles(map, coord);
+        }
+
+        /// <summary>
+        /// 尝试创建该节点的道路信息,若该节点不存在道路则返回false;
+        /// </summary>
+        public static bool TryCreate(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord, out RoadNode road)
+        {
+            TerrainNode tNode;
+            if (map.TryGetValue(coord, out tNode))
+            {
+                if (tNode.ExistRoad)
+                {
+                    road = new RoadNode(map, coord);
+                    return true;
+                }
+            }
+            road = default(RoadNode);
+            return false;
         }
 
         /// <summary>
