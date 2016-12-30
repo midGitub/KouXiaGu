@@ -54,7 +54,7 @@ namespace KouXiaGu.Terrain3D
             /// 烘焙需要的调整图;
             /// 地形提升图 -> 平滑区域图 -> 漫反射贴图; 
             /// </summary>
-            public IEnumerator Rander(IBakeRequest request, IEnumerable<BakingNode> bakingNodes)
+            public IEnumerator Rander(IBakeRequest request, IEnumerable<CubicHexCoord> bakingPoints)
             {
                 //List<KeyValuePair<BakingNode, MeshRenderer>> displayMeshs = GetDisplayMeshs(request, bakingNodes);
 
@@ -66,6 +66,10 @@ namespace KouXiaGu.Terrain3D
 
                 yield break;
             }
+
+            //IEnumerable<KeyValuePair<RoadNode, MeshRenderer>
+
+
 
             void RanderHeightAdjust(IEnumerable<KeyValuePair<BakingNode, MeshRenderer>> displayMeshs)
             {

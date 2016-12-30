@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
@@ -11,7 +8,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路节点;分别检测点周围是否存在道路,若存在道路则标记;
     /// </summary>
-    public class RoadNode
+    public class BuildingNode
     {
 
         /// <summary>
@@ -22,50 +19,59 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 存在道路的节点方向;
         /// </summary>
-        public IEnumerable<float> Angles { get; private set; }
+        public IEnumerable<float> RoadAngles { get; private set; }
+
+        /// <summary>
+        /// 建筑物使用的贴图;
+        /// </summary>
+        public BuildingRes BuildingRes { get; private set; }
+
+        /// <summary>
+        /// 建筑物旋转的方向;
+        /// </summary>
+        public float BuildingAngle { get; private set; }
+
+        /// <summary>
+        /// 存在道路?
+        /// </summary>
+        public bool ExistRoad
+        {
+            get { return Road != null; }
+        }
+
+        /// <summary>
+        /// 存在建筑物?
+        /// </summary>
+        public bool ExistBuild
+        {
+            get { return BuildingRes != null; }
+        }
 
         /// <summary>
         /// 创建该节点的道路信息,若无法创建则返回异常;
         /// </summary>
-        public RoadNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+        public BuildingNode(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
         {
-            this.Road = GetRoadRes(map, coord);
-            this.Angles = GetRoadAngles(map, coord);
+            InitRoad(map, coord);
+            InitBuilding(map, coord);
         }
 
         /// <summary>
-        /// 尝试创建该节点的道路信息,若该节点不存在道路则返回false;
+        /// 初始化道路信息;
         /// </summary>
-        public static bool TryCreate(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord, out RoadNode road)
-        {
-            TerrainNode tNode;
-            if (map.TryGetValue(coord, out tNode))
-            {
-                if (tNode.ExistRoad)
-                {
-                    road = new RoadNode(map, coord);
-                    return true;
-                }
-            }
-            road = default(RoadNode);
-            return false;
-        }
-
-        /// <summary>
-        /// 获取到这个点的道路资源;
-        /// </summary>
-        RoadRes GetRoadRes(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+        void InitRoad(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
         {
             var node = map[coord];
-            int roadId = node.Road;
 
             if (node.ExistRoad)
             {
-                return GetRoadRes(roadId);
+                this.Road = GetRoadRes(node.Road);
+                this.RoadAngles = GetRoadAngles(map, coord);
             }
             else
             {
-                throw new KeyNotFoundException("该节点不存在道路;");
+                this.Road = null;
+                this.RoadAngles = null;
             }
         }
 
@@ -97,6 +103,24 @@ namespace KouXiaGu.Terrain3D
                 }
             }
             return angles;
+        }
+
+        /// <summary>
+        /// 初始化建筑信息;
+        /// </summary>
+        void InitBuilding(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+        {
+            var node = map[coord];
+
+            if (node.ExistBuild)
+            {
+
+            }
+            else
+            {
+                this.BuildingRes = null;
+                this.BuildingAngle = default(float);
+            }
         }
 
     }

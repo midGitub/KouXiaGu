@@ -1,6 +1,6 @@
 ﻿
 /*
-	烘焙高度平整贴图;
+	高度调整;
 */
 
 Shader "HexTerrain/HeightAdjustInMesh"

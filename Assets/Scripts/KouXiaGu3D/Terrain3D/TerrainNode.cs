@@ -40,6 +40,20 @@ namespace KouXiaGu.Terrain3D
             get { return Road != 0; }
         }
 
+        /// <summary>
+        /// 建筑物类型编号;
+        /// </summary>
+        [ProtoMember(4)]
+        public int Build;
+
+        /// <summary>
+        /// 存在建筑物?
+        /// </summary>
+        public bool ExistBuild
+        {
+            get { return Build != 0; }
+        }
+
     }
 
 }
