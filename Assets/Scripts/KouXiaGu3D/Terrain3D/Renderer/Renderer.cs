@@ -41,6 +41,10 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         DiffuseTex diffuseRenderer;
 
+
+        [SerializeField]
+        TerrainRender terrainRender;
+
         [SerializeField]
         RoadDecorate roadDescorate;
 
@@ -90,6 +94,9 @@ namespace KouXiaGu.Terrain3D
         {
             terDisplayMeshPool.Awake();
             buildingRenderer.Awake();
+
+            terrainRender.Awake();
+            roadDescorate.Awake();
         }
 
         void Start()
@@ -149,12 +156,9 @@ namespace KouXiaGu.Terrain3D
         {
             CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
 
-            List<LandformNode> bakingNodes;
-            List<KeyValuePair<LandformNode, MeshRenderer>> terrainDisplayMesh;
             IBakeRequest request = null;
-            RenderTexture heightMapRT = null;
             RenderTexture normalMapRT = null;
-            RenderTexture diffuseRT = null;
+
             Texture2D normalMap = null;
             Texture2D heightMap = null;
             Texture2D diffuse = null;
@@ -162,25 +166,17 @@ namespace KouXiaGu.Terrain3D
             while (true)
             {
                 yield return bakingYieldInstruction;
-
-                request = bakingQueue.Dequeue();
-                bakingNodes = GetBakingNodes(request);
-
-                //yield return buildingRenderer.Rander(request, bakingNodes);
-
                 try
                 {
-                    terrainDisplayMesh = GetTerrainDisplayMesh(request, bakingNodes);
+                    request = bakingQueue.Dequeue();
+                    var cover = GetCover(request);
 
-                    SetBakingCamera(terDisplayMeshPool);
-                    heightMapRT = heightRenderer.Baking(terrainDisplayMesh);
-                    diffuseRT = diffuseRenderer.Baking(terrainDisplayMesh);
+                    terrainRender.Render(request, cover);
+                    normalMapRT = normalMapper.Rander(terrainRender.HeightRT);
 
-                    normalMapRT = normalMapper.Rander(heightMapRT);
-
-                    heightMap = heightRenderer.GetTexture(heightMapRT);
+                    heightMap = terrainRender.GetHeightTexture();
                     normalMap = normalMapper.GetTexture(normalMapRT);
-                    diffuse = diffuseRenderer.GetTexture(diffuseRT);
+                    diffuse = terrainRender.GetDiffuseTexture();
 
                     request.OnComplete(diffuse, heightMap, normalMap);
                 }
@@ -197,9 +193,8 @@ namespace KouXiaGu.Terrain3D
                 }
                 finally
                 {
-                    RenderTexture.ReleaseTemporary(heightMapRT);
+                    terrainRender.Dispose();
                     RenderTexture.ReleaseTemporary(normalMapRT);
-                    RenderTexture.ReleaseTemporary(diffuseRT);
                 }
             }
         }

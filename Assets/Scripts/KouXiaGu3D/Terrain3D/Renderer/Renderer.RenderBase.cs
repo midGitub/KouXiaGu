@@ -33,10 +33,10 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             CubicHexCoord tempCenter;
 
-            public RenderTexture DiffuseAdjustRT { get; private set; }
-            public RenderTexture HeightAdjustRT { get; private set; }
+            public RenderTexture DiffuseRT { get; private set; }
+            public RenderTexture HeightRT { get; private set; }
 
-            protected BakingParameter Parameter
+            protected static BakingParameter Parameter
             {
                 get { return Renderer.Parameter; }
             }
@@ -84,14 +84,16 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 烘焙对应高度调整图和漫反射调整图;
             /// </summary>
-            public void Rander(IBakeRequest request, IEnumerable<CubicHexCoord> bakingPoints)
+            public void Render(IBakeRequest request, IEnumerable<CubicHexCoord> bakingPoints)
             {
                 tempCenter = TerrainChunk.GetHexCenter(request.ChunkCoord);
 
                 List<KeyValuePair<T, MeshRenderer>> meshs = InitMeshs(request.Map, bakingPoints);
 
-                HeightAdjustRT = RenderHeight(meshs);
-                DiffuseAdjustRT = RenderDiffuse(meshs);
+                SetBakingCamera(displayMeshPool);
+
+                HeightRT = RenderHeight(meshs);
+                DiffuseRT = RenderDiffuse(meshs);
             }
 
             /// <summary>
@@ -138,16 +140,36 @@ namespace KouXiaGu.Terrain3D
                 return rt;
             }
 
+            public Texture2D GetHeightTexture()
+            {
+                RenderTexture.active = HeightRT;
+                Texture2D heightMap = new Texture2D(Parameter.HeightMapWidth, Parameter.HeightMapHeight, TextureFormat.RGB24, false);
+                heightMap.ReadPixels(Parameter.HeightReadPixel, 0, 0, false);
+                heightMap.wrapMode = TextureWrapMode.Clamp;
+                heightMap.Apply();
+                return heightMap;
+            }
+
+            public Texture2D GetDiffuseTexture()
+            {
+                RenderTexture.active = DiffuseRT;
+                Texture2D diffuseTex = new Texture2D(Parameter.DiffuseTexWidth, Parameter.DiffuseTexHeight, TextureFormat.RGB24, false);
+                diffuseTex.ReadPixels(Parameter.DiffuseReadPixel, 0, 0, false);
+                diffuseTex.wrapMode = TextureWrapMode.Clamp;
+                diffuseTex.Apply();
+                return diffuseTex;
+            }
+
             /// <summary>
             /// 释放资源引用;
             /// </summary>
             public void Dispose()
             {
-                RenderTexture.ReleaseTemporary(DiffuseAdjustRT);
-                RenderTexture.ReleaseTemporary(HeightAdjustRT);
+                RenderTexture.ReleaseTemporary(DiffuseRT);
+                RenderTexture.ReleaseTemporary(HeightRT);
 
-                DiffuseAdjustRT = null;
-                HeightAdjustRT = null;
+                DiffuseRT = null;
+                HeightRT = null;
             }
 
         }

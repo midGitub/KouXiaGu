@@ -61,12 +61,14 @@ namespace KouXiaGu.Terrain3D
 
             protected override void SetDiffuseParameter(Material material, LandformRes res)
             {
-                return;
+                material.SetTexture("_MainTex", res.DiffuseTex);
+                material.SetTexture("_BlendTex", res.DiffuseBlendTex);
             }
 
             protected override void SetHeightParameter(Material material, LandformRes res)
             {
-                return;
+                material.SetTexture("_MainTex", res.HeightTex);
+                material.SetTexture("_BlendTex", res.HeightBlendTex);
             }
 
             /// <summary>

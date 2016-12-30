@@ -419,7 +419,7 @@ namespace KouXiaGu.Grids
             int mask = (int)directions;
             for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
             {
-                if ((intDirection & mask) == 1)
+                if ((intDirection & mask) != 0)
                 {
                     yield return (HexDirections)intDirection;
                 }

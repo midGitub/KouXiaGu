@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Landform = id[UnityEngine.Random.Range(0, id.Length)],
                 LandformAngle = UnityEngine.Random.Range(0, 360),
-                Road = 0,
+                Road = 1,
             };
         }
 

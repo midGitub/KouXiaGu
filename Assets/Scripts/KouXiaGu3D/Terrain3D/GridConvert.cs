@@ -51,7 +51,7 @@ namespace KouXiaGu
             {(int)HexDirections.North, 0},
             {(int)HexDirections.Northeast, 60},
             {(int)HexDirections.Southeast, 120},
-            {(int)HexDirections.South, 160},
+            {(int)HexDirections.South, 180},
             {(int)HexDirections.Southwest, 240},
             {(int)HexDirections.Northwest, 300},
         };
