@@ -41,6 +41,9 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         DiffuseTex diffuseRenderer;
 
+        [SerializeField]
+        RoadDecorate roadDescorate;
+
         static Coroutine bakingCoroutine;
 
         /// <summary>

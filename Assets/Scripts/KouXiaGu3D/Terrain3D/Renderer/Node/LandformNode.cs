@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形进行烘焙时的最小单位;
     /// </summary>
-    public class LandformNode
+    public class LandformNode 
     {
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
 
             if (node.ExistLandform)
             {
-                this.Landform = GetLandform(node);
+                this.Landform = GetLandform(node.Landform);
                 this.LandformAngle = node.LandformAngle;
             }
             else
@@ -52,18 +52,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 根据地貌节点获取到地貌信息;
         /// </summary>
-        LandformRes GetLandform(TerrainNode landformNode)
+        LandformRes GetLandform(int id)
         {
-            LandformRes landform;
             try
             {
-                landform = LandformRes.initializedInstances[landformNode.Landform];
-                return landform;
+                return LandformRes.initializedInstances[id];
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
-                Debug.LogWarning("获取到不存在的地貌ID: " + landformNode.Landform + ";");
-                return default(LandformRes);
+                throw new LackOfResourcesException("缺少材质资源;", ex);
             }
         }
 

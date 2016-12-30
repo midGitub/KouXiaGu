@@ -11,9 +11,12 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路节点;分别检测点周围是否存在道路,若存在道路则标记;
     /// </summary>
-    public class RoadNode
+    public class RoadNode 
     {
 
+        /// <summary>
+        /// 在地图上的位置;
+        /// </summary>
         public CubicHexCoord Position { get; private set; }
 
         /// <summary>
@@ -22,14 +25,14 @@ namespace KouXiaGu.Terrain3D
         public RoadRes Road { get; private set; }
 
         /// <summary>
-        /// 存在道路的节点方向;
-        /// </summary>
-        public IEnumerable<float> RoadAngles { get; private set; }
-
-        /// <summary>
         /// 存在道路的方向;
         /// </summary>
         public HexDirections RoadDirections { get; private set; }
+
+        /// <summary>
+        /// 存在道路的节点方向;
+        /// </summary>
+        public IEnumerable<float> RoadAngles { get; private set; }
 
         /// <summary>
         /// 存在道路?
@@ -65,7 +68,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         RoadRes GetRoadRes(int id)
         {
-            return RoadRes.initializedInstances[id];
+            try
+            {
+                return RoadRes.initializedInstances[id];
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new LackOfResourcesException("缺少材质资源;", ex);
+            }
         }
 
         /// <summary>
@@ -88,28 +98,6 @@ namespace KouXiaGu.Terrain3D
             }
             return roadDirections;
         }
-
-        ///// <summary>
-        ///// 获取到这个点周围存在道路的方向角度;
-        ///// </summary>
-        //List<float> GetRoadAngles(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
-        //{
-        //    List<float> angles = new List<float>();
-        //    TerrainNode node;
-        //    foreach (var dir in CubicHexCoord.Directions)
-        //    {
-        //        CubicHexCoord dirCoord = coord.GetDirection(dir);
-        //        if (map.TryGetValue(dirCoord, out node))
-        //        {
-        //            if (node.ExistRoad)
-        //            {
-        //                float angle = GridConvert.GetAngle(dir);
-        //                angles.Add(angle);
-        //            }
-        //        }
-        //    }
-        //    return angles;
-        //}
 
         /// <summary>
         /// 获取到方向对应的角度;

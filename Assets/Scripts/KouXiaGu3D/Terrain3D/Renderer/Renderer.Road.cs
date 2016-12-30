@@ -13,55 +13,54 @@ namespace KouXiaGu.Terrain3D
     public sealed partial class Renderer : UnitySington<Renderer>
     {
 
-        /// <summary>
-        /// 地形道路装饰;
-        /// </summary>
         [Serializable]
-        class RoadDecorate : IDecorate
+        class RoadDecorate : RenderBase<RoadRes>
         {
-            [SerializeField]
-            MeshDisplay displayMeshPool;
+            RoadDecorate() { }
 
-            public RenderTexture DiffuseAdjustRT { get; private set; }
+            List<KeyValuePair<RoadRes, MeshRenderer>> meshs;
 
-            public RenderTexture HeightAdjustRT { get; private set; }
-
-            public void Awake()
+            public override void Awake()
             {
-                displayMeshPool.Awake();
+                base.Awake();
+                meshs = new List<KeyValuePair<RoadRes, MeshRenderer>>();
             }
 
-            public IEnumerator Rander(IBakeRequest request, IEnumerable<CubicHexCoord> bakingPoints)
+            protected override List<KeyValuePair<RoadRes, MeshRenderer>> InitMeshs(IDictionary<CubicHexCoord, TerrainNode> map, IEnumerable<CubicHexCoord> coords)
             {
-                throw new NotImplementedException();
-            }
+                this.meshs.Clear();
+                RecoveryActive();
 
-            /// <summary>
-            /// 获取到这些点的道路信息;
-            /// </summary>
-            List<RoadNode> GetRoads(IDictionary<CubicHexCoord, TerrainNode> map, IEnumerable<CubicHexCoord> coords)
-            {
-                List<RoadNode> roads = new List<RoadNode>();
                 foreach (var coord in coords)
                 {
                     try
                     {
                         var road = new RoadNode(map, coord);
-                        roads.Add(road);
+                        foreach (var roadAngle in road.RoadAngles)
+                        {
+                            CubicHexCoord crood = road.Position;
+                            var mesh = DequeueMesh(crood, roadAngle);
+                            this.meshs.Add(new KeyValuePair<RoadRes, MeshRenderer>(road.Road, mesh));
+                        }
                     }
                     catch (ObjectNotExistedException)
                     {
                         continue;
                     }
                 }
-                return roads;
+                return this.meshs;
             }
 
-            public void ReleaseAll()
+            protected override void SetDiffuseParameter(Material material, RoadRes res)
             {
-                RenderTexture.ReleaseTemporary(DiffuseAdjustRT);
-                RenderTexture.ReleaseTemporary(HeightAdjustRT);
+                return;
             }
+
+            protected override void SetHeightParameter(Material material, RoadRes res)
+            {
+                return;
+            }
+
         }
 
     }

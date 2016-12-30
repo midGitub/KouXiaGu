@@ -5,9 +5,12 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public class BuildingNode
+    public class BuildingNode 
     {
 
+        /// <summary>
+        /// 节点在地图上的坐标;
+        /// </summary>
         public CubicHexCoord Position { get; private set; }
 
         /// <summary>
