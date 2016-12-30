@@ -36,7 +36,7 @@ namespace KouXiaGu.Terrain3D
             public RenderTexture DiffuseAdjustRT { get; private set; }
             public RenderTexture HeightAdjustRT { get; private set; }
 
-            BakingParameter Parameter
+            protected BakingParameter Parameter
             {
                 get { return Renderer.Parameter; }
             }
@@ -112,6 +112,7 @@ namespace KouXiaGu.Terrain3D
                 }
 
                 RenderTexture rt = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24);
+                CameraRender(rt);
                 return rt;
             }
 
@@ -133,6 +134,7 @@ namespace KouXiaGu.Terrain3D
                 }
 
                 RenderTexture rt = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24);
+                CameraRender(rt);
                 return rt;
             }
 

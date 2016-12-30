@@ -16,40 +16,72 @@ namespace KouXiaGu.Terrain3D
         /// 地形烘焙;
         /// </summary>
         [Serializable]
-        public class TerrainRender : IDisposable
+        class TerrainRender : RenderBase<LandformRes>
         {
             TerrainRender() { }
 
-            [SerializeField]
-            MeshDisplay displayMeshPool;
+            List<KeyValuePair<LandformRes, MeshRenderer>> meshs;
 
-            [SerializeField]
-            Shader heightShader;
-
-            [SerializeField]
-            Shader diffuseShader;
-
-            public RenderTexture DiffuseAdjustRT { get; private set; }
-
-            public RenderTexture HeightAdjustRT { get; private set; }
-
-            public void Awake()
+            public override void Awake()
             {
-                displayMeshPool.Awake();
+                base.Awake();
+                meshs = new List<KeyValuePair<LandformRes, MeshRenderer>>();
             }
 
-            public void Rander(IBakeRequest request, IEnumerable<CubicHexCoord> bakingPoints)
+            protected override List<KeyValuePair<LandformRes, MeshRenderer>> InitMeshs(IDictionary<CubicHexCoord, TerrainNode> map, IEnumerable<CubicHexCoord> coords)
             {
-                throw new NotImplementedException();
+                this.meshs.Clear();
+                RecoveryActive();
+
+                TerrainNode node;
+                KeyValuePair<LandformRes, MeshRenderer> mesh;
+
+                foreach (var coord in coords)
+                {
+                    if (map.TryGetValue(coord, out node))
+                        if (TryGetMeshWith(coord, node, out mesh))
+                            this.meshs.Add(mesh);
+                }
+
+                return this.meshs;
             }
 
-            public void Dispose()
+            bool TryGetMeshWith(CubicHexCoord coord, TerrainNode node, out KeyValuePair<LandformRes, MeshRenderer> landformMesh)
             {
-                RenderTexture.ReleaseTemporary(DiffuseAdjustRT);
-                RenderTexture.ReleaseTemporary(HeightAdjustRT);
+                if (node.ExistLandform)
+                {
+                    var res = GetLandform(node.Landform);
+                    var mesh = DequeueMesh(coord, node.LandformAngle);
+                    landformMesh = new KeyValuePair<LandformRes, MeshRenderer>(res, mesh);
+                    return true;
+                }
+                landformMesh = default(KeyValuePair<LandformRes, MeshRenderer>);
+                return false;
+            }
 
-                DiffuseAdjustRT = null;
-                HeightAdjustRT = null;
+            protected override void SetDiffuseParameter(Material material, LandformRes res)
+            {
+                return;
+            }
+
+            protected override void SetHeightParameter(Material material, LandformRes res)
+            {
+                return;
+            }
+
+            /// <summary>
+            /// 获取到地貌信息;
+            /// </summary>
+            LandformRes GetLandform(int id)
+            {
+                try
+                {
+                    return LandformRes.initializedInstances[id];
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw new LackOfResourcesException("缺少材质资源;", ex);
+                }
             }
 
         }

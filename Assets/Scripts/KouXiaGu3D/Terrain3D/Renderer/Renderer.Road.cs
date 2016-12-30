@@ -13,6 +13,9 @@ namespace KouXiaGu.Terrain3D
     public sealed partial class Renderer : UnitySington<Renderer>
     {
 
+        /// <summary>
+        /// 道路信息烘焙;
+        /// </summary>
         [Serializable]
         class RoadDecorate : RenderBase<RoadRes>
         {
@@ -31,23 +34,24 @@ namespace KouXiaGu.Terrain3D
                 this.meshs.Clear();
                 RecoveryActive();
 
+                TerrainNode node;
                 foreach (var coord in coords)
                 {
-                    try
+                    if (map.TryGetValue(coord, out node))
                     {
-                        var road = new RoadNode(map, coord);
-                        foreach (var roadAngle in road.RoadAngles)
+                        if (node.ExistRoad)
                         {
-                            CubicHexCoord crood = road.Position;
-                            var mesh = DequeueMesh(crood, roadAngle);
-                            this.meshs.Add(new KeyValuePair<RoadRes, MeshRenderer>(road.Road, mesh));
+                            var res = GetRoadRes(node.Road);
+                            IEnumerable<float> roadAngles = GetRoadAngles(map, coord);
+                            foreach (var roadAngle in roadAngles)
+                            {
+                                var mesh = DequeueMesh(coord, roadAngle);
+                                this.meshs.Add(new KeyValuePair<RoadRes, MeshRenderer>(res, mesh));
+                            }
                         }
                     }
-                    catch (ObjectNotExistedException)
-                    {
-                        continue;
-                    }
                 }
+
                 return this.meshs;
             }
 
@@ -60,6 +64,63 @@ namespace KouXiaGu.Terrain3D
             {
                 return;
             }
+
+            /// <summary>
+            /// 获取到道路资源信息;
+            /// </summary>
+            RoadRes GetRoadRes(int id)
+            {
+                try
+                {
+                    return RoadRes.initializedInstances[id];
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw new LackOfResourcesException("缺少材质资源;", ex);
+                }
+            }
+
+            IEnumerable<float> GetRoadAngles(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+            {
+                HexDirections Directions = GetRoadDirections(map, coord);
+                return GetRoadAngles(Directions);
+            }
+
+            /// <summary>
+            /// 获取到存在道路的方向;
+            /// </summary>
+            HexDirections GetRoadDirections(IDictionary<CubicHexCoord, TerrainNode> map, CubicHexCoord coord)
+            {
+                HexDirections roadDirections = 0;
+                TerrainNode node;
+                foreach (var dir in CubicHexCoord.Directions)
+                {
+                    CubicHexCoord dirCoord = coord.GetDirection(dir);
+                    if (map.TryGetValue(dirCoord, out node))
+                    {
+                        if (node.ExistRoad)
+                        {
+                            roadDirections |= dir;
+                        }
+                    }
+                }
+                return roadDirections;
+            }
+
+            /// <summary>
+            /// 获取到方向对应的角度;
+            /// </summary>
+            List<float> GetRoadAngles(HexDirections roadDirections)
+            {
+                List<float> angles = new List<float>();
+                foreach (var dir in CubicHexCoord.GetDirections(roadDirections))
+                {
+                    float angle = GridConvert.GetAngle(dir);
+                    angles.Add(angle);
+                }
+                return angles;
+            }
+
 
         }
 
