@@ -33,8 +33,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 当前正在进行寻路的坐标;
         /// </summary>
-        private AStartPathNode currentNode;
-
+        AStartPathNode currentNode;
 
         /// <summary>
         /// 代价值获取;
@@ -49,7 +48,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 寻路范围限制;
         /// </summary>
-        INavigationRange<TPoint> range { get; set; }
+        public INavigationRange<TPoint> range { get; set; }
 
         /// <summary>
         /// 起点;
