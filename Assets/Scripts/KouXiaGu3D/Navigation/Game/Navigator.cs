@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using UnityEngine;
 
 namespace KouXiaGu.Navigation.Game
 {
@@ -14,16 +15,26 @@ namespace KouXiaGu.Navigation.Game
     {
         Navigator() { }
 
-        IDictionary<CubicHexCoord, NavNode> Map;
+        /// <summary>
+        /// 导航地图;
+        /// </summary>
+        public static NavMap Map { get; private set; }
+
+        public static NavObstruction Obstruction { get; private set; }
+
+        /// <summary>
+        /// 获取到导航路径;
+        /// </summary>
+        public static NavPath<CubicHexCoord, NavNode> FindPath(Vector3 starting, Vector3 destination)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 获取到导航路径;
         /// </summary>
         public static NavPath<CubicHexCoord, NavNode> FindPath(CubicHexCoord starting, CubicHexCoord destination)
         {
-            AStar<CubicHexCoord, NavNode> pathfinding = new AStar<CubicHexCoord, NavNode>();
-            var path = pathfinding.Start(starting, destination);
-
             throw new NotImplementedException();
         }
 
