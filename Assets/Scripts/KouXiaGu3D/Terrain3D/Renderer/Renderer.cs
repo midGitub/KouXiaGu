@@ -163,8 +163,6 @@ namespace KouXiaGu.Terrain3D
                     terrain.Render(request, cover);
                     road.Render(request, cover);
 
-                    //road.DiffuseRT.SavePNG(@"123");
-
                     heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
                     diffuseMapRT = decorateBlend.BlendDiffuse(terrain.DiffuseRT, road.DiffuseRT);
 
@@ -173,8 +171,6 @@ namespace KouXiaGu.Terrain3D
                     heightMap = GetHeightTexture(heightMapRT);
                     normalMap = normalMapper.GetTexture(normalMapRT);
                     diffuse = GetDiffuseTexture(diffuseMapRT);
-
-                    //heightMap.SavePNG(@"123");
 
                     request.OnComplete(diffuse, heightMap, normalMap);
                 }

@@ -33,22 +33,22 @@ namespace KouXiaGu.Terrain3D
         [SerializeField, Range(0,20)]
         float snowLevel = 0f;
 
-        public float Tessellation
+        public static float Tessellation
         {
-            get { return tessellation; }
-            set { Shader.SetGlobalFloat("_TerrainTess", value); tessellation = value; }
+            get { return GetInstance.tessellation; }
+            set { Shader.SetGlobalFloat("_TerrainTess", value); GetInstance.tessellation = value; }
         }
 
-        public float Displacement
+        public static float Displacement
         {
-            get { return displacement; }
-            set { Shader.SetGlobalFloat("_TerrainDisplacement", value); displacement = value; }
+            get { return GetInstance.displacement; }
+            set { Shader.SetGlobalFloat("_TerrainDisplacement", value); GetInstance.displacement = value; }
         }
 
-        public float SnowLevel
+        public static float SnowLevel
         {
-            get { return snowLevel; }
-            set { Shader.SetGlobalFloat("_TerrainSnow", value); snowLevel = value; }
+            get { return GetInstance.snowLevel; }
+            set { Shader.SetGlobalFloat("_TerrainSnow", value); GetInstance.snowLevel = value; }
         }
 
         void Start()
@@ -81,7 +81,7 @@ namespace KouXiaGu.Terrain3D
 
                 Color pixelColor = chunk.HeightTexture.GetPixel(x, y);
 
-                return pixelColor.r * GetInstance.Displacement;
+                return pixelColor.r * Displacement;
             }
             return 0f;
         }
@@ -93,6 +93,11 @@ namespace KouXiaGu.Terrain3D
         {
             RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
             return TerrainChunk.Contains(coord);
+        }
+
+        public void SetSnowLevel(float snow)
+        {
+            SnowLevel = snow;
         }
 
         #endregion

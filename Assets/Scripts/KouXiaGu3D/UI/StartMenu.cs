@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using KouXiaGu.Initialization;
@@ -19,6 +15,9 @@ namespace KouXiaGu.UI
         [SerializeField]
         Button returnStart;
 
+        [SerializeField]
+        Button quitGame;
+
         void Start()
         {
             startGame.OnClickAsObservable().
@@ -26,6 +25,9 @@ namespace KouXiaGu.UI
 
             returnStart.OnClickAsObservable().
                 Subscribe(_ => GameStage.End());
+
+            quitGame.OnClickAsObservable().
+                Subscribe(_AppDomain => Application.Quit());
 
             return;
         }

@@ -158,27 +158,6 @@ namespace KouXiaGu.Terrain3D
             return RectCoord.Range(center, radius.x, radius.y);
         }
 
-        //IEnumerable<RectCoord> GetDestoryCoords(RectCoord center)
-        //{
-        //    return RectCoord.Range(center, radius.y);
-        //}
-
-        [ContextMenu("渲染所有")]
-        void BakingAll()
-        {
-            foreach (var item in RectCoord.Range(RectCoord.Self, 4))
-            {
-                try
-                {
-                    Create(item);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    continue;
-                }
-            }
-        }
-
     }
 
 }
