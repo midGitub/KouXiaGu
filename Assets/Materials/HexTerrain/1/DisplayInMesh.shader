@@ -41,7 +41,7 @@ Shader "HexTerrain/DisplayInMesh"
 			};
 
 			sampler2D _MainTex;
-			sampler2D _BlendTex;  
+			sampler2D _BlendTex;
             
 			v2f vert (appdata_t v)
 			{

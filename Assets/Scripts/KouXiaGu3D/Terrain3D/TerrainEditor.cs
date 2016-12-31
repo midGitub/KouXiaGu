@@ -70,11 +70,14 @@ namespace KouXiaGu.Terrain3D
 
         static TerrainNode GetRandomNode(int[] id)
         {
+            int landform = id[UnityEngine.Random.Range(0, id.Length)];
+            int road = landform == 20 ? 1 : 0;
+
             return new TerrainNode()
             {
-                Landform = id[UnityEngine.Random.Range(0, id.Length)],
+                Landform = landform,
                 LandformAngle = UnityEngine.Random.Range(0, 360),
-                Road = 1,
+                Road = road,
             };
         }
 

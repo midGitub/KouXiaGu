@@ -29,10 +29,13 @@ namespace KouXiaGu.Terrain3D
         NormalMapper normalMapper;
 
         [SerializeField]
-        RenderTerrain terrainRender;
+        RenderTerrain terrain;
 
         [SerializeField]
-        DecorateRoad roadDescorate;
+        DecorateRoad road;
+
+        [SerializeField]
+        DecorateBlend decorateBlend;
 
         static Coroutine bakingCoroutine;
 
@@ -78,8 +81,9 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
-            terrainRender.Awake();
-            roadDescorate.Awake();
+            terrain.Awake();
+            road.Awake();
+            decorateBlend.Awake();
         }
 
         void Start()
@@ -141,6 +145,8 @@ namespace KouXiaGu.Terrain3D
 
             IBakeRequest request = null;
             RenderTexture normalMapRT = null;
+            RenderTexture heightMapRT = null;
+            RenderTexture diffuseMapRT = null;
 
             Texture2D normalMap = null;
             Texture2D heightMap = null;
@@ -154,12 +160,21 @@ namespace KouXiaGu.Terrain3D
                     request = bakingQueue.Dequeue();
                     var cover = GetCover(request);
 
-                    terrainRender.Render(request, cover);
-                    normalMapRT = normalMapper.Rander(terrainRender.HeightRT);
+                    terrain.Render(request, cover);
+                    road.Render(request, cover);
 
-                    heightMap = terrainRender.GetHeightTexture();
+                    //road.DiffuseRT.SavePNG(@"123");
+
+                    heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
+                    diffuseMapRT = decorateBlend.BlendDiffuse(terrain.DiffuseRT, road.DiffuseRT);
+
+                    normalMapRT = normalMapper.Rander(heightMapRT);
+
+                    heightMap = GetHeightTexture(heightMapRT);
                     normalMap = normalMapper.GetTexture(normalMapRT);
-                    diffuse = terrainRender.GetDiffuseTexture();
+                    diffuse = GetDiffuseTexture(diffuseMapRT);
+
+                    //heightMap.SavePNG(@"123");
 
                     request.OnComplete(diffuse, heightMap, normalMap);
                 }
@@ -176,8 +191,11 @@ namespace KouXiaGu.Terrain3D
                 }
                 finally
                 {
-                    terrainRender.Dispose();
+                    terrain.Dispose();
+                    road.Dispose();
                     RenderTexture.ReleaseTemporary(normalMapRT);
+                    RenderTexture.ReleaseTemporary(heightMapRT);
+                    RenderTexture.ReleaseTemporary(diffuseMapRT);
                 }
             }
         }
@@ -204,6 +222,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用摄像机指定背景颜色烘焙;
         /// </summary>
+        public static void CameraRender(RenderTexture rt, MeshDisplay display, Color backgroundColor)
+        {
+            SetBakingCamera(display);
+            CameraRender(rt, backgroundColor);
+        }
+
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
         public static void CameraRender(RenderTexture rt, Color backgroundColor)
         {
             Color current = BakingCamera.backgroundColor;
@@ -211,6 +238,7 @@ namespace KouXiaGu.Terrain3D
             CameraRender(rt);
             BakingCamera.backgroundColor = current;
         }
+
 
         /// <summary>
         /// 设置烘焙相机到对应位置;
@@ -229,6 +257,27 @@ namespace KouXiaGu.Terrain3D
         {
             return TerrainChunk.GetChunkCover(request.ChunkCoord);
         }
+
+        public static Texture2D GetHeightTexture(RenderTexture rt)
+        {
+            RenderTexture.active = rt;
+            Texture2D heightMap = new Texture2D(Parameter.HeightMapWidth, Parameter.HeightMapHeight, TextureFormat.RGB24, false);
+            heightMap.ReadPixels(Parameter.HeightReadPixel, 0, 0, false);
+            heightMap.wrapMode = TextureWrapMode.Clamp;
+            heightMap.Apply();
+            return heightMap;
+        }
+
+        public static Texture2D GetDiffuseTexture(RenderTexture rt)
+        {
+            RenderTexture.active = rt;
+            Texture2D diffuseTex = new Texture2D(Parameter.DiffuseTexWidth, Parameter.DiffuseTexHeight, TextureFormat.RGB24, false);
+            diffuseTex.ReadPixels(Parameter.DiffuseReadPixel, 0, 0, false);
+            diffuseTex.wrapMode = TextureWrapMode.Clamp;
+            diffuseTex.Apply();
+            return diffuseTex;
+        }
+
 
     }
 

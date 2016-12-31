@@ -108,8 +108,16 @@ namespace KouXiaGu.Terrain3D
             }
 
             RenderTexture rt = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24);
-            Renderer.CameraRender(rt, displayMeshPool);
+            CameraRenderHeight(rt, displayMeshPool);
             return rt;
+        }
+
+        /// <summary>
+        /// 使用摄像机烘焙高度图;
+        /// </summary>
+        protected virtual void CameraRenderHeight(RenderTexture rt, MeshDisplay display)
+        {
+            Renderer.CameraRender(rt, displayMeshPool);
         }
 
         /// <summary>
@@ -130,28 +138,26 @@ namespace KouXiaGu.Terrain3D
             }
 
             RenderTexture rt = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24);
-            Renderer.CameraRender(rt, displayMeshPool);
+            CameraRenderDiffuse(rt, displayMeshPool);
             return rt;
+        }
+
+        /// <summary>
+        /// 使用摄像机烘焙漫反射图;
+        /// </summary>
+        protected virtual void CameraRenderDiffuse(RenderTexture rt, MeshDisplay display)
+        {
+            Renderer.CameraRender(rt, displayMeshPool);
         }
 
         public Texture2D GetHeightTexture()
         {
-            RenderTexture.active = HeightRT;
-            Texture2D heightMap = new Texture2D(Parameter.HeightMapWidth, Parameter.HeightMapHeight, TextureFormat.RGB24, false);
-            heightMap.ReadPixels(Parameter.HeightReadPixel, 0, 0, false);
-            heightMap.wrapMode = TextureWrapMode.Clamp;
-            heightMap.Apply();
-            return heightMap;
+            return Renderer.GetHeightTexture(HeightRT);
         }
 
         public Texture2D GetDiffuseTexture()
         {
-            RenderTexture.active = DiffuseRT;
-            Texture2D diffuseTex = new Texture2D(Parameter.DiffuseTexWidth, Parameter.DiffuseTexHeight, TextureFormat.RGB24, false);
-            diffuseTex.ReadPixels(Parameter.DiffuseReadPixel, 0, 0, false);
-            diffuseTex.wrapMode = TextureWrapMode.Clamp;
-            diffuseTex.Apply();
-            return diffuseTex;
+            return Renderer.GetDiffuseTexture(DiffuseRT);
         }
 
         /// <summary>

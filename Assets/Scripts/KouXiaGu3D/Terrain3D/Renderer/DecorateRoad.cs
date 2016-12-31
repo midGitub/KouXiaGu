@@ -55,11 +55,18 @@ namespace KouXiaGu.Terrain3D
             return;
         }
 
+        protected override void CameraRenderDiffuse(RenderTexture rt, MeshDisplay display)
+        {
+            Renderer.CameraRender(rt, display, new Color(0, 0, 0, 0));
+            //base.CameraRenderDiffuse(rt, display);
+        }
+
         protected override void SetHeightParameter(Material material, RoadRes res)
         {
             material.SetTexture("_MainTex", res.HeightAdjustTex);
             return;
         }
+
 
         /// <summary>
         /// 获取到道路资源信息;
