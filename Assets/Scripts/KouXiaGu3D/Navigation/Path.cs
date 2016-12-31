@@ -7,12 +7,10 @@ namespace KouXiaGu.Navigation
 {
 
     /// <summary>
-    /// 地图导航控制;
+    /// 导航道路管理;
     /// </summary>
-    public sealed class Navigator : UnitySington<Navigator>
+    public class Path
     {
-        Navigator() { }
-
 
 
     }
