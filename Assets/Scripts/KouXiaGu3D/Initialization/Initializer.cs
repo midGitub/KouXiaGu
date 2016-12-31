@@ -9,10 +9,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏阶段初始化器;
     /// </summary>
-    public class Initializer
-#if UNITY_EDITOR
-        : MonoBehaviour
-#endif
+    public class Initializer : MonoBehaviour
     {
         Initializer() { }
 
