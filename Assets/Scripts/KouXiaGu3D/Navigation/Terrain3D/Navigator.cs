@@ -5,11 +5,11 @@ using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
-namespace KouXiaGu.Navigation.Game
+namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>
-    /// 地图导航控制;
+    /// 地图导航路径控制;
     /// </summary>
     public sealed class Navigator : UnitySington<Navigator>
     {
@@ -20,12 +20,13 @@ namespace KouXiaGu.Navigation.Game
         /// </summary>
         public static NavMap Map { get; private set; }
 
-        public static NavObstruction Obstruction { get; private set; }
-
         /// <summary>
         /// 获取到导航路径;
         /// </summary>
-        public static NavPath<CubicHexCoord, NavNode> FindPath(Vector3 starting, Vector3 destination)
+        public static NavPath<CubicHexCoord, TerrainNode> FindPath(
+            Vector3 starting,
+            Vector3 destination,
+            NavObstruction obstruction)
         {
             throw new NotImplementedException();
         }
@@ -33,7 +34,10 @@ namespace KouXiaGu.Navigation.Game
         /// <summary>
         /// 获取到导航路径;
         /// </summary>
-        public static NavPath<CubicHexCoord, NavNode> FindPath(CubicHexCoord starting, CubicHexCoord destination)
+        public static NavPath<CubicHexCoord, TerrainNode> FindPath(
+            CubicHexCoord starting, 
+            CubicHexCoord destination,
+            NavObstruction obstruction)
         {
             throw new NotImplementedException();
         }

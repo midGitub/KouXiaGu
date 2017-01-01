@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using KouXiaGu.Navigation;
 
-namespace KouXiaGu.Navigation.Game
+namespace KouXiaGu.Terrain3D.Navigation
 {
 
 

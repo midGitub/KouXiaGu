@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.Navigation.Game
+namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>

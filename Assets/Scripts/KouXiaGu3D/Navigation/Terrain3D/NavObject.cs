@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KouXiaGu.Navigation.Game
+namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>
