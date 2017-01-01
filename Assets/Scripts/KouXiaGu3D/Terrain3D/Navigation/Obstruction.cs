@@ -15,8 +15,6 @@ namespace KouXiaGu.Terrain3D.Navigation
     public class Obstruction : IObstructive<CubicHexCoord, TerrainNode>
     {
 
-
-
         public bool CanWalk(TerrainNode item)
         {
             throw new NotImplementedException();

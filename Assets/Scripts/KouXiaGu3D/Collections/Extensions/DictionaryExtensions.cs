@@ -9,11 +9,10 @@ namespace KouXiaGu
     {
 
         /// <summary>
-        /// 将 IEnumerable<KeyValuePair<TKey, TValue>> 内的元素加入到 IDictionary<TKey, TValue>,若已经存在,则进行替换;
-        /// ArgumentNullException : key 为 null
-        /// NotSupportedException : IDictionary<TKey, TValue> 为只读。
+        /// 将元素加入到,若已经存在,则进行替换;
         /// </summary>
-        public static void AddOrUpdate<TKey,TValue>(this IDictionary<TKey, TValue> dictionary, 
+        public static void AddOrUpdate<TKey,TValue>(
+            this IDictionary<TKey, TValue> dictionary, 
             IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
             foreach (var pair in collection)
@@ -30,11 +29,13 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 将元素加入到 IDictionary<TKey, TValue>, 若已经存在,则进行替换;
+        /// 将元素加入到,若已经存在,则进行替换;
         /// 若为加入则返回true,替换返回false;
         /// </summary>
-        public static bool AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary,
-            TKey key, TValue value)
+        public static bool AddOrUpdate<TKey, TValue>(
+            this IDictionary<TKey, TValue> dictionary,
+            TKey key,
+            TValue value)
         {
             try
             {
@@ -47,6 +48,52 @@ namespace KouXiaGu
                 return false;
             }
         }
+
+        /// <summary>
+        /// 将元素加入到,若已经存在,则进行替换;
+        /// </summary>
+        public static void AddOrUpdate<TKey, TValue, T>(
+            this IDictionary<TKey, TValue> dictionary,
+            IEnumerable<T> collection,
+            Func<T, KeyValuePair<TKey, TValue>> func)
+        {
+            foreach (var value in collection)
+            {
+                KeyValuePair<TKey, TValue> pair = func(value);
+                try
+                {
+                    dictionary.Add(pair);
+                }
+                catch (ArgumentException)
+                {
+                    dictionary[pair.Key] = pair.Value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将元素加入到,若已经存在,则进行替换;
+        /// </summary>
+        public static void AddOrUpdate<TKey, TValue>(
+            this IDictionary<TKey, TValue> dictionary,
+            IEnumerable<TValue> collection, 
+            Func<TValue, TKey> func)
+        {
+            foreach (var value in collection)
+            {
+                TKey key = func(value);
+                try
+                {
+                    dictionary.Add(key, value);
+                }
+                catch (ArgumentException)
+                {
+                    dictionary[key] = value;
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// 获取到,若不存在则返回默认值;

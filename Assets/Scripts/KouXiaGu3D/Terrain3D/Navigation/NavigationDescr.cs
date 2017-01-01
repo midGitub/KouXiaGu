@@ -8,13 +8,13 @@ namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>
-    /// 地形信息描述;
+    /// 地形导航信息;
     /// </summary>
     [XmlType("Navigation")]
-    public struct TerrainDescr
+    public struct NavigationDescr
     {
 
-        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(TerrainDescr[]));
+        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(NavigationDescr[]));
 
         public static XmlSerializer ArraySerializer
         {
@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         }
 
         /// <summary>
-        /// 地貌ID;
+        /// 关联的地貌ID;
         /// </summary>
         [XmlAttribute("landform")]
         public int Landform { get; set; }
