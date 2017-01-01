@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
-        static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
+        public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
         {
             get { return CurrentMap.Map; }
         }

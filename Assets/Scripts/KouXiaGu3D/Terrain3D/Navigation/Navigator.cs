@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
+using KouXiaGu.Navigation;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>
-    /// 地图导航路径控制;
+    /// 地图导航路径;
     /// </summary>
     public sealed class Navigator : UnitySington<Navigator>
     {
         Navigator() { }
 
-        /// <summary>
-        /// 导航地图;
-        /// </summary>
-        public static NavMap Map { get; private set; }
+        static IDictionary<CubicHexCoord, TerrainNode> Map
+        {
+            get { return TerrainController.ActivatedMap; }
+        }
 
         /// <summary>
         /// 获取到导航路径;
@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         public static NavPath<CubicHexCoord, TerrainNode> FindPath(
             Vector3 starting,
             Vector3 destination,
-            NavObstruction obstruction)
+            IObstructive<CubicHexCoord, TerrainNode> obstruction)
         {
             throw new NotImplementedException();
         }
@@ -37,7 +37,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         public static NavPath<CubicHexCoord, TerrainNode> FindPath(
             CubicHexCoord starting, 
             CubicHexCoord destination,
-            NavObstruction obstruction)
+            IObstructive<CubicHexCoord, TerrainNode> obstruction)
         {
             throw new NotImplementedException();
         }

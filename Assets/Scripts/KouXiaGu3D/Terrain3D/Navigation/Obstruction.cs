@@ -8,15 +8,21 @@ using KouXiaGu.Navigation;
 namespace KouXiaGu.Terrain3D.Navigation
 {
 
-
-    public class NavObstruction : IObstructive<CubicHexCoord, NavNode>
+    /// <summary>
+    /// 寻路代价,寻路方式;
+    /// </summary>
+    [Serializable]
+    public class Obstruction : IObstructive<CubicHexCoord, TerrainNode>
     {
-        public bool CanWalk(NavNode item)
+
+
+
+        public bool CanWalk(TerrainNode item)
         {
             throw new NotImplementedException();
         }
 
-        public float GetCost(CubicHexCoord currentPoint, NavNode targetNode, CubicHexCoord destination)
+        public float GetCost(CubicHexCoord currentPoint, TerrainNode targetNode, CubicHexCoord destination)
         {
             throw new NotImplementedException();
         }

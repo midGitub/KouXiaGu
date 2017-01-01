@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Navigation
+namespace KouXiaGu.Grids
 {
 
     /// <summary>
-    /// 寻路范围;
+    /// 范围;
     /// </summary>
-    public interface INavigationRange<TPoint>
+    public interface IRange<TPoint>
     {
         /// <summary>
         /// 若超出范围则返回false;

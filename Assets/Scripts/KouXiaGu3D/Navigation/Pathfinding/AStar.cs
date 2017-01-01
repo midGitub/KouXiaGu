@@ -48,7 +48,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 寻路范围限制;
         /// </summary>
-        public INavigationRange<TPoint> range { get; set; }
+        public IRange<TPoint> range { get; set; }
 
         /// <summary>
         /// 起点;
