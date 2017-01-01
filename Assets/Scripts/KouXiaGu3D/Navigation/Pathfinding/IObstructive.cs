@@ -17,13 +17,13 @@ namespace KouXiaGu.Navigation
         bool CanWalk(TNode item);
 
         /// <summary>
-        /// 获取到人物走到这个地图节点的代价值
+        /// 获取到代价值
         /// </summary>
-        /// <param name="currentPoint">当前物体所在的点</param>
+        /// <param name="targetPoint">行走到的位置</param>
         /// <param name="targetNode">行走到的节点</param>
         /// <param name="destination">寻路终点</param>
         /// <returns></returns>
-        float GetCost(TPoint currentPoint, TNode targetNode, TPoint destination);
+        float GetCost(TPoint targetPoint, TNode targetNode, TPoint destination);
 
     }
 

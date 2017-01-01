@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.Navigation;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D.Navigation
 {
@@ -15,15 +16,68 @@ namespace KouXiaGu.Terrain3D.Navigation
     public class Obstruction : IObstructive<CubicHexCoord, TerrainNode>
     {
 
-        public bool CanWalk(TerrainNode item)
+        public Obstruction(float distancesFactor, float landformFactor)
         {
-            throw new NotImplementedException();
+            this.distancesFactor = distancesFactor;
+            this.landformFactor = landformFactor;
         }
 
-        public float GetCost(CubicHexCoord currentPoint, TerrainNode targetNode, CubicHexCoord destination)
+        /// <summary>
+        /// 距离的权重;
+        /// </summary>
+        [SerializeField, Range(1, 10)]
+        float distancesFactor;
+
+        /// <summary>
+        /// 地貌权重;
+        /// </summary>
+        [SerializeField, Range(1,10)]
+        float landformFactor;
+
+        /// <summary>
+        /// 是否可行走;
+        /// </summary>
+        public bool CanWalk(TerrainNode item)
         {
-            throw new NotImplementedException();
+            if (item.ExistLandform)
+            {
+                int landform = item.Landform;
+                NavigationDescr descr;
+                if(NavigationRes.TerrainInfos.TryGetValue(landform, out descr))
+                {
+                    return descr.Walkable;
+                }
+            }
+            return false;
         }
+
+        /// <summary>
+        /// 获取到代价值;
+        /// </summary>
+        public float GetCost(CubicHexCoord targetPoint, TerrainNode targetNode, CubicHexCoord destination)
+        {
+            float cost = ManhattanDistances(targetPoint, destination) * distancesFactor;
+            cost += GetCost(targetNode) * landformFactor;
+            return cost;
+        }
+
+        /// <summary>
+        /// 曼哈顿距离;
+        /// </summary>
+        int ManhattanDistances(CubicHexCoord a, CubicHexCoord b)
+        {
+            return CubicHexCoord.ManhattanDistances(a, b);
+        }
+
+        /// <summary>
+        /// 获取到这个节点的代价值;
+        /// </summary>
+        float GetCost(TerrainNode node)
+        {
+            int landform = node.Landform;
+            return NavigationRes.TerrainInfos[landform].NavigationCost;
+        }
+
     }
 
 }
