@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Grids;
 using KouXiaGu.Navigation;
+using KouXiaGu.Collections;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D.Navigation
@@ -19,6 +20,8 @@ namespace KouXiaGu.Terrain3D.Navigation
         {
             get { return TerrainController.ActivatedMap; }
         }
+
+        static readonly AStar<CubicHexCoord, TerrainNode> astar = new AStar<CubicHexCoord, TerrainNode>();
 
         /// <summary>
         /// 获取到导航路径;
@@ -39,7 +42,8 @@ namespace KouXiaGu.Terrain3D.Navigation
             CubicHexCoord destination,
             IObstructive<CubicHexCoord, TerrainNode> obstruction)
         {
-            throw new NotImplementedException();
+            var path = astar.Start(Map, new Obstruction(1, 1), new HexRadiusRange(10, starting), starting, destination);
+            return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
         }
 
 

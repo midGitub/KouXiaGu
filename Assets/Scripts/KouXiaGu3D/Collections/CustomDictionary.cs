@@ -6,7 +6,8 @@ namespace KouXiaGu.Collections
     /// <summary>
     /// 实现IReadOnlyDictionary接口的字典结构;
     /// </summary>
-    public class CustomDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    public class CustomDictionary<TKey, TValue> : System.Collections.Generic.Dictionary<TKey, TValue>,
+        IReadOnlyDictionary<TKey, TValue>
     {
         public CustomDictionary() : base() { }
         public CustomDictionary(IEqualityComparer<TKey> comparer) : base(comparer) { }

@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D.Navigation
     /// </summary>
     public class NavPath<TPoint, TNode>
     {
-        public NavPath(LinkedList<TPoint> wayPath, IReadOnlyDictionary<TPoint, TNode> worldMap)
+        public NavPath(LinkedList<TPoint> wayPath, IDictionary<TPoint, TNode> worldMap)
         {
             this.wayPath = wayPath;
             this.WorldMap = worldMap;
@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 寻路的地图;
         /// </summary>
-        public IReadOnlyDictionary<TPoint, TNode> WorldMap { get; private set; }
+        public IDictionary<TPoint, TNode> WorldMap { get; private set; }
 
         /// <summary>
         /// 起点;

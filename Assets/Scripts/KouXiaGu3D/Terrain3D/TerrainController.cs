@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using KouXiaGu.Grids;
 using KouXiaGu.Initialization;
+using KouXiaGu.Collections;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D

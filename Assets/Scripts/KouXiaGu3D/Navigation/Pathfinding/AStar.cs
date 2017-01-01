@@ -38,17 +38,17 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 代价值获取;
         /// </summary>
-        public IObstructive<TPoint, TNode> Obstructive { get; set; }
+        public IObstructive<TPoint, TNode> Obstructive { get; private set; }
 
         /// <summary>
         /// 使用的地图;
         /// </summary>
-        public IDictionary<TPoint, TNode> WroldMap { get; set; }
+        public IDictionary<TPoint, TNode> Map { get; private set; }
 
         /// <summary>
         /// 寻路范围限制;
         /// </summary>
-        public IRange<TPoint> range { get; set; }
+        public IRange<TPoint> Range { get; private set; }
 
         /// <summary>
         /// 起点;
@@ -63,7 +63,38 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 开始寻路;若无法找到目标点则返回异常;
         /// </summary>
-        public LinkedList<TPoint> Start(TPoint starting, TPoint destination)
+        public LinkedList<TPoint> Start(
+            IDictionary<TPoint, TNode> map,
+            IObstructive<TPoint, TNode> obstructive,
+            IRange<TPoint> range, 
+            TPoint starting,
+            TPoint destination)
+        {
+            this.Map = map;
+            this.Obstructive = obstructive;
+            this.Range = range;
+            return Start(starting, destination);
+        }
+
+        /// <summary>
+        /// 开始寻路,不限制范围;若无法找到目标点则返回异常;
+        /// </summary>
+        public LinkedList<TPoint> Start(
+            IDictionary<TPoint, TNode> map,
+            IObstructive<TPoint, TNode> obstructive,
+            TPoint starting,
+            TPoint destination)
+        {
+            this.Map = map;
+            this.Obstructive = obstructive;
+            this.Range = UnlimitedRange<TPoint>.Instance;
+            return Start(starting, destination);
+        }
+
+        /// <summary>
+        /// 开始寻路;若无法找到目标点则返回异常;
+        /// </summary>
+        LinkedList<TPoint> Start(TPoint starting, TPoint destination)
         {
             Clear();
 
@@ -73,7 +104,7 @@ namespace KouXiaGu.Navigation
             if (IsTrapped(Starting))
                 throw new TrappedException("起点周围不可行走,物体可能被困住;");
 
-            if (this.range.IsOutRange(Starting))
+            if (this.Range.IsOutRange(Destination))
                 throw new DestinationNotFoundException("目的地超出了最大搜索范围的定义;");
 
             if (IsTrapped(Destination))
@@ -98,7 +129,7 @@ namespace KouXiaGu.Navigation
         bool IsTrapped(TPoint point)
         {
             TNode worldNode;
-            if (WroldMap.TryGetValue(point, out worldNode))
+            if (Map.TryGetValue(point, out worldNode))
             {
                 if (!Obstructive.CanWalk(worldNode))
                     return true;
@@ -161,7 +192,7 @@ namespace KouXiaGu.Navigation
             foreach (var item in point.GetNeighbours())
             {
                 TPoint dirPoint = (TPoint)item;
-                if (WroldMap.TryGetValue(dirPoint, out node))
+                if (Map.TryGetValue(dirPoint, out node))
                 {
                     yield return new KeyValuePair<TPoint, TNode>(dirPoint, node);
                 }
@@ -175,7 +206,7 @@ namespace KouXiaGu.Navigation
         {
             return !closePointsSet.Contains(nodePair.Key) &&
                 Obstructive.CanWalk(nodePair.Value) &&
-                !range.IsOutRange(nodePair.Key);
+                !Range.IsOutRange(nodePair.Key);
         }
 
         /// <summary>

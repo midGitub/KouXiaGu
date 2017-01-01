@@ -64,7 +64,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             if (path == null)
                 throw new ArgumentNullException("空的导航路径;");
             if(IsFollowPath)
-                CompletePath(this.path);
+                CompletePath();
 
             this.path = path;
             MoveNext();
@@ -120,7 +120,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// </summary>
         public void Stop()
         {
-            CompletePath(path);
+            CompletePath();
             enabled = false;
         }
 
@@ -135,7 +135,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 完成路线;
         /// </summary>
-        void CompletePath(INavigationPath path)
+        void CompletePath()
         {
             path.Complete();
             path = null;
