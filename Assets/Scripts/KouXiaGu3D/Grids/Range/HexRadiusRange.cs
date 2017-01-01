@@ -12,6 +12,10 @@ namespace KouXiaGu.Grids
     public class HexRadiusRange : IRange<CubicHexCoord>
     {
 
+        public HexRadiusRange()
+        {
+        }
+
         /// <summary>
         /// 若 radius 为负数则是相反的范围;
         /// </summary>
@@ -20,9 +24,9 @@ namespace KouXiaGu.Grids
             SetRange(radius, starting);
         }
 
-        public int Radius { get; private set; }
+        public int Radius { get; set; }
 
-        public CubicHexCoord Starting { get; private set; }
+        public CubicHexCoord Starting { get; set; }
 
         int[] boundary;
 

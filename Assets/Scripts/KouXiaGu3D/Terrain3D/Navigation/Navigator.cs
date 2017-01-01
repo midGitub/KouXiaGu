@@ -21,31 +21,59 @@ namespace KouXiaGu.Terrain3D.Navigation
             get { return TerrainController.ActivatedMap; }
         }
 
+        #region 同步;
+
         static readonly AStar<CubicHexCoord, TerrainNode> astar = new AStar<CubicHexCoord, TerrainNode>();
 
+        static readonly HexRadiusRange hexRange = new HexRadiusRange();
+
         /// <summary>
-        /// 获取到导航路径;
+        /// 获取到导航路径(同步);
         /// </summary>
         public static NavPath<CubicHexCoord, TerrainNode> FindPath(
-            Vector3 starting,
-            Vector3 destination,
-            IObstructive<CubicHexCoord, TerrainNode> obstruction)
+            CubicHexCoord starting,
+            CubicHexCoord destination,
+            IObstructive<CubicHexCoord, TerrainNode> obstruction,
+            int radius)
+        {
+            hexRange.Radius = radius;
+            hexRange.Starting = starting;
+
+            var path = astar.Start(Map, obstruction, hexRange, starting, destination);
+            return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
+        }
+
+        /// <summary>
+        /// 获取到导航路径(同步);
+        /// </summary>
+        public static NavPath<CubicHexCoord, TerrainNode> FindPath(
+            CubicHexCoord starting,
+            CubicHexCoord destination,
+            IObstructive<CubicHexCoord, TerrainNode> obstruction,
+            IRange<CubicHexCoord> range)
+        {
+            var path = astar.Start(Map, obstruction, range, starting, destination);
+            return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
+        }
+
+        #endregion
+
+
+        #region 异步;
+
+        /// <summary>
+        /// 获取到导航路径(异步);
+        /// </summary>
+        public static void FindPathAsync(
+            CubicHexCoord starting,
+            CubicHexCoord destination,
+            IObstructive<CubicHexCoord, TerrainNode> obstruction,
+            IRange<CubicHexCoord> range)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// 获取到导航路径;
-        /// </summary>
-        public static NavPath<CubicHexCoord, TerrainNode> FindPath(
-            CubicHexCoord starting, 
-            CubicHexCoord destination,
-            IObstructive<CubicHexCoord, TerrainNode> obstruction)
-        {
-            var path = astar.Start(Map, new Obstruction(1, 1), new HexRadiusRange(10, starting), starting, destination);
-            return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
-        }
-
+        #endregion
 
     }
 
