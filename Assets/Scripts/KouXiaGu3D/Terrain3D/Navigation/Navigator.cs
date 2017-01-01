@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         #region 同步;
 
-        static readonly AStar<CubicHexCoord, TerrainNode> astar = new AStar<CubicHexCoord, TerrainNode>();
+        static readonly AStarPathFinding<CubicHexCoord, TerrainNode> astar = new AStarPathFinding<CubicHexCoord, TerrainNode>();
 
         static readonly HexRadiusRange hexRange = new HexRadiusRange();
 
@@ -39,7 +39,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             hexRange.Radius = radius;
             hexRange.Starting = starting;
 
-            var path = astar.Start(Map, obstruction, hexRange, starting, destination);
+            var path = astar.Search(Map, obstruction, hexRange, starting, destination);
             return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
         }
 
@@ -52,7 +52,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             IObstructive<CubicHexCoord, TerrainNode> obstruction,
             IRange<CubicHexCoord> range)
         {
-            var path = astar.Start(Map, obstruction, range, starting, destination);
+            var path = astar.Search(Map, obstruction, range, starting, destination);
             return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
         }
 

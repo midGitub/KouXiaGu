@@ -10,11 +10,11 @@ namespace KouXiaGu.Navigation
     /// <summary>
     /// 寻路;单线程;
     /// </summary>
-    public class AStar<TPoint, TNode>
+    public class AStarPathFinding<TPoint, TNode> : IPathfinding<TPoint, TNode>
         where TPoint : IGrid
     {
 
-        public AStar()
+        public AStarPathFinding()
         {
             openPointsSet = new OpenDictionary<AStartPathNode>();
             closePointsSet = new HashSet<TPoint>();
@@ -63,7 +63,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 开始寻路;若无法找到目标点则返回异常;
         /// </summary>
-        public LinkedList<TPoint> Start(
+        public LinkedList<TPoint> Search(
             IDictionary<TPoint, TNode> map,
             IObstructive<TPoint, TNode> obstructive,
             IRange<TPoint> range, 
@@ -73,21 +73,6 @@ namespace KouXiaGu.Navigation
             this.Map = map;
             this.Obstructive = obstructive;
             this.Range = range;
-            return Start(starting, destination);
-        }
-
-        /// <summary>
-        /// 开始寻路,不限制范围;若无法找到目标点则返回异常;
-        /// </summary>
-        public LinkedList<TPoint> Start(
-            IDictionary<TPoint, TNode> map,
-            IObstructive<TPoint, TNode> obstructive,
-            TPoint starting,
-            TPoint destination)
-        {
-            this.Map = map;
-            this.Obstructive = obstructive;
-            this.Range = UnlimitedRange<TPoint>.Instance;
             return Start(starting, destination);
         }
 
