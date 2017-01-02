@@ -27,7 +27,6 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 下一次行动到的目标点;
         /// </summary>
-        [SerializeField]
         Vector3 targetPoint;
 
         /// <summary>
