@@ -48,7 +48,17 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         Vector3 GetPosition()
         {
-            return GridConvert.Grid.GetPixel(path.Current);
+            Vector3 pos = GridConvert.Grid.GetPixel(path.Current);
+            pos.y = GetHeight(pos);
+            return pos;
+        }
+
+        /// <summary>
+        /// 获取到这个点的高度;
+        /// </summary>
+        float GetHeight(Vector3 point)
+        {
+            return TerrainData.GetHeight(point);
         }
 
         float GetSpeed()
@@ -66,6 +76,11 @@ namespace KouXiaGu.Terrain3D.Navigation
         void INavigationPath.Complete()
         {
             return;
+        }
+
+        public override string ToString()
+        {
+            return path.ToString();
         }
 
     }

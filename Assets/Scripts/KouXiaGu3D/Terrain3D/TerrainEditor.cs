@@ -48,6 +48,15 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 生成一个随机地图,并且加入到现在激活的地图内(忽略重复);
+        /// </summary>
+        public static void RandomMap(int randomMapSize, int landform)
+        {
+            Dictionary<CubicHexCoord, TerrainNode> map = RandomMap(randomMapSize, new int[]{ landform });
+            ActivatedMap.AddOrUpdate(map);
+        }
+
+        /// <summary>
         /// 返回一个随机地图;
         /// </summary>
         static Dictionary<CubicHexCoord, TerrainNode> RandomMap(int size, params int[] id)

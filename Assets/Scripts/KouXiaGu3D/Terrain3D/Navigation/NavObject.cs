@@ -1,22 +1,23 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections;
 
 namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>
     /// 挂载于需要导航的物体;
+    /// 路径点在协程内更新;
     /// </summary>
     [DisallowMultipleComponent]
     public class NavObject : MonoBehaviour
     {
+        const float smoothTime = 0.3f;
+
+
         protected NavObject() { }
 
-        [SerializeField]
         float maxSpeed = 1;
-
-        [SerializeField]
-        float smoothTime = 0.3f;
 
         /// <summary>
         /// 在跟随路径时,当与目标点相距多少距离进行跟换一下个目标点;
@@ -40,6 +41,11 @@ namespace KouXiaGu.Terrain3D.Navigation
         INavigationPath path;
 
         /// <summary>
+        /// 目标点更新协程;
+        /// </summary>
+        Coroutine targetPointUpdateCoroutine;
+
+        /// <summary>
         /// 是否正在跟随路线而行动;
         /// </summary>
         public bool IsFollowPath
@@ -55,72 +61,13 @@ namespace KouXiaGu.Terrain3D.Navigation
             get { return velocity; }
         }
 
-        /// <summary>
-        /// 这只导航路径,若已经存在导航路径则替换;
-        /// </summary>
-        public void Follow(INavigationPath path)
+        void Update()
         {
-            if (path == null)
-                throw new ArgumentNullException("空的导航路径;");
-            if(IsFollowPath)
-                CompletePath();
+            Vector3 pos = transform.position;
 
-            this.path = path;
-            MoveNext();
-            enabled = true;
-        }
+            pos.y = GetHeight(pos);
 
-        void Awake()
-        {
-            if (path == null)
-                enabled = false;
-        }
-
-        void FixedUpdate()
-        {
-            Vector3 current = transform.position;
-            Vector3 next = Vector3.SmoothDamp(current, targetPoint, ref velocity, smoothTime, maxSpeed, Time.deltaTime);
-
-            next.y = GetHeight(next);
-            transform.position = next;
-
-            if (IsClose(current, next))
-            {
-                MoveNext();
-            }
-        }
-
-        /// <summary>
-        /// 这两个点是否足够接近;
-        /// </summary>
-        bool IsClose(Vector3 point1, Vector3 point2)
-        {
-            return (Vector3.Distance(point1, point2) < alternate);
-        }
-
-        /// <summary>
-        /// 设置到下一步;
-        /// </summary>
-        void MoveNext()
-        {
-            if (path.MoveNext())
-            {
-                maxSpeed = path.MaxSpeed;
-                targetPoint = path.Position;
-            }
-            else
-            {
-                Stop();
-            }
-        }
-
-        /// <summary>
-        /// 停止跟随路径;
-        /// </summary>
-        public void Stop()
-        {
-            CompletePath();
-            enabled = false;
+            transform.position = pos;
         }
 
         /// <summary>
@@ -131,6 +78,59 @@ namespace KouXiaGu.Terrain3D.Navigation
             return TerrainData.GetHeight(point);
         }
 
+        void FixedUpdate()
+        {
+            Vector3 current = transform.position;
+            transform.position = Vector3.SmoothDamp(current, targetPoint, ref velocity, smoothTime, maxSpeed, Time.deltaTime);
+        }
+
+        /// <summary>
+        /// 这只导航路径,若已经存在导航路径则替换;
+        /// </summary>
+        public void Follow(INavigationPath path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("空的导航路径;");
+
+            Stop();
+
+            this.path = path;
+
+            targetPointUpdateCoroutine = StartCoroutine(UpdateTargetPoint());
+        }
+
+        /// <summary>
+        /// 停止跟随路径;
+        /// </summary>
+        [ContextMenu("StopFollow")]
+        public void Stop()
+        {
+            if (IsFollowPath)
+            {
+                StopCoroutine(targetPointUpdateCoroutine);
+                CompletePath();
+            }
+        }
+
+        /// <summary>
+        /// 更新目标点;
+        /// </summary>
+        IEnumerator UpdateTargetPoint()
+        {
+            while (path.MoveNext())
+            {
+                maxSpeed = path.MaxSpeed;
+                targetPoint = path.Position;
+
+                while (!IsClose(transform.position, targetPoint))
+                    yield return null;
+            }
+
+            CompletePath();
+            targetPointUpdateCoroutine = null;
+            yield break;
+        }
+
         /// <summary>
         /// 完成路线;
         /// </summary>
@@ -138,6 +138,14 @@ namespace KouXiaGu.Terrain3D.Navigation
         {
             path.Complete();
             path = null;
+        }
+
+        /// <summary>
+        /// 这两个点是否足够接近;
+        /// </summary>
+        bool IsClose(Vector3 point1, Vector3 point2)
+        {
+            return (Vector3.Distance(point1, point2) < alternate);
         }
 
     }

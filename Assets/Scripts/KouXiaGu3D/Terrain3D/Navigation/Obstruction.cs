@@ -42,12 +42,10 @@ namespace KouXiaGu.Terrain3D.Navigation
             if (item.ExistLandform)
             {
                 int landform = item.Landform;
-                NavigationDescr descr;
-                if(NavigationRes.TerrainInfos.TryGetValue(landform, out descr))
-                {
-                    return descr.Walkable;
-                }
+                NavigationDescr descr = NavigationRes.GetNavigationDescr(landform);
+                return descr.Walkable;
             }
+            Debug.LogWarning("查询点不存在地貌信息;");
             return false;
         }
 

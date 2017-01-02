@@ -32,6 +32,7 @@ namespace KouXiaGu.Terrain3D.Navigation
                 CubicHexCoord destinationCoord = Convert(destination);
                 NavigationPath path = GetPath(nav.gameObject, starting, destinationCoord);
                 nav.Follow(path);
+                Debug.Log(path.ToString());
             }
 
             GUILayout.EndVertical();
@@ -46,7 +47,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         NavigationPath GetPath(GameObject gameObject, CubicHexCoord starting, CubicHexCoord destination)
         {
             IMovable character = gameObject.GetComponent<IMovable>();
-            return Navigator.FindPath(starting, destination, new Obstruction(1, 1), new HexRadiusRange(10, starting), character);
+            return Navigator.FindPath(starting, destination, new Obstruction(1, 1), new HexRadiusRange(50, starting), character);
         }
 
     }

@@ -68,6 +68,11 @@ namespace KouXiaGu.Terrain3D.Navigation
             return true;
         }
 
+        public override string ToString()
+        {
+            return wayPath.ToLog();
+        }
+
     }
 
 }

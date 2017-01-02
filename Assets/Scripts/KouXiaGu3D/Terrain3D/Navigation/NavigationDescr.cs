@@ -45,6 +45,29 @@ namespace KouXiaGu.Terrain3D.Navigation
         [XmlElement("NavigationCost")]
         public float NavigationCost { get; set; }
 
+        public override int GetHashCode()
+        {
+            return Landform.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is NavigationDescr))
+                return false;
+            return ((NavigationDescr)obj).Landform == Landform;
+        }
+
+        public override string ToString()
+        {
+            return 
+                "[" + 
+                "Landform:" + Landform +
+                "Walkable:" + Walkable +
+                "SpeedOfTravel:" + SpeedOfTravel +
+                "NavigationCost" + NavigationCost +
+                "]";
+        }
+
     }
 
 }

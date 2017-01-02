@@ -14,6 +14,8 @@ namespace KouXiaGu.Terrain3D
     public class TerrainEditorEditor : Editor
     {
 
+        int landform;
+
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -43,6 +45,14 @@ namespace KouXiaGu.Terrain3D
             {
                 TerrainEditor.RandomMap(edit.randomMapSize);
             }
+
+            landform = EditorGUILayout.IntField("平铺地形:", landform);
+
+            if (GUILayout.Button("随机地形地图"))
+            {
+                TerrainEditor.RandomMap(edit.randomMapSize, landform);
+            }
+
         }
 
     }
