@@ -8,7 +8,9 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D.Navigation
 {
 
-
+    /// <summary>
+    /// 导航路径;
+    /// </summary>
     public class NavigationPath : INavigationPath
     {
 

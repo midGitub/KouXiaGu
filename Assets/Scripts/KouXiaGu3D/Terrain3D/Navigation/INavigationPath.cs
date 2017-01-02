@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>
-    /// 路径;
+    /// 导航路径;
     /// </summary>
     public interface INavigationPath
     {

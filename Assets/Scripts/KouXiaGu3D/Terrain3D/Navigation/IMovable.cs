@@ -6,7 +6,9 @@ using System.Text;
 namespace KouXiaGu.Terrain3D.Navigation
 {
 
-
+    /// <summary>
+    /// 可移动物体;
+    /// </summary>
     public interface IMovable
     {
 

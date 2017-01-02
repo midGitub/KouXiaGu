@@ -147,8 +147,8 @@ namespace KouXiaGu.Terrain3D
         const string MESH_NAME = "Terrain Mesh";
 
         //为了地形相接的地方不存在明显的缝隙,所以加上 小数 的数值;
-        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF + 0.005f;
-        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF + 0.005f;
+        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF + 0.0005f;
+        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF + 0.0005f;
 
         /// <summary>
         /// 网格生成的高度;

@@ -3,6 +3,9 @@
 namespace KouXiaGu.Terrain3D.Navigation
 {
 
+    /// <summary>
+    /// 执行导航脚本;
+    /// </summary>
     public interface INavigator
     {
 
