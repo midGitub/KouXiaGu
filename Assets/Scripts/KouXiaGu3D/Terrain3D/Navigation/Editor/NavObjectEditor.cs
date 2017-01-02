@@ -9,16 +9,18 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D.Navigation
 {
 
-    [CustomEditor(typeof(NavObject), true)]
+    [CustomEditor(typeof(Navigator), true)]
     public class NavObjectEditor : Editor
     {
         Vector3 destination;
+
+        static PathFindingCost obstruction = new PathFindingCost(1, 1);
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            NavObject nav = (NavObject)target;
+            Navigator nav = (Navigator)target;
 
             GUILayout.BeginVertical();
 
@@ -30,9 +32,9 @@ namespace KouXiaGu.Terrain3D.Navigation
             {
                 CubicHexCoord starting = Convert(nav.transform.position);
                 CubicHexCoord destinationCoord = Convert(destination);
-                NavigationPath path = GetPath(nav.gameObject, starting, destinationCoord);
-                nav.Follow(path);
-                Debug.Log(path.ToString());
+
+                IMovable character = nav.GetComponent<IMovable>();
+                nav.NavigateTo(destinationCoord, obstruction, new HexRadiusRange(50, starting), character);
             }
 
             GUILayout.EndVertical();
@@ -42,12 +44,6 @@ namespace KouXiaGu.Terrain3D.Navigation
         CubicHexCoord Convert(Vector3 pos)
         {
             return GridConvert.Grid.GetCubic(pos);
-        }
-
-        NavigationPath GetPath(GameObject gameObject, CubicHexCoord starting, CubicHexCoord destination)
-        {
-            IMovable character = gameObject.GetComponent<IMovable>();
-            return Navigator.FindPath(starting, destination, new Obstruction(1, 1), new HexRadiusRange(50, starting), character);
         }
 
     }

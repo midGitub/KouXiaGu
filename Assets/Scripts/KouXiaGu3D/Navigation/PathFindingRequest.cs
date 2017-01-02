@@ -32,7 +32,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 代价值获取;
         /// </summary>
-        public IObstructive<TPoint, TNode> Obstructive { get; private set; }
+        public IPathFindingCost<TPoint, TNode> Obstructive { get; private set; }
 
         /// <summary>
         /// 寻路范围限制;

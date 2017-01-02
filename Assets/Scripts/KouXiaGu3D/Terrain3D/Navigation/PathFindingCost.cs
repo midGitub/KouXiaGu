@@ -10,13 +10,13 @@ namespace KouXiaGu.Terrain3D.Navigation
 {
 
     /// <summary>
-    /// 寻路代价,寻路方式;
+    /// 寻路权重;
     /// </summary>
     [Serializable]
-    public class Obstruction : IObstructive<CubicHexCoord, TerrainNode>
+    public class PathFindingCost : IPathFindingCost<CubicHexCoord, TerrainNode>
     {
 
-        public Obstruction(float distancesFactor, float landformFactor)
+        public PathFindingCost(float distancesFactor, float landformFactor)
         {
             this.distancesFactor = distancesFactor;
             this.landformFactor = landformFactor;

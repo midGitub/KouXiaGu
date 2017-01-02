@@ -7,9 +7,9 @@ namespace KouXiaGu.Navigation
 {
 
     /// <summary>
-    /// 寻路代价值获取;
+    /// 寻路权重;
     /// </summary>
-    public interface IObstructive<TPoint, TNode>
+    public interface IPathFindingCost<TPoint, TNode>
     {
         /// <summary>
         /// 这个点是否允许行走到;

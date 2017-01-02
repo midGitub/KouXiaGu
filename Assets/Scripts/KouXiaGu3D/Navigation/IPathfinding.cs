@@ -14,7 +14,7 @@ namespace KouXiaGu.Navigation
         /// </summary>
         LinkedList<TPoint> Search(
             IDictionary<TPoint, TNode> map,
-            IObstructive<TPoint, TNode> obstructive,
+            IPathFindingCost<TPoint, TNode> obstructive,
             IRange<TPoint> range,
             TPoint starting,
             TPoint destination);

@@ -15,7 +15,7 @@ namespace KouXiaGu.Navigation
 
         public PathFindingRequest<TPoint, TNode> SearchAsync(
             IDictionary<TPoint, TNode> map,
-            IObstructive<TPoint, TNode> obstructive,
+            IPathFindingCost<TPoint, TNode> obstructive,
             IRange<TPoint> range,
             TPoint starting,
             TPoint destination)
