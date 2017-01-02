@@ -76,11 +76,7 @@ namespace KouXiaGu.Terrain3D
 
             if (TerrainChunk.TryGetChunk(coord, out chunk))
             {
-                int x = (int)(uv.x * chunk.HeightTexture.width);
-                int y = (int)(uv.y * chunk.HeightTexture.height);
-
-                Color pixelColor = chunk.HeightTexture.GetPixel(x, y);
-
+                Color pixelColor = chunk.HeightTexture.GetPixel(uv);
                 return pixelColor.r * Displacement;
             }
             return 0f;

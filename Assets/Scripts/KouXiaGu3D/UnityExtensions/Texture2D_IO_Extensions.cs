@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -12,7 +9,7 @@ namespace KouXiaGu
     /// <summary>
     /// 对 Texture2D 保存的拓展方法;
     /// </summary>
-    public static class Texture2DExpand
+    public static class Texture2D_IO_Extensions
     {
 
         const string ExtensionPNG = ".png";
