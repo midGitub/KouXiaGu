@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             get { return velocity; }
         }
 
-        void Update()
+        protected virtual void Update()
         {
             Vector3 pos = transform.position;
 
@@ -88,7 +88,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             return TerrainData.GetHeight(point);
         }
 
-        void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             Vector3 current = transform.position;
             transform.position = Vector3.SmoothDamp(current, targetPoint, ref velocity, smoothTime, maxSpeed, Time.deltaTime);

@@ -4,7 +4,7 @@ using System.Linq;
 using KouXiaGu.Grids;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
@@ -40,6 +40,23 @@ namespace KouXiaGu
         public static CubicHexGrid Grid
         {
             get { return grid; }
+        }
+
+
+        /// <summary>
+        /// 转换为地形使用的六边形坐标;
+        /// </summary>
+        public static CubicHexCoord GetTerrainCubic(this Vector3 pos)
+        {
+            return GridConvert.Grid.GetCubic(pos);
+        }
+
+        /// <summary>
+        /// 转换为地形使用的坐标;
+        /// </summary>
+        public static Vector3 GetTerrainPixel(this CubicHexCoord coord)
+        {
+            return GridConvert.Grid.GetPixel(coord);
         }
 
 

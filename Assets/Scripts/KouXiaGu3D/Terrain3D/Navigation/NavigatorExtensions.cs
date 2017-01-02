@@ -18,12 +18,23 @@ namespace KouXiaGu.Terrain3D.Navigation
         public static void NavigateTo(
             this INavigator navigator,
             CubicHexCoord destination,
-            IPathFindingCost<CubicHexCoord, TerrainNode> obstruction,
+            IPathFindingCost<CubicHexCoord, TerrainNode> cost,
             IRange<CubicHexCoord> searchRange,
             IMovable character)
         {
-            CubicHexCoord starting = navigator.Position.GetCubic();
-            var path = Pathfinding.FindPath(starting, destination, obstruction, searchRange);
+            CubicHexCoord starting = navigator.Position.GetTerrainCubic();
+            NavigateTo(navigator, starting, destination, cost, searchRange, character);
+        }
+
+        public static void NavigateTo(
+            this INavigator navigator,
+            CubicHexCoord starting,
+            CubicHexCoord destination,
+            IPathFindingCost<CubicHexCoord, TerrainNode> cost,
+            IRange<CubicHexCoord> searchRange,
+            IMovable character)
+        {
+            var path = Pathfinding.FindPath(starting, destination, cost, searchRange);
             navigator.NavigateTo(character, path);
         }
 
@@ -33,15 +44,6 @@ namespace KouXiaGu.Terrain3D.Navigation
             navigator.Follow(navPath);
         }
 
-        static CubicHexCoord GetCubic(this Vector3 pos)
-        {
-            return GridConvert.Grid.GetCubic(pos);
-        }
-
-        static Vector3 GetPixel(this CubicHexCoord coord)
-        {
-            return GridConvert.Grid.GetPixel(coord);
-        }
 
     }
 

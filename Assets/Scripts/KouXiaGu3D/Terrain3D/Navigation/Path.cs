@@ -11,16 +11,11 @@ namespace KouXiaGu.Terrain3D.Navigation
     {
         public Path(LinkedList<TPoint> wayPath, IDictionary<TPoint, TNode> worldMap)
         {
-            this.wayPath = wayPath;
+            this.WayPath = wayPath;
             this.WorldMap = worldMap;
 
             current = wayPath.First;
         }
-
-        /// <summary>
-        /// 路径点合集;
-        /// </summary>
-        LinkedList<TPoint> wayPath;
 
         /// <summary>
         /// 当前行走到;
@@ -33,11 +28,16 @@ namespace KouXiaGu.Terrain3D.Navigation
         public IDictionary<TPoint, TNode> WorldMap { get; private set; }
 
         /// <summary>
+        /// 路径点合集;
+        /// </summary>
+        public LinkedList<TPoint> WayPath { get; private set; }
+
+        /// <summary>
         /// 起点;
         /// </summary>
         public TPoint Starting
         {
-            get { return wayPath.First.Value; }
+            get { return WayPath.First.Value; }
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// </summary>
         public TPoint Destination
         {
-            get { return wayPath.Last.Value; }
+            get { return WayPath.Last.Value; }
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         public override string ToString()
         {
-            return wayPath.ToLog();
+            return WayPath.ToLog();
         }
 
     }
