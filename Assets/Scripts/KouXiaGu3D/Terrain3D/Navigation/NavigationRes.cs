@@ -27,6 +27,29 @@ namespace KouXiaGu.Terrain3D.Navigation
             get { return terrainInfos; }
         }
 
+        static readonly NavigationDescr defaultNavigationDescr = new NavigationDescr()
+        {
+            Landform = 0,
+            Walkable = false,
+            SpeedOfTravel = 1,
+            NavigationCost = 10,
+        };
+
+        /// <summary>
+        /// 获取到寻路信息,若不存在则返回默认的寻路信息;
+        /// </summary>
+        public static NavigationDescr GetNavigationDescr(int landform)
+        {
+            NavigationDescr descr;
+            if (terrainInfos.TryGetValue(landform, out descr))
+            {
+                return descr;
+            }
+
+            Debug.LogWarning("获取不存在的导航信息;地貌:" + landform);
+            return defaultNavigationDescr;
+        }
+
         public static string NavigationDescrFile
         {
             get { return TerrainResPath.Combine(GetInstance.navigationDescrName); }

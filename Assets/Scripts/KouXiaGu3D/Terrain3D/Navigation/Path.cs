@@ -7,9 +7,9 @@ namespace KouXiaGu.Terrain3D.Navigation
     /// <summary>
     /// 导航路径;将地图路径转换成导航路径提供单独实例使用;
     /// </summary>
-    public class NavPath<TPoint, TNode>
+    public class Path<TPoint, TNode>
     {
-        public NavPath(LinkedList<TPoint> wayPath, IDictionary<TPoint, TNode> worldMap)
+        public Path(LinkedList<TPoint> wayPath, IDictionary<TPoint, TNode> worldMap)
         {
             this.wayPath = wayPath;
             this.WorldMap = worldMap;

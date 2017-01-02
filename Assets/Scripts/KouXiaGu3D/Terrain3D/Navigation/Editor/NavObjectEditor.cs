@@ -10,6 +10,12 @@ namespace KouXiaGu.Terrain3D.Navigation
     public class NavObjectEditor : Editor
     {
 
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+        }
+
+
 
     }
 

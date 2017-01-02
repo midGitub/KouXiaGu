@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 获取到导航路径(同步);
         /// </summary>
-        public static NavPath<CubicHexCoord, TerrainNode> FindPath(
+        public static Path<CubicHexCoord, TerrainNode> FindPath(
             CubicHexCoord starting,
             CubicHexCoord destination,
             IObstructive<CubicHexCoord, TerrainNode> obstruction,
@@ -40,20 +40,20 @@ namespace KouXiaGu.Terrain3D.Navigation
             hexRange.Starting = starting;
 
             var path = astar.Search(Map, obstruction, hexRange, starting, destination);
-            return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
+            return new Path<CubicHexCoord, TerrainNode>(path, Map);
         }
 
         /// <summary>
         /// 获取到导航路径(同步);
         /// </summary>
-        public static NavPath<CubicHexCoord, TerrainNode> FindPath(
+        public static Path<CubicHexCoord, TerrainNode> FindPath(
             CubicHexCoord starting,
             CubicHexCoord destination,
             IObstructive<CubicHexCoord, TerrainNode> obstruction,
             IRange<CubicHexCoord> range)
         {
             var path = astar.Search(Map, obstruction, range, starting, destination);
-            return new NavPath<CubicHexCoord, TerrainNode>(path, Map);
+            return new Path<CubicHexCoord, TerrainNode>(path, Map);
         }
 
         #endregion
