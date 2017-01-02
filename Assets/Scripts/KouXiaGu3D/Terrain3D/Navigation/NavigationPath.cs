@@ -57,10 +57,10 @@ namespace KouXiaGu.Terrain3D.Navigation
             if (path.WorldMap.TryGetValue(path.Current, out node))
             {
                 var descr = NavigationRes.GetNavigationDescr(node.Landform);
-                return descr.SpeedOfTravel * Character.Speed;
+                return descr.SpeedOfTravel * Character.MovingSpeed;
             }
             Debug.LogError("路径点超出地图范围;");
-            return Character.Speed;
+            return Character.MovingSpeed;
         }
 
         void INavigationPath.Complete()

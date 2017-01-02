@@ -25,24 +25,6 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         static readonly AStarPathFinding<CubicHexCoord, TerrainNode> astar = new AStarPathFinding<CubicHexCoord, TerrainNode>();
 
-        static readonly HexRadiusRange hexRange = new HexRadiusRange();
-
-        /// <summary>
-        /// 获取到导航路径(同步);
-        /// </summary>
-        public static Path<CubicHexCoord, TerrainNode> FindPath(
-            CubicHexCoord starting,
-            CubicHexCoord destination,
-            IObstructive<CubicHexCoord, TerrainNode> obstruction,
-            int radius)
-        {
-            hexRange.Radius = radius;
-            hexRange.Starting = starting;
-
-            var path = astar.Search(Map, obstruction, hexRange, starting, destination);
-            return new Path<CubicHexCoord, TerrainNode>(path, Map);
-        }
-
         /// <summary>
         /// 获取到导航路径(同步);
         /// </summary>
@@ -56,7 +38,23 @@ namespace KouXiaGu.Terrain3D.Navigation
             return new Path<CubicHexCoord, TerrainNode>(path, Map);
         }
 
+        /// <summary>
+        /// 获取到导航路径(同步);
+        /// </summary>
+        public static NavigationPath FindPath(
+            CubicHexCoord starting,
+            CubicHexCoord destination,
+            IObstructive<CubicHexCoord, TerrainNode> obstruction,
+            IRange<CubicHexCoord> range,
+            IMovable character)
+        {
+            var path = FindPath(starting, destination, obstruction, range);
+            return new NavigationPath(character, path);
+        }
+
         #endregion
+
+
 
 
         #region 异步;

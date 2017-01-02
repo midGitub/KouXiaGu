@@ -13,9 +13,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 移动速度;
         /// </summary>
-        float Speed { get; }
-
-
+        float MovingSpeed { get; }
 
     }
 
