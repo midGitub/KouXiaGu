@@ -169,7 +169,7 @@ namespace KouXiaGu.Navigation
         }
 
         /// <summary>
-        /// 获取到周围的节点;
+        /// 获取到周围可行走的节点,且不在关闭合集内;
         /// </summary>
         IEnumerable<KeyValuePair<TPoint, TNode>> GetAround(TPoint point)
         {
@@ -177,9 +177,10 @@ namespace KouXiaGu.Navigation
             foreach (var item in point.GetNeighbours())
             {
                 TPoint dirPoint = (TPoint)item;
-                if (Map.TryGetValue(dirPoint, out node))
+                if (!closePointsSet.Contains(dirPoint) && Map.TryGetValue(dirPoint, out node))
                 {
-                    yield return new KeyValuePair<TPoint, TNode>(dirPoint, node);
+                    if(Obstructive.CanWalk(node))
+                        yield return new KeyValuePair<TPoint, TNode>(dirPoint, node);
                 }
             }
         }

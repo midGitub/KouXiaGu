@@ -84,7 +84,8 @@ namespace KouXiaGu.Test
 
                 + "\n块坐标:" + terrainBlockLocal
                 + "UV:" + terrainBlockUV
-                + "高度:" + terrainHeight + ";"
+
+                + "\n高度:" + terrainHeight
                 + "所属1:" + terrainBlocks[0]
                 + "所属2:" + terrainBlocks[1]
                 ;
