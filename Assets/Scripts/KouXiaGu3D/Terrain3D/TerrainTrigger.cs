@@ -118,15 +118,6 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        TerrainChunk terrainChunk;
-        MeshCollider meshCollider;
-
-        void Awake()
-        {
-            terrainChunk = GetComponent<TerrainChunk>();
-            meshCollider = GetComponent<MeshCollider>();
-        }
-
         void Start()
         {
             gameObject.layer = RayLayer;
@@ -140,6 +131,7 @@ namespace KouXiaGu.Terrain3D
         public void ResetCollisionMesh()
         {
             MeshCollider meshCollider = GetComponent<MeshCollider>();
+            TerrainChunk terrainChunk = GetComponent<TerrainChunk>();
 
             Mesh mesh = meshCollider.sharedMesh;
 
@@ -164,17 +156,11 @@ namespace KouXiaGu.Terrain3D
             foreach (var pair in VERTICES)
             {
                 Vector3 vertice = pair.Key;
-                vertice.y = GetHeight(pair.Value);
+                vertice.y = TerrainData.GetHeight(chunk, pair.Value);
                 vertices.Add(vertice);
             }
             return vertices.ToArray();
         }
-
-        float GetHeight(UV uv)
-        {
-            return TerrainData.GetHeight(terrainChunk, uv);
-        }
-
 
     }
 

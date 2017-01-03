@@ -9,6 +9,7 @@ namespace KouXiaGu
 
     /// <summary>
     /// 只允许内部访问的,延迟实例化的单例;
+    /// 主要是"限制多个实例化";
     /// </summary>
     public class UnitySington<T> : MonoBehaviour
         where T : UnitySington<T>
@@ -46,6 +47,15 @@ namespace KouXiaGu
             GameObject singletonGameObject = new GameObject(typeof(T).Name);
             GameObject.DontDestroyOnLoad(singletonGameObject);
             return singletonGameObject;
+        }
+
+        protected virtual void Awake()
+        {
+            if (instance != null)
+            {
+                Debug.LogWarning("尝试实例化多个单例;" + name);
+                Destroy(this);
+            }
         }
 
     }

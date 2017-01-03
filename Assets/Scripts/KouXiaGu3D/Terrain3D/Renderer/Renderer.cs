@@ -79,8 +79,9 @@ namespace KouXiaGu.Terrain3D
             bakingQueue.Clear();
         }
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             terrain.Awake();
             road.Awake();
             decorateBlend.Awake();

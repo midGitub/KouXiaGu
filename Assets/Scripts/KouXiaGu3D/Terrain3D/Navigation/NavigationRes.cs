@@ -89,8 +89,9 @@ namespace KouXiaGu.Terrain3D.Navigation
         string navigationDescrName = "NavigationDescr.xml";
 
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             InitialStage.Subscribe(Stage.Instance);
         }
 
