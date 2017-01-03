@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -10,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 游戏地图管理;
     /// </summary>
-    public class MapFiler
+    public static class MapFiler
     {
 
         /// <summary>
@@ -26,15 +28,60 @@ namespace KouXiaGu.Terrain3D
             get { return TerrainResPath.Combine(MAPS_DIRECTORY_NAME); }
         }
 
+        /// <summary>
+        /// 指定其它的地图文件夹路径;
+        /// </summary>
+        public static IEnumerable<string> MapDirectorys { get; set; }
 
+        /// <summary>
+        /// 获取到所有的地图;
+        /// </summary>
+        public static IEnumerable<MapFileInfo> GetMaps()
+        {
+            var mapPaths = MapDirectorys.AddRange(PredefinedDirectory);
 
-        ///// <summary>
-        ///// 获取到目录下的地图
-        ///// </summary>
-        //public static IEnumerable<MapFileInfo> GetMap(string directoryPath)
-        //{
+            foreach (var mapPath in mapPaths)
+            {
+                foreach (var map in GetMaps(mapPath))
+                {
+                    yield return map;
+                }
+            }
+        }
 
-        //}
+        /// <summary>
+        /// 获取到目录下的地图;
+        /// </summary>
+        public static IEnumerable<MapFileInfo> GetMaps(string directoryPath)
+        {
+            var paths = Directory.GetDirectories(directoryPath).AddRange(directoryPath);
+            MapFileInfo mapFile;
+
+            foreach (var mapPath in paths)
+            {
+                if(TryLoadMap(mapPath, out mapFile))
+                    yield return mapFile;
+            }
+        }
+
+        /// <summary>
+        /// 尝试获取到这个目录下的地图;
+        /// </summary>
+        public static bool TryLoadMap(string directoryPath, out MapFileInfo mapFile)
+        {
+            try
+            {
+                mapFile = MapFileInfo.Load(directoryPath);
+                return true;
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.LogWarning("无法获取到描述文件 ;地图目录 :" + directoryPath + " ; 跳过此文件夹;");
+            }
+
+            mapFile = default(MapFileInfo);
+            return false;
+        }
 
     }
 
