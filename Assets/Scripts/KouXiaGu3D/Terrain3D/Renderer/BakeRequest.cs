@@ -37,7 +37,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void OnComplete(Texture2D diffuse, Texture2D height, Texture2D normal)
         {
-            TerrainChunk.Create(ChunkCoord, diffuse, height, normal);
+            TerrainChunkPool.Create(ChunkCoord, diffuse, height, normal);
         }
 
         /// <summary>

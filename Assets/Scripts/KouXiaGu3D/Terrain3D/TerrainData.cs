@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
             RectCoord coord;
             Vector2 uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
 
-            if (TerrainChunk.TryGetChunk(coord, out chunk))
+            if (TerrainChunkPool.TryGetChunk(coord, out chunk))
             {
                 Color pixelColor = chunk.HeightTexture.GetPixel(uv);
                 return pixelColor.r * Displacement;
@@ -83,12 +83,21 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 获取到对应的高度;
+        /// </summary>
+        public static float GetHeight(TerrainChunk chunk, UV uv)
+        {
+            Color pixelColor = chunk.HeightTexture.GetPixel(uv);
+            return pixelColor.r * Displacement;
+        }
+
+        /// <summary>
         /// 是否超出了地形的定义范围;
         /// </summary>
         public static bool IsOutTerrain(Vector3 position)
         {
             RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
-            return TerrainChunk.Contains(coord);
+            return TerrainChunkPool.Contains(coord);
         }
 
         public void SetSnowLevel(float snow)

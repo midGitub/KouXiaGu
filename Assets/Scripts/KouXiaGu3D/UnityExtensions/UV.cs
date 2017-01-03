@@ -32,6 +32,11 @@ namespace KouXiaGu
             get { return y; }
         }
 
+        public override string ToString()
+        {
+            return "(" + x + ", " + y + ")";
+        }
+
         public static float Saturate(float value)
         {
             return Mathf.Clamp01(value);

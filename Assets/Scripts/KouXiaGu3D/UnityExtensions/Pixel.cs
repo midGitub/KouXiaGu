@@ -29,6 +29,12 @@ namespace KouXiaGu
         {
             get { return y; }
         }
+
+        public override string ToString()
+        {
+            return "(" + x + ", " + y + ")";
+        }
+
     }
 
 }

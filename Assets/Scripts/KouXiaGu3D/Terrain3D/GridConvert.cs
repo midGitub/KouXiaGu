@@ -113,10 +113,10 @@ namespace KouXiaGu.Terrain3D
         /// 获取到位于地形上的点;
         /// </summary>
         /// <param name="pos">望向点;</param>
-        /// <param name="altitudeAngle">望向点于地平线形成高度角</param>
+        /// <param name="zenithAngle">天顶角</param>
         /// <param name="azimuth">与正Z轴形成的角度</param>
         /// <returns></returns>
-        static Vector3 GetTerrainPoint(Vector3 pos, float altitudeAngle, float azimuth)
+        static Vector3 GetTerrainPoint(Vector3 pos, float zenithAngle, float azimuth)
         {
             throw new NotImplementedException();
         }
