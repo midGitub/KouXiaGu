@@ -89,7 +89,7 @@ namespace KouXiaGu.Terrain3D
         public static TerrainMap GetMap(string directoryPath)
         {
             string filePath = GetDescriptionFilePath(directoryPath);
-            var data = TerrainMapDescr.Deserialize(filePath);
+            var data = MapDescr.Deserialize(filePath);
             TerrainMap map = new TerrainMap(data, directoryPath);
             return map;
         }
@@ -125,7 +125,7 @@ namespace KouXiaGu.Terrain3D
 
         #region 实例部分;
 
-        TerrainMapDescr description;
+        MapDescr description;
 
         ObservableDictionary<CubicHexCoord, TerrainNode> map;
 
@@ -136,7 +136,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public string DirectoryPath { get; private set; }
 
-        public TerrainMapDescr Description
+        public MapDescr Description
         {
             get { return description; }
             private set { description = value; }
@@ -153,7 +153,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 根据ID创建一个新地图到预定义的目录下,若已经存在则返回异常;;
         /// </summary>
-        public TerrainMap(TerrainMapDescr description)
+        public TerrainMap(MapDescr description)
         {
             this.DirectoryPath = Path.Combine(PredefinedDirectory, description.id.ToString());
 
@@ -167,7 +167,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化地图信息;
         /// </summary>
-        TerrainMap(TerrainMapDescr description, string directoryPath)
+        TerrainMap(MapDescr description, string directoryPath)
         {
             this.description = description;
             this.DirectoryPath = directoryPath;
@@ -191,7 +191,7 @@ namespace KouXiaGu.Terrain3D
             if (landformObserver != null)
                 description.landformRecord = landformObserver.ToLandformRecord().ToArray();
 
-            TerrainMapDescr.Serialize(filePath, description);
+            MapDescr.Serialize(filePath, description);
         }
 
         public override bool Equals(object obj)

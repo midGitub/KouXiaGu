@@ -2,72 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
-using UniRx;
 
 namespace KouXiaGu.Terrain3D
 {
-
-    /// <summary>
-    /// 对地形地图的描述;
-    /// </summary>
-    [Serializable, XmlType("TerrainMap")]
-    public struct TerrainMapDescr
-    {
-
-        [XmlElement("id")]
-        public int id;
-
-        [XmlElement("Name")]
-        public string name;
-
-        [XmlElement("Time")]
-        public long time;
-
-        [XmlElement("Version")]
-        public int version;
-
-        [XmlElement("Description")]
-        public string description;
-
-        [XmlArray("Landforms")]
-        public LandformRecord[] landformRecord;
-
-        static readonly XmlSerializer TerrainMapInfoSerializer = new XmlSerializer(typeof(TerrainMapDescr));
-
-        public static void Serialize(string filePath, TerrainMapDescr data)
-        {
-            TerrainMapInfoSerializer.SerializeXiaGu(filePath, data);
-        }
-
-        public static TerrainMapDescr Deserialize(string filePath)
-        {
-            TerrainMapDescr data = (TerrainMapDescr)TerrainMapInfoSerializer.DeserializeXiaGu(filePath);
-            return data;
-        }
-
-    }
-
-    /// <summary>
-    /// 记录地图所有引用的地形;
-    /// </summary>
-    [Serializable, XmlType("Record")]
-    public struct LandformRecord
-    {
-        [XmlAttribute("id")]
-        public int ID;
-
-        [XmlAttribute("count")]
-        public int Count;
-
-        public LandformRecord(int id, int count)
-        {
-            this.ID = id;
-            this.Count = count;
-        }
-    }
 
     /// <summary>
     /// 观察加入到地图的地形,并且做记录;
@@ -76,7 +15,6 @@ namespace KouXiaGu.Terrain3D
     {
 
         readonly Dictionary<int, int> landformID;
-
 
         public LandformObserver()
         {
@@ -149,5 +87,6 @@ namespace KouXiaGu.Terrain3D
 
 
     }
+
 
 }

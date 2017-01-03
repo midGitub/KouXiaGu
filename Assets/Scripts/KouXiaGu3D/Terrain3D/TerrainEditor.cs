@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
 
         public int randomMapSize = 10;
 
-        public TerrainMapDescr description;
+        public MapDescr description;
 
         public int[] landforms;
 
@@ -33,7 +33,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建地图到预制目录下;
         /// </summary>
-        public static TerrainMap CreateMap(TerrainMapDescr description)
+        public static TerrainMap CreateMap(MapDescr description)
         {
             var map = new TerrainMap(description);
             map.Save();
