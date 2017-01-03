@@ -157,7 +157,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 网格顶点数据;
         /// </summary>
-        static readonly Vector3[] VERTICES = new Vector3[]
+        internal static readonly Vector3[] VERTICES = new Vector3[]
             {
                 new Vector3(-MESH_HALF_WIDTH , ALTITUDE, MESH_HALF_HEIGHT),
                 new Vector3(MESH_HALF_WIDTH, ALTITUDE, MESH_HALF_HEIGHT),
@@ -168,7 +168,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 网格三角形数据;
         /// </summary>
-        static readonly int[] TRIANGLES = new int[]
+        internal static readonly int[] TRIANGLES = new int[]
            {
                 0,1,2,
                 0,2,3,
@@ -177,7 +177,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 网格UV坐标数据;
         /// </summary>
-        static readonly Vector2[] UV = new Vector2[]
+        internal static readonly Vector2[] UV = new Vector2[]
            {
                 new Vector2(0f, 1f),
                 new Vector2(1f, 1f),

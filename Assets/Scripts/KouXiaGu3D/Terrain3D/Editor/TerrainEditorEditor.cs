@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D
 
             if (GUILayout.Button("随机地形地图"))
             {
-                TerrainEditor.RandomMap(edit.randomMapSize, landform);
+                TerrainEditor.RandomMap(edit.randomMapSize, ((TerrainEditor)target).landforms);
             }
 
         }

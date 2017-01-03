@@ -56,49 +56,54 @@ namespace KouXiaGu.Test
         string GetTestPointsLog(Vector3 mousePosition)
         {
             Vector3 pixel = MouseConvert.MouseToPixel();
-            //ShortVector2 offset = HexGrids.PixelToOffset(pixel);
             CubicHexCoord cube = GridConvert.Grid.GetCubic(pixel);
 
-            //Vector3 offsetPixel = HexGrids.OffsetToPixel(offset);
-            //CubicHexCoord offsetCube = HexGrids.OffsetToHex(offset);
-
             Vector3 cubePixel = GridConvert.Grid.GetPixel(cube);
-            //ShortVector2 cubeOffset = HexGrids.HexToOffset(cube);
 
-            RectCoord terrainBlockCoord = Terrain3D.TerrainChunk.ChunkGrid.GetCoord(pixel);
-            Vector3 terrainBlockCenter = Terrain3D.TerrainChunk.ChunkGrid.GetCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = Terrain3D.TerrainChunk.GetHexCenter(terrainBlockCoord);
-            //Rect terrainBlockRect = Terrain3D.TerrainData.RectGrid.GetRect(terrainBlockCenter);
+            RectCoord terrainBlockCoord = TerrainChunk.ChunkGrid.GetCoord(pixel);
+            Vector3 terrainBlockCenter = TerrainChunk.ChunkGrid.GetCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = TerrainChunk.GetHexCenter(terrainBlockCoord);
 
-            Vector2 terrainBlockLocal = Terrain3D.TerrainChunk.ChunkGrid.GetLocal(pixel, out terrainBlockCoord);
-            Vector2 terrainBlockUV = Terrain3D.TerrainChunk.ChunkGrid.GetUV(pixel, out terrainBlockCoord);
+            Vector2 terrainBlockLocal = TerrainChunk.ChunkGrid.GetLocal(pixel, out terrainBlockCoord);
+            Vector2 terrainBlockUV = TerrainChunk.ChunkGrid.GetUV(pixel, out terrainBlockCoord);
             float terrainHeight = Terrain3D.TerrainData.GetHeight(pixel);
-            RectCoord[] terrainBlocks = Terrain3D.TerrainChunk.GetBelongChunks(cube);
+            RectCoord[] terrainBlocks = TerrainChunk.GetBelongChunks(cube);
 
             string str = "";
 
-            str += "\n基本数值: 像素:" + pixel
-                //+ "偏移:" + offset
+            str = str
+                + "\n基本数值: 像素:" + pixel
                 + "立方:" + cube
 
-                //+ "\n偏移转换: 中心:" + offsetPixel
-                //+ "立方:" + offsetCube
-
                 + "\n立方转换: 中心:" + cubePixel
-                //+ "偏移:" + cubeOffset
 
                 + "\n地貌块: 块编号:" + terrainBlockCoord
                 + "中心:" + terrainBlockCenter
                 + "立方:" + terrainBlockHexCenter
-                //+ "矩形:" + terrainBlockRect
+
                 + "\n块坐标:" + terrainBlockLocal
                 + "UV:" + terrainBlockUV
                 + "高度:" + terrainHeight + ";"
                 + "所属1:" + terrainBlocks[0]
-                + "所属2:" + terrainBlocks[1];
+                + "所属2:" + terrainBlocks[1]
+
+                + "\n地形坐标" + TerrainPoint()
+                ;
 
             return str;
         }
+
+        Vector3 TerrainPoint()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit raycastHit;
+            if (TerrainTrigger.Raycast(ray, out raycastHit))
+            {
+                return raycastHit.point;
+            }
+            return Vector3.zero;
+        }
+
 
         string OnMouseDown()
         {

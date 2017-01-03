@@ -23,6 +23,8 @@ namespace KouXiaGu.Terrain3D
 
         public TerrainMapDescr description;
 
+        public int[] landforms;
+
         public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
         {
             get { return TerrainController.CurrentMap.Map; }
@@ -43,23 +45,23 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void RandomMap(int randomMapSize)
         {
-            Dictionary<CubicHexCoord, TerrainNode> map = RandomMap(randomMapSize, LandformRes.initializedInstances.Keys.ToArray());
+            Dictionary<CubicHexCoord, TerrainNode> map = RandomMap1(randomMapSize, LandformRes.initializedInstances.Keys.ToArray());
             ActivatedMap.AddOrUpdate(map);
         }
 
         /// <summary>
         /// 生成一个随机地图,并且加入到现在激活的地图内(忽略重复);
         /// </summary>
-        public static void RandomMap(int randomMapSize, int landform)
+        public static void RandomMap(int randomMapSize, int[] landforms)
         {
-            Dictionary<CubicHexCoord, TerrainNode> map = RandomMap(randomMapSize, new int[]{ landform });
+            Dictionary<CubicHexCoord, TerrainNode> map = RandomMap1(randomMapSize, landforms);
             ActivatedMap.AddOrUpdate(map);
         }
 
         /// <summary>
         /// 返回一个随机地图;
         /// </summary>
-        static Dictionary<CubicHexCoord, TerrainNode> RandomMap(int size, params int[] id)
+        static Dictionary<CubicHexCoord, TerrainNode> RandomMap1(int size, params int[] id)
         {
             Dictionary<CubicHexCoord, TerrainNode> terrainMap = new Dictionary<CubicHexCoord, TerrainNode>();
 
