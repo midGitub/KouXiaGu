@@ -10,8 +10,8 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地图数据提供;
     /// </summary>
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(TerrainCollider)), DisallowMultipleComponent]
-    public class TerrainChunk : MonoBehaviour
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent]
+    public sealed class TerrainChunk : MonoBehaviour
     {
         TerrainChunk() { }
 

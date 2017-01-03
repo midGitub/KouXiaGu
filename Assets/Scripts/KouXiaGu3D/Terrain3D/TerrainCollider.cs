@@ -76,6 +76,15 @@ namespace KouXiaGu.Terrain3D
         TerrainChunk terrainChunk;
         MeshCollider meshCollider;
 
+        [SerializeField]
+        bool isTrigger;
+
+        public bool IsTrigger
+        {
+            get { return isTrigger; }
+            set { meshCollider.isTrigger = value; isTrigger = value; }
+        }
+
         void Awake()
         {
             terrainChunk = GetComponent<TerrainChunk>();
@@ -85,6 +94,12 @@ namespace KouXiaGu.Terrain3D
         void Start()
         {
             ResetCollisionMesh();
+        }
+
+        void OnValidate()
+        {
+            if(meshCollider != null)
+                meshCollider.isTrigger = isTrigger;
         }
 
         /// <summary>
@@ -115,19 +130,20 @@ namespace KouXiaGu.Terrain3D
         {
             Mesh mesh;
 
-            if (meshCollider.sharedMesh != null)
+            if (meshCollider.sharedMesh.name == MESH_NAME)
             {
                 mesh = meshCollider.sharedMesh;
             }
             else
             {
                 mesh = new Mesh();
-                meshCollider.sharedMesh = mesh;
             }
 
             mesh.name = MESH_NAME;
             mesh.vertices = GetVertices(terrainChunk);
             mesh.triangles = TRIANGLES;
+
+            meshCollider.sharedMesh = mesh;
         }
 
     }

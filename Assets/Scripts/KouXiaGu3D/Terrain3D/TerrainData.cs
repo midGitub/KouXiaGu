@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
             RectCoord coord;
             Vector2 uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
 
-            if (TerrainChunkPool.TryGetChunk(coord, out chunk))
+            if (TerrainChunkPool.ActivatedChunks.TryGetValue(coord, out chunk))
             {
                 Color pixelColor = chunk.HeightTexture.GetPixel(uv);
                 return pixelColor.r * Displacement;
@@ -97,7 +97,7 @@ namespace KouXiaGu.Terrain3D
         public static bool IsOutTerrain(Vector3 position)
         {
             RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
-            return TerrainChunkPool.Contains(coord);
+            return TerrainChunkPool.ActivatedChunks.ContainsKey(coord);
         }
 
         public void SetSnowLevel(float snow)
