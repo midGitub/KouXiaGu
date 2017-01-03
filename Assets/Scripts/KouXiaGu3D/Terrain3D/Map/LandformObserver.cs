@@ -85,6 +85,19 @@ namespace KouXiaGu.Terrain3D
             Add(key, newValue);
         }
 
+        /// <summary>
+        /// 重新记录;
+        /// </summary>
+        public void Reset(IEnumerable<LandformRecord> landform)
+        {
+            Clear();
+            landformID.AddOrUpdate(landform, record => new KeyValuePair<int, int>(record.ID, record.Count));
+        }
+
+        public void Clear()
+        {
+            landformID.Clear();
+        }
 
     }
 

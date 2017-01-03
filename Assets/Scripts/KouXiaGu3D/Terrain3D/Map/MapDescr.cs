@@ -29,16 +29,23 @@ namespace KouXiaGu.Terrain3D
         [XmlArray("Landforms")]
         public LandformRecord[] landformRecord;
 
-        static readonly XmlSerializer TerrainMapInfoSerializer = new XmlSerializer(typeof(MapDescr));
+        static readonly XmlSerializer serializer = new XmlSerializer(typeof(MapDescr));
 
-        public static void Serialize(string filePath, MapDescr data)
+        public static XmlSerializer Serializer
         {
-            TerrainMapInfoSerializer.SerializeXiaGu(filePath, data);
+            get { return serializer; }
         }
 
+        [Obsolete]
+        public static void Serialize(string filePath, MapDescr data)
+        {
+            serializer.SerializeXiaGu(filePath, data);
+        }
+
+        [Obsolete]
         public static MapDescr Deserialize(string filePath)
         {
-            MapDescr data = (MapDescr)TerrainMapInfoSerializer.DeserializeXiaGu(filePath);
+            MapDescr data = (MapDescr)serializer.DeserializeXiaGu(filePath);
             return data;
         }
 
