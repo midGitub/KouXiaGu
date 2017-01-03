@@ -37,22 +37,10 @@ namespace KouXiaGu.Terrain3D.Navigation
             if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 CubicHexCoord starting = Position.GetTerrainCubic();
-                CubicHexCoord destination = TerrainPoint().GetTerrainCubic();
+                CubicHexCoord destination = TerrainTrigger.MouseRayPoint().GetTerrainCubic();
                 HexRadiusRange searchRange = new HexRadiusRange(searchRadius, starting);
                 this.NavigateTo(starting, destination, cost, searchRange, character);
             }
-        }
-
-
-        Vector3 TerrainPoint()
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit raycastHit;
-            if (TerrainTrigger.Raycast(ray, out raycastHit))
-            {
-                return raycastHit.point;
-            }
-            return Vector3.zero;
         }
 
     }

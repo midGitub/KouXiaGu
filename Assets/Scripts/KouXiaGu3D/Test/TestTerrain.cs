@@ -55,24 +55,25 @@ namespace KouXiaGu.Test
 
         string GetTestPointsLog(Vector3 mousePosition)
         {
-            Vector3 pixel = MouseConvert.MouseToPixel();
-            CubicHexCoord cube = GridConvert.Grid.GetCubic(pixel);
+
+            Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
+            CubicHexCoord cube = GridConvert.Grid.GetCubic(terrainPixel);
 
             Vector3 cubePixel = GridConvert.Grid.GetPixel(cube);
 
-            RectCoord terrainBlockCoord = TerrainChunk.ChunkGrid.GetCoord(pixel);
+            RectCoord terrainBlockCoord = TerrainChunk.ChunkGrid.GetCoord(terrainPixel);
             Vector3 terrainBlockCenter = TerrainChunk.ChunkGrid.GetCenter(terrainBlockCoord);
             CubicHexCoord terrainBlockHexCenter = TerrainChunk.GetHexCenter(terrainBlockCoord);
 
-            Vector2 terrainBlockLocal = TerrainChunk.ChunkGrid.GetLocal(pixel, out terrainBlockCoord);
-            Vector2 terrainBlockUV = TerrainChunk.ChunkGrid.GetUV(pixel, out terrainBlockCoord);
-            float terrainHeight = Terrain3D.TerrainData.GetHeight(pixel);
+            Vector2 terrainBlockLocal = TerrainChunk.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
+            Vector2 terrainBlockUV = TerrainChunk.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
+            float terrainHeight = Terrain3D.TerrainData.GetHeight(terrainPixel);
             RectCoord[] terrainBlocks = TerrainChunk.GetBelongChunks(cube);
 
             string str = "";
 
             str = str
-                + "\n基本数值: 像素:" + pixel
+                + "\n基本数值: 地形像素:" + terrainPixel
                 + "立方:" + cube
 
                 + "\n立方转换: 中心:" + cubePixel
@@ -86,22 +87,9 @@ namespace KouXiaGu.Test
                 + "高度:" + terrainHeight + ";"
                 + "所属1:" + terrainBlocks[0]
                 + "所属2:" + terrainBlocks[1]
-
-                + "\n地形坐标" + TerrainPoint()
                 ;
 
             return str;
-        }
-
-        Vector3 TerrainPoint()
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit raycastHit;
-            if (TerrainTrigger.Raycast(ray, out raycastHit))
-            {
-                return raycastHit.point;
-            }
-            return Vector3.zero;
         }
 
 

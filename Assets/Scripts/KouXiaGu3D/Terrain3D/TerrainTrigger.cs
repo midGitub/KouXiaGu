@@ -101,6 +101,20 @@ namespace KouXiaGu.Terrain3D
             return Physics.Raycast(ray, out raycastHit, maxDistance, RayLayerMask, QueryTriggerInteraction.Collide);
         }
 
+        /// <summary>
+        /// 获取到主摄像机的鼠标所指向的地形坐标,若无法获取到则返回默认值;
+        /// </summary>
+        public static Vector3 MouseRayPoint()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit raycastHit;
+            if (Raycast(ray, out raycastHit))
+            {
+               return raycastHit.point;
+            }
+            return default(Vector3);
+        }
+
         #endregion
 
 
