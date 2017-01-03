@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
             creater = null;
 
             onSceneChunk.Clear();
-            TerrainChunkPool.DestroyAll();
+            TerrainData.DestroyAll();
             Renderer.Clear();
         }
 
@@ -72,7 +72,7 @@ namespace KouXiaGu.Terrain3D
             if (!IsCreated(chunkCoord))
                 return false;
 
-            if(!TerrainChunkPool.Destroy(chunkCoord))
+            if(!TerrainData.Destroy(chunkCoord))
                 Renderer.BakingRequests.Remove(item => item.ChunkCoord == chunkCoord);
 
             onSceneChunk.Remove(chunkCoord);
@@ -85,7 +85,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static void RemoveOnScene(RectCoord chunkCoord)
         {
-            TerrainChunkPool.Destroy(chunkCoord);
+            TerrainData.Destroy(chunkCoord);
         }
 
         /// <summary>
@@ -107,8 +107,7 @@ namespace KouXiaGu.Terrain3D
                 GameObject.Destroy(height);
                 return;
             }
-
-            TerrainChunkPool.Create(chunkCoord, diffuse, height, normal);
+            TerrainData.Create(chunkCoord, diffuse, height, normal);
         }
 
         #endregion

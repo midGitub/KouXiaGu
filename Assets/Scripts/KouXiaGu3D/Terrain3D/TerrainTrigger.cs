@@ -8,11 +8,12 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形碰撞器;
+    /// 地表触发器;
     /// </summary>
     [RequireComponent(typeof(MeshCollider), typeof(TerrainChunk)), DisallowMultipleComponent]
-    public class TerrainCollider : MonoBehaviour
+    public class TerrainTrigger : MonoBehaviour
     {
+
         const string MESH_NAME = "TerrainCollisionMesh";
 
         //网格细分程度;
@@ -76,15 +77,6 @@ namespace KouXiaGu.Terrain3D
         TerrainChunk terrainChunk;
         MeshCollider meshCollider;
 
-        [SerializeField]
-        bool isTrigger;
-
-        public bool IsTrigger
-        {
-            get { return isTrigger; }
-            set { meshCollider.isTrigger = value; isTrigger = value; }
-        }
-
         void Awake()
         {
             terrainChunk = GetComponent<TerrainChunk>();
@@ -94,12 +86,6 @@ namespace KouXiaGu.Terrain3D
         void Start()
         {
             ResetCollisionMesh();
-        }
-
-        void OnValidate()
-        {
-            if(meshCollider != null)
-                meshCollider.isTrigger = isTrigger;
         }
 
         /// <summary>
