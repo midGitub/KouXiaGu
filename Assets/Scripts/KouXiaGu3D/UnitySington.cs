@@ -51,11 +51,15 @@ namespace KouXiaGu
 
         protected virtual void Awake()
         {
-            if (instance != null)
+            if (instance == null)
             {
-                Debug.LogWarning("尝试实例化多个单例;" + name);
-                Destroy(this);
+                instance = Initialize();
+                if (instance == this)
+                    return;
             }
+
+            Debug.LogWarning("尝试实例化多个单例;" + name);
+            Destroy(this);
         }
 
     }

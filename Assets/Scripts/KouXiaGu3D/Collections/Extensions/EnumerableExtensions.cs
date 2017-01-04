@@ -23,7 +23,7 @@ namespace KouXiaGu.Collections
         }
 
         /// <summary>
-        /// 加入到最后返回;(还是别在循环中使用吧)
+        /// 加入到最后返回;
         /// </summary>
         public static IEnumerable<T> AddRange<T>(this IEnumerable<T> collection, T item)
         {
@@ -32,6 +32,21 @@ namespace KouXiaGu.Collections
                 yield return value;
             }
             yield return item;
+        }
+
+        /// <summary>
+        /// 加入到最后返回;
+        /// </summary>
+        public static IEnumerable<T> AddRange<T>(this IEnumerable<T> collection, IEnumerable<T> other)
+        {
+            foreach (var value in collection)
+            {
+                yield return value;
+            }
+            foreach (var value in other)
+            {
+                yield return value;
+            }
         }
 
     }

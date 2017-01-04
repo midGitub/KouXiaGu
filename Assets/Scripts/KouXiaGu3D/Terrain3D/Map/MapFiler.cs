@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using KouXiaGu.Collections;
 
@@ -38,15 +37,17 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerable<MapFileInfo> GetMaps()
         {
-            var mapPaths = MapDirectorys.AddRange(PredefinedDirectory);
+            IEnumerable<MapFileInfo> mapFiles = GetMaps(PredefinedDirectory);
 
-            foreach (var mapPath in mapPaths)
+            if (MapDirectorys != null)
             {
-                foreach (var map in GetMaps(mapPath))
+                foreach (var mapPath in MapDirectorys)
                 {
-                    yield return map;
+                    mapFiles.AddRange(GetMaps(mapPath));
                 }
             }
+
+            return mapFiles;
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerable<MapFileInfo> GetMaps(string directoryPath)
         {
-            var paths = Directory.GetDirectories(directoryPath).AddRange(directoryPath);
+            var paths = Directory.GetDirectories(directoryPath);
             MapFileInfo mapFile;
 
             foreach (var mapPath in paths)
