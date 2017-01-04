@@ -45,14 +45,21 @@ namespace KouXiaGu.UI
 
         EscapeKeyObserver escapeKeyObserver;
 
+        EnterKeyObserver enterKeyObserver;
+
         Canvas Canvas
         {
             get { return canvas ?? (canvas = GetComponent<Canvas>()); }
         }
 
-        EscapeKeyObserver _EscapeKeyObserver
+        EscapeKeyObserver EscapeKeyObserver
         {
-            get { return escapeKeyObserver ?? (escapeKeyObserver = new EscapeKeyObserver(Conceal)); }
+            get { return escapeKeyObserver ?? (escapeKeyObserver = new EscapeKeyObserver(OnEscapeKeyDown)); }
+        }
+
+        EnterKeyObserver EnterKeyObserver
+        {
+            get { return enterKeyObserver ?? (enterKeyObserver = new EnterKeyObserver(OnEnterKeyDown)); }
         }
 
         public void Display()
@@ -62,7 +69,7 @@ namespace KouXiaGu.UI
 
             state.AddLast(this);
             SetSortingLayer();
-            _EscapeKeyObserver.Subscribe();
+            Subscribe();
 
             DisplayAction();
         }
@@ -82,6 +89,12 @@ namespace KouXiaGu.UI
 #endif
         }
 
+        void Subscribe()
+        {
+            EscapeKeyObserver.Subscribe();
+            EnterKeyObserver.Subscribe();
+        }
+
 
         public void Conceal()
         {
@@ -91,23 +104,26 @@ namespace KouXiaGu.UI
                 throw new PremiseNotInvalidException("不为最前的UI;");
 
             state.RemoveLast();
-            _EscapeKeyObserver.Unsubscribe();
+            Unsubscribe();
 
             ConcealAction();
         }
 
-        /// <summary>
-        /// 立即隐藏;
-        /// </summary>
         public void ConcealImmediate()
         {
             if (!IsDisplay())
                 return;
 
             state.Remove(this);
-            _EscapeKeyObserver.Unsubscribe();
+            Unsubscribe();
 
             ConcealAction();
+        }
+
+        void Unsubscribe()
+        {
+            EscapeKeyObserver.Unsubscribe();
+            EnterKeyObserver.Unsubscribe();
         }
 
 
@@ -124,6 +140,16 @@ namespace KouXiaGu.UI
         protected virtual void ConcealAction()
         {
             gameObject.SetActive(false);
+        }
+
+        protected virtual void OnEscapeKeyDown()
+        {
+            Conceal();
+        }
+
+        protected virtual void OnEnterKeyDown()
+        {
+            Conceal();
         }
 
     }

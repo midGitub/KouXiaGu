@@ -32,6 +32,11 @@ namespace KouXiaGu.UI
                 target.Conceal();
             }
 
+            if (GUILayout.Button("立即隐藏"))
+            {
+                target.ConcealImmediate();
+            }
+
             GUILayout.EndHorizontal();
 
         }
