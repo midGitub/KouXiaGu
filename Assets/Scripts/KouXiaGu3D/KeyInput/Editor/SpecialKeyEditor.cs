@@ -28,10 +28,7 @@ namespace KouXiaGu.KeyInput
 
             GUILayout.Label("Observer:");
 
-            if (stack.IsInitialized)
                 GUILayout.Label(stack.Count.ToString());
-            else
-                GUILayout.Label("Null");
 
             GUILayout.EndHorizontal();
 
@@ -40,7 +37,7 @@ namespace KouXiaGu.KeyInput
 
             GUILayout.Label("Activate:");
 
-            if (stack.IsInitialized && !stack.IsEmpty)
+            if (stack.Activate != null)
                 GUILayout.Label(stack.Activate.ToString());
             else
                 GUILayout.Label("Null");

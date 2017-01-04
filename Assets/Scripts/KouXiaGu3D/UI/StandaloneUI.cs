@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
+using KouXiaGu.KeyInput;
 
 namespace KouXiaGu.UI
 {
@@ -40,12 +41,18 @@ namespace KouXiaGu.UI
 
 
 
-
         Canvas canvas;
+
+        EscapeKeyObserver escapeKeyObserver;
 
         Canvas Canvas
         {
             get { return canvas ?? (canvas = GetComponent<Canvas>()); }
+        }
+
+        EscapeKeyObserver _EscapeKeyObserver
+        {
+            get { return escapeKeyObserver ?? (escapeKeyObserver = new EscapeKeyObserver(Conceal)); }
         }
 
         public void Display()
@@ -55,6 +62,7 @@ namespace KouXiaGu.UI
 
             state.AddLast(this);
             SetSortingLayer();
+            _EscapeKeyObserver.Subscribe();
 
             DisplayAction();
         }
@@ -74,6 +82,7 @@ namespace KouXiaGu.UI
 #endif
         }
 
+
         public void Conceal()
         {
             if (!IsDisplay())
@@ -82,6 +91,7 @@ namespace KouXiaGu.UI
                 throw new PremiseNotInvalidException("不为最前的UI;");
 
             state.RemoveLast();
+            _EscapeKeyObserver.Unsubscribe();
 
             ConcealAction();
         }
@@ -95,6 +105,7 @@ namespace KouXiaGu.UI
                 return;
 
             state.Remove(this);
+            _EscapeKeyObserver.Unsubscribe();
 
             ConcealAction();
         }

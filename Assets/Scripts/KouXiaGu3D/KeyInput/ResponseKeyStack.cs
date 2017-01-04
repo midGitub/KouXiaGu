@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Collections;
 using UnityEngine;
 
 namespace KouXiaGu.KeyInput
 {
 
     /// <summary>
-    /// 按最后加入顺序响应按键;
+    /// 响应最后加入的按键;
     /// </summary>
     [Serializable]
     public class ResponseKeyStack
@@ -17,22 +18,16 @@ namespace KouXiaGu.KeyInput
         public ResponseKeyStack(KeyCode key)
         {
             this.key = key;
-            OnAwake();
         }
 
         [SerializeField]
         KeyCode key;
 
-        LinkedList<IKeyResponse> observers;
+        readonly LinkedList<IKeyResponse> observers = new LinkedList<IKeyResponse>();
 
         public KeyCode Key
         {
             get { return key; }
-        }
-
-        public bool IsInitialized
-        {
-            get { return observers != null; }
         }
 
         public bool IsEmpty
@@ -47,13 +42,7 @@ namespace KouXiaGu.KeyInput
 
         public IKeyResponse Activate
         {
-            get { return observers.Last.Value; }
-        }
-
-        public void OnAwake()
-        {
-            if (observers == null)
-                observers = new LinkedList<IKeyResponse>();
+            get { return IsEmpty ? null : observers.Last.Value; }
         }
 
         public void OnUpdate()
@@ -64,17 +53,13 @@ namespace KouXiaGu.KeyInput
                 {
                     Activate.OnKeyDown();
                 }
-                else if (Input.GetKey(Key))
-                {
-                    Activate.OnKeyHold();
-                }
             }
         }
 
         public IDisposable Subscribe(IKeyResponse observer)
         {
             var node = observers.AddLast(observer);
-            return new Unsubscriber(observers, node);
+            return new LinkedListUnsubscriber<IKeyResponse>(observers, node);
         }
 
         public override bool Equals(object obj)
@@ -92,23 +77,6 @@ namespace KouXiaGu.KeyInput
         public override string ToString()
         {
             return "[Key:" + Key + ",Observer:" + Count + "]";
-        }
-
-        class Unsubscriber : IDisposable
-        {
-            public Unsubscriber(LinkedList<IKeyResponse> observers, LinkedListNode<IKeyResponse> observer)
-            {
-                this.observers = observers;
-                this.observer = observer;
-            }
-
-            LinkedList<IKeyResponse> observers;
-            LinkedListNode<IKeyResponse> observer;
-
-            public void Dispose()
-            {
-                observers.Remove(observer);
-            }
         }
 
     }

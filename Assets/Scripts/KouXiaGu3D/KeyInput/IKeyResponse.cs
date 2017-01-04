@@ -8,7 +8,6 @@ namespace KouXiaGu.KeyInput
 
     public interface IKeyResponse
     {
-        void OnKeyHold();
         void OnKeyDown();
     }
 

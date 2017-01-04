@@ -8,35 +8,24 @@ namespace KouXiaGu.KeyInput
 {
 
     /// <summary>
-    /// 特殊按键监视;
+    /// 对回车 和 Esc 等按键的特殊监视方法;
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class SpecialKey : UnitySington<SpecialKey>
     {
 
-        [SerializeField, HideInInspector]
-        ResponseKeyStack escape = new ResponseKeyStack(KeyCode.Escape);
+        static readonly ResponseKeyStack escape = new ResponseKeyStack(KeyCode.Escape);
 
-        [SerializeField, HideInInspector]
-        ResponseKeyStack enter = new ResponseKeyStack(KeyCode.Return);
-
+        static readonly ResponseKeyStack enter = new ResponseKeyStack(KeyCode.Return);
 
         public static ResponseKeyStack Escape
         {
-            get { return GetInstance.escape; }
+            get { return escape; }
         }
 
         public static ResponseKeyStack Enter
         {
-            get { return GetInstance.enter; }
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            escape.OnAwake();
-            enter.OnAwake();
+            get { return enter; }
         }
 
         void Update()
