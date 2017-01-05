@@ -13,44 +13,44 @@ namespace KouXiaGu.Localizations
     [DisallowMultipleComponent]
     public class LocalizationLoader : UnitySington<LocalizationLoader>
     {
-        LocalizationLoader() { }
+        //LocalizationLoader() { }
 
-        /// <summary>
-        /// 等待加载的语言包;
-        /// </summary>
-        static readonly Queue<ITextReader> waitLoads = new Queue<ITextReader>();
+        ///// <summary>
+        ///// 等待加载的语言包;
+        ///// </summary>
+        //static readonly Queue<ITextReader> waitLoads = new Queue<ITextReader>();
 
-        static bool isEmpty
-        {
-            get { return waitLoads.Count == 0; }
-        }
+        //static bool isEmpty
+        //{
+        //    get { return waitLoads.Count == 0; }
+        //}
 
-        /// <summary>
-        /// 异步的读取语言包;
-        /// </summary>
-        public static void LoadAsync(ITextReader item)
-        {
-            waitLoads.Enqueue(item);
-        }
+        ///// <summary>
+        ///// 异步的读取语言包;
+        ///// </summary>
+        //public static void LoadAsync(ITextReader item)
+        //{
+        //    waitLoads.Enqueue(item);
+        //}
 
-        /// <summary>
-        /// 读取语言包;
-        /// </summary>
-        static void Load(ITextReader item)
-        {
-            foreach (var text in item.ReadTexts())
-            {
-                Localization.Add(text);
-            }
-        }
+        ///// <summary>
+        ///// 读取语言包;
+        ///// </summary>
+        //static void Load(ITextReader item)
+        //{
+        //    foreach (var text in item.ReadTexts())
+        //    {
+        //        Localization.Add(text);
+        //    }
+        //}
 
-        void Update()
-        {
-            if (!isEmpty)
-            {
-                Load(waitLoads.Dequeue());
-            }
-        }
+        //void Update()
+        //{
+        //    if (!isEmpty)
+        //    {
+        //        Load(waitLoads.Dequeue());
+        //    }
+        //}
 
     }
 

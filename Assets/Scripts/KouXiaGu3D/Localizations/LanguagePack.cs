@@ -57,6 +57,8 @@ namespace KouXiaGu.Localizations
 
         public ITextReader Reader { get; private set; }
 
+
+
     }
 
 }
