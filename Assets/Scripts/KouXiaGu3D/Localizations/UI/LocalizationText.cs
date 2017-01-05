@@ -17,7 +17,7 @@ namespace KouXiaGu.Localizations
         void Awake()
         {
             textObject = GetComponent<Text>();
-            Localization.Subscribe(this);
+            Localization.ObservableText.Subscribe(this);
         }
 
         string ITextObserver.Key
@@ -30,6 +30,10 @@ namespace KouXiaGu.Localizations
             textObject.text = text;
         }
 
+        void ITextObserver.OnTextNotFound()
+        {
+            Debug.Log("无法找到对应文本:" + (this as ITextObserver).Key);
+        }
     }
 
 }

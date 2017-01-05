@@ -11,6 +11,11 @@ namespace KouXiaGu.Localizations
     {
         string Key { get; }
         void SetText(string text);
+
+        /// <summary>
+        /// 无法获取到对应的文本;
+        /// </summary>
+        void OnTextNotFound();
     }
 
 }

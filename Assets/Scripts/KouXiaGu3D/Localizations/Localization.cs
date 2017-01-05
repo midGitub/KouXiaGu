@@ -10,28 +10,164 @@ using UnityEngine;
 namespace KouXiaGu.Localizations
 {
 
-    public class Localization : UnitySington<Localization>
+    public static class Localization
     {
 
-        #region 语言包文件管理;
+        /// <summary>
+        /// 文本订阅合集;
+        /// </summary>
+        static readonly ObservableText observableText = new ObservableText();
 
         /// <summary>
-        /// 语言文件匹配的搜索字符串;
+        /// 文本字典;
         /// </summary>
-        public const string LANGUAGE_PACK_SEARCH_PATTERN = "*" + XmlFile.FILE_EXTENSION;
+        static readonly CustomDictionary<string, string> textDictionary = new CustomDictionary<string, string>();
 
-        static readonly Dictionary<string, SystemLanguage> languageDictionary = GetLanguageDictionary();
+        /// <summary>
+        /// 监视文本变化;
+        /// </summary>
+        public static IObservableText ObservableText
+        {
+            get { return observableText; }
+        }
+
+        /// <summary>
+        /// 文本字典;
+        /// </summary>
+        public static IReadOnlyDictionary<string, string> TextDictionary
+        {
+            get { return textDictionary; }
+        }
+
+        /// <summary>
+        /// 加入到文本字典;
+        /// </summary>
+        public static bool Add(TextPack pack)
+        {
+            return textDictionary.Add(pack);
+        }
+
+        public static bool Add(this Dictionary<string, string> dictionary, TextPack pack)
+        {
+            if (dictionary.ContainsKey(pack.Key) && !pack.IsUpdate)
+            {
+                Debug.LogWarning("[本地化]存在相同的字符串:" + pack.ToString());
+                return false;
+            }
+
+            dictionary.AddOrUpdate(pack.Key, pack.Value);
+            return true;
+        }
+
+
+
+        static Configuration DefaultConfig = new Configuration()
+        {
+            Language = SystemLanguage.English,
+            SecondLanguage = SystemLanguage.ChineseSimplified,
+        };
+
+        static Configuration config;
+
+        public static Configuration Config
+        {
+            get{ return config ?? (config = LoadConfiguration()); }
+        }
+
+        const string DESCRIPTION_NAME = "Description.xml";
+
+        /// <summary>
+        /// 读取到配置文件,若不存在则返回默认的配置;
+        /// </summary>
+        public static Configuration LoadConfiguration()
+        {
+            try
+            {
+                string filePath = Path.Combine(ResPath, DESCRIPTION_NAME);
+                return LoadConfiguration(filePath);
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.LogWarning("缺少语言配置文件!");
+                return DefaultConfig;
+            }
+        }
+
+        public static Configuration LoadConfiguration(string filePath)
+        {
+            var descr = (Configuration)Configuration.Serializer.DeserializeXiaGu(filePath);
+            return descr;
+        }
+
+        /// <summary>
+        /// 保存配置文件,若不存在则保存默认的配置;
+        /// </summary>
+        public static void SaveConfiguration()
+        {
+            string filePath = Path.Combine(ResPath, DESCRIPTION_NAME);
+            SaveConfiguration(filePath);
+        }
+
+        /// <summary>
+        /// 保存配置文件,若不存在则保存默认的配置;
+        /// </summary>
+        public static void SaveConfiguration(string filePath)
+        {
+            Configuration.Serializer.SerializeXiaGu(filePath, Config);
+        }
+
+        [XmlType("LocalizationConfiguration"), Serializable]
+        public sealed class Configuration
+        {
+
+            static readonly XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
+
+            public static XmlSerializer Serializer
+            {
+                get { return serializer; }
+            }
+
+            /// <summary>
+            /// 指定使用的语言;
+            /// </summary>
+            [XmlElement("Language")]
+            public SystemLanguage Language;
+
+            /// <summary>
+            /// 备用语言;
+            /// </summary>
+            [XmlElement("SecondLanguage")]
+            public SystemLanguage SecondLanguage;
+
+        }
+
+
+
+        /// <summary>
+        /// 当前系统的语言;
+        /// </summary>
+        public static SystemLanguage SystemLanguage
+        {
+            get { return Application.systemLanguage; }
+        }
+
+
+
+        #region 语言包文件管理;
 
         /// <summary>
         /// 语言包存放的文件夹;
         /// </summary>
         public const string RES_DIRECTORY = "Localization";
 
-        public static string resPath
+        public static string ResPath
         {
             get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, RES_DIRECTORY); }
         }
 
+
+
+        static readonly Dictionary<string, SystemLanguage> languageDictionary = GetLanguageDictionary();
 
         static Dictionary<string, SystemLanguage> GetLanguageDictionary()
         {
@@ -49,9 +185,14 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
+        /// 语言文件匹配的搜索字符串;
+        /// </summary>
+        public const string LANGUAGE_PACK_SEARCH_PATTERN = "*" + XmlFile.FILE_EXTENSION;
+
+        /// <summary>
         /// 寻找目录下存在的语言和其路径;
         /// </summary>
-        public static IEnumerable<KeyValuePair<SystemLanguage, string>> LanguagePackExists(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public static IEnumerable<KeyValuePair<SystemLanguage, string>> LanguagePackExists(string directoryPath, SearchOption searchOption)
         {
             var paths = Directory.GetFiles(directoryPath, LANGUAGE_PACK_SEARCH_PATTERN, searchOption);
 
@@ -67,106 +208,6 @@ namespace KouXiaGu.Localizations
 
         #endregion
 
-
-        #region 本地化文本订阅器;
-
-        static readonly Dictionary<string, string> textDictionary = new Dictionary<string, string>();
-
-        static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
-
-        /// <summary>
-        /// 订阅到文本更新;
-        /// </summary>
-        public static IDisposable Subscribe(ITextObserver observer)
-        {
-            if (observer == null)
-                throw new ArgumentNullException("订阅者为null;");
-            if (!textObservers.Add(observer))
-                throw new ArgumentException("重复订阅;");
-
-            return new CollectionUnsubscriber<ITextObserver>(textObservers, observer);
-        }
-
-        /// <summary>
-        /// 取消订阅文本更新;
-        /// </summary>
-        public static bool Unsubscribe(ITextObserver observer)
-        {
-            return textObservers.Remove(observer);
-        }
-
-        /// <summary>
-        /// 更新所有文本观察者(应该在Unity线程中);
-        /// </summary>
-        public static void UpdateTextObservers()
-        {
-            foreach (var textObserver in textObservers)
-            {
-                UpdateTextObserver(textObserver);
-            }
-        }
-
-        /// <summary>
-        /// 更新文本观察者内容;
-        /// </summary>
-        public static void UpdateTextObserver(ITextObserver textObserver)
-        {
-            string text;
-            if (textDictionary.TryGetValue(textObserver.Key, out text))
-            {
-                textObserver.SetText(text);
-            }
-            Debug.LogWarning("[本地化]未知字符串:" + textObserver.Key);
-        }
-
-        /// <summary>
-        /// 加入到文本字典;
-        /// </summary>
-        public static bool AddText(TextPack pack)
-        {
-            if (textDictionary.ContainsKey(pack.Key) && !pack.IsUpdate)
-            {
-                Debug.LogWarning("[本地化]存在相同的字符串:" + pack.ToString());
-                return false;
-            }
-
-            textDictionary.AddOrUpdate(pack.Key, pack.Value);
-            return true;
-        }
-
-        #endregion
-
-
-        #region 初始化信息;
-
-        /// <summary>
-        /// 当前系统的语言;
-        /// </summary>
-        public static SystemLanguage SystemLanguage
-        {
-            get { return Application.systemLanguage; }
-        }
-
-
-        [XmlType("Localization")]
-        public struct LocalizationDescr
-        {
-
-            static readonly XmlSerializer serializer = new XmlSerializer(typeof(LocalizationDescr));
-
-            public static XmlSerializer Serializer
-            {
-                get { return serializer; }
-            }
-
-            /// <summary>
-            /// 指定使用的语言;
-            /// </summary>
-            [XmlElement("Language")]
-            public SystemLanguage Language;
-        }
-
-        #endregion
 
     }
 

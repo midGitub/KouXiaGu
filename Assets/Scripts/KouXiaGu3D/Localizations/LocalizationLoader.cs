@@ -40,7 +40,7 @@ namespace KouXiaGu.Localizations
         {
             foreach (var text in item.ReadTexts())
             {
-                Localization.AddText(text);
+                Localization.Add(text);
             }
         }
 

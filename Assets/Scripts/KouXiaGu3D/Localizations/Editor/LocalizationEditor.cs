@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Localizations
 {
 
-    [CustomEditor(typeof(Localization), true)]
+    [CustomEditor(typeof(LocalizationLoader), true)]
     class LocalizationEditor : Editor
     {
         public override void OnInspectorGUI()
