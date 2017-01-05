@@ -230,7 +230,7 @@ namespace KouXiaGu.KeyInput
                 var emptyKeys = EmptyKeys();
                 if (emptyKeys.Count != 0)
                 {
-                    Debug.LogWarning("未定义的按键:" + emptyKeys.ToEnumerableLog());
+                    Debug.LogWarning("未定义的按键:" + emptyKeys.ToLog());
                 }
                 emptyKeys.Clear();
             }

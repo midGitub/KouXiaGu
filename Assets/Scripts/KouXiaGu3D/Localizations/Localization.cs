@@ -169,7 +169,7 @@ namespace KouXiaGu.Localizations
         {
             foreach (var item in reader.ReadTexts())
             {
-                if (textDictionary.Add(item))
+                if (!textDictionary.Add(item))
                 {
                     Debug.LogWarning("存在相同的字符:" + item.ToString());
                 }
