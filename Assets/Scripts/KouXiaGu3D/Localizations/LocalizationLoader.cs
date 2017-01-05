@@ -8,7 +8,7 @@ namespace KouXiaGu.Localizations
 {
 
     /// <summary>
-    /// 负责加载对应的语言包,和加载次序;
+    /// 负责异步加载语言包;
     /// </summary>
     [DisallowMultipleComponent]
     public class LocalizationLoader : UnitySington<LocalizationLoader>

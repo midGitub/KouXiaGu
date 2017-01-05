@@ -73,15 +73,16 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 加入到文本字典;
         /// </summary>
-        public static void AddText(TextPack pack)
+        public static bool AddText(TextPack pack)
         {
             if (textDictionary.ContainsKey(pack.Key) && !pack.IsUpdate)
             {
                 Debug.LogWarning("[本地化]存在相同的字符串:" + pack.ToString());
-                return;
+                return false;
             }
 
             textDictionary.AddOrUpdate(pack.Key, pack.Value);
+            return true;
         }
 
     }
