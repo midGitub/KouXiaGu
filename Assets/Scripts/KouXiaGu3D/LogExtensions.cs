@@ -26,13 +26,13 @@ namespace KouXiaGu
         /// </summary>
         public static string ToEnumerableLog<T>(this IEnumerable<T> enumerable, string descr)
         {
-            string log = descr;
+            string log = "";
             int index = 0;
             foreach (var item in enumerable)
             {
                 log += Log(index++, item);
             }
-            return log;
+            return descr + ",Count:" + index + log;
         }
 
         /// <summary>

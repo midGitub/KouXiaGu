@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using ProtoBuf;
@@ -27,6 +28,7 @@ namespace KouXiaGu
             Indent = true,
             NewLineChars = Environment.NewLine,
             NewLineOnAttributes = false,
+            Encoding = Encoding.UTF8,
         };
 
         /// <summary>
