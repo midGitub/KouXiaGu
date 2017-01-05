@@ -10,7 +10,7 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public class XmlLocalizationFiler
+    public class XmlLocalizationFiler : ILocalizationReader
     {
 
         const string ROOT_ELEMENT_NAME = "Localization";
@@ -23,7 +23,6 @@ namespace KouXiaGu.Localizations
         {
             this.FilePath = filePath;
         }
-
 
         public string FilePath { get; private set; }
 
@@ -42,17 +41,40 @@ namespace KouXiaGu.Localizations
             IgnoreProcessingInstructions = true,
         };
 
-        public static XmlWriterSettings XmlWriterSettings
-        {
-            get { return xmlWriterSettings; }
-        }
 
-
-        public IEnumerable<KeyValuePair<string, string>> GetAllTexts()
+        public IEnumerable<KeyValuePair<string, string>> ReadTexts()
         {
             using (XmlReader reader = XmlReader.Create(FilePath, xmlReaderSettings))
             {
                 return ReadTexts(reader);
+            }
+        }
+
+        public static IEnumerable<KeyValuePair<string, string>> ReadTexts(XmlReader reader)
+        {
+            while (reader.Read())
+            {
+                if (reader.IsStartElement(TEXT_ELEMENT_NAME))
+                {
+                    string key = null;
+                    string value = null;
+
+                    while (reader.MoveToNextAttribute())
+                    {
+                        switch (reader.Name)
+                        {
+                            case KEY_ATTRIBUTE_NAME:
+                                key = reader.Value;
+                                break;
+                            case VALUE_ATTRIBUTE_NAME:
+                                value = reader.Value;
+                                break;
+                        }
+                    }
+
+                    if (key != null && value != null)
+                        yield return new KeyValuePair<string, string>(key, value);
+                }
             }
         }
 
@@ -84,69 +106,6 @@ namespace KouXiaGu.Localizations
             writer.WriteEndDocument();
         }
 
-        /// <summary>
-        /// 读取到所有文字结构;
-        /// </summary>
-        public static IEnumerable<KeyValuePair<string, string>> ReadTexts(XmlReader reader)
-        {
-            while (reader.Read())
-            {
-                if (reader.IsStartElement(TEXT_ELEMENT_NAME))
-                {
-                    string key = null;
-                    string value = null;
-
-                    while (reader.MoveToNextAttribute())
-                    {
-                        switch (reader.Name)
-                        {
-                            case KEY_ATTRIBUTE_NAME:
-                                key = reader.Value;
-                                break;
-                            case VALUE_ATTRIBUTE_NAME:
-                                value = reader.Value;
-                                break;
-                        }
-                    }
-
-                    if (key != null && value != null)
-                        yield return new KeyValuePair<string, string>(key, value);
-                }
-            }
-        }
-
-
-
-        //public void 
-
-
-        //[ContextMenu("Output")]
-        //void Output()
-        //{
-        //    Dictionary<string, string> texts = new Dictionary<string, string>()
-        //    {
-        //        { "你的名字", "A佬"},
-        //        { "我的名字", "B佬"},
-        //        { "你的名字1", "A佬"},
-        //        { "我的名字1", "B佬"},
-        //        { "你的名字2", "A佬"},
-        //        { "我的名字2", "B佬"},
-        //    };
-
-        //    using (XmlWriter xmlWriter = XmlWriter.Create(filePath, XmlWriterSettings))
-        //    {
-        //        WriteTexts(xmlWriter, texts);
-        //    }
-        //}
-
-        //[ContextMenu("Input")]
-        //void Input()
-        //{
-        //    using (XmlReader xmlReader = XmlReader.Create(filePath, xmlReaderSettings))
-        //    {
-        //        Debug.Log(ReadTexts(xmlReader).ToEnumerableLog());
-        //    }
-        //}
 
     }
 
