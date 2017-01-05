@@ -18,7 +18,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 等待加载的语言包;
         /// </summary>
-        static readonly Queue<IFile> waitLoads = new Queue<IFile>();
+        static readonly Queue<ITextReader> waitLoads = new Queue<ITextReader>();
 
         static bool isEmpty
         {
@@ -28,7 +28,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 异步的读取语言包;
         /// </summary>
-        public static void LoadAsync(IFile item)
+        public static void LoadAsync(ITextReader item)
         {
             waitLoads.Enqueue(item);
         }
@@ -36,7 +36,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 读取语言包;
         /// </summary>
-        static void Load(IFile item)
+        static void Load(ITextReader item)
         {
             foreach (var text in item.ReadTexts())
             {

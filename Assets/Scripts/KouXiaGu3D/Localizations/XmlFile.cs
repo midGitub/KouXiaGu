@@ -5,13 +5,12 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using KouXiaGu.Collections;
-using UnityEngine;
 
 namespace KouXiaGu.Localizations
 {
 
 
-    public class XmlFile : IFile
+    public class XmlFile
     {
 
         /// <summary>
@@ -20,6 +19,8 @@ namespace KouXiaGu.Localizations
         public const string FILE_EXTENSION = ".xml";
 
         const string ROOT_ELEMENT_NAME = "LocalizationTexts";
+        const string LANGUAGE_ATTRIBUTE_NAME = "Language";
+
         const string TEXT_ELEMENT_NAME = "Text";
         const string KEY_ATTRIBUTE_NAME = "key";
         const string VALUE_ATTRIBUTE_NAME = "value";
@@ -27,17 +28,8 @@ namespace KouXiaGu.Localizations
 
         const bool DEFAULT_UPDATE_MARK = false;
 
-        XmlFile(string filePath)
-        {
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException();
 
-            this.FilePath = filePath;
-        }
-
-        public string FilePath { get; private set; }
-
-        static readonly XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+        protected static readonly XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
         {
             Indent = true,
             NewLineChars = Environment.NewLine,
@@ -45,7 +37,7 @@ namespace KouXiaGu.Localizations
             Encoding = Encoding.UTF8,
         };
 
-        static readonly XmlReaderSettings xmlReaderSettings = new XmlReaderSettings()
+        protected static readonly XmlReaderSettings xmlReaderSettings = new XmlReaderSettings()
         {
             IgnoreWhitespace = true,
             IgnoreComments = true,
@@ -53,15 +45,10 @@ namespace KouXiaGu.Localizations
         };
 
 
-        public IEnumerable<TextPack> ReadTexts()
-        {
-            using (XmlReader reader = XmlReader.Create(FilePath, xmlReaderSettings))
-            {
-                return ReadTexts(reader);
-            }
-        }
-
-        public static IEnumerable<TextPack> ReadTexts(XmlReader reader)
+        /// <summary>
+        /// 读取所有文本节点的内容并且返回;
+        /// </summary>
+        protected static IEnumerable<TextPack> ReadTexts(XmlReader reader)
         {
             while (reader.Read())
             {
@@ -93,22 +80,15 @@ namespace KouXiaGu.Localizations
             }
         }
 
-
-        public void WriteTexts(IEnumerable<TextPack> texts)
-        {
-            using (XmlWriter reader = XmlWriter.Create(FilePath, xmlWriterSettings))
-            {
-                WriteTexts(reader, texts);
-            }
-        }
-
         /// <summary>
         /// 保存所有文字结构到XML;
         /// </summary>
-        public static void WriteTexts(XmlWriter writer, IEnumerable<TextPack> texts)
+        protected static void WriteTexts(XmlWriter writer, string language, IEnumerable<TextPack> texts)
         {
             writer.WriteStartDocument();
             writer.WriteStartElement(ROOT_ELEMENT_NAME);
+            writer.WriteStartAttribute(LANGUAGE_ATTRIBUTE_NAME);
+            writer.WriteString(language);
 
             foreach (var pair in texts)
             {
@@ -136,6 +116,11 @@ namespace KouXiaGu.Localizations
             writer.WriteEndDocument();
         }
 
+
+        public static LanguagePack Load(string filePath)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 
