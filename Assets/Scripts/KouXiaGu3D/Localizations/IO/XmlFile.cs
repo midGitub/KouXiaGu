@@ -10,7 +10,7 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public class XmlFile
+    public abstract class XmlFile
     {
 
         /// <summary>
@@ -117,10 +117,80 @@ namespace KouXiaGu.Localizations
         }
 
 
-        public static LanguagePack Load(string filePath)
+        /// <summary>
+        /// 语言文件匹配的搜索字符串;
+        /// </summary>
+        const string LANGUAGE_PACK_SEARCH_PATTERN = "*" + FILE_EXTENSION;
+
+        /// <summary>
+        /// 寻找目录下存在的语言和其路径;
+        /// </summary>
+        public static IEnumerable<LanguagePack> LanguagePackExists(string directoryPath, SearchOption searchOption)
         {
-            throw new NotImplementedException();
+            var paths = Directory.GetFiles(directoryPath, LANGUAGE_PACK_SEARCH_PATTERN, searchOption);
+
+            foreach (var path in paths)
+            {
+                LanguagePack language;
+                string fileName = Path.GetFileNameWithoutExtension(path);
+
+                if (TryGetLanguagePack(path, out language))
+                    yield return language;
+            }
         }
+
+        /// <summary>
+        /// 尝试获取到语言包,若无法获取到则返回false;
+        /// </summary>
+        public static bool TryGetLanguagePack(string filePath, out LanguagePack language)
+        {
+            try
+            {
+                language = GetLanguagePack(filePath);
+                return true;
+            }
+            catch
+            {
+                language = default(LanguagePack);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取到这个文件的语言类型,若无法获取到则返回 空白;
+        /// </summary>
+        public static string GetLanguage(string filePath)
+        {
+            using (XmlReader reader = XmlReader.Create(filePath))
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement(ROOT_ELEMENT_NAME))
+                    {
+                        if (reader.MoveToAttribute(LANGUAGE_ATTRIBUTE_NAME))
+                        {
+                            return reader.Value;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// 获取到语言包;
+        /// </summary>
+        public static LanguagePack GetLanguagePack(string filePath)
+        {
+            string language = GetLanguage(filePath);
+            return new LanguagePack(language, new XmlFileReader(filePath));
+        }
+
 
     }
 

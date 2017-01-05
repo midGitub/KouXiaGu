@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 namespace KouXiaGu.Localizations
 {
@@ -13,17 +14,20 @@ namespace KouXiaGu.Localizations
 
         public XmlFileReader(string filePath)
         {
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException();
+
             this.FilePath = filePath;
-            reader = XmlReader.Create(filePath, xmlReaderSettings);
         }
 
         public string FilePath { get; private set; }
 
-        XmlReader reader;
-
         public IEnumerable<TextPack> ReadTexts()
         {
-            return ReadTexts(reader);
+            using (XmlReader reader = XmlReader.Create(FilePath, xmlReaderSettings))
+            {
+                return ReadTexts(reader);
+            }
         }
 
     }
