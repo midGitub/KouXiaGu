@@ -6,7 +6,7 @@ using System.Text;
 namespace KouXiaGu.Localizations
 {
 
-    public interface IFiler
+    public interface IFile
     {
 
         IEnumerable<TextPack> ReadTexts();

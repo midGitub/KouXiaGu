@@ -10,7 +10,7 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public class XmlFile : IFiler
+    public class XmlFile : IFile
     {
 
         const string ROOT_ELEMENT_NAME = "Localization";

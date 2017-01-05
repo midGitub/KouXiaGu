@@ -15,8 +15,18 @@ namespace KouXiaGu.Localizations
 
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
 
+
         /// <summary>
-        /// 订阅字段更新方法;
+        /// 当前系统的语言;
+        /// </summary>
+        public static SystemLanguage SystemLanguage
+        {
+            get { return Application.systemLanguage; }
+        }
+
+
+        /// <summary>
+        /// 订阅到文本更新;
         /// </summary>
         public static IDisposable Subscribe(ITextObserver observer)
         {
@@ -29,7 +39,7 @@ namespace KouXiaGu.Localizations
         }
 
         /// <summary>
-        /// 取消订阅;
+        /// 取消订阅文本更新;
         /// </summary>
         public static bool Unsubscribe(ITextObserver observer)
         {
@@ -37,7 +47,7 @@ namespace KouXiaGu.Localizations
         }
 
         /// <summary>
-        /// 更新所有字符串观察者(应该在Unity线程中);
+        /// 更新所有文本观察者(应该在Unity线程中);
         /// </summary>
         public static void UpdateTextObservers()
         {
@@ -48,7 +58,7 @@ namespace KouXiaGu.Localizations
         }
 
         /// <summary>
-        /// 更新字符串观察者;
+        /// 更新文本观察者内容;
         /// </summary>
         public static void UpdateTextObserver(ITextObserver textObserver)
         {
@@ -61,7 +71,7 @@ namespace KouXiaGu.Localizations
         }
 
         /// <summary>
-        /// 加入到字符串字典;
+        /// 加入到文本字典;
         /// </summary>
         public static void AddText(TextPack pack)
         {
