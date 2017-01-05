@@ -18,16 +18,13 @@ namespace KouXiaGu.UI
     public class StandaloneUI : MonoBehaviour
     {
 
-        protected StandaloneUI() { }
-
-
         [CustomSortingLayer]
         public const string SortingLayerName = "StandaloneUI";
 
         static readonly LinkedList<StandaloneUI> state = new LinkedList<StandaloneUI>();
 
         /// <summary>
-        /// 当前在最前面的UI;
+        /// 当前在最顶部的UI;
         /// </summary>
         public static StandaloneUI Activate
         {
@@ -40,6 +37,8 @@ namespace KouXiaGu.UI
         }
 
 
+
+        protected StandaloneUI() { }
 
         Canvas canvas;
 
