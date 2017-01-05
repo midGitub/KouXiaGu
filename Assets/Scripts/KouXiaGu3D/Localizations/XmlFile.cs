@@ -10,7 +10,7 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public class XmlLocalizationFiler : ILocalizationReader
+    public class XmlFile : IFiler
     {
 
         const string ROOT_ELEMENT_NAME = "Localization";
@@ -21,7 +21,7 @@ namespace KouXiaGu.Localizations
 
         const bool DEFAULT_UPDATE_MARK = false;
 
-        XmlLocalizationFiler(string filePath)
+        XmlFile(string filePath)
         {
             this.FilePath = filePath;
         }
@@ -84,6 +84,14 @@ namespace KouXiaGu.Localizations
             }
         }
 
+
+        public void WriteTexts(IEnumerable<TextPack> texts)
+        {
+            using (XmlWriter reader = XmlWriter.Create(FilePath, xmlWriterSettings))
+            {
+                WriteTexts(reader, texts);
+            }
+        }
 
         /// <summary>
         /// 保存所有文字结构到XML;

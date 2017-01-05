@@ -6,10 +6,11 @@ using System.Text;
 namespace KouXiaGu.Localizations
 {
 
-    public interface ILocalizationReader
+    public interface IFiler
     {
 
         IEnumerable<TextPack> ReadTexts();
+        void WriteTexts(IEnumerable<TextPack> texts);
 
     }
 
