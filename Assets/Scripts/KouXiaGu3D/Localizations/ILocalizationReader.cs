@@ -9,7 +9,7 @@ namespace KouXiaGu.Localizations
     public interface ILocalizationReader
     {
 
-        IEnumerable<KeyValuePair<string, string>> ReadTexts();
+        IEnumerable<TextPack> ReadTexts();
 
     }
 

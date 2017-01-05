@@ -17,7 +17,9 @@ namespace KouXiaGu.Localizations
         const string TEXT_ELEMENT_NAME = "Text";
         const string KEY_ATTRIBUTE_NAME = "key";
         const string VALUE_ATTRIBUTE_NAME = "value";
+        const string UPDATE_MARK_ATTRIBUTE_NAME = "update";
 
+        const bool DEFAULT_UPDATE_MARK = false;
 
         XmlLocalizationFiler(string filePath)
         {
@@ -42,7 +44,7 @@ namespace KouXiaGu.Localizations
         };
 
 
-        public IEnumerable<KeyValuePair<string, string>> ReadTexts()
+        public IEnumerable<TextPack> ReadTexts()
         {
             using (XmlReader reader = XmlReader.Create(FilePath, xmlReaderSettings))
             {
@@ -50,7 +52,7 @@ namespace KouXiaGu.Localizations
             }
         }
 
-        public static IEnumerable<KeyValuePair<string, string>> ReadTexts(XmlReader reader)
+        public static IEnumerable<TextPack> ReadTexts(XmlReader reader)
         {
             while (reader.Read())
             {
@@ -58,6 +60,7 @@ namespace KouXiaGu.Localizations
                 {
                     string key = null;
                     string value = null;
+                    bool updateMark = DEFAULT_UPDATE_MARK;
 
                     while (reader.MoveToNextAttribute())
                     {
@@ -69,11 +72,14 @@ namespace KouXiaGu.Localizations
                             case VALUE_ATTRIBUTE_NAME:
                                 value = reader.Value;
                                 break;
+                            case UPDATE_MARK_ATTRIBUTE_NAME:
+                                updateMark = reader.ReadContentAsBoolean();
+                                break;
                         }
                     }
 
                     if (key != null && value != null)
-                        yield return new KeyValuePair<string, string>(key, value);
+                        yield return new TextPack(key, value, updateMark);
                 }
             }
         }
@@ -82,7 +88,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 保存所有文字结构到XML;
         /// </summary>
-        public static void WriteTexts(XmlWriter writer, IEnumerable<KeyValuePair<string, string>> texts)
+        public static void WriteTexts(XmlWriter writer, IEnumerable<TextPack> texts)
         {
             writer.WriteStartDocument();
             writer.WriteStartElement(ROOT_ELEMENT_NAME);
@@ -91,6 +97,7 @@ namespace KouXiaGu.Localizations
             {
                 string key = pair.Key;
                 string value = pair.Value;
+                bool updateMark = pair.IsUpdate;
 
                 writer.WriteStartElement(TEXT_ELEMENT_NAME);
 
@@ -99,6 +106,12 @@ namespace KouXiaGu.Localizations
 
                 writer.WriteStartAttribute(VALUE_ATTRIBUTE_NAME);
                 writer.WriteString(value);
+
+                if (updateMark != DEFAULT_UPDATE_MARK)
+                {
+                    writer.WriteStartAttribute(UPDATE_MARK_ATTRIBUTE_NAME);
+                    writer.WriteValue(updateMark);
+                }
 
                 writer.WriteEndElement();
             }

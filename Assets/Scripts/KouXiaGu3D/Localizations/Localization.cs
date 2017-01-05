@@ -37,6 +37,13 @@ namespace KouXiaGu.Localizations
         /// </summary>
         public static bool Initialized { get; private set; }
 
+        /// <summary>
+        /// 存在剩余的读取读取内容;
+        /// </summary>
+        public static bool IsOverplus
+        {
+            get { return currentReader.Next != null; }
+        }
 
         /// <summary>
         /// 订阅字段更新器;
@@ -91,23 +98,56 @@ namespace KouXiaGu.Localizations
             Debug.LogWarning("[本地化]未知字符串:" + textObserver.Key);
         }
 
-
-
-        static void Read(ILocalizationReader reader)
+        /// <summary>
+        /// 同步的 继续或者从头读取所有未加载的字符串;
+        /// </summary>
+        static void Read()
         {
-            foreach (var pair in reader.ReadTexts())
+            if (currentReader == null)
             {
+                currentReader = readers.First;
+            }
+            else
+            {
+                if (currentReader.Next == null)
+                    return;
 
+                currentReader = currentReader.Next;
+            }
+
+            while(true)
+            {
+                Read(currentReader.Value);
+                if (currentReader.Next != null)
+                    currentReader = currentReader.Next;
+                else
+                    break;
             }
         }
 
-
-        static void Add(string key, string value)
+        /// <summary>
+        /// 读取所有字符串;
+        /// </summary>
+        static void Read(ILocalizationReader reader)
         {
-            if (textDictionary.ContainsKey(key))
-                Debug.LogWarning("[本地化]存在相同的字符串:" + key);
+            foreach (var pack in reader.ReadTexts())
+            {
+                Add(pack);
+            }
+        }
 
-            textDictionary.Add(key, value);
+        /// <summary>
+        /// 加入到字符串字典;
+        /// </summary>
+        static void Add(TextPack pack)
+        {
+            if (textDictionary.ContainsKey(pack.Key) && !pack.IsUpdate)
+            {
+                Debug.LogWarning("[本地化]存在相同的字符串:" + pack.ToString());
+                return;
+            }
+
+            textDictionary.AddOrUpdate(pack.Key, pack.Value);
         }
 
 
