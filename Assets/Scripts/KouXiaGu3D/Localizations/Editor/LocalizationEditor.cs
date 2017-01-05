@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Localizations
 {
 
-    [CustomEditor(typeof(LocalizationLoader), true)]
+    [CustomEditor(typeof(Localization), true)]
     class LocalizationEditor : Editor
     {
         public override void OnInspectorGUI()
@@ -16,6 +16,7 @@ namespace KouXiaGu.Localizations
             base.OnInspectorGUI();
 
             EditorGUILayout.LabelField("SystemLanguage", Localization.SystemLanguage.ToString());
+            EditorGUILayout.LabelField("文本数", Localization.TextDictionary.Count.ToString());
         }
     }
 

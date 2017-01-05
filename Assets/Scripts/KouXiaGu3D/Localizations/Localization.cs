@@ -1,33 +1,24 @@
 ﻿using System;
 using System.IO;
 using KouXiaGu.Collections;
+using System.Collections;
 using System.Xml.Serialization;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace KouXiaGu.Localizations
 {
 
-
+    /// <summary>
+    /// 负责固定内容的文本;
+    /// </summary>
     public sealed class Localization : UnitySington<Localization>
     {
-
-        /// <summary>
-        /// 文本订阅合集;
-        /// </summary>
-        static readonly ObservableText observableText = new ObservableText();
 
         /// <summary>
         /// 文本字典;
         /// </summary>
         static readonly TextDictionary textDictionary = new TextDictionary();
-
-        /// <summary>
-        /// 监视文本变化;
-        /// </summary>
-        public static IObservableText ObservableText
-        {
-            get { return observableText; }
-        }
 
         /// <summary>
         /// 文本字典;
@@ -37,14 +28,10 @@ namespace KouXiaGu.Localizations
             get { return textDictionary; }
         }
 
-        /// <summary>
-        /// 当前系统的语言;
-        /// </summary>
-        public static SystemLanguage SystemLanguage
+        static void Clear()
         {
-            get { return Application.systemLanguage; }
+            textDictionary.Clear();
         }
-
 
         #region 外部资源;
 
@@ -132,6 +119,108 @@ namespace KouXiaGu.Localizations
         }
 
         #endregion
+
+
+        #region 实例部分;
+
+        /// <summary>
+        /// 文本订阅合集;
+        /// </summary>
+        static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
+
+        static bool isLoading = false;
+
+
+        /// <summary>
+        /// 当前系统的语言;
+        /// </summary>
+        public static SystemLanguage SystemLanguage
+        {
+            get { return Application.systemLanguage; }
+        }
+
+
+        void Start()
+        {
+            StartLoadPack();
+        }
+
+        public void StartLoadPack()
+        {
+            if(!isLoading)
+                StartCoroutine(LoadPack());
+        }
+
+        IEnumerator LoadPack()
+        {
+            isLoading = true;
+            Clear();
+
+            ITextReader reader = GetTextReader();
+
+            Add(reader);
+            UpdateTextObservers();
+
+            isLoading = false;
+            yield break;
+        }
+
+        void Add(ITextReader reader)
+        {
+            foreach (var item in reader.ReadTexts())
+            {
+                if (textDictionary.Add(item))
+                {
+                    Debug.LogWarning("存在相同的字符:" + item.ToString());
+                }
+            }
+        }
+
+        ITextReader GetTextReader()
+        {
+            List<LanguagePack> pack = new List<LanguagePack>(XmlFile.LanguagePackExists(ResPath, SearchOption.TopDirectoryOnly));
+            return pack[0].Reader;
+        }
+
+        /// <summary>
+        /// 订阅到文本更新;
+        /// </summary>
+        public static IDisposable Subscribe(ITextObserver observer)
+        {
+            if (observer == null)
+                throw new ArgumentNullException("订阅者为null;");
+            if (!textObservers.Add(observer))
+                throw new ArgumentException("重复订阅;");
+
+            return new CollectionUnsubscriber<ITextObserver>(textObservers, observer);
+        }
+
+        /// <summary>
+        /// 更新所有文本(应该在Unity线程中);
+        /// </summary>
+        void UpdateTextObservers()
+        {
+            foreach (var textObserver in textObservers)
+            {
+                UpdateTextObserver(textObserver);
+            }
+        }
+
+        /// <summary>
+        /// 更新文本观察者内容;
+        /// </summary>
+        void UpdateTextObserver(ITextObserver textObserver)
+        {
+            string text;
+            if (textDictionary.TryGetValue(textObserver.Key, out text))
+            {
+                textObserver.SetText(text);
+            }
+            textObserver.OnTextNotFound();
+        }
+
+        #endregion
+
 
     }
 

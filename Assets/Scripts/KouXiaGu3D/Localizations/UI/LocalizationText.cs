@@ -17,7 +17,7 @@ namespace KouXiaGu.Localizations
         void Awake()
         {
             textObject = GetComponent<Text>();
-            Localization.ObservableText.Subscribe(this);
+            Localization.Subscribe(this);
         }
 
         string ITextObserver.Key
