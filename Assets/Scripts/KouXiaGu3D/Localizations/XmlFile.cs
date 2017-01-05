@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.IO;
 using KouXiaGu.Collections;
 using UnityEngine;
 
@@ -13,7 +14,12 @@ namespace KouXiaGu.Localizations
     public class XmlFile : IFile
     {
 
-        const string ROOT_ELEMENT_NAME = "Localization";
+        /// <summary>
+        /// 文件后缀;
+        /// </summary>
+        public const string FILE_EXTENSION = ".xml";
+
+        const string ROOT_ELEMENT_NAME = "LocalizationTexts";
         const string TEXT_ELEMENT_NAME = "Text";
         const string KEY_ATTRIBUTE_NAME = "key";
         const string VALUE_ATTRIBUTE_NAME = "value";
@@ -23,6 +29,9 @@ namespace KouXiaGu.Localizations
 
         XmlFile(string filePath)
         {
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException();
+
             this.FilePath = filePath;
         }
 
