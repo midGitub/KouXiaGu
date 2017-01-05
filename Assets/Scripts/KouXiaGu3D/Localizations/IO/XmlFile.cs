@@ -8,7 +8,7 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public abstract class XmlFile
+    public class XmlFile : ITextReader, ITextWriter
     {
 
         /// <summary>
@@ -186,9 +186,32 @@ namespace KouXiaGu.Localizations
         public static LanguagePack GetLanguagePack(string filePath)
         {
             string language = GetLanguage(filePath);
-            return new LanguagePack(language, new XmlFileReader(filePath));
+            return new LanguagePack(language, new XmlFile(filePath));
         }
 
+
+        public XmlFile(string filePath)
+        {
+            this.FilePath = filePath;
+        }
+
+        public string FilePath { get; private set; }
+
+        public IEnumerable<TextPack> ReadTexts()
+        {
+            using (XmlReader reader = XmlReader.Create(FilePath, xmlReaderSettings))
+            {
+                return ReadTexts(reader);
+            }
+        }
+
+        public void WriteTexts(string language, IEnumerable<TextPack> texts)
+        {
+            using (XmlWriter writer = XmlWriter.Create(FilePath, xmlWriterSettings))
+            {
+                WriteTexts(writer, language, texts);
+            }
+        }
 
     }
 
