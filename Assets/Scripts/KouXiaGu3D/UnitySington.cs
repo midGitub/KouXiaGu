@@ -20,7 +20,7 @@ namespace KouXiaGu
 
         protected static T GetInstance
         {
-            get { return instance ?? Initialize(); }
+            get { return instance ?? (instance = Initialize()); }
         }
 
         static T Initialize()
