@@ -226,7 +226,7 @@ namespace KouXiaGu.Terrain3D
 
         ObservableDictionary<CubicHexCoord, TerrainNode> LoadMap(string filePath)
         {
-            return SerializeExtensions.DeserializeProtoBuf<ObservableDictionary<CubicHexCoord, TerrainNode>>(filePath);
+            return ProtoBufExtensions.DeserializeProtoBuf<ObservableDictionary<CubicHexCoord, TerrainNode>>(filePath);
         }
 
         void LoadLandformObserver()
@@ -277,7 +277,7 @@ namespace KouXiaGu.Terrain3D
 
         void SaveMap(ObservableDictionary<CubicHexCoord, TerrainNode> map, string filePath)
         {
-            SerializeExtensions.SerializeProtoBuf(filePath, map);
+            ProtoBufExtensions.SerializeProtoBuf(filePath, map);
         }
 
         /// <summary>

@@ -61,7 +61,7 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         public static void SaveMapBlock<T>(string fullFilePath, Dictionary<RectCoord, T> mapBlock)
         {
-            SerializeExtensions.SerializeProtoBuf(fullFilePath, mapBlock);
+            ProtoBufExtensions.SerializeProtoBuf(fullFilePath, mapBlock);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace KouXiaGu.World2D.Map
         /// </summary>
         public static Dictionary<RectCoord, T> LoadMapBlock<T>(string fullFilePath)
         {
-            var dictionary = SerializeExtensions.DeserializeProtoBuf<Dictionary<RectCoord, T>>(fullFilePath);
+            var dictionary = ProtoBufExtensions.DeserializeProtoBuf<Dictionary<RectCoord, T>>(fullFilePath);
             return dictionary;
         }
 

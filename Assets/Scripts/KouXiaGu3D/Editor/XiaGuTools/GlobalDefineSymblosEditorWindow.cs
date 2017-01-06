@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Xml.Serialization;
 using UnityEditor;
 using UnityEngine;
-using System.Xml.Serialization;
-using System.IO;
-using KouXiaGu.Collections;
 
 namespace KouXiaGu
 {
 
 
-    public class GlobalDefineSymblosEditorWindow : EditorWindow
+    sealed class GlobalDefineSymblosEditorWindow : EditorWindow
     {
 
         GlobalDefineSymblosEditorWindow()
@@ -30,7 +27,7 @@ namespace KouXiaGu
         public const BuildTargetGroup buildTargetGroup = BuildTargetGroup.Standalone;
 
 
-        static readonly LinkedList<DefineSymblo> defineSymblos = new LinkedList<DefineSymblo>();
+        static readonly LinkedList<DefineAndTag> defineSymblos = new LinkedList<DefineAndTag>();
 
 
         public static string DirPath
@@ -44,7 +41,7 @@ namespace KouXiaGu
         }
 
 
-        [MenuItem("Tools/DefineSymblos")]
+        [MenuItem("XiaGuTools/DefineSymblos")]
         static void Init()
         {
             GlobalDefineSymblosEditorWindow window = (GlobalDefineSymblosEditorWindow)GetWindow(typeof(GlobalDefineSymblosEditorWindow));
@@ -84,17 +81,19 @@ namespace KouXiaGu
             EditorGUILayout.BeginVertical();
             AutoAddOne();
 
-            LinkedListNode<DefineSymblo> pointer = defineSymblos.First;
+            LinkedListNode<DefineAndTag> pointer = defineSymblos.First;
             while (pointer != null)
             {
                 EditorGUILayout.BeginHorizontal();
 
-                DefineSymblo defineSymblo = pointer.Value;
+                DefineAndTag defineSymblo = pointer.Value;
 
                 GUI.backgroundColor = red;
                 if (GUILayout.Button("Remove", GUILayout.Width(65f)))
                 {
-                    pointer = defineSymblos.RemoveAndReturnNext(pointer);
+                    LinkedListNode<DefineAndTag> next = pointer.Next;
+                    defineSymblos.Remove(pointer);
+                    pointer = next;
                 }
                 else
                 {
@@ -114,7 +113,7 @@ namespace KouXiaGu
                 EditorGUILayout.EndHorizontal();
 
                 if (result != defineSymblo.Define)
-                    defineSymblo.Define = Standardize(result);
+                    defineSymblo.Define = Normalize(result);
                 EditorGUILayout.EndHorizontal();
             }
 
@@ -153,17 +152,18 @@ namespace KouXiaGu
 
         }
 
+
         static void AutoAddOne()
         {
             if (defineSymblos.Count == 0)
-                defineSymblos.AddLast(new DefineSymblo());
+                defineSymblos.AddLast(new DefineAndTag());
             else if (!defineSymblos.Last.Value.IsEmpty)
-                defineSymblos.AddLast(new DefineSymblo());
+                defineSymblos.AddLast(new DefineAndTag());
         }
 
         static void AutoRemoveEmpty()
         {
-            LinkedListNode<DefineSymblo> pointer = defineSymblos.First;
+            LinkedListNode<DefineAndTag> pointer = defineSymblos.First;
             while (pointer != null)
             {
                 while (pointer.Value.IsEmpty &&
@@ -195,7 +195,10 @@ namespace KouXiaGu
 
         static readonly List<char> newStr = new List<char>();
 
-        static string Standardize(string defineSymblo)
+        /// <summary>
+        /// 去除多余的结束符;
+        /// </summary>
+        static string Normalize(string defineSymblo)
         {
             if (string.IsNullOrEmpty(defineSymblo))
                 return defineSymblo;
@@ -224,15 +227,21 @@ namespace KouXiaGu
 
         static void ReadFromFile()
         {
-            try
-            {
-                DefineSymblo[] defines = (DefineSymblo[])DefineSymblo.ArraySerializer.DeserializeXiaGu(FilePath);
-                defineSymblos.Clear();
-                defineSymblos.Add(defines);
-            }
-            catch (FileNotFoundException)
-            {
+            string filePath = FilePath;
+
+            if (!File.Exists(filePath))
                 return;
+
+            DefineAndTag[] defines = (DefineAndTag[])DefineAndTag.ArraySerializer.DeserializeXiaGu(filePath);
+            defineSymblos.Clear();
+            AddRange(defineSymblos, defines);
+        }
+
+        static void AddRange<T>(ICollection<T> collection, IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                collection.Add(item);
             }
         }
 
@@ -240,33 +249,35 @@ namespace KouXiaGu
         {
             Directory.CreateDirectory(DirPath);
 
-            DefineSymblo[] array = defineSymblos.Where(item => !item.IsEmpty).ToArray();
-            DefineSymblo.ArraySerializer.SerializeXiaGu(FilePath, array);
+            DefineAndTag[] save = defineSymblos.Where(item => !item.IsEmpty).ToArray();
+            DefineAndTag.ArraySerializer.SerializeXiaGu(FilePath, save);
         }
 
     }
 
-    [XmlType("DefineSymblo")]
-    public class DefineSymblo
+
+    [XmlType("Define")]
+    public class DefineAndTag
     {
 
-        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(DefineSymblo[]));
+        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(DefineAndTag[]));
 
         public static XmlSerializer ArraySerializer
         {
             get { return arraySerializer; }
         }
 
-        public DefineSymblo()
+        public DefineAndTag()
         {
         }
 
-        public DefineSymblo(string define)
+        public DefineAndTag(string tag, string define)
         {
+            this.Tag = tag;
             this.Define = define;
         }
 
-        [XmlAttribute("Tag")]
+        [XmlAttribute("tag")]
         public string Tag { get; set; }
 
         [XmlAttribute("defineSymblo")]

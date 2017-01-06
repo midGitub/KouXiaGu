@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
 
             string filePath = Archiver.CreateDirectory(archiveDirectory, MAP_ARCHIVED_FILE_NAME);
 
-            SerializeExtensions.SerializeProtoBuf(filePath, ArchiveMap);
+            ProtoBufExtensions.SerializeProtoBuf(filePath, ArchiveMap);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace KouXiaGu.Terrain3D
 
             if (File.Exists(filePath))
             {
-                MapArchiver.ArchiveMap = SerializeExtensions.DeserializeProtoBuf<DictionaryArchiver<CubicHexCoord, TerrainNode>>(filePath);
+                MapArchiver.ArchiveMap = ProtoBufExtensions.DeserializeProtoBuf<DictionaryArchiver<CubicHexCoord, TerrainNode>>(filePath);
             }
             else
             {

@@ -158,8 +158,8 @@ namespace KouXiaGu
 
             SetArchivedInfo(archived.Archived);
 
-            SerializeExtensions.SerializeProtoBuf(archivedFilePath, (ArchivedExpand)archived.Archived);
-            SerializeExtensions.SerializeProtoBuf(smallArchivedFilePath, (SmallArchived)archived.Archived);
+            ProtoBufExtensions.SerializeProtoBuf(archivedFilePath, (ArchivedExpand)archived.Archived);
+            ProtoBufExtensions.SerializeProtoBuf(smallArchivedFilePath, (SmallArchived)archived.Archived);
         }
 
         ///// <summary>
@@ -194,7 +194,7 @@ namespace KouXiaGu
 
             if (ExistArchivedFile(archivedPath) && TryGetSmallArchivedFilePath(archivedPath, out smallArchivedFilePath))
             {
-                SmallArchived archived = SerializeExtensions.DeserializeProtoBuf<SmallArchived>(smallArchivedFilePath);
+                SmallArchived archived = ProtoBufExtensions.DeserializeProtoBuf<SmallArchived>(smallArchivedFilePath);
                 smallArchived = new SmallArchivedGroup(true, archived, archivedPath);
                 return true;
             }
@@ -211,7 +211,7 @@ namespace KouXiaGu
 
             if (TryGetSmallArchivedFilePath(archivedPath, out archivedFilePath))
             {
-                ArchivedExpand archivedExpand = SerializeExtensions.DeserializeProtoBuf<ArchivedExpand>(archivedFilePath);
+                ArchivedExpand archivedExpand = ProtoBufExtensions.DeserializeProtoBuf<ArchivedExpand>(archivedFilePath);
                 archived = new ArchivedGroup(true, archivedExpand, archivedPath);
                 return true;
             }
