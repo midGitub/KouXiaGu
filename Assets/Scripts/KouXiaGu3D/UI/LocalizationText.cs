@@ -2,26 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Localizations;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent, RequireComponent(typeof(Text))]
-    public class LocalizationText : MonoBehaviour, ITextObserver
+    public sealed class LocalizationText : MonoBehaviour, ITextObserver
     {
 
-        Text textObject;
-
         string key;
+        Text textObject;
+        IDisposable unSubscriber;
 
         void Awake()
         {
             textObject = GetComponent<Text>();
-            key = textObject.text;
 
-            Localization.Subscribe(this);
+            key = textObject.text;
+            unSubscriber = Localization.Subscribe(this);
+        }
+
+        void OnDestroy()
+        {
+            unSubscriber.Dispose();
+            unSubscriber = null;
         }
 
         string ITextObserver.Key
@@ -36,8 +43,9 @@ namespace KouXiaGu.Localizations
 
         void ITextObserver.OnTextNotFound()
         {
-            Debug.Log( name +" 无法找到对应文本:" + key);
+            Debug.Log(name + " 无法找到对应文本:" + key);
         }
+
     }
 
 }
