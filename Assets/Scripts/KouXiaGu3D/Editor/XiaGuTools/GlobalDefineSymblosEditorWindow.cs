@@ -178,21 +178,8 @@ namespace KouXiaGu
         }
 
 
-        string GetDefinesFromPlayerSettings()
-        {
-            return PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-        }
-
-        void SetDefinesToPlayerSettings()
-        {
-            string defines = defineSymblos.
-                Select(item => item.Define).
-                Aggregate((workingSentence, next) => workingSentence + next);
-
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines);
-        }
-
-
+        const char separatorChar = ';';
+        const string separatorString = ";";
         static readonly List<char> newStr = new List<char>();
 
         /// <summary>
@@ -203,8 +190,6 @@ namespace KouXiaGu
             if (string.IsNullOrEmpty(defineSymblo))
                 return defineSymblo;
 
-            const char endChar = ';';
-
             char[] charArray = defineSymblo.ToCharArray();
             newStr.Clear();
 
@@ -212,16 +197,36 @@ namespace KouXiaGu
             {
                 char c = charArray[i];
 
-                if (i != 0 && c == endChar && charArray[i - 1] == endChar)
+                if (i != 0 && c == separatorChar && charArray[i - 1] == separatorChar)
                     continue;
 
                 newStr.Add(c);
             }
 
-            if (newStr[newStr.Count - 1] != endChar)
-                newStr.Add(endChar);
-
             return new string(newStr.ToArray());
+        }
+
+
+        string GetDefinesFromPlayerSettings()
+        {
+            return PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+        }
+
+        void SetDefinesToPlayerSettings()
+        {
+            string defines = defineSymblos.
+                Select(item => item.Define).
+                Aggregate(delegate(string workingSentence, string next)
+                {
+                    if (!string.IsNullOrEmpty(workingSentence) && !workingSentence.EndsWith(separatorString))
+                    {
+                        workingSentence += separatorString;
+                    }
+
+                    return workingSentence + next;
+                });
+
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines);
         }
 
 
@@ -229,12 +234,13 @@ namespace KouXiaGu
         {
             string filePath = FilePath;
 
-            if (!File.Exists(filePath))
-                return;
+            if (File.Exists(filePath))
+            {
+                DefineAndTag[] defines = (DefineAndTag[])DefineAndTag.ArraySerializer.DeserializeXiaGu(filePath);
 
-            DefineAndTag[] defines = (DefineAndTag[])DefineAndTag.ArraySerializer.DeserializeXiaGu(filePath);
-            defineSymblos.Clear();
-            AddRange(defineSymblos, defines);
+                defineSymblos.Clear();
+                AddRange(defineSymblos, defines);
+            }
         }
 
         static void AddRange<T>(ICollection<T> collection, IEnumerable<T> items)
