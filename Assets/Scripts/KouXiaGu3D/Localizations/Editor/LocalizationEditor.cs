@@ -20,10 +20,20 @@ namespace KouXiaGu.Localizations
             EditorGUILayout.LabelField("SystemLanguage", Localization.SysLanguage);
             EditorGUILayout.LabelField("文本量", Localization.TextDictionary.Count.ToString());
 
+            EditorGUILayout.BeginHorizontal();
+
             if (GUILayout.Button("保存配置文件"))
             {
                 Localization.WriteConfigFile();
             }
+
+            if (GUILayout.Button("输出所有语言包"))
+            {
+                Debug.Log(Resources.LanguagePacks().ToLog());
+            }
+
+            EditorGUILayout.EndHorizontal();
+
 
             EditorGUILayout.BeginHorizontal();
 

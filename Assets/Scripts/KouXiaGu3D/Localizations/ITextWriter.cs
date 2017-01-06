@@ -9,10 +9,7 @@ namespace KouXiaGu.Localizations
 
     public interface ITextWriter
     {
-
-        string FilePath { get; }
-        void WriteTexts(string language, IEnumerable<TextPack> texts);
-
+        void WriteTexts(IEnumerable<TextPack> texts);
     }
 
 }

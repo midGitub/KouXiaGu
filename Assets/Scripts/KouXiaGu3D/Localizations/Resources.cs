@@ -43,7 +43,33 @@ namespace KouXiaGu.Localizations
 
         public static List<ITextReader> GetTextReader(string language, string secondLanguage)
         {
-            throw new NotImplementedException();
+            List<ITextReader> readers = new List<ITextReader>(1);
+            IEnumerable<LanguagePack> packs = LanguagePack.Find(ResPath);
+
+            LanguagePack first = null;
+            LanguagePack second = null;
+
+            foreach (var pack in packs)
+            {
+                if (pack.Language == language)
+                    first = pack;
+                else if (pack.Language == secondLanguage)
+                    second = pack;
+            }
+
+            if (first != null)
+                readers.Add(first);
+            else if (second != null)
+                readers.Add(second);
+            else
+                Debug.LogError("未找到合适的语言包;");
+
+            return readers;
+        }
+
+        public static IEnumerable<LanguagePack> LanguagePacks()
+        {
+            return LanguagePack.Find(ResPath);
         }
 
     }

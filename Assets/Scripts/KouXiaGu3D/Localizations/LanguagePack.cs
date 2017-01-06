@@ -8,7 +8,7 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public class LanguagePack : ITextReader
+    public class LanguagePack : ITextReader, ITextWriter
     {
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace KouXiaGu.Localizations
         }
 
 
-        LanguagePack(string language, string file)
+        public LanguagePack(string language, string file)
         {
             this.Language = language;
             this.FilePath = file;
@@ -67,6 +67,28 @@ namespace KouXiaGu.Localizations
         public IEnumerable<TextPack> ReadTexts()
         {
             return XmlFile.ReadTexts(FilePath);
+        }
+
+        public void WriteTexts(IEnumerable<TextPack> texts)
+        {
+            XmlFile.WriteTexts(FilePath, Language, texts);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is LanguagePack))
+                return false;
+            return ((LanguagePack)obj).FilePath == FilePath;
+        }
+
+        public override int GetHashCode()
+        {
+            return FilePath.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return "[Language:" + Language + ",File:" + FilePath + "]";
         }
 
     }

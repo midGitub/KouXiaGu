@@ -64,6 +64,7 @@ namespace KouXiaGu.Localizations
             ReadConfigFile();
             LoadLanguage();
             UpdateTextObservers();
+            IsLoading = false;
         }
 
         public static void SetConfig(LocalizationConfig config)
@@ -71,6 +72,7 @@ namespace KouXiaGu.Localizations
             Config = config;
             LoadLanguage();
             UpdateTextObservers();
+            IsLoading = false;
         }
 
 

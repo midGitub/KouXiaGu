@@ -14,15 +14,19 @@ namespace KouXiaGu.Localizations
 
         Text textObject;
 
+        string key;
+
         void Awake()
         {
             textObject = GetComponent<Text>();
+            key = textObject.text;
+
             Localization.Subscribe(this);
         }
 
         string ITextObserver.Key
         {
-            get { return textObject.text; }
+            get { return key; }
         }
 
         void ITextObserver.SetText(string text)
@@ -32,7 +36,7 @@ namespace KouXiaGu.Localizations
 
         void ITextObserver.OnTextNotFound()
         {
-            Debug.Log("无法找到对应文本:" + (this as ITextObserver).Key);
+            Debug.Log( name +" 无法找到对应文本:" + key);
         }
     }
 
