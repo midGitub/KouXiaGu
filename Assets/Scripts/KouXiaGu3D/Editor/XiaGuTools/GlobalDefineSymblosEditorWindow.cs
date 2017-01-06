@@ -5,11 +5,10 @@ using System.Xml.Serialization;
 using UnityEditor;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.XiaGuTools
 {
 
-
-    sealed class GlobalDefineSymblosEditorWindow : EditorWindow
+    public sealed class GlobalDefineSymblosEditorWindow : EditorWindow
     {
 
         GlobalDefineSymblosEditorWindow()
