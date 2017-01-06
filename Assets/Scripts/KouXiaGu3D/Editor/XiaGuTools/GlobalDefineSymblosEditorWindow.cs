@@ -18,7 +18,7 @@ namespace KouXiaGu
             minSize = new Vector2(420f, 300f);
         }
 
-        public const string DirName = "Editor\\DefineSymblos";
+        public const string DirName = "Editor\\XiaGuTools";
         public const string FileName = "DefineSymblos.xml";
 
         static readonly Color red = new Color(200f / 255f, 100f / 255f, 100f / 255f);
