@@ -23,38 +23,10 @@ namespace KouXiaGu
             return value;
         }
 
-        ///// <summary>
-        ///// 加入到队尾;
-        ///// </summary>
-        //public static void Enqueue<T>(this LinkedList<T> collection, T item)
-        //{
-        //    collection.AddLast(item);
-        //}
-
-        ///// <summary>
-        ///// 移除队首元素并且返回;
-        ///// </summary>
-        //public static T Pop<T>(this LinkedList<T> collection)
-        //{
-        //    LinkedListNode<T> first = collection.First;
-        //    collection.Remove(first);
-        //    T value = first.Value;
-        //    return value;
-        //}
-
-        ///// <summary>
-        ///// 将对象插入队首。
-        ///// </summary>
-        //public static void Push<T>(this LinkedList<T> collection, T item)
-        //{
-        //    collection.AddFirst(item);
-        //}
-
-
         /// <summary>
         /// 移除第一个满足要求的元素;
         /// </summary>
-        public static bool Remove<T>(this LinkedList<T> collection,  Func<T, bool> func)
+        public static bool Remove<T>(this LinkedList<T> collection, Func<T, bool> func)
         {
             var current = collection.First;
 
@@ -70,7 +42,12 @@ namespace KouXiaGu
             return false;
         }
 
-
+        public static LinkedListNode<T> RemoveAndReturnNext<T>(this LinkedList<T> collection, LinkedListNode<T> node)
+        {
+            LinkedListNode<T> next = node.Next;
+            collection.Remove(node);
+            return next;
+        }
 
     }
 

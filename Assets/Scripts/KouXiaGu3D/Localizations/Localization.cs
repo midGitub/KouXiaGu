@@ -1,8 +1,7 @@
-﻿using System;
+﻿
+using System;
 using System.IO;
 using KouXiaGu.Collections;
-using System.Collections;
-using System.Xml.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -20,7 +19,6 @@ namespace KouXiaGu.Localizations
             IsLoading = true;
         }
 
-
         [SerializeField]
         LocalizationConfig config = new LocalizationConfig()
         {
@@ -33,6 +31,10 @@ namespace KouXiaGu.Localizations
         static readonly TextDictionary textDictionary = new TextDictionary();
 
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
+
+#if COLLECT_KEYS
+        static readonly HashSet<string> collectKeys = new HashSet<string>();
+#endif
 
         public static bool IsLoading { get; private set; }
 
@@ -69,6 +71,9 @@ namespace KouXiaGu.Localizations
 
         public static void SetConfig(LocalizationConfig config)
         {
+            if (config == null)
+                throw new ArgumentNullException();
+
             Config = config;
             LoadLanguage();
             UpdateTextObservers();
@@ -76,12 +81,22 @@ namespace KouXiaGu.Localizations
         }
 
 
+        /// <summary>
+        /// 从磁盘读取配置文件,若不存在,则创建到;
+        /// </summary>
         public static void ReadConfigFile()
         {
-            var config = Resources.ReadConfig();
-            if (config != null)
+            try
             {
-                Config = config;
+                var config = Resources.ReadConfig();
+                if (config != null)
+                {
+                    Config = config;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Resources.WriteConfig(Config);
             }
         }
 
@@ -144,6 +159,10 @@ namespace KouXiaGu.Localizations
             if (!IsLoading)
                 UpdateTextObserver(observer);
 
+#if COLLECT_KEYS
+            collectKeys.Add(observer.Key);
+#endif
+
             return new CollectionUnsubscriber<ITextObserver>(textObservers, observer);
         }
 
@@ -167,6 +186,17 @@ namespace KouXiaGu.Localizations
         }
 
 
+#if COLLECT_KEYS
+        /// <summary>
+        /// 获取到到现在所有订阅的Key;
+        /// </summary>
+        public static IEnumerable<string> GetAllSubscribedKeys()
+        {
+            return collectKeys;
+        }
+#endif
+
+
         static void Clear()
         {
             textDictionary.Clear();
@@ -174,15 +204,14 @@ namespace KouXiaGu.Localizations
         }
 
 
-        #region 实例部分;
+
+
 
         protected override void Awake()
         {
             base.Awake();
             Initialize();
         }
-
-        #endregion
 
 
     }

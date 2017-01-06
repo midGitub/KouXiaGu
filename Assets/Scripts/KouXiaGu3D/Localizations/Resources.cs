@@ -17,7 +17,7 @@ namespace KouXiaGu.Localizations
         /// </summary>
         const string RES_DIRECTORY = "Localization";
 
-        const string DESCRIPTION_NAME = "Description.xml";
+        const string DESCRIPTION_NAME = "Localization.xml";
 
         public static string ResPath
         {
