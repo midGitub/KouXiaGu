@@ -161,6 +161,7 @@ namespace KouXiaGu.Localizations
             if (textDictionary.TryGetValue(textObserver.Key, out text))
             {
                 textObserver.SetText(text);
+                return;
             }
             textObserver.OnTextNotFound();
         }
