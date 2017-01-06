@@ -17,8 +17,13 @@ namespace KouXiaGu.Localizations
         {
             base.OnInspectorGUI();
 
-            EditorGUILayout.LabelField("SystemLanguage", Localization.SystemLanguage.ToString());
+            EditorGUILayout.LabelField("SystemLanguage", Localization.SysLanguage);
             EditorGUILayout.LabelField("文本量", Localization.TextDictionary.Count.ToString());
+
+            if (GUILayout.Button("保存配置文件"))
+            {
+                Localization.WriteConfigFile();
+            }
 
             EditorGUILayout.BeginHorizontal();
 
@@ -33,6 +38,7 @@ namespace KouXiaGu.Localizations
             }
 
             EditorGUILayout.EndHorizontal();
+
         }
 
 
@@ -46,19 +52,17 @@ namespace KouXiaGu.Localizations
 
         string TempletFilePath
         {
-            get { return Path.Combine(Localization.ResPath, "Test.xml"); }
+            get { return Path.Combine(Resources.ResPath, "Test.xml"); }
         }
 
         void Output()
         {
-            XmlFile writer = new XmlFile(TempletFilePath);
-            writer.WriteTexts(SystemLanguage.ChineseSimplified.ToString(), Templet);
+            XmlFile.WriteTexts(TempletFilePath, SystemLanguage.ChineseSimplified.ToString(), Templet);
         }
 
         void Input()
         {
-            XmlFile writer = new XmlFile(TempletFilePath);
-            var texts = writer.ReadTexts().ToArray();
+            var texts = XmlFile.ReadTexts(TempletFilePath);
             Debug.Log(texts.ToLog());
         }
 

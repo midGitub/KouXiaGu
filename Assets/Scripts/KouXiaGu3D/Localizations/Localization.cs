@@ -15,176 +15,123 @@ namespace KouXiaGu.Localizations
     public sealed class Localization : UnitySington<Localization>
     {
 
-        /// <summary>
-        /// 文本字典;
-        /// </summary>
+        static Localization()
+        {
+            IsLoading = true;
+        }
+
+
+        [SerializeField]
+        LocalizationConfig config = new LocalizationConfig()
+        {
+            FollowSystemLanguage = true,
+            Language = SystemLanguage.English.ToString(),
+            SecondLanguage = SystemLanguage.ChineseSimplified.ToString(),
+        };
+
+
         static readonly TextDictionary textDictionary = new TextDictionary();
 
+        static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
+
+        public static bool IsLoading { get; private set; }
+
         /// <summary>
-        /// 文本字典;
+        /// 重复加入舍弃的;
         /// </summary>
+        static readonly List<TextPack> invalidTexts = new List<TextPack>();
+
+
         public static IReadOnlyDictionary<string, string> TextDictionary
         {
             get { return textDictionary; }
         }
 
-        static void Clear()
+        public static LocalizationConfig Config
         {
-            textDictionary.Clear();
+            get { return GetInstance.config; }
+            private set { GetInstance.config = value; }
         }
 
-        #region 外部资源;
-
-        /// <summary>
-        /// 语言包存放的文件夹;
-        /// </summary>
-        const string RES_DIRECTORY = "Localization";
-
-        const string DESCRIPTION_NAME = "Description.xml";
-
-        static Configuration DefaultConfig = new Configuration()
+        public static string SysLanguage
         {
-            Language = SystemLanguage.English,
-            SecondLanguage = SystemLanguage.ChineseSimplified,
-        };
-
-        static Configuration config;
-
-        public static string ResPath
-        {
-            get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, RES_DIRECTORY); }
-        }
-
-        public static Configuration Config
-        {
-            get{ return config ?? (config = LoadConfiguration()); }
-        }
-
-        public static string ConfigFilePath
-        {
-            get { return Path.Combine(ResPath, DESCRIPTION_NAME); }
-        }
-
-        /// <summary>
-        /// 读取到配置文件,若不存在则返回默认的配置;
-        /// </summary>
-        public static Configuration LoadConfiguration()
-        {
-            try
-            {
-                var descr = (Configuration)Configuration.Serializer.DeserializeXiaGu(ConfigFilePath);
-                return descr;
-            }
-            catch (FileNotFoundException)
-            {
-                Debug.LogWarning("缺少语言配置文件!");
-                return DefaultConfig;
-            }
-        }
-
-        /// <summary>
-        /// 保存配置文件,若不存在则保存默认的配置;
-        /// </summary>
-        public static void SaveConfiguration()
-        {
-            Configuration.Serializer.SerializeXiaGu(ConfigFilePath, Config);
-        }
-
-        /// <summary>
-        /// 配置信息;
-        /// </summary>
-        [XmlType("LocalizationConfiguration"), Serializable]
-        public sealed class Configuration
-        {
-
-            static readonly XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
-
-            public static XmlSerializer Serializer
-            {
-                get { return serializer; }
-            }
-
-            /// <summary>
-            /// 指定使用的语言;
-            /// </summary>
-            [XmlElement("Language")]
-            public SystemLanguage Language;
-
-            /// <summary>
-            /// 备用语言;
-            /// </summary>
-            [XmlElement("SecondLanguage")]
-            public SystemLanguage SecondLanguage;
-
-        }
-
-        #endregion
-
-
-        #region 实例部分;
-
-        /// <summary>
-        /// 文本订阅合集;
-        /// </summary>
-        static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
-
-        static bool isLoading = false;
-
-
-        /// <summary>
-        /// 当前系统的语言;
-        /// </summary>
-        public static SystemLanguage SystemLanguage
-        {
-            get { return Application.systemLanguage; }
+            get { return Application.systemLanguage.ToString(); }
         }
 
 
-        void Start()
+        static void Initialize()
         {
-            StartLoadPack();
-        }
-
-        public void StartLoadPack()
-        {
-            if(!isLoading)
-                StartCoroutine(LoadPack());
-        }
-
-        IEnumerator LoadPack()
-        {
-            isLoading = true;
-            Clear();
-
-            ITextReader reader = GetTextReader();
-
-            Add(reader);
+            ReadConfigFile();
+            LoadLanguage();
             UpdateTextObservers();
-
-            isLoading = false;
-            yield break;
         }
 
-        void Add(ITextReader reader)
+        public static void SetConfig(LocalizationConfig config)
+        {
+            Config = config;
+            LoadLanguage();
+            UpdateTextObservers();
+        }
+
+
+        public static void ReadConfigFile()
+        {
+            var config = Resources.ReadConfig();
+            if (config != null)
+            {
+                Config = config;
+            }
+        }
+
+        public static void WriteConfigFile()
+        {
+            Resources.WriteConfig(Config);
+        }
+
+
+        static void LoadLanguage()
+        {
+            string language;
+            string secondLanguage;
+
+            if (Config.FollowSystemLanguage)
+            {
+                language = SysLanguage;
+                secondLanguage = Config.Language;
+            }
+            else
+            {
+                language = Config.Language;
+                secondLanguage = Config.SecondLanguage;
+            }
+
+            LoadLanguage(language, secondLanguage);
+        }
+
+        static void LoadLanguage(string language, string secondLanguage)
+        {
+            var readers = Resources.GetTextReader(language, secondLanguage);
+            ReadTexts(readers);
+        }
+
+        static void ReadTexts(IEnumerable<ITextReader> readers)
+        {
+            foreach (var reader in readers)
+            {
+                ReadTexts(reader);
+            }
+        }
+
+        static void ReadTexts(ITextReader reader)
         {
             foreach (var item in reader.ReadTexts())
             {
                 if (!textDictionary.Add(item))
-                {
-                    Debug.LogWarning("存在相同的字符:" + item.ToString());
-                }
+                    invalidTexts.Add(item);
             }
         }
 
-        ITextReader GetTextReader()
-        {
-            List<LanguagePack> pack = new List<LanguagePack>(XmlFile.LanguagePackExists(ResPath, SearchOption.TopDirectoryOnly));
-            return pack[0].Reader;
-        }
 
-        /// <summary>
-        /// 订阅到文本更新;
-        /// </summary>
         public static IDisposable Subscribe(ITextObserver observer)
         {
             if (observer == null)
@@ -192,13 +139,13 @@ namespace KouXiaGu.Localizations
             if (!textObservers.Add(observer))
                 throw new ArgumentException("重复订阅;");
 
+            if (!IsLoading)
+                UpdateTextObserver(observer);
+
             return new CollectionUnsubscriber<ITextObserver>(textObservers, observer);
         }
 
-        /// <summary>
-        /// 更新所有文本(应该在Unity线程中);
-        /// </summary>
-        void UpdateTextObservers()
+        static void UpdateTextObservers()
         {
             foreach (var textObserver in textObservers)
             {
@@ -206,10 +153,7 @@ namespace KouXiaGu.Localizations
             }
         }
 
-        /// <summary>
-        /// 更新文本观察者内容;
-        /// </summary>
-        void UpdateTextObserver(ITextObserver textObserver)
+        static void UpdateTextObserver(ITextObserver textObserver)
         {
             string text;
             if (textDictionary.TryGetValue(textObserver.Key, out text))
@@ -217,6 +161,22 @@ namespace KouXiaGu.Localizations
                 textObserver.SetText(text);
             }
             textObserver.OnTextNotFound();
+        }
+
+
+        static void Clear()
+        {
+            textDictionary.Clear();
+            invalidTexts.Clear();
+        }
+
+
+        #region 实例部分;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            Initialize();
         }
 
         #endregion

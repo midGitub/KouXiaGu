@@ -8,10 +8,7 @@ namespace KouXiaGu.Localizations
 
     public interface ITextReader
     {
-
-        string FilePath { get; }
         IEnumerable<TextPack> ReadTexts();
-
     }
 
 }

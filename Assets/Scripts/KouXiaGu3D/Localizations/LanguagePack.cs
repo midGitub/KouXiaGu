@@ -1,64 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace KouXiaGu.Localizations
 {
 
 
-    public class LanguagePack
+    public class LanguagePack : ITextReader
     {
 
-        static readonly Dictionary<string, SystemLanguage> languageDictionary = GetLanguageDictionary();
-
-        static Dictionary<string, SystemLanguage> GetLanguageDictionary()
-        {
-            var languagesArray = Enum.GetValues(typeof(SystemLanguage));
-            var languageDictionary = new Dictionary<string, SystemLanguage>(languagesArray.Length);
-
-            foreach (SystemLanguage language in languagesArray)
-            {
-                string key = language.ToString();
-                languageDictionary.AddOrUpdate(key, language);
-            }
-
-            return languageDictionary;
-        }
+        /// <summary>
+        /// 语言文件匹配的搜索字符串;
+        /// </summary>
+        const string LANGUAGE_PACK_SEARCH_PATTERN = "*" + XmlFile.FILE_EXTENSION;
 
         /// <summary>
-        /// 返回枚举表示的语言,若不存在则返回 Unknown
+        /// 搜索并获取到所有语言包;
         /// </summary>
-        public static SystemLanguage GetLanguage(string language)
+        public static IEnumerable<LanguagePack> Find(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            SystemLanguage systemLanguage;
-            if (languageDictionary.TryGetValue(language, out systemLanguage))
+            var paths = Directory.GetFiles(directoryPath, LANGUAGE_PACK_SEARCH_PATTERN, searchOption);
+
+            foreach (var path in paths)
             {
-                return systemLanguage;
+                LanguagePack pack;
+                if (TryLoad(path, out pack))
+                    yield return pack;
             }
-            return SystemLanguage.Unknown;
         }
 
-
-        public LanguagePack(string language, ITextReader file)
+        public static bool TryLoad(string filePath, out LanguagePack pack)
         {
-            this.Language = GetLanguage(language);
-            this.Reader = file;
+            try
+            {
+                pack = Load(filePath);
+                return true;
+            }
+            catch
+            {
+                pack = default(LanguagePack);
+                return false;
+            }
         }
 
-        public LanguagePack(SystemLanguage language, ITextReader file)
+        public static LanguagePack Load(string filePath)
+        {
+            string language = XmlFile.GetLanguage(filePath);
+            return new LanguagePack(language, filePath);
+        }
+
+
+        LanguagePack(string language, string file)
         {
             this.Language = language;
-            this.Reader = file;
+            this.FilePath = file;
         }
 
-        public SystemLanguage Language { get; private set; }
 
-        public ITextReader Reader { get; private set; }
+        public string Language { get; private set; }
+
+        public string FilePath { get; private set; }
 
 
-
+        public IEnumerable<TextPack> ReadTexts()
+        {
+            return XmlFile.ReadTexts(FilePath);
+        }
 
     }
 
