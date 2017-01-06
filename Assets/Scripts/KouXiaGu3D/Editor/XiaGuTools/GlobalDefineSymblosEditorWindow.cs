@@ -84,9 +84,10 @@ namespace KouXiaGu
             LinkedListNode<DefineAndTag> pointer = defineSymblos.First;
             while (pointer != null)
             {
+                DefineAndTag defineSymblo = pointer.Value;
+
                 EditorGUILayout.BeginHorizontal();
 
-                DefineAndTag defineSymblo = pointer.Value;
 
                 GUI.backgroundColor = red;
                 if (GUILayout.Button("Remove", GUILayout.Width(65f)))
@@ -102,18 +103,16 @@ namespace KouXiaGu
                 GUI.backgroundColor = Color.white;
 
 
-                EditorGUILayout.BeginHorizontal();
-
                 EditorGUILayout.LabelField("Tag:", GUILayout.MaxWidth(28f));
                 defineSymblo.Tag = EditorGUILayout.TextField(defineSymblo.Tag, GUILayout.MaxWidth(222f));
 
                 EditorGUILayout.LabelField("DefineSymblos:", GUILayout.MaxWidth(92f));
                 string result = EditorGUILayout.TextField(defineSymblo.Define);
 
-                EditorGUILayout.EndHorizontal();
-
                 if (result != defineSymblo.Define)
                     defineSymblo.Define = Normalize(result);
+
+
                 EditorGUILayout.EndHorizontal();
             }
 
@@ -130,6 +129,7 @@ namespace KouXiaGu
 
             EditorGUILayout.BeginHorizontal();
 
+
             if (GUILayout.Button("Read", GUILayout.Height(btnHeight)))
             {
                 ReadFromFile();
@@ -145,6 +145,7 @@ namespace KouXiaGu
                 SetDefinesToPlayerSettings();
             }
             GUI.backgroundColor = Color.white;
+
 
             EditorGUILayout.EndHorizontal();
 
@@ -295,6 +296,5 @@ namespace KouXiaGu
         }
 
     }
-
 
 }
