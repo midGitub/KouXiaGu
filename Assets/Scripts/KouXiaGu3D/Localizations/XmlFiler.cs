@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.IO;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.Localizations
 {
@@ -53,6 +54,21 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
+        /// 使用枚举的方式获取到所有文本条目;
+        /// </summary>
+        public static IEnumerable<TextItem> ReadTextsEnumerate(string filePath)
+        {
+            using (XmlReader reader = XmlReader.Create(filePath, xmlReaderSettings))
+            {
+                IEnumerable<TextItem> texts = ReadTexts(reader);
+                foreach (var text in texts)
+                {
+                    yield return text;
+                }
+            }
+        }
+
+        /// <summary>
         /// 读取到文件所有文本条目;
         /// </summary>
         public static List<TextItem> ReadTexts(string filePath)
@@ -60,11 +76,13 @@ namespace KouXiaGu.Localizations
             using (XmlReader reader = XmlReader.Create(filePath, xmlReaderSettings))
             {
                 IEnumerable<TextItem> texts = ReadTexts(reader);
-                List<TextItem> contents = new List<TextItem>(texts);
-                return contents;
+                return new List<TextItem>(texts);
             }
         }
 
+        /// <summary>
+        /// 读取并返回所有文本条目;
+        /// </summary>
         static IEnumerable<TextItem> ReadTexts(XmlReader reader)
         {
             reader.MoveToContent();
@@ -101,7 +119,22 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
-        /// 获取到文件所有Key关键词;
+        /// 使用迭代的方式获取到文件的所有Key关键词;
+        /// </summary>
+        public static IEnumerable<string> ReadKeysEnumerate(string filePath)
+        {
+            using (XmlReader reader = XmlReader.Create(filePath, xmlReaderSettings))
+            {
+                IEnumerable<string> keys = ReadKeys(reader);
+                foreach (var key in keys)
+                {
+                    yield return key;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到文件的所有Key关键词;
         /// </summary>
         public static List<string> ReadKeys(string filePath)
         {
@@ -192,46 +225,70 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
-        /// 写入所有文本条目;
+        /// 创建新的文件,并且写入所有文本条目;
         /// </summary>
-        public static void WriteTexts(string filePath, string language, IEnumerable<TextItem> texts)
+        public static void CreateTexts(string filePath, string language, IEnumerable<TextItem> texts)
         {
             using (XmlWriter writer = XmlWriter.Create(filePath, xmlWriterSettings))
             {
-                WriteTexts(writer, language, texts);
+                CreateTexts(writer, language, texts);
             }
         }
 
         /// <summary>
         /// 写入所有文本条目;
         /// </summary>
-        public static void WriteTexts(XmlWriter writer, string language, IEnumerable<TextItem> texts)
+        static void CreateTexts(XmlWriter writer, string language, IEnumerable<TextItem> texts)
         {
             writer.WriteStartRoot(language);
             WriteTextElements(writer, texts);
             writer.WriteEndRoot();
         }
 
+
+        /// <summary>
+        /// 添加到Texts到文件内;
+        /// </summary>
+        public static void AppendTexts(string filePath, IEnumerable<TextItem> texts)
+        {
+            string language;
+
+            if (TryGetLanguage(filePath, out language))
+            {
+                List<TextItem> original = ReadTexts(filePath);
+                IEnumerable<TextItem> newTests = original.Append(texts);
+
+                CreateTexts(filePath, language, newTests);
+            }
+            else
+            {
+                throw new InvalidOperationException("可能格式不符,无法读取文件内容;");
+            }
+        }
+
+
         /// <summary>
         /// 仅写入条目中的Key的值,其它值留空;
         /// </summary>
-        public static void WriteKeys(string filePath, string language, IEnumerable<string> keys)
+        public static void CreateKeys(string filePath, string language, IEnumerable<string> keys)
         {
             using (XmlWriter writer = XmlWriter.Create(filePath, xmlWriterSettings))
             {
-                WriteKeys(writer, language, keys);
+                CreateKeys(writer, language, keys);
             }
         }
 
         /// <summary>
         /// 仅写入条目中的Key的值,其它值留空;
         /// </summary>
-        public static void WriteKeys(XmlWriter writer, string language, IEnumerable<string> keys)
+        static void CreateKeys(XmlWriter writer, string language, IEnumerable<string> keys)
         {
             writer.WriteStartRoot(language);
             WriteKeyElements(writer, keys);
             writer.WriteEndRoot();
         }
+
+
 
 
         static void WriteStartRoot(this XmlWriter writer, string language)

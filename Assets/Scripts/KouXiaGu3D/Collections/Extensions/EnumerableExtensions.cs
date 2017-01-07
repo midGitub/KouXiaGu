@@ -25,7 +25,7 @@ namespace KouXiaGu.Collections
         /// <summary>
         /// 加入到最后返回;
         /// </summary>
-        public static IEnumerable<T> AddRange<T>(this IEnumerable<T> collection, T item)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, T item)
         {
             foreach (var value in collection)
             {
@@ -37,7 +37,7 @@ namespace KouXiaGu.Collections
         /// <summary>
         /// 加入到最后返回;
         /// </summary>
-        public static IEnumerable<T> AddRange<T>(this IEnumerable<T> collection, IEnumerable<T> other)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, IEnumerable<T> other)
         {
             foreach (var value in collection)
             {

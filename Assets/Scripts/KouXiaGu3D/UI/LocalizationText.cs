@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Localizations;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,6 +40,9 @@ namespace KouXiaGu.UI
 
         void ITextObserver.OnTextNotFound()
         {
+#if COLLECT_LACKED_KEYS
+            LackingTextCollecter.Collecting(key);
+#endif
             Debug.Log(name + " 无法找到对应文本:" + key);
         }
 

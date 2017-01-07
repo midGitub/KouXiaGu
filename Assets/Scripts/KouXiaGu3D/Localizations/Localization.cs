@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using KouXiaGu.Collections;
 using UnityEngine;
@@ -34,10 +33,6 @@ namespace KouXiaGu.Localizations
         static readonly TextDictionary textDictionary = new TextDictionary();
 
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
-
-#if COLLECT_KEYS
-        static readonly HashSet<string> collectKeys = new HashSet<string>();
-#endif
 
         public static bool IsLoading { get; private set; }
 
@@ -168,10 +163,6 @@ namespace KouXiaGu.Localizations
             if (!IsLoading)
                 UpdateTextObserver(observer);
 
-#if COLLECT_KEYS
-            collectKeys.Add(observer.Key);
-#endif
-
             return new CollectionUnsubscriber<ITextObserver>(textObservers, observer);
         }
 
@@ -193,17 +184,6 @@ namespace KouXiaGu.Localizations
             }
             textObserver.OnTextNotFound();
         }
-
-
-#if COLLECT_KEYS
-        /// <summary>
-        /// 获取到到现在所有订阅的Key;
-        /// </summary>
-        public static IEnumerable<string> GetAllSubscribedKeys()
-        {
-            return collectKeys;
-        }
-#endif
 
 
         static void Clear()

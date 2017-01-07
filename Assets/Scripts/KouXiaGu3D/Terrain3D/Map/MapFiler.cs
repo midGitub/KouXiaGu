@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
             {
                 foreach (var mapPath in MapDirectorys)
                 {
-                    mapFiles.AddRange(GetMaps(mapPath));
+                    mapFiles.Append(GetMaps(mapPath));
                 }
             }
 
