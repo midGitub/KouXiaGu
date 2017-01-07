@@ -23,8 +23,11 @@ namespace KouXiaGu.Localizations
         LocalizationConfig config = new LocalizationConfig()
         {
             FollowSystemLanguage = true,
-            Language = SystemLanguage.English.ToString(),
-            SecondLanguage = SystemLanguage.ChineseSimplified.ToString(),
+            Language = new string[]
+            {
+                SystemLanguage.English.ToString(),
+                SystemLanguage.ChineseSimplified.ToString(),
+            },
         };
 
 
@@ -41,7 +44,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 重复加入舍弃的;
         /// </summary>
-        static readonly List<TextPack> invalidTexts = new List<TextPack>();
+        static readonly List<TextItem> invalidTexts = new List<TextItem>();
 
 
         public static IReadOnlyDictionary<string, string> TextDictionary
@@ -108,28 +111,34 @@ namespace KouXiaGu.Localizations
 
         static void LoadLanguage()
         {
-            string language;
-            string secondLanguage;
-
             if (Config.FollowSystemLanguage)
             {
-                language = SysLanguage;
-                secondLanguage = Config.Language;
+                string language = SysLanguage;
+                LoadLanguage(language, Config.Language);
             }
             else
             {
-                language = Config.Language;
-                secondLanguage = Config.SecondLanguage;
+                LoadLanguage(Config.Language);
             }
-
-            LoadLanguage(language, secondLanguage);
         }
 
-        static void LoadLanguage(string language, string secondLanguage)
+
+        static void LoadLanguage(IEnumerable<string> languages)
         {
-            var readers = Resources.GetTextReader(language, secondLanguage);
+            var readers = Resources.GetReader(languages);
             ReadTexts(readers);
         }
+
+        static void LoadLanguage(string language, IEnumerable<string> languages)
+        {
+            List<string> newlanguage = new List<string>();
+            newlanguage.Add(language);
+            newlanguage.AddRange(languages);
+
+            var readers = Resources.GetReader(newlanguage);
+            ReadTexts(readers);
+        }
+
 
         static void ReadTexts(IEnumerable<ITextReader> readers)
         {

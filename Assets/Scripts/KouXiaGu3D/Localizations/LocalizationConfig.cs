@@ -31,14 +31,8 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 指定使用的语言;
         /// </summary>
-        [XmlElement("Language")]
-        public string Language;
-
-        /// <summary>
-        /// 备用语言;
-        /// </summary>
-        [XmlElement("SecondLanguage")]
-        public string SecondLanguage;
+        [XmlArray("LanguagePriority"), XmlArrayItem("Language")]
+        public string[] Language;
 
     }
 

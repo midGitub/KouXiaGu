@@ -9,7 +9,7 @@ namespace KouXiaGu.Localizations
 
     public interface ITextWriter
     {
-        void WriteTexts(IEnumerable<TextPack> texts);
+        void WriteTexts(IEnumerable<TextItem> texts);
     }
 
 }

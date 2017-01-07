@@ -41,35 +41,71 @@ namespace KouXiaGu.Localizations
         }
 
 
-        public static List<ITextReader> GetTextReader(string language, string secondLanguage)
+        /// <summary>
+        /// 按数组从 0 到 max 的顺序获取到对应的文本读取接口;
+        /// </summary>
+        public static IEnumerable<ITextReader> GetReader(IEnumerable<string> languages)
         {
-            List<ITextReader> readers = new List<ITextReader>(1);
-            IEnumerable<LanguagePack> packs = LanguagePack.Find(ResPath);
+            foreach (var directory in SearchDirectorys())
+            {
+                ITextReader reader;
+                if (TryGetReader(directory, out reader, languages.ToArray()))
+                    yield return reader;
+            }
+        }
 
-            LanguagePack first = null;
-            LanguagePack second = null;
+        public static bool TryGetReader(string directoryPath, out ITextReader reader, params string[] languages)
+        {
+            int level = int.MaxValue;
+            XmlLanguagePack result = null;
+            IEnumerable<XmlLanguagePack> packs = GetLanguagePacks(directoryPath);
 
             foreach (var pack in packs)
             {
-                if (pack.Language == language)
-                    first = pack;
-                else if (pack.Language == secondLanguage)
-                    second = pack;
+                for (int i = 0; i < languages.Length; i++)
+                {
+                    if (level > i && languages[i] == pack.Language)
+                    {
+                        result = pack;
+                        level = i;
+                        break;
+                    }
+                }
             }
 
-            if (first != null)
-                readers.Add(first);
-            else if (second != null)
-                readers.Add(second);
+            if (result == null)
+            {
+                reader = null;
+                Debug.LogWarning("无法找到目录之下的语言包:" + directoryPath + "\n请求:" + languages.ToLog());
+                return false;
+            }
             else
-                Debug.LogError("未找到合适的语言包;");
-
-            return readers;
+            {
+                reader = GetReader(result);
+                return true;
+            }
         }
 
-        public static IEnumerable<LanguagePack> LanguagePacks()
+
+        /// <summary>
+        /// 获取到需要读取语言文件的路径;
+        /// </summary>
+        static IEnumerable<string> SearchDirectorys()
         {
-            return LanguagePack.Find(ResPath);
+            yield return ResPath;
+        }
+
+        /// <summary>
+        /// 获取到文件夹之下的所有语言文件;
+        /// </summary>
+        public static IEnumerable<XmlLanguagePack> GetLanguagePacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            return XmlFiler.GetPacks(ResPath, searchOption);
+        }
+
+        static ITextReader GetReader(XmlLanguagePack pack)
+        {
+            return new XmlTextReader(pack);
         }
 
     }

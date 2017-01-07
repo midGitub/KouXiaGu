@@ -29,7 +29,7 @@ namespace KouXiaGu.Localizations
 
             if (GUILayout.Button("输出所有语言包"))
             {
-                Debug.Log(Resources.LanguagePacks().ToLog());
+                Debug.Log(Resources.GetLanguagePacks(Resources.ResPath).ToLog());
             }
 
             EditorGUILayout.EndHorizontal();
@@ -52,12 +52,12 @@ namespace KouXiaGu.Localizations
         }
 
 
-        static readonly TextPack[] Templet = new TextPack[]
+        static readonly TextItem[] Templet = new TextItem[]
         {
-            new TextPack("Test_1", "测试1", false),
-            new TextPack("Test_2", "测试2", false),
-            new TextPack("Test_3", "测试3", true),
-            new TextPack("Test_4", "测试4", true),
+            new TextItem("Test_1", "测试1", false),
+            new TextItem("Test_2", "测试2", false),
+            new TextItem("Test_3", "测试3", true),
+            new TextItem("Test_4", "测试4", true),
         };
 
         string TempletFilePath
@@ -67,12 +67,12 @@ namespace KouXiaGu.Localizations
 
         void Output()
         {
-            XmlFile.WriteTexts(TempletFilePath, SystemLanguage.ChineseSimplified.ToString(), Templet);
+            XmlFiler.WriteTexts(TempletFilePath, SystemLanguage.ChineseSimplified.ToString(), Templet);
         }
 
         void Input()
         {
-            var texts = XmlFile.ReadTexts(TempletFilePath);
+            var texts = XmlFiler.ReadTexts(TempletFilePath);
             Debug.Log(texts.ToLog());
         }
 

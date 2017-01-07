@@ -7,10 +7,9 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public struct TextPack
+    public struct TextItem
     {
-
-        public TextPack(string Key, string Value, bool IsUpdate)
+        public TextItem(string Key, string Value, bool IsUpdate)
         {
             this.Key = Key;
             this.Value = Value;
@@ -23,9 +22,9 @@ namespace KouXiaGu.Localizations
 
         public override bool Equals(object obj)
         {
-            if (!(obj is TextPack))
+            if (!(obj is TextItem))
                 return false;
-            return ((TextPack)obj).Key == Key;
+            return ((TextItem)obj).Key == Key;
         }
 
         public override int GetHashCode()

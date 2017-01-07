@@ -27,7 +27,7 @@ namespace KouXiaGu.Localizations
             get { return base.Values; }
         }
 
-        public bool Add(TextPack pack)
+        public bool Add(TextItem pack)
         {
             if (ContainsKey(pack.Key) && !pack.IsUpdate)
             {
