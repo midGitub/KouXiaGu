@@ -37,17 +37,18 @@ namespace KouXiaGu.Localizations
 
             EditorGUILayout.LabelField("SystemLanguage", LocalizationConfig.SysLanguage);
             EditorGUILayout.LabelField("文本量", Localization.TextDictionary.Count.ToString());
+            EditorGUILayout.LabelField("缺失文本量", LackingTextCollecter.LackingKeyCount.ToString());
 
             EditorGUILayout.BeginHorizontal();
 
             if (GUILayout.Button("保存配置"))
             {
-                //LocalizationConfig.Write();
+                LocalizationConfig.Write(Localization.Config);
             }
 
             if (GUILayout.Button("输出语言"))
             {
-                Debug.Log(Resources.GetLanguagePacks(Resources.ResDirectoryPath).ToLog("目录下的语言文件"));
+                Debug.Log(Resources.GetLanguageFiles(Resources.ResDirectoryPath).ToLog("目录下的语言文件"));
             }
 
             EditorGUILayout.EndHorizontal();

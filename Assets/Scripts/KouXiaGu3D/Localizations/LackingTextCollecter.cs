@@ -12,6 +12,11 @@ namespace KouXiaGu.Localizations
 
         static readonly HashSet<string> lackingKeys = new HashSet<string>();
 
+        public static int LackingKeyCount
+        {
+            get { return lackingKeys.Count; }
+        }
+
         public static IEnumerable<string> LackingKeys
         {
             get { return lackingKeys; }

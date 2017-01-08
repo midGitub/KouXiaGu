@@ -42,8 +42,9 @@ namespace KouXiaGu.UI
         {
 #if COLLECT_LACKED_KEYS
             LackingTextCollecter.Collecting(key);
-#endif
+#else
             Debug.Log(name + " 无法找到对应文本:" + key);
+#endif
         }
 
     }

@@ -66,7 +66,7 @@ namespace KouXiaGu.Localizations
         {
             int level = int.MaxValue;
             XmlLanguageFile result = null;
-            IEnumerable<XmlLanguageFile> packs = GetLanguagePacks(directoryPath);
+            IEnumerable<XmlLanguageFile> packs = GetLanguageFiles(directoryPath);
 
             foreach (var pack in packs)
             {
@@ -95,9 +95,17 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
+        /// 获取到所有语言包;
+        /// </summary>
+        public static IEnumerable<XmlLanguageFile> GetLanguageFiles()
+        {
+            return GetLanguageFiles(ResDirectoryPath, SearchOption.TopDirectoryOnly);
+        }
+
+        /// <summary>
         /// 获取到文件夹之下的所有语言文件;
         /// </summary>
-        public static IEnumerable<XmlLanguageFile> GetLanguagePacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public static IEnumerable<XmlLanguageFile> GetLanguageFiles(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             return XmlFiler.GetPacks(ResDirectoryPath, searchOption);
         }

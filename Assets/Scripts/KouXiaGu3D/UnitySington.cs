@@ -20,8 +20,16 @@ namespace KouXiaGu
 
         protected static T GetInstance
         {
-            get { return instance ?? (instance = Initialize()); }
+            get
+            {
+#if UNITY_EDITOR
+                return Initialize();
+#else
+                return instance ?? (instance = Initialize());
+#endif
+            }
         }
+
 
         static T Initialize()
         {
@@ -58,7 +66,7 @@ namespace KouXiaGu
                     return;
             }
 
-            Debug.LogWarning("尝试实例化多个单例;" + name);
+            Debug.LogWarning(GetType().Name + ";尝试实例化多个单例;" + name);
             Destroy(this);
         }
 

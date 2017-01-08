@@ -72,6 +72,7 @@ namespace KouXiaGu.UI
                 state.Last.Value.OnCover();
 
             DisplayAction();
+            OnUncover();
 
             state.AddLast(this);
         }
@@ -165,6 +166,7 @@ namespace KouXiaGu.UI
         /// </summary>
         protected virtual void OnCover()
         {
+            Canvas.renderMode = RenderMode.ScreenSpaceCamera;
             Canvas.worldCamera = Camera.main;
         }
 
@@ -173,7 +175,7 @@ namespace KouXiaGu.UI
         /// </summary>
         protected virtual void OnUncover()
         {
-            Canvas.worldCamera = UICamera.Main;
+            Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         }
 
         /// <summary>

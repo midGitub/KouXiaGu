@@ -21,6 +21,11 @@ namespace KouXiaGu.Localizations
             return XmlFiler.ReadTexts(pack.FilePath);
         }
 
+        public override string ToString()
+        {
+            return pack.ToString();
+        }
+
     }
 
 }

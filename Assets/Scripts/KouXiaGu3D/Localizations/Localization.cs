@@ -93,10 +93,11 @@ namespace KouXiaGu.Localizations
         public static void ReadMain()
         {
             Config = LocalizationConfig.Read();
-            ITextReader readers = Resources.GetReader(Config.GetLanguages().ToArray());
+            ITextReader reader = Resources.GetReader(Config.GetLanguages().ToArray());
 
             ClearTexts();
-            ReadTexts(readers);
+            ReadTexts(reader);
+            UpdateTextObservers();
         }
 
         /// <summary>
@@ -134,6 +135,8 @@ namespace KouXiaGu.Localizations
                 if (!textDictionary.Add(item))
                     Debug.LogWarning("重复加入的文本条目:" + item);
             }
+
+            Debug.Log("语言读取完毕:" + reader.ToString());
         }
 
         /// <summary>
