@@ -8,16 +8,21 @@ using UnityEngine.UI;
 namespace KouXiaGu.UI
 {
 
-    [DisallowMultipleComponent]
+    [DisallowMultipleComponent, RequireComponent(typeof(Toggle))]
     public class ToggleObserver : MonoBehaviour
     {
         ToggleObserver() { }
 
+
         [SerializeField]
+        GameObject target;
+
         Toggle toggle;
+
 
         void Awake()
         {
+            toggle = GetComponent<Toggle>();
             toggle.onValueChanged.AddListener(OnValueChanged);
         }
 
@@ -28,7 +33,7 @@ namespace KouXiaGu.UI
 
         void OnValueChanged(bool isOn)
         {
-            gameObject.SetActive(isOn);
+            target.SetActive(isOn);
         }
 
     }

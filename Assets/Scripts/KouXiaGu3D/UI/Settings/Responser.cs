@@ -22,6 +22,7 @@ namespace KouXiaGu.UI
             responsive = GetComponentsInChildren<IResponsive>();
         }
 
+
         protected override void ConcealAction()
         {
             base.ConcealAction();
