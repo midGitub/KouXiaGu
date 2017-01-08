@@ -198,14 +198,21 @@ namespace KouXiaGu.Localizations
         }
 
 
+        /// <summary>
+        /// 添加文本到字典;
+        /// </summary>
+        public static void AddTexts(ITextReader reader)
+        {
+            ReadTexts(reader);
+        }
+
+
         protected override void Awake()
         {
             base.Awake();
             Init();
             Read();
         }
-
-
 
     }
 
