@@ -22,14 +22,6 @@ namespace KouXiaGu.Localizations
             lackingKeys.Add(key);
         }
 
-        /// <summary>
-        /// 将所有Key输出到文件;
-        /// </summary>
-        public static void WriteXml(string filePath)
-        {
-
-        }
-
     }
 
 }

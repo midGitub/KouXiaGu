@@ -9,12 +9,12 @@ namespace KouXiaGu.Localizations
     public class XmlTextReader : ITextReader
     {
 
-        public XmlTextReader(XmlLanguagePack pack)
+        public XmlTextReader(XmlLanguageFile pack)
         {
             this.pack = pack;
         }
 
-        XmlLanguagePack pack;
+        XmlLanguageFile pack;
 
         public IEnumerable<TextItem> ReadTexts()
         {

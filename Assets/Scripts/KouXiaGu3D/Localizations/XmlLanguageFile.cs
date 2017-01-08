@@ -7,11 +7,13 @@ using System.Text;
 namespace KouXiaGu.Localizations
 {
 
-
-    public class XmlLanguagePack
+    /// <summary>
+    /// 语言文件
+    /// </summary>
+    public class XmlLanguageFile
     {
 
-        public XmlLanguagePack(string language, string file)
+        public XmlLanguageFile(string language, string file)
         {
             this.Language = language;
             this.FilePath = file;
@@ -23,9 +25,9 @@ namespace KouXiaGu.Localizations
 
         public override bool Equals(object obj)
         {
-            if (!(obj is XmlLanguagePack))
+            if (!(obj is XmlLanguageFile))
                 return false;
-            return ((XmlLanguagePack)obj).FilePath == FilePath;
+            return ((XmlLanguageFile)obj).FilePath == FilePath;
         }
 
         public override int GetHashCode()

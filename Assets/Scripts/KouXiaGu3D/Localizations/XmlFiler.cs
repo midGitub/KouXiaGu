@@ -165,13 +165,13 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 获取到目录下的所有语言包文件;
         /// </summary>
-        public static IEnumerable<XmlLanguagePack> GetPacks(string directoryPath, SearchOption searchOption)
+        public static IEnumerable<XmlLanguageFile> GetPacks(string directoryPath, SearchOption searchOption)
         {
             var paths = Directory.GetFiles(directoryPath, LANGUAGE_PACK_SEARCH_PATTERN, searchOption);
 
             foreach (var path in paths)
             {
-                XmlLanguagePack pack;
+                XmlLanguageFile pack;
                 if (TryGetPack(path, out pack))
                     yield return pack;
             }
@@ -180,15 +180,15 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 尝试获取到这个文件的信息,若无法获取到则返回false;
         /// </summary>
-        public static bool TryGetPack(string filePath, out XmlLanguagePack pack)
+        public static bool TryGetPack(string filePath, out XmlLanguageFile pack)
         {
             string language;
             if (TryGetLanguage(filePath, out language))
             {
-                pack = new XmlLanguagePack(language, filePath);
+                pack = new XmlLanguageFile(language, filePath);
                 return true;
             }
-            pack = default(XmlLanguagePack);
+            pack = default(XmlLanguageFile);
             return false;
         }
 

@@ -1,31 +1,32 @@
 ﻿using System;
-using System.IO;
 using KouXiaGu.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KouXiaGu.Localizations
 {
 
     /// <summary>
-    /// 负责固定内容的文本;
+    /// 文本内容;
     /// </summary>
+    [DisallowMultipleComponent]
     public sealed class Localization : UnitySington<Localization>
     {
+        Localization() { }
 
-        static Localization()
-        {
-            IsLoading = true;
-        }
-
+        /// <summary>
+        /// 配置信息;
+        /// </summary>
         [SerializeField]
         LocalizationConfig config = new LocalizationConfig()
         {
-            FollowSystemLanguage = true,
-            Language = new string[]
+            IsFollowSystemLanguage = true,
+            LanguagePrioritys = new string[]
             {
-                SystemLanguage.English.ToString(),
-                SystemLanguage.ChineseSimplified.ToString(),
+                "English",
+                "ChineseSimplified",
+                "ChineseS",
             },
         };
 
@@ -34,122 +35,19 @@ namespace KouXiaGu.Localizations
 
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
 
-        public static bool IsLoading { get; private set; }
-
-        /// <summary>
-        /// 重复加入舍弃的;
-        /// </summary>
-        static readonly List<TextItem> invalidTexts = new List<TextItem>();
-
 
         public static IReadOnlyDictionary<string, string> TextDictionary
         {
             get { return textDictionary; }
         }
 
+        /// <summary>
+        /// 指定的配置;
+        /// </summary>
         public static LocalizationConfig Config
         {
             get { return GetInstance.config; }
             private set { GetInstance.config = value; }
-        }
-
-        public static string SysLanguage
-        {
-            get { return Application.systemLanguage.ToString(); }
-        }
-
-
-        static void Initialize()
-        {
-            ReadConfigFile();
-            LoadLanguage();
-            UpdateTextObservers();
-            IsLoading = false;
-        }
-
-        public static void SetConfig(LocalizationConfig config)
-        {
-            if (config == null)
-                throw new ArgumentNullException();
-
-            Config = config;
-            LoadLanguage();
-            UpdateTextObservers();
-            IsLoading = false;
-        }
-
-
-        /// <summary>
-        /// 从磁盘读取配置文件,若不存在,则创建到;
-        /// </summary>
-        public static void ReadConfigFile()
-        {
-            try
-            {
-                var config = Resources.ReadConfig();
-                if (config != null)
-                {
-                    Config = config;
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                Resources.WriteConfig(Config);
-            }
-        }
-
-        public static void WriteConfigFile()
-        {
-            Resources.WriteConfig(Config);
-        }
-
-
-        static void LoadLanguage()
-        {
-            if (Config.FollowSystemLanguage)
-            {
-                string language = SysLanguage;
-                LoadLanguage(language, Config.Language);
-            }
-            else
-            {
-                LoadLanguage(Config.Language);
-            }
-        }
-
-
-        static void LoadLanguage(IEnumerable<string> languages)
-        {
-            var readers = Resources.GetReader(languages);
-            ReadTexts(readers);
-        }
-
-        static void LoadLanguage(string language, IEnumerable<string> languages)
-        {
-            List<string> newlanguage = new List<string>();
-            newlanguage.Add(language);
-            newlanguage.AddRange(languages);
-
-            var readers = Resources.GetReader(newlanguage);
-            ReadTexts(readers);
-        }
-
-
-        static void ReadTexts(IEnumerable<ITextReader> readers)
-        {
-            foreach (var reader in readers)
-            {
-                ReadTexts(reader);
-            }
-        }
-
-        static void ReadTexts(ITextReader reader)
-        {
-            foreach (var item in reader.ReadTexts())
-            {
-                if (!textDictionary.Add(item))
-                    invalidTexts.Add(item);
-            }
         }
 
 
@@ -160,13 +58,16 @@ namespace KouXiaGu.Localizations
             if (!textObservers.Add(observer))
                 throw new ArgumentException("重复订阅;");
 
-            if (!IsLoading)
-                UpdateTextObserver(observer);
+            UpdateTextObserver(observer);
 
             return new CollectionUnsubscriber<ITextObserver>(textObservers, observer);
         }
 
-        static void UpdateTextObservers()
+
+        /// <summary>
+        /// 更新所有文本,在主线程内调用;
+        /// </summary>
+        public static void UpdateTextObservers()
         {
             foreach (var textObserver in textObservers)
             {
@@ -186,22 +87,69 @@ namespace KouXiaGu.Localizations
         }
 
 
-        static void Clear()
+        /// <summary>
+        /// 读取\重新读取 主语言包;
+        /// </summary>
+        public static void ReadMain()
         {
-            textDictionary.Clear();
-            invalidTexts.Clear();
+            Config = LocalizationConfig.Read();
+            ITextReader readers = Resources.GetReader(Config.GetLanguages().ToArray());
+
+            ClearTexts();
+            ReadTexts(readers);
         }
 
+        /// <summary>
+        /// 重新读取到所有文本,读取完毕后通知到监视者;
+        /// </summary>
+        public static void ReadTexts(IEnumerable<ITextReader> readers)
+        {
+            ClearTexts();
 
+            foreach (var reader in readers)
+            {
+                ReadTexts(reader);
+            }
 
+            UpdateTextObservers();
+        }
+
+        /// <summary>
+        /// 添加文本到现有字典内;
+        /// </summary>
+        public static void AddTexts(IEnumerable<ITextReader> readers)
+        {
+            foreach (var reader in readers)
+            {
+                ReadTexts(reader);
+            }
+
+            UpdateTextObservers();
+        }
+
+        static void ReadTexts(ITextReader reader)
+        {
+            foreach (var item in reader.ReadTexts())
+            {
+                if (!textDictionary.Add(item))
+                    Debug.LogWarning("重复加入的文本条目:" + item);
+            }
+        }
+
+        /// <summary>
+        /// 清除所有文本内容;
+        /// </summary>
+        public static void ClearTexts()
+        {
+            textDictionary.Clear();
+        }
 
 
         protected override void Awake()
         {
             base.Awake();
-            Initialize();
+            ReadMain();
         }
-
 
     }
 

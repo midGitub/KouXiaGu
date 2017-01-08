@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu.Localizations
 {
 
-
-    public class Resources
+    /// <summary>
+    /// 负责提供语言读取方式和;
+    /// </summary>
+    [DisallowMultipleComponent]
+    public static class Resources
     {
 
         /// <summary>
@@ -17,48 +19,54 @@ namespace KouXiaGu.Localizations
         /// </summary>
         const string RES_DIRECTORY = "Localization";
 
-        const string DESCRIPTION_NAME = "Localization.xml";
-
-        public static string ResPath
+        /// <summary>
+        /// 主语言包们存放的文件夹;
+        /// </summary>
+        public static string ResDirectoryPath
         {
             get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, RES_DIRECTORY); }
         }
 
-        public static string ConfigFilePath
-        {
-            get { return Path.Combine(ResPath, DESCRIPTION_NAME); }
-        }
-
-        public static LocalizationConfig ReadConfig()
-        {
-            var descr = (LocalizationConfig)LocalizationConfig.Serializer.DeserializeXiaGu(ConfigFilePath);
-            return descr;
-        }
-
-        public static void WriteConfig(LocalizationConfig config)
-        {
-            LocalizationConfig.Serializer.SerializeXiaGu(ConfigFilePath, config);
-        }
-
 
         /// <summary>
-        /// 按数组从 0 到 max 的顺序获取到对应的文本读取接口;
+        /// 获取到主目录下优先级最高的语言读取接口;
         /// </summary>
-        public static IEnumerable<ITextReader> GetReader(IEnumerable<string> languages)
+        public static ITextReader GetReader(params string[] languages)
         {
-            foreach (var directory in SearchDirectorys())
+            ITextReader reader;
+            if (TryGetReader(ResDirectoryPath, out reader, languages))
             {
-                ITextReader reader;
-                if (TryGetReader(directory, out reader, languages.ToArray()))
-                    yield return reader;
+                return reader;
+            }
+            else
+            {
+                throw new FileNotFoundException();
             }
         }
 
+        /// <summary>
+        /// 获取到目录下的优先级最高的语言读取接口;
+        /// </summary>
+        public static IEnumerable<ITextReader> GetReader(IEnumerable<string> directorys, params string[] languages)
+        {
+            ITextReader reader;
+            foreach (var directory in directorys)
+            {
+                if (TryGetReader(directory, out reader, languages))
+                    yield return reader;
+                else
+                    Debug.LogWarning("无法找到目录之下的语言包:" + directory + "\n请求:" + languages.ToLog());
+            }
+        }
+
+        /// <summary>
+        /// 获取到目录下的优先级最高的语言读取接口;
+        /// </summary>
         public static bool TryGetReader(string directoryPath, out ITextReader reader, params string[] languages)
         {
             int level = int.MaxValue;
-            XmlLanguagePack result = null;
-            IEnumerable<XmlLanguagePack> packs = GetLanguagePacks(directoryPath);
+            XmlLanguageFile result = null;
+            IEnumerable<XmlLanguageFile> packs = GetLanguagePacks(directoryPath);
 
             foreach (var pack in packs)
             {
@@ -76,7 +84,6 @@ namespace KouXiaGu.Localizations
             if (result == null)
             {
                 reader = null;
-                Debug.LogWarning("无法找到目录之下的语言包:" + directoryPath + "\n请求:" + languages.ToLog());
                 return false;
             }
             else
@@ -88,22 +95,17 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
-        /// 获取到需要读取语言文件的路径;
+        /// 获取到文件夹之下的所有语言文件;
         /// </summary>
-        static IEnumerable<string> SearchDirectorys()
+        public static IEnumerable<XmlLanguageFile> GetLanguagePacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            yield return ResPath;
+            return XmlFiler.GetPacks(ResDirectoryPath, searchOption);
         }
 
         /// <summary>
-        /// 获取到文件夹之下的所有语言文件;
+        /// 获取到这个语言包的读取接口;
         /// </summary>
-        public static IEnumerable<XmlLanguagePack> GetLanguagePacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
-        {
-            return XmlFiler.GetPacks(ResPath, searchOption);
-        }
-
-        static ITextReader GetReader(XmlLanguagePack pack)
+        public static ITextReader GetReader(XmlLanguageFile pack)
         {
             return new XmlTextReader(pack);
         }

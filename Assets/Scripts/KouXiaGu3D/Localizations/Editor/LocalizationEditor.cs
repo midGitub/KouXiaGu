@@ -23,26 +23,31 @@ namespace KouXiaGu.Localizations
 
         string TempletFilePath
         {
-            get { return Path.Combine(Resources.ResPath, "Test.xml"); }
+            get { return Path.Combine(Resources.ResDirectoryPath, "Test.xml"); }
+        }
+
+        string LackingKeysFilePath
+        {
+            get { return Path.Combine(Resources.ResDirectoryPath, "LackingKeys.xml"); }
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            EditorGUILayout.LabelField("SystemLanguage", Localization.SysLanguage);
+            EditorGUILayout.LabelField("SystemLanguage", LocalizationConfig.SysLanguage);
             EditorGUILayout.LabelField("文本量", Localization.TextDictionary.Count.ToString());
 
             EditorGUILayout.BeginHorizontal();
 
             if (GUILayout.Button("保存配置"))
             {
-                Localization.WriteConfigFile();
+                //LocalizationConfig.Write();
             }
 
             if (GUILayout.Button("输出语言"))
             {
-                Debug.Log(Resources.GetLanguagePacks(Resources.ResPath).ToLog());
+                Debug.Log(Resources.GetLanguagePacks(Resources.ResDirectoryPath).ToLog("目录下的语言文件"));
             }
 
             EditorGUILayout.EndHorizontal();
@@ -52,7 +57,7 @@ namespace KouXiaGu.Localizations
 
             if (GUILayout.Button("测试输出"))
             {
-                XmlFiler.CreateTexts(TempletFilePath, Localization.SysLanguage, Templet);
+                XmlFiler.CreateTexts(TempletFilePath, LocalizationConfig.SysLanguage, Templet);
             }
 
             if (GUILayout.Button("测试输入"))
@@ -68,6 +73,11 @@ namespace KouXiaGu.Localizations
             if (GUILayout.Button("测试添加"))
             {
                 XmlFiler.AppendTexts(TempletFilePath, Templet);
+            }
+
+            if (GUILayout.Button("输出缺失"))
+            {
+                XmlFiler.CreateKeys(LackingKeysFilePath, LocalizationConfig.SysLanguage, LackingTextCollecter.LackingKeys);
             }
 
             EditorGUILayout.EndHorizontal();
