@@ -32,7 +32,6 @@ namespace KouXiaGu.UI
         }
 
 
-
         protected StandaloneUI() { }
 
         Canvas canvas;
