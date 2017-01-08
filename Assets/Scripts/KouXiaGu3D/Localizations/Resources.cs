@@ -29,85 +29,12 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
-        /// 获取到主目录下优先级最高的语言读取接口;
+        /// 获取到这个语言包的读取接口;
         /// </summary>
-        public static ITextReader GetReader(params string[] languages)
+        public static ITextReader GetReader(string language)
         {
-            ITextReader reader;
-            if (TryGetReader(ResDirectoryPath, out reader, languages))
-            {
-                return reader;
-            }
-            else
-            {
-                throw new FileNotFoundException();
-            }
-        }
-
-        /// <summary>
-        /// 获取到目录下的优先级最高的语言读取接口;
-        /// </summary>
-        public static IEnumerable<ITextReader> GetReader(IEnumerable<string> directorys, params string[] languages)
-        {
-            ITextReader reader;
-            foreach (var directory in directorys)
-            {
-                if (TryGetReader(directory, out reader, languages))
-                    yield return reader;
-                else
-                    Debug.LogWarning("无法找到目录之下的语言包:" + directory + "\n请求:" + languages.ToLog());
-            }
-        }
-
-        /// <summary>
-        /// 获取到目录下的优先级最高的语言读取接口;
-        /// </summary>
-        public static bool TryGetReader(string directoryPath, out ITextReader reader, params string[] languages)
-        {
-            int level = int.MaxValue;
-            XmlLanguageFile result = null;
-            IEnumerable<XmlLanguageFile> packs = GetLanguageFiles(directoryPath);
-
-            foreach (var pack in packs)
-            {
-                for (int i = 0; i < languages.Length; i++)
-                {
-                    if (level > i && languages[i] == pack.Language)
-                    {
-                        result = pack;
-                        level = i;
-                        break;
-                    }
-                }
-            }
-
-            if (result == null)
-            {
-                reader = null;
-                return false;
-            }
-            else
-            {
-                reader = GetReader(result);
-                return true;
-            }
-        }
-
-
-        /// <summary>
-        /// 获取到所有语言包;
-        /// </summary>
-        public static IEnumerable<XmlLanguageFile> GetLanguageFiles()
-        {
-            return GetLanguageFiles(ResDirectoryPath, SearchOption.TopDirectoryOnly);
-        }
-
-        /// <summary>
-        /// 获取到文件夹之下的所有语言文件;
-        /// </summary>
-        public static IEnumerable<XmlLanguageFile> GetLanguageFiles(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
-        {
-            return XmlFiler.GetPacks(ResDirectoryPath, searchOption);
+            XmlLanguageFile languageFile = FindLanguageFiles().First(item => item.Language == language);
+            return GetReader(languageFile);
         }
 
         /// <summary>
@@ -116,6 +43,23 @@ namespace KouXiaGu.Localizations
         public static ITextReader GetReader(XmlLanguageFile pack)
         {
             return new XmlTextReader(pack);
+        }
+
+
+        /// <summary>
+        /// 获取到定义的所有语言包;
+        /// </summary>
+        public static IEnumerable<XmlLanguageFile> FindLanguageFiles()
+        {
+            return FindLanguageFiles(ResDirectoryPath, SearchOption.TopDirectoryOnly);
+        }
+
+        /// <summary>
+        /// 获取到文件夹之下的所有语言文件;
+        /// </summary>
+        public static IEnumerable<XmlLanguageFile> FindLanguageFiles(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            return XmlFiler.GetPacks(ResDirectoryPath, searchOption);
         }
 
     }

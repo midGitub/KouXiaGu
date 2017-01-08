@@ -30,6 +30,10 @@ namespace KouXiaGu
             }
         }
 
+        protected bool Instanced
+        {
+            get { return instance != null; }
+        }
 
         static T Initialize()
         {
@@ -62,12 +66,20 @@ namespace KouXiaGu
             if (instance == null)
             {
                 instance = Initialize();
-                if (instance == this)
-                    return;
             }
 
-            Debug.LogWarning(GetType().Name + ";尝试实例化多个单例;" + name);
-            Destroy(this);
+            if (instance != this)
+            {
+                Debug.LogWarning(GetType().Name + ";尝试实例化多个单例;" + name + ";Instanced:" + Instanced + "," + (instance == this));
+                Destroy(this);
+            }
+        }
+
+        [ContextMenu("实例存在数")]
+        protected void OutputCount()
+        {
+            var instances = GameObject.FindObjectsOfType(typeof(T));
+            Debug.Log("实例数量:" + instances.Length);
         }
 
     }

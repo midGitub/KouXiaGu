@@ -12,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形数据管理;
     /// </summary>
     [DisallowMultipleComponent]
-    public class TerrainData : UnitySington<TerrainData>
+    public sealed class TerrainData : UnitySington<TerrainData>
     {
         [SerializeField]
         Shader terrainShader;

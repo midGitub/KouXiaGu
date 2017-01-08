@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 using KouXiaGu.Localizations;
 
 namespace KouXiaGu.UI
@@ -12,29 +13,42 @@ namespace KouXiaGu.UI
     [DisallowMultipleComponent]
     public sealed class LanguageUI : MonoBehaviour, IResponsive
     {
+        LanguageUI() { }
+
 
         [SerializeField]
         Dropdown languageDropdown;
 
-        void Awake()
+
+        void OnEnable()
         {
             languageDropdown.ClearOptions();
-            languageDropdown.AddOptions(new List<string>(GetLanguageFiles()));
+
+            if (Localization.Initialized)
+            {
+                languageDropdown.AddOptions(Localization.ReadOnlyLanguages);
+                languageDropdown.value = Localization.LanguageIndex;
+            }
         }
 
-        public IEnumerable<string> GetLanguageFiles()
+        void Start()
         {
-            return Localizations.Resources.GetLanguageFiles().Select(item => item.Language);
+            languageDropdown.onValueChanged.AddListener(OnChanged);
+        }
+
+        void OnChanged(int id)
+        {
+            Localization.SetConfig(id, false);
         }
 
         void IResponsive.OnApply()
         {
-            throw new NotImplementedException();
+            return;
         }
 
         void IResponsive.OnReset()
         {
-            throw new NotImplementedException();
+            languageDropdown.value = Localization.LanguageIndex;
         }
 
     }

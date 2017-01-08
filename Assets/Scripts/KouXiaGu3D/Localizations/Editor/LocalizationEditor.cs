@@ -48,7 +48,7 @@ namespace KouXiaGu.Localizations
 
             if (GUILayout.Button("输出语言"))
             {
-                Debug.Log(Resources.GetLanguageFiles(Resources.ResDirectoryPath).ToLog("目录下的语言文件"));
+                Debug.Log(Resources.FindLanguageFiles(Resources.ResDirectoryPath).ToLog("目录下的语言文件"));
             }
 
             EditorGUILayout.EndHorizontal();

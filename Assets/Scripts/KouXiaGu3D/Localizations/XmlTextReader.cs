@@ -16,6 +16,11 @@ namespace KouXiaGu.Localizations
 
         XmlLanguageFile pack;
 
+        public string Language
+        {
+            get { return pack.Language; }
+        }
+
         public IEnumerable<TextItem> ReadTexts()
         {
             return XmlFiler.ReadTexts(pack.FilePath);

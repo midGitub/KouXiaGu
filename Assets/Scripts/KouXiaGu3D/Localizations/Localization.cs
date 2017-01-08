@@ -13,22 +13,19 @@ namespace KouXiaGu.Localizations
     [DisallowMultipleComponent]
     public sealed class Localization : UnitySington<Localization>
     {
+        static Localization()
+        {
+            Initialized = false;
+            LanguageIndex = -1;
+        }
+
         Localization() { }
 
         /// <summary>
         /// 配置信息;
         /// </summary>
         [SerializeField]
-        LocalizationConfig config = new LocalizationConfig()
-        {
-            IsFollowSystemLanguage = true,
-            LanguagePrioritys = new string[]
-            {
-                "English",
-                "ChineseSimplified",
-                "ChineseS",
-            },
-        };
+        LocalizationConfig config = new LocalizationConfig();
 
 
         static readonly TextDictionary textDictionary = new TextDictionary();
@@ -42,12 +39,59 @@ namespace KouXiaGu.Localizations
         }
 
         /// <summary>
-        /// 指定的配置;
+        /// 是否初始化完毕?
         /// </summary>
+        public static bool Initialized { get; private set; }
+
         public static LocalizationConfig Config
         {
             get { return GetInstance.config; }
             private set { GetInstance.config = value; }
+        }
+
+        /// <summary>
+        /// 所有语言包(只读);
+        /// </summary>
+        public static List<XmlLanguageFile> ReadOnlyLanguageFiles { get; private set; }
+
+        /// <summary>
+        /// 所有语言(只读),和 ReadOnlyLanguageFiles 对应;
+        /// </summary>
+        public static List<string> ReadOnlyLanguages { get; private set; }
+
+        /// <summary>
+        /// 当前读取的语言下标;
+        /// </summary>
+        public static int LanguageIndex { get; private set; }
+
+        /// <summary>
+        /// 当前读取的语言;
+        /// </summary>
+        public static string Language
+        {
+            get { return ReadOnlyLanguages[LanguageIndex]; }
+        }
+
+        /// <summary>
+        /// 当前读取的语言;
+        /// </summary>
+        public static XmlLanguageFile LanguageFile
+        {
+            get { return ReadOnlyLanguageFiles[LanguageIndex]; }
+        }
+
+
+        /// <summary>
+        /// 初始化所有信息;
+        /// </summary>
+        public static void Init()
+        {
+            Config = LocalizationConfig.Read();
+
+            ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
+            ReadOnlyLanguages = ReadOnlyLanguageFiles.Select(item => item.Language).ToList();
+
+            Initialized = true;
         }
 
 
@@ -65,7 +109,7 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
-        /// 更新所有文本,在主线程内调用;
+        /// 更新所有文本内容,在主线程内调用;
         /// </summary>
         public static void UpdateTextObservers()
         {
@@ -88,12 +132,39 @@ namespace KouXiaGu.Localizations
 
 
         /// <summary>
-        /// 读取\重新读取 主语言包;
+        /// 设置优先读取语言,并且重新读取所有文本;
         /// </summary>
-        public static void ReadMain()
+        public static void SetConfig(int languageIndex, bool isFollowSystemLanguage)
         {
-            Config = LocalizationConfig.Read();
-            ITextReader reader = Resources.GetReader(Config.GetLanguages().ToArray());
+            var languageFile = ReadOnlyLanguageFiles[languageIndex];
+            LocalizationConfig config = new LocalizationConfig(isFollowSystemLanguage, languageFile.Language);
+            SetConfig(config);
+        }
+
+        /// <summary>
+        /// 更新配置信息,并且重新读取所有文本;
+        /// </summary>
+        public static void SetConfig(LocalizationConfig config)
+        {
+            LocalizationConfig.Write(config);
+            Config = config;
+            Read(config);
+        }
+
+        /// <summary>
+        /// 读取到所有文本;
+        /// </summary>
+        public static void Read()
+        {
+            Read(Config);
+        }
+
+        /// <summary>
+        /// 读取\重新读取 所有文本;
+        /// </summary>
+        static void Read(LocalizationConfig config)
+        {
+            ITextReader reader = FindReader(config);
 
             ClearTexts();
             ReadTexts(reader);
@@ -101,31 +172,13 @@ namespace KouXiaGu.Localizations
         }
 
         /// <summary>
-        /// 重新读取到所有文本,读取完毕后通知到监视者;
+        /// 寻找到当前最适合读取的语言接口;
         /// </summary>
-        public static void ReadTexts(IEnumerable<ITextReader> readers)
+        static ITextReader FindReader(LocalizationConfig config)
         {
-            ClearTexts();
-
-            foreach (var reader in readers)
-            {
-                ReadTexts(reader);
-            }
-
-            UpdateTextObservers();
-        }
-
-        /// <summary>
-        /// 添加文本到现有字典内;
-        /// </summary>
-        public static void AddTexts(IEnumerable<ITextReader> readers)
-        {
-            foreach (var reader in readers)
-            {
-                ReadTexts(reader);
-            }
-
-            UpdateTextObservers();
+            LanguageIndex = config.FindIndex(ReadOnlyLanguages);
+            var reader = Resources.GetReader(LanguageFile);
+            return reader;
         }
 
         static void ReadTexts(ITextReader reader)
@@ -139,9 +192,6 @@ namespace KouXiaGu.Localizations
             Debug.Log("语言读取完毕:" + reader.ToString());
         }
 
-        /// <summary>
-        /// 清除所有文本内容;
-        /// </summary>
         public static void ClearTexts()
         {
             textDictionary.Clear();
@@ -151,8 +201,11 @@ namespace KouXiaGu.Localizations
         protected override void Awake()
         {
             base.Awake();
-            ReadMain();
+            Init();
+            Read();
         }
+
+
 
     }
 
