@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Initialization;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -28,6 +29,15 @@ namespace KouXiaGu.Terrain3D
         public static string Combine(string path)
         {
             return Path.Combine(resPath, path);
+        }
+
+        /// <summary>
+        /// 路径组合到地形存档路径下;
+        /// </summary>
+        public static string CombineToTerrain(this Archive archive, string path)
+        {
+            string archivePath = Path.Combine(archive.DirectoryPath, ResDirectory);
+            return Path.Combine(archivePath, path);
         }
 
         /// <summary>

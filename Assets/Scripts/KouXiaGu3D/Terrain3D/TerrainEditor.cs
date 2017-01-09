@@ -33,9 +33,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建地图到预制目录下;
         /// </summary>
-        public static TerrainMap CreateMap(MapDescr description)
+        public static TerrainMapO CreateMap(MapDescr description)
         {
-            var map = new TerrainMap(description);
+            var map = new TerrainMapO(description);
             map.Save();
             return map;
         }

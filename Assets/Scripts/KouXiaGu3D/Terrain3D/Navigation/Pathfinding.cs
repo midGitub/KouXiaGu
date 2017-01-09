@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         static IDictionary<CubicHexCoord, TerrainNode> Map
         {
-            get { return TerrainInitializer.ActivatedMap; }
+            get { return TerrainInitializer.Map; }
         }
 
         #region 同步;

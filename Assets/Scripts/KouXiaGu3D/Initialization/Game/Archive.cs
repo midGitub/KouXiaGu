@@ -31,7 +31,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 在存档目录下创建一个新的存档;
         /// </summary>
-        public static Archive Create(ArchiveDescr description)
+        public static Archive Create(ArchiveDescription description)
         {
             string archivePath = GetRandomArchiveDirectory();
             return Create(archivePath, description);
@@ -49,8 +49,9 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 创建一个新的存档;
         /// </summary>
-        public static Archive Create(string directory, ArchiveDescr description)
+        public static Archive Create(string directory, ArchiveDescription description)
         {
+            Directory.CreateDirectory(directory);
             Archive archive = new Archive(directory, description);
             WriteDescription(directory, description);
             return archive;
@@ -59,11 +60,11 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 创建描述文件到目录下;
         /// </summary>
-        static void WriteDescription(string directory, ArchiveDescr description)
+        static void WriteDescription(string directory, ArchiveDescription description)
         {
             Directory.CreateDirectory(directory);
             string descriptionFilePath = GetDescriptionFilePath(directory);
-            ArchiveDescr.Serializer.SerializeXiaGu(descriptionFilePath, description);
+            ArchiveDescription.Serializer.SerializeXiaGu(descriptionFilePath, description);
         }
 
         /// <summary>
@@ -126,23 +127,23 @@ namespace KouXiaGu.Initialization
 
         public static Archive Load(string directory)
         {
-            ArchiveDescr description = ReadDescription(directory);
+            ArchiveDescription description = ReadDescription(directory);
             return new Archive(directory, description);
         }
 
         /// <summary>
         /// 从目录下读取描述文件;
         /// </summary>
-        static ArchiveDescr ReadDescription(string directory)
+        static ArchiveDescription ReadDescription(string directory)
         {
             string descriptionFilePath = GetDescriptionFilePath(directory);
-            ArchiveDescr description = (ArchiveDescr)ArchiveDescr.Serializer.DeserializeXiaGu(descriptionFilePath);
+            ArchiveDescription description = (ArchiveDescription)ArchiveDescription.Serializer.DeserializeXiaGu(descriptionFilePath);
             return description;
         }
 
 
 
-        Archive(string directory, ArchiveDescr description)
+        Archive(string directory, ArchiveDescription description)
         {
             this.DirectoryPath = directory;
             this.Description = description;
@@ -162,7 +163,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 描述信息;
         /// </summary>
-        public ArchiveDescr Description { get; private set; }
+        public ArchiveDescription Description { get; private set; }
 
         /// <summary>
         /// 是否允许编辑?
@@ -175,7 +176,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 更新描述文件;
         /// </summary>
-        public void UpdateDescription(ArchiveDescr description)
+        public void UpdateDescription(ArchiveDescription description)
         {
             WriteDescription(DirectoryPath, description);
             this.Description = description;
@@ -191,6 +192,23 @@ namespace KouXiaGu.Initialization
 
             Directory.Delete(DirectoryPath, true);
             IsEffective = false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Archive))
+                return false;
+            return ((Archive)obj).DirectoryPath == DirectoryPath;
+        }
+
+        public override int GetHashCode()
+        {
+            return DirectoryPath.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return "[" + ",Path:" + DirectoryPath + ",Description:" + Description.ToString() + "]";
         }
 
     }

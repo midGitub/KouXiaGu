@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形地图保存和提供;
     /// </summary>
-    public class TerrainMap
+    public class TerrainMapO
     {
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static bool AllowEdit { get; private set; }
 
-        static TerrainMap()
+        static TerrainMapO()
         {
             AllowEdit = true;
         }
@@ -55,7 +55,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到预定义目录下的所有地图;
         /// </summary>
-        public static IEnumerable<TerrainMap> GetMaps()
+        public static IEnumerable<TerrainMapO> GetMaps()
         {
             return GetMaps(PredefinedDirectory);
         }
@@ -63,10 +63,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到目录下一级的所有地图;
         /// </summary>
-        public static IEnumerable<TerrainMap> GetMaps(string directoryPath)
+        public static IEnumerable<TerrainMapO> GetMaps(string directoryPath)
         {
             var paths = Directory.GetDirectories(directoryPath);
-            TerrainMap data;
+            TerrainMapO data;
 
             foreach (var mapPath in paths)
             {
@@ -86,18 +86,18 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到目录下所保存的地图;
         /// </summary>
-        public static TerrainMap GetMap(string directoryPath)
+        public static TerrainMapO GetMap(string directoryPath)
         {
             string filePath = GetDescriptionFilePath(directoryPath);
             var data = MapDescr.Deserialize(filePath);
-            TerrainMap map = new TerrainMap(data, directoryPath);
+            TerrainMapO map = new TerrainMapO(data, directoryPath);
             return map;
         }
 
         /// <summary>
         /// 寻找这个地图并且返回,若不存在则返回异常 InvalidOperationException;
         /// </summary>
-        public static TerrainMap FindMap(int id)
+        public static TerrainMapO FindMap(int id)
         {
             return FindMap(id, PredefinedDirectory);
         }
@@ -105,9 +105,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 寻找这个地图并且返回,若不存在则返回异常 InvalidOperationException;
         /// </summary>
-        public static TerrainMap FindMap(int id, string directoryPaths)
+        public static TerrainMapO FindMap(int id, string directoryPaths)
         {
-            TerrainMap map = GetMaps(directoryPaths).First(tmap => tmap.Description.id == id);
+            TerrainMapO map = GetMaps(directoryPaths).First(tmap => tmap.Description.id == id);
             return map;
         }
 
@@ -152,7 +152,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 根据ID创建一个新地图到预定义的目录下,若已经存在则返回异常;;
         /// </summary>
-        public TerrainMap(MapDescr description)
+        public TerrainMapO(MapDescr description)
         {
             this.DirectoryPath = Path.Combine(PredefinedDirectory, description.id.ToString());
 
@@ -166,7 +166,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化地图信息;
         /// </summary>
-        TerrainMap(MapDescr description, string directoryPath)
+        TerrainMapO(MapDescr description, string directoryPath)
         {
             this.description = description;
             this.DirectoryPath = directoryPath;
@@ -195,9 +195,9 @@ namespace KouXiaGu.Terrain3D
 
         public override bool Equals(object obj)
         {
-            if (!(obj is TerrainMap))
+            if (!(obj is TerrainMapO))
                 return false;
-            return ((TerrainMap)obj).DirectoryPath == this.DirectoryPath;
+            return ((TerrainMapO)obj).DirectoryPath == this.DirectoryPath;
         }
 
         public override int GetHashCode()
@@ -251,98 +251,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         #endregion
-
-        #region Test
-
-        //[ShowOnlyProperty]
-        //public int Count
-        //{
-        //    get { return Map.Count; }
-        //}
-
-        //[ShowOnlyProperty]
-        //public int ChunkCount
-        //{
-        //    get { return (map.BlockedMap as IMap<RectCoord, Dictionary<CubicHexCoord, TerrainNode>>).Count; }
-        //}
-
-        //[ContextMenu("烘焙测试")]
-        //void Test_Baking()
-        //{
-        //    TerrainCreater.Create(RectCoord.Self);
-        //    TerrainCreater.Create(RectCoord.West);
-        //    TerrainCreater.Create(RectCoord.East);
-        //    TerrainCreater.Create(RectCoord.North);
-        //    TerrainCreater.Create(RectCoord.South);
-        //    TerrainCreater.Create(RectCoord.South + RectCoord.West);
-        //    TerrainCreater.Create(RectCoord.South + RectCoord.East);
-        //    TerrainCreater.Create(RectCoord.North + RectCoord.West);
-        //    TerrainCreater.Create(RectCoord.North + RectCoord.East);
-        //}
-
-        //[ContextMenu("保存修改的地图")]
-        //void SaveMap()
-        //{
-        //    Save(mapDirectory);
-        //}
-
-        //[ContextMenu("保存地图")]
-        //void SaveAllMap()
-        //{
-        //    SaveAll(mapDirectory);
-        //}
-
-        //[ContextMenu("读取地图")]
-        //void LoadMap()
-        //{
-        //    Load(mapDirectory);
-        //}
-
-        //[ContextMenu("输出所有地图文件")]
-        //void ShowAllMapFile()
-        //{
-        //    var paths = BlockProtoBufExtensions.GetFilePaths(mapDirectory);
-        //    Debug.Log(paths.ToLog());
-        //}
-
-        ///// <summary>
-        ///// 返回一个随机地图;
-        ///// </summary>
-        //Map<CubicHexCoord, TerrainNode> RandomMap()
-        //{
-        //    Map<CubicHexCoord, TerrainNode> terrainMap = new Map<CubicHexCoord, TerrainNode>();
-        //    int[] aa = new int[] { 10, 20, 30, 20 };
-
-        //    foreach (var item in CubicHexCoord.GetHexRange(CubicHexCoord.Self, 50))
-        //    {
-        //        try
-        //        {
-        //            terrainMap.Add(item, new TerrainNode(aa[UnityEngine.Random.Range(0, aa.Length)], UnityEngine.Random.Range(0, 360)));
-        //        }
-        //        catch (ArgumentException)
-        //        {
-
-        //        }
-        //    }
-        //    return terrainMap;
-        //}
-
-        //void Awake()
-        //{
-        //    if (ConfirmDirectory(mapDirectory))
-        //    {
-        //        LoadMap();
-        //    }
-        //    else
-        //    {
-        //        Debug.Log("随机地图");
-        //        terrainMap.Add(RandomMap());
-        //    }
-        //    Debug.Log("地图准备完毕");
-        //}
-
-        #endregion
-
 
     }
 

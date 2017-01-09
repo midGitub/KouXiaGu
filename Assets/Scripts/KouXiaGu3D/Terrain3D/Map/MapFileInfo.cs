@@ -297,9 +297,9 @@ namespace KouXiaGu.Terrain3D
 
         public override bool Equals(object obj)
         {
-            if (!(obj is TerrainMap))
+            if (!(obj is TerrainMapO))
                 return false;
-            return ((TerrainMap)obj).DirectoryPath == this.DirectoryPath;
+            return ((TerrainMapO)obj).DirectoryPath == this.DirectoryPath;
         }
 
         public override int GetHashCode()

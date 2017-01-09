@@ -7,11 +7,11 @@ using System.Xml.Serialization;
 namespace KouXiaGu.Initialization
 {
 
-    [XmlType("ArchiveDescr")]
-    public struct ArchiveDescr
+    [XmlType("Archive")]
+    public struct ArchiveDescription
     {
 
-        static readonly XmlSerializer serializer = new XmlSerializer(typeof(ArchiveDescr));
+        static readonly XmlSerializer serializer = new XmlSerializer(typeof(ArchiveDescription));
 
         public static XmlSerializer Serializer
         {

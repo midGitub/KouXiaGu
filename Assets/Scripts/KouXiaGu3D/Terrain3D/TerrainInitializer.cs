@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using KouXiaGu.Grids;
 using KouXiaGu.Initialization;
 using UnityEngine;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -19,14 +20,21 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用的地图;
         /// </summary>
-        public static TerrainMap CurrentMap { get; set; }
+        [Obsolete]
+        public static TerrainMapO CurrentMap { get; set; }
+
 
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
-        public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
+        public static TerrainMap TerrainMap { get; private set; }
+
+        /// <summary>
+        /// 当前游戏使用的地图;
+        /// </summary>
+        public static IObservableDictionary<CubicHexCoord, TerrainNode> Map
         {
-            get { return CurrentMap.Map; }
+            get { return TerrainMap.Map; }
         }
 
 
@@ -41,13 +49,10 @@ namespace KouXiaGu.Terrain3D
             TerrainArchiver.Load(archive.DirectoryPath);
             yield return null;
 
-            CurrentMap.Load();
+            TerrainMap.ReadMap();
             yield return null;
 
-            MapArchiver.LoadMap(archive.DirectoryPath);
-            yield return null;
-
-            MapArchiver.Subscribe(CurrentMap);
+            MapArchiver.Initialize(archive, TerrainMap);
             yield return null;
 
             TerrainCreater.Load();
@@ -59,7 +64,7 @@ namespace KouXiaGu.Terrain3D
             TerrainArchiver.Save(archive.DirectoryPath);
             yield return null;
 
-            MapArchiver.SaveMap(archive.DirectoryPath);
+            MapArchiver.Write(archive);
             yield return null;
         }
 

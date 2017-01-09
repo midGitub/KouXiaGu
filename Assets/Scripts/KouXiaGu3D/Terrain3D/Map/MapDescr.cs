@@ -11,6 +11,14 @@ namespace KouXiaGu.Terrain3D
     public struct MapDescr
     {
 
+        static readonly XmlSerializer serializer = new XmlSerializer(typeof(MapDescr));
+
+        public static XmlSerializer Serializer
+        {
+            get { return serializer; }
+        }
+
+
         [XmlElement("id")]
         public int id;
 
@@ -29,12 +37,6 @@ namespace KouXiaGu.Terrain3D
         [XmlArray("Landforms")]
         public LandformRecord[] landformRecord;
 
-        static readonly XmlSerializer serializer = new XmlSerializer(typeof(MapDescr));
-
-        public static XmlSerializer Serializer
-        {
-            get { return serializer; }
-        }
 
         [Obsolete]
         public static void Serialize(string filePath, MapDescr data)

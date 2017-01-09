@@ -80,7 +80,7 @@ namespace KouXiaGu.Terrain3D
 
         static void SetTerrainMapID(ArchiveDescr archive)
         {
-            TerrainMap map = TerrainMap.FindMap(archive.UseMapID);
+            TerrainMapO map = TerrainMapO.FindMap(archive.UseMapID);
             TerrainInitializer.CurrentMap = map;
         }
 
