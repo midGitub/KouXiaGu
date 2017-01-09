@@ -141,6 +141,7 @@ namespace KouXiaGu.Initialization
         }
 
 
+
         Archive(string directory, ArchiveDescr description)
         {
             this.DirectoryPath = directory;

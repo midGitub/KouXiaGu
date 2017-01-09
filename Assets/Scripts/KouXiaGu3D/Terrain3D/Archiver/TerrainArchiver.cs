@@ -75,13 +75,13 @@ namespace KouXiaGu.Terrain3D
 
         static int GetTerrainMapID()
         {
-            return TerrainController.CurrentMap.Description.id;
+            return TerrainInitializer.CurrentMap.Description.id;
         }
 
         static void SetTerrainMapID(ArchiveDescr archive)
         {
             TerrainMap map = TerrainMap.FindMap(archive.UseMapID);
-            TerrainController.CurrentMap = map;
+            TerrainInitializer.CurrentMap = map;
         }
 
     }

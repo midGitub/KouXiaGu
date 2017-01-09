@@ -27,7 +27,7 @@ namespace KouXiaGu.Terrain3D
 
         public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
         {
-            get { return TerrainController.CurrentMap.Map; }
+            get { return TerrainInitializer.CurrentMap.Map; }
         }
 
         /// <summary>
