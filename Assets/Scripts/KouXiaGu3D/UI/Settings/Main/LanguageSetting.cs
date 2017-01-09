@@ -6,30 +6,14 @@ namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent]
-    public sealed class LanguageUI : MonoBehaviour, IResponsive
+    public sealed class LanguageSetting : MonoBehaviour
     {
-        LanguageUI() { }
+        LanguageSetting() { }
 
         [SerializeField]
         Dropdown languageDropdown;
 
         void Start()
-        {
-            languageDropdown.onValueChanged.AddListener(OnChanged);
-        }
-
-        void OnChanged(int id)
-        {
-            if (Localization.LanguageIndex != id)
-                Localization.SetConfig(id, false);
-        }
-
-        public void OnApply()
-        {
-            return;
-        }
-
-        public void OnReset()
         {
             languageDropdown.ClearOptions();
 
@@ -38,6 +22,14 @@ namespace KouXiaGu.UI
                 languageDropdown.AddOptions(Localization.ReadOnlyLanguages);
                 languageDropdown.value = Localization.LanguageIndex;
             }
+
+            languageDropdown.onValueChanged.AddListener(OnChanged);
+        }
+
+        void OnChanged(int id)
+        {
+            if (Localization.LanguageIndex != id)
+                Localization.SetConfig(id, false);
         }
 
     }
