@@ -19,6 +19,12 @@ namespace KouXiaGu.Initialization
             InitialStage.Start();
         }
 
+        [ContextMenu("123")]
+        void tttt()
+        {
+            Debug.Log(Application.version);
+        }
+
     }
 
 }

@@ -8,7 +8,7 @@ namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent]
-    public class ScreenSetting : MonoBehaviour, IResponsive
+    class ScreenSetting : MonoBehaviour, IResponsive
     {
         ScreenSetting() { }
 
