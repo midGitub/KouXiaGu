@@ -31,14 +31,25 @@ namespace KouXiaGu.Terrain3D
             return Path.Combine(resPath, path);
         }
 
+
         /// <summary>
         /// 路径组合到地形存档路径下;
         /// </summary>
         public static string CombineToTerrain(this Archive archive, string path)
         {
-            string archivePath = Path.Combine(archive.DirectoryPath, ResDirectory);
-            return Path.Combine(archivePath, path);
+            string archiveDirectory = Path.Combine(archive.DirectoryPath, ResDirectory);
+            return Path.Combine(archiveDirectory, path);
         }
+
+        /// <summary>
+        /// 创建存档路径;
+        /// </summary>
+        public static DirectoryInfo CreateDirectory(this Archive archive)
+        {
+            string archiveDirectory = Path.Combine(archive.DirectoryPath, ResDirectory);
+            return Directory.CreateDirectory(archiveDirectory);
+        }
+
 
         /// <summary>
         /// 创建目录;

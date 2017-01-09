@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     [XmlType("TerrainMap")]
-    public class MapDescription
+    public struct MapDescription
     {
 
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(MapDescription));
@@ -17,6 +17,24 @@ namespace KouXiaGu.Terrain3D
         {
             get { return serializer; }
         }
+
+
+        [XmlAttribute("id")]
+        public string Id;
+
+        [XmlAttribute("Version")]
+        public string Version;
+
+
+        [XmlElement("Name")]
+        public string Name;
+
+        [XmlElement("SaveTime")]
+        public long SaveTime;
+
+        [XmlElement("Description")]
+        public string Description;
+
 
 
     }

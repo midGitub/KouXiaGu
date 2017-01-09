@@ -28,7 +28,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 记录当前地图发生变化的内容;
         /// </summary>
-        public static DictionaryArchiver<CubicHexCoord, TerrainNode> ArchiveMap { get; private set; }
+        public static DictionaryArchiver<CubicHexCoord, TerrainNode> Map { get; private set; }
 
         public static bool IsSubscribe { get; private set; }
 
@@ -44,8 +44,8 @@ namespace KouXiaGu.Terrain3D
             ObservableDictionary<CubicHexCoord, TerrainNode> observableMap = map.Map;
 
             ReadArchiveMap(archive);
-            Combine(observableMap, ArchiveMap);
-            ArchiveMap.Subscribe(observableMap);
+            Combine(observableMap, Map);
+            Map.Subscribe(observableMap);
 
             IsSubscribe = true;
         }
@@ -57,9 +57,9 @@ namespace KouXiaGu.Terrain3D
         {
             if (IsSubscribe)
             {
-                ArchiveMap.Unsubscribe();
-                ArchiveMap.Clear();
-                ArchiveMap = null;
+                Map.Unsubscribe();
+                Map.Clear();
+                Map = null;
 
                 IsSubscribe = false;
             }
@@ -70,7 +70,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Clear()
         {
-            ArchiveMap.Clear();
+            Map.Clear();
         }
 
 
@@ -83,11 +83,11 @@ namespace KouXiaGu.Terrain3D
 
             if (File.Exists(filePath))
             {
-                ArchiveMap = ReadArchiveMap(filePath);
+                Map = ReadArchiveMap(filePath);
             }
             else
             {
-                ArchiveMap = new DictionaryArchiver<CubicHexCoord, TerrainNode>();
+                Map = new DictionaryArchiver<CubicHexCoord, TerrainNode>();
             }
         }
 
@@ -108,7 +108,7 @@ namespace KouXiaGu.Terrain3D
         public static void Write(Archive archive)
         {
             string filePath = archive.CombineToTerrain(MAP_ARCHIVED_FILE_NAME);
-            WriteArchiveMap(filePath, ArchiveMap);
+            WriteArchiveMap(filePath, Map);
         }
 
         static void WriteArchiveMap(string filePath, DictionaryArchiver<CubicHexCoord, TerrainNode> map)

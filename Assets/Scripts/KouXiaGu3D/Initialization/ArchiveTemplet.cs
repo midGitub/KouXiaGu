@@ -106,7 +106,7 @@ namespace KouXiaGu.Initialization
         public static void TempletOutput(ArchiveDirectory archive)
         {
 
-            TerrainArchiver.TempletOutput(archive.DirectoryPath);
+            KouXiaGu.Terrain3D.ArchiveDescription.TempletOutput(archive.DirectoryPath);
 
         }
 

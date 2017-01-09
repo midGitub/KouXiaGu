@@ -18,13 +18,6 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
-        /// 使用的地图;
-        /// </summary>
-        [Obsolete]
-        public static TerrainMapO CurrentMap { get; set; }
-
-
-        /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
         public static TerrainMap TerrainMap { get; private set; }
@@ -46,7 +39,10 @@ namespace KouXiaGu.Terrain3D
 
         public static IEnumerator GameStart(Archive archive)
         {
-            TerrainArchiver.Load(archive.DirectoryPath);
+            ArchiveDescription description = ArchiveDescription.Read(archive);
+            yield return null;
+
+            TerrainMap = TerrainMapFiler.Find(description.UseMapID);
             yield return null;
 
             TerrainMap.ReadMap();
@@ -61,11 +57,29 @@ namespace KouXiaGu.Terrain3D
 
         public static IEnumerator GameSave(Archive archive)
         {
-            TerrainArchiver.Save(archive.DirectoryPath);
+            ArchiveDescription description = DescriptionFromGame();
+            yield return null;
+
+            ArchiveDescription.Write(archive, description);
             yield return null;
 
             MapArchiver.Write(archive);
             yield return null;
+        }
+
+        public static IEnumerator GameEnd(Archive archive)
+        {
+            yield break;
+        }
+
+
+        static ArchiveDescription DescriptionFromGame()
+        {
+            ArchiveDescription description = new ArchiveDescription()
+            {
+                UseMapID = TerrainMap.Description.Id,
+            };
+            return description;
         }
 
     }
