@@ -87,7 +87,7 @@ namespace KouXiaGu.Terrain3D
             TerrainMap item;
             foreach (var directory in directorys)
             {
-                if (TryLoad(directory, out item))
+                if (TryRead(directory, out item))
                 {
                     yield return item;
                 }
@@ -97,11 +97,11 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 尝试读取此路径下的描述文件;
         /// </summary>
-        public static bool TryLoad(string directory, out TerrainMap item)
+        public static bool TryRead(string directory, out TerrainMap item)
         {
             if (Exists(directory))
             {
-                item = Load(directory);
+                item = Read(directory);
                 return true;
             }
 
@@ -121,7 +121,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public static TerrainMap Load(string directory)
+        public static TerrainMap Read(string directory)
         {
             MapDescription description = ReadDescription(directory);
             return new TerrainMap(directory, description);

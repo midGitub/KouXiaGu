@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
 
             if (GUILayout.Button("创建新地图"))
             {
-                TerrainEditor.CreateMap(edit.description);
+                //TerrainEditor.CreateMap(edit.description);
             }
 
             if (GUILayout.Button("保存预制"))

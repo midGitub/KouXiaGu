@@ -42,20 +42,6 @@ namespace KouXiaGu.Terrain3D
             return data;
         }
 
-        /// <summary>
-        /// 输出一个模板到存档;
-        /// </summary>
-        public static void TempletOutput(string archiveDirectory)
-        {
-            string filePath = Archiver.CreateDirectory(archiveDirectory, ARCHIVED_FILE_NAME);
-            ArchiveDescription data = new ArchiveDescription()
-            {
-                UseMapID = "0",
-            };
-            Serializer.SerializeXiaGu(filePath, data);
-        }
-
-
 
         /// <summary>
         /// 使用的地形地图ID;

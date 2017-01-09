@@ -21,23 +21,11 @@ namespace KouXiaGu.Terrain3D
 
         public int randomMapSize = 10;
 
-        public MapDescr description;
-
         public int[] landforms;
 
         public static IDictionary<CubicHexCoord, TerrainNode> ActivatedMap
         {
             get { return TerrainInitializer.Map; }
-        }
-
-        /// <summary>
-        /// 创建地图到预制目录下;
-        /// </summary>
-        public static TerrainMapO CreateMap(MapDescr description)
-        {
-            var map = new TerrainMapO(description);
-            map.Save();
-            return map;
         }
 
         /// <summary>

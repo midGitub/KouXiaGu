@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地图管理;
     /// </summary>
-    public static class TerrainMapFiler
+    public static class MapFiler
     {
 
         /// <summary>

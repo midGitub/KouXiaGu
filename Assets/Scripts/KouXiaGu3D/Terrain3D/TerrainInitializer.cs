@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
             ArchiveDescription description = ArchiveDescription.Read(archive);
             yield return null;
 
-            TerrainMap = TerrainMapFiler.Find(description.UseMapID);
+            TerrainMap = MapFiler.Find(description.UseMapID);
             yield return null;
 
             TerrainMap.ReadMap();
