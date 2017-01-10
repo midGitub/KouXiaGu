@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     /// 控制整个地形初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class TerrainInitializer : MonoBehaviour
+    public sealed class TerrainInitializer : UnitySington<TerrainInitializer>
     {
 
         /// <summary>
@@ -30,10 +30,16 @@ namespace KouXiaGu.Terrain3D
             get { return TerrainMap.Map; }
         }
 
+        void Awake()
+        {
+            StartCoroutine(PreparationStart());
+        }
 
         public static IEnumerator PreparationStart()
         {
             yield return TerrainRes.Initialize();
+
+            MapFiler.Initialize();
         }
 
 

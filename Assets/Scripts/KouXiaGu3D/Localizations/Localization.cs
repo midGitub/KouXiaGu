@@ -94,7 +94,17 @@ namespace KouXiaGu.Localizations
             Initialized = true;
         }
 
+        /// <summary>
+        /// 是否已经订阅?O(1)
+        /// </summary>
+        public static bool IsSubecribe(ITextObserver observer)
+        {
+            return textObservers.Contains(observer);
+        }
 
+        /// <summary>
+        /// 订阅到文本更新;
+        /// </summary>
         public static IDisposable Subscribe(ITextObserver observer)
         {
             if (observer == null)
@@ -119,15 +129,12 @@ namespace KouXiaGu.Localizations
             }
         }
 
+        /// <summary>
+        /// 更新文本信息,若无法获取到文本内容则返回false;
+        /// </summary>
         static void UpdateTextObserver(ITextObserver textObserver)
         {
-            string text;
-            if (textDictionary.TryGetValue(textObserver.Key, out text))
-            {
-                textObserver.SetText(text);
-                return;
-            }
-            textObserver.OnTextNotFound();
+            textObserver.UpdateTexts(textDictionary);
         }
 
 

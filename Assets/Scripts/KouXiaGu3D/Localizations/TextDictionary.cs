@@ -8,7 +8,7 @@ namespace KouXiaGu.Localizations
 {
 
 
-    public class TextDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>
+    public class TextDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, IReadOnlyDictionary
     {
         public TextDictionary() : base() { }
         public TextDictionary(IEqualityComparer<string> comparer) : base(comparer) { }
@@ -37,6 +37,26 @@ namespace KouXiaGu.Localizations
             this.AddOrUpdate(pack.Key, pack.Value);
             return true;
         }
+
+        ///// <summary>
+        ///// 获取到文本,若获取失败则返回本身;
+        ///// </summary>
+        //public string GetText(string key)
+        //{
+        //    string text;
+        //    if (TryGetValue(key, out text))
+        //        return text;
+        //    else
+        //        return key;
+        //}
+
+        ///// <summary>
+        ///// 获取到文本,若获取失败则返回本身,并且调用 onFail;
+        ///// </summary>
+        //public string GetText(string key, Action onFail)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
     }
 

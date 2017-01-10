@@ -14,6 +14,17 @@ namespace KouXiaGu.UI
         Text textObject;
         IDisposable unSubscriber;
 
+        string Key
+        {
+            get { return key; }
+        }
+
+        public string Text
+        {
+            get { return textObject.text; }
+            private set { textObject.text = value; }
+        }
+
         void Awake()
         {
             textObject = GetComponent<Text>();
@@ -28,17 +39,20 @@ namespace KouXiaGu.UI
             unSubscriber = null;
         }
 
-        string ITextObserver.Key
+        public void UpdateTexts(IReadOnlyDictionary textDictionary)
         {
-            get { return key; }
+            string text;
+            if (textDictionary.TryGetValue(Key, out text))
+            {
+                Text = text;
+            }
+            else
+            {
+                OnTextNotFound();
+            }
         }
 
-        void ITextObserver.SetText(string text)
-        {
-            textObject.text = text;
-        }
-
-        void ITextObserver.OnTextNotFound()
+        void OnTextNotFound()
         {
 #if COLLECT_LACKED_KEYS
             LackingTextCollecter.Collecting(key);
