@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KouXiaGu.XmlLocalization
+namespace KouXiaGu.xgLocalization
 {
 
 

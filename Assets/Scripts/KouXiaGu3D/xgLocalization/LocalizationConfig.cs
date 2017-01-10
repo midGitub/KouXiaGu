@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.XmlLocalization
+namespace KouXiaGu.xgLocalization
 {
 
     /// <summary>

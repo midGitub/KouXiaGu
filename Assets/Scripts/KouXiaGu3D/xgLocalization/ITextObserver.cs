@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.XmlLocalization
+namespace KouXiaGu.xgLocalization
 {
 
 

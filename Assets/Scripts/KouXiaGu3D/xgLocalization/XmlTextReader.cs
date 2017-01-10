@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.XmlLocalization
+namespace KouXiaGu.xgLocalization
 {
 
     public class XmlTextReader : ITextReader

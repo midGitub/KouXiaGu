@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using KouXiaGu.XmlLocalization;
+using KouXiaGu.xgLocalization;
 
 namespace KouXiaGu.UI
 {

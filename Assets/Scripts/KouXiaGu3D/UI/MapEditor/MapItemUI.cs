@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.Terrain3D;
-using System.Globalization;
+using KouXiaGu.xgLocalization;
 
 namespace KouXiaGu.UI
 {

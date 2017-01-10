@@ -3,8 +3,9 @@ using KouXiaGu.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
-namespace KouXiaGu.XmlLocalization
+namespace KouXiaGu.xgLocalization
 {
 
     /// <summary>
@@ -66,11 +67,16 @@ namespace KouXiaGu.XmlLocalization
 
 
         /// <summary>
-        /// 当前读取的语言信息;
+        /// 当前读取的语言信息,若不存在则返回预定义的;
         /// </summary>
-        public static Language Language
+        public static Language LanguageCulture
         {
-            get { return ReadOnlyLanguageFiles[LanguageIndex].Language; }
+            get
+            {
+                return LanguageIndex >= ReadOnlyLanguageFiles.Count || LanguageIndex < 0 ?
+                    Language.CurrentLanguage :
+                    ReadOnlyLanguageFiles[LanguageIndex].Language;
+            }
         }
 
         /// <summary>
@@ -85,9 +91,16 @@ namespace KouXiaGu.XmlLocalization
         /// <summary>
         /// 初始化所有信息;
         /// </summary>
-        public static void Init()
+        static void Init()
         {
-            Config = LocalizationConfig.Read();
+            try
+            {
+                Config = LocalizationConfig.Read();
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.LogWarning("未找到语言配置文件,将使用默认的语言配置信息;");
+            }
 
             ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
             ReadOnlyLanguages = ReadOnlyLanguageFiles.Select(item => item.Language.Name).ToList();
@@ -159,8 +172,9 @@ namespace KouXiaGu.XmlLocalization
             Read(config);
         }
 
+
         /// <summary>
-        /// 读取到所有文本;
+        /// 读取\重新读取 所有文本;
         /// </summary>
         public static void Read()
         {
@@ -172,23 +186,42 @@ namespace KouXiaGu.XmlLocalization
         /// </summary>
         static void Read(LocalizationConfig config)
         {
-            ITextReader reader = FindReader(config);
+            try
+            {
+                ITextReader reader = FindReader(config);
 
-            ClearTexts();
-            ReadTexts(reader);
-            UpdateTextObservers();
+                ClearTexts();
+                ReadTexts(reader);
+                UpdateTextObservers();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Debug.LogError(ex);
+                return;
+            }
         }
 
         /// <summary>
-        /// 寻找到当前最适合读取的语言接口;
+        /// 寻找到当前最适合读取的语言接口,若未找到则返回异常 KeyNotFoundException;
         /// </summary>
         static ITextReader FindReader(LocalizationConfig config)
         {
             LanguageIndex = config.FindIndex(ReadOnlyLanguages);
+
+            if (LanguageIndex == -1)
+            {
+                string ex = "未找到合适的语言文件;" + config.ToString();
+                throw new KeyNotFoundException(ex);
+            }
+
             var reader = Resources.GetReader(LanguageFile);
             return reader;
         }
 
+
+        /// <summary>
+        /// 获取到接口的所有文本并且加入到字典中;
+        /// </summary>
         static void ReadTexts(ITextReader reader)
         {
             foreach (var item in reader.ReadTexts())
@@ -200,11 +233,13 @@ namespace KouXiaGu.XmlLocalization
             Debug.Log("语言读取完毕:" + reader.ToString());
         }
 
+        /// <summary>
+        /// 清空字典所有内容;
+        /// </summary>
         public static void ClearTexts()
         {
             textDictionary.Clear();
         }
-
 
         /// <summary>
         /// 添加文本到字典;
@@ -214,12 +249,11 @@ namespace KouXiaGu.XmlLocalization
             ReadTexts(reader);
         }
 
-
         protected override void Awake()
         {
             base.Awake();
-            Init();
-            Read();
+            Localization.Init();
+            Localization.Read();
         }
 
     }

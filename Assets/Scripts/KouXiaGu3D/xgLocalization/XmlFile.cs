@@ -4,8 +4,9 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using KouXiaGu.Collections;
+using UnityEngine;
 
-namespace KouXiaGu.XmlLocalization
+namespace KouXiaGu.xgLocalization
 {
 
 
@@ -185,25 +186,38 @@ namespace KouXiaGu.XmlLocalization
         {
             using (XmlReader reader = XmlReader.Create(filePath))
             {
-                string language = null;
-                string languageTag = null;
+                return TryLoadFile(reader, out file);
+            }
+        }
 
-                reader.MoveToContent();
+        public static bool TryLoadFile(XmlReader reader, out Language file)
+        {
+            string language = null;
+            string languageTag = null;
 
-                if (reader.IsStartElement(ROOT_ELEMENT_NAME))
+            reader.MoveToContent();
+
+            if (reader.IsStartElement(ROOT_ELEMENT_NAME))
+            {
+                language = reader.GetAttribute(LANGUAGE_NAME_ATTRIBUTE_NAME);
+                languageTag = reader.GetAttribute(LANGUAGE_TAG_ATTRIBUTE_NAME);
+
+                if (!string.IsNullOrEmpty(language))
                 {
-                    language = reader.GetAttribute(LANGUAGE_NAME_ATTRIBUTE_NAME);
-                    languageTag = reader.GetAttribute(LANGUAGE_TAG_ATTRIBUTE_NAME);
-
-                    if (!string.IsNullOrEmpty(language) && !string.IsNullOrEmpty(languageTag))
+                    if (!string.IsNullOrEmpty(languageTag))
                     {
                         file = new Language(language, languageTag);
                         return true;
                     }
+                    else
+                    {
+                        file = new Language(language);
+                        return true;
+                    }
                 }
-                file = default(Language);
-                return false;
             }
+            file = default(Language);
+            return false;
         }
 
         #endregion

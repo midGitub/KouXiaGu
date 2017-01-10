@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
-namespace KouXiaGu.XmlLocalization
+namespace KouXiaGu.xgLocalization
 {
 
     [CustomEditor(typeof(Localization), true)]
@@ -21,7 +21,7 @@ namespace KouXiaGu.XmlLocalization
             new TextItem("Test_4", "测试4", true),
         };
 
-        static readonly Language language = new Language("简中", "zh_CN");
+        static readonly Language language = new Language("简中", "zh-CN");
 
         string TempletFilePath
         {
