@@ -5,11 +5,11 @@ using System.Xml;
 using System.IO;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
 
-    public static class XmlFiler
+    public static class XmlFile
     {
 
         /// <summary>
@@ -24,7 +24,8 @@ namespace KouXiaGu.Localizations
 
 
         const string ROOT_ELEMENT_NAME = "LocalizationTexts";
-        const string LANGUAGE_ATTRIBUTE_NAME = "Language";
+        const string LANGUAGE_NAME_ATTRIBUTE_NAME = "name";
+        const string LANGUAGE_TAG_ATTRIBUTE_NAME = "languageTag";
 
         const string TEXT_ELEMENT_NAME = "Text";
         const string KEY_ATTRIBUTE_NAME = "key";
@@ -32,7 +33,6 @@ namespace KouXiaGu.Localizations
         const string UPDATE_MARK_ATTRIBUTE_NAME = "update";
 
         const bool DEFAULT_UPDATE_MARK = false;
-
 
         static readonly XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
         {
@@ -162,6 +162,7 @@ namespace KouXiaGu.Localizations
         }
 
 
+
         /// <summary>
         /// 获取到目录下的所有语言包文件;
         /// </summary>
@@ -171,51 +172,38 @@ namespace KouXiaGu.Localizations
 
             foreach (var path in paths)
             {
-                XmlLanguageFile pack;
-                if (TryGetPack(path, out pack))
-                    yield return pack;
+                Language language;
+                if (TryLoadFile(path, out language))
+                    yield return new XmlLanguageFile(language, path);
             }
-        }
-
-        /// <summary>
-        /// 尝试获取到这个文件的信息,若无法获取到则返回false;
-        /// </summary>
-        public static bool TryGetPack(string filePath, out XmlLanguageFile pack)
-        {
-            string language;
-            if (TryGetLanguage(filePath, out language))
-            {
-                pack = new XmlLanguageFile(language, filePath);
-                return true;
-            }
-            pack = default(XmlLanguageFile);
-            return false;
         }
 
         /// <summary>
         /// 尝试获取到这个文件的语言信息,若无法获取到则返回false;
         /// </summary>
-        public static bool TryGetLanguage(string filePath, out string language)
+        public static bool TryLoadFile(string filePath, out Language file)
         {
             using (XmlReader reader = XmlReader.Create(filePath))
             {
-                return TryGetLanguage(reader, out language);
+                string language = null;
+                string languageTag = null;
+
+                reader.MoveToContent();
+
+                if (reader.IsStartElement(ROOT_ELEMENT_NAME))
+                {
+                    language = reader.GetAttribute(LANGUAGE_NAME_ATTRIBUTE_NAME);
+                    languageTag = reader.GetAttribute(LANGUAGE_TAG_ATTRIBUTE_NAME);
+
+                    if (!string.IsNullOrEmpty(language) && !string.IsNullOrEmpty(languageTag))
+                    {
+                        file = new Language(language, languageTag);
+                        return true;
+                    }
+                }
+                file = default(Language);
+                return false;
             }
-        }
-
-        static bool TryGetLanguage(XmlReader reader, out string language)
-        {
-            language = default(string);
-            reader.MoveToContent();
-
-            if (reader.IsStartElement(ROOT_ELEMENT_NAME))
-            {
-                language = reader.GetAttribute(LANGUAGE_ATTRIBUTE_NAME);
-
-                if (language != default(string))
-                    return true;
-            }
-            return false;
         }
 
         #endregion
@@ -227,7 +215,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 创建新的文件,并且写入所有文本条目;
         /// </summary>
-        public static void CreateTexts(string filePath, string language, IEnumerable<TextItem> texts)
+        public static void CreateTexts(string filePath, Language language, IEnumerable<TextItem> texts)
         {
             using (XmlWriter writer = XmlWriter.Create(filePath, xmlWriterSettings))
             {
@@ -238,7 +226,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 写入所有文本条目;
         /// </summary>
-        static void CreateTexts(XmlWriter writer, string language, IEnumerable<TextItem> texts)
+        static void CreateTexts(XmlWriter writer, Language language, IEnumerable<TextItem> texts)
         {
             writer.WriteStartRoot(language);
             WriteTextElements(writer, texts);
@@ -251,9 +239,9 @@ namespace KouXiaGu.Localizations
         /// </summary>
         public static void AppendTexts(string filePath, IEnumerable<TextItem> texts)
         {
-            string language;
+            Language language;
 
-            if (TryGetLanguage(filePath, out language))
+            if (TryLoadFile(filePath, out language))
             {
                 List<TextItem> original = ReadTexts(filePath);
                 IEnumerable<TextItem> newTests = original.Append(texts);
@@ -270,7 +258,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 仅写入条目中的Key的值,其它值留空;
         /// </summary>
-        public static void CreateKeys(string filePath, string language, IEnumerable<string> keys)
+        public static void CreateKeys(string filePath, Language language, IEnumerable<string> keys)
         {
             using (XmlWriter writer = XmlWriter.Create(filePath, xmlWriterSettings))
             {
@@ -281,7 +269,7 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 仅写入条目中的Key的值,其它值留空;
         /// </summary>
-        static void CreateKeys(XmlWriter writer, string language, IEnumerable<string> keys)
+        static void CreateKeys(XmlWriter writer, Language language, IEnumerable<string> keys)
         {
             writer.WriteStartRoot(language);
             WriteKeyElements(writer, keys);
@@ -289,15 +277,16 @@ namespace KouXiaGu.Localizations
         }
 
 
-
-
-        static void WriteStartRoot(this XmlWriter writer, string language)
+        static void WriteStartRoot(this XmlWriter writer, Language language)
         {
             writer.WriteStartDocument();
             writer.WriteStartElement(ROOT_ELEMENT_NAME);
 
-            writer.WriteStartAttribute(LANGUAGE_ATTRIBUTE_NAME);
-            writer.WriteString(language);
+            writer.WriteStartAttribute(LANGUAGE_NAME_ATTRIBUTE_NAME);
+            writer.WriteString(language.Name);
+
+            writer.WriteStartAttribute(LANGUAGE_TAG_ATTRIBUTE_NAME);
+            writer.WriteString(language.LanguageTag);
             writer.WriteEndAttribute();
         }
 

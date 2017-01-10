@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
     /// <summary>
@@ -52,29 +52,21 @@ namespace KouXiaGu.Localizations
         {
         }
 
-        public LocalizationConfig(bool isFollowSystemLanguage, string[] languagePrioritys)
+        public LocalizationConfig(string[] languagePrioritys)
         {
             if (languagePrioritys == null)
                 throw new ArgumentNullException();
             if (languagePrioritys.Length < 1)
                 throw new ArgumentOutOfRangeException();
 
-            this.isFollowSystemLanguage = isFollowSystemLanguage;
             this.languagePrioritys = languagePrioritys;
         }
 
-        public LocalizationConfig(bool isFollowSystemLanguage, string firstLanguage)
+        public LocalizationConfig(string firstLanguage)
         {
-            this.isFollowSystemLanguage = isFollowSystemLanguage;
             this.Language = firstLanguage;
         }
 
-
-        /// <summary>
-        /// 是否跟随系统语言;
-        /// </summary>
-        [SerializeField]
-        bool isFollowSystemLanguage = true;
 
         /// <summary>
         /// 语言读取顺序
@@ -88,13 +80,6 @@ namespace KouXiaGu.Localizations
                 "Chinese",
             };
 
-
-        [XmlElement("IsFollowSystemLanguage")]
-        public bool IsFollowSystemLanguage
-        {
-            get { return isFollowSystemLanguage; }
-            private set { isFollowSystemLanguage = value; }
-        }
 
         [XmlArray("LanguagePriority"), XmlArrayItem("Language")]
         public string[] LanguagePrioritys
@@ -117,7 +102,7 @@ namespace KouXiaGu.Localizations
         /// <param name="languages">存在的语言;</param>
         public int FindIndex(IList<string> languages)
         {
-            string[] prioritys = GetPrioritys();
+            string[] prioritys = LanguagePrioritys;
             return FindIndex(languages, prioritys);
         }
 
@@ -138,20 +123,6 @@ namespace KouXiaGu.Localizations
             return index;
         }
 
-        /// <summary>
-        /// 获取到语言优先顺序;
-        /// </summary>
-        public string[] GetPrioritys()
-        {
-            if (IsFollowSystemLanguage)
-            {
-                return LanguagePrioritys.AddFirst(SysLanguage);
-            }
-            else
-            {
-                return LanguagePrioritys;
-            }
-        }
 
     }
 

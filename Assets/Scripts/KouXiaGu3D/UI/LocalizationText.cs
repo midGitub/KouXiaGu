@@ -1,5 +1,5 @@
 ﻿using System;
-using KouXiaGu.Localizations;
+using KouXiaGu.XmlLocalization;
 using UnityEngine;
 using UnityEngine.UI;
 

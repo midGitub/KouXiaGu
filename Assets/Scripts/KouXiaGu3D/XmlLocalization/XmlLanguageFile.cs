@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
     /// <summary>
@@ -13,13 +13,13 @@ namespace KouXiaGu.Localizations
     public class XmlLanguageFile
     {
 
-        public XmlLanguageFile(string language, string file)
+        public XmlLanguageFile(Language language, string file)
         {
             this.Language = language;
             this.FilePath = file;
         }
 
-        public string Language { get; private set; }
+        public Language Language { get; private set; }
 
         public string FilePath { get; private set; }
 
@@ -37,7 +37,7 @@ namespace KouXiaGu.Localizations
 
         public override string ToString()
         {
-            return "[Language:" + Language + ",File:" + FilePath + "]";
+            return "[Language:" + Language.ToString() + ",File:" + FilePath + "]";
         }
 
     }

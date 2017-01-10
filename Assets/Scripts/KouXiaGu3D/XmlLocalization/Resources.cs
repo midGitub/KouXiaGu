@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
     /// <summary>
@@ -31,15 +31,6 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 获取到这个语言包的读取接口;
         /// </summary>
-        public static ITextReader GetReader(string language)
-        {
-            XmlLanguageFile languageFile = FindLanguageFiles().First(item => item.Language == language);
-            return GetReader(languageFile);
-        }
-
-        /// <summary>
-        /// 获取到这个语言包的读取接口;
-        /// </summary>
         public static ITextReader GetReader(XmlLanguageFile pack)
         {
             return new XmlTextReader(pack);
@@ -59,7 +50,7 @@ namespace KouXiaGu.Localizations
         /// </summary>
         public static IEnumerable<XmlLanguageFile> FindLanguageFiles(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            return XmlFiler.GetPacks(ResDirectoryPath, searchOption);
+            return XmlFile.GetPacks(ResDirectoryPath, searchOption);
         }
 
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
     /// <summary>
@@ -64,12 +64,13 @@ namespace KouXiaGu.Localizations
         /// </summary>
         public static int LanguageIndex { get; private set; }
 
+
         /// <summary>
-        /// 当前读取的语言;
+        /// 当前读取的语言信息;
         /// </summary>
-        public static string Language
+        public static Language Language
         {
-            get { return ReadOnlyLanguages[LanguageIndex]; }
+            get { return ReadOnlyLanguageFiles[LanguageIndex].Language; }
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace KouXiaGu.Localizations
             Config = LocalizationConfig.Read();
 
             ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
-            ReadOnlyLanguages = ReadOnlyLanguageFiles.Select(item => item.Language).ToList();
+            ReadOnlyLanguages = ReadOnlyLanguageFiles.Select(item => item.Language.Name).ToList();
 
             Initialized = true;
         }
@@ -141,10 +142,10 @@ namespace KouXiaGu.Localizations
         /// <summary>
         /// 设置优先读取语言,并且重新读取所有文本;
         /// </summary>
-        public static void SetConfig(int languageIndex, bool isFollowSystemLanguage)
+        public static void SetConfig(int languageIndex)
         {
             var languageFile = ReadOnlyLanguageFiles[languageIndex];
-            LocalizationConfig config = new LocalizationConfig(isFollowSystemLanguage, languageFile.Language);
+            LocalizationConfig config = new LocalizationConfig(languageFile.Language.Name);
             SetConfig(config);
         }
 

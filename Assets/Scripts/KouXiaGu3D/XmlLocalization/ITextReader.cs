@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
     public interface ITextReader
     {
-        string Language { get; }
+        Language Language { get; }
         IEnumerable<TextItem> ReadTexts();
     }
 

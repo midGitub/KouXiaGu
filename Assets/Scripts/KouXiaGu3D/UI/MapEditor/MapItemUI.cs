@@ -89,8 +89,6 @@ namespace KouXiaGu.UI
         {
             MapName = mapDescription.Name;
             MapData = new DateTime(mapDescription.SaveTime).ToString();
-
-            MapName = CultureInfo.CurrentCulture.NativeName;
         }
 
     }

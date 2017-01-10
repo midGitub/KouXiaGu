@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
     [CustomEditor(typeof(Localization), true)]
@@ -20,6 +20,8 @@ namespace KouXiaGu.Localizations
             new TextItem("Test_3", "测试3", true),
             new TextItem("Test_4", "测试4", true),
         };
+
+        static readonly Language language = new Language("简中", "zh_CN");
 
         string TempletFilePath
         {
@@ -58,12 +60,12 @@ namespace KouXiaGu.Localizations
 
             if (GUILayout.Button("测试输出"))
             {
-                XmlFiler.CreateTexts(TempletFilePath, LocalizationConfig.SysLanguage, Templet);
+                XmlFile.CreateTexts(TempletFilePath, language, Templet);
             }
 
             if (GUILayout.Button("测试输入"))
             {
-                var texts = XmlFiler.ReadTexts(TempletFilePath);
+                var texts = XmlFile.ReadTexts(TempletFilePath);
                 Debug.Log(texts.ToLog());
             }
 
@@ -73,12 +75,12 @@ namespace KouXiaGu.Localizations
 
             if (GUILayout.Button("测试添加"))
             {
-                XmlFiler.AppendTexts(TempletFilePath, Templet);
+                XmlFile.AppendTexts(TempletFilePath, Templet);
             }
 
             if (GUILayout.Button("输出缺失"))
             {
-                XmlFiler.CreateKeys(LackingKeysFilePath, LocalizationConfig.SysLanguage, LackingTextCollecter.LackingKeys);
+                XmlFile.CreateKeys(LackingKeysFilePath, language, LackingTextCollecter.LackingKeys);
             }
 
             EditorGUILayout.EndHorizontal();

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using KouXiaGu.Localizations;
+using KouXiaGu.XmlLocalization;
 
 namespace KouXiaGu.UI
 {
@@ -29,7 +29,7 @@ namespace KouXiaGu.UI
         void OnChanged(int id)
         {
             if (Localization.LanguageIndex != id)
-                Localization.SetConfig(id, false);
+                Localization.SetConfig(id);
         }
 
     }

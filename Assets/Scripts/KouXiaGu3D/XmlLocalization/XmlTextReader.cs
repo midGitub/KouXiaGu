@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Localizations
+namespace KouXiaGu.XmlLocalization
 {
 
     public class XmlTextReader : ITextReader
@@ -16,14 +16,14 @@ namespace KouXiaGu.Localizations
 
         XmlLanguageFile pack;
 
-        public string Language
+        public Language Language
         {
             get { return pack.Language; }
         }
 
         public IEnumerable<TextItem> ReadTexts()
         {
-            return XmlFiler.ReadTexts(pack.FilePath);
+            return XmlFile.ReadTexts(pack.FilePath);
         }
 
         public override string ToString()
