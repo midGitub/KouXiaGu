@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using KouXiaGu.Grids;
 using KouXiaGu.Initialization;
 using UnityEngine;
@@ -17,10 +15,56 @@ namespace KouXiaGu.Terrain3D
     public sealed class TerrainInitializer : UnitySington<TerrainInitializer>
     {
 
+        static TerrainInitializer()
+        {
+            IsRunning = false;
+            IsSaving = false;
+            IsPause = false;
+        }
+
+        TerrainInitializer() { }
+
+
+        #region 提供初始化;
+
+        static TerrainMap terrainMap;
+        static ArchiveDescription description;
+
+
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
-        public static TerrainMap TerrainMap { get; private set; }
+        public static TerrainMap TerrainMap
+        {
+            get { return terrainMap; }
+            set
+            {
+                if (IsRunning)
+                    throw new CanNotEditException("在运行状态无法编辑!");
+                terrainMap = value;
+            }
+        }
+
+        /// <summary>
+        /// 预定义的信息;
+        /// </summary>
+        public static ArchiveDescription Description
+        {
+            get { return description; }
+            set
+            {
+                if (IsRunning)
+                    throw new CanNotEditException("在运行状态无法编辑!");
+                description = value;
+            }
+        }
+
+        #endregion
+
+
+        public static bool IsRunning { get; private set; }
+        public static bool IsSaving { get; private set; }
+        public static bool IsPause { get; private set; }
 
         /// <summary>
         /// 当前游戏使用的地图;
@@ -30,40 +74,67 @@ namespace KouXiaGu.Terrain3D
             get { return TerrainMap.Map; }
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            StartCoroutine(Initialize());
 
+        /// <summary>
+        /// 可异步初始化的;
+        /// </summary>
+        static void Initialize()
+        {
             MapFiler.Initialize();
         }
 
-        public static IEnumerator Initialize()
+
+        /// <summary>
+        /// 使用类信息初始化;
+        /// </summary>
+        public static IEnumerator Begin()
         {
+            if (IsRunning)
+                throw new PremiseNotInvalidException();
+
             yield return TerrainRes.Initialize();
-        }
-
-
-        public static IEnumerator GameStart(Archive archive)
-        {
-            ArchiveDescription description = ArchiveDescription.Read(archive);
-            yield return null;
-
-            TerrainMap = MapFiler.Find(description.UseMapID);
-            yield return null;
 
             TerrainMap.ReadMap();
-            yield return null;
 
-            MapArchiver.Initialize(archive, TerrainMap);
-            yield return null;
+            MapArchiver.Initialize(TerrainMap);
 
             TerrainCreater.Load();
-            yield return null;
+
+            IsRunning = true;
+            yield break;
         }
 
-        public static IEnumerator GameSave(Archive archive)
+        /// <summary>
+        /// 使用存档初始化;
+        /// </summary>
+        public static IEnumerator Begin(Archive archive)
         {
+            if (IsRunning)
+                throw new PremiseNotInvalidException();
+
+            yield return TerrainRes.Initialize();
+
+            ArchiveDescription description = ArchiveDescription.Read(archive);
+
+            TerrainMap = MapFiler.Find(description.UseMapID);
+            TerrainMap.ReadMap();
+
+            MapArchiver.Initialize(archive, TerrainMap);
+
+            TerrainCreater.Load();
+
+            IsRunning = true;
+            yield break;
+        }
+
+
+        /// <summary>
+        /// 保存游戏内容;
+        /// </summary>
+        public static IEnumerator Save(Archive archive)
+        {
+            IsSaving = true;
+
             ArchiveDescription description = DescriptionFromGame();
             yield return null;
 
@@ -72,12 +143,41 @@ namespace KouXiaGu.Terrain3D
 
             MapArchiver.Write(archive);
             yield return null;
+
+            IsSaving = false;
         }
 
-        public static IEnumerator GameEnd(Archive archive)
+
+        /// <summary>
+        /// 游戏结束;
+        /// </summary>
+        public static IEnumerator Finish()
         {
+            if (!IsRunning)
+                throw new PremiseNotInvalidException();
+
             MapArchiver.Clear();
+
+            IsRunning = false;
             yield break;
+        }
+
+
+        /// <summary>
+        /// 暂停游戏状态;
+        /// </summary>
+        public static void Pause()
+        {
+            IsPause = true;
+        }
+
+
+        /// <summary>
+        /// 从暂停状态继续;
+        /// </summary>
+        public static void Continue()
+        {
+            IsPause = false;
         }
 
 
@@ -88,6 +188,14 @@ namespace KouXiaGu.Terrain3D
                 UseMapID = TerrainMap.Description.Id,
             };
             return description;
+        }
+
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            Initialize();
         }
 
     }

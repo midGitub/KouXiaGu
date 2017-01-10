@@ -30,6 +30,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static DictionaryArchiver<CubicHexCoord, TerrainNode> Map { get; private set; }
 
+        /// <summary>
+        /// 是否已经监视了地图?;
+        /// </summary>
         public static bool IsSubscribe { get; private set; }
 
 
@@ -48,6 +51,28 @@ namespace KouXiaGu.Terrain3D
             Map.Subscribe(observableMap);
 
             IsSubscribe = true;
+        }
+
+        /// <summary>
+        /// 开始检视地图变化;
+        /// </summary>
+        public static void Initialize(TerrainMap map)
+        {
+            if (map.IsMapLoaded)
+                throw new ArgumentNullException("地图还未初始化");
+
+            ObservableDictionary<CubicHexCoord, TerrainNode> observableMap = map.Map;
+
+            CreateArchiveMap();
+            Combine(observableMap, Map);
+            Map.Subscribe(observableMap);
+
+            IsSubscribe = true;
+        }
+
+        static void Combine(IDictionary<CubicHexCoord, TerrainNode> map, DictionaryArchiver<CubicHexCoord, TerrainNode> archiveMap)
+        {
+            map.AddOrUpdate(archiveMap);
         }
 
         /// <summary>
@@ -83,27 +108,33 @@ namespace KouXiaGu.Terrain3D
 
             if (File.Exists(filePath))
             {
-                Map = ReadArchiveMap(filePath);
+                Map = Read(filePath);
             }
             else
             {
-                Map = new DictionaryArchiver<CubicHexCoord, TerrainNode>();
+                CreateArchiveMap();
             }
         }
 
-        static DictionaryArchiver<CubicHexCoord, TerrainNode> ReadArchiveMap(string filePath)
+        /// <summary>
+        /// 从文件读取到地图;
+        /// </summary>
+        static DictionaryArchiver<CubicHexCoord, TerrainNode> Read(string filePath)
         {
             return ProtoBufExtensions.DeserializeProtoBuf<DictionaryArchiver<CubicHexCoord, TerrainNode>>(filePath);
         }
 
-        static void Combine(IDictionary<CubicHexCoord, TerrainNode> map, DictionaryArchiver<CubicHexCoord, TerrainNode> archiveMap)
+        /// <summary>
+        /// 创建存档地图;
+        /// </summary>
+        static void CreateArchiveMap()
         {
-            map.AddOrUpdate(archiveMap);
+            Map = new DictionaryArchiver<CubicHexCoord, TerrainNode>();
         }
 
 
         /// <summary>
-        /// 将存档输出;
+        /// 将地图输出到文件;
         /// </summary>
         public static void Write(Archive archive)
         {

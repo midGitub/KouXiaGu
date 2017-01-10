@@ -15,47 +15,39 @@ namespace KouXiaGu.Initialization
 
         static Game()
         {
-            IsStart = false;
+            IsRunning = false;
+            IsSaving = false;
             IsPause = false;
         }
 
 
-        public static bool IsStart { get; private set; }
+        public static bool IsRunning { get; private set; }
+        public static bool IsSaving { get; private set; }
         public static bool IsPause { get; private set; }
 
 
         /// <summary>
         /// 开始游戏;
         /// </summary>
-        public static IEnumerator StageStart(Archive archive)
+        public static IEnumerator Begin(Archive archive)
         {
-            if (IsStart)
+            if (IsRunning)
                 throw new PremiseNotInvalidException();
 
-            yield return StageStartAction(archive);
-            IsStart = true;
+            yield return TerrainInitializer.Begin(archive);
+
+            IsRunning = true;
+            yield break;
         }
 
-        static IEnumerator StageStartAction(Archive archive)
+        public static IEnumerator Begin()
         {
-            return TerrainInitializer.GameStart(archive);
-        }
-
-
-        /// <summary>
-        /// 结束游戏;
-        /// </summary>
-        public static IEnumerator StageEnd()
-        {
-            if (!IsStart)
+            if (IsRunning)
                 throw new PremiseNotInvalidException();
 
-            yield return StageEndAction();
-            IsStart = false;
-        }
+            yield return TerrainInitializer.Begin();
 
-        static IEnumerator StageEndAction()
-        {
+            IsRunning = true;
             yield break;
         }
 
@@ -63,14 +55,29 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 保存到存档;
         /// </summary>
-        public static void Save(Archive archive)
+        public static IEnumerator Save(Archive archive)
         {
+            IsSaving = true;
 
+            yield return TerrainInitializer.Save(archive);
+
+            IsSaving = false;
+            yield break;
         }
 
-        static void SaveAction()
-        {
 
+        /// <summary>
+        /// 结束游戏;
+        /// </summary>
+        public static IEnumerator Finish()
+        {
+            if (!IsRunning)
+                throw new PremiseNotInvalidException();
+
+            yield return TerrainInitializer.Finish();
+
+            IsRunning = false;
+            yield break;
         }
 
 
@@ -79,7 +86,9 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public static void Pause()
         {
+            TerrainInitializer.Pause();
 
+            IsPause = true;
         }
 
         /// <summary>
@@ -87,7 +96,9 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public static void Continue()
         {
+            TerrainInitializer.Continue();
 
+            IsPause = false;
         }
 
     }
