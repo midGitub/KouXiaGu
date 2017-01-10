@@ -57,6 +57,7 @@ namespace KouXiaGu.Terrain3D
         public static void Initialize()
         {
             maps.AddRange(FindAll());
+
             IsInitialized = true;
         }
 
@@ -71,6 +72,34 @@ namespace KouXiaGu.Terrain3D
                 OnMapUpdate();
         }
 
+        /// <summary>
+        /// 加入新的地图;
+        /// </summary>
+        public static void AddMap(TerrainMap map)
+        {
+            MapFiler.maps.Add(map);
+
+            if (OnMapUpdate != null)
+                OnMapUpdate();
+        }
+
+
+        /// <summary>
+        /// 创建一个新地图;
+        /// </summary>
+        public static TerrainMap CreateNewMap(MapDescription description)
+        {
+            string directory = RandomMapDirectory();
+            TerrainMap map = TerrainMap.Create(directory, description);
+            AddMap(map);
+            return map;
+        }
+
+        static string RandomMapDirectory()
+        {
+            string directory = Path.Combine(MapDirectory, Path.GetRandomFileName());
+            return directory;
+        }
 
         /// <summary>
         /// 获取到所有地图;

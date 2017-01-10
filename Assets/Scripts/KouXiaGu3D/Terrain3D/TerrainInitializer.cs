@@ -34,13 +34,13 @@ namespace KouXiaGu.Terrain3D
         {
             base.Awake();
             StartCoroutine(Initialize());
+
+            MapFiler.Initialize();
         }
 
         public static IEnumerator Initialize()
         {
             yield return TerrainRes.Initialize();
-
-            MapFiler.Initialize();
         }
 
 

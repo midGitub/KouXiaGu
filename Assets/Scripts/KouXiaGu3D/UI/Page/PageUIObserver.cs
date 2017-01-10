@@ -17,6 +17,9 @@ namespace KouXiaGu.UI
         [SerializeField]
         PageUI target;
 
+        [SerializeField]
+        bool defaultPage;
+
         Toggle toggle;
 
         void Awake()
@@ -25,8 +28,14 @@ namespace KouXiaGu.UI
             toggle.onValueChanged.AddListener(OnValueChanged);
         }
 
+        void OnDisable()
+        {
+            SetDefaultPage();
+        }
+
         void Start()
         {
+            SetDefaultPage();
             OnValueChanged(toggle.isOn);
         }
 
@@ -36,6 +45,14 @@ namespace KouXiaGu.UI
                 target.Display();
             else
                 target.Conceal();
+        }
+
+        void SetDefaultPage()
+        {
+            if (defaultPage)
+                toggle.isOn = true;
+            else
+                toggle.isOn = false;
         }
 
     }

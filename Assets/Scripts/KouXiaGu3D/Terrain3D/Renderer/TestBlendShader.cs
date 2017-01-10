@@ -70,8 +70,8 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("烘焙平整高度;")]
         void RanderHeigt()
         {
-            var col = new Color(128f / 255f, 128f / 255f, 128f / 255f, 1f);
-            var col2 = new Color(1, 1, 1, 0f);
+            //var col = new Color(128f / 255f, 128f / 255f, 128f / 255f, 1f);
+            //var col2 = new Color(1, 1, 1, 0f);
 
             RenderTexture rt = RenderTexture.GetTemporary(512, 512, 24);
             Renderer.CameraRender(rt);

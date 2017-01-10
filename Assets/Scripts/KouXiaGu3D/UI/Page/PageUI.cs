@@ -10,7 +10,7 @@ namespace KouXiaGu.UI
     [DisallowMultipleComponent]
     public class PageUI : MonoBehaviour
     {
-        PageUI() { }
+        protected PageUI() { }
 
         public virtual void Display()
         {

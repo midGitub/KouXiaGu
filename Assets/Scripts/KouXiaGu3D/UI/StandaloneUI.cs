@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using KouXiaGu.KeyInput;
+using UnityEngine.Events;
 
 namespace KouXiaGu.UI
 {
@@ -33,6 +34,12 @@ namespace KouXiaGu.UI
 
 
         protected StandaloneUI() { }
+
+        [SerializeField]
+        UnityEvent OnDisplay;
+
+        [SerializeField]
+        UnityEvent OnConceal;
 
         Canvas canvas;
 

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.Terrain3D;
+using System.Globalization;
 
 namespace KouXiaGu.UI
 {
@@ -22,11 +23,17 @@ namespace KouXiaGu.UI
         [SerializeField]
         Text mapData;
 
-        [SerializeField]
-        Text description;
-
         Toggle toggle;
+
+
+        /// <summary>
+        /// 当 toggle 为 选中时调用;
+        /// </summary>
+        public event Action<MapItemUI> OnPitch;
+
+
         public TerrainMap Map { get; private set; }
+        public int Index { get; private set; }
 
         MapDescription mapDescription
         {
@@ -45,12 +52,6 @@ namespace KouXiaGu.UI
             private set { mapData.text = value; }
         }
 
-        public string Description
-        {
-            get { return description.text; }
-            private set { description.text = value; }
-        }
-
         public bool IsOn
         {
             get { return toggle.isOn; }
@@ -61,15 +62,35 @@ namespace KouXiaGu.UI
         void Awake()
         {
             toggle = GetComponent<Toggle>();
+            toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
 
-        public void SetDescription(TerrainMap map)
+        void OnToggleValueChanged(bool isOn)
+        {
+            if (IsOn && OnPitch != null)
+                OnPitch(this);
+        }
+
+        /// <summary>
+        /// 初始化内部信息;
+        /// </summary>
+        public void Init(TerrainMap map, int index)
         {
             this.Map = map;
+            this.Index = index;
 
+            UpdateDescription();
+        }
+
+        /// <summary>
+        /// 更新描述;
+        /// </summary>
+        public void UpdateDescription()
+        {
             MapName = mapDescription.Name;
-            MapData = new DateTime(mapDescription.SaveTime).ToLongDateString();
-            Description = mapDescription.Summary;
+            MapData = new DateTime(mapDescription.SaveTime).ToString();
+
+            MapName = CultureInfo.CurrentCulture.NativeName;
         }
 
     }
