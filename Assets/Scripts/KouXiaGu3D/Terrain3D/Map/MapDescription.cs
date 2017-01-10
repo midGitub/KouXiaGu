@@ -33,9 +33,7 @@ namespace KouXiaGu.Terrain3D
         public long SaveTime;
 
         [XmlElement("Description")]
-        public string Description;
-
-
+        public string Summary;
 
     }
 

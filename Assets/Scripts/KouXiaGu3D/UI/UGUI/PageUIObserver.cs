@@ -9,16 +9,15 @@ namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent, RequireComponent(typeof(Toggle))]
-    public class ToggleObserver : MonoBehaviour
+    public class PageUIObserver : MonoBehaviour
     {
-        ToggleObserver() { }
+        PageUIObserver() { }
 
 
         [SerializeField]
-        GameObject target;
+        PageUI target;
 
         Toggle toggle;
-
 
         void Awake()
         {
@@ -33,7 +32,10 @@ namespace KouXiaGu.UI
 
         void OnValueChanged(bool isOn)
         {
-            target.SetActive(isOn);
+            if (isOn)
+                target.Display();
+            else
+                target.Conceal();
         }
 
     }

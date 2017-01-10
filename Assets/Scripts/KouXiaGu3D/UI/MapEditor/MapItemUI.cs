@@ -69,7 +69,7 @@ namespace KouXiaGu.UI
 
             MapName = mapDescription.Name;
             MapData = new DateTime(mapDescription.SaveTime).ToLongDateString();
-            Description = mapDescription.Description;
+            Description = mapDescription.Summary;
         }
 
     }

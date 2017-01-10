@@ -9,7 +9,7 @@ namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent]
-    public class MapFilerUI : MonoBehaviour
+    public sealed class MapFilerUI : MonoBehaviour
     {
         MapFilerUI() { }
 
