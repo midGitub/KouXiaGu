@@ -12,7 +12,7 @@ namespace KouXiaGu.UI
     /// <summary>
     /// 单个地图显示窗口;
     /// </summary>
-    [DisallowMultipleComponent, RequireComponent(typeof(Toggle))]
+    [DisallowMultipleComponent]
     public class MapItemUI : MonoBehaviour
     {
         MapItemUI() { }
@@ -23,6 +23,7 @@ namespace KouXiaGu.UI
         [SerializeField]
         Text mapData;
 
+        [SerializeField]
         Toggle toggle;
 
 
@@ -30,7 +31,6 @@ namespace KouXiaGu.UI
         /// 当 toggle 为 选中时调用;
         /// </summary>
         public event Action<MapItemUI> OnPitch;
-
 
         public TerrainMap Map { get; private set; }
         public int Index { get; private set; }
@@ -61,7 +61,6 @@ namespace KouXiaGu.UI
 
         void Awake()
         {
-            toggle = GetComponent<Toggle>();
             toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
 
@@ -88,7 +87,7 @@ namespace KouXiaGu.UI
         public void UpdateDescription()
         {
             MapName = mapDescription.Name;
-            MapData = new DateTime(mapDescription.SaveTime).ToString();
+            MapData = new DateTime(mapDescription.SaveTime).ToString(Localization.LanguageCulture.CultureInfo);
         }
 
     }

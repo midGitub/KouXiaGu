@@ -13,17 +13,10 @@ namespace KouXiaGu.UI
     public struct MapDescriptionUI
     {
 
-        [SerializeField]
-        InputField fieldId;
-
-        [SerializeField]
-        InputField fieldName;
-
-        [SerializeField]
-        InputField fieldVersion;
-
-        [SerializeField]
-        InputField fieldSummary;
+        public InputField fieldId;
+        public InputField fieldName;
+        public InputField fieldVersion;
+        public InputField fieldSummary;
 
 
         public string Id
@@ -43,7 +36,6 @@ namespace KouXiaGu.UI
             get { return fieldVersion.text; }
             set { fieldVersion.text = value; }
         }
-
 
         public string Summary
         {
@@ -73,6 +65,17 @@ namespace KouXiaGu.UI
                 SaveTime = DateTime.Now.Ticks,
             };
             return description;
+        }
+
+        /// <summary>
+        /// 设置所有的UI是否允许交互;
+        /// </summary>
+        public void SetInteractable(bool b)
+        {
+            fieldId.interactable = b;
+            fieldName.interactable = b;
+            fieldVersion.interactable = b;
+            fieldSummary.interactable = b;
         }
 
     }

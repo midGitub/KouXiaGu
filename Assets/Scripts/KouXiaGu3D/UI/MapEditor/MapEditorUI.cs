@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Terrain3D;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,16 +24,23 @@ namespace KouXiaGu.UI
         [SerializeField]
         MapDescriptionUI mapDescriptionUI;
 
-
         /// <summary>
         /// 所有实例化的地图模块;
         /// </summary>
         List<MapItemUI> activates;
 
         /// <summary>
+        /// 选中的下标;
+        /// </summary>
+        int selectedIndex = -1;
+
+        /// <summary>
         /// 选中的地图模块;
         /// </summary>
-        MapItemUI selected;
+        MapItemUI selected
+        {
+            get { return activates[selectedIndex]; }
+        }
 
         /// <summary>
         /// 选中的地图,若未选中或者不存在则返回 default();
@@ -65,21 +70,36 @@ namespace KouXiaGu.UI
         void RecreateMapItems()
         {
             Clear();
-            foreach (var item in MapFiler.ReadOnlyMaps)
+            foreach (var map in MapFiler.ReadOnlyMaps)
             {
-                CreateMapItem(item);
+                MapItemUI mapItem = CreateMapItem(map);
+                activates.Add(mapItem);
+            }
+
+            if (activates.Count == 0)
+            {
+                selectedIndex = -1;
+            }
+            else if (selectedIndex < 0 || selectedIndex >= activates.Count)
+            {
+                selectedIndex = 0;
+                selected.IsOn = true;
+            }
+            else
+            {
+                selected.IsOn = true;
             }
         }
 
-        void CreateMapItem(TerrainMap map)
+        MapItemUI CreateMapItem(TerrainMap map)
         {
-            MapItemUI item = Instantiate<MapItemUI>(mapItemPrefab, mapItemPrefabParent);
+            MapItemUI item = Instantiate(mapItemPrefab, mapItemPrefabParent);
             item.gameObject.SetActive(true);
 
             item.Init(map, activates.Count);
             item.OnPitch += OnSelected;
 
-            activates.Add(item);
+            return item;
         }
 
         /// <summary>
@@ -87,7 +107,7 @@ namespace KouXiaGu.UI
         /// </summary>
         void OnSelected(MapItemUI item)
         {
-            selected = item;
+            selectedIndex = item.Index;
             mapDescriptionUI.Set(item.Map.Description);
         }
 

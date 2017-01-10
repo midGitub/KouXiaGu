@@ -65,6 +65,10 @@ namespace KouXiaGu.xgLocalization
         /// </summary>
         public static int LanguageIndex { get; private set; }
 
+        /// <summary>
+        /// 当语言发生变化时调用;
+        /// </summary>
+        public static event Action OnLanguageChanged;
 
         /// <summary>
         /// 当前读取的语言信息,若不存在则返回预定义的;
@@ -192,13 +196,26 @@ namespace KouXiaGu.xgLocalization
 
                 ClearTexts();
                 ReadTexts(reader);
-                UpdateTextObservers();
+                ReadComplete();
+
             }
             catch (KeyNotFoundException ex)
             {
                 Debug.LogError(ex);
                 return;
             }
+        }
+
+        /// <summary>
+        /// 当语言变更,或者初次读取完毕时调用;
+        /// 更新所有监视字典变化的内容;在主线程中调用;
+        /// </summary>
+        static void ReadComplete()
+        {
+            UpdateTextObservers();
+
+            if (OnLanguageChanged != null)
+                OnLanguageChanged();
         }
 
         /// <summary>
