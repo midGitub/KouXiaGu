@@ -27,7 +27,7 @@ namespace KouXiaGu.Initialization
 
 
         /// <summary>
-        /// 开始游戏;
+        /// 开始阶段;
         /// </summary>
         public static IEnumerator Begin(Archive archive)
         {
