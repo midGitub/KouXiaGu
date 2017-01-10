@@ -30,12 +30,13 @@ namespace KouXiaGu.Terrain3D
             get { return TerrainMap.Map; }
         }
 
-        void Awake()
+        protected override void Awake()
         {
-            StartCoroutine(PreparationStart());
+            base.Awake();
+            StartCoroutine(Initialize());
         }
 
-        public static IEnumerator PreparationStart()
+        public static IEnumerator Initialize()
         {
             yield return TerrainRes.Initialize();
 
@@ -75,6 +76,7 @@ namespace KouXiaGu.Terrain3D
 
         public static IEnumerator GameEnd(Archive archive)
         {
+            MapArchiver.Clear();
             yield break;
         }
 

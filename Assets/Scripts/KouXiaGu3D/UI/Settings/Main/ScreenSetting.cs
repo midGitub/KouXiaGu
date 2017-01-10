@@ -8,7 +8,7 @@ namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent]
-    class ScreenSetting : MonoBehaviour, IResponsive
+    class ScreenSetting : MonoBehaviour, IWaitingApply, IResetWhenDisplay
     {
         ScreenSetting() { }
 
@@ -64,7 +64,7 @@ namespace KouXiaGu.UI
         }
 
 
-        void IResponsive.OnApply()
+        void IWaitingApply.OnApply()
         {
             int targetResolutionIndex = resolutionDropdown.value;
 
@@ -73,7 +73,7 @@ namespace KouXiaGu.UI
             currentResolutionIndex = targetResolutionIndex;
         }
 
-        void IResponsive.OnReset()
+        void IResetWhenDisplay.OnReset()
         {
             resolutionDropdown.value = currentResolutionIndex;
             fullScreenToggle.isOn = Screen.fullScreen;

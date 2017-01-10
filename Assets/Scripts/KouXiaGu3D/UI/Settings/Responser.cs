@@ -24,15 +24,15 @@ namespace KouXiaGu.UI
         [SerializeField]
         Button btnRetrun;
 
-        HashSet<IResponsive> observers;
+        HashSet<IWaitingApply> observers;
 
-        IResponsive[] responsive;
+        IResetWhenDisplay[] responsive;
 
 
         void Awake()
         {
-            observers = new HashSet<IResponsive>();
-            responsive = GetComponentsInChildren<IResponsive>();
+            observers = new HashSet<IWaitingApply>();
+            responsive = GetComponentsInChildren<IResetWhenDisplay>();
 
             btnApply.onClick.AddListener(ObserversApply);
             btnRetrun.onClick.AddListener(base.Conceal);
@@ -53,7 +53,7 @@ namespace KouXiaGu.UI
         /// <summary>
         /// 订阅 应用 按钮事件;
         /// </summary>
-        public void SubscribeApply(IResponsive observer)
+        public void SubscribeApply(IWaitingApply observer)
         {
             if (observer == null)
                 throw new ArgumentNullException();
@@ -65,7 +65,7 @@ namespace KouXiaGu.UI
         /// <summary>
         /// 取消订阅 应用 按钮事件;
         /// </summary>
-        public void UnsubscribeApply(IResponsive observer)
+        public void UnsubscribeApply(IWaitingApply observer)
         {
             if (observer == null)
                 throw new ArgumentNullException();
@@ -98,9 +98,9 @@ namespace KouXiaGu.UI
 
         void ResetAll()
         {
-            foreach (var observer in observers)
+            foreach (var item in responsive)
             {
-                observer.OnReset();
+                item.OnReset();
             }
         }
 

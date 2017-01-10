@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.Terrain3D;
-using UnityEngine.Events;
 
 namespace KouXiaGu.UI
 {
@@ -28,7 +26,12 @@ namespace KouXiaGu.UI
         Text description;
 
         Toggle toggle;
-        MapDescription mapDescription;
+        public TerrainMap Map { get; private set; }
+
+        MapDescription mapDescription
+        {
+            get { return Map.Description; }
+        }
 
         public string MapName
         {
@@ -60,11 +63,13 @@ namespace KouXiaGu.UI
             toggle = GetComponent<Toggle>();
         }
 
-        public void SetDescription(MapDescription description)
+        public void SetDescription(TerrainMap map)
         {
-            MapName = description.Name;
-            MapData = new DateTime(description.SaveTime).ToLongDateString();
-            Description = description.Description;
+            this.Map = map;
+
+            MapName = mapDescription.Name;
+            MapData = new DateTime(mapDescription.SaveTime).ToLongDateString();
+            Description = mapDescription.Description;
         }
 
     }

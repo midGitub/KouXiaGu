@@ -10,9 +10,7 @@ namespace KouXiaGu.Localizations
 
     public interface ITextObserver
     {
-
         void UpdateTexts(IReadOnlyDictionary textDictionary);
-
     }
 
 }
