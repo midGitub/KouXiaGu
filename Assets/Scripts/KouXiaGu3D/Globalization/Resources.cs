@@ -30,7 +30,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 获取到定义的所有语言包;
         /// </summary>
-        public static IEnumerable<XmlLanguageFile> FindLanguageFiles()
+        public static IEnumerable<LanguageFile> FindLanguageFiles()
         {
             return FindLanguageFiles(DirectoryPath, SearchOption.TopDirectoryOnly);
         }
@@ -38,7 +38,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 获取到文件夹之下的所有语言文件;
         /// </summary>
-        public static IEnumerable<XmlLanguageFile> FindLanguageFiles(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public static IEnumerable<LanguageFile> FindLanguageFiles(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             return XmlFile.GetPacks(DirectoryPath, searchOption);
         }

@@ -47,7 +47,7 @@ namespace KouXiaGu.Globalization
 
             if (GUILayout.Button("保存配置"))
             {
-                Localizer.SetLanguage(new Localizer("简体中文"));
+                Localization.SetLanguage(new Localization("简体中文"));
             }
 
             if (GUILayout.Button("输出语言"))

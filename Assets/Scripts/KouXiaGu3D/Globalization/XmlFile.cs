@@ -167,7 +167,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 获取到目录下的所有语言包文件;
         /// </summary>
-        public static IEnumerable<XmlLanguageFile> GetPacks(string directoryPath, SearchOption searchOption)
+        public static IEnumerable<LanguageFile> GetPacks(string directoryPath, SearchOption searchOption)
         {
             var paths = Directory.GetFiles(directoryPath, LANGUAGE_PACK_SEARCH_PATTERN, searchOption);
 
@@ -175,7 +175,7 @@ namespace KouXiaGu.Globalization
             {
                 Language language;
                 if (TryLoadFile(path, out language))
-                    yield return new XmlLanguageFile(language, path);
+                    yield return new LanguageFile(language, path);
             }
         }
 

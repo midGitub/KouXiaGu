@@ -33,7 +33,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 所有存在的语言;
         /// </summary>
-        public static List<XmlLanguageFile> ReadOnlyLanguageFiles { get; private set; }
+        public static List<LanguageFile> ReadOnlyLanguageFiles { get; private set; }
 
         /// <summary>
         /// 所有存在的语言;
@@ -48,7 +48,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 当前选中的语言,若不存在则返回 null;
         /// </summary>
-        public static XmlLanguageFile LanguageFile
+        public static LanguageFile LanguageFile
         {
             get
             {
@@ -76,7 +76,7 @@ namespace KouXiaGu.Globalization
         /// 初始化;
         /// </summary>
         /// <param name="languages">存在的语言信息;</param>
-        public static void Initialize(List<XmlLanguageFile> languageFiles)
+        public static void Initialize(List<LanguageFile> languageFiles)
         {
             ReadOnlyLanguageFiles = languageFiles;
             ReadOnlyLanguageNames = languageFiles.Select(item => item.Language.LanguageName).ToList();
@@ -95,7 +95,7 @@ namespace KouXiaGu.Globalization
 
         public static void SetLanguage(int index)
         {
-            XmlLanguageFile file = ReadOnlyLanguageFiles[index];
+            LanguageFile file = ReadOnlyLanguageFiles[index];
             Localization config = new Localization(file.Language.LanguageName);
             Write(ConfigFilePath, config);
 

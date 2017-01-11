@@ -15,7 +15,7 @@ namespace KouXiaGu.Globalization
 
         void Start()
         {
-            List<XmlLanguageFile> ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
+            List<LanguageFile> ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
             Localization.Initialize(ReadOnlyLanguageFiles);
             LocalizationText.UpdateTextDictionary(Localization.LanguageFile.ReadTexts());
         }

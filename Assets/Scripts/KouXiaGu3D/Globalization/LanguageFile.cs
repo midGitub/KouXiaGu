@@ -10,10 +10,10 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 语言文件
     /// </summary>
-    public class XmlLanguageFile
+    public class LanguageFile
     {
 
-        public XmlLanguageFile(Language language, string file)
+        public LanguageFile(Language language, string file)
         {
             this.Language = language;
             this.FilePath = file;
@@ -52,9 +52,9 @@ namespace KouXiaGu.Globalization
 
         public override bool Equals(object obj)
         {
-            if (!(obj is XmlLanguageFile))
+            if (!(obj is LanguageFile))
                 return false;
-            return ((XmlLanguageFile)obj).FilePath == FilePath;
+            return ((LanguageFile)obj).FilePath == FilePath;
         }
 
         public override int GetHashCode()
