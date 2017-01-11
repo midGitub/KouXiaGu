@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Initialization;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -9,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 在开始启动时准备的内容;
     /// </summary>
-    public class TerrainPrepare : UnitySington<TerrainPrepare>
+    public class TerrainPrepare : Preparation
     {
 
         /// <summary>
@@ -18,9 +19,10 @@ namespace KouXiaGu.Terrain3D
         public bool IsReady { get; private set; }
 
 
-        void Start()
+        protected override void Start()
         {
-            IsReady = true;
+            base.Start();
+            OnComplete();
         }
 
 

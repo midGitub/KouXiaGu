@@ -21,7 +21,7 @@ namespace KouXiaGu.Collections
         LinkedList<T> observers;
         LinkedListNode<T> observer;
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (observers != null)
             {
