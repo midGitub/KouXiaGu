@@ -61,12 +61,12 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 当前语言信息,若不存在则返回 默认的;
         /// </summary>
-        public static Language Language
+        public static Culture Culture
         {
             get
             {
                 return LanguageIndex >= ReadOnlyLanguageFiles.Count || LanguageIndex < 0 ?
-                    Language.CurrentLanguage :
+                    Culture.CurrentLanguage :
                     ReadOnlyLanguageFiles[LanguageIndex].Language;
             }
         }
@@ -80,14 +80,14 @@ namespace KouXiaGu.Globalization
         {
             ReadOnlyLanguageFiles = languageFiles;
             ReadOnlyLanguageNames = languageFiles.Select(item => item.Language.LanguageName).ToList();
-            Localization config = Read(ConfigFilePath);
+            Localization config = Read();
 
             LanguageIndex = config.FindIndex(ReadOnlyLanguageNames);
         }
 
-        static Localization Read(string filePath)
+        static Localization Read()
         {
-            filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
+            string filePath = Path.ChangeExtension(ConfigFilePath, FILE_EXTENSION);
             var descr = (Localization)serializer.DeserializeXiaGu(filePath);
             return descr;
         }
@@ -95,31 +95,37 @@ namespace KouXiaGu.Globalization
 
         public static void SetLanguage(int index)
         {
-            LanguageFile file = ReadOnlyLanguageFiles[index];
-            Localization config = new Localization(file.Language.LanguageName);
-            Write(ConfigFilePath, config);
+            LanguageFile languageFile = ReadOnlyLanguageFiles[index];
+            Localization config;
+            try
+            {
+                config = Read();
+                config.FirstLanguage = languageFile.Language.LanguageName;
+            }
+            catch 
+            {
+                config = new Localization(languageFile.Language.LanguageName);
+            }
+            Write(config);
 
             LanguageIndex = index;
         }
 
         public static void SetLanguage(Localization config)
         {
-            Write(ConfigFilePath, config);
+            Write(config);
             LanguageIndex = config.FindIndex(ReadOnlyLanguageNames);
         }
 
-        static void Write(string filePath, Localization config)
+        static void Write(Localization config)
         {
-            filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
+            string filePath = Path.ChangeExtension(ConfigFilePath, FILE_EXTENSION);
             serializer.SerializeXiaGu(filePath, config);
         }
 
 
 
-
-
-
-        public Localization(string[] languagePrioritys)
+        public Localization(params string[] languagePrioritys)
         {
             if (languagePrioritys == null)
                 throw new ArgumentNullException();
@@ -127,11 +133,6 @@ namespace KouXiaGu.Globalization
                 throw new ArgumentOutOfRangeException();
 
             this.languagePrioritys = languagePrioritys;
-        }
-
-        public Localization(string firstLanguage)
-        {
-            this.FirstLanguage = firstLanguage;
         }
 
         /// <summary>
@@ -142,8 +143,8 @@ namespace KouXiaGu.Globalization
             {
                 "English",
                 "English",
-                "ChineseSimplified",
-                "Chinese",
+                "简体中文",
+                "中文",
             };
 
 

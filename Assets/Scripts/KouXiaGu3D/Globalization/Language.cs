@@ -9,18 +9,18 @@ namespace KouXiaGu.Globalization
 {
 
 
-    public class Language : CultureInfo
+    public class Culture : CultureInfo
     {
 
-        static readonly Language currentLanguage = new Language("Default");
+        static readonly Culture currentLanguage = new Culture("Default");
 
-        public static Language CurrentLanguage
+        public static Culture CurrentLanguage
         {
             get { return currentLanguage; }
         }
 
 
-        public Language(string name) : base(CurrentCulture.Name)
+        public Culture(string name) : base(CurrentCulture.Name)
         {
             this.LanguageName = name;
         }
@@ -28,7 +28,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 若Tag未知则返回ArgumentException
         /// </summary>
-        public Language(string name, string languageTag) : base(languageTag)
+        public Culture(string name, string languageTag) : base(languageTag)
         {
             this.LanguageName = name;
             this.LanguageTag = languageTag;

@@ -173,7 +173,7 @@ namespace KouXiaGu.Globalization
 
             foreach (var path in paths)
             {
-                Language language;
+                Culture language;
                 if (TryLoadFile(path, out language))
                     yield return new LanguageFile(language, path);
             }
@@ -182,7 +182,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 尝试获取到这个文件的语言信息,若无法获取到则返回false;
         /// </summary>
-        public static bool TryLoadFile(string filePath, out Language file)
+        public static bool TryLoadFile(string filePath, out Culture file)
         {
             using (XmlReader reader = XmlReader.Create(filePath))
             {
@@ -190,7 +190,7 @@ namespace KouXiaGu.Globalization
             }
         }
 
-        public static bool TryLoadFile(XmlReader reader, out Language file)
+        public static bool TryLoadFile(XmlReader reader, out Culture file)
         {
             string language = null;
             string languageTag = null;
@@ -206,17 +206,17 @@ namespace KouXiaGu.Globalization
                 {
                     if (!string.IsNullOrEmpty(languageTag))
                     {
-                        file = new Language(language, languageTag);
+                        file = new Culture(language, languageTag);
                         return true;
                     }
                     else
                     {
-                        file = new Language(language);
+                        file = new Culture(language);
                         return true;
                     }
                 }
             }
-            file = default(Language);
+            file = default(Culture);
             return false;
         }
 
@@ -229,7 +229,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 创建新的文件,并且写入所有文本条目;
         /// </summary>
-        public static void CreateTexts(string filePath, Language language, IEnumerable<TextItem> texts)
+        public static void CreateTexts(string filePath, Culture language, IEnumerable<TextItem> texts)
         {
             using (XmlWriter writer = XmlWriter.Create(filePath, xmlWriterSettings))
             {
@@ -240,7 +240,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 写入所有文本条目;
         /// </summary>
-        static void CreateTexts(XmlWriter writer, Language language, IEnumerable<TextItem> texts)
+        static void CreateTexts(XmlWriter writer, Culture language, IEnumerable<TextItem> texts)
         {
             writer.WriteStartRoot(language);
             WriteTextElements(writer, texts);
@@ -253,7 +253,7 @@ namespace KouXiaGu.Globalization
         /// </summary>
         public static void AppendTexts(string filePath, IEnumerable<TextItem> texts)
         {
-            Language language;
+            Culture language;
 
             if (TryLoadFile(filePath, out language))
             {
@@ -272,7 +272,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 仅写入条目中的Key的值,其它值留空;
         /// </summary>
-        public static void CreateKeys(string filePath, Language language, IEnumerable<string> keys)
+        public static void CreateKeys(string filePath, Culture language, IEnumerable<string> keys)
         {
             using (XmlWriter writer = XmlWriter.Create(filePath, xmlWriterSettings))
             {
@@ -283,7 +283,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 仅写入条目中的Key的值,其它值留空;
         /// </summary>
-        static void CreateKeys(XmlWriter writer, Language language, IEnumerable<string> keys)
+        static void CreateKeys(XmlWriter writer, Culture language, IEnumerable<string> keys)
         {
             writer.WriteStartRoot(language);
             WriteKeyElements(writer, keys);
@@ -291,7 +291,7 @@ namespace KouXiaGu.Globalization
         }
 
 
-        static void WriteStartRoot(this XmlWriter writer, Language language)
+        static void WriteStartRoot(this XmlWriter writer, Culture language)
         {
             writer.WriteStartDocument();
             writer.WriteStartElement(ROOT_ELEMENT_NAME);

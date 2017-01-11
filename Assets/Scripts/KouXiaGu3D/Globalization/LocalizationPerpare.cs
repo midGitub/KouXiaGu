@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,8 +20,27 @@ namespace KouXiaGu.Globalization
             base.Start();
             List<LanguageFile> ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
             Localization.Initialize(ReadOnlyLanguageFiles);
-            LocalizationText.UpdateTextDictionary(Localization.LanguageFile.ReadTexts());
+
+            ReadTexts();
             OnComplete();
+        }
+
+        /// <summary>
+        /// 根据本地化信息读取文本;
+        /// </summary>
+        public static void ReadTexts()
+        {
+            LanguageFile file = Localization.LanguageFile;
+            if (file == null)
+            {
+                Debug.LogError("无法读取!");
+            }
+            ReadTexts(file);
+        }
+
+        public static void ReadTexts(LanguageFile file)
+        {
+            LocalizationText.UpdateTextDictionary(file.ReadTexts());
         }
 
     }

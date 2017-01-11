@@ -13,13 +13,13 @@ namespace KouXiaGu.Globalization
     public class LanguageFile
     {
 
-        public LanguageFile(Language language, string file)
+        public LanguageFile(Culture language, string file)
         {
             this.Language = language;
             this.FilePath = file;
         }
 
-        public Language Language { get; private set; }
+        public Culture Language { get; private set; }
 
         public string FilePath { get; private set; }
 

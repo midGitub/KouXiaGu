@@ -21,7 +21,7 @@ namespace KouXiaGu.Globalization
             new TextItem("Test_4", "测试4", true),
         };
 
-        static readonly Language language = new Language("简中", "zh-CN");
+        static readonly Culture language = new Culture("简中", "zh-CN");
 
         string TempletFilePath
         {
