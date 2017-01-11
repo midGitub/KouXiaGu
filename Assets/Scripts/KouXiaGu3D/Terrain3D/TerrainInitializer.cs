@@ -69,7 +69,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
-        public static IObservableDictionary<CubicHexCoord, TerrainNode> Map
+        public static TerrainMap Map
         {
             get { return TerrainMap.Map; }
         }
@@ -92,7 +92,7 @@ namespace KouXiaGu.Terrain3D
             if (IsRunning)
                 throw new PremiseNotInvalidException();
 
-            yield return TerrainRes.Initialize();
+            yield return ResInitializer.Initialize();
 
             TerrainMap.ReadMap();
 
@@ -112,7 +112,7 @@ namespace KouXiaGu.Terrain3D
             if (IsRunning)
                 throw new PremiseNotInvalidException();
 
-            yield return TerrainRes.Initialize();
+            yield return ResInitializer.Initialize();
 
             ArchiveDescription description = ArchiveDescription.Read(archive);
 

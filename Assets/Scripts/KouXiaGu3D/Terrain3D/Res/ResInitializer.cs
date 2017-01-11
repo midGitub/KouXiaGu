@@ -10,15 +10,20 @@ namespace KouXiaGu.Terrain3D
     /// 地形资源初始化控制;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class TerrainRes : UnitySington<TerrainRes>
+    public sealed class ResInitializer : UnitySington<ResInitializer>
     {
-        TerrainRes() { }
+        static ResInitializer()
+        {
+            IsInitialized = false;
+        }
+
+        ResInitializer() { }
 
         /// <summary>
         /// 资源所在的资源包;
         /// </summary>
         [SerializeField]
-        string resAssetBundleName = "terrain";
+        string assetBundleName = "terrain";
 
         /// <summary>
         /// 地貌配置文件名;
@@ -32,9 +37,12 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         string roadDescrName = "RoadDescr.xml";
 
+
+        public static bool IsInitialized { get; private set; }
+
         public static string ResAssetBundleFile
         {
-            get { return ResourcePath.CombineAssetBundle(GetInstance.resAssetBundleName); }
+            get { return ResourcePath.CombineAssetBundle(GetInstance.assetBundleName); }
         }
 
         public static string LandformDescrFile
@@ -74,6 +82,7 @@ namespace KouXiaGu.Terrain3D
                 yield return null;
 
             assetBundle.Unload(false);
+            IsInitialized = true;
             yield break;
         }
 

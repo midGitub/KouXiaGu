@@ -5,7 +5,7 @@ using System.IO;
 namespace KouXiaGu.Terrain3D
 {
 
-    [CustomEditor(typeof(TerrainRes), true)]
+    [CustomEditor(typeof(ResInitializer), true)]
     public class TerrainResEditor : Editor
     {
 
@@ -28,11 +28,11 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainResPath.Create();
 
-            if(!File.Exists(TerrainRes.RoadDescrFile))
-                RoadDescr.ArraySerializer.SerializeXiaGu(TerrainRes.RoadDescrFile, RoadTemplets);
+            if(!File.Exists(ResInitializer.RoadDescrFile))
+                RoadDescr.ArraySerializer.SerializeXiaGu(ResInitializer.RoadDescrFile, RoadTemplets);
 
-            if (!File.Exists(TerrainRes.LandformDescrFile))
-                LandformDescr.ArraySerializer.SerializeXiaGu(TerrainRes.LandformDescrFile, LandformTemplets);
+            if (!File.Exists(ResInitializer.LandformDescrFile))
+                LandformDescr.ArraySerializer.SerializeXiaGu(ResInitializer.LandformDescrFile, LandformTemplets);
         }
 
 
