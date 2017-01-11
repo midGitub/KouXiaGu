@@ -57,9 +57,9 @@ namespace KouXiaGu.Test
         {
 
             Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
-            CubicHexCoord cube = GridConvert.Grid.GetCubic(terrainPixel);
+            CubicHexCoord cube = TerrainConvert.Grid.GetCubic(terrainPixel);
 
-            Vector3 cubePixel = GridConvert.Grid.GetPixel(cube);
+            Vector3 cubePixel = TerrainConvert.Grid.GetPixel(cube);
 
             RectCoord terrainBlockCoord = TerrainChunk.ChunkGrid.GetCoord(terrainPixel);
             Vector3 terrainBlockCenter = TerrainChunk.ChunkGrid.GetCenter(terrainBlockCoord);

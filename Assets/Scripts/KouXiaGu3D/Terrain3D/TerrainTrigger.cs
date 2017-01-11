@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using KouXiaGu.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -14,6 +10,8 @@ namespace KouXiaGu.Terrain3D
     [RequireComponent(typeof(MeshCollider), typeof(TerrainChunk)), DisallowMultipleComponent]
     public class TerrainTrigger : MonoBehaviour
     {
+
+        #region 网格定义;
 
         const string MESH_NAME = "Terrain Collision Mesh";
 
@@ -77,8 +75,12 @@ namespace KouXiaGu.Terrain3D
             return triangles.ToArray();
         }
 
+        #endregion
+
+
         #region 地形射线(静态);
 
+        [CustomUnityLayer("地形层")]
         const string LAYER_NAME = "Terrain";
 
         public static int RayLayerMask
@@ -148,7 +150,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 获取到高度对应的定点坐标;
+        /// 获取到高度对应的顶点坐标;
         /// </summary>
         Vector3[] GetVertices(TerrainChunk chunk)
         {

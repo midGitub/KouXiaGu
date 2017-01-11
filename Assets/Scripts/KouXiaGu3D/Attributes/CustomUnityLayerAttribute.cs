@@ -13,6 +13,13 @@ namespace KouXiaGu
     public sealed class CustomUnityLayerAttribute : Attribute
     {
         public CustomUnityLayerAttribute() { }
+        public CustomUnityLayerAttribute(string message)
+        {
+            this.Message = message;
+        }
+
+        public string Message { get; private set; }
+
     }
 
 }

@@ -31,6 +31,14 @@ namespace KouXiaGu.Terrain3D
             return Path.Combine(resPath, path);
         }
 
+        /// <summary>
+        /// 创建目录;
+        /// </summary>
+        public static DirectoryInfo Create()
+        {
+            return Directory.CreateDirectory(resPath);
+        }
+
 
         /// <summary>
         /// 路径组合到地形存档路径下;
@@ -48,15 +56,6 @@ namespace KouXiaGu.Terrain3D
         {
             string archiveDirectory = Path.Combine(archive.DirectoryPath, ResDirectory);
             return Directory.CreateDirectory(archiveDirectory);
-        }
-
-
-        /// <summary>
-        /// 创建目录;
-        /// </summary>
-        public static DirectoryInfo Create()
-        {
-            return Directory.CreateDirectory(resPath);
         }
 
     }

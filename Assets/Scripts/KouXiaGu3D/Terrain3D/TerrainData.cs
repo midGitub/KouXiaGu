@@ -36,18 +36,27 @@ namespace KouXiaGu.Terrain3D
         [SerializeField, Range(0,20)]
         float snowLevel = 0f;
 
+        /// <summary>
+        /// 地形细分程度;
+        /// </summary>
         public static float Tessellation
         {
             get { return GetInstance.tessellation; }
             set { Shader.SetGlobalFloat("_TerrainTess", value); GetInstance.tessellation = value; }
         }
 
+        /// <summary>
+        /// 地形高度缩放;
+        /// </summary>
         public static float Displacement
         {
             get { return GetInstance.displacement; }
             set { Shader.SetGlobalFloat("_TerrainDisplacement", value); GetInstance.displacement = value; }
         }
 
+        /// <summary>
+        /// 降雪程度;
+        /// </summary>
         public static float SnowLevel
         {
             get { return GetInstance.snowLevel; }

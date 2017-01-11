@@ -8,9 +8,9 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地图网格信息转换;
+    /// 地图信息转换;
     /// </summary>
-    public static class GridConvert
+    public static class TerrainConvert
     {
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static CubicHexCoord GetTerrainCubic(this Vector3 pos)
         {
-            return GridConvert.Grid.GetCubic(pos);
+            return TerrainConvert.Grid.GetCubic(pos);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static Vector3 GetTerrainPixel(this CubicHexCoord coord)
         {
-            return GridConvert.Grid.GetPixel(coord);
+            return TerrainConvert.Grid.GetPixel(coord);
         }
 
 

@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 六边形外半径;
         /// </summary>
-        const float outerRadius = GridConvert.OuterRadius;
+        const float outerRadius = TerrainConvert.OuterRadius;
         static readonly float innerRadius = (float)(Math.Sqrt(3) / 2 * outerRadius);
         const float halfOuterRadius = outerRadius / 2;
         const float altitude = 0;

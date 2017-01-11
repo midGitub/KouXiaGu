@@ -243,7 +243,7 @@ namespace KouXiaGu.Terrain3D
         static void SetBakingCamera(MeshDisplay display)
         {
             Camera bakingCamera = GetInstance.bakingCamera;
-            Vector3 cameraPoint = GridConvert.Grid.GetPixel(display.Center, 5);
+            Vector3 cameraPoint = TerrainConvert.Grid.GetPixel(display.Center, 5);
             bakingCamera.transform.position = cameraPoint;
         }
 

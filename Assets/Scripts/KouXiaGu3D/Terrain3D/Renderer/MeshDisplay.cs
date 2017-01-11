@@ -67,7 +67,7 @@ namespace KouXiaGu.Terrain3D
         {
             CubicHexCoord oCoord = coord - center;
             CubicHexCoord rCoord = oCoord + this.center;
-            return GridConvert.Grid.GetPixel(rCoord, -active.Count);
+            return TerrainConvert.Grid.GetPixel(rCoord, -active.Count);
         }
 
         /// <summary>

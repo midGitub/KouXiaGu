@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         CubicHexCoord Convert(Vector3 pos)
         {
-            return GridConvert.Grid.GetCubic(pos);
+            return TerrainConvert.Grid.GetCubic(pos);
         }
 
     }

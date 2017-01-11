@@ -13,6 +13,13 @@ namespace KouXiaGu
     public class CustomUnityTagAttribute : Attribute
     {
         public CustomUnityTagAttribute() { }
+        public CustomUnityTagAttribute(string message)
+        {
+            this.Message = message;
+        }
+
+        public string Message { get; private set; }
+
     }
 
 }

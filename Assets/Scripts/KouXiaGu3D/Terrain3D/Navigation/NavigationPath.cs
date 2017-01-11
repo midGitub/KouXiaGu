@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         Vector3 GetPosition()
         {
-            Vector3 pos = GridConvert.Grid.GetPixel(path.Current);
+            Vector3 pos = TerrainConvert.Grid.GetPixel(path.Current);
             pos.y = GetHeight(pos);
             return pos;
         }

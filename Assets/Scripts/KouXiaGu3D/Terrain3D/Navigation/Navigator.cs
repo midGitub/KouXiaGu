@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 在跟随路径时,当与目标点相距多少距离进行跟换一下个目标点;
         /// </summary>
-        [SerializeField, Range(0.01f, GridConvert.OuterRadius)]
+        [SerializeField, Range(0.01f, TerrainConvert.OuterRadius)]
         float alternateDistance = 0.3f;
 
         /// <summary>

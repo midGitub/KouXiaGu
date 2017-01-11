@@ -118,7 +118,7 @@ namespace KouXiaGu.Terrain3D
             List<float> angles = new List<float>();
             foreach (var dir in CubicHexCoord.GetDirections(roadDirections))
             {
-                float angle = GridConvert.GetAngle(dir);
+                float angle = TerrainConvert.GetAngle(dir);
                 angles.Add(angle);
             }
             return angles;

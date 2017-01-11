@@ -14,7 +14,6 @@ namespace KouXiaGu.Terrain3D
     public sealed class TerrainCreater : MonoBehaviour
     {
 
-
         #region 静态
 
         static TerrainCreater creater;
