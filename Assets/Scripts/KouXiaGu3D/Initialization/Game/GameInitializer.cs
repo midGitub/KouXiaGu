@@ -24,7 +24,6 @@ namespace KouXiaGu.Initialization
         public static bool IsSaving { get; private set; }
         public static bool IsPause { get; private set; }
 
-
         protected override void Awake()
         {
             base.Awake();

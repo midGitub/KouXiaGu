@@ -35,12 +35,11 @@ namespace KouXiaGu.UI
         }
 
 
+        //[SerializeField]
+        //UnityEvent OnDisplay;
 
-        [SerializeField]
-        UnityEvent OnDisplay;
-
-        [SerializeField]
-        UnityEvent OnConceal;
+        //[SerializeField]
+        //UnityEvent OnConceal;
 
         Canvas canvas;
 
