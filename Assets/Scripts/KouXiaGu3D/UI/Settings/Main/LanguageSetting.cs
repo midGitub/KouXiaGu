@@ -28,7 +28,7 @@ namespace KouXiaGu.UI
             if (Localization.LanguageIndex != index)
             {
                 Localization.SetLanguage(index);
-                LocalizationPerpare.ReadTexts();
+                LocalizationInitializer.Read();
             }
         }
 

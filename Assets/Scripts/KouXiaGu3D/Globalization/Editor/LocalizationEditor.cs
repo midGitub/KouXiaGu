@@ -9,7 +9,7 @@ using System.IO;
 namespace KouXiaGu.Globalization
 {
 
-    [CustomEditor(typeof(LocalizationPerpare), true)]
+    [CustomEditor(typeof(LocalizationInitializer), true)]
     class LocalizationEditor : Editor
     {
 
