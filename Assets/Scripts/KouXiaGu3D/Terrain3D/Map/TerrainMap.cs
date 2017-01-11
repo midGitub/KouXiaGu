@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Write(string filePath, TerrainMap map)
         {
-            Path.ChangeExtension(filePath, FILE_EXTENSION);
+            filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
             ProtoBufExtensions.SerializeProtoBuf(filePath, map);
         }
 
@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static TerrainMap Read(string filePath)
         {
-            Path.ChangeExtension(filePath, FILE_EXTENSION);
+            filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
             return ProtoBufExtensions.DeserializeProtoBuf<TerrainMap>(filePath);
         }
 

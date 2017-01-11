@@ -1,5 +1,5 @@
 ﻿using System;
-using KouXiaGu.xgLocalization;
+using KouXiaGu.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +30,7 @@ namespace KouXiaGu.UI
             textObject = GetComponent<Text>();
 
             key = textObject.text;
-            unSubscriber = Localization.Subscribe(this);
+            unSubscriber = Globalization.LocalizationText.Subscribe(this);
         }
 
         void OnDestroy()

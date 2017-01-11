@@ -6,10 +6,10 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
-namespace KouXiaGu.xgLocalization
+namespace KouXiaGu.Globalization
 {
 
-    [CustomEditor(typeof(Localization), true)]
+    [CustomEditor(typeof(LocalizationPerpare), true)]
     class LocalizationEditor : Editor
     {
 
@@ -25,32 +25,34 @@ namespace KouXiaGu.xgLocalization
 
         string TempletFilePath
         {
-            get { return Path.Combine(Resources.ResDirectoryPath, "Test.xml"); }
+            get { return Path.Combine(Resources.DirectoryPath, "Test.xml"); }
         }
 
         string LackingKeysFilePath
         {
-            get { return Path.Combine(Resources.ResDirectoryPath, "LackingKeys.xml"); }
+            get { return Path.Combine(Resources.DirectoryPath, "LackingKeys.xml"); }
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            EditorGUILayout.LabelField("SystemLanguage", LocalizationConfig.SysLanguage);
-            EditorGUILayout.LabelField("文本量", Localization.TextDictionary.Count.ToString());
-            EditorGUILayout.LabelField("缺失文本量", LackingTextCollecter.LackingKeyCount.ToString());
+            if (LocalizationText.IsInitialized)
+            {
+                EditorGUILayout.LabelField("文本量", LocalizationText.TextDictionary.Count.ToString());
+                EditorGUILayout.LabelField("缺失文本量", LackingTextCollecter.LackingKeyCount.ToString());
+            }
 
             EditorGUILayout.BeginHorizontal();
 
             if (GUILayout.Button("保存配置"))
             {
-                LocalizationConfig.Write(Localization.Config);
+                Localizer.SetLanguage(new Localizer("简体中文"));
             }
 
             if (GUILayout.Button("输出语言"))
             {
-                Debug.Log(Resources.FindLanguageFiles(Resources.ResDirectoryPath).ToLog("目录下的语言文件"));
+                Debug.Log(Resources.FindLanguageFiles(Resources.DirectoryPath).ToLog("目录下的语言文件"));
             }
 
             EditorGUILayout.EndHorizontal();

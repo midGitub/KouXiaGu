@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.xgLocalization
+namespace KouXiaGu.Globalization
 {
 
 
-    public class TextDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, IReadOnlyDictionary
+    public class TextDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, IReadOnlyDictionary,
+        IEnumerable<TextItem>
     {
         public TextDictionary() : base() { }
         public TextDictionary(IEqualityComparer<string> comparer) : base(comparer) { }
@@ -16,6 +17,15 @@ namespace KouXiaGu.xgLocalization
         public TextDictionary(int capacity) : base(capacity) { }
         public TextDictionary(IDictionary<string, string> dictionary, IEqualityComparer<string> comparer) : base(dictionary, comparer) { }
         public TextDictionary(int capacity, IEqualityComparer<string> comparer) : base(capacity, comparer) { }
+
+        public TextDictionary(IEnumerable<TextItem> textItems)
+        {
+            foreach (var item in textItems)
+            {
+                Add(item);
+            }
+        }
+
 
         IEnumerable<string> IReadOnlyDictionary<string, string>.Keys
         {
@@ -38,25 +48,13 @@ namespace KouXiaGu.xgLocalization
             return true;
         }
 
-        ///// <summary>
-        ///// 获取到文本,若获取失败则返回本身;
-        ///// </summary>
-        //public string GetText(string key)
-        //{
-        //    string text;
-        //    if (TryGetValue(key, out text))
-        //        return text;
-        //    else
-        //        return key;
-        //}
-
-        ///// <summary>
-        ///// 获取到文本,若获取失败则返回本身,并且调用 onFail;
-        ///// </summary>
-        //public string GetText(string key, Action onFail)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        IEnumerator<TextItem> IEnumerable<TextItem>.GetEnumerator()
+        {
+            foreach (var item in this as IEnumerable<KeyValuePair<string, string>>)
+            {
+                yield return new TextItem(item.Key, item.Value, false);
+            }
+        }
 
     }
 

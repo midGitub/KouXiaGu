@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Write(string filePath, MapDescription description)
         {
-            Path.ChangeExtension(filePath, FILE_EXTENSION);
+            filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
             Serializer.SerializeXiaGu(filePath, description);
         }
 
@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static MapDescription Read(string filePath)
         {
-            Path.ChangeExtension(filePath, FILE_EXTENSION);
+            filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
             MapDescription description = (MapDescription)Serializer.DeserializeXiaGu(filePath);
             return description;
         }

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.xgLocalization
+namespace KouXiaGu.Globalization
 {
 
     /// <summary>
@@ -22,6 +22,33 @@ namespace KouXiaGu.xgLocalization
         public Language Language { get; private set; }
 
         public string FilePath { get; private set; }
+
+
+        /// <summary>
+        /// 读取所有文本;
+        /// </summary>
+        public TextDictionary ReadTexts()
+        {
+            return new TextDictionary(XmlFile.ReadTexts(FilePath));
+        }
+
+        /// <summary>
+        /// 创建一个新的文件,并且写入;
+        /// </summary>
+        /// <param name="textItems"></param>
+        public void CreateTexts(IEnumerable<TextItem> textItems)
+        {
+            XmlFile.CreateTexts(FilePath, Language, textItems);
+        }
+
+        /// <summary>
+        /// 加入到已存在的文本中;
+        /// </summary>
+        public void AppendTexts(IEnumerable<TextItem> textItems)
+        {
+            XmlFile.AppendTexts(FilePath, textItems);
+        }
+
 
         public override bool Equals(object obj)
         {

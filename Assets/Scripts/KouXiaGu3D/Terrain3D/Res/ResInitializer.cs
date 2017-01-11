@@ -60,10 +60,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerator Initialize()
         {
-            var bundleLoadRequest = LoadAssetAsync();
-            while (!bundleLoadRequest.isDone)
-                yield return null;
+            if (IsInitialized)
+            {
+                Debug.LogWarning("地形资源已经初始化完毕,无需再次初始化;");
+                yield break;
+            }
 
+            var bundleLoadRequest = LoadAssetAsync();
+            yield return bundleLoadRequest;
             AssetBundle assetBundle = bundleLoadRequest.assetBundle;
             if (assetBundle == null)
             {
@@ -167,6 +171,8 @@ namespace KouXiaGu.Terrain3D
         {
             LandformRes.Clear();
             RoadRes.Clear();
+
+            IsInitialized = false;
         }
 
     }

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.Terrain3D;
-using KouXiaGu.xgLocalization;
+using KouXiaGu.Globalization;
 
 namespace KouXiaGu.UI
 {
@@ -87,7 +87,7 @@ namespace KouXiaGu.UI
         public void UpdateDescription()
         {
             MapName = mapDescription.Name;
-            MapData = new DateTime(mapDescription.SaveTime).ToString(Localization.LanguageCulture.CultureInfo);
+            MapData = new DateTime(mapDescription.SaveTime).ToString(Localization.Language);
         }
 
     }

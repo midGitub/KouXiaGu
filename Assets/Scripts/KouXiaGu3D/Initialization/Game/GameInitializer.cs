@@ -4,26 +4,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
-using UnityEngine;
 
 namespace KouXiaGu.Initialization
 {
 
-
-    public static class Game 
+    /// <summary>
+    /// 负责游戏场景初始化;
+    /// </summary>
+    public sealed class GameInitializer : UnitySington<GameInitializer>
     {
-
-        static Game()
+        static GameInitializer()
         {
             IsRunning = false;
             IsSaving = false;
             IsPause = false;
         }
 
-
         public static bool IsRunning { get; private set; }
         public static bool IsSaving { get; private set; }
         public static bool IsPause { get; private set; }
+
+
+        protected override void Awake()
+        {
+            base.Awake();
+            IsRunning = true;
+        }
+
+        void Start()
+        {
+            
+        }
+
+        void OnDestroy()
+        {
+            IsRunning = false;
+        }
+
+
 
 
         /// <summary>

@@ -6,7 +6,7 @@ using System.IO;
 using KouXiaGu.Collections;
 using UnityEngine;
 
-namespace KouXiaGu.xgLocalization
+namespace KouXiaGu.Globalization
 {
 
 
@@ -297,7 +297,7 @@ namespace KouXiaGu.xgLocalization
             writer.WriteStartElement(ROOT_ELEMENT_NAME);
 
             writer.WriteStartAttribute(LANGUAGE_NAME_ATTRIBUTE_NAME);
-            writer.WriteString(language.Name);
+            writer.WriteString(language.LanguageName);
 
             writer.WriteStartAttribute(LANGUAGE_TAG_ATTRIBUTE_NAME);
             writer.WriteString(language.LanguageTag);

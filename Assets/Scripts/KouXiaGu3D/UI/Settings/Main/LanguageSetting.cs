@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using KouXiaGu.xgLocalization;
+using KouXiaGu.Globalization;
 
 namespace KouXiaGu.UI
 {
@@ -17,19 +17,16 @@ namespace KouXiaGu.UI
         {
             languageDropdown.ClearOptions();
 
-            if (Localization.Initialized)
-            {
-                languageDropdown.AddOptions(Localization.ReadOnlyLanguages);
+            languageDropdown.AddOptions(Localization.ReadOnlyLanguageNames);
                 languageDropdown.value = Localization.LanguageIndex;
-            }
 
             languageDropdown.onValueChanged.AddListener(OnChanged);
         }
 
-        void OnChanged(int id)
+        void OnChanged(int index)
         {
-            if (Localization.LanguageIndex != id)
-                Localization.SetConfig(id);
+            if (Localization.LanguageIndex != index)
+                Localization.SetLanguage(index);
         }
 
     }
