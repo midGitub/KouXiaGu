@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 开始检视地图变化;
         /// </summary>
-        public static void Initialize(Archive archive, TerrainMap map)
+        public static void Initialize(Archive archive, TerrainMapFile map)
         {
-            if (map.IsMapLoaded)
+            if (map.IsLoaded)
                 throw new ArgumentNullException("地图还未初始化");
 
             ObservableDictionary<CubicHexCoord, TerrainNode> observableMap = map.Map;
@@ -56,9 +56,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 开始检视地图变化;
         /// </summary>
-        public static void Initialize(TerrainMap map)
+        public static void Initialize(TerrainMapFile map)
         {
-            if (map.IsMapLoaded)
+            if (!map.IsLoaded)
                 throw new ArgumentNullException("地图还未初始化");
 
             ObservableDictionary<CubicHexCoord, TerrainNode> observableMap = map.Map;

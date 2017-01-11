@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形地图合集;
         /// </summary>
-        static readonly List<TerrainMap> maps = new List<TerrainMap>();
+        static readonly List<TerrainMapFile> maps = new List<TerrainMapFile>();
 
         /// <summary>
         /// 当地图内容更新时调用;
@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static bool IsInitialized { get; private set; }
 
-        public static List<TerrainMap> ReadOnlyMaps
+        public static List<TerrainMapFile> ReadOnlyMaps
         {
             get { return maps; }
         }
@@ -64,7 +64,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 加入新的地图;
         /// </summary>
-        public static void AddMaps(IEnumerable<TerrainMap> maps)
+        public static void AddMaps(IEnumerable<TerrainMapFile> maps)
         {
             MapFiler.maps.AddRange(maps);
 
@@ -75,7 +75,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 加入新的地图;
         /// </summary>
-        public static void AddMap(TerrainMap map)
+        public static void AddMap(TerrainMapFile map)
         {
             MapFiler.maps.Add(map);
 
@@ -87,10 +87,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建一个新地图;
         /// </summary>
-        public static TerrainMap CreateNewMap(MapDescription description)
+        public static TerrainMapFile CreateNewMap(MapDescription description)
         {
             string directory = RandomMapDirectory();
-            TerrainMap map = TerrainMap.Create(directory, description);
+            TerrainMapFile map = TerrainMapFile.Create(directory, description);
             AddMap(map);
             return map;
         }
@@ -104,16 +104,31 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到所有地图;
         /// </summary>
-        public static IEnumerable<TerrainMap> FindAll()
+        public static IEnumerable<TerrainMapFile> FindAll()
         {
             string[] paths = Directory.GetDirectories(MapDirectory);
-            return TerrainMap.Find(paths);
+            return Find(paths);
+        }
+
+        /// <summary>
+        /// 获取到这些目录中为描述文件;
+        /// </summary>
+        public static IEnumerable<TerrainMapFile> Find(IEnumerable<string> directorys)
+        {
+            TerrainMapFile item;
+            foreach (var directory in directorys)
+            {
+                if (TerrainMapFile.TryRead(directory, out item))
+                {
+                    yield return item;
+                }
+            }
         }
 
         /// <summary>
         /// 获取到Id相同的地图,若不存在则返回异常;
         /// </summary>
-        public static TerrainMap Find(string id)
+        public static TerrainMapFile Find(string id)
         {
             return FindAll().First(item => item.Description.Id == id);
         }

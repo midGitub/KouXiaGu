@@ -27,14 +27,14 @@ namespace KouXiaGu.Terrain3D
 
         #region 提供初始化;
 
-        static TerrainMap terrainMap;
+        static TerrainMapFile terrainMap;
         static ArchiveDescription description;
 
 
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
-        public static TerrainMap TerrainMap
+        public static TerrainMapFile TerrainMap
         {
             get { return terrainMap; }
             set

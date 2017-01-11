@@ -13,6 +13,8 @@ namespace KouXiaGu.UI
     [DisallowMultipleComponent, RequireComponent(typeof(Canvas))]
     public class StandaloneUI : MonoBehaviour
     {
+        protected StandaloneUI() { }
+
 
         [CustomUnityLayer]
         public const string SortingLayerName = "StandaloneUI";
@@ -33,7 +35,6 @@ namespace KouXiaGu.UI
         }
 
 
-        protected StandaloneUI() { }
 
         [SerializeField]
         UnityEvent OnDisplay;
@@ -62,6 +63,10 @@ namespace KouXiaGu.UI
             get { return enterKeyObserver ?? (enterKeyObserver = new EnterKeyObserver(OnEnterKeyDown)); }
         }
 
+
+        /// <summary>
+        /// 显示窗口;
+        /// </summary>
         public void Display()
         {
             if (IsDisplay())
@@ -101,6 +106,9 @@ namespace KouXiaGu.UI
         }
 
 
+        /// <summary>
+        /// 隐藏窗口;
+        /// </summary>
         public void Conceal()
         {
             if (!IsDisplay())

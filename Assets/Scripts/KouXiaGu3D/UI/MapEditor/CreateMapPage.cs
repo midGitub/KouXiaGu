@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.Terrain3D;
@@ -10,9 +7,9 @@ namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent]
-    public class CreateMapUI : MonoBehaviour
+    public class CreateMapPage : MonoBehaviour
     {
-        CreateMapUI() { }
+        CreateMapPage() { }
 
         [SerializeField]
         Button btnCreate;

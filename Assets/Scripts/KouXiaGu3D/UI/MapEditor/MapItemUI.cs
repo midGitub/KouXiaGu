@@ -32,7 +32,7 @@ namespace KouXiaGu.UI
         /// </summary>
         public event Action<MapItemUI> OnPitch;
 
-        public TerrainMap Map { get; private set; }
+        public TerrainMapFile Map { get; private set; }
         public int Index { get; private set; }
 
         MapDescription mapDescription
@@ -73,7 +73,7 @@ namespace KouXiaGu.UI
         /// <summary>
         /// 初始化内部信息;
         /// </summary>
-        public void Init(TerrainMap map, int index)
+        public void Init(TerrainMapFile map, int index)
         {
             this.Map = map;
             this.Index = index;

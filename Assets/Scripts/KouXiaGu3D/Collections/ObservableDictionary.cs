@@ -15,6 +15,25 @@ namespace KouXiaGu.Collections
     public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>
     {
 
+        public ObservableDictionary()
+        {
+            this.dictionary = new Dictionary<TKey, TValue>();
+            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
+        }
+
+        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
+        {
+            this.dictionary = new Dictionary<TKey, TValue>(dictionary);
+            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
+        }
+
+        public ObservableDictionary(int capacity)
+        {
+            this.dictionary = new Dictionary<TKey, TValue>(capacity);
+            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
+        }
+
+
         Dictionary<TKey, TValue> dictionary;
 
         List<IObserver<DictionaryChange<TKey, TValue>>> observers;
@@ -56,26 +75,6 @@ namespace KouXiaGu.Collections
         {
             get {  return this.dictionary.Values; }
         }
-
-
-        public ObservableDictionary()
-        {
-            this.dictionary = new Dictionary<TKey, TValue>();
-            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
-        }
-
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
-        {
-            this.dictionary = new Dictionary<TKey, TValue>(dictionary);
-            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
-        }
-
-        public ObservableDictionary(int capacity)
-        {
-            this.dictionary = new Dictionary<TKey, TValue>(capacity);
-            this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
-        }
-
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {

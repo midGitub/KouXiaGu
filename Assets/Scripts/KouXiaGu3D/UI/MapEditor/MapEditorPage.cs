@@ -8,9 +8,9 @@ namespace KouXiaGu.UI
 {
 
     [DisallowMultipleComponent]
-    public sealed class MapEditorUI : MonoBehaviour
+    public sealed class MapEditorPage : MonoBehaviour
     {
-        MapEditorUI() { }
+        MapEditorPage() { }
 
         [SerializeField]
         Transform mapItemPrefabParent;
@@ -45,11 +45,10 @@ namespace KouXiaGu.UI
         /// <summary>
         /// 选中的地图,若未选中或者不存在则返回 default();
         /// </summary>
-        public TerrainMap Map
+        public TerrainMapFile Map
         {
             get { return selected == null ? null : selected.Map; }
         }
-
 
         void Awake()
         {
@@ -91,7 +90,7 @@ namespace KouXiaGu.UI
             }
         }
 
-        MapItemUI CreateMapItem(TerrainMap map)
+        MapItemUI CreateMapItem(TerrainMapFile map)
         {
             MapItemUI item = Instantiate(mapItemPrefab, mapItemPrefabParent);
             item.gameObject.SetActive(true);
