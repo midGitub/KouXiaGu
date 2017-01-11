@@ -12,17 +12,31 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 负责游戏一开始对本地化信息初始化;
     /// </summary>
-    public class LocalizationPerpare : Preparation
+    public class LocalizationPerpare : MonoBehaviour, IOperateAsync
     {
 
-        protected override void Start()
-        {
-            base.Start();
-            List<LanguageFile> ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
-            Localization.Initialize(ReadOnlyLanguageFiles);
+        public bool IsCompleted { get; private set; }
 
-            ReadTexts();
-            OnComplete();
+        public bool IsFaulted { get; private set; }
+
+        public Exception Ex { get; private set; }
+
+
+        void Start()
+        {
+            try
+            {
+                List<LanguageFile> ReadOnlyLanguageFiles = Resources.FindLanguageFiles().ToList();
+                Localization.Initialize(ReadOnlyLanguageFiles);
+                ReadTexts();
+            }
+            catch (Exception e)
+            {
+                IsFaulted = true;
+                Ex = e;
+            }
+
+            IsCompleted = true;
         }
 
         /// <summary>

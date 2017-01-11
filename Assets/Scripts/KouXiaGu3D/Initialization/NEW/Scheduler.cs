@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +6,7 @@ namespace KouXiaGu.Initialization
 {
 
     /// <summary>
-    /// 监视所有下级节点的 IOperationAsync 的进度;
+    /// 在开始场景时监视所有在场景的 IOperationAsync 的进度;
     /// </summary>
     [DisallowMultipleComponent]
     public abstract class Scheduler : MonoBehaviour
@@ -50,7 +50,7 @@ namespace KouXiaGu.Initialization
 
         void Awake()
         {
-            operaters = GetComponents<IOperateAsync>();
+            operaters = GetComponentsInChildren<IOperateAsync>();
             waitOperaters = ToQueue(operaters);
 
             if (IsComplete)
