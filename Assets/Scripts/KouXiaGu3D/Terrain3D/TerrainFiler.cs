@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形资源存放的路径;
     /// </summary>
-    public static class TerrainResPath
+    public static class TerrainFiler
     {
         /// <summary>
         /// 资源存放的文件夹;

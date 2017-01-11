@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         public static void OutputTemplet()
         {
-            TerrainResPath.Create();
+            TerrainFiler.Create();
 
             if (!File.Exists(NavigationRes.NavigationDescrFile))
                 NavigationRes.Save(NavigationTemplets);

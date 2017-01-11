@@ -35,7 +35,7 @@ namespace KouXiaGu.Initialization
         {
             IsSaving = true;
 
-            TerrainInitializer.TerrainMap.WriteMap();
+            MapFiler.Write();
 
             IsSaving = false;
             yield break;

@@ -25,63 +25,46 @@ namespace KouXiaGu.Terrain3D
         TerrainInitializer() { }
 
 
-        #region 提供初始化;
+        //#region 提供初始化;
 
-        static TerrainMapFile terrainMap;
-        static ArchiveDescription description;
+        //static TerrainMapFile terrainMap;
+        //static ArchiveDescription description;
 
 
-        /// <summary>
-        /// 当前游戏使用的地图;
-        /// </summary>
-        public static TerrainMapFile TerrainMap
-        {
-            get { return terrainMap; }
-            set
-            {
-                if (IsRunning)
-                    throw new CanNotEditException("在运行状态无法编辑!");
-                terrainMap = value;
-            }
-        }
+        ///// <summary>
+        ///// 当前游戏使用的地图;
+        ///// </summary>
+        //public static TerrainMapFile TerrainMap
+        //{
+        //    get { return terrainMap; }
+        //    set
+        //    {
+        //        if (IsRunning)
+        //            throw new CanNotEditException("在运行状态无法编辑!");
+        //        terrainMap = value;
+        //    }
+        //}
 
-        /// <summary>
-        /// 预定义的信息;
-        /// </summary>
-        public static ArchiveDescription Description
-        {
-            get { return description; }
-            set
-            {
-                if (IsRunning)
-                    throw new CanNotEditException("在运行状态无法编辑!");
-                description = value;
-            }
-        }
+        ///// <summary>
+        ///// 预定义的信息;
+        ///// </summary>
+        //public static ArchiveDescription Description
+        //{
+        //    get { return description; }
+        //    set
+        //    {
+        //        if (IsRunning)
+        //            throw new CanNotEditException("在运行状态无法编辑!");
+        //        description = value;
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
 
         public static bool IsRunning { get; private set; }
         public static bool IsSaving { get; private set; }
         public static bool IsPause { get; private set; }
-
-        /// <summary>
-        /// 当前游戏使用的地图;
-        /// </summary>
-        public static TerrainMap Map
-        {
-            get { return TerrainMap.Map; }
-        }
-
-
-        /// <summary>
-        /// 可异步初始化的;
-        /// </summary>
-        static void Initialize()
-        {
-            MapFiler.Initialize();
-        }
 
 
         /// <summary>
@@ -94,9 +77,9 @@ namespace KouXiaGu.Terrain3D
 
             yield return ResInitializer.Initialize();
 
-            TerrainMap.ReadMap();
+            MapFiler.Read();
 
-            MapArchiver.Initialize(TerrainMap);
+            MapArchiver.Initialize(MapFiler.Map);
 
             TerrainCreater.Load();
 
@@ -114,12 +97,9 @@ namespace KouXiaGu.Terrain3D
 
             yield return ResInitializer.Initialize();
 
-            ArchiveDescription description = ArchiveDescription.Read(archive);
+            MapFiler.Read();
 
-            TerrainMap = MapFiler.Find(description.UseMapID);
-            TerrainMap.ReadMap();
-
-            MapArchiver.Initialize(archive, TerrainMap);
+            MapArchiver.Initialize(MapFiler.Map);
 
             TerrainCreater.Load();
 
@@ -134,12 +114,6 @@ namespace KouXiaGu.Terrain3D
         public static IEnumerator Save(Archive archive)
         {
             IsSaving = true;
-
-            ArchiveDescription description = DescriptionFromGame();
-            yield return null;
-
-            ArchiveDescription.Write(archive, description);
-            yield return null;
 
             MapArchiver.Write(archive);
             yield return null;
@@ -178,24 +152,6 @@ namespace KouXiaGu.Terrain3D
         public static void Continue()
         {
             IsPause = false;
-        }
-
-
-        static ArchiveDescription DescriptionFromGame()
-        {
-            ArchiveDescription description = new ArchiveDescription()
-            {
-                UseMapID = TerrainMap.Description.Id,
-            };
-            return description;
-        }
-
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            Initialize();
         }
 
     }

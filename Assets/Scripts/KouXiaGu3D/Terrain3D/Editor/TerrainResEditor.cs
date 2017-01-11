@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
 
         public static void OutputTemplet()
         {
-            TerrainResPath.Create();
+            TerrainFiler.Create();
 
             if(!File.Exists(ResInitializer.RoadDescrFile))
                 RoadDescr.ArraySerializer.SerializeXiaGu(ResInitializer.RoadDescrFile, RoadTemplets);

@@ -52,7 +52,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         public static string NavigationDescrFile
         {
-            get { return TerrainResPath.Combine(GetInstance.navigationDescrName); }
+            get { return TerrainFiler.Combine(GetInstance.navigationDescrName); }
         }
 
         /// <summary>

@@ -47,12 +47,12 @@ namespace KouXiaGu.Terrain3D
 
         public static string LandformDescrFile
         {
-            get { return TerrainResPath.Combine(GetInstance.landformDescrName); }
+            get { return TerrainFiler.Combine(GetInstance.landformDescrName); }
         }
 
         public static string RoadDescrFile
         {
-            get { return TerrainResPath.Combine(GetInstance.roadDescrName); }
+            get { return TerrainFiler.Combine(GetInstance.roadDescrName); }
         }
 
         /// <summary>

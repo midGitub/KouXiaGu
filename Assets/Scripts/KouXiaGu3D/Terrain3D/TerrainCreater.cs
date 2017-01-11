@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static IDictionary<CubicHexCoord, TerrainNode> terrainMap
         {
-            get { return TerrainInitializer.Map; }
+            get { return MapFiler.Map; }
         }
 
         /// <summary>
