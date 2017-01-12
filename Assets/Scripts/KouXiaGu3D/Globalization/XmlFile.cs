@@ -206,7 +206,14 @@ namespace KouXiaGu.Globalization
                 {
                     if (!string.IsNullOrEmpty(languageTag))
                     {
-                        file = new Culture(language, languageTag);
+                        try
+                        {
+                            file = new Culture(language, languageTag);
+                        }
+                        catch (ArgumentException)
+                        {
+                            file = new Culture(language);
+                        }
                         return true;
                     }
                     else

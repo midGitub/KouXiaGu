@@ -34,7 +34,9 @@ namespace KouXiaGu.Terrain3D.Navigation
         {
             base.Update();
 
-            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+            if (Input.GetMouseButtonDown(0) &&
+                EventSystem.current != null &&
+                !EventSystem.current.IsPointerOverGameObject())
             {
                 CubicHexCoord starting = Position.GetTerrainCubic();
                 CubicHexCoord destination = TerrainTrigger.MouseRayPoint().GetTerrainCubic();

@@ -8,6 +8,9 @@ using UnityEngine;
 namespace KouXiaGu.Grids
 {
 
+    /// <summary>
+    /// 平顶六边形相关计算方法;
+    /// </summary>
     [Serializable]
     public struct Hexagon
     {
@@ -28,9 +31,6 @@ namespace KouXiaGu.Grids
         public double OuterRadius
         {
             get { return outerRadius; }
-#if SET_PROPERTY
-            set { outerRadius = value; }
-#endif
         }
 
         /// <summary>
@@ -39,9 +39,6 @@ namespace KouXiaGu.Grids
         public double OuterDiameters
         {
             get { return OuterRadius * 2; }
-#if SET_PROPERTY
-            set { OuterRadius = value / 2; }
-#endif
         }
 
         /// <summary>
@@ -50,9 +47,6 @@ namespace KouXiaGu.Grids
         public double InnerRadius
         {
             get { return cos30 * OuterRadius; }
-#if SET_PROPERTY
-            set { OuterRadius = value / cos30; }
-#endif
         }
 
         /// <summary>
@@ -61,9 +55,14 @@ namespace KouXiaGu.Grids
         public double InnerDiameters
         {
             get { return InnerRadius * 2; }
-#if SET_PROPERTY
-            set { OuterRadius = value / 2 / cos30; }
-#endif
+        }
+
+        /// <summary>
+        /// 边长;
+        /// </summary>
+        public double SideLength
+        {
+            get { return outerRadius; }
         }
 
     }
