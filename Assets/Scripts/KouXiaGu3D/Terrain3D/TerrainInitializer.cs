@@ -13,55 +13,59 @@ namespace KouXiaGu.Terrain3D
     /// 控制整个地形初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class TerrainInitializer : Initializer
+    public sealed class TerrainInitializer : MonoBehaviour, IStartOperate, IRecoveryOperate, IArchiveOperate
     {
-
-        static TerrainInitializer()
-        {
-            IsRunning = false;
-            IsSaving = false;
-            IsPause = false;
-        }
-
         TerrainInitializer() { }
 
 
-        public static bool IsRunning { get; private set; }
-        public static bool IsSaving { get; private set; }
-        public static bool IsPause { get; private set; }
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public Exception Ex { get; private set; }
 
         /// <summary>
         /// 当前游戏使用的地图;
         /// </summary>
         public static TerrainMap Map { get; private set; }
 
-
-
-        public override void Initialize()
+        void ResetState()
         {
-            throw new NotImplementedException();
+            IsCompleted = false;
+            IsFaulted = false;
+            Ex = null;
         }
 
+        /// <summary>
+        /// 使用类信息初始化;
+        /// </summary>
+        void IStartOperate.Initialize()
+        {
+            ResetState();
+            StartCoroutine(Begin());
+        }
 
-        //protected override void Awake()
-        //{
-        //    base.Awake();
-        //    if (IsRunning)
-        //    {
-        //        IsCompleted = true;
-        //        IsFaulted = true;
-        //    }
+        /// <summary>
+        /// 使用存档初始化;
+        /// </summary>
+        void IRecoveryOperate.Initialize(Archive archive)
+        {
+            ResetState();
+            StartCoroutine(Begin(archive));
+        }
 
-        //}
+        /// <summary>
+        /// 保存状态为存档;
+        /// </summary>
+        void IArchiveOperate.SaveState(Archive archive)
+        {
+            ResetState();
+            StartCoroutine(SaveState(archive));
+        }
 
         /// <summary>
         /// 使用类信息初始化;
         /// </summary>
         public static IEnumerator Begin()
         {
-            if (IsRunning)
-                throw new PremiseNotInvalidException();
-
             yield return ResInitializer.Initialize();
 
             Map = MapFiler.Read();
@@ -70,7 +74,6 @@ namespace KouXiaGu.Terrain3D
 
             TerrainCreater.Load();
 
-            IsRunning = true;
             yield break;
         }
 
@@ -79,9 +82,6 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerator Begin(Archive archive)
         {
-            if (IsRunning)
-                throw new PremiseNotInvalidException();
-
             yield return ResInitializer.Initialize();
 
             Map = MapFiler.Read();
@@ -90,55 +90,16 @@ namespace KouXiaGu.Terrain3D
 
             TerrainCreater.Load();
 
-            IsRunning = true;
             yield break;
         }
-
 
         /// <summary>
         /// 保存游戏内容;
         /// </summary>
-        public static IEnumerator Save(Archive archive)
+        public static IEnumerator SaveState(Archive archive)
         {
-            IsSaving = true;
-
             MapArchiver.Write(archive);
             yield return null;
-
-            IsSaving = false;
-        }
-
-
-        /// <summary>
-        /// 游戏结束;
-        /// </summary>
-        public static IEnumerator Finish()
-        {
-            if (!IsRunning)
-                throw new PremiseNotInvalidException();
-
-            MapArchiver.Clear();
-
-            IsRunning = false;
-            yield break;
-        }
-
-
-        /// <summary>
-        /// 暂停游戏状态;
-        /// </summary>
-        public static void Pause()
-        {
-            IsPause = true;
-        }
-
-
-        /// <summary>
-        /// 从暂停状态继续;
-        /// </summary>
-        public static void Continue()
-        {
-            IsPause = false;
         }
 
     }

@@ -5,11 +5,11 @@ namespace KouXiaGu.Initialization
 {
 
     /// <summary>
-    /// 监视指定 IStartOperate 的进度;
+    /// 监视指定 IOperateAsync 的进度;
     /// </summary>
-    public abstract class StartOperateWaiter : MonoBehaviour
+    public abstract class OperateWaiter : MonoBehaviour
     {
-        protected StartOperateWaiter() { }
+        protected OperateWaiter() { }
 
 
         /// <summary>
@@ -20,13 +20,13 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 所有操作者的数组;
         /// </summary>
-        IStartOperate[] operaters;
+        IOperateAsync[] operaters;
 
 
         /// <summary>
         /// 正在等待的,若不存在则返回 null;
         /// </summary>
-        public IStartOperate current
+        public IOperateAsync current
         {
             get { return operaters == null || currentPointer < 0 || currentPointer >= operaters.Length ? null : operaters[currentPointer]; }
         }
@@ -59,30 +59,18 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 开始进行等待;
         /// </summary>
-        protected void StartWait(IStartOperate[] operaters)
+        protected void StartWait(IOperateAsync[] operaters)
         {
             if (IsWaiting)
                 throw new ArgumentException("正在等待;");
 
             this.operaters = operaters;
-            InitOperaters();
             if (operaters.Length == 0)
             {
                 Complete();
             }
 
             currentPointer = 0;
-        }
-
-        /// <summary>
-        /// 设置并初始化所有操作者;
-        /// </summary>
-        void InitOperaters()
-        {
-            foreach (var operater in operaters)
-            {
-                operater.Initialize();
-            }
         }
 
         /// <summary>
@@ -111,7 +99,7 @@ namespace KouXiaGu.Initialization
         {
             if (operaters != null)
             {
-                IStartOperate current = operaters[currentPointer];
+                var current = operaters[currentPointer];
 
                 while (current.IsCompleted)
                 {
@@ -140,12 +128,12 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 当存在完成时调用,提供剩余数目;
         /// </summary>
-        protected abstract void OnComplete(IStartOperate operater);
+        protected abstract void OnComplete(IOperateAsync operater);
 
         /// <summary>
         /// 当存在一个任务失败时调用;
         /// </summary>
-        protected abstract void OnFail(IStartOperate operater);
+        protected abstract void OnFail(IOperateAsync operater);
 
     }
 
