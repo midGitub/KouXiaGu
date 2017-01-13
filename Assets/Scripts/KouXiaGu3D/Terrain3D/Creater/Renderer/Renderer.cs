@@ -164,7 +164,6 @@ namespace KouXiaGu.Terrain3D
 
                     heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
                     diffuseMapRT = decorateBlend.BlendDiffuse(terrain.DiffuseRT, road.DiffuseRT);
-
                     normalMapRT = normalMapper.Rander(heightMapRT);
 
                     tex = new TerrainTexPack();

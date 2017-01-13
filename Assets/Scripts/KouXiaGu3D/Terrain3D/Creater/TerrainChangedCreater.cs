@@ -14,15 +14,15 @@ namespace KouXiaGu.Terrain3D
     /// 当地图发生变化,且已经渲染到场景,则重新渲染;
     /// </summary>
     [SerializeField]
-    public class TerrainChangedCreater : SceneSington<TerrainChangedCreater>, ITerrainMapObserver
+    public class TerrainChangedCreater : ITerrainMapObserver
     {
+        static readonly TerrainChangedCreater instance = new TerrainChangedCreater();
 
 
         public static void Initialize(TerrainMap map)
         {
-            map.Subscribe(GetInstance);
+            map.Subscribe(instance);
         }
-
 
         void IObserver<DictionaryChange<CubicHexCoord, TerrainNode>>.OnCompleted()
         {
@@ -36,20 +36,17 @@ namespace KouXiaGu.Terrain3D
 
         void IObserver<DictionaryChange<CubicHexCoord, TerrainNode>>.OnNext(DictionaryChange<CubicHexCoord, TerrainNode> value)
         {
-            switch (value.Operation)
-            {
-                case Operation.Add:
-                    //if(TerrainCreater.GetInstance.ReadOnlyOnSceneChunks.Contains())
-                    break;
+            UpdateChunk(value.Key);
+        }
 
-                case Operation.Remove:
+        static RectCoord[] chunksCoord = new RectCoord[2];
 
-                    break;
+        void UpdateChunk(CubicHexCoord coord)
+        {
+            TerrainChunk.GetBelongChunks(coord, ref chunksCoord);
 
-                case Operation.Update:
-
-                    break;
-            }
+            TerrainCreater.UpdateChunk(chunksCoord[0]);
+            TerrainCreater.UpdateChunk(chunksCoord[1]);
         }
 
     }

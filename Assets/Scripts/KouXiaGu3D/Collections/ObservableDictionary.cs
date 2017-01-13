@@ -127,6 +127,10 @@ namespace KouXiaGu.Collections
 
         public void Clear()
         {
+            foreach (var item in dictionary)
+            {
+                TrackRemove(item.Key, item.Value);
+            }
             this.dictionary.Clear();
         }
 

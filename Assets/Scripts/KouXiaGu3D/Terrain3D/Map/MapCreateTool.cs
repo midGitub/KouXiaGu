@@ -70,7 +70,7 @@ namespace KouXiaGu.Terrain3D
 
         static T RamdomFromArray<T>(T[] array)
         {
-            return array.Length == 0 ? default(T) : array[random.Next(0, array.Length - 1)];
+            return array.Length == 0 ? default(T) : array[random.Next(0, array.Length)];
         }
 
         static float RamdomAngle()

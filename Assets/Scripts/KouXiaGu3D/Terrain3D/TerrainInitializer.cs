@@ -27,6 +27,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static TerrainMap Map { get; private set; }
 
+
         void ResetState()
         {
             IsCompleted = false;
@@ -69,7 +70,8 @@ namespace KouXiaGu.Terrain3D
             yield return ResInitializer.Initialize();
 
             Map = MapFiler.Read();
-            MapArchiver.Initialize(TerrainInitializer.Map);
+            MapArchiver.Initialize(Map);
+            TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
             IsCompleted = true;
@@ -85,6 +87,7 @@ namespace KouXiaGu.Terrain3D
 
             Map = MapFiler.Read();
             MapArchiver.Initialize(archive, Map);
+            TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
             IsCompleted = true;
@@ -100,6 +103,12 @@ namespace KouXiaGu.Terrain3D
 
             IsCompleted = true;
             yield break;
+        }
+
+        void OnDestroy()
+        {
+            Map.EndTransmission();
+            Map = null;
         }
 
     }

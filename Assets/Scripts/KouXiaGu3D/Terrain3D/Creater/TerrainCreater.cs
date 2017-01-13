@@ -199,12 +199,25 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
-        /// 将这个地形块加入到创建队列;
+        /// 将这个地形块加入到创建队列,若创建,则不重复创建;
         /// </summary>
         public static void CreateChunk(RectCoord coord)
         {
             if (AllowCreation &&
                 !activatedChunks.ContainsKey(coord) &&
+                onRenderingChunks.Add(coord))
+            {
+                Renderer.BakingRequests.AddLast(new RenderRequest(coord));
+            }
+        }
+
+        /// <summary>
+        /// 将这个地形块加入到创建队列,若已经创建了,则重新创建;
+        /// </summary>
+        public static void UpdateChunk(RectCoord coord)
+        {
+            if (AllowCreation &&
+                activatedChunks.ContainsKey(coord) &&
                 onRenderingChunks.Add(coord))
             {
                 Renderer.BakingRequests.AddLast(new RenderRequest(coord));

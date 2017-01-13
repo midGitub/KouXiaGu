@@ -29,11 +29,25 @@ namespace KouXiaGu.Terrain3D
                     MapFiler.Write(TerrainInitializer.Map);
                     MapArchiver.Map.Clear();
                 }
-                if (GUILayout.Button("覆盖随机地图"))
+                if (GUILayout.Button("清空地图"))
+                {
+                    TerrainInitializer.Map.Clear();
+                }
+                EditorGUILayout.EndHorizontal();
+
+
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("填满随机地图"))
                 {
                     MapCreateTool.Fill(TerrainInitializer.Map);
                 }
+                if (GUILayout.Button("替换随机地图"))
+                {
+                    MapCreateTool.Replace(TerrainInitializer.Map);
+                }
                 EditorGUILayout.EndHorizontal();
+
+
             }
 
 

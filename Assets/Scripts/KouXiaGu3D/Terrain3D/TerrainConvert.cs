@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static CubicHexCoord GetTerrainCubic(this Vector3 pos)
         {
-            return TerrainConvert.Grid.GetCubic(pos);
+            return Grid.GetCubic(pos);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static Vector3 GetTerrainPixel(this CubicHexCoord coord)
         {
-            return TerrainConvert.Grid.GetPixel(coord);
+            return Grid.GetPixel(coord);
         }
 
 
