@@ -92,47 +92,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         protected override void Awake()
         {
             base.Awake();
-            InitialStage.Subscribe(Stage.Instance);
-        }
-
-        class Stage : IStageObserver<object>
-        {
-            public static readonly Stage Instance = new Stage();
-
-            IEnumerator IStageObserver<object>.OnEnter(object item)
-            {
-                Load();
-                Debug.Log(terrainInfos.ToLog("地形导航信息初始化完成;"));
-                yield break;
-            }
-
-            void IStageObserver<object>.OnEnterCompleted()
-            {
-                return;
-            }
-
-            IEnumerator IStageObserver<object>.OnEnterRollBack(object item)
-            {
-                yield break;
-            }
-
-            IEnumerator IStageObserver<object>.OnLeave(object item)
-            {
-                Clear();
-                yield break;
-            }
-
-            void IStageObserver<object>.OnLeaveCompleted()
-            {
-                return;
-            }
-
-            IEnumerator IStageObserver<object>.OnLeaveRollBack(object item)
-            {
-                yield break;
-            }
         }
 
     }
-
 }

@@ -16,7 +16,7 @@ namespace KouXiaGu.Initialization
         /// 存档保存到的文件夹;
         /// </summary>
         const string ARCHIVES_DIRECTORY_NAME = "Saves";
-        const string DESCR_FILE_NAME = "Archive.xml";
+        const string DESCR_FILE_NAME = "Archive";
 
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace KouXiaGu.Initialization
         }
 
         /// <summary>
-        /// 创建一个新的存档;
+        /// 创建一个新的存档,到文件夹;
         /// </summary>
         public static Archive Create(string directory, ArchiveDescription description)
         {
@@ -62,9 +62,8 @@ namespace KouXiaGu.Initialization
         /// </summary>
         static void WriteDescription(string directory, ArchiveDescription description)
         {
-            Directory.CreateDirectory(directory);
             string descriptionFilePath = GetDescriptionFilePath(directory);
-            ArchiveDescription.Serializer.SerializeXiaGu(descriptionFilePath, description);
+            ArchiveDescription.Write(descriptionFilePath, description);
         }
 
         /// <summary>
@@ -107,7 +106,7 @@ namespace KouXiaGu.Initialization
         {
             if (Exists(directory))
             {
-                item = Load(directory);
+                item = Read(directory);
                 return true;
             }
 
@@ -124,8 +123,10 @@ namespace KouXiaGu.Initialization
             return File.Exists(descriptionFilePath);
         }
 
-
-        public static Archive Load(string directory)
+        /// <summary>
+        /// 读取目录下的存档信息;
+        /// </summary>
+        public static Archive Read(string directory)
         {
             ArchiveDescription description = ReadDescription(directory);
             return new Archive(directory, description);
@@ -137,7 +138,7 @@ namespace KouXiaGu.Initialization
         static ArchiveDescription ReadDescription(string directory)
         {
             string descriptionFilePath = GetDescriptionFilePath(directory);
-            ArchiveDescription description = (ArchiveDescription)ArchiveDescription.Serializer.DeserializeXiaGu(descriptionFilePath);
+            var description = ArchiveDescription.Read(descriptionFilePath);
             return description;
         }
 

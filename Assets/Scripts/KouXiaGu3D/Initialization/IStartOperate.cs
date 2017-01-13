@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.Initialization
 {
 
-
-    public interface IOperateAsync
+    /// <summary>
+    /// 在每个阶段起始时进行的操作;
+    /// </summary>
+    public interface IStartOperate
     {
+
         /// <summary>
         /// 是否完成?
         /// </summary>
@@ -24,6 +24,10 @@ namespace KouXiaGu.Initialization
         /// </summary>
         Exception Ex { get; }
 
+        /// <summary>
+        /// 初始化内容;
+        /// </summary>
+        void Initialize();
     }
 
 }

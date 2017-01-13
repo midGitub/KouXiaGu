@@ -22,9 +22,9 @@ namespace KouXiaGu.Terrain3D
 
             var edit = (TerrainEditor)target;
 
-            if (MapFiler.Map != null)
+            if (TerrainInitializer.Map != null)
             {
-                EditorGUILayout.IntField("地图容量:", MapFiler.Map.Count);
+                EditorGUILayout.IntField("地图容量:", TerrainInitializer.Map.Count);
                 EditorGUILayout.IntField("归档容量:", MapArchiver.Map.Count);
             }
             else
@@ -37,7 +37,7 @@ namespace KouXiaGu.Terrain3D
 
             if (GUILayout.Button("保存预制"))
             {
-                MapFiler.Write();
+                MapFiler.Write(TerrainInitializer.Map);
                 MapArchiver.Map.Clear();
             }
 

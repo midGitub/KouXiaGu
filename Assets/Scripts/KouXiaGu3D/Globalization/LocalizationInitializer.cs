@@ -15,17 +15,34 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 负责游戏一开始对本地化信息初始化;
     /// </summary>
-    public class LocalizationInitializer : MonoBehaviour, IOperateAsync
+    public class LocalizationInitializer : MonoBehaviour, IStartOperate
     {
 
         public bool IsCompleted { get; private set; }
-
         public bool IsFaulted { get; private set; }
-
         public Exception Ex { get; private set; }
 
+        /// <summary>
+        /// 完成初始化,且没有发生异常;
+        /// </summary>
+        protected void OnComplete()
+        {
+            IsCompleted = true;
+            IsFaulted = false;
+            Ex = null;
+        }
 
-        void Start()
+        /// <summary>
+        /// 初始化中发生异常;
+        /// </summary>
+        protected void OnFail(Exception ex)
+        {
+            IsCompleted = true;
+            IsFaulted = true;
+            this.Ex = ex;
+        }
+
+        void IStartOperate.Initialize()
         {
 #if USE_THREAD
             ThreadPool.QueueUserWorkItem(_ => FirstRead());
@@ -43,11 +60,10 @@ namespace KouXiaGu.Globalization
             }
             catch (Exception e)
             {
-                IsFaulted = true;
-                Ex = e;
+                OnFail(e);
             }
 
-            IsCompleted = true;
+            OnComplete();
         }
 
         static void FirstReadTexts()

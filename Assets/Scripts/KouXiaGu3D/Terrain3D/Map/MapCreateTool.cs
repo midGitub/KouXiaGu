@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
@@ -8,37 +9,29 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 随机地形创建;
+    /// 游戏创建工具;
     /// </summary>
-    public class MapCreater
+    [DisallowMultipleComponent]
+    public sealed class MapCreateTool : UnitySington<MapCreateTool>
     {
+        MapCreateTool() { }
+
         static readonly CubicHexCoord ORIGIN = CubicHexCoord.Self;
 
         static readonly System.Random random = new System.Random();
 
+        static int[] landforms;
+        static int[] roads;
+        static int[] buildings;
+
+        TerrainMap Map;
 
         /// <summary>
-        /// 前提,若不满足则返回异常;
+        /// 初始化必要的信息;
         /// </summary>
-        public static void Precondition()
+        public void Initialize()
         {
-            if (ResInitializer.IsInitialized == false)
-                throw new PremiseNotInvalidException();
         }
-
-
-        public MapCreater()
-        {
-            Precondition();
-
-            landforms = LandformRes.initializedInstances.Keys.ToArray();
-            roads = RoadRes.initializedInstances.Keys.ToArray();
-            buildings = BuildingRes.initializedInstances.Keys.ToArray();
-        }
-
-        int[] landforms;
-        int[] roads;
-        int[] buildings;
 
         /// <summary>
         /// 随机的节点;
@@ -111,6 +104,7 @@ namespace KouXiaGu.Terrain3D
         {
             return CubicHexCoord.Range(ORIGIN, size);
         }
+
 
     }
 

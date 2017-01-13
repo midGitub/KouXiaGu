@@ -3,6 +3,7 @@ using KouXiaGu.Grids;
 using KouXiaGu.Initialization;
 using UnityEngine;
 using KouXiaGu.Collections;
+using System;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -12,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// 控制整个地形初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class TerrainInitializer : UnitySington<TerrainInitializer>
+    public sealed class TerrainInitializer : Initializer
     {
 
         static TerrainInitializer()
@@ -25,47 +26,33 @@ namespace KouXiaGu.Terrain3D
         TerrainInitializer() { }
 
 
-        //#region 提供初始化;
-
-        //static TerrainMapFile terrainMap;
-        //static ArchiveDescription description;
-
-
-        ///// <summary>
-        ///// 当前游戏使用的地图;
-        ///// </summary>
-        //public static TerrainMapFile TerrainMap
-        //{
-        //    get { return terrainMap; }
-        //    set
-        //    {
-        //        if (IsRunning)
-        //            throw new CanNotEditException("在运行状态无法编辑!");
-        //        terrainMap = value;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 预定义的信息;
-        ///// </summary>
-        //public static ArchiveDescription Description
-        //{
-        //    get { return description; }
-        //    set
-        //    {
-        //        if (IsRunning)
-        //            throw new CanNotEditException("在运行状态无法编辑!");
-        //        description = value;
-        //    }
-        //}
-
-        //#endregion
-
-
         public static bool IsRunning { get; private set; }
         public static bool IsSaving { get; private set; }
         public static bool IsPause { get; private set; }
 
+        /// <summary>
+        /// 当前游戏使用的地图;
+        /// </summary>
+        public static TerrainMap Map { get; private set; }
+
+
+
+        public override void Initialize()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        //protected override void Awake()
+        //{
+        //    base.Awake();
+        //    if (IsRunning)
+        //    {
+        //        IsCompleted = true;
+        //        IsFaulted = true;
+        //    }
+
+        //}
 
         /// <summary>
         /// 使用类信息初始化;
@@ -77,9 +64,9 @@ namespace KouXiaGu.Terrain3D
 
             yield return ResInitializer.Initialize();
 
-            MapFiler.Read();
+            Map = MapFiler.Read();
 
-            MapArchiver.Initialize(MapFiler.Map);
+            MapArchiver.Initialize(TerrainInitializer.Map);
 
             TerrainCreater.Load();
 
@@ -97,9 +84,9 @@ namespace KouXiaGu.Terrain3D
 
             yield return ResInitializer.Initialize();
 
-            MapFiler.Read();
+            Map = MapFiler.Read();
 
-            MapArchiver.Initialize(MapFiler.Map);
+            MapArchiver.Initialize(archive, Map);
 
             TerrainCreater.Load();
 

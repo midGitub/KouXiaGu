@@ -33,10 +33,12 @@ namespace KouXiaGu.Terrain3D
             Vector3 p0 = ShowPoint(0);
             Vector3 p1 = ShowPoint(1);
             Vector3 p2 = ShowPoint(2);
+            //Vector3 p3 = ShowPoint(3);
 
             Handles.color = Color.gray;
             Handles.DrawLine(p0, p1);
             Handles.DrawLine(p1, p2);
+            //Handles.DrawLine(p2, p3);
 
             Vector3 lineStart = GetPoint(0f);
             Handles.color = Color.green;
@@ -67,14 +69,25 @@ namespace KouXiaGu.Terrain3D
         }
 
 
+        //public Vector3 GetPoint(float t)
+        //{
+        //    return handleTransform.TransformPoint(GetPoint(points[0], points[1], points[2], points[3], t));
+        //}
+
+        //public Vector3 GetVelocity(float t)
+        //{
+        //    return handleTransform.TransformPoint(GetFirstDerivative(points[0], points[1], points[2], points[3], t)) -
+        //        handleTransform.position;
+        //}
+
         public Vector3 GetPoint(float t)
         {
-            return handleTransform.TransformPoint(GetPoint(points[0], points[1], points[2], t));
+            return handleTransform.TransformPoint(Bezier.GetPoint(points[0], points[1], points[2], t));
         }
 
         public Vector3 GetVelocity(float t)
         {
-            return handleTransform.TransformPoint(GetFirstDerivative(points[0], points[1], points[2], t)) -
+            return handleTransform.TransformPoint(Bezier.GetFirstDerivative(points[0], points[1], points[2], t)) -
                 handleTransform.position;
         }
 
@@ -82,46 +95,6 @@ namespace KouXiaGu.Terrain3D
         {
             return GetVelocity(t).normalized;
         }
-
-
-        public static Vector3 GetPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t)
-        {
-            t = Mathf.Clamp01(t);
-            float oneMinusT = 1f - t;
-            return
-                oneMinusT * oneMinusT * p0 +
-                2f * oneMinusT * t * p1 +
-                t * t * p2;
-        }
-
-        public static Vector3 GetFirstDerivative(Vector3 p0, Vector3 p1, Vector3 p2, float t)
-        {
-            return
-                2f * (1f - t) * (p1 - p0) +
-                2f * t * (p2 - p1);
-        }
-
-
-        //public static Vector3 GetPoint(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
-        //{
-        //    t = Mathf.Clamp01(t);
-        //    float oneMinusT = 1f - t;
-        //    return
-        //        oneMinusT * oneMinusT * oneMinusT * p0 +
-        //        3f * oneMinusT * oneMinusT * t * p1 +
-        //        3f * oneMinusT * t * t * p2 +
-        //        t * t * t * p3;
-        //}
-
-        //public static Vector3 GetFirstDerivative(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
-        //{
-        //    t = Mathf.Clamp01(t);
-        //    float oneMinusT = 1f - t;
-        //    return
-        //        3f * oneMinusT * oneMinusT * (p1 - p0) +
-        //        6f * oneMinusT * t * (p2 - p1) +
-        //        3f * t * t * (p3 - p2);
-        //}
 
     }
 

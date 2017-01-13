@@ -7,6 +7,9 @@ using System.Text;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 地图文件管理;
+    /// </summary>
     public static class MapFiler
     {
 
@@ -16,25 +19,18 @@ namespace KouXiaGu.Terrain3D
         const string DATA_FILE_NAME = "Map";
 
         /// <summary>
-        /// 当前游戏使用的地图;
+        /// 读取地图;
         /// </summary>
-        public static TerrainMap Map { get; private set; }
-
-        /// <summary>
-        /// 地图是否加载?
-        /// </summary>
-        public static bool IsLoaded
-        {
-            get { return Map != null; }
-        }
-
-        public static void Read()
+        public static TerrainMap Read()
         {
             string filePath = TerrainFiler.Combine(DATA_FILE_NAME);
-            Map = TerrainMap.Read(filePath);
+            return TerrainMap.Read(filePath);
         }
 
-        public static void Write()
+        /// <summary>
+        /// 保存地图;
+        /// </summary>
+        public static void Write(TerrainMap Map)
         {
             string filePath = TerrainFiler.Combine(DATA_FILE_NAME);
             TerrainMap.Write(filePath, Map);

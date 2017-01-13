@@ -8,13 +8,18 @@ namespace KouXiaGu.Initialization
     /// 游戏一开始初始化等待;
     /// </summary>
     [DisallowMultipleComponent]
-    public class InitialPreparation : Scheduler
+    public class InitialScheduler : StartOperateWaiter
     {
 
         [SerializeField]
         string nextSceneName = "Start";
 
-        protected override void OnComplete(IOperateAsync operater)
+        void Awake()
+        {
+            StartWait(GetComponentsInChildren<IStartOperate>());
+        }
+
+        protected override void OnComplete(IStartOperate operater)
         {
             return;
         }
@@ -25,7 +30,7 @@ namespace KouXiaGu.Initialization
             Destroy(this);
         }
 
-        protected override void OnFail(IOperateAsync operater)
+        protected override void OnFail(IStartOperate operater)
         {
             Debug.LogError(operater.Ex);
         }
