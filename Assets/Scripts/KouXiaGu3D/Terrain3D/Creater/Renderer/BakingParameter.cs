@@ -89,18 +89,18 @@ namespace KouXiaGu.Terrain3D
 
         void SetTextureSize(float size)
         {
-            float chunkWidth = TerrainChunk.CHUNK_WIDTH * size;
-            float chunkHeight = TerrainChunk.CHUNK_HEIGHT * size;
+            int chunkWidth = (int)Math.Round(TerrainChunk.CHUNK_WIDTH * size);
+            int chunkHeight = (int)Math.Round(TerrainChunk.CHUNK_HEIGHT * size);
 
-            this.DiffuseTexWidth = (int)(chunkWidth) >> diffuseTexDownsample;
-            this.DiffuseTexHeight = (int)(chunkHeight) >> diffuseTexDownsample;
-            this.HeightMapWidth = (int)(chunkWidth) >> heightMapDownsample;
-            this.HeightMapHeight = (int)(chunkHeight) >> heightMapDownsample;
+            this.DiffuseTexWidth = chunkWidth >> diffuseTexDownsample;
+            this.DiffuseTexHeight = chunkHeight >> diffuseTexDownsample;
+            this.HeightMapWidth = chunkWidth >> heightMapDownsample;
+            this.HeightMapHeight = chunkHeight >> heightMapDownsample;
 
-            this.rDiffuseTexWidth = (int)(DiffuseTexWidth + DiffuseTexWidth * OutlineScale);
-            this.rDiffuseTexHeight = (int)(DiffuseTexHeight + DiffuseTexHeight * OutlineScale);
-            this.rHeightMapWidth = (int)(HeightMapWidth + HeightMapWidth * OutlineScale);
-            this.rHeightMapHeight = (int)(HeightMapHeight + HeightMapHeight * OutlineScale);
+            this.rDiffuseTexWidth = (int)Math.Round(DiffuseTexWidth + DiffuseTexWidth * OutlineScale);
+            this.rDiffuseTexHeight = (int)Math.Round(DiffuseTexHeight + DiffuseTexHeight * OutlineScale);
+            this.rHeightMapWidth = (int)Math.Round(HeightMapWidth + HeightMapWidth * OutlineScale);
+            this.rHeightMapHeight = (int)Math.Round(HeightMapHeight + HeightMapHeight * OutlineScale);
 
             this.DiffuseReadPixel =
                 new Rect(
