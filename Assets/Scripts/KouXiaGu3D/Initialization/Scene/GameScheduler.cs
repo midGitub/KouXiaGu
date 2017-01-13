@@ -30,9 +30,9 @@ namespace KouXiaGu.Initialization
         static event Action onGameInitializedEvent;
 
         /// <summary>
-        /// 在游戏初始化完成后调用,调用后既清空;
+        /// 在游戏初始化完成后调用,调用后既清空,在Update之前加入有效;
         /// </summary>
-        public event Action OnGameInitializedEvent
+        public static event Action OnGameInitializedEvent
         {
             add { onGameInitializedEvent += value; }
             remove { onGameInitializedEvent -= value; }

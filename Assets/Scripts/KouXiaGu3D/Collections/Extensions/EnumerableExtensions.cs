@@ -49,6 +49,19 @@ namespace KouXiaGu.Collections
             }
         }
 
+        /// <summary>
+        /// 若有任何返回true则算找到;
+        /// </summary>
+        public static bool Contains<T>(this IEnumerable<T> collection, Func<T, bool> func)
+        {
+            foreach (var item in collection)
+            {
+                if (func(item))
+                    return true;
+            }
+            return false;
+        }
+
     }
 
 }

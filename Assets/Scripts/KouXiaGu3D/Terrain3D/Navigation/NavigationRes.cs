@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D.Navigation
     /// <summary>
     /// 地形导航信息;
     /// </summary>
-    public sealed class NavigationRes : UnitySington<NavigationRes>
+    public sealed class NavigationRes : GlobalSington<NavigationRes>
     {
         NavigationRes() { }
 

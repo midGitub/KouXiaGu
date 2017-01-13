@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public sealed partial class Renderer : UnitySington<Renderer>
+    public sealed partial class Renderer : GlobalSington<Renderer>
     {
 
         /// <summary>

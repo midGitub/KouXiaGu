@@ -275,12 +275,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 设置参数到地形块;
         /// </summary>
-        public void SetChunk(RectCoord coord, Texture2D diffuse, Texture2D height, Texture2D normal)
+        public void SetChunk(RectCoord coord, TerrainTexPack tex)
         {
             Coord = coord;
-            DiffuseTexture = diffuse;
-            HeightTexture = height;
-            NormalMap = normal;
+            DiffuseTexture = tex.diffuseMap;
+            HeightTexture = tex.heightMap;
+            NormalMap = tex.normalMap;
         }
 
         /// <summary>

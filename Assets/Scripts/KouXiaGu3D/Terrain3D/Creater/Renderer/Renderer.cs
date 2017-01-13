@@ -12,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// 基本贴图信息渲染,负责将传入的请求渲染出基本的高度图和地貌贴图;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class Renderer : UnitySington<Renderer>
+    public sealed partial class Renderer : GlobalSington<Renderer>
     {
         Renderer() { }
 
@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
         NormalMapper normalMapper;
 
         [SerializeField]
-        RenderTerrain terrain;
+        TerrainRender terrain;
 
         [SerializeField]
         DecorateRoad road;
@@ -149,9 +149,7 @@ namespace KouXiaGu.Terrain3D
             RenderTexture heightMapRT = null;
             RenderTexture diffuseMapRT = null;
 
-            Texture2D normalMap = null;
-            Texture2D heightMap = null;
-            Texture2D diffuse = null;
+            TerrainTexPack tex = null;
 
             while (true)
             {
@@ -169,19 +167,20 @@ namespace KouXiaGu.Terrain3D
 
                     normalMapRT = normalMapper.Rander(heightMapRT);
 
-                    heightMap = GetHeightTexture(heightMapRT);
-                    normalMap = normalMapper.GetTexture(normalMapRT);
-                    diffuse = GetDiffuseTexture(diffuseMapRT);
+                    tex = new TerrainTexPack();
+                    tex.heightMap = GetHeightTexture(heightMapRT);
+                    tex.normalMap = normalMapper.GetTexture(normalMapRT);
+                    tex.diffuseMap = GetDiffuseTexture(diffuseMapRT);
 
-                    request.OnComplete(diffuse, heightMap, normalMap);
+                    request.OnComplete(tex);
+                    tex = null;
                 }
                 catch (Exception ex)
                 {
                     Debug.LogWarning("烘焙时出现错误:" + ex);
 
-                    Destroy(diffuse);
-                    Destroy(heightMap);
-                    Destroy(normalMap);
+                    if(tex != null)
+                        tex.Destroy();
 
                     if(request != null)
                         request.OnError(ex);

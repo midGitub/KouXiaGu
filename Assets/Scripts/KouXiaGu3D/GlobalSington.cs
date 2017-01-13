@@ -9,12 +9,12 @@ namespace KouXiaGu
 
     /// <summary>
     /// 只允许内部访问的,延迟实例化的单例;
-    /// 主要是"限制多个实例化";
+    /// 主要是"限制多个实例";
     /// </summary>
-    public class UnitySington<T> : MonoBehaviour
-        where T : UnitySington<T>
+    public class GlobalSington<T> : MonoBehaviour
+        where T : GlobalSington<T>
     {
-        protected UnitySington() { }
+        protected GlobalSington() { }
 
         static T instance;
 
@@ -30,26 +30,29 @@ namespace KouXiaGu
             }
         }
 
-        protected bool Instanced
+        protected bool IsInstanced
         {
             get { return instance != null; }
         }
 
         static T Initialize()
         {
-            UnityEngine.Object[] instances = GameObject.FindObjectsOfType(typeof(T));
-            if (instances.Length == 0)
+            if (instance == null)
             {
-                instance = GetSingletonGameObject().AddComponent<T>();
-            }
-            else if (instances.Length == 1)
-            {
-                instance = instances[0] as T;
-            }
-            else
-            {
-                instance = instances[0] as T;
-                Debug.LogError(instances.ToLog("存在多个单例在场景!"));
+                UnityEngine.Object[] instances = GameObject.FindObjectsOfType(typeof(T));
+                if (instances.Length == 0)
+                {
+                    instance = GetSingletonGameObject().AddComponent<T>();
+                }
+                else if (instances.Length == 1)
+                {
+                    instance = (T)instances[0];
+                }
+                else
+                {
+                    instance = (T)instances[0];
+                    Debug.LogError(instances.ToLog("存在多个单例在场景!"));
+                }
             }
             return instance;
         }
@@ -63,16 +66,13 @@ namespace KouXiaGu
 
         protected virtual void Awake()
         {
-            if (instance == null)
+            if (instance != null && instance != this)
             {
-                instance = Initialize();
-            }
-
-            if (instance != this)
-            {
-                Debug.LogWarning(GetType().Name + ";尝试实例化多个单例;" + name + ";Instanced:" + Instanced + "," + (instance == this));
+                Debug.LogWarning(GetType().Name + ";尝试实例化多个单例;" + name + ";Instanced:" + IsInstanced + "," + (instance == this));
                 Destroy(this);
+                return;
             }
+            instance = (T)this;
         }
 
         [ContextMenu("实例存在数")]

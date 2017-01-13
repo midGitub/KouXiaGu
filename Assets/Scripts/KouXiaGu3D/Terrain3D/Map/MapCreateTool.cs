@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
+using KouXiaGu.Initialization;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -12,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// 游戏创建工具;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MapCreateTool : UnitySington<MapCreateTool>
+    public sealed class MapCreateTool : GlobalSington<MapCreateTool>
     {
         MapCreateTool() { }
 
@@ -20,53 +21,70 @@ namespace KouXiaGu.Terrain3D
 
         static readonly System.Random random = new System.Random();
 
-        static int[] landforms;
-        static int[] roads;
-        static int[] buildings;
+        [SerializeField]
+        int[] landforms;
 
-        TerrainMap Map;
+        [SerializeField]
+        bool haveRoad;
+        [SerializeField]
+        int[] roads;
+        [SerializeField]
+        int[] buildings;
+
+        [SerializeField]
+        int mapSize = 20;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            GameScheduler.OnGameInitializedEvent += Initialize;
+        }
 
         /// <summary>
         /// 初始化必要的信息;
         /// </summary>
         public void Initialize()
         {
+            landforms = LandformRes.initializedInstances.Keys.ToArray();
+            roads = RoadRes.initializedInstances.Keys.ToArray();
+            buildings = BuildingRes.initializedInstances.Keys.ToArray();
         }
 
         /// <summary>
         /// 随机的节点;
         /// </summary>
-        public TerrainNode RamdomNode()
+        public static TerrainNode RamdomNode()
         {
             TerrainNode node = new TerrainNode()
             {
-                Landform = RamdomFromArray(landforms),
+                Landform = RamdomFromArray(GetInstance.landforms),
                 LandformAngle = RamdomAngle(),
 
-                Road = RamdomFromArray(roads),
+                Road = GetInstance.haveRoad ? RamdomFromArray(GetInstance.roads) : 0,
 
-                Building = RamdomFromArray(buildings),
+                Building = RamdomFromArray(GetInstance.buildings),
                 BuildingAngle = RamdomAngle(),
             };
             return node;
         }
 
-        T RamdomFromArray<T>(T[] array)
+        static T RamdomFromArray<T>(T[] array)
         {
-            return array[random.Next(0, array.Length - 1)];
+            return array.Length == 0 ? default(T) : array[random.Next(0, array.Length - 1)];
         }
 
-        float RamdomAngle()
+        static float RamdomAngle()
         {
             return (float)random.NextDouble();
         }
 
+
         /// <summary>
         /// 使用节点填满地图;
         /// </summary>
-        public void Fill(TerrainMap map, int size, TerrainNode node)
+        public static void Fill(TerrainMap map, TerrainNode node)
         {
-            foreach (var coord in Range(size))
+            foreach (var coord in Range())
             {
                 if (!map.ContainsKey(coord))
                 {
@@ -76,33 +94,50 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 使用随机节点填满地图;
+        /// </summary>
+        public static void Fill(TerrainMap map)
+        {
+            foreach (var coord in Range())
+            {
+                if (!map.ContainsKey(coord))
+                {
+                    TerrainNode node = RamdomNode();
+                    map.Add(coord, node);
+                }
+            }
+        }
+
+        /// <summary>
         /// 替换整个地图;
         /// </summary>
-        public void Replace(TerrainMap map, int size, TerrainNode node)
+        public static void Replace(TerrainMap map, TerrainNode node)
         {
-            foreach (var coord in Range(size))
+            foreach (var coord in Range())
             {
                 map.AddOrUpdate(coord, node);
             }
         }
 
         /// <summary>
-        /// 随机填满;
+        /// 随机节点替换整个地图;
         /// </summary>
-        public void Ramdom(TerrainMap map, int size)
+        public static void Replace(TerrainMap map)
         {
-            foreach (var coord in Range(size))
+            foreach (var coord in Range())
             {
-                map.AddOrUpdate(coord, RamdomNode());
+                TerrainNode node = RamdomNode();
+                map.AddOrUpdate(coord, node);
             }
         }
+
 
         /// <summary>
         /// 获取到范围;
         /// </summary>
-        public IEnumerable<CubicHexCoord> Range(int size)
+        public static IEnumerable<CubicHexCoord> Range()
         {
-            return CubicHexCoord.Range(ORIGIN, size);
+            return CubicHexCoord.Range(ORIGIN, GetInstance.mapSize);
         }
 
 

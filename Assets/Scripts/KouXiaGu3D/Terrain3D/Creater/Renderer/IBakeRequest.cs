@@ -24,7 +24,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 贴图烘焙完成;
         /// </summary>
-        void OnComplete(Texture2D diffuse, Texture2D height, Texture2D normal);
+        void OnComplete(TerrainTexPack tex);
 
         /// <summary>
         /// 出现错误时调用;

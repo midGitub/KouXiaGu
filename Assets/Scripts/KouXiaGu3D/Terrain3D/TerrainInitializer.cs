@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D
         public Exception Ex { get; private set; }
 
         /// <summary>
-        /// 当前游戏使用的地图;
+        /// 当前游戏使用的地图,若不在游戏中则为null;
         /// </summary>
         public static TerrainMap Map { get; private set; }
 
@@ -64,42 +64,42 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用类信息初始化;
         /// </summary>
-        public static IEnumerator Begin()
+        public IEnumerator Begin()
         {
             yield return ResInitializer.Initialize();
 
             Map = MapFiler.Read();
-
             MapArchiver.Initialize(TerrainInitializer.Map);
+            TerrainCreater.AllowCreation = true;
 
-            TerrainCreater.Load();
-
+            IsCompleted = true;
             yield break;
         }
 
         /// <summary>
         /// 使用存档初始化;
         /// </summary>
-        public static IEnumerator Begin(ArchiveFile archive)
+        public IEnumerator Begin(ArchiveFile archive)
         {
             yield return ResInitializer.Initialize();
 
             Map = MapFiler.Read();
-
             MapArchiver.Initialize(archive, Map);
+            TerrainCreater.AllowCreation = true;
 
-            TerrainCreater.Load();
-
+            IsCompleted = true;
             yield break;
         }
 
         /// <summary>
         /// 保存游戏内容;
         /// </summary>
-        public static IEnumerator SaveState(ArchiveFile archive)
+        public IEnumerator SaveState(ArchiveFile archive)
         {
             MapArchiver.Write(archive);
-            yield return null;
+
+            IsCompleted = true;
+            yield break;
         }
 
     }
