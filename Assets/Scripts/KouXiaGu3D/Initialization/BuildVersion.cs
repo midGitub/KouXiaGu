@@ -14,7 +14,7 @@ namespace KouXiaGu.Initialization
     public class BuildVersion
     {
 
-        public string Version
+        public static string Version
         {
             get { return Application.version; }
         }

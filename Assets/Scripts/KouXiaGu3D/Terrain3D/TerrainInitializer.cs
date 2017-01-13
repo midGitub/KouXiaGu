@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用存档初始化;
         /// </summary>
-        void IRecoveryOperate.Initialize(Archive archive)
+        void IRecoveryOperate.Initialize(ArchiveFile archive)
         {
             ResetState();
             StartCoroutine(Begin(archive));
@@ -55,7 +55,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 保存状态为存档;
         /// </summary>
-        void IArchiveOperate.SaveState(Archive archive)
+        void IArchiveOperate.SaveState(ArchiveFile archive)
         {
             ResetState();
             StartCoroutine(SaveState(archive));
@@ -80,7 +80,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用存档初始化;
         /// </summary>
-        public static IEnumerator Begin(Archive archive)
+        public static IEnumerator Begin(ArchiveFile archive)
         {
             yield return ResInitializer.Initialize();
 
@@ -96,7 +96,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 保存游戏内容;
         /// </summary>
-        public static IEnumerator SaveState(Archive archive)
+        public static IEnumerator SaveState(ArchiveFile archive)
         {
             MapArchiver.Write(archive);
             yield return null;

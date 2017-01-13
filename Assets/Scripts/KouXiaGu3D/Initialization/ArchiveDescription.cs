@@ -41,6 +41,7 @@ namespace KouXiaGu.Initialization
             filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
             return (ArchiveDescription)serializer.DeserializeXiaGu(filePath);
         }
+        
 
         /// <summary>
         /// 存档名;

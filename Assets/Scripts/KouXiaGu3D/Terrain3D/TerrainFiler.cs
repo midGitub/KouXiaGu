@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 路径组合到地形存档路径下;
         /// </summary>
-        public static string CombineToTerrain(this Archive archive, string path)
+        public static string CombineToTerrain(this ArchiveFile archive, string path)
         {
             string archiveDirectory = Path.Combine(archive.DirectoryPath, ResDirectory);
             return Path.Combine(archiveDirectory, path);
@@ -52,7 +52,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建存档路径;
         /// </summary>
-        public static DirectoryInfo CreateDirectory(this Archive archive)
+        public static DirectoryInfo CreateDirectory(this ArchiveFile archive)
         {
             string archiveDirectory = Path.Combine(archive.DirectoryPath, ResDirectory);
             return Directory.CreateDirectory(archiveDirectory);

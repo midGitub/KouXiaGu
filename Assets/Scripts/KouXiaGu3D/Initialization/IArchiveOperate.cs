@@ -11,7 +11,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 进行保存;
         /// </summary>
-        void SaveState(Archive archive);
+        void SaveState(ArchiveFile archive);
     }
 
 }

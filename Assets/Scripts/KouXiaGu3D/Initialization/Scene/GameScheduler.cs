@@ -13,23 +13,24 @@ namespace KouXiaGu.Initialization
     {
         GameScheduler() { }
 
+
         /// <summary>
-        /// 指定初始化存档;
+        /// 指定初始化存档,当前游戏的存档;
         /// </summary>
-        public static Archive Archive { get; set; }
+        public static ArchiveFile Archived { get; set; }
 
         /// <summary>
         /// 从存档初始化?
         /// </summary>
-        public static bool IsFromArchive
+        public static bool IsFromArchived
         {
-            get { return Archive != null; }
+            get { return Archived != null; }
         }
 
         static event Action onGameInitializedEvent;
 
         /// <summary>
-        /// 到游戏初始化完成后调用,调用后既清空;
+        /// 在游戏初始化完成后调用,调用后既清空;
         /// </summary>
         public event Action OnGameInitializedEvent
         {
@@ -39,14 +40,14 @@ namespace KouXiaGu.Initialization
 
 
         /// <summary>
-        /// 提供外部设置;
+        /// 提供外部设置,在游戏初始化完成后调用;
         /// </summary>
         [SerializeField]
         UnityEvent onGameInitialized;
 
         void Awake()
         {
-            if (IsFromArchive)
+            if (IsFromArchived)
             {
                 StartGameFromArchive();
             }
@@ -71,7 +72,7 @@ namespace KouXiaGu.Initialization
             var operates = GetComponentsInChildren<IRecoveryOperate>();
             foreach (var operate in operates)
             {
-                operate.Initialize(Archive);
+                operate.Initialize(Archived);
             }
             StartWait(operates);
         }
@@ -97,6 +98,12 @@ namespace KouXiaGu.Initialization
         protected override void OnFail(IOperateAsync operater)
         {
             Debug.LogError(operater.Ex);
+        }
+
+
+        void OnDestroy()
+        {
+            Archived = null;
         }
 
     }

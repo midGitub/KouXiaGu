@@ -39,7 +39,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 开始检视地图变化;
         /// </summary>
-        public static void Initialize(Archive archive, TerrainMap map)
+        public static void Initialize(ArchiveFile archive, TerrainMap map)
         {
             ReadArchiveMap(archive);
             Combine(map, Map);
@@ -92,7 +92,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 读取到存档内的地图;
         /// </summary>
-        static void ReadArchiveMap(Archive archive)
+        static void ReadArchiveMap(ArchiveFile archive)
         {
             string filePath = archive.CombineToTerrain(MAP_ARCHIVED_FILE_NAME);
 
@@ -126,7 +126,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将地图输出到文件;
         /// </summary>
-        public static void Write(Archive archive)
+        public static void Write(ArchiveFile archive)
         {
             string filePath = archive.CombineToTerrain(MAP_ARCHIVED_FILE_NAME);
             WriteArchiveMap(filePath, Map);

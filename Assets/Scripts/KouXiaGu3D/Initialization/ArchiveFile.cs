@@ -9,7 +9,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 存档文件;
     /// </summary>
-    public class Archive
+    public class ArchiveFile
     {
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 在存档目录下创建一个新的存档;
         /// </summary>
-        public static Archive Create(ArchiveDescription description)
+        public static ArchiveFile Create(ArchiveDescription description)
         {
             string archivePath = GetRandomArchiveDirectory();
             return Create(archivePath, description);
@@ -49,10 +49,10 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 创建一个新的存档,到文件夹;
         /// </summary>
-        public static Archive Create(string directory, ArchiveDescription description)
+        public static ArchiveFile Create(string directory, ArchiveDescription description)
         {
             Directory.CreateDirectory(directory);
-            Archive archive = new Archive(directory, description);
+            ArchiveFile archive = new ArchiveFile(directory, description);
             WriteDescription(directory, description);
             return archive;
         }
@@ -78,7 +78,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 获取到存档目录下的所有存档;
         /// </summary>
-        public static IEnumerable<Archive> All()
+        public static IEnumerable<ArchiveFile> All()
         {
             var directorys = Directory.GetDirectories(ArchivesDirectory);
             return Find(directorys);
@@ -87,9 +87,9 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 获取到这些目录中为存档的;
         /// </summary>
-        public static IEnumerable<Archive> Find(IEnumerable<string> directorys)
+        public static IEnumerable<ArchiveFile> Find(IEnumerable<string> directorys)
         {
-            Archive item;
+            ArchiveFile item;
             foreach (var directory in directorys)
             {
                 if (TryLoad(directory,out item))
@@ -102,7 +102,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 尝试读取此路径下的存档;
         /// </summary>
-        public static bool TryLoad(string directory, out Archive item)
+        public static bool TryLoad(string directory, out ArchiveFile item)
         {
             if (Exists(directory))
             {
@@ -110,7 +110,7 @@ namespace KouXiaGu.Initialization
                 return true;
             }
 
-            item = default(Archive);
+            item = default(ArchiveFile);
             return false;
         }
 
@@ -126,10 +126,10 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 读取目录下的存档信息;
         /// </summary>
-        public static Archive Read(string directory)
+        public static ArchiveFile Read(string directory)
         {
             ArchiveDescription description = ReadDescription(directory);
-            return new Archive(directory, description);
+            return new ArchiveFile(directory, description);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace KouXiaGu.Initialization
 
 
 
-        Archive(string directory, ArchiveDescription description)
+        ArchiveFile(string directory, ArchiveDescription description)
         {
             this.DirectoryPath = directory;
             this.Description = description;
@@ -197,9 +197,9 @@ namespace KouXiaGu.Initialization
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Archive))
+            if (!(obj is ArchiveFile))
                 return false;
-            return ((Archive)obj).DirectoryPath == DirectoryPath;
+            return ((ArchiveFile)obj).DirectoryPath == DirectoryPath;
         }
 
         public override int GetHashCode()

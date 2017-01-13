@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 保存当前游戏状态的信息到存档文件;
         /// </summary>
-        public static void Write(Archive archive, ArchiveDescription data)
+        public static void Write(ArchiveFile archive, ArchiveDescription data)
         {
             string filePath = archive.CombineToTerrain(ARCHIVED_FILE_NAME);
             Serializer.SerializeXiaGu(filePath, data);
@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从存档文件获取到对应信息;
         /// </summary>
-        public static ArchiveDescription Read(Archive archive)
+        public static ArchiveDescription Read(ArchiveFile archive)
         {
             string filePath = archive.CombineToTerrain(ARCHIVED_FILE_NAME);
             ArchiveDescription data = (ArchiveDescription)ArchiveDescription.Serializer.DeserializeXiaGu(filePath);
