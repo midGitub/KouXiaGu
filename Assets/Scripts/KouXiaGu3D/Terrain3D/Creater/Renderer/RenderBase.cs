@@ -82,7 +82,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Render(IBakeRequest request, IEnumerable<CubicHexCoord> bakingPoints)
         {
-            tempCenter = TerrainChunk.GetHexCenter(request.ChunkCoord);
+            tempCenter = TerrainRenderer.GetHexCenter(request.ChunkCoord);
 
             List<KeyValuePair<T, MeshRenderer>> meshs = InitMeshs(request.Map, bakingPoints);
 

@@ -26,14 +26,14 @@ namespace KouXiaGu.Terrain3D
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
         public static readonly float CameraSize =
-            ((TerrainChunk.CHUNK_HEIGHT + (TerrainChunk.CHUNK_HEIGHT * OutlineScale)) / 2);
+            ((TerrainRenderer.CHUNK_HEIGHT + (TerrainRenderer.CHUNK_HEIGHT * OutlineScale)) / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
         public static readonly float CameraAspect =
-            (TerrainChunk.CHUNK_WIDTH + TerrainChunk.CHUNK_WIDTH * OutlineScale) /
-            (TerrainChunk.CHUNK_HEIGHT + TerrainChunk.CHUNK_HEIGHT * OutlineScale);
+            (TerrainRenderer.CHUNK_WIDTH + TerrainRenderer.CHUNK_WIDTH * OutlineScale) /
+            (TerrainRenderer.CHUNK_HEIGHT + TerrainRenderer.CHUNK_HEIGHT * OutlineScale);
 
         [SerializeField, Range(50, 500)]
         float textureSize;
@@ -89,8 +89,8 @@ namespace KouXiaGu.Terrain3D
 
         void SetTextureSize(float size)
         {
-            int chunkWidth = (int)Math.Round(TerrainChunk.CHUNK_WIDTH * size);
-            int chunkHeight = (int)Math.Round(TerrainChunk.CHUNK_HEIGHT * size);
+            int chunkWidth = (int)Math.Round(TerrainRenderer.CHUNK_WIDTH * size);
+            int chunkHeight = (int)Math.Round(TerrainRenderer.CHUNK_HEIGHT * size);
 
             this.DiffuseTexWidth = chunkWidth >> diffuseTexDownsample;
             this.DiffuseTexHeight = chunkHeight >> diffuseTexDownsample;

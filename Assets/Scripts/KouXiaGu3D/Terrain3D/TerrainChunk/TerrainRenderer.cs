@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using KouXiaGu.Grids;
 using UnityEngine;
@@ -11,18 +10,13 @@ namespace KouXiaGu.Terrain3D
     /// 地图数据提供;
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent]
-    public sealed class TerrainChunk : MonoBehaviour
+    public sealed class TerrainRenderer : MonoBehaviour
     {
-        TerrainChunk() { }
+        TerrainRenderer() { }
 
         static Shader TerrainShader
         {
             get { return TerrainData.TerrainShader; }
-        }
-
-        static Shader HeightShader
-        {
-            get { return TerrainData.HeightShader; }
         }
 
 
@@ -228,7 +222,7 @@ namespace KouXiaGu.Terrain3D
         public RectCoord Coord
         {
             get { return coord; }
-            private set { transform.position = ChunkGrid.GetCenter(value); coord = value; }
+            set { transform.position = ChunkGrid.GetCenter(value); coord = value; }
         }
 
         /// <summary>
@@ -273,17 +267,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 设置参数到地形块;
-        /// </summary>
-        public void SetChunk(RectCoord coord, TerrainTexPack tex)
-        {
-            Coord = coord;
-            DiffuseTexture = tex.diffuseMap;
-            HeightTexture = tex.heightMap;
-            NormalMap = tex.normalMap;
-        }
-
-        /// <summary>
         /// 清空贴图引用,但是不销毁;
         /// </summary>
         public void ClearTextures()
@@ -311,22 +294,6 @@ namespace KouXiaGu.Terrain3D
             MeshRenderer renderer = GetComponent<MeshRenderer>();
             if (renderer.sharedMaterial == null)
                 renderer.sharedMaterial = Material;
-        }
-
-
-        [ContextMenu("显示地形模式")]
-        void TerrainDisplay()
-        {
-            Material.shader = TerrainShader;
-
-            DiffuseTexture = diffuseTexture;
-            HeightTexture = heightTexture;
-        }
-
-        [ContextMenu("显示高度模式")]
-        void HeightDisplay()
-        {
-            Material.shader = HeightShader;
         }
 
         #endregion

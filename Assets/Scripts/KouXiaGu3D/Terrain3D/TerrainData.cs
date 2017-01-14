@@ -12,17 +12,13 @@ namespace KouXiaGu.Terrain3D
     {
         [SerializeField]
         Shader terrainShader;
-        [SerializeField]
-        Shader heightShader;
 
+        /// <summary>
+        /// 地形Shader;
+        /// </summary>
         public static Shader TerrainShader
         {
             get { return GetInstance.terrainShader; }
-        }
-
-        public static Shader HeightShader
-        {
-            get { return GetInstance.heightShader; }
         }
 
         [SerializeField, Range(0, 32)]
@@ -80,11 +76,11 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainChunk chunk;
             RectCoord coord;
-            UV uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
+            UV uv = TerrainRenderer.ChunkGrid.GetUV(position, out coord);
 
             if (TerrainCreater.ActivatedChunks.TryGetValue(coord, out chunk))
             {
-                return GetHeight(chunk, uv);
+                return GetHeight(chunk.Renderer, uv);
             }
             return 0f;
         }
@@ -92,7 +88,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到对应的高度;
         /// </summary>
-        public static float GetHeight(TerrainChunk chunk, UV uv)
+        public static float GetHeight(TerrainRenderer chunk, UV uv)
         {
             Color pixelColor = chunk.HeightTexture.GetPixel(uv);
             return pixelColor.r * Displacement;
@@ -103,7 +99,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static bool IsOutTerrain(Vector3 position)
         {
-            RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
+            RectCoord coord = TerrainRenderer.ChunkGrid.GetCoord(position);
             return TerrainCreater.ActivatedChunks.ContainsKey(coord);
         }
 

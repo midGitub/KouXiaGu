@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    [CustomEditor(typeof(TerrainChunk), true)]
+    [CustomEditor(typeof(TerrainRenderer), true)]
     class TerrainChunkEditor : Editor
     {
 
@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         {
             base.OnInspectorGUI();
 
-            var target = (TerrainChunk)this.target;
+            var target = (TerrainRenderer)this.target;
 
 
             EditorGUILayout.ObjectField("Diffuse", target.DiffuseTexture, typeof(Texture2D), true);

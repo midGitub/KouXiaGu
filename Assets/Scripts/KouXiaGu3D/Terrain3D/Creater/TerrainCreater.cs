@@ -4,7 +4,6 @@ using System.Linq;
 using KouXiaGu.Grids;
 using UnityEngine;
 using KouXiaGu.Collections;
-using UnityEditor;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -23,16 +22,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         TerrainCreater() { }
-
-
-        /// <summary>
-        /// 地形块挂载的脚本;
-        /// </summary>
-        static readonly Type[] TERRAIN_CHUNK_SCRIPTS = new Type[]
-            {
-                typeof(TerrainChunk), //必须的;
-                typeof(TerrainTrigger) //地形碰撞器;
-            };
 
         /// <summary>
         /// 地形地图;
@@ -104,12 +93,12 @@ namespace KouXiaGu.Terrain3D
 
             if (activatedChunks.TryGetValue(coord, out chunk))
             {
-                chunk.SetChunk(coord, tex);
+                chunk.Set(tex);
             }
             else
             {
-                chunk = GetTerrainChunk(coord.ToString());
-                chunk.SetChunk(coord, tex);
+                chunk = GetTerrainChunk();
+                chunk.Set(coord, tex);
                 activatedChunks.Add(coord, chunk);
             }
             return chunk;
@@ -118,16 +107,16 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从池内获取到或者实例化一个;
         /// </summary>
-        static TerrainChunk GetTerrainChunk(string name)
+        static TerrainChunk GetTerrainChunk()
         {
             TerrainChunk terrainChunk;
             if (restingChunks.Count > 0)
             {
-                terrainChunk = DequeueTerrainChunk(name);
+                terrainChunk = DequeueTerrainChunk();
             }
             else
             {
-                terrainChunk = CraeteTerrainChunk(name);
+                terrainChunk = new TerrainChunk();
             }
             return terrainChunk;
         }
@@ -135,46 +124,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从对象池获取到地形块;
         /// </summary>
-        static TerrainChunk DequeueTerrainChunk(string name)
+        static TerrainChunk DequeueTerrainChunk()
         {
             var terrainChunk = restingChunks.Dequeue();
-            terrainChunk.name = name;
-            terrainChunk.gameObject.SetActive(true);
+            terrainChunk.SetActive(true);
             return terrainChunk;
         }
-
-#if UNITY_EDITOR
-        [MenuItem("GameObject/Create Other/TerrainChunk")]
-#endif
-        static GameObject CraeteTerrainChunk()
-        {
-            GameObject gameObject = new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
-            return gameObject;
-        }
-
-        /// <summary>
-        /// 实例一个地形块;
-        /// </summary>
-        static TerrainChunk CraeteTerrainChunk(string name)
-        {
-            GameObject gameObject = new GameObject(name, TERRAIN_CHUNK_SCRIPTS);
-            var terrainChunk = gameObject.GetComponent<TerrainChunk>();
-#if UNITY_EDITOR
-            terrainChunk.transform.SetParent(ChunkParent, false);
-#endif
-            return terrainChunk;
-        }
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// 放置地形块的父节点;
-        /// </summary>
-        static Transform chunkParent;
-        static Transform ChunkParent
-        {
-            get { return chunkParent ?? (chunkParent = new GameObject("TerrainChunks").transform); }
-        }
-#endif
 
         /// <summary>
         /// 释放这个地形块的使用权,将地形块放回池内,备下次使用,若不存在则返回false;
@@ -184,9 +139,9 @@ namespace KouXiaGu.Terrain3D
             TerrainChunk terrainChunk;
             if (activatedChunks.TryGetValue(coord, out terrainChunk))
             {
-                terrainChunk.DestroyTextures();
+                terrainChunk.Clear();
 
-                terrainChunk.gameObject.SetActive(false);
+                terrainChunk.SetActive(false);
                 restingChunks.Enqueue(terrainChunk);
                 activatedChunks.Remove(coord);
                 return true;

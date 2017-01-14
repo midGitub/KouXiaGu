@@ -14,9 +14,6 @@ namespace KouXiaGu.Test
         [SerializeField]
         Text textObject;
 
-        Vector3 currentPixelPosition;
-        string checkPointText;
-
         void Awake()
         {
             textObject = textObject ?? GetComponent<Text>();
@@ -26,10 +23,14 @@ namespace KouXiaGu.Test
         {
             this.ObserveEveryValueChanged(_ => UnityEngine.Input.mousePosition).
                 SubscribeToText(textObject, TextUpdate);
+        }
 
-            this.ObserveEveryValueChanged(_ => Input.GetKeyDown(KeyCode.Mouse0)).
-                Subscribe(_ => currentPixelPosition = MouseConvert.MouseToPixel());
-
+        private void Update()
+        {
+            if (Input.GetMouseButton(0))
+            {
+                OnMouseDown();
+            }
         }
 
         string TextUpdate(Vector3 mousePosition)
@@ -38,7 +39,6 @@ namespace KouXiaGu.Test
 
             str += GetScreenPoint(mousePosition);
             str += GetTestPointsLog(mousePosition);
-            str += OnMouseDown();
 
             return str;
         }
@@ -61,14 +61,14 @@ namespace KouXiaGu.Test
 
             Vector3 cubePixel = TerrainConvert.Grid.GetPixel(cube);
 
-            RectCoord terrainBlockCoord = TerrainChunk.ChunkGrid.GetCoord(terrainPixel);
-            Vector3 terrainBlockCenter = TerrainChunk.ChunkGrid.GetCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = TerrainChunk.GetHexCenter(terrainBlockCoord);
+            RectCoord terrainBlockCoord = TerrainRenderer.ChunkGrid.GetCoord(terrainPixel);
+            Vector3 terrainBlockCenter = TerrainRenderer.ChunkGrid.GetCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = TerrainRenderer.GetHexCenter(terrainBlockCoord);
 
-            Vector2 terrainBlockLocal = TerrainChunk.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
-            Vector2 terrainBlockUV = TerrainChunk.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
+            Vector2 terrainBlockLocal = TerrainRenderer.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
+            Vector2 terrainBlockUV = TerrainRenderer.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
             float terrainHeight = Terrain3D.TerrainData.GetHeight(terrainPixel);
-            RectCoord[] terrainBlocks = TerrainChunk.GetBelongChunks(cube);
+            RectCoord[] terrainBlocks = TerrainRenderer.GetBelongChunks(cube);
 
             string str = "";
 
@@ -93,22 +93,15 @@ namespace KouXiaGu.Test
             return str;
         }
 
-
-        string OnMouseDown()
+        void OnMouseDown()
         {
-            string str = "";
+            Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
 
-            //CubicHexCoord hex = GridConvert.ToHexCubic(currentPixelPosition);
+            var item = TerrainInitializer.Map[terrainPixel.GetTerrainCubic()];
+            item.Road = 1;
+            TerrainInitializer.Map[terrainPixel.GetTerrainCubic()] = item;
 
-            //GridsExtensions.GetNeighboursAndSelf(CubicHexCoord.Self);
-            //CubicHexCoord.Self.GetNeighboursAndSelf<CubicHexCoord, HexDirections>();
-
-            //foreach (var item in hex.GetNeighboursAndSelf<CubicHexCoord, HexDirections>())
-            //{
-            //    str += "\n" + item.ToString();
-            //}
-
-            return str;
+            Debug.Log("OnMouseDown");
         }
 
     }
