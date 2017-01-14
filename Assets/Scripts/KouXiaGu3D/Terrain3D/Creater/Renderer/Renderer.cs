@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using KouXiaGu.Grids;
@@ -9,7 +8,8 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 基本贴图信息渲染,负责将传入的请求渲染出基本的高度图和地貌贴图;
+    /// 负责将传入的请求渲染出基本的
+    /// 高度图\地貌贴图\法线图;
     /// </summary>
     [DisallowMultipleComponent]
     public sealed partial class Renderer : GlobalSington<Renderer>
@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
         NormalMapper normalMapper;
 
         [SerializeField]
-        TerrainRender terrain;
+        TerrainBlend terrain;
 
         [SerializeField]
         DecorateRoad road;

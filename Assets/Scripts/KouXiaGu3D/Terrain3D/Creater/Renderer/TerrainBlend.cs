@@ -12,9 +12,9 @@ namespace KouXiaGu.Terrain3D
     /// 地形烘焙;
     /// </summary>
     [Serializable]
-    public class TerrainRender : RenderBase<LandformRes>
+    public class TerrainBlend : RenderBase<LandformRes>
     {
-        TerrainRender() { }
+        TerrainBlend() { }
 
         List<KeyValuePair<LandformRes, MeshRenderer>> meshs;
 
