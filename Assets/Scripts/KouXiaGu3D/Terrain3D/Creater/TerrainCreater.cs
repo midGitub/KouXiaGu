@@ -4,6 +4,7 @@ using System.Linq;
 using KouXiaGu.Grids;
 using UnityEngine;
 using KouXiaGu.Collections;
+using UnityEditor;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -140,6 +141,15 @@ namespace KouXiaGu.Terrain3D
             terrainChunk.name = name;
             terrainChunk.gameObject.SetActive(true);
             return terrainChunk;
+        }
+
+#if UNITY_EDITOR
+        [MenuItem("GameObject/Create Other/TerrainChunk")]
+#endif
+        static GameObject CraeteTerrainChunk()
+        {
+            GameObject gameObject = new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
+            return gameObject;
         }
 
         /// <summary>

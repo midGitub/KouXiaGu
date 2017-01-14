@@ -309,8 +309,8 @@ namespace KouXiaGu.Terrain3D
         {
             GetComponent<MeshFilter>().mesh = CreateTerrainMesh();
             MeshRenderer renderer = GetComponent<MeshRenderer>();
-            if (renderer.material == null)
-                renderer.material = Material;
+            if (renderer.sharedMaterial == null)
+                renderer.sharedMaterial = Material;
         }
 
         [ContextMenu("保存贴图")]
