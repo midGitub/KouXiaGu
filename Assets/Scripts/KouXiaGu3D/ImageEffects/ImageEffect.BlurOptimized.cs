@@ -7,7 +7,7 @@ using UnityEngine;
 namespace KouXiaGu.ImageEffects
 {
 
-    public sealed partial class ImageEffect : UnitySingleton<ImageEffect>
+    public sealed partial class ImageEffect : GlobalSington<ImageEffect>
     {
 
         [SerializeField]

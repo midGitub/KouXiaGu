@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
@@ -43,10 +40,12 @@ namespace KouXiaGu.Terrain3D
 
         void UpdateChunk(CubicHexCoord coord)
         {
-            TerrainChunk.GetBelongChunks(coord, ref chunksCoord);
-
-            TerrainCreater.UpdateChunk(chunksCoord[0]);
-            TerrainCreater.UpdateChunk(chunksCoord[1]);
+            foreach (var around in coord.GetNeighbours())
+            {
+                TerrainChunk.GetBelongChunks(around, ref chunksCoord);
+                TerrainCreater.UpdateChunk(chunksCoord[0]);
+                TerrainCreater.UpdateChunk(chunksCoord[1]);
+            }
         }
 
     }

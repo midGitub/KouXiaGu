@@ -320,12 +320,12 @@ namespace KouXiaGu.Grids
 
         IEnumerable<CoordPack<IGrid<HexDirections>, HexDirections>> IGrid<HexDirections>.GetNeighbours()
         {
-            return GetNeighbours().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Item));
+            return GetNeighbours().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Direction));
         }
 
         IEnumerable<CoordPack<IGrid<HexDirections>, HexDirections>> IGrid<HexDirections>.GetNeighboursAndSelf()
         {
-            return GetNeighboursAndSelf().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Item));
+            return GetNeighboursAndSelf().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Direction));
         }
 
 
