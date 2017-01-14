@@ -313,15 +313,6 @@ namespace KouXiaGu.Terrain3D
                 renderer.sharedMaterial = Material;
         }
 
-        [ContextMenu("保存贴图")]
-        void SAVE_Tex()
-        {
-            string path = Application.dataPath + "\\TestTex";
-
-            diffuseTexture.SavePNG(path);
-            heightTexture.SavePNG(path);
-            normalMap.SavePNG(path);
-        }
 
         [ContextMenu("显示地形模式")]
         void TerrainDisplay()
