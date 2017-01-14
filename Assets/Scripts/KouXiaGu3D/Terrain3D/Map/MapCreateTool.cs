@@ -75,7 +75,7 @@ namespace KouXiaGu.Terrain3D
 
         static float RamdomAngle()
         {
-            return (float)random.NextDouble();
+            return (float)random.Next(0, 360);
         }
 
 

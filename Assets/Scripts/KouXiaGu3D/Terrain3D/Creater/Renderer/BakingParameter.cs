@@ -111,8 +111,8 @@ namespace KouXiaGu.Terrain3D
 
             this.HeightReadPixel =
                 new Rect(
-                    HeightMapWidth * OutlineScale / 2,
-                    HeightMapHeight * OutlineScale / 2,
+                    HeightMapWidth * OutlineScale / 4,
+                    HeightMapHeight * OutlineScale / 4,
                     HeightMapWidth,
                     HeightMapHeight);
 
