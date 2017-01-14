@@ -29,7 +29,11 @@ namespace KouXiaGu.Test
         {
             if (Input.GetMouseButton(0))
             {
-                OnMouseDown();
+                OnLeftMouseButtonDown();
+            }
+            if (Input.GetMouseButton(1))
+            {
+                OnRightMouseButtonDown();
             }
         }
 
@@ -93,15 +97,22 @@ namespace KouXiaGu.Test
             return str;
         }
 
-        void OnMouseDown()
+        void OnLeftMouseButtonDown()
         {
             Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
 
             var item = TerrainInitializer.Map[terrainPixel.GetTerrainCubic()];
             item.Road = 1;
             TerrainInitializer.Map[terrainPixel.GetTerrainCubic()] = item;
+        }
 
-            Debug.Log("OnMouseDown");
+        void OnRightMouseButtonDown()
+        {
+            Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
+
+            var item = TerrainInitializer.Map[terrainPixel.GetTerrainCubic()];
+            item.Road = 0;
+            TerrainInitializer.Map[terrainPixel.GetTerrainCubic()] = item;
         }
 
     }
