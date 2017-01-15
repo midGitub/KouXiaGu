@@ -22,27 +22,6 @@ namespace KouXiaGu.Terrain3D
 
         LineRenderer lineRednerer;
 
-        //void Awake()
-        //{
-        //    lineRednerer = GetComponent<LineRenderer>();
-        //    //lineRednerer.numPositions = SegmentPoints;
-        //}
-
-        //[ContextMenu("更新")]
-        //void Update()
-        //{
-        //    Vector3[] array = NewPoints.ToArray();
-        //    lineRednerer.numPositions = array.Length;
-        //    lineRednerer.SetPositions(array);
-        //}
-
-            [ContextMenu("设置网格;")]
-        void Set()
-        {
-            GetComponent<RoadRenderer>().SetSpline(NewPoints);
-
-        }
-
         void Reset()
         {
             Points = new Vector3[]
@@ -55,6 +34,30 @@ namespace KouXiaGu.Terrain3D
                 };
         }
 
+        [SerializeField,Range(0.1f, 2f)]
+        public float roadWidth;
+
+        [ContextMenu("初始化完整网格;")]
+        void SetFull()
+        {
+            IEnumerable<Vector3> spline = CatmullRom.GetFullPath(Points, SegmentPoints);
+            List<Vector3> path = new List<Vector3>(spline);
+            GetComponent<RoadRenderer>().SetSpline(path, roadWidth);
+        }
+
+        [ContextMenu("初始化网格;")]
+        void Set()
+        {
+            IEnumerable<Vector3> spline = CatmullRom.GetPath(Points, SegmentPoints);
+            List<Vector3> path = new List<Vector3>(spline);
+            GetComponent<RoadRenderer>().SetSpline(path, roadWidth);
+            Debug.Log(path.ToLog());
+        }
+
+        //void OnValidate()
+        //{
+        //    SetFull();
+        //}
 
     }
 

@@ -47,34 +47,25 @@ namespace KouXiaGu.Terrain3D
             }
 
             newPoints.Clear();
-            newPoints.AddRange(CatmullRom.GetPath(points, segmentPoints));
+            newPoints.AddRange(CatmullRom.GetFullPath(points, segmentPoints));
 
             for (int i = 0; i < newPoints.Count - 1; i++)
             {
                 Handles.color = Color.red;
                 Handles.DrawLine(newPoints[i], newPoints[i + 1]);
                 Handles.color = Color.white;
-                Handles.SphereCap(1, newPoints[i], Quaternion.identity, 0.1f);
+                Handles.SphereCap(1, newPoints[i], Quaternion.identity, 0.08f);
 
-                Vector3 left, right;
-                GetPoint(newPoints[i], newPoints[i + 1], out left, out right);
+                //Vector3 left, right;
+                //GetPoint(newPoints[i], newPoints[i + 1], out left, out right);
 
-                Handles.color = Color.yellow;
-                Handles.SphereCap(1, left, Quaternion.identity, 0.1f);
-                Handles.color = Color.blue;
-                Handles.SphereCap(1, right, Quaternion.identity, 0.1f);
+                //Handles.color = Color.yellow;
+                //Handles.SphereCap(1, left, Quaternion.identity, 0.1f);
+                //Handles.color = Color.blue;
+                //Handles.SphereCap(1, right, Quaternion.identity, 0.1f);
             }
             catmullRomSpline.NewPoints = newPoints;
 
-            //Vector3 newPoint = GetPoint(Vector3.zero, new Vector3(1, 0, 1) / 2, 0.5f);
-            //Handles.color = Color.yellow;
-            //Handles.SphereCap(1, newPoint, Quaternion.identity, 0.1f);
-
-            //Handles.color = Color.blue;
-            //Handles.SphereCap(1, new Vector3(0.5f, 0, 0.5f), Quaternion.identity, 0.1f);
-
-            //Handles.color = Color.blue;
-            //Handles.SphereCap(1, Circle(1, 145 *  Math.PI / 180), Quaternion.identity, 0.1f);
         }
 
         Vector3 ShowPoint(int index)

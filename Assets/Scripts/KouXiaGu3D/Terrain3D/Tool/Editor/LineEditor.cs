@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    [CustomEditor(typeof(Line))]
+    [CustomEditor(typeof(Line), true)]
     public class LineEditor : Editor
     {
 

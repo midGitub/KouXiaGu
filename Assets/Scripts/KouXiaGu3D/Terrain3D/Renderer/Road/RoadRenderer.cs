@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -10,32 +8,34 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 根据样条线生成网格,
     /// </summary>
-    [DisallowMultipleComponent, ExecuteInEditMode]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent]
     public sealed class RoadRenderer : MonoBehaviour
     {
         RoadRenderer() { }
 
         const string MESH_NAME = "Road Mesh";
 
-
         /// <summary>
         /// 道路宽度;
         /// </summary>
-        [SerializeField, Range(0.01f, TerrainConvert.OuterRadius)]
-        float width;
+        float roadWidth;
 
-        /// <summary>
-        /// 细分程度;
-        /// </summary>
-        [SerializeField, Range(1, 60)]
-        int segmentPoints;
-
+        ///// <summary>
+        ///// 设置路径点,并且使用 CatmullRom 算法进行平滑;
+        ///// </summary>
+        //public void SetPoints(IList<Vector3> points, int segmentPoints, float roadWidth)
+        //{
+        //    IEnumerable<Vector3> spline = CatmullRom.GetFullPath(points, segmentPoints);
+        //    List<Vector3> path = new List<Vector3>(spline);
+        //    SetSpline(path, roadWidth);
+        //}
 
         /// <summary>
         /// 设置样条线;
         /// </summary>
-        public void SetSpline(IList<Vector3> path)
+        public void SetSpline(IList<Vector3> path, float roadWidth)
         {
+            this.roadWidth = roadWidth;
             List<Offset> offsets = CalculatedOffsets(path);
             InitMesh(offsets);
         }
@@ -48,9 +48,18 @@ namespace KouXiaGu.Terrain3D
             List<Offset> offsets = new List<Offset>(spline.Count);
             int endIndex = spline.Count - 1;
 
-            for (int i = 0; i < endIndex; i++)
+            for (int i = 0; i < spline.Count; i++)
             {
-                Offset offset = GetOffset(spline[i], spline[Math.Min(i + 1, endIndex)]);
+                Offset offset;
+                if (i == endIndex)
+                {
+                    offset = GetOffset(spline[i], spline[i - 1]);
+                    offset.Reversal();
+                }
+                else
+                {
+                    offset = GetOffset(spline[i], spline[i + 1]);
+                }
                 offsets.Add(offset);
             }
 
@@ -66,8 +75,8 @@ namespace KouXiaGu.Terrain3D
 
             double angle = AngleY(from, to);
             offset.Original = from;
-            offset.Left = Circle(width, LEFT_ANGLE + angle) + from;
-            offset.Right = Circle(width, RIGHT_ANGLE + angle) + from;
+            offset.Left = Circle(roadWidth, LEFT_ANGLE + angle) + from;
+            offset.Right = Circle(roadWidth, RIGHT_ANGLE + angle) + from;
 
             return offset;
         }
@@ -183,6 +192,17 @@ namespace KouXiaGu.Terrain3D
             public Vector3 Original;
             public Vector3 Left;
             public Vector3 Right;
+
+            /// <summary>
+            /// 交换 Left 和 Right;
+            /// </summary>
+            public void Reversal()
+            {
+                Vector3 temp = Left;
+                Left = Right;
+                Right = temp;
+            }
+
         }
 
     }
