@@ -10,6 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 用于演示曲线;
     /// </summary>
+    [ExecuteInEditMode]
     public class CatmullRomSpline : MonoBehaviour
     {
 
@@ -19,6 +20,28 @@ namespace KouXiaGu.Terrain3D
 
         public List<Vector3> NewPoints;
 
+        LineRenderer lineRednerer;
+
+        //void Awake()
+        //{
+        //    lineRednerer = GetComponent<LineRenderer>();
+        //    //lineRednerer.numPositions = SegmentPoints;
+        //}
+
+        //[ContextMenu("更新")]
+        //void Update()
+        //{
+        //    Vector3[] array = NewPoints.ToArray();
+        //    lineRednerer.numPositions = array.Length;
+        //    lineRednerer.SetPositions(array);
+        //}
+
+            [ContextMenu("设置网格;")]
+        void Set()
+        {
+            GetComponent<RoadRenderer>().SetSpline(NewPoints);
+
+        }
 
         void Reset()
         {
