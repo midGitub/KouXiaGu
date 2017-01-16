@@ -14,6 +14,7 @@ namespace KouXiaGu.Grids
     [Flags]
     public enum RecDirections
     {
+        Unknown = 0,
         North = 1,
         Northeast = 2,
         East = 4,

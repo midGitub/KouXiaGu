@@ -13,6 +13,7 @@ namespace KouXiaGu.Grids
     [Flags]
     public enum HexDirections
     {
+        Unknown = 0,
         North = 1,
         Northeast = 2,
         Southeast = 4,
@@ -28,6 +29,7 @@ namespace KouXiaGu.Grids
     [Flags]
     public enum HexDiagonals
     {
+        Unknown = 0,
         Northeast = 1,
         East = 2,
         Southeast = 4,

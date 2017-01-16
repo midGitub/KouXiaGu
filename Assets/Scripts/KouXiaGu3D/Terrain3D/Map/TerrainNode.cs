@@ -14,6 +14,8 @@ namespace KouXiaGu.Terrain3D
     public struct TerrainNode : IEquatable<TerrainNode>
     {
 
+        #region 地貌;
+
         /// <summary>
         /// 代表的地形ID((0,-1作为保留);
         /// </summary>
@@ -44,6 +46,10 @@ namespace KouXiaGu.Terrain3D
                 other.LandformAngle == LandformAngle;
         }
 
+        #endregion;
+
+
+        #region 道路;
 
         /// <summary>
         /// 道路类型编号?不存在则为0,否则为道路类型编号;
@@ -68,6 +74,10 @@ namespace KouXiaGu.Terrain3D
                   other.Road == Road;
         }
 
+        [ProtoMember(10)]
+        public RoadNode RoadInfo;
+
+        #endregion
 
         /// <summary>
         /// 建筑物类型编号;
