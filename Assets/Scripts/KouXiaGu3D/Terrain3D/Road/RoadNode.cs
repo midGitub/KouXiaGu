@@ -21,24 +21,19 @@ namespace KouXiaGu.Terrain3D
         const int MAX_ROAD_COUNT = RoadBuilder.MAX_ROAD_COUNT;
 
 
-        [ProtoMember(1)]
-        List<Road> roadInfos;
-
-
         /// <summary>
         /// 若不存在道路则为空；
         /// </summary>
-        public List<Road> RoadInfos
-        {
-            get { return roadInfos; }
-        }
+        [ProtoMember(1)]
+        public List<Road> RoadInfos;
+
 
         /// <summary>
         /// 存在道路?
         /// </summary>
         public bool Exist
         {
-            get { return roadInfos != null && roadInfos.Count > 0; }
+            get { return RoadInfos != null && RoadInfos.Count > 0; }
         }
 
 
@@ -47,14 +42,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Add(Road road)
         {
-            if (roadInfos == null)
+            if (RoadInfos == null)
             {
-                roadInfos = new List<Road>(MAX_ROAD_COUNT);
-                roadInfos.Add(road);
+                RoadInfos = new List<Road>(MAX_ROAD_COUNT);
+                RoadInfos.Add(road);
             }
-            else if (roadInfos.Count < 2)
+            else if (RoadInfos.Count < 2)
             {
-                roadInfos.Add(road);
+                RoadInfos.Add(road);
             }
             else
             {
@@ -67,10 +62,10 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool Remove(int id)
         {
-            if (roadInfos == null)
+            if (RoadInfos == null)
                 return false;
 
-            return roadInfos.Remove(item => item.ID == id);
+            return RoadInfos.Remove(item => item.ID == id);
         }
 
         /// <summary>
@@ -78,14 +73,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool TryGetValue(int id, out Road road)
         {
-            if (roadInfos == null)
+            if (RoadInfos == null)
             {
                 road = default(Road);
                 return false;
             }
             else
             {
-                road = roadInfos.Find(item => item.ID == id);
+                road = RoadInfos.Find(item => item.ID == id);
                 return true;
             }
         }
@@ -95,15 +90,15 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<Road> GetRoadInfos()
         {
-            if (roadInfos == null)
+            if (RoadInfos == null)
                 return EmptyCollection<Road>.GetInstance;
 
-            return roadInfos;
+            return RoadInfos;
         }
 
         public void Clear()
         {
-            roadInfos = null;
+            RoadInfos = null;
         }
 
         /// <summary>
@@ -113,10 +108,10 @@ namespace KouXiaGu.Terrain3D
         {
             if (other == null)
                 return false;
-            if (roadInfos == null && other.roadInfos == null)
+            if (RoadInfos == null && other.RoadInfos == null)
                 return true;
             else
-                return roadInfos.Contains(item => other.roadInfos.Contains(item));
+                return RoadInfos.Contains(item => other.RoadInfos.Contains(item));
         }
 
     }

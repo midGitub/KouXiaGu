@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.Collections;
@@ -47,6 +46,13 @@ namespace KouXiaGu.Terrain3D
         {
             Map.Clear();
             roadRecords.Clear();
+        }
+
+
+        [ContextMenu("测试")]
+        void TEST()
+        {
+
         }
 
 
@@ -147,30 +153,28 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        class RoadMap
+        #region 创建方法;
+
+
+        /// <summary>
+        /// 这个点是否已经不允许加入道路;
+        /// </summary>
+        public void IsFill(CubicHexCoord coord)
         {
 
-            public IDictionary<CubicHexCoord, TerrainNode> Map { get; set; }
-
-            Dictionary<CubicHexCoord, List<int>> roadRecords;
-
-
-            public RoadNode this[CubicHexCoord coord]
-            {
-                get { return Map[coord].RoadInfo; }
-            }
-
-            public bool Contains(CubicHexCoord coord)
-            {
-                return Map.ContainsKey(coord);
-            }
-
-            public void Clear()
-            {
-                Map.Clear();
-            }
-
         }
+
+        /// <summary>
+        /// 创建道路节点到目标点;
+        /// </summary>
+        public void CreateRoad(CubicHexCoord coord, Road road)
+        {
+            Map[coord].RoadInfo.Add(road);
+        }
+
+
+
+        #endregion
 
     }
 

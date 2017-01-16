@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
                 };
         }
 
-        [SerializeField,Range(0.1f, 2f)]
+        [SerializeField,Range(0.01f, 2f)]
         public float roadWidth;
 
         [ContextMenu("初始化完整网格;")]

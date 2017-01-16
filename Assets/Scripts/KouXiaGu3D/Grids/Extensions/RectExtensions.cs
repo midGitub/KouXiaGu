@@ -7,7 +7,9 @@ using UnityEngine;
 namespace KouXiaGu.Grids
 {
 
-
+    /// <summary>
+    /// 矩形拓展;
+    /// </summary>
     public static class RectExtensions
     {
 

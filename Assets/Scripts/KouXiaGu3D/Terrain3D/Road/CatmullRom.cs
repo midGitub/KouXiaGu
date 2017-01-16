@@ -54,10 +54,10 @@ namespace KouXiaGu.Terrain3D
 
             for (var i = 1; i < endIndex; i++)
             {
-                Vector3 p0 = points[Math.Max(0, i - 1)];
+                Vector3 p0 = points[i - 1];
                 Vector3 p1 = points[i];
-                Vector3 p2 = points[Math.Min(i + 1, endIndex)];
-                Vector3 p3 = points[Math.Min(i + 2, endIndex)];
+                Vector3 p2 = points[i + 1];
+                Vector3 p3 = points[i + 2];
 
                 for (float t = 0; t < 1; t += segment)
                 {
