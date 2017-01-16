@@ -74,8 +74,11 @@ namespace KouXiaGu.Terrain3D
                   other.Road == Road;
         }
 
+        //[ProtoMember(10)]
+        //public RoadNode RoadInfo;
+
         [ProtoMember(10)]
-        public RoadNode RoadInfo;
+        public RoadInfo RoadInfo;
 
         #endregion
 
