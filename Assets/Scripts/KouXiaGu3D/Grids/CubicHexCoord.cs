@@ -266,6 +266,14 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
+        /// 获取到这个方向的反方向坐标;
+        /// </summary>
+        public CubicHexCoord GetOppositeDirection(HexDirections direction)
+        {
+            return this + GetOppositeDirectionOffset(direction);
+        }
+
+        /// <summary>
         /// 获取到这个对角线的偏移量;
         /// </summary>
         public CubicHexCoord GetDiagonal(HexDiagonals diagonal)
@@ -363,15 +371,6 @@ namespace KouXiaGu.Grids
 
 
         /// <summary>
-        /// 使其根据(0,0,0)坐标进行翻转\类似镜像,一般对方向变量使用,获取到其相反方向;
-        /// </summary>
-        public static CubicHexCoord Invert(CubicHexCoord coord)
-        {
-            return coord * -1;
-        }
-
-
-        /// <summary>
         /// 曼哈顿距离;
         /// </summary>
         public static int ManhattanDistances(CubicHexCoord a, CubicHexCoord b)
@@ -404,6 +403,16 @@ namespace KouXiaGu.Grids
         {
             return directionVectors[(int)direction];
         }
+
+        /// <summary>
+        /// 使其根据(0,0,0)坐标进行翻转\类似镜像,一般对方向变量使用,获取到其相反方向;
+        /// </summary>
+        public static CubicHexCoord GetOppositeDirectionOffset(HexDirections direction)
+        {
+            return GetDirectionOffset(direction) * -1;
+        }
+
+
 
         /// <summary>
         /// 获取到对角线偏移量;

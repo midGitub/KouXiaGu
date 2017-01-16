@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KouXiaGu
+namespace KouXiaGu.Collections
 {
 
     public static class DictionaryExtensions
@@ -93,6 +93,25 @@ namespace KouXiaGu
             }
         }
 
+
+        /// <summary>
+        /// 将值加入到链表合集;若不存在则创建到;
+        /// </summary>
+        public static void Add<TKey, TValue>(
+            this IDictionary<TKey, List< TValue>> dictionary,
+            TKey key, TValue value, int capacity)
+        {
+            List<TValue> list;
+            if (dictionary.TryGetValue(key, out list))
+            {
+                list.Add(value);
+            }
+            else
+            {
+                list = new List<TValue>(capacity);
+                dictionary.Add(key, list);
+            }
+        }
 
 
         /// <summary>

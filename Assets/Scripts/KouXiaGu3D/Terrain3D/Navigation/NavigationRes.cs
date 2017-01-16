@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using KouXiaGu.Collections;
 using KouXiaGu.Initialization;
 using UnityEngine;
 

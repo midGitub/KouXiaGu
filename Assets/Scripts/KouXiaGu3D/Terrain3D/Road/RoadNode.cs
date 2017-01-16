@@ -16,16 +16,22 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
-        /// 最大存在的道路数量；
-        /// </summary>
-        const int MAX_ROAD_COUNT = 2;
-
-        /// <summary>
         /// 最多两种道路重叠，组成 丁字路口，Y字路口，十字路口，道路;
-        /// 若不存在道路则为空；
         /// </summary>
+        const int MAX_ROAD_COUNT = RoadBuilder.MAX_ROAD_COUNT;
+
+
         [ProtoMember(1)]
         List<Road> roadInfos;
+
+
+        /// <summary>
+        /// 若不存在道路则为空；
+        /// </summary>
+        public List<Road> RoadInfos
+        {
+            get { return roadInfos; }
+        }
 
         /// <summary>
         /// 存在道路?
@@ -68,6 +74,23 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 尝试获取到ID相同的道路信息;
+        /// </summary>
+        public bool TryGetValue(int id, out Road road)
+        {
+            if (roadInfos == null)
+            {
+                road = default(Road);
+                return false;
+            }
+            else
+            {
+                road = roadInfos.Find(item => item.ID == id);
+                return true;
+            }
+        }
+
+        /// <summary>
         /// 获取到所有道路信息;
         /// </summary>
         public IEnumerable<Road> GetRoadInfos()
@@ -80,7 +103,7 @@ namespace KouXiaGu.Terrain3D
 
         public void Clear()
         {
-            roadInfos.Clear();
+            roadInfos = null;
         }
 
         /// <summary>

@@ -40,9 +40,8 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
-        /// 仅计算 下标 1 ~ 2 的一段路径; 0 和 3 作为控制点,其他点舍弃;
+        /// 舍弃首尾节点,只计算中间部分;
         /// </summary>
-        /// <param name="points"></param>
         /// <param name="segmentPoints">分段点数</param>
         /// <returns>迭代结构;</returns>
         public static IEnumerable<Vector3> GetPath(IList<Vector3> points, int segmentPoints)
@@ -51,18 +50,22 @@ namespace KouXiaGu.Terrain3D
                 throw new ArgumentNullException();
 
             float segment = Math.Abs(1f / segmentPoints);
+            int endIndex = points.Count - 2;
 
-            Vector3 p0 = points[0];
-            Vector3 p1 = points[1];
-            Vector3 p2 = points[2];
-            Vector3 p3 = points[3];
-
-            for (float t = 0; t < 1; t += segment)
+            for (var i = 1; i < endIndex; i++)
             {
-                var pos = InterpolatedPoint(p0, p1, p2, p3, t);
-                yield return pos;
+                Vector3 p0 = points[Math.Max(0, i - 1)];
+                Vector3 p1 = points[i];
+                Vector3 p2 = points[Math.Min(i + 1, endIndex)];
+                Vector3 p3 = points[Math.Min(i + 2, endIndex)];
+
+                for (float t = 0; t < 1; t += segment)
+                {
+                    var pos = InterpolatedPoint(p0, p1, p2, p3, t);
+                    yield return pos;
+                }
             }
-            yield return p2;
+            yield return points[endIndex];
         }
 
         /// <summary>
