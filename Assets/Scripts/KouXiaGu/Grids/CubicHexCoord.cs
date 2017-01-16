@@ -44,7 +44,7 @@ namespace KouXiaGu.Grids
     /// 所有有效坐标都满足 X + Y + Z = 0;
     /// </summary>
     [ProtoContract, Serializable]
-    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<HexDirections>
+    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<CubicHexCoord, HexDirections>
     {
 
         /// <summary>
@@ -93,6 +93,20 @@ namespace KouXiaGu.Grids
             { (int)HexDirections.Southwest, DIR_Southwest },
             { (int)HexDirections.Northwest, DIR_Northwest },
             { (int)HexDirections.Self, Self },
+        };
+
+        /// <summary>
+        /// 相对方向映射;
+        /// </summary>
+        static Dictionary<int, int> oppositeDirection = new Dictionary<int, int>()
+        {
+            { (int)HexDirections.North, (int)HexDirections.South },
+            { (int)HexDirections.Northeast, (int)HexDirections.Southwest },
+            { (int)HexDirections.Southeast, (int)HexDirections.Northwest },
+            { (int)HexDirections.South, (int)HexDirections.North },
+            { (int)HexDirections.Southwest, (int)HexDirections.Northeast },
+            { (int)HexDirections.Northwest, (int)HexDirections.Southeast },
+            { (int)HexDirections.Self, (int)HexDirections.Self },
         };
 
         /// <summary>
@@ -281,6 +295,7 @@ namespace KouXiaGu.Grids
             return this + GetDiagonalOffset(diagonal);
         }
 
+
         /// <summary>
         /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
@@ -326,16 +341,6 @@ namespace KouXiaGu.Grids
         IEnumerable<IGrid> IGrid.GetNeighboursAndSelf()
         {
             return GetNeighboursAndSelf().Select(coord => coord.Point).Cast<IGrid>();
-        }
-
-        IEnumerable<CoordPack<IGrid<HexDirections>, HexDirections>> IGrid<HexDirections>.GetNeighbours()
-        {
-            return GetNeighbours().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Direction));
-        }
-
-        IEnumerable<CoordPack<IGrid<HexDirections>, HexDirections>> IGrid<HexDirections>.GetNeighboursAndSelf()
-        {
-            return GetNeighboursAndSelf().Select(coord => new CoordPack<IGrid<HexDirections>, HexDirections>(coord.Point, coord.Direction));
         }
 
 
@@ -412,6 +417,13 @@ namespace KouXiaGu.Grids
             return GetDirectionOffset(direction) * -1;
         }
 
+        /// <summary>
+        /// 获取到这个方向的相反方向;
+        /// </summary>
+        public static HexDirections ToOppositeDirection(HexDirections direction)
+        {
+            return (HexDirections)oppositeDirection[(int)direction];
+        }
 
 
         /// <summary>

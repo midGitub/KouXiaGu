@@ -42,6 +42,13 @@ namespace KouXiaGu.Grids
     public struct CoordPack<TVector, TDirection, T>
     {
 
+        public CoordPack(CoordPack<TVector, TDirection> pack, T item)
+        {
+            this.Point = pack.Point;
+            this.Direction = pack.Direction;
+            this.Item = item;
+        }
+
         public CoordPack(TVector point, TDirection direction, T item)
         {
             this.Point = point;
@@ -49,13 +56,13 @@ namespace KouXiaGu.Grids
             this.Item = item;
         }
 
-        public TDirection Direction { get; private set; }
         public TVector Point { get; private set; }
+        public TDirection Direction { get; private set; }
         public T Item { get; private set; }
 
-        public static implicit operator CoordPack<TVector, T>(CoordPack<TVector, TDirection, T> item)
+        public static implicit operator CoordPack<TVector, TDirection>(CoordPack<TVector, TDirection, T> item)
         {
-            return new CoordPack<TVector, T>(item.Point, item.Item);
+            return new CoordPack<TVector, TDirection>(item.Point, item.Direction);
         }
 
         public override string ToString()

@@ -12,7 +12,7 @@ namespace KouXiaGu.GameScene
     /// 当存在目标时跟随目标,
     /// 若 跟随目标时按方向控制键 或 不存在目标,则转换为 类似 文明系列 的固定方向摄像机;
     /// </summary>
-    [DisallowMultipleComponent, RequireComponent(typeof(Camera)), ExecuteInEditMode, CustomEditorTool, Obsolete]
+    [DisallowMultipleComponent, RequireComponent(typeof(Camera)), ExecuteInEditMode, Obsolete]
     public class FollowTargetCamera : MonoBehaviour
     {
         FollowTargetCamera() { }
@@ -67,7 +67,6 @@ namespace KouXiaGu.GameScene
         /// <summary>
         /// 更随的目标,若不存在则设置为null;;
         /// </summary>
-        [ExposeProperty]
         public Transform Target
         {
             get { return target; }

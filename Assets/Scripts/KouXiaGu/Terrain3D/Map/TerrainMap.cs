@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 存储文件后缀名;
         /// </summary>
-        public const string FILE_EXTENSION = ".mapp";
+        public const string FILE_EXTENSION = ".data";
 
         static readonly TerrainMap emptyMap = new TerrainMap();
 

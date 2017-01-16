@@ -31,7 +31,7 @@ namespace KouXiaGu.Grids
     /// 矩形网格的坐标;
     /// </summary>
     [Serializable, ProtoContract]
-    public struct RectCoord : IEquatable<RectCoord>, IGrid, IGrid<RecDirections>
+    public struct RectCoord : IEquatable<RectCoord>, IGrid, IGrid<RectCoord, RecDirections>
     {
 
         /// <summary>
@@ -205,17 +205,6 @@ namespace KouXiaGu.Grids
         {
             return GetNeighboursAndSelf().Select(coord => coord.Point).Cast<IGrid>();
         }
-
-        IEnumerable<CoordPack<IGrid<RecDirections>, RecDirections>> IGrid<RecDirections>.GetNeighbours()
-        {
-            return GetNeighbours().Select(coord => new CoordPack<IGrid<RecDirections>, RecDirections>(coord.Point, coord.Direction));
-        }
-
-        IEnumerable<CoordPack<IGrid<RecDirections>, RecDirections>> IGrid<RecDirections>.GetNeighboursAndSelf()
-        {
-            return GetNeighboursAndSelf().Select(coord => new CoordPack<IGrid<RecDirections>, RecDirections>(coord.Point, coord.Direction));
-        }
-
 
 
         /// <summary>

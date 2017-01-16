@@ -62,6 +62,25 @@ namespace KouXiaGu.Collections
             return false;
         }
 
+
+        /// <summary>
+        /// 尝试获取到第一个元素,若不存在则返回false,否则返回true;
+        /// </summary>
+        public static bool TryGetFirst<T>(this IEnumerable<T> collection, out T item)
+        {
+            if (collection == null)
+                throw new ArgumentNullException();
+
+            foreach (var value in collection)
+            {
+                item = value;
+                return true;
+            }
+
+            item = default(T);
+            return false;
+        }
+
     }
 
 }

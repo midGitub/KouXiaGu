@@ -23,17 +23,17 @@ namespace KouXiaGu.Grids
     /// <summary>
     /// 带方向的网格结构;
     /// </summary>
-    public interface IGrid<T>
+    public interface IGrid<TVector, TDirection>
     {
         /// <summary>
         /// 获取到目标点的邻居节点;
         /// </summary>
-        IEnumerable<CoordPack<IGrid<T>, T>> GetNeighbours();
+        IEnumerable<CoordPack<TVector, TDirection>> GetNeighbours();
 
         /// <summary>
         /// 获取到目标点的邻居节点,但是也返回自己本身;
         /// </summary>
-        IEnumerable<CoordPack<IGrid<T>, T>> GetNeighboursAndSelf();
+        IEnumerable<CoordPack<TVector, TDirection>> GetNeighboursAndSelf();
     }
 
 }
