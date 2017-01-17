@@ -25,8 +25,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图,若不在游戏中则为null;
         /// </summary>
-        public static TerrainMap Map { get; private set; }
-
+        public static MapData Map { get; private set; }
 
         void ResetState()
         {
@@ -65,12 +64,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用类信息初始化;
         /// </summary>
-        public IEnumerator Begin()
+        IEnumerator Begin()
         {
             yield return ResInitializer.Initialize();
 
-            Map = MapFiler.Read();
-            MapArchiver.Initialize(Map);
+            Map = MapDataFiler.Read();
+            MapDataChangedArchiver.Initialize(Map);
             TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
@@ -81,12 +80,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用存档初始化;
         /// </summary>
-        public IEnumerator Begin(ArchiveFile archive)
+        IEnumerator Begin(ArchiveFile archive)
         {
             yield return ResInitializer.Initialize();
 
-            Map = MapFiler.Read();
-            MapArchiver.Initialize(archive, Map);
+            Map = MapDataFiler.Read();
+            MapDataChangedArchiver.Initialize(archive, Map);
             TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
@@ -97,9 +96,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 保存游戏内容;
         /// </summary>
-        public IEnumerator SaveState(ArchiveFile archive)
+        IEnumerator SaveState(ArchiveFile archive)
         {
-            MapArchiver.Write(archive);
+            MapDataChangedArchiver.Archive(archive);
 
             IsCompleted = true;
             yield break;
@@ -110,6 +109,17 @@ namespace KouXiaGu.Terrain3D
             Map.EndTransmission();
             Map = null;
         }
+
+        /// <summary>
+        /// 保存现在地图为预制地图,并且清空存档地图内容;
+        /// </summary>
+        public static void SavePrefabMap()
+        {
+            MapDataFiler.Write(Map);
+            MapDataChangedArchiver.Map.Clear();
+        }
+
+
 
     }
 

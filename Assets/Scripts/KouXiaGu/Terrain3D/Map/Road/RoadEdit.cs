@@ -11,14 +11,14 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路节点信息;
     /// </summary>
-    [ProtoContract]
+    [ProtoContract, XmlType("RoadInfo")]
     public struct RoadInfo
     {
 
         /// <summary>
         /// 道路的唯一编号;
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(1), XmlAttribute("id")]
         public uint ID;
 
     }
@@ -27,13 +27,13 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 与地图匹配的保存文件;
     /// </summary>
-    [XmlType("RoadInfo")]
+    [ProtoContract, XmlType("RoadInfo")]
     public struct RoadDescription
     {
         /// <summary>
         /// 记录到的ID;
         /// </summary>
-        [XmlElement("EffectiveID")]
+        [ProtoMember(1), XmlElement("EffectiveID")]
         public uint EffectiveID;
     }
 
@@ -66,16 +66,33 @@ namespace KouXiaGu.Terrain3D
         public static IDictionary<CubicHexCoord, TerrainNode> Map { get; set; }
 
 
+        /// <summary>
+        /// 初始化;
+        /// </summary>
         public static void Initialize(IDictionary<CubicHexCoord, TerrainNode> map)
         {
             Map = map;
             effectiveID = INITATING_EFFECTIVE_ID;
         }
 
+        /// <summary>
+        /// 初始化;
+        /// </summary>
         public static void Initialize(IDictionary<CubicHexCoord, TerrainNode> map, RoadDescription roadDescr)
         {
             Map = map;
             effectiveID = roadDescr.EffectiveID;
+        }
+
+        /// <summary>
+        /// 获取到存档信息;
+        /// </summary>
+        public static RoadDescription Archive()
+        {
+            return new RoadDescription()
+            {
+                EffectiveID = effectiveID,
+            };
         }
 
 

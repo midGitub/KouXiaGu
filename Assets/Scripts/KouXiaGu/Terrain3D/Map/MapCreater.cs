@@ -72,7 +72,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用节点填满地图;
         /// </summary>
-        public void Fill(TerrainMap map, int size, TerrainNode node)
+        public void Fill(MapData map, int size, TerrainNode node)
         {
             foreach (var coord in Range(size))
             {
@@ -86,7 +86,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 替换整个地图;
         /// </summary>
-        public void Replace(TerrainMap map, int size, TerrainNode node)
+        public void Replace(MapData map, int size, TerrainNode node)
         {
             foreach (var coord in Range(size))
             {
@@ -97,7 +97,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 随机填满;
         /// </summary>
-        public void Ramdom(TerrainMap map, int size)
+        public void Ramdom(MapData map, int size)
         {
             foreach (var coord in Range(size))
             {

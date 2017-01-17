@@ -10,34 +10,48 @@ namespace KouXiaGu
     public static class ProtoBufExtensions
     {
 
-        public static void SerializeProtoBuf<T>(Stream stream, T t)
-        {
-            Serializer.Serialize(stream, t);
-        }
-
-        public static void SerializeProtoBuf<T>(string filePath, T t, FileMode fileMode = FileMode.Create)
+        public static void Serialize<T>(string filePath, T t, FileMode fileMode = FileMode.Create)
         {
             using (Stream fStream = new FileStream(filePath, fileMode))
             {
-                SerializeProtoBuf(fStream, t);
+                Serializer.Serialize(fStream, t);
             }
         }
 
-
-        public static T DeserializeProtoBuf<T>(Stream stream)
-        {
-            return Serializer.Deserialize<T>(stream);
-        }
-
-        public static T DeserializeProtoBuf<T>(string filePath, FileMode fileMode = FileMode.Open)
+        public static T Deserialize<T>(string filePath, FileMode fileMode = FileMode.Open)
         {
             T item;
             using (Stream fStream = new FileStream(filePath, fileMode))
             {
-                item = DeserializeProtoBuf<T>(fStream);
+                item = Serializer.Deserialize<T>(fStream);
             }
             return item;
         }
+
+        /// <summary>
+        /// 将路径文件更改为指定的后缀名;
+        /// </summary>
+        public static void SerializeXiaGu<T>(string filePath, T t, FileMode fileMode = FileMode.Create)
+        {
+            using (Stream fStream = new FileStream(filePath, fileMode))
+            {
+                Serializer.Serialize(fStream, t);
+            }
+        }
+
+        /// <summary>
+        /// 将路径文件更改为指定的后缀名;
+        /// </summary>
+        public static T DeserializeXiaGu<T>(string filePath, FileMode fileMode = FileMode.Open)
+        {
+            T item;
+            using (Stream fStream = new FileStream(filePath, fileMode))
+            {
+                item = Serializer.Deserialize<T>(fStream);
+            }
+            return item;
+        }
+
 
     }
 

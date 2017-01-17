@@ -9,12 +9,12 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 负责对地形地图归档,并且记录地图信息;
+    /// 负责对地形地图归档,记录地图变化;
     /// </summary>
-    public static class MapArchiver
+    public static class MapDataChangedArchiver
     {
 
-        static MapArchiver()
+        static MapDataChangedArchiver()
         {
             IsSubscribe = false;
         }
@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 存档的地图数据文件;
         /// </summary>
-        const string MAP_ARCHIVED_FILE_NAME = "TerrainMap.mapp";
+        const string MAP_ARCHIVED_FILE_NAME = "TerrainMap.data";
 
         /// <summary>
         /// 记录当前地图发生变化的内容;
@@ -39,7 +39,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 开始检视地图变化;
         /// </summary>
-        public static void Initialize(ArchiveFile archive, TerrainMap map)
+        public static void Initialize(ArchiveFile archive, MapData map)
         {
             ReadArchiveMap(archive);
             Combine(map, Map);
@@ -51,7 +51,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 开始检视地图变化;
         /// </summary>
-        public static void Initialize(TerrainMap map)
+        public static void Initialize(MapData map)
         {
             CreateArchiveMap();
             Combine(map, Map);
@@ -111,7 +111,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static DictionaryArchiver<CubicHexCoord, TerrainNode> Read(string filePath)
         {
-            return ProtoBufExtensions.DeserializeProtoBuf<DictionaryArchiver<CubicHexCoord, TerrainNode>>(filePath);
+            return ProtoBufExtensions.Deserialize<DictionaryArchiver<CubicHexCoord, TerrainNode>>(filePath);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将地图输出到文件;
         /// </summary>
-        public static void Write(ArchiveFile archive)
+        public static void Archive(ArchiveFile archive)
         {
             string filePath = archive.CombineToTerrain(MAP_ARCHIVED_FILE_NAME);
             WriteArchiveMap(filePath, Map);
@@ -134,7 +134,7 @@ namespace KouXiaGu.Terrain3D
 
         static void WriteArchiveMap(string filePath, DictionaryArchiver<CubicHexCoord, TerrainNode> map)
         {
-            ProtoBufExtensions.SerializeProtoBuf(filePath, map);
+            ProtoBufExtensions.Serialize(filePath, map);
         }
 
     }

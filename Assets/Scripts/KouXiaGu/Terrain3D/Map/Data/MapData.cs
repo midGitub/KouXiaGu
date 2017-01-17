@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形地图;
     /// </summary>
     [ProtoContract]
-    public class TerrainMap : ObservableDictionary<CubicHexCoord, TerrainNode>
+    public class MapData : ObservableDictionary<CubicHexCoord, TerrainNode>
     {
         
         /// <summary>
@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public const string FILE_EXTENSION = ".data";
 
-        static readonly TerrainMap emptyMap = new TerrainMap();
+        static readonly MapData emptyMap = new MapData();
 
 
         /// <summary>
@@ -32,26 +32,29 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 输出到文件;
         /// </summary>
-        public static void Write(string filePath, TerrainMap map)
+        public static void Write(string filePath, MapData map)
         {
             filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
-            ProtoBufExtensions.SerializeProtoBuf(filePath, map);
+            ProtoBufExtensions.Serialize(filePath, map);
         }
 
         /// <summary>
         /// 从文件读取到;
         /// </summary>
-        public static TerrainMap Read(string filePath)
+        public static MapData Read(string filePath)
         {
             filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
-            return ProtoBufExtensions.DeserializeProtoBuf<TerrainMap>(filePath);
+            return ProtoBufExtensions.Deserialize<MapData>(filePath);
         }
 
 
-        public TerrainMap() : base()
+        public MapData() : base()
         {
 
         }
+
+
+
 
     }
 
