@@ -65,9 +65,9 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 向这个坐标添加道路标记;
+        /// 向这个坐标添加道路标记,若已存在则返回 false;
         /// </summary>
-        public void CreateRoad(CubicHexCoord coord)
+        public bool CreateRoad(CubicHexCoord coord)
         {
             TerrainNode node = Data[coord];
 
@@ -75,7 +75,9 @@ namespace KouXiaGu.Terrain3D
             {
                 node.RoadInfo.ID = GetNewID();
                 Data[coord] = node;
+                return true;
             }
+            return false;
         }
 
         /// <summary>
@@ -87,9 +89,9 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 清除这个坐标的道路标记;
+        /// 清除这个坐标的道路标记,若不存在则返回 false;
         /// </summary>
-        public void DestroyRoad(CubicHexCoord coord)
+        public bool DestroyRoad(CubicHexCoord coord)
         {
             TerrainNode node = Data[coord];
 
@@ -97,7 +99,9 @@ namespace KouXiaGu.Terrain3D
             {
                 node.RoadInfo.ID = EMPTY_ROAD_MARK;
                 Data[coord] = node;
+                return true;
             }
+            return false;
         }
 
         /// <summary>
