@@ -6,23 +6,22 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 根据样条线生成网格,
+    /// 根据样条线生成网格,应该单独挂载在 GameObject 上;
     /// </summary>
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent]
-    public sealed class RoadMesh : MonoBehaviour
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent, ExecuteInEditMode]
+    public sealed class RoadMesh : MonoBehaviour, IReusable
     {
         RoadMesh() { }
 
         const string MESH_NAME = "Road Mesh";
 
-        /// <summary>
-        /// 道路宽度;
-        /// </summary>
-        float roadWidth;
-
-        List<Offset> roadSpline;
 
         MeshFilter meshFilter;
+
+        /// <summary>
+        /// 当前道路宽度;
+        /// </summary>
+        public float Width { get; private set; }
 
 
         /// <summary>
@@ -30,57 +29,51 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool IsBuilt
         {
-            get { return roadSpline != null || meshFilter.mesh.name != MESH_NAME; }
+            get { return meshFilter.sharedMesh != null && meshFilter.sharedMesh.name == MESH_NAME; }
         }
-
 
         void Awake()
         {
             meshFilter = GetComponent<MeshFilter>();
         }
 
-        /// <summary>
-        /// 设置道路宽度,若网格已经构建,则重新构建网格;
-        /// </summary>
-        public void SetRoadWidth(float width)
+        public void Reset()
         {
-            if (IsBuilt)
-                InitMesh();
-            else
-                this.roadWidth = width;
+            DestroyMesh();
         }
 
-
         /// <summary>
-        /// 设置样条线;
+        /// 销毁网格信息;
         /// </summary>
-        public void SetSpline(IList<Vector3> spline)
+        void DestroyMesh()
         {
-            SetSpline(spline, roadWidth);
+            meshFilter.sharedMesh = null;
+            meshFilter.sharedMesh.DestroyXia();
         }
+
 
         /// <summary>
         /// 设置样条线,并且重置宽度信息;
         /// </summary>
         public void SetSpline(IList<Vector3> spline, float width)
         {
-            this.roadWidth = width;
-            roadSpline = CalculatedOffsets(spline);
-            InitMesh();
+            this.Width = width;
+            var roadSpline = CalculatedOffsets(spline);
+            InitMesh(roadSpline);
         }
 
 
         /// <summary>
         /// 计算出点偏移;
         /// </summary>
-        List<Offset> CalculatedOffsets(IList<Vector3> spline)
+        List<RoadPoint> CalculatedOffsets(IList<Vector3> spline)
         {
-            List<Offset> offsets = new List<Offset>(spline.Count);
+            List<RoadPoint> offsets = new List<RoadPoint>(spline.Count);
             int endIndex = spline.Count - 1;
 
             for (int i = 0; i < spline.Count; i++)
             {
-                Offset offset;
+                RoadPoint offset;
                 if (i == endIndex)
                 {
                     offset = GetOffset(spline[i], spline[i - 1]);
@@ -96,17 +89,17 @@ namespace KouXiaGu.Terrain3D
             return offsets;
         }
 
-        Offset GetOffset(Vector3 from, Vector3 to)
+        RoadPoint GetOffset(Vector3 from, Vector3 to)
         {
-            Offset offset = new Offset();
+            RoadPoint offset = new RoadPoint();
 
             const double LEFT_ANGLE = -90 * (Math.PI / 180);
             const double RIGHT_ANGLE = 90 * (Math.PI / 180);
 
             double angle = AngleY(from, to);
             offset.Original = from;
-            offset.Left = Circle(roadWidth, LEFT_ANGLE + angle) + from;
-            offset.Right = Circle(roadWidth, RIGHT_ANGLE + angle) + from;
+            offset.Left = Circle(Width, LEFT_ANGLE + angle) + from;
+            offset.Right = Circle(Width, RIGHT_ANGLE + angle) + from;
 
             return offset;
         }
@@ -135,36 +128,22 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化网格结构;
         /// </summary>
-        void InitMesh()
+        void InitMesh(IList<RoadPoint> roadSpline)
         {
-            Mesh mesh;
-
-#if UNITY_EDITOR
-            meshFilter = meshFilter ?? GetComponent<MeshFilter>();
-            if (!Application.isPlaying)
+            Mesh mesh = meshFilter.sharedMesh;
+            if (mesh == null)
             {
                 mesh = new Mesh();
                 mesh.name = MESH_NAME;
+                meshFilter.sharedMesh = mesh;
             }
-#endif
-            else if (meshFilter.mesh != null && meshFilter.mesh.name == MESH_NAME)
-            {
-                mesh = meshFilter.mesh;
-            }
-            else
-            {
-                mesh = new Mesh();
-                mesh.name = MESH_NAME;
-            }
-
-            InitMesh(ref mesh);
-            meshFilter.mesh = mesh;
+            InitMesh(roadSpline, ref mesh);
         }
 
         /// <summary>
         /// 初始化网格结构;
         /// </summary>
-        void InitMesh(ref Mesh mesh)
+        void InitMesh(IList<RoadPoint> roadSpline, ref Mesh mesh)
         {
             int verticesCapacity = roadSpline.Count * 4;
             int trianglesCapacity = roadSpline.Count * 6;
@@ -210,9 +189,9 @@ namespace KouXiaGu.Terrain3D
         }
 
         [Serializable]
-        struct Offset
+        struct RoadPoint
         {
-            public Offset(Vector3 original, Vector3 left, Vector3 right)
+            public RoadPoint(Vector3 original, Vector3 left, Vector3 right)
             {
                 this.Original = original;
                 this.Left = left;
