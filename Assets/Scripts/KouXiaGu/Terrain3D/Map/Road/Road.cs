@@ -1,27 +1,9 @@
 ﻿using System.Collections.Generic;
 using KouXiaGu.Grids;
-using System.Xml.Serialization;
-using System;
 using ProtoBuf;
 
 namespace KouXiaGu.Terrain3D
 {
-
-    /// <summary>
-    /// 道路节点信息;
-    /// </summary>
-    [ProtoContract, XmlType("RoadInfo")]
-    public struct RoadInfo
-    {
-
-        /// <summary>
-        /// 道路的唯一编号;
-        /// </summary>
-        [ProtoMember(1), XmlAttribute("id")]
-        public uint ID;
-
-    }
-
 
     /// <summary>
     /// 道路信息;
@@ -51,7 +33,7 @@ namespace KouXiaGu.Terrain3D
         public Road(IDictionary<CubicHexCoord, TerrainNode> map)
         {
             this.Data = map;
-            effectiveID = INITATING_EFFECTIVE_ID;
+            EffectiveID = INITATING_EFFECTIVE_ID;
         }
 
 
@@ -59,7 +41,7 @@ namespace KouXiaGu.Terrain3D
         /// 当前有效的ID;
         /// </summary>
         [ProtoMember(1)]
-        uint effectiveID;
+        internal uint EffectiveID { get; private set; }
 
         /// <summary>
         /// 进行编辑的地图;
@@ -86,7 +68,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         uint GetNewID()
         {
-            return effectiveID++;
+            return EffectiveID++;
         }
 
         /// <summary>
@@ -103,21 +85,12 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-
-        /// <summary>
-        /// 是否存在道路;
-        /// </summary>
-        public bool IsHaveRoad(TerrainNode node)
-        {
-            return IsHaveRoad(node.RoadInfo);
-        }
-
         /// <summary>
         /// 是否存在道路;
         /// </summary>
         public bool IsHaveRoad(RoadInfo road)
         {
-            return road.ID != 0;
+            return road.ID != EMPTY_ROAD_MARK;
         }
 
 

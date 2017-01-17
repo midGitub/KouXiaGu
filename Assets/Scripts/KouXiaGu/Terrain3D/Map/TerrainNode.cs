@@ -74,11 +74,13 @@ namespace KouXiaGu.Terrain3D
                   other.Road == Road;
         }
 
-        //[ProtoMember(10)]
-        //public RoadNode RoadInfo;
-
         [ProtoMember(10)]
         public RoadInfo RoadInfo;
+
+        public static implicit operator RoadInfo(TerrainNode item)
+        {
+            return item.RoadInfo;
+        }
 
         #endregion
 

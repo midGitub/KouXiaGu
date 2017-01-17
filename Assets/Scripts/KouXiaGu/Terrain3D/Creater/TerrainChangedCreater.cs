@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 当地图发生变化,且已经渲染到场景,则重新渲染;
     /// </summary>
     [SerializeField]
-    public class TerrainChangedCreater : ITerrainMapObserver
+    public class TerrainChangedCreater : IDataObserver
     {
         static readonly TerrainChangedCreater instance = new TerrainChangedCreater();
 

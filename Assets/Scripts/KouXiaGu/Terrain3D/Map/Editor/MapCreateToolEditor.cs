@@ -27,6 +27,10 @@ namespace KouXiaGu.Terrain3D
                 {
                     MapDataManager.Save();
                 }
+                if (GUILayout.Button("清除记录"))
+                {
+                    MapDataManager.ActiveData.ClearArchiveData();
+                }
                 if (GUILayout.Button("清空地图"))
                 {
                     TerrainInitializer.Map.Clear();

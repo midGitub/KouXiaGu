@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public class RoadText : MonoBehaviour
+    public class RoadTest : MonoBehaviour
     {
 
         public Text textObject;
