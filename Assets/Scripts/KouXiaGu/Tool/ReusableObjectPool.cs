@@ -8,19 +8,19 @@ namespace KouXiaGu
     /// <summary>
     /// 对象池;
     /// </summary>
-    public class GameObjectPool<T>
+    public class ReusableObjectPool<T>
         where T : MonoBehaviour, IReusable
     {
 
         const string DEFAULT_NAME = "GameObject";
 
-        public GameObjectPool()
+        public ReusableObjectPool()
         {
             objectPool = new Stack<T>();
             Capacity = int.MaxValue;
         }
 
-        public GameObjectPool(int capacity)
+        public ReusableObjectPool(int capacity)
         {
             objectPool = new Stack<T>(capacity);
             this.Capacity = capacity;
@@ -65,7 +65,9 @@ namespace KouXiaGu
             }
             else
             {
-                return objectPool.Pop();
+                T item = objectPool.Pop();
+                item.gameObject.SetActive(true);
+                return item;
             }
         }
 
@@ -81,6 +83,7 @@ namespace KouXiaGu
             else
             {
                 item.Reset();
+                item.gameObject.SetActive(false);
                 objectPool.Push(item);
             }
         }
