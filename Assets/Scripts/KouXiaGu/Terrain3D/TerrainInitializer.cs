@@ -25,7 +25,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图,若不在游戏中则为null;
         /// </summary>
-        public static MapData Map { get; private set; }
+        public static MapData Map
+        {
+            get { return MapDataFiler.Map; }
+        }
 
         void ResetState()
         {
@@ -68,8 +71,7 @@ namespace KouXiaGu.Terrain3D
         {
             yield return ResInitializer.Initialize();
 
-            Map = MapDataFiler.Read();
-            MapDataChangedArchiver.Initialize(Map);
+            MapDataFiler.Read();
             TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
@@ -84,8 +86,7 @@ namespace KouXiaGu.Terrain3D
         {
             yield return ResInitializer.Initialize();
 
-            Map = MapDataFiler.Read();
-            MapDataChangedArchiver.Initialize(archive, Map);
+            MapDataFiler.Read(archive);
             TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
@@ -98,7 +99,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerator SaveState(ArchiveFile archive)
         {
-            MapDataChangedArchiver.Archive(archive);
+            MapDataFiler.Write(archive);
 
             IsCompleted = true;
             yield break;
@@ -106,20 +107,8 @@ namespace KouXiaGu.Terrain3D
 
         void OnDestroy()
         {
-            Map.EndTransmission();
-            Map = null;
+            MapDataFiler.Clear();
         }
-
-        /// <summary>
-        /// 保存现在地图为预制地图,并且清空存档地图内容;
-        /// </summary>
-        public static void SavePrefabMap()
-        {
-            MapDataFiler.Write(Map);
-            MapDataChangedArchiver.Map.Clear();
-        }
-
-
 
     }
 

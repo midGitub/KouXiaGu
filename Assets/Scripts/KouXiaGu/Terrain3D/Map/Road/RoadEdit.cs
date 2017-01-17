@@ -44,6 +44,11 @@ namespace KouXiaGu.Terrain3D
     public static class RoadEdit
     {
 
+        static RoadEdit()
+        {
+            IsInitialized = false;
+        }
+
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
@@ -58,13 +63,14 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前有效的ID;
         /// </summary>
-        static uint effectiveID;
+        static uint effectiveID = INITATING_EFFECTIVE_ID;
 
         /// <summary>
         /// 进行编辑的地图;
         /// </summary>
         public static IDictionary<CubicHexCoord, TerrainNode> Map { get; set; }
 
+        public static bool IsInitialized { get; private set; }
 
         /// <summary>
         /// 初始化;
@@ -73,6 +79,8 @@ namespace KouXiaGu.Terrain3D
         {
             Map = map;
             effectiveID = INITATING_EFFECTIVE_ID;
+
+            IsInitialized = true;
         }
 
         /// <summary>
@@ -82,6 +90,8 @@ namespace KouXiaGu.Terrain3D
         {
             Map = map;
             effectiveID = roadDescr.EffectiveID;
+
+            IsInitialized = true;
         }
 
         /// <summary>
@@ -89,10 +99,25 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static RoadDescription Archive()
         {
-            return new RoadDescription()
+            if (IsInitialized)
             {
-                EffectiveID = effectiveID,
-            };
+                return new RoadDescription()
+                {
+                    EffectiveID = effectiveID,
+                };
+            }
+            else
+            {
+                return new RoadDescription()
+                {
+                    EffectiveID = INITATING_EFFECTIVE_ID,
+                };
+            }
+        }
+
+        public static void Clear()
+        {
+            Map = null;
         }
 
 
@@ -147,11 +172,6 @@ namespace KouXiaGu.Terrain3D
         public static bool IsHaveRoad(RoadInfo road)
         {
             return road.ID != 0;
-        }
-
-        public static void Clear()
-        {
-            Map = null;
         }
 
 

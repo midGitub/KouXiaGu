@@ -17,16 +17,16 @@ namespace KouXiaGu.Terrain3D
         {
             base.OnInspectorGUI();
 
-            if (TerrainInitializer.Map != null)
+            if (MapDataFiler.Map != null)
             {
-                EditorGUILayout.LabelField("地图容量:", TerrainInitializer.Map.Count.ToString());
-                EditorGUILayout.LabelField("归档容量:", MapDataChangedArchiver.Map.Count.ToString());
+                EditorGUILayout.LabelField("地图容量:", MapDataFiler.Map.Count.ToString());
+                EditorGUILayout.LabelField("归档容量:", MapDataFiler.ArchiveMap.Count.ToString());
 
 
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("保存预制"))
                 {
-                    TerrainInitializer.SavePrefabMap();
+                    MapDataFiler.WriteAndReset();
                 }
                 if (GUILayout.Button("清空地图"))
                 {
