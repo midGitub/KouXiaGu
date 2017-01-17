@@ -22,7 +22,6 @@ namespace KouXiaGu.Terrain3D
             this.RoadInfo = road;
         }
 
-
         [SerializeField, Range(4, 60)]
         int segmentPoints = 16;
 
