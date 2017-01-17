@@ -9,9 +9,9 @@ namespace KouXiaGu.Terrain3D
     /// 根据样条线生成网格,
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent]
-    public sealed class RoadRenderer : MonoBehaviour
+    public sealed class RoadMesh : MonoBehaviour
     {
-        RoadRenderer() { }
+        RoadMesh() { }
 
         const string MESH_NAME = "Road Mesh";
 
@@ -20,25 +20,56 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         float roadWidth;
 
-        ///// <summary>
-        ///// 设置路径点,并且使用 CatmullRom 算法进行平滑;
-        ///// </summary>
-        //public void SetPoints(IList<Vector3> points, int segmentPoints, float roadWidth)
-        //{
-        //    IEnumerable<Vector3> spline = CatmullRom.GetFullPath(points, segmentPoints);
-        //    List<Vector3> path = new List<Vector3>(spline);
-        //    SetSpline(path, roadWidth);
-        //}
+        List<Offset> roadSpline;
+
+        MeshFilter meshFilter;
+
+
+        /// <summary>
+        /// 是否已经生成网格?
+        /// </summary>
+        public bool IsBuilt
+        {
+            get { return roadSpline != null || meshFilter.mesh.name != MESH_NAME; }
+        }
+
+
+        void Awake()
+        {
+            meshFilter = GetComponent<MeshFilter>();
+        }
+
+
+        /// <summary>
+        /// 设置道路宽度,若网格已经构建,则重新构建网格;
+        /// </summary>
+        public void SetRoadWidth(float width)
+        {
+            if (IsBuilt)
+                InitMesh();
+            else
+                this.roadWidth = width;
+        }
+
 
         /// <summary>
         /// 设置样条线;
         /// </summary>
-        public void SetSpline(IList<Vector3> path, float roadWidth)
+        public void SetSpline(IList<Vector3> spline)
         {
-            this.roadWidth = roadWidth;
-            List<Offset> offsets = CalculatedOffsets(path);
-            InitMesh(offsets);
+            SetSpline(spline, roadWidth);
         }
+
+        /// <summary>
+        /// 设置样条线,并且重置宽度信息;
+        /// </summary>
+        public void SetSpline(IList<Vector3> spline, float width)
+        {
+            this.roadWidth = width;
+            roadSpline = CalculatedOffsets(spline);
+            InitMesh();
+        }
+
 
         /// <summary>
         /// 计算出点偏移;
@@ -105,9 +136,8 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化网格结构;
         /// </summary>
-        void InitMesh(IList<Offset> offsets)
+        void InitMesh()
         {
-            MeshFilter meshFilter= GetComponent<MeshFilter>();
             Mesh mesh;
 
 #if UNITY_EDITOR
@@ -127,34 +157,34 @@ namespace KouXiaGu.Terrain3D
                 mesh.name = MESH_NAME;
             }
 
-            InitMesh(offsets, ref mesh);
+            InitMesh(ref mesh);
             meshFilter.mesh = mesh;
         }
 
         /// <summary>
         /// 初始化网格结构;
         /// </summary>
-        void InitMesh(IList<Offset> offsets, ref Mesh mesh)
+        void InitMesh(ref Mesh mesh)
         {
-            int verticesCapacity = offsets.Count * 4;
-            int trianglesCapacity = offsets.Count * 6;
+            int verticesCapacity = roadSpline.Count * 4;
+            int trianglesCapacity = roadSpline.Count * 6;
 
             List<Vector3> vertices = new List<Vector3>(verticesCapacity);
             List<Vector2> uv = new List<Vector2>(verticesCapacity);
             List<int> triangles = new List<int>(trianglesCapacity);
 
-            for (int i = 0; i < offsets.Count - 1; i++)
+            for (int i = 0; i < roadSpline.Count - 1; i++)
             {
-                vertices.Add(offsets[i + 1].Left);
+                vertices.Add(roadSpline[i + 1].Left);
                 uv.Add(new Vector2(0, 1));
 
-                vertices.Add(offsets[i + 1].Right);
+                vertices.Add(roadSpline[i + 1].Right);
                 uv.Add(new Vector2(1, 1));
 
-                vertices.Add(offsets[i].Right);
+                vertices.Add(roadSpline[i].Right);
                 uv.Add(new Vector2(1, 0));
 
-                vertices.Add(offsets[i].Left);
+                vertices.Add(roadSpline[i].Left);
                 uv.Add(new Vector2(0, 0));
 
                 int j = i * 4;

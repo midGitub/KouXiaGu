@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             newPoints.Clear();
-            newPoints.AddRange(CatmullRom.GetFullPath(points, segmentPoints));
+            newPoints.AddRange(CatmullRom.GetFullSpline(points, segmentPoints));
 
             for (int i = 0; i < newPoints.Count - 1; i++)
             {

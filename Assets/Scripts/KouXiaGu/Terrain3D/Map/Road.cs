@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using KouXiaGu.Grids;
 using ProtoBuf;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -15,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
-        const uint EMPTY_ROAD_MARK = 0;
+        const uint EMPTY_ROAD_MARK = RoadInfo.EMPTY_ROAD_MARK;
 
         /// <summary>
         /// 起始的有效ID;
@@ -44,9 +46,9 @@ namespace KouXiaGu.Terrain3D
         internal uint EffectiveID { get; private set; }
 
         /// <summary>
-        /// 进行编辑的地图;
+        /// 当前查询的数据;
         /// </summary>
-        internal IDictionary<CubicHexCoord, TerrainNode> Data { get; set; }
+        public IDictionary<CubicHexCoord, TerrainNode> Data { get; internal set; }
 
 
         [ProtoAfterDeserialization]
@@ -71,7 +73,7 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainNode node = Data[coord];
 
-            if (!IsHaveRoad(node))
+            if (!node.RoadInfo.IsHaveRoad())
             {
                 node.RoadInfo.ID = GetNewID();
                 Data[coord] = node;
@@ -95,7 +97,7 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainNode node = Data[coord];
 
-            if (IsHaveRoad(node))
+            if (node.RoadInfo.IsHaveRoad())
             {
                 node.RoadInfo.ID = EMPTY_ROAD_MARK;
                 Data[coord] = node;
@@ -104,14 +106,19 @@ namespace KouXiaGu.Terrain3D
             return false;
         }
 
-        /// <summary>
-        /// 是否存在道路;
-        /// </summary>
-        public bool IsHaveRoad(RoadInfo road)
-        {
-            return road.ID != EMPTY_ROAD_MARK;
-        }
 
+        /// <summary>
+        /// 获取到这个点通向周围的像素路径;
+        /// </summary>
+        public IEnumerable<Vector3[]> FindPixelPaths(CubicHexCoord target)
+        {
+            IEnumerable<CubicHexCoord[]> paths = FindPaths(target);
+            return paths.Select(delegate (CubicHexCoord[] path)
+            {
+                Vector3[] newPath = path.Select(coord => coord.GetTerrainPixel()).ToArray();
+                return newPath;
+            });
+        }
 
         /// <summary>
         /// 获取到这个点通向周围的路径;
@@ -120,20 +127,20 @@ namespace KouXiaGu.Terrain3D
         {
             RoadInfo targetRoadInfo = Data[target].RoadInfo;
 
-            if(IsHaveRoad(targetRoadInfo))
+            if (targetRoadInfo.IsHaveRoad())
             {
                 foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
                 {
                     RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
 
-                    if (IsHaveRoad(neighbourRoadInfo) && neighbourRoadInfo.ID > targetRoadInfo.ID)
+                    if (neighbourRoadInfo.IsHaveRoad() && neighbourRoadInfo.ID > targetRoadInfo.ID)
                     {
                         CubicHexCoord[] path = new CubicHexCoord[4];
 
                         path[0] = MinNeighbour(target, neighbour.Point);
                         path[1] = target;
                         path[2] = neighbour.Point;
-                        path[4] = MinNeighbour(neighbour.Point, target);
+                        path[3] = MinNeighbour(neighbour.Point, target);
 
                         yield return path;
                     }
@@ -157,7 +164,7 @@ namespace KouXiaGu.Terrain3D
                 RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
 
                 if (neighbour.Point != eliminate &&
-                    IsHaveRoad(neighbourRoadInfo) &&
+                    neighbourRoadInfo.IsHaveRoad() &&
                     neighbourRoadInfo.ID < minID)
                 {
                     isFind = true;
@@ -171,6 +178,7 @@ namespace KouXiaGu.Terrain3D
             else
                 return target;
         }
+
 
     }
 

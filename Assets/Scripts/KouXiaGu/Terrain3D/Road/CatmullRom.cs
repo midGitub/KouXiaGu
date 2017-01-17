@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         /// <param name="segmentPoints">分段点数</param>
         /// <returns>迭代结构;</returns>
-        public static IEnumerable<Vector3> GetFullPath(IList<Vector3> points, int segmentPoints)
+        public static IEnumerable<Vector3> GetFullSpline(IList<Vector3> points, int segmentPoints)
         {
             if (points == null)
                 throw new ArgumentNullException();
@@ -44,7 +44,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         /// <param name="segmentPoints">分段点数</param>
         /// <returns>迭代结构;</returns>
-        public static IEnumerable<Vector3> GetPath(IList<Vector3> points, int segmentPoints)
+        public static IEnumerable<Vector3> GetSpline(IList<Vector3> points, int segmentPoints)
         {
             if (points == null)
                 throw new ArgumentNullException();

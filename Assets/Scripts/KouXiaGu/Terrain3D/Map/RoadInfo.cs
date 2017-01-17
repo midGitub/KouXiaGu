@@ -10,6 +10,10 @@ namespace KouXiaGu.Terrain3D
     [ProtoContract]
     public struct RoadInfo : IEquatable<RoadInfo>
     {
+        /// <summary>
+        /// 节点不存在道路时放置的标志;
+        /// </summary>
+        internal const uint EMPTY_ROAD_MARK = 0;
 
         /// <summary>
         /// 道路的唯一编号;
@@ -17,6 +21,14 @@ namespace KouXiaGu.Terrain3D
         [ProtoMember(1)]
         public uint ID;
 
+
+        /// <summary>
+        /// 是否存在道路;
+        /// </summary>
+        public bool IsHaveRoad()
+        {
+            return ID != EMPTY_ROAD_MARK;
+        }
 
         public bool Equals(RoadInfo other)
         {
