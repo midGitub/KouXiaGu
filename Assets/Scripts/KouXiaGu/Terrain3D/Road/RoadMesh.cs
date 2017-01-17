@@ -25,7 +25,6 @@ namespace KouXiaGu.Terrain3D
         MeshFilter meshFilter;
 
 
-
         /// <summary>
         /// 是否已经生成网格?
         /// </summary>
@@ -39,7 +38,6 @@ namespace KouXiaGu.Terrain3D
         {
             meshFilter = GetComponent<MeshFilter>();
         }
-
 
         /// <summary>
         /// 设置道路宽度,若网格已经构建,则重新构建网格;

@@ -23,11 +23,11 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        [SerializeField]
-        int segmentPoints;
+        [SerializeField, Range(4, 60)]
+        int segmentPoints = 16;
 
         [SerializeField]
-        float roadWidth;
+        float roadWidth = 0.07f;
 
         public Road RoadInfo { get; set; }
 
