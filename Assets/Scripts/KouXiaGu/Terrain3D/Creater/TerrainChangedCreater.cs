@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
         static readonly TerrainChangedCreater instance = new TerrainChangedCreater();
 
 
-        public static void Initialize(MapData map)
+        public static void Initialize(ObservableDictionary<CubicHexCoord, TerrainNode> map)
         {
             map.Subscribe(instance);
         }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using KouXiaGu.Grids;
 using System.Xml.Serialization;
-using System.Linq;
+using System;
 using ProtoBuf;
 
 namespace KouXiaGu.Terrain3D
@@ -25,29 +24,11 @@ namespace KouXiaGu.Terrain3D
 
 
     /// <summary>
-    /// 与地图匹配的保存文件;
+    /// 道路信息;
     /// </summary>
-    [ProtoContract, XmlType("RoadInfo")]
-    public struct RoadDescription
+    [ProtoContract]
+    public class Road
     {
-        /// <summary>
-        /// 记录到的ID;
-        /// </summary>
-        [ProtoMember(1), XmlElement("EffectiveID")]
-        public uint EffectiveID;
-    }
-
-
-    /// <summary>
-    /// 道路编辑类;
-    /// </summary>
-    public static class RoadEdit
-    {
-
-        static RoadEdit()
-        {
-            IsInitialized = false;
-        }
 
         /// <summary>
         /// 节点不存在道路时放置的标志;
@@ -55,90 +36,55 @@ namespace KouXiaGu.Terrain3D
         const uint EMPTY_ROAD_MARK = 0;
 
         /// <summary>
-        /// 起始的ID;
+        /// 起始的有效ID;
         /// </summary>
         const uint INITATING_EFFECTIVE_ID = 5;
+
+
+        Road()
+        {
+        }
+
+        /// <summary>
+        /// 初始化基本信息;
+        /// </summary>
+        public Road(IDictionary<CubicHexCoord, TerrainNode> map)
+        {
+            this.Data = map;
+            effectiveID = INITATING_EFFECTIVE_ID;
+        }
 
 
         /// <summary>
         /// 当前有效的ID;
         /// </summary>
-        static uint effectiveID = INITATING_EFFECTIVE_ID;
+        [ProtoMember(1)]
+        uint effectiveID;
 
         /// <summary>
         /// 进行编辑的地图;
         /// </summary>
-        public static IDictionary<CubicHexCoord, TerrainNode> Map { get; set; }
-
-        public static bool IsInitialized { get; private set; }
-
-        /// <summary>
-        /// 初始化;
-        /// </summary>
-        public static void Initialize(IDictionary<CubicHexCoord, TerrainNode> map)
-        {
-            Map = map;
-            effectiveID = INITATING_EFFECTIVE_ID;
-
-            IsInitialized = true;
-        }
-
-        /// <summary>
-        /// 初始化;
-        /// </summary>
-        public static void Initialize(IDictionary<CubicHexCoord, TerrainNode> map, RoadDescription roadDescr)
-        {
-            Map = map;
-            effectiveID = roadDescr.EffectiveID;
-
-            IsInitialized = true;
-        }
-
-        /// <summary>
-        /// 获取到存档信息;
-        /// </summary>
-        public static RoadDescription Archive()
-        {
-            if (IsInitialized)
-            {
-                return new RoadDescription()
-                {
-                    EffectiveID = effectiveID,
-                };
-            }
-            else
-            {
-                return new RoadDescription()
-                {
-                    EffectiveID = INITATING_EFFECTIVE_ID,
-                };
-            }
-        }
-
-        public static void Clear()
-        {
-            Map = null;
-        }
+        internal IDictionary<CubicHexCoord, TerrainNode> Data { get; set; }
 
 
         /// <summary>
         /// 向这个坐标添加道路标记;
         /// </summary>
-        public static void CreateRoad(CubicHexCoord coord)
+        public void CreateRoad(CubicHexCoord coord)
         {
-            TerrainNode node = Map[coord];
+            TerrainNode node = Data[coord];
 
             if (!IsHaveRoad(node))
             {
                 node.RoadInfo.ID = GetNewID();
-                Map[coord] = node;
+                Data[coord] = node;
             }
         }
 
         /// <summary>
         /// 获取到一个新的ID;
         /// </summary>
-        static uint GetNewID()
+        uint GetNewID()
         {
             return effectiveID++;
         }
@@ -146,14 +92,14 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 清除这个坐标的道路标记;
         /// </summary>
-        public static void DestroyRoad(CubicHexCoord coord)
+        public void DestroyRoad(CubicHexCoord coord)
         {
-            TerrainNode node = Map[coord];
+            TerrainNode node = Data[coord];
 
             if (IsHaveRoad(node))
             {
                 node.RoadInfo.ID = EMPTY_ROAD_MARK;
-                Map[coord] = node;
+                Data[coord] = node;
             }
         }
 
@@ -161,7 +107,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 是否存在道路;
         /// </summary>
-        public static bool IsHaveRoad(TerrainNode node)
+        public bool IsHaveRoad(TerrainNode node)
         {
             return IsHaveRoad(node.RoadInfo);
         }
@@ -169,7 +115,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 是否存在道路;
         /// </summary>
-        public static bool IsHaveRoad(RoadInfo road)
+        public bool IsHaveRoad(RoadInfo road)
         {
             return road.ID != 0;
         }
@@ -178,13 +124,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到这个点通向周围的路径;
         /// </summary>
-        public static IEnumerable<CubicHexCoord[]> FindPaths(CubicHexCoord target)
+        public IEnumerable<CubicHexCoord[]> FindPaths(CubicHexCoord target)
         {
-            RoadInfo targetRoadInfo = Map[target].RoadInfo;
+            RoadInfo targetRoadInfo = Data[target].RoadInfo;
 
             if(IsHaveRoad(targetRoadInfo))
             {
-                foreach (var neighbour in Map.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
+                foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
                 {
                     RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
 
@@ -206,7 +152,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到ID值最小的邻居节点,若无法找到则返回 target;
         /// </summary>
-        static CubicHexCoord MinNeighbour(
+        CubicHexCoord MinNeighbour(
             CubicHexCoord target,
             CubicHexCoord eliminate)
         {
@@ -214,7 +160,7 @@ namespace KouXiaGu.Terrain3D
             uint minID = uint.MaxValue;
             CubicHexCoord min = default(CubicHexCoord);
 
-            foreach (var neighbour in Map.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
+            foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
             {
                 RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
 
@@ -233,8 +179,6 @@ namespace KouXiaGu.Terrain3D
             else
                 return target;
         }
-
-
 
     }
 

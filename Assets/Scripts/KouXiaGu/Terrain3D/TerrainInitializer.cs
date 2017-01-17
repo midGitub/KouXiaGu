@@ -25,9 +25,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图,若不在游戏中则为null;
         /// </summary>
-        public static MapData Map
+        public static ObservableDictionary<CubicHexCoord, TerrainNode> Map
         {
-            get { return MapDataFiler.Map; }
+            get { return MapDataManager.ActiveData.Data; }
         }
 
         void ResetState()
@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D
         {
             yield return ResInitializer.Initialize();
 
-            MapDataFiler.Read();
+            MapDataManager.Load();
             TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
@@ -86,7 +86,7 @@ namespace KouXiaGu.Terrain3D
         {
             yield return ResInitializer.Initialize();
 
-            MapDataFiler.Read(archive);
+            MapDataManager.Load(archive);
             TerrainChangedCreater.Initialize(Map);
             TerrainCreater.AllowCreation = true;
 
@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerator SaveState(ArchiveFile archive)
         {
-            MapDataFiler.Write(archive);
+            MapDataManager.Save(archive);
 
             IsCompleted = true;
             yield break;
@@ -107,7 +107,7 @@ namespace KouXiaGu.Terrain3D
 
         void OnDestroy()
         {
-            MapDataFiler.Clear();
+            MapDataManager.Unload();
         }
 
     }

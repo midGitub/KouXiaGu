@@ -83,7 +83,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用节点填满地图;
         /// </summary>
-        public static void Fill(MapData map, TerrainNode node)
+        public static void Fill(ObservableDictionary<CubicHexCoord, TerrainNode> map, TerrainNode node)
         {
             foreach (var coord in Range())
             {
@@ -97,7 +97,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用随机节点填满地图;
         /// </summary>
-        public static void Fill(MapData map)
+        public static void Fill(ObservableDictionary<CubicHexCoord, TerrainNode> map)
         {
             foreach (var coord in Range())
             {
@@ -112,7 +112,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 替换整个地图;
         /// </summary>
-        public static void Replace(MapData map, TerrainNode node)
+        public static void Replace(ObservableDictionary<CubicHexCoord, TerrainNode> map, TerrainNode node)
         {
             foreach (var coord in Range())
             {
@@ -123,7 +123,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 随机节点替换整个地图;
         /// </summary>
-        public static void Replace(MapData map)
+        public static void Replace(ObservableDictionary<CubicHexCoord, TerrainNode> map)
         {
             foreach (var coord in Range())
             {
