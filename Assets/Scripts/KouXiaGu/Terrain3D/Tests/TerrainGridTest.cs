@@ -1,14 +1,12 @@
 ﻿using KouXiaGu.Grids;
-using KouXiaGu.Terrain3D;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KouXiaGu.Test
+namespace KouXiaGu.Terrain3D.Tests
 {
 
-    
-    public class TestTerrain : MonoBehaviour
+    public class TerrainGridTest : MonoBehaviour
     {
 
         [SerializeField]
@@ -23,18 +21,6 @@ namespace KouXiaGu.Test
         {
             this.ObserveEveryValueChanged(_ => UnityEngine.Input.mousePosition).
                 SubscribeToText(textObject, TextUpdate);
-        }
-
-        private void Update()
-        {
-            if (Input.GetMouseButton(0))
-            {
-                OnLeftMouseButtonDown();
-            }
-            if (Input.GetMouseButton(1))
-            {
-                OnRightMouseButtonDown();
-            }
         }
 
         string TextUpdate(Vector3 mousePosition)
@@ -60,7 +46,7 @@ namespace KouXiaGu.Test
         string GetTestPointsLog(Vector3 mousePosition)
         {
 
-            Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
+            Vector3 terrainPixel = TerrainTrigger.MouseRayPointOrDefault();
             CubicHexCoord cube = TerrainConvert.Grid.GetCubic(terrainPixel);
 
             Vector3 cubePixel = TerrainConvert.Grid.GetPixel(cube);
@@ -95,24 +81,6 @@ namespace KouXiaGu.Test
                 ;
 
             return str;
-        }
-
-        void OnLeftMouseButtonDown()
-        {
-            Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
-
-            var item = TerrainInitializer.Map[terrainPixel.GetTerrainCubic()];
-            item.Road = 1;
-            TerrainInitializer.Map[terrainPixel.GetTerrainCubic()] = item;
-        }
-
-        void OnRightMouseButtonDown()
-        {
-            Vector3 terrainPixel = TerrainTrigger.MouseRayPoint();
-
-            var item = TerrainInitializer.Map[terrainPixel.GetTerrainCubic()];
-            item.Road = 0;
-            TerrainInitializer.Map[terrainPixel.GetTerrainCubic()] = item;
         }
 
     }

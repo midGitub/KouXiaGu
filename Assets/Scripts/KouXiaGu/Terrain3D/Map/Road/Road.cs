@@ -49,6 +49,21 @@ namespace KouXiaGu.Terrain3D
         internal IDictionary<CubicHexCoord, TerrainNode> Data { get; set; }
 
 
+        [ProtoAfterDeserialization]
+        void ProtoAfterDeserialization()
+        {
+            if (EffectiveID < INITATING_EFFECTIVE_ID)
+                EffectiveID = INITATING_EFFECTIVE_ID;
+        }
+
+        /// <summary>
+        /// 重置道路信息(仅在地图清空时调用);
+        /// </summary>
+        internal void Reset()
+        {
+            EffectiveID = INITATING_EFFECTIVE_ID;
+        }
+
         /// <summary>
         /// 向这个坐标添加道路标记;
         /// </summary>

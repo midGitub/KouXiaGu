@@ -11,8 +11,20 @@ namespace KouXiaGu.Terrain3D
     /// 用于保存的地形节点结构;
     /// </summary>
     [ProtoContract]
-    public struct TerrainNode : IEquatable<TerrainNode>
+    public struct TerrainNode
     {
+
+
+        [ProtoMember(10)]
+        public RoadInfo RoadInfo;
+
+        public static implicit operator RoadInfo(TerrainNode item)
+        {
+            return item.RoadInfo;
+        }
+
+
+
 
         #region 地貌;
 
@@ -65,23 +77,6 @@ namespace KouXiaGu.Terrain3D
             get { return Road != 0; }
         }
 
-        /// <summary>
-        /// 与此节点的道路信息是否相同?
-        /// </summary>
-        public bool EqualsRoad(TerrainNode other)
-        {
-            return
-                  other.Road == Road;
-        }
-
-        [ProtoMember(10)]
-        public RoadInfo RoadInfo;
-
-        public static implicit operator RoadInfo(TerrainNode item)
-        {
-            return item.RoadInfo;
-        }
-
         #endregion
 
         /// <summary>
@@ -112,18 +107,6 @@ namespace KouXiaGu.Terrain3D
             return
                   other.Building == Building &&
                 other.BuildingAngle == BuildingAngle;
-        }
-
-
-        /// <summary>
-        /// 与此节点的信息是否完全相同?
-        /// </summary>
-        public bool Equals(TerrainNode other)
-        {
-            return
-                EqualsLandform(other) &&
-                EqualsRoad(other) &&
-                EqualsBuild(other);
         }
 
     }

@@ -39,7 +39,7 @@ namespace KouXiaGu.Terrain3D.Navigation
                 !EventSystem.current.IsPointerOverGameObject())
             {
                 CubicHexCoord starting = Position.GetTerrainCubic();
-                CubicHexCoord destination = TerrainTrigger.MouseRayPoint().GetTerrainCubic();
+                CubicHexCoord destination = TerrainTrigger.MouseRayPointOrDefault().GetTerrainCubic();
                 HexRadiusRange searchRange = new HexRadiusRange(searchRadius, starting);
                 this.NavigateTo(starting, destination, cost, searchRange, character);
             }

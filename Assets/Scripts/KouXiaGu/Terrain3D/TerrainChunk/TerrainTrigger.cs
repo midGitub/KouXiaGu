@@ -106,7 +106,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到主摄像机的鼠标所指向的地形坐标,若无法获取到则返回默认值;
         /// </summary>
-        public static Vector3 MouseRayPoint()
+        public static Vector3 MouseRayPointOrDefault()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit raycastHit;
@@ -115,6 +115,25 @@ namespace KouXiaGu.Terrain3D
                return raycastHit.point;
             }
             return default(Vector3);
+        }
+
+        /// <summary>
+        /// 获取到主摄像机的鼠标所指向的地形坐标,若无法获取到则返回 false;
+        /// </summary>
+        public static bool TryGetMouseRayPoint(out Vector3 mousePoint)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit raycastHit;
+            if (Raycast(ray, out raycastHit))
+            {
+                mousePoint = raycastHit.point;
+                return true;
+            }
+            else
+            {
+                mousePoint = default(Vector3);
+                return false;
+            }
         }
 
         #endregion
