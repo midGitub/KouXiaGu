@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
@@ -14,6 +13,9 @@ namespace KouXiaGu.Terrain3D
     [Serializable]
     public class RoadMeshCreate
     {
+        public RoadMeshCreate()
+        {
+        }
 
         public RoadMeshCreate(Road road)
         {
@@ -31,27 +33,61 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
+        /// 创建这些区域的道路网格;
+        /// </summary>
+        public List<RoadMesh> Create(IEnumerable<CubicHexCoord> coords)
+        {
+            List<RoadMesh> roadMeshs = new List<RoadMesh>();
+
+            foreach (var coord in coords)
+            {
+                try
+                {
+                    var meshs = Create(coord);
+                    roadMeshs.AddRange(meshs);
+                }
+                catch(Exception e)
+                {
+                    Destroy(roadMeshs);
+                    throw e;
+                }
+            }
+
+            return roadMeshs;
+        }
+
+        void Destroy(ICollection<RoadMesh> meshs)
+        {
+            foreach (var mesh in meshs)
+            {
+                GameObject.Destroy(mesh.gameObject);
+            }
+            meshs.Clear();
+        }
+
+        /// <summary>
         /// 创建这个店通往周围的道路网格;
         /// </summary>
-        public void Create(CubicHexCoord coord)
+        public IEnumerable<RoadMesh> Create(CubicHexCoord coord)
         {
             foreach (var path in RoadInfo.FindPixelPaths(coord))
             {
-                Create(path);
+                yield return Create(path);
             }
         }
 
-        void Create(IList<Vector3> paths)
+        RoadMesh Create(IList<Vector3> paths)
         {
-            IEnumerable<Vector3> spline = CatmullRom.GetSpline(paths, segmentPoints);
-            CreateMesh(spline.ToList());
+            var spline = CatmullRom.GetSpline(paths, segmentPoints);
+            return CreateMesh(spline.ToList());
         }
 
-        void CreateMesh(IList<Vector3> spline)
+        RoadMesh CreateMesh(IList<Vector3> spline)
         {
             GameObject gameObject = new GameObject("Road", typeof(RoadMesh));
             RoadMesh roadMesh = gameObject.GetComponent<RoadMesh>();
-            roadMesh.SetSpline(spline);
+            roadMesh.SetSpline(spline, roadWidth);
+            return roadMesh;
         }
 
     }

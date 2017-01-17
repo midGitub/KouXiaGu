@@ -25,6 +25,7 @@ namespace KouXiaGu.Terrain3D
         MeshFilter meshFilter;
 
 
+
         /// <summary>
         /// 是否已经生成网格?
         /// </summary>
@@ -141,6 +142,7 @@ namespace KouXiaGu.Terrain3D
             Mesh mesh;
 
 #if UNITY_EDITOR
+            meshFilter = meshFilter ?? GetComponent<MeshFilter>();
             if (!Application.isPlaying)
             {
                 mesh = new Mesh();
