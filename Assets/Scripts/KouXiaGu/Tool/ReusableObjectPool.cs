@@ -137,7 +137,10 @@ namespace KouXiaGu
         /// </summary>
         protected virtual void Destroy(T item)
         {
-            GameObject.Destroy(item.gameObject);
+            if (item != null)
+            {
+                GameObject.Destroy(item.gameObject);
+            }
         }
 
     }

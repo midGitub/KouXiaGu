@@ -172,7 +172,7 @@ namespace KouXiaGu.Terrain3D
                 !activatedChunks.ContainsKey(coord) &&
                 onRenderingChunks.Add(coord))
             {
-                Renderer.BakingRequests.AddLast(new RenderRequest(coord));
+                TerrainBaker.BakingRequests.AddLast(new RenderRequest(coord));
             }
         }
 
@@ -185,7 +185,7 @@ namespace KouXiaGu.Terrain3D
                 activatedChunks.ContainsKey(coord) &&
                 onRenderingChunks.Add(coord))
             {
-                Renderer.BakingRequests.AddLast(new RenderRequest(coord));
+                TerrainBaker.BakingRequests.AddLast(new RenderRequest(coord));
             }
         }
 
@@ -201,7 +201,7 @@ namespace KouXiaGu.Terrain3D
 
             if (onRenderingChunks.Remove(coord))
             {
-                Renderer.BakingRequests.Remove(item => item.ChunkCoord == coord);
+                TerrainBaker.BakingRequests.Remove(item => item.ChunkCoord == coord);
                 return true;
             }
 
@@ -218,7 +218,6 @@ namespace KouXiaGu.Terrain3D
             activatedChunks.Clear();
             onRenderingChunks.Clear();
             restingChunks.Clear();
-            Renderer.BakingRequests.Clear();
 
             Activation = false;
         }

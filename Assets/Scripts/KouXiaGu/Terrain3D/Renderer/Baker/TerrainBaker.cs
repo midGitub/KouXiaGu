@@ -12,14 +12,14 @@ namespace KouXiaGu.Terrain3D
     /// 高度图\地貌贴图\法线图;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class Renderer : SceneSington<Renderer>
+    public sealed partial class TerrainBaker : SceneSington<TerrainBaker>
     {
-        static Renderer()
+        static TerrainBaker()
         {
             IsInitialised = false;
         }
 
-        Renderer() { }
+        TerrainBaker() { }
 
         /// <summary>
         /// 负责渲染的摄像机;
@@ -79,7 +79,7 @@ namespace KouXiaGu.Terrain3D
         {
             if (!IsInitialised)
             {
-                Renderer instance = GetInstance;
+                TerrainBaker instance = GetInstance;
 
                 instance.road.Initialise();
 
@@ -100,9 +100,13 @@ namespace KouXiaGu.Terrain3D
 
         protected override void OnDestroy()
         {
-            base.OnDestroy();
             bakingQueue.Clear();
+            TerrainBaker instance = GetInstance;
+
+            instance.road.OnDestroy();
+
             IsInitialised = false;
+            base.OnDestroy();
         }
 
 

@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
 
         protected static BakingParameter Parameter
         {
-            get { return Renderer.Parameter; }
+            get { return TerrainBaker.Parameter; }
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         protected virtual void CameraRenderHeight(RenderTexture rt, MeshDisplay display)
         {
-            Renderer.CameraRender(rt, displayMeshPool);
+            TerrainBaker.CameraRender(rt, displayMeshPool);
         }
 
         /// <summary>
@@ -147,17 +147,17 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         protected virtual void CameraRenderDiffuse(RenderTexture rt, MeshDisplay display)
         {
-            Renderer.CameraRender(rt, displayMeshPool);
+            TerrainBaker.CameraRender(rt, displayMeshPool);
         }
 
         public Texture2D GetHeightTexture()
         {
-            return Renderer.GetHeightTexture(HeightRT);
+            return TerrainBaker.GetHeightTexture(HeightRT);
         }
 
         public Texture2D GetDiffuseTexture()
         {
-            return Renderer.GetDiffuseTexture(DiffuseRT);
+            return TerrainBaker.GetDiffuseTexture(DiffuseRT);
         }
 
         /// <summary>

@@ -8,34 +8,15 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 道路烘焙;
+    /// </summary>
     [Serializable]
     public class RoadBaker : IDisposable
     {
 
         [SerializeField]
-        ObjectPool objectPool;
-
-        [SerializeField, Range(4, 60)]
-        int segmentPoints = 16;
-
-        [SerializeField, Range(0.01f, 2)]
-        float roadWidth = 0.07f;
-
-        /// <summary>
-        /// 中心点,根据传入坐标位置转换到此中心点附近;
-        /// </summary>
-        [SerializeField]
-        CubicHexCoord center;
-
-        /// <summary>
-        /// 目标中心点;
-        /// </summary>
-        CubicHexCoord targetCenter;
-
-        /// <summary>
-        /// 在场景中的网格;
-        /// </summary>
-        List<RoadMesh> inSceneMeshs;
+        RoadMeshCreater roadMeshCreater;
 
         [SerializeField]
         Shader diffuseShader;
@@ -51,7 +32,7 @@ namespace KouXiaGu.Terrain3D
 
         static BakingParameter Parameter
         {
-            get { return Renderer.Parameter; }
+            get { return TerrainBaker.Parameter; }
         }
 
         /// <summary>
@@ -59,7 +40,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Initialise()
         {
-            inSceneMeshs = new List<RoadMesh>();
+            roadMeshCreater.Initialise();
 
             var res = RoadRes.initializedInstances[1];
             if (diffuseMaterial == null)
@@ -77,83 +58,17 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+        public void OnDestroy()
+        {
+            roadMeshCreater.Clear();
+        }
+
         public IEnumerator Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
         {
-            PrepareScene(request, points);
+            roadMeshCreater.PrepareScene(request, points);
             DiffuseRT = BakeDiffuse();
             HeightRT = BakeHeight();
             yield break;
-        }
-
-        /// <summary>
-        /// 准备场景;
-        /// </summary>
-        public void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
-        {
-            SetTargetCenter(request);
-            ClearSceneMeshs();
-
-            foreach (var display in displays)
-            {
-                var meshs = Create(request.Data.Road, display);
-                inSceneMeshs.AddRange(meshs);
-            }
-        }
-
-        void SetTargetCenter(IBakeRequest request)
-        {
-            this.targetCenter = TerrainMesh.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
-        }
-
-        void ClearSceneMeshs()
-        {
-            foreach (var roadMesh in inSceneMeshs)
-            {
-                objectPool.Release(roadMesh);
-            }
-            inSceneMeshs.Clear();
-        }
-
-        /// <summary>
-        /// 创建目标点之上的道路;
-        /// </summary>
-        IEnumerable<RoadMesh> Create(Road road, CubicHexCoord target)
-        {
-            var paths = road.FindPaths(target);
-
-            foreach (var path in paths)
-            {
-                Vector3[] pixelPath = PointConvertPixel(path);
-
-                RoadMesh roadMesh = objectPool.Get();
-                roadMesh.SetPath(pixelPath, segmentPoints, roadWidth);
-
-                yield return roadMesh;
-            }
-        }
-
-        /// <summary>
-        /// 转换目标点到相应位置;
-        /// </summary>
-        Vector3[] PointConvertPixel(CubicHexCoord[] path)
-        {
-            Vector3[] newPath = new Vector3[path.Length];
-
-            for (int i = 0; i < path.Length; i++)
-            {
-                newPath[i] = PointConvertPixel(path[i]);
-            }
-
-            return newPath;
-        }
-
-        /// <summary>
-        /// 转换目标点到相应位置;
-        /// </summary>
-        Vector3 PointConvertPixel(CubicHexCoord target)
-        {
-            CubicHexCoord coord = target - targetCenter;
-            return (coord + center).GetTerrainPixel();
         }
 
 
@@ -164,14 +79,13 @@ namespace KouXiaGu.Terrain3D
 
         RenderTexture BakeDiffuse()
         {
-            foreach (var mesh in inSceneMeshs)
+            foreach (var meshRenderer in roadMeshCreater.Renderers)
             {
-                MeshRenderer meshRenderer = mesh.MeshRenderer;
                 SetDiffuserMaterial(meshRenderer);
             }
 
             RenderTexture rt = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24);
-            Renderer.CameraRender(rt, center, Transparent);
+            TerrainBaker.CameraRender(rt, roadMeshCreater.Center, Transparent);
             return rt;
         }
 
@@ -183,14 +97,13 @@ namespace KouXiaGu.Terrain3D
 
         RenderTexture BakeHeight()
         {
-            foreach (var mesh in inSceneMeshs)
+            foreach (var meshRenderer in roadMeshCreater.Renderers)
             {
-                MeshRenderer meshRenderer = mesh.MeshRenderer;
                 SetHeightMaterial(meshRenderer);
             }
 
             RenderTexture rt = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24);
-            Renderer.CameraRender(rt, center);
+            TerrainBaker.CameraRender(rt, roadMeshCreater.Center);
             return rt;
         }
 
@@ -198,6 +111,7 @@ namespace KouXiaGu.Terrain3D
         {
             renderer.sharedMaterial = heightMaterial;
         }
+
 
         public void Dispose()
         {
@@ -208,11 +122,121 @@ namespace KouXiaGu.Terrain3D
             HeightRT = null;
         }
 
+
         [Serializable]
-        class ObjectPool : ReusableObjectPool<RoadMesh>
+        class RoadMeshCreater : ReusableObjectPool<RoadMesh>
         {
             [SerializeField]
             RoadMesh prefab;
+
+            [SerializeField, Range(4, 60)]
+            int segmentPoints = 16;
+
+            [SerializeField, Range(0.01f, 2)]
+            float roadWidth = 0.07f;
+
+            /// <summary>
+            /// 中心点,根据传入坐标位置转换到此中心点附近;
+            /// </summary>
+            [SerializeField]
+            CubicHexCoord center;
+
+            /// <summary>
+            /// 目标中心点;
+            /// </summary>
+            CubicHexCoord targetCenter;
+
+            /// <summary>
+            /// 在场景中的网格;
+            /// </summary>
+            List<RoadMesh> inSceneMeshs;
+
+            public IEnumerable<MeshRenderer> Renderers
+            {
+                get { return inSceneMeshs.Select(item => item.MeshRenderer); }
+            }
+
+            public CubicHexCoord Center
+            {
+                get { return center; }
+            }
+
+
+            public void Initialise()
+            {
+                inSceneMeshs = new List<RoadMesh>();
+            }
+
+            /// <summary>
+            /// 准备场景;
+            /// </summary>
+            public void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
+            {
+                SetTargetCenter(request);
+                ClearInSceneMeshs();
+
+                foreach (var display in displays)
+                {
+                    var meshs = Create(request.Data.Road, display);
+                    inSceneMeshs.AddRange(meshs);
+                }
+            }
+
+            void SetTargetCenter(IBakeRequest request)
+            {
+                this.targetCenter = TerrainMesh.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
+            }
+
+            void ClearInSceneMeshs()
+            {
+                foreach (var roadMesh in inSceneMeshs)
+                {
+                    Release(roadMesh);
+                }
+                inSceneMeshs.Clear();
+            }
+
+            /// <summary>
+            /// 创建目标点之上的道路;
+            /// </summary>
+            IEnumerable<RoadMesh> Create(Road road, CubicHexCoord target)
+            {
+                var paths = road.FindPaths(target);
+
+                foreach (var path in paths)
+                {
+                    Vector3[] pixelPath = PointConvertPixel(path);
+
+                    RoadMesh roadMesh = Get();
+                    roadMesh.SetPath(pixelPath, segmentPoints, roadWidth);
+
+                    yield return roadMesh;
+                }
+            }
+
+            /// <summary>
+            /// 转换目标点到相应位置;
+            /// </summary>
+            Vector3[] PointConvertPixel(CubicHexCoord[] path)
+            {
+                Vector3[] newPath = new Vector3[path.Length];
+
+                for (int i = 0; i < path.Length; i++)
+                {
+                    newPath[i] = PointConvertPixel(path[i]);
+                }
+
+                return newPath;
+            }
+
+            /// <summary>
+            /// 转换目标点到相应位置;
+            /// </summary>
+            Vector3 PointConvertPixel(CubicHexCoord target)
+            {
+                CubicHexCoord coord = target - targetCenter;
+                return (coord + center).GetTerrainPixel();
+            }
 
             protected override RoadMesh Create()
             {
@@ -223,5 +247,6 @@ namespace KouXiaGu.Terrain3D
         }
 
     }
+
 
 }

@@ -9,7 +9,7 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
-    [CustomEditor(typeof(KouXiaGu.Terrain3D.Renderer))]
+    [CustomEditor(typeof(KouXiaGu.Terrain3D.TerrainBaker))]
     class RendererEditor : Editor
     {
 

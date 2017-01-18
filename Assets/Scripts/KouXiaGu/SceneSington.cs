@@ -17,16 +17,18 @@ namespace KouXiaGu
         protected SceneSington() { }
 
         static T instance;
+        static readonly object asyncObject = new object();
 
         protected static T GetInstance
         {
             get
             {
-#if UNITY_EDITOR
-                return Initialize();
-#else
                 return instance ?? (instance = Initialize());
-#endif
+//#if UNITY_EDITOR
+//                return Initialize();
+//#else
+//                return instance ?? (instance = Initialize());
+//#endif
             }
         }
 
@@ -37,31 +39,27 @@ namespace KouXiaGu
 
         static T Initialize()
         {
-            if (instance == null)
+            lock (asyncObject)
             {
-                UnityEngine.Object[] instances = GameObject.FindObjectsOfType(typeof(T));
-                if (instances.Length == 0)
+                if (instance == null)
                 {
-                    instance = GetSingletonGameObject().AddComponent<T>();
-                }
-                else if (instances.Length == 1)
-                {
-                    instance = (T)instances[0];
-                }
-                else
-                {
-                    instance = (T)instances[0];
-                    Debug.LogError(instances.ToLog("存在多个单例在场景!"));
+                    UnityEngine.Object[] instances = GameObject.FindObjectsOfType(typeof(T));
+                    if (instances.Length == 0)
+                    {
+                        Debug.LogError("场景不存在实例;" + typeof(T).Name);
+                    }
+                    else if (instances.Length == 1)
+                    {
+                        instance = (T)instances[0];
+                    }
+                    else
+                    {
+                        instance = (T)instances[0];
+                        Debug.LogError(instances.ToLog("存在多个单例在场景!"));
+                    }
                 }
             }
             return instance;
-        }
-
-        static GameObject GetSingletonGameObject()
-        {
-            GameObject singletonGameObject = new GameObject(typeof(T).Name);
-            GameObject.DontDestroyOnLoad(singletonGameObject);
-            return singletonGameObject;
         }
 
         protected virtual void Awake()

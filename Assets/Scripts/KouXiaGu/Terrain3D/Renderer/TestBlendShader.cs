@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
             //var col2 = new Color(1, 1, 1, 0f);
 
             RenderTexture rt = RenderTexture.GetTemporary(512, 512, 24);
-            Renderer.CameraRender(rt);
+            TerrainBaker.CameraRender(rt);
             rt.SavePNG(savePath);
             RenderTexture.ReleaseTemporary(rt);
         }
