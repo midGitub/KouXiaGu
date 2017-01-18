@@ -12,8 +12,13 @@ namespace KouXiaGu.Terrain3D
     /// 高度图\地貌贴图\法线图;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class Renderer : GlobalSington<Renderer>
+    public sealed partial class Renderer : SceneSington<Renderer>
     {
+        static Renderer()
+        {
+            IsInitialised = false;
+        }
+
         Renderer() { }
 
         /// <summary>
@@ -32,25 +37,17 @@ namespace KouXiaGu.Terrain3D
         TerrainBlend terrain;
 
         [SerializeField]
-        RoadDecorate road;
+        RoadBaker road;
 
         [SerializeField]
         DecorateBlend decorateBlend;
 
-        static Coroutine bakingCoroutine;
-
         /// <summary>
         /// 将要进行烘焙的队列;
         /// </summary>
-        static readonly LinkedList<IBakeRequest> bakingQueue = new LinkedList<IBakeRequest>();
+        LinkedList<IBakeRequest> bakingQueue = new LinkedList<IBakeRequest>();
 
-        /// <summary>
-        /// 是否运行中?
-        /// </summary>
-        public static bool IsRunning
-        {
-            get { return bakingCoroutine != null; }
-        }
+        public static bool IsInitialised { get; private set; }
 
         /// <summary>
         /// 烘焙时的参数;
@@ -71,25 +68,29 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static LinkedList<IBakeRequest> BakingRequests
         {
-            get { return bakingQueue; }
+            get { return GetInstance.bakingQueue; }
         }
 
-        public static void Clear()
-        {
-            bakingQueue.Clear();
-        }
 
-        protected override void Awake()
+        /// <summary>
+        /// 初始化;
+        /// </summary>
+        public static void Initialize()
         {
-            base.Awake();
-            terrain.Awake();
-            decorateBlend.Awake();
-        }
+            if (!IsInitialised)
+            {
+                Renderer instance = GetInstance;
 
-        void Start()
-        {
-            InitBakingCamera();
-            StartCoroutine();
+                instance.road.Initialise();
+
+                instance.terrain.Awake();
+                instance.decorateBlend.Awake();
+
+                instance.InitBakingCamera();
+                instance.StartCoroutine(instance.Baking());
+
+                IsInitialised = true;
+            }
         }
 
         void OnValidate()
@@ -97,25 +98,13 @@ namespace KouXiaGu.Terrain3D
             parameter.Reset();
         }
 
-        /// <summary>
-        /// 开始烘焙协程;
-        /// </summary>
-        public void StartCoroutine()
+        protected override void OnDestroy()
         {
-            if (!IsRunning)
-            {
-                bakingCoroutine = StartCoroutine(Baking());
-            }
+            base.OnDestroy();
+            bakingQueue.Clear();
+            IsInitialised = false;
         }
 
-        /// <summary>
-        /// 停止烘焙的协程,清空请求队列;
-        /// </summary>
-        public void StopCoroutine()
-        {
-            StopCoroutine(bakingCoroutine);
-            bakingQueue.Clear();
-        }
 
         /// <summary>
         /// 初始化烘焙相机参数;
@@ -158,7 +147,6 @@ namespace KouXiaGu.Terrain3D
                 var cover = GetCover(request);
 
                 terrain.Render(request, cover);
-                yield return new WaitForSeconds(1);
                 yield return road.Bake(request, cover);
                
                 heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
