@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         NormalMapper normalMapper;
 
         [SerializeField]
-        TerrainBlend terrain;
+        LandformBaker landform;
 
         [SerializeField]
         RoadBaker road;
@@ -82,8 +82,8 @@ namespace KouXiaGu.Terrain3D
                 TerrainBaker instance = GetInstance;
 
                 instance.road.Initialise();
+                instance.landform.Initialise();
 
-                instance.terrain.Awake();
                 instance.decorateBlend.Awake();
 
                 instance.InitBakingCamera();
@@ -150,11 +150,11 @@ namespace KouXiaGu.Terrain3D
                 request = bakingQueue.Dequeue();
                 var cover = GetCover(request);
 
-                terrain.Render(request, cover);
+                yield return landform.Bake(request, cover);
                 yield return road.Bake(request, cover);
                
-                heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
-                diffuseMapRT = decorateBlend.BlendDiffuse(terrain.DiffuseRT, road.DiffuseRT);
+                heightMapRT = decorateBlend.BlendHeight(landform.HeightRT, road.HeightRT);
+                diffuseMapRT = decorateBlend.BlendDiffuse(landform.DiffuseRT, road.DiffuseRT);
                 normalMapRT = normalMapper.Rander(heightMapRT);
 
                 tex = new TerrainTexPack();
@@ -180,7 +180,7 @@ namespace KouXiaGu.Terrain3D
                 }
                 finally
                 {
-                    terrain.Dispose();
+                    landform.Dispose();
                     road.Dispose();
                     RenderTexture.ReleaseTemporary(normalMapRT);
                     RenderTexture.ReleaseTemporary(heightMapRT);
@@ -256,36 +256,6 @@ namespace KouXiaGu.Terrain3D
             BakingCamera.targetTexture = rt;
             BakingCamera.Render();
             BakingCamera.targetTexture = null;
-        }
-
-
-
-        /// <summary>
-        /// 使用摄像机烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, MeshDisplay display)
-        {
-            SetBakingCamera(display);
-            CameraRender(rt);
-        }
-
-        /// <summary>
-        /// 使用摄像机指定背景颜色烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, MeshDisplay display, Color backgroundColor)
-        {
-            SetBakingCamera(display);
-            CameraRender(rt, backgroundColor);
-        }
-
-        /// <summary>
-        /// 设置烘焙相机到对应位置;
-        /// </summary>
-        static void SetBakingCamera(MeshDisplay display)
-        {
-            Camera bakingCamera = GetInstance.bakingCamera;
-            Vector3 cameraPoint = TerrainConvert.Grid.GetPixel(display.Center, 5);
-            bakingCamera.transform.position = cameraPoint;
         }
 
 

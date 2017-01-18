@@ -24,39 +24,39 @@ namespace KouXiaGu.Terrain3D
 
 
 
-        #region 地貌;
+        //#region 地貌;
 
-        /// <summary>
-        /// 代表的地形ID((0,-1作为保留);
-        /// </summary>
-        [ProtoMember(1)]
-        public int Landform;
+        ///// <summary>
+        ///// 代表的地形ID((0,-1作为保留);
+        ///// </summary>
+        //[ProtoMember(1)]
+        //public int Landform;
 
-        /// <summary>
-        /// 地形旋转角度;
-        /// </summary>
-        [ProtoMember(2)]
-        public float LandformAngle;
+        ///// <summary>
+        ///// 地形旋转角度;
+        ///// </summary>
+        //[ProtoMember(2)]
+        //public float LandformAngle;
 
-        /// <summary>
-        /// 存在地貌信息?
-        /// </summary>
-        public bool ExistLandform
-        {
-            get { return Landform != 0; }
-        }
+        ///// <summary>
+        ///// 存在地貌信息?
+        ///// </summary>
+        //public bool ExistLandform
+        //{
+        //    get { return Landform != 0; }
+        //}
 
-        /// <summary>
-        /// 与此节点的地貌信息是否相同?
-        /// </summary>
-        public bool EqualsLandform(TerrainNode other)
-        {
-            return 
-                other.Landform == Landform &&
-                other.LandformAngle == LandformAngle;
-        }
+        ///// <summary>
+        ///// 与此节点的地貌信息是否相同?
+        ///// </summary>
+        //public bool EqualsLandform(TerrainNode other)
+        //{
+        //    return 
+        //        other.Landform == Landform &&
+        //        other.LandformAngle == LandformAngle;
+        //}
 
-        #endregion;
+        //#endregion;
 
 
         #region 道路;

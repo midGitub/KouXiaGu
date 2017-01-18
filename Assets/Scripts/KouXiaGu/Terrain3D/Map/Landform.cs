@@ -50,6 +50,23 @@ namespace KouXiaGu.Terrain3D
             Data[coord] = node;
         }
 
+        /// <summary>
+        /// 获取到该位置的地貌信息;
+        /// </summary>
+        public bool TryGetValue(CubicHexCoord coord, out LandformInfo info)
+        {
+            TerrainNode node;
+            if (Data.TryGetValue(coord, out node))
+            {
+                info = node.LandformInfo;
+                if (info.IsHaveLandform())
+                    return true;
+                else
+                    return false;
+            }
+            info = default(LandformInfo);
+            return false;
+        }
 
     }
 

@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// </summary>
         public bool CanWalk(TerrainNode item)
         {
-            if (item.ExistLandform)
+            if (item.LandformInfo.IsHaveLandform())
             {
-                int landform = item.Landform;
+                int landform = item.LandformInfo.ID;
                 NavigationDescr descr = NavigationRes.GetNavigationDescr(landform);
                 return descr.Walkable;
             }
@@ -72,7 +72,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// </summary>
         float GetCost(TerrainNode node)
         {
-            int landform = node.Landform;
+            int landform = node.LandformInfo.ID;
             return NavigationRes.TerrainInfos[landform].NavigationCost;
         }
 

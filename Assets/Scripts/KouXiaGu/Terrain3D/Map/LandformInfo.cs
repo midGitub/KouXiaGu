@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 地貌节点信息
     /// </summary>
     [ProtoContract]
-    public class LandformInfo : IEquatable<LandformInfo>
+    public struct LandformInfo : IEquatable<LandformInfo>
     {
 
         /// <summary>

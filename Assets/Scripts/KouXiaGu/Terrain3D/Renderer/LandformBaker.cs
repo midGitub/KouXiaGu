@@ -56,7 +56,6 @@ namespace KouXiaGu.Terrain3D
             yield break;
         }
 
-
         /// <summary>
         /// 完全透明颜色;
         /// </summary>
@@ -165,11 +164,13 @@ namespace KouXiaGu.Terrain3D
 
                 foreach (var display in displays)
                 {
-                    LandformInfo Info = request.Data.Landform[display];
-
-                    var renderer = Get(display, Info.Angle);
-                    LandformRes res = GetLandform(Info.ID);
-                    inSceneMeshs.Add(new Pack(res, renderer));
+                    LandformInfo info;
+                    if (request.Data.Landform.TryGetValue(display, out info))
+                    {
+                        var renderer = Get(display, info.Angle);
+                        LandformRes res = GetLandform(info.ID);
+                        inSceneMeshs.Add(new Pack(res, renderer));
+                    }
                 }
             }
 
@@ -212,11 +213,20 @@ namespace KouXiaGu.Terrain3D
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    throw new LackOfResourcesException("缺少材质资源;", ex);
+                    throw new LackOfResourcesException("缺少材质资源;ID: " + id, ex);
                 }
             }
 
+            protected override MeshRenderer Create()
+            {
+                var item = GameObject.Instantiate(prefab, Parent);
+                item.gameObject.SetActive(true);
+                return item;
+            }
+
         }
+
+
 
         struct Pack
         {

@@ -53,7 +53,9 @@ namespace KouXiaGu.Terrain3D.Tests
                 {
                     return
                         "坐标:" + coord.ToString() +
-                        "\n" + node.RoadInfo.ToString();
+                        "\n道路:" + node.RoadInfo.ToString() +
+                        "\n地貌:" + node.LandformInfo.ToString()
+                        ;
                 }
             }
             return "Empty Content";

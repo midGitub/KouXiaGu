@@ -58,10 +58,11 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainNode node = new TerrainNode()
             {
-                Landform = RamdomFromArray(GetInstance.landforms),
-                LandformAngle = RamdomAngle(),
-
-                Road = GetInstance.haveRoad ? RamdomFromArray(GetInstance.roads) : 0,
+                LandformInfo = new LandformInfo()
+                {
+                    ID = RamdomFromArray(GetInstance.landforms),
+                    Angle = RamdomAngle(),
+                },
 
                 Building = RamdomFromArray(GetInstance.buildings),
                 BuildingAngle = RamdomAngle(),
