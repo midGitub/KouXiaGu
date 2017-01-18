@@ -59,6 +59,14 @@ namespace KouXiaGu.Terrain3D
             return Grid.GetPixel(coord);
         }
 
+        /// <summary>
+        /// 转换为地形使用的坐标,并指定y轴;
+        /// </summary>
+        public static Vector3 GetTerrainPixel(this CubicHexCoord coord, float y)
+        {
+            return Grid.GetPixel(coord, y);
+        }
+
 
         /// <summary>
         /// 六边形方向对应的欧拉角;

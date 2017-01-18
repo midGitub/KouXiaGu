@@ -26,9 +26,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形地图;
         /// </summary>
-        static IDictionary<CubicHexCoord, TerrainNode> terrainMap
+        static MapData Data
         {
-            get { return TerrainInitializer.Map; }
+            get { return MapDataManager.ActiveData; }
         }
 
 
@@ -234,9 +234,9 @@ namespace KouXiaGu.Terrain3D
 
             public RectCoord ChunkCoord { get; private set; }
 
-            public IDictionary<CubicHexCoord, TerrainNode> Map
+            public MapData Data
             {
-                get { return terrainMap; }
+                get { return TerrainCreater.Data; }
             }
 
             public void OnComplete(TerrainTexPack tex)

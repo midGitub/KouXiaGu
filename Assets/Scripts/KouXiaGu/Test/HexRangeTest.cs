@@ -74,7 +74,7 @@ namespace KouXiaGu.Test
 
         void Output(RectCoord coord)
         {
-            foreach (var item in TerrainRenderer.GetChunkCover(coord))
+            foreach (var item in TerrainMesh.GetChunkCover(coord))
             {
                 this.Instantiate(item);
             }

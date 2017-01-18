@@ -32,19 +32,19 @@ namespace KouXiaGu.Terrain3D
 
         public bool Equals(RoadInfo other)
         {
-            return other.ID == ID;
+            return other.IsHaveRoad() == IsHaveRoad();
         }
 
         public override bool Equals(object obj)
         {
             if (!(obj is RoadInfo))
                 return false;
-            return ((RoadInfo)obj).ID == ID;
+            return this.Equals((RoadInfo)obj);
         }
 
         public override int GetHashCode()
         {
-            return ID.GetHashCode();
+            return IsHaveRoad().GetHashCode();
         }
 
         public override string ToString()

@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形使用的地图;
         /// </summary>
-        IDictionary<CubicHexCoord, TerrainNode> Map { get; }
+        MapData Data { get; }
 
         /// <summary>
         /// 贴图烘焙完成;

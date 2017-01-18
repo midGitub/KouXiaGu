@@ -8,23 +8,13 @@ namespace KouXiaGu
     /// <summary>
     /// 对象池;
     /// </summary>
+    [Serializable]
     public class ReusableObjectPool<T>
         where T : MonoBehaviour, IReusable
     {
 
         const string DEFAULT_NAME = "GameObject";
-
-        public ReusableObjectPool()
-        {
-            objectPool = new Stack<T>();
-            Capacity = int.MaxValue;
-        }
-
-        public ReusableObjectPool(int capacity)
-        {
-            objectPool = new Stack<T>(capacity);
-            this.Capacity = capacity;
-        }
+        const int DEFAULT_CAPACITY = 500;
 
         /// <summary>
         /// 对象存放结构;
@@ -34,24 +24,41 @@ namespace KouXiaGu
         /// <summary>
         /// 最大容量;
         /// </summary>
-        public int Capacity { get; private set; }
+        [SerializeField, Range(5, DEFAULT_CAPACITY * 2)]
+        int capacity = DEFAULT_CAPACITY;
+
+        /// <summary>
+        /// 最大容量;
+        /// </summary>
+        public int Capacity
+        {
+            get { return capacity; }
+            private set { capacity = value; }
+        }
 
         /// <summary>
         /// 池内的对象数;
         /// </summary>
         public int Count
         {
-            get { return objectPool.Count; }
+            get { return objectPool == null ? 0 : objectPool.Count; }
         }
 
         public bool IsFull
         {
-            get { return Count >= Capacity; }
+            get { return objectPool == null ? false : Count >= Capacity; }
         }
 
         public bool IsEmpty
         {
-            get { return Count <= 0; }
+            get { return objectPool == null ? true : Count <= 0; }
+        }
+
+
+        void InitObjectPool()
+        {
+            if (objectPool == null)
+                objectPool = new Stack<T>(capacity);
         }
 
         /// <summary>
@@ -59,6 +66,8 @@ namespace KouXiaGu
         /// </summary>
         public T Get()
         {
+            InitObjectPool();
+
             if (IsEmpty)
             {
                 return Create();
@@ -76,6 +85,8 @@ namespace KouXiaGu
         /// </summary>
         public void Release(T item)
         {
+            InitObjectPool();
+
             if (IsFull)
             {
                 Destroy(item);
@@ -110,6 +121,9 @@ namespace KouXiaGu
         /// </summary>
         public void Clear()
         {
+            if (objectPool == null)
+                return;
+
             foreach (var item in objectPool)
             {
                 Destroy(item);

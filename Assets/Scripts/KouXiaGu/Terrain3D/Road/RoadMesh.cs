@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,12 +17,8 @@ namespace KouXiaGu.Terrain3D
         const string MESH_NAME = "Road Mesh";
 
 
-        MeshFilter meshFilter;
-
-        /// <summary>
-        /// 当前道路宽度;
-        /// </summary>
-        public float Width { get; private set; }
+        public MeshFilter MeshFilter { get; private set; }
+        public MeshRenderer MeshRenderer { get; private set; }
 
 
         /// <summary>
@@ -29,12 +26,13 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool IsBuilt
         {
-            get { return meshFilter.sharedMesh != null && meshFilter.sharedMesh.name == MESH_NAME; }
+            get { return MeshFilter.sharedMesh != null && MeshFilter.sharedMesh.name == MESH_NAME; }
         }
 
         void Awake()
         {
-            meshFilter = GetComponent<MeshFilter>();
+            MeshFilter = GetComponent<MeshFilter>();
+            MeshRenderer = GetComponent<MeshRenderer>();
         }
 
         public void Reset()
@@ -47,18 +45,26 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void DestroyMesh()
         {
-            meshFilter.sharedMesh = null;
-            meshFilter.sharedMesh.DestroyXia();
+            MeshFilter.sharedMesh = null;
+            MeshFilter.sharedMesh.DestroyXia();
         }
 
+
+        /// <summary>
+        /// 路径点数量大于等于 4 的;
+        /// </summary>
+        public void SetPath(IList<Vector3> paths, int segmentPoints, float width)
+        {
+            var spline = CatmullRom.GetSpline(paths, segmentPoints);
+            SetSpline(spline.ToArray(), width);
+        }
 
         /// <summary>
         /// 设置样条线,并且重置宽度信息;
         /// </summary>
         public void SetSpline(IList<Vector3> spline, float width)
         {
-            this.Width = width;
-            var roadSpline = CalculatedOffsets(spline);
+            var roadSpline = CalculatedOffsets(spline, width);
             InitMesh(roadSpline);
         }
 
@@ -66,7 +72,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 计算出点偏移;
         /// </summary>
-        List<RoadPoint> CalculatedOffsets(IList<Vector3> spline)
+        List<RoadPoint> CalculatedOffsets(IList<Vector3> spline, float width)
         {
             List<RoadPoint> offsets = new List<RoadPoint>(spline.Count);
             int endIndex = spline.Count - 1;
@@ -76,12 +82,12 @@ namespace KouXiaGu.Terrain3D
                 RoadPoint offset;
                 if (i == endIndex)
                 {
-                    offset = GetOffset(spline[i], spline[i - 1]);
+                    offset = GetOffset(spline[i], spline[i - 1], width);
                     offset.Reversal();
                 }
                 else
                 {
-                    offset = GetOffset(spline[i], spline[i + 1]);
+                    offset = GetOffset(spline[i], spline[i + 1], width);
                 }
                 offsets.Add(offset);
             }
@@ -89,7 +95,7 @@ namespace KouXiaGu.Terrain3D
             return offsets;
         }
 
-        RoadPoint GetOffset(Vector3 from, Vector3 to)
+        RoadPoint GetOffset(Vector3 from, Vector3 to, float width)
         {
             RoadPoint offset = new RoadPoint();
 
@@ -98,8 +104,8 @@ namespace KouXiaGu.Terrain3D
 
             double angle = AngleY(from, to);
             offset.Original = from;
-            offset.Left = Circle(Width, LEFT_ANGLE + angle) + from;
-            offset.Right = Circle(Width, RIGHT_ANGLE + angle) + from;
+            offset.Left = Circle(width, LEFT_ANGLE + angle) + from;
+            offset.Right = Circle(width, RIGHT_ANGLE + angle) + from;
 
             return offset;
         }
@@ -130,12 +136,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void InitMesh(IList<RoadPoint> roadSpline)
         {
-            Mesh mesh = meshFilter.sharedMesh;
+            Mesh mesh = MeshFilter.sharedMesh;
             if (mesh == null)
             {
                 mesh = new Mesh();
                 mesh.name = MESH_NAME;
-                meshFilter.sharedMesh = mesh;
+                MeshFilter.sharedMesh = mesh;
             }
             InitMesh(roadSpline, ref mesh);
         }

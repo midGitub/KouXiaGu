@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
 
         void Update()
         {
-            RectCoord center = TerrainRenderer.ChunkGrid.GetCoord(position);
+            RectCoord center = TerrainMesh.ChunkGrid.GetCoord(position);
             HashSet<RectCoord> displayCoords = new HashSet<RectCoord>(GetDisplayCoords(center));
 
             foreach (var item in displayCoords)

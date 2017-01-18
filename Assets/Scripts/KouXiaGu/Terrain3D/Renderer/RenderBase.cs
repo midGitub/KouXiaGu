@@ -82,9 +82,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Render(IBakeRequest request, IEnumerable<CubicHexCoord> bakingPoints)
         {
-            tempCenter = TerrainRenderer.GetHexCenter(request.ChunkCoord);
+            tempCenter = TerrainMesh.GetHexCenter(request.ChunkCoord);
 
-            List<KeyValuePair<T, MeshRenderer>> meshs = InitMeshs(request.Map, bakingPoints);
+            List<KeyValuePair<T, MeshRenderer>> meshs = InitMeshs(request.Data.Data, bakingPoints);
 
             HeightRT = RenderHeight(meshs);
             DiffuseRT = RenderDiffuse(meshs);

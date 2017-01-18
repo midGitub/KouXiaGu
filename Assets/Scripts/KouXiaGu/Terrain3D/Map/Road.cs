@@ -113,6 +113,14 @@ namespace KouXiaGu.Terrain3D
         public IEnumerable<Vector3[]> FindPixelPaths(CubicHexCoord target)
         {
             IEnumerable<CubicHexCoord[]> paths = FindPaths(target);
+            return Convert(paths);
+        }
+
+        /// <summary>
+        /// 转换 地图坐标 到 像素坐标;
+        /// </summary>
+        public IEnumerable<Vector3[]> Convert(IEnumerable<CubicHexCoord[]> paths)
+        {
             return paths.Select(delegate (CubicHexCoord[] path)
             {
                 Vector3[] newPath = path.Select(coord => coord.GetTerrainPixel()).ToArray();

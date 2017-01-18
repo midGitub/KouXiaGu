@@ -10,9 +10,9 @@ namespace KouXiaGu.Terrain3D
     /// 地图数据提供;
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent]
-    public sealed class TerrainRenderer : MonoBehaviour
+    public sealed class TerrainMesh : MonoBehaviour
     {
-        TerrainRenderer() { }
+        TerrainMesh() { }
 
         static Shader TerrainShader
         {

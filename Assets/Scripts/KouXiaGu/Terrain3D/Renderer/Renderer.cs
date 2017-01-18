@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
         TerrainBlend terrain;
 
         [SerializeField]
-        DecorateRoad road;
+        RoadDecorate road;
 
         [SerializeField]
         DecorateBlend decorateBlend;
@@ -83,7 +83,6 @@ namespace KouXiaGu.Terrain3D
         {
             base.Awake();
             terrain.Awake();
-            road.Awake();
             decorateBlend.Awake();
         }
 
@@ -160,7 +159,7 @@ namespace KouXiaGu.Terrain3D
                     var cover = GetCover(request);
 
                     terrain.Render(request, cover);
-                    road.Render(request, cover);
+                    road.Bake(request, cover);
 
                     heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
                     diffuseMapRT = decorateBlend.BlendDiffuse(terrain.DiffuseRT, road.DiffuseRT);
@@ -195,6 +194,65 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, CubicHexCoord cameraPoint, Color backgroundColor)
+        {
+            Color current = BakingCamera.backgroundColor;
+            BakingCamera.backgroundColor = backgroundColor;
+
+            CameraRender(rt, cameraPoint);
+
+            BakingCamera.backgroundColor = current;
+        }
+
+        /// <summary>
+        /// 使用摄像机烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, CubicHexCoord cameraPoint)
+        {
+            Vector3 cameraPixelPoint = cameraPoint.GetTerrainPixel(5f);
+            CameraRender(rt, cameraPixelPoint);
+        }
+
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, Vector3 cameraPoint, Color backgroundColor)
+        {
+            Color current = BakingCamera.backgroundColor;
+            BakingCamera.backgroundColor = backgroundColor;
+
+            CameraRender(rt, cameraPoint);
+
+            BakingCamera.backgroundColor = current;
+        }
+
+        /// <summary>
+        /// 使用摄像机烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, Vector3 cameraPoint)
+        {
+            Camera bakingCamera = GetInstance.bakingCamera;
+            bakingCamera.transform.position = cameraPoint;
+            CameraRender(rt);
+        }
+
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, Color backgroundColor)
+        {
+            Color current = BakingCamera.backgroundColor;
+            BakingCamera.backgroundColor = backgroundColor;
+
+            CameraRender(rt);
+
+            BakingCamera.backgroundColor = current;
+        }
+
         /// <summary>
         /// 使用摄像机烘焙;
         /// </summary>
@@ -205,9 +263,12 @@ namespace KouXiaGu.Terrain3D
             BakingCamera.targetTexture = null;
         }
 
+
+
         /// <summary>
         /// 使用摄像机烘焙;
         /// </summary>
+        [Obsolete]
         public static void CameraRender(RenderTexture rt, MeshDisplay display)
         {
             SetBakingCamera(display);
@@ -217,6 +278,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用摄像机指定背景颜色烘焙;
         /// </summary>
+        [Obsolete]
         public static void CameraRender(RenderTexture rt, MeshDisplay display, Color backgroundColor)
         {
             SetBakingCamera(display);
@@ -224,20 +286,9 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 使用摄像机指定背景颜色烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, Color backgroundColor)
-        {
-            Color current = BakingCamera.backgroundColor;
-            BakingCamera.backgroundColor = backgroundColor;
-            CameraRender(rt);
-            BakingCamera.backgroundColor = current;
-        }
-
-
-        /// <summary>
         /// 设置烘焙相机到对应位置;
         /// </summary>
+        [Obsolete]
         static void SetBakingCamera(MeshDisplay display)
         {
             Camera bakingCamera = GetInstance.bakingCamera;
@@ -245,12 +296,13 @@ namespace KouXiaGu.Terrain3D
             bakingCamera.transform.position = cameraPoint;
         }
 
+
         /// <summary>
         /// 获取到覆盖到的坐标;
         /// </summary>
         IEnumerable<CubicHexCoord> GetCover(IBakeRequest request)
         {
-            return TerrainRenderer.GetChunkCover(request.ChunkCoord);
+            return TerrainMesh.GetChunkCover(request.ChunkCoord);
         }
 
         public static Texture2D GetHeightTexture(RenderTexture rt)

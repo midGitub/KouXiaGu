@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Type[] TERRAIN_CHUNK_SCRIPTS = new Type[]
             {
-                typeof(TerrainRenderer), //地形块控制;
+                typeof(TerrainMesh), //地形块控制;
                 typeof(TerrainTrigger), //地形碰撞器;
             };
 
@@ -61,7 +61,7 @@ namespace KouXiaGu.Terrain3D
         public TerrainChunk()
         {
             GameObject gameobjct = CraeteTerrainChunk();
-            Renderer = gameobjct.GetComponent<TerrainRenderer>();
+            Renderer = gameobjct.GetComponent<TerrainMesh>();
             Trigger = gameobjct.GetComponent<TerrainTrigger>();
         }
 
@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D
             set { Renderer.Coord = value; }
         }
 
-        public TerrainRenderer Renderer { get; private set; }
+        public TerrainMesh Renderer { get; private set; }
         public TerrainTrigger Trigger { get; private set; }
 
 
