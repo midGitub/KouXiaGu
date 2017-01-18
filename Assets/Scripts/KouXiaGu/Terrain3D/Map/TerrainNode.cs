@@ -14,14 +14,12 @@ namespace KouXiaGu.Terrain3D
     public struct TerrainNode
     {
 
+        [ProtoMember(20)]
+        public LandformInfo LandformInfo;
+
 
         [ProtoMember(10)]
         public RoadInfo RoadInfo;
-
-        public static implicit operator RoadInfo(TerrainNode item)
-        {
-            return item.RoadInfo;
-        }
 
 
 

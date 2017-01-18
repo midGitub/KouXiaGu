@@ -129,28 +129,32 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 获取到这个点通向周围的路径;
+        /// 获取到这个点通向周围的路径,若不存在节点则不返回;
         /// </summary>
         public IEnumerable<CubicHexCoord[]> FindPaths(CubicHexCoord target)
         {
-            RoadInfo targetRoadInfo = Data[target].RoadInfo;
-
-            if (targetRoadInfo.IsHaveRoad())
+            TerrainNode node;
+            if (Data.TryGetValue(target, out node))
             {
-                foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
+                RoadInfo targetRoadInfo = node.RoadInfo;
+
+                if (targetRoadInfo.IsHaveRoad())
                 {
-                    RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
-
-                    if (neighbourRoadInfo.IsHaveRoad() && neighbourRoadInfo.ID > targetRoadInfo.ID)
+                    foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
                     {
-                        CubicHexCoord[] path = new CubicHexCoord[4];
+                        RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
 
-                        path[0] = MinNeighbour(target, neighbour.Point);
-                        path[1] = target;
-                        path[2] = neighbour.Point;
-                        path[3] = MinNeighbour(neighbour.Point, target);
+                        if (neighbourRoadInfo.IsHaveRoad() && neighbourRoadInfo.ID > targetRoadInfo.ID)
+                        {
+                            CubicHexCoord[] path = new CubicHexCoord[4];
 
-                        yield return path;
+                            path[0] = MinNeighbour(target, neighbour.Point);
+                            path[1] = target;
+                            path[2] = neighbour.Point;
+                            path[3] = MinNeighbour(neighbour.Point, target);
+
+                            yield return path;
+                        }
                     }
                 }
             }

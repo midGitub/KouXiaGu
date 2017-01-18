@@ -28,6 +28,7 @@ namespace KouXiaGu.Terrain3D
 
             map.Data = new ObservableDictionary<CubicHexCoord, TerrainNode>();
             map.Road = new Road(map.Data);
+            map.Landform = new Landform(map.Data);
             SubscribeChanged(map);
 
             return map;
@@ -41,6 +42,7 @@ namespace KouXiaGu.Terrain3D
             MapData map = Read(filePath);
 
             map.Road.Data = map.Data;
+            map.Landform = new Landform(map.Data);
             SubscribeChanged(map);
 
             return map;
@@ -55,6 +57,7 @@ namespace KouXiaGu.Terrain3D
             ArchiveFile archive = ReadArchive(archiveFilePath);
 
             map.Road = archive.Road;
+            map.Landform = new Landform(map.Data);
             SubscribeChanged(map, archive);
 
             return map;
@@ -67,7 +70,22 @@ namespace KouXiaGu.Terrain3D
         static MapData Read(string filePath)
         {
             filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
-            return ProtoBufExtensions.Deserialize<MapData>(filePath);
+            MapData data = ProtoBufExtensions.Deserialize<MapData>(filePath);
+
+            if (!IsIntegrated(data))
+                throw new FileNotFoundException("文件顺坏;");
+
+            return data;
+        }
+
+        /// <summary>
+        /// 从文件读取后检查是否完整;
+        /// </summary>
+        static bool IsIntegrated(MapData data)
+        {
+            return 
+                data.Data != null &&
+                data.Road != null;
         }
 
         /// <summary>
@@ -141,6 +159,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [ProtoMember(2)]
         public Road Road { get; private set; }
+
+        public Landform Landform { get; private set; }
 
         /// <summary>
         /// 用于监视地图变化;

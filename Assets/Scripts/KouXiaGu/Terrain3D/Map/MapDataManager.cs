@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Initialization;
+using System.IO;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -27,8 +29,16 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Load()
         {
-            string filePath = TerrainFiler.Combine(DATA_FILE_NAME);
-            ActiveData = MapData.Create(filePath);
+            try
+            {
+                string filePath = TerrainFiler.Combine(DATA_FILE_NAME);
+                ActiveData = MapData.Create(filePath);
+            }
+            catch (FileNotFoundException e)
+            {
+                Debug.LogWarning("未找到地形地图数据文件或地图损坏,从新的地图加载游戏" + e);
+                ActiveData = MapData.Create();
+            }
         }
 
         /// <summary>

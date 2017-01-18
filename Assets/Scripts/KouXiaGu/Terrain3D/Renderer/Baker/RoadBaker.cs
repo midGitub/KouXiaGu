@@ -240,7 +240,7 @@ namespace KouXiaGu.Terrain3D
 
             protected override RoadMesh Create()
             {
-                var item = GameObject.Instantiate(prefab);
+                var item = GameObject.Instantiate(prefab, Parent);
                 return item;
             }
 
