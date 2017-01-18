@@ -70,7 +70,8 @@ namespace KouXiaGu
 
             if (IsEmpty)
             {
-                return Create();
+                T item = Create();
+                return item;
             }
             else
             {

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
@@ -55,13 +54,14 @@ namespace KouXiaGu.Terrain3D
             get { return Renderer.Parameter; }
         }
 
-        public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
+
+        public IEnumerator Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
         {
             PrepareScene(request, points);
             DiffuseRT = BakeDiffuse();
             HeightRT = BakeHeight();
+            yield break;
         }
-
 
         /// <summary>
         /// 准备场景;
@@ -69,11 +69,7 @@ namespace KouXiaGu.Terrain3D
         public void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
         {
             SetTargetCenter(request);
-
-            if (inSceneMeshs == null)
-                inSceneMeshs = new List<RoadMesh>();
-            else
-                inSceneMeshs.Clear();
+            InitSceneMeshs();
 
             foreach (var display in displays)
             {
@@ -85,6 +81,22 @@ namespace KouXiaGu.Terrain3D
         void SetTargetCenter(IBakeRequest request)
         {
             this.targetCenter = TerrainMesh.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
+        }
+
+        void InitSceneMeshs()
+        {
+            if (inSceneMeshs == null)
+            {
+                inSceneMeshs = new List<RoadMesh>();
+            }
+            else
+            {
+                foreach (var roadMesh in inSceneMeshs)
+                {
+                    objectPool.Release(roadMesh);
+                }
+                inSceneMeshs.Clear();
+            }
         }
 
         /// <summary>
@@ -139,7 +151,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             RenderTexture rt = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24);
-            Renderer.CameraRender(rt, targetCenter, Color.black);
+            Renderer.CameraRender(rt, center, new Color(0, 0, 0, 0));
             return rt;
         }
 
@@ -149,6 +161,7 @@ namespace KouXiaGu.Terrain3D
             {
                 diffuseMaterial = new Material(diffuseShader);
                 var res = RoadRes.initializedInstances[1];
+
                 diffuseMaterial.SetTexture("_MainTex", res.DiffuseTex);
                 diffuseMaterial.SetTexture("_BlendTex", res.DiffuseBlendTex);
             }
@@ -166,7 +179,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             RenderTexture rt = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24);
-            Renderer.CameraRender(rt, targetCenter);
+            Renderer.CameraRender(rt, center);
             return rt;
         }
 
@@ -176,6 +189,7 @@ namespace KouXiaGu.Terrain3D
             {
                 heightMaterial = new Material(heightShader);
                 var res = RoadRes.initializedInstances[1];
+
                 heightMaterial.SetTexture("_MainTex", res.HeightAdjustTex);
             }
 
@@ -194,6 +208,14 @@ namespace KouXiaGu.Terrain3D
         [Serializable]
         class ObjectPool : ReusableObjectPool<RoadMesh>
         {
+            [SerializeField]
+            RoadMesh prefab;
+
+            protected override RoadMesh Create()
+            {
+                var item = GameObject.Instantiate(prefab);
+                return item;
+            }
 
         }
 

@@ -153,25 +153,28 @@ namespace KouXiaGu.Terrain3D
             while (true)
             {
                 yield return bakingYieldInstruction;
+      
+                request = bakingQueue.Dequeue();
+                var cover = GetCover(request);
+
+                terrain.Render(request, cover);
+                yield return new WaitForSeconds(1);
+                yield return road.Bake(request, cover);
+               
+                heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
+                diffuseMapRT = decorateBlend.BlendDiffuse(terrain.DiffuseRT, road.DiffuseRT);
+                normalMapRT = normalMapper.Rander(heightMapRT);
+
+                tex = new TerrainTexPack();
+                tex.heightMap = GetHeightTexture(heightMapRT);
+                tex.normalMap = normalMapper.GetTexture(normalMapRT);
+                tex.diffuseMap = GetDiffuseTexture(diffuseMapRT);
+
+                request.OnComplete(tex);
+                tex = null;
+
                 try
                 {
-                    request = bakingQueue.Dequeue();
-                    var cover = GetCover(request);
-
-                    terrain.Render(request, cover);
-                    road.Bake(request, cover);
-
-                    heightMapRT = decorateBlend.BlendHeight(terrain.HeightRT, road.HeightRT);
-                    diffuseMapRT = decorateBlend.BlendDiffuse(terrain.DiffuseRT, road.DiffuseRT);
-                    normalMapRT = normalMapper.Rander(heightMapRT);
-
-                    tex = new TerrainTexPack();
-                    tex.heightMap = GetHeightTexture(heightMapRT);
-                    tex.normalMap = normalMapper.GetTexture(normalMapRT);
-                    tex.diffuseMap = GetDiffuseTexture(diffuseMapRT);
-
-                    request.OnComplete(tex);
-                    tex = null;
                 }
                 catch (Exception ex)
                 {
@@ -268,7 +271,6 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用摄像机烘焙;
         /// </summary>
-        [Obsolete]
         public static void CameraRender(RenderTexture rt, MeshDisplay display)
         {
             SetBakingCamera(display);
@@ -278,7 +280,6 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用摄像机指定背景颜色烘焙;
         /// </summary>
-        [Obsolete]
         public static void CameraRender(RenderTexture rt, MeshDisplay display, Color backgroundColor)
         {
             SetBakingCamera(display);
@@ -288,7 +289,6 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 设置烘焙相机到对应位置;
         /// </summary>
-        [Obsolete]
         static void SetBakingCamera(MeshDisplay display)
         {
             Camera bakingCamera = GetInstance.bakingCamera;
