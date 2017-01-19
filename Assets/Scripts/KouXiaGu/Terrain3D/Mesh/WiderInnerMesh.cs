@@ -7,6 +7,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 略宽于六边形的矩形;
     /// </summary>
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
     public class WiderInnerMesh : MonoBehaviour
     {
         WiderInnerMesh() { }

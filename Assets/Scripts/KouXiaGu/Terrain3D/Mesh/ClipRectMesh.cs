@@ -11,6 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 大小为六边形外直径和内直径,宽高比约为 "1.154701";
     /// </summary>
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
     public class ClipRectMesh : MonoBehaviour
     {
         ClipRectMesh() { }
