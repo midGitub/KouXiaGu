@@ -36,7 +36,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘培使用的相机;
         /// </summary>
-        static Camera BakingCamera
+        static Camera BakeCamera
         {
             get { return GetInstance.bakingCamera; }
         }
@@ -209,12 +209,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void CameraRender(RenderTexture rt, CubicHexCoord cameraPoint, Color backgroundColor)
         {
-            Color current = BakingCamera.backgroundColor;
-            BakingCamera.backgroundColor = backgroundColor;
+            Color current = BakeCamera.backgroundColor;
+            BakeCamera.backgroundColor = backgroundColor;
 
             CameraRender(rt, cameraPoint);
 
-            BakingCamera.backgroundColor = current;
+            BakeCamera.backgroundColor = current;
         }
 
         /// <summary>
@@ -231,12 +231,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void CameraRender(RenderTexture rt, Vector3 cameraPoint, Color backgroundColor)
         {
-            Color current = BakingCamera.backgroundColor;
-            BakingCamera.backgroundColor = backgroundColor;
+            Color current = BakeCamera.backgroundColor;
+            BakeCamera.backgroundColor = backgroundColor;
 
             CameraRender(rt, cameraPoint);
 
-            BakingCamera.backgroundColor = current;
+            BakeCamera.backgroundColor = current;
         }
 
         /// <summary>
@@ -254,12 +254,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void CameraRender(RenderTexture rt, Color backgroundColor)
         {
-            Color current = BakingCamera.backgroundColor;
-            BakingCamera.backgroundColor = backgroundColor;
+            Color current = BakeCamera.backgroundColor;
+            BakeCamera.backgroundColor = backgroundColor;
 
             CameraRender(rt);
 
-            BakingCamera.backgroundColor = current;
+            BakeCamera.backgroundColor = current;
         }
 
         /// <summary>
@@ -267,9 +267,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void CameraRender(RenderTexture rt)
         {
-            BakingCamera.targetTexture = rt;
-            BakingCamera.Render();
-            BakingCamera.targetTexture = null;
+            BakeCamera.targetTexture = rt;
+            BakeCamera.Render();
+            BakeCamera.targetTexture = null;
         }
 
 

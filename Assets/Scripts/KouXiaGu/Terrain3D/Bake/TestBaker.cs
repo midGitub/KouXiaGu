@@ -17,12 +17,10 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         MeshRenderer terrainChunk;
 
-
         public void Bake(IBakeRequest request)
         {
             Vector3 pos = TerrainChunk.ChunkGrid.GetCenter(request.ChunkCoord);
-
-            
+            GameObject.Instantiate(terrainChunk, pos, Quaternion.identity);
         }
 
     }
