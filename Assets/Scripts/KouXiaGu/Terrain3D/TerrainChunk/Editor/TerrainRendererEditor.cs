@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
 
 
     [CustomEditor(typeof(TerrainRenderer), true)]
-    class TerrainChunkEditor : Editor
+    class TerrainRendererEditor : Editor
     {
 
         public override void OnInspectorGUI()
@@ -20,9 +20,9 @@ namespace KouXiaGu.Terrain3D
 
             var target = (TerrainRenderer)this.target;
 
-            EditorGUILayout.ObjectField("Diffuse", target.DiffuseTexture, typeof(Texture2D), true);
-            EditorGUILayout.ObjectField("Height", target.HeightTexture, typeof(Texture2D), true);
-            EditorGUILayout.ObjectField("Normal", target.NormalMap, typeof(Texture2D), true);
+            target.DiffuseTexture = (Texture2D)EditorGUILayout.ObjectField("Diffuse", target.DiffuseTexture, typeof(Texture2D), true);
+            target.HeightTexture = (Texture2D)EditorGUILayout.ObjectField("Height", target.HeightTexture, typeof(Texture2D), true);
+            target.NormalMap = (Texture2D)EditorGUILayout.ObjectField("Normal", target.NormalMap, typeof(Texture2D), true);
 
             if (GUILayout.Button("存储所有贴图"))
             {

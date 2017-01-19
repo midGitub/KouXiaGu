@@ -20,17 +20,17 @@ namespace KouXiaGu.Terrain3D
 
         void OnSceneGUI()
         {
-            var par = new BakingParameter(1, 1, 1);
-            Rect rect = par.DiffuseReadPixel;
+            //var par = new BakingParameter(1, 1, 1);
+            //Rect rect = par.DiffuseReadPixel;
 
-            Handles.color = Color.red;
-            DrawRect(par.DiffuseReadPixel);
+            //Handles.color = Color.red;
+            //DrawRect(par.DiffuseReadPixel);
 
-            //Handles.color = Color.blue;
-            //DrawRect(Rect.MinMaxRect(0, 0, TerrainChunk.CHUNK_WIDTH, TerrainChunk.CHUNK_HEIGHT));
+            ////Handles.color = Color.blue;
+            ////DrawRect(Rect.MinMaxRect(0, 0, TerrainChunk.CHUNK_WIDTH, TerrainChunk.CHUNK_HEIGHT));
 
-            Handles.color = Color.green;
-            DrawRect(Rect.MinMaxRect(0, 0, par.rDiffuseTexWidth, par.rDiffuseTexHeight));
+            //Handles.color = Color.green;
+            //DrawRect(Rect.MinMaxRect(0, 0, par.rDiffuseTexWidth, par.rDiffuseTexHeight));
         }
 
         void DrawRect(Rect rect)

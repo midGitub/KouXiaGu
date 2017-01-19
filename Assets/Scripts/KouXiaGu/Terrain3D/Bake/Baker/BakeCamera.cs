@@ -222,9 +222,9 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("初始化相机")]
         void InitBakingCamera()
         {
-            _camera.aspect = BakingParameter.CameraAspect;
-            _camera.orthographicSize = BakingParameter.CameraSize;
-            _camera.transform.rotation = BakingParameter.CameraRotation;
+            _camera.aspect = CameraAspect;
+            _camera.orthographicSize = CameraSize;
+            _camera.transform.rotation = CameraRotation;
             _camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
             _camera.backgroundColor = Color.black;
         }

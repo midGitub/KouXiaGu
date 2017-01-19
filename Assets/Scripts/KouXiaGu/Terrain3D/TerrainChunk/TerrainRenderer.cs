@@ -20,18 +20,12 @@ namespace KouXiaGu.Terrain3D
         }
 
         Material material;
+        [SerializeField, HideInInspector]
         Texture2D heightTexture;
+        [SerializeField, HideInInspector]
         Texture2D diffuseTexture;
+        [SerializeField, HideInInspector]
         Texture2D normalMap;
-
-        ///// <summary>
-        ///// 地形块坐标;
-        ///// </summary>
-        //public RectCoord Coord
-        //{
-        //    get { return coord; }
-        //    set { transform.position = ChunkGrid.GetCenter(value); coord = value; }
-        //}
 
         /// <summary>
         /// 正在使用的材质;
