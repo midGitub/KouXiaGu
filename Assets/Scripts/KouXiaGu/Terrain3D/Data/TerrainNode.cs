@@ -15,11 +15,11 @@ namespace KouXiaGu.Terrain3D
     {
 
         [ProtoMember(20)]
-        public LandformInfo LandformInfo;
+        public LandformNode LandformInfo;
 
 
         [ProtoMember(10)]
-        public RoadInfo RoadInfo;
+        public RoadNode RoadInfo;
 
 
 

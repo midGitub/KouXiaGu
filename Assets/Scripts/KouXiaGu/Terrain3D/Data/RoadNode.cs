@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
     /// 道路节点信息;
     /// </summary>
     [ProtoContract]
-    public struct RoadInfo : IEquatable<RoadInfo>
+    public struct RoadNode : IEquatable<RoadNode>
     {
         /// <summary>
         /// 节点不存在道路时放置的标志;
@@ -30,16 +30,16 @@ namespace KouXiaGu.Terrain3D
             return ID != EMPTY_ROAD_MARK;
         }
 
-        public bool Equals(RoadInfo other)
+        public bool Equals(RoadNode other)
         {
             return other.IsHaveRoad() == IsHaveRoad();
         }
 
         public override bool Equals(object obj)
         {
-            if (!(obj is RoadInfo))
+            if (!(obj is RoadNode))
                 return false;
-            return this.Equals((RoadInfo)obj);
+            return this.Equals((RoadNode)obj);
         }
 
         public override int GetHashCode()

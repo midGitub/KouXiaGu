@@ -11,13 +11,13 @@ namespace KouXiaGu.Terrain3D
     /// 道路信息;
     /// </summary>
     [ProtoContract]
-    public class Road
+    public class RoadData
     {
 
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
-        const uint EMPTY_ROAD_MARK = RoadInfo.EMPTY_ROAD_MARK;
+        const uint EMPTY_ROAD_MARK = RoadNode.EMPTY_ROAD_MARK;
 
         /// <summary>
         /// 起始的有效ID;
@@ -25,14 +25,14 @@ namespace KouXiaGu.Terrain3D
         const uint INITATING_EFFECTIVE_ID = 5;
 
 
-        Road()
+        RoadData()
         {
         }
 
         /// <summary>
         /// 初始化基本信息;
         /// </summary>
-        public Road(IDictionary<CubicHexCoord, TerrainNode> map)
+        public RoadData(IDictionary<CubicHexCoord, TerrainNode> map)
         {
             this.Data = map;
             EffectiveID = INITATING_EFFECTIVE_ID;
@@ -136,13 +136,13 @@ namespace KouXiaGu.Terrain3D
             TerrainNode node;
             if (Data.TryGetValue(target, out node))
             {
-                RoadInfo targetRoadInfo = node.RoadInfo;
+                RoadNode targetRoadInfo = node.RoadInfo;
 
                 if (targetRoadInfo.IsHaveRoad())
                 {
                     foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
                     {
-                        RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
+                        RoadNode neighbourRoadInfo = neighbour.Item.RoadInfo;
 
                         if (neighbourRoadInfo.IsHaveRoad() && neighbourRoadInfo.ID > targetRoadInfo.ID)
                         {
@@ -173,7 +173,7 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
             {
-                RoadInfo neighbourRoadInfo = neighbour.Item.RoadInfo;
+                RoadNode neighbourRoadInfo = neighbour.Item.RoadInfo;
 
                 if (neighbour.Point != eliminate &&
                     neighbourRoadInfo.IsHaveRoad() &&

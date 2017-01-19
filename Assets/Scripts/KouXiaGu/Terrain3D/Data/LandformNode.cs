@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 地貌节点信息
     /// </summary>
     [ProtoContract]
-    public struct LandformInfo : IEquatable<LandformInfo>
+    public struct LandformNode : IEquatable<LandformNode>
     {
 
         /// <summary>
@@ -40,16 +40,16 @@ namespace KouXiaGu.Terrain3D
             return ID != EMPTY_LANDFORM_MARK;
         }
 
-        public bool Equals(LandformInfo other)
+        public bool Equals(LandformNode other)
         {
             return other.IsHaveLandform() == IsHaveLandform();
         }
 
         public override bool Equals(object obj)
         {
-            if (!(obj is LandformInfo))
+            if (!(obj is LandformNode))
                 return false;
-            return this.Equals((LandformInfo)obj);
+            return this.Equals((LandformNode)obj);
         }
 
         public override int GetHashCode()

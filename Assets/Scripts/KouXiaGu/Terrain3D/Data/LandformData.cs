@@ -7,14 +7,14 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
-    public class Landform
+    public class LandformData
     {
 
-        Landform()
+        LandformData()
         {
         }
 
-        public Landform(IDictionary<CubicHexCoord, TerrainNode> data)
+        public LandformData(IDictionary<CubicHexCoord, TerrainNode> data)
         {
             this.Data = data;
         }
@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         public IDictionary<CubicHexCoord, TerrainNode> Data { get; internal set; }
 
 
-        public LandformInfo this[CubicHexCoord coord]
+        public LandformNode this[CubicHexCoord coord]
         {
             get { return Data[coord].LandformInfo; }
             set
@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
         public void Set(CubicHexCoord coord, int id, float angle)
         {
             var node = Data[coord];
-            LandformInfo info = node.LandformInfo;
+            LandformNode info = node.LandformInfo;
 
             info.ID = id;
             info.Angle = angle;
@@ -53,7 +53,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到该位置的地貌信息;
         /// </summary>
-        public bool TryGetValue(CubicHexCoord coord, out LandformInfo info)
+        public bool TryGetValue(CubicHexCoord coord, out LandformNode info)
         {
             TerrainNode node;
             if (Data.TryGetValue(coord, out node))
@@ -64,7 +64,7 @@ namespace KouXiaGu.Terrain3D
                 else
                     return false;
             }
-            info = default(LandformInfo);
+            info = default(LandformNode);
             return false;
         }
 

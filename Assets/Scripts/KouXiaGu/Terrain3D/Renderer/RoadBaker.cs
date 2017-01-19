@@ -138,7 +138,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建目标点之上的道路;
         /// </summary>
-        IEnumerable<RoadMesh> Create(Road road, CubicHexCoord target)
+        IEnumerable<RoadMesh> Create(RoadData road, CubicHexCoord target)
         {
             var paths = road.FindPaths(target);
 

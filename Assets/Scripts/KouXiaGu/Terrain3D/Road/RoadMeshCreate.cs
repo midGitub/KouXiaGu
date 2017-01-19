@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        public RoadMeshCreate(Road road)
+        public RoadMeshCreate(RoadData road)
         {
             this.RoadInfo = road;
         }
@@ -28,7 +28,7 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         float roadWidth = 0.07f;
 
-        public Road RoadInfo { get; set; }
+        public RoadData RoadInfo { get; set; }
 
 
         /// <summary>

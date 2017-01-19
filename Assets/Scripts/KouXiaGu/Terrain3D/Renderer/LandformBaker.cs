@@ -86,7 +86,7 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var display in displays)
             {
-                LandformInfo info;
+                LandformNode info;
                 if (request.Data.Landform.TryGetValue(display, out info))
                 {
                     var renderer = Get(display, info.Angle);

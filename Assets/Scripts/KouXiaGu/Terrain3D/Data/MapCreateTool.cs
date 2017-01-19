@@ -58,7 +58,7 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainNode node = new TerrainNode()
             {
-                LandformInfo = new LandformInfo()
+                LandformInfo = new LandformNode()
                 {
                     ID = RamdomFromArray(GetInstance.landforms),
                     Angle = RamdomAngle(),
