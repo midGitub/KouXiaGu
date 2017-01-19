@@ -64,18 +64,12 @@ namespace KouXiaGu.Terrain3D
             heightMaterial = new Material(heightShader);
         }
 
-        public void OnDestroy()
-        {
-            Clear();
-        }
 
-
-        public IEnumerator Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
+        public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
         {
             PrepareScene(request, points);
             DiffuseRT = BakeDiffuse();
             HeightRT = BakeHeight();
-            yield break;
         }
 
 
@@ -135,6 +129,7 @@ namespace KouXiaGu.Terrain3D
             }
             catch (KeyNotFoundException ex)
             {
+                //Debug.LogError("缺少材质资源;ID: " + id + ex.ToString());
                 throw new LackOfResourcesException("缺少材质资源;ID: " + id, ex);
             }
         }
@@ -206,118 +201,6 @@ namespace KouXiaGu.Terrain3D
             DiffuseRT = null;
             HeightRT = null;
         }
-
-
-        //[Serializable]
-        //class MeshCreater : GameObjectPool<MeshRenderer>
-        //{
-
-        //    [SerializeField]
-        //    MeshRenderer prefab;
-
-        //    /// <summary>
-        //    /// 中心点,根据传入坐标位置转换到此中心点附近;
-        //    /// </summary>
-        //    [SerializeField]
-        //    CubicHexCoord center;
-
-        //    /// <summary>
-        //    /// 目标中心点;
-        //    /// </summary>
-        //    CubicHexCoord targetCenter;
-
-        //    List<Pack> inSceneMeshs;
-
-
-        //    public IEnumerable<Pack> Renderers
-        //    {
-        //        get { return inSceneMeshs; }
-        //    }
-
-        //    public CubicHexCoord Center
-        //    {
-        //        get { return center; }
-        //    }
-
-
-        //    public void Initialise()
-        //    {
-        //        inSceneMeshs = new List<Pack>();
-        //    }
-
-        //    /// <summary>
-        //    /// 准备场景;
-        //    /// </summary>
-        //    public void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
-        //    {
-        //        SetTargetCenter(request);
-        //        ClearInSceneMeshs();
-
-        //        foreach (var display in displays)
-        //        {
-        //            LandformInfo info;
-        //            if (request.Data.Landform.TryGetValue(display, out info))
-        //            {
-        //                var renderer = Get(display, info.Angle);
-        //                LandformRes res = GetLandform(info.ID);
-        //                inSceneMeshs.Add(new Pack(res, renderer));
-        //            }
-        //        }
-        //    }
-
-        //    void SetTargetCenter(IBakeRequest request)
-        //    {
-        //        this.targetCenter = TerrainMesh.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
-        //    }
-
-        //    void ClearInSceneMeshs()
-        //    {
-        //        foreach (var roadMesh in inSceneMeshs)
-        //        {
-        //            Release(roadMesh.Rednerer);
-        //        }
-        //        inSceneMeshs.Clear();
-        //    }
-
-        //    MeshRenderer Get(CubicHexCoord coord, float angle)
-        //    {
-        //        MeshRenderer item = Get();
-        //        item.transform.position = PositionConvert(coord);
-        //        item.transform.rotation = Quaternion.Euler(0, angle, 0);
-        //        return item;
-        //    }
-
-        //    Vector3 PositionConvert(CubicHexCoord terget)
-        //    {
-        //        CubicHexCoord coord = terget - targetCenter;
-        //        return (coord + this.center).GetTerrainPixel();
-        //    }
-
-        //    /// <summary>
-        //    /// 获取到地貌信息;
-        //    /// </summary>
-        //    LandformRes GetLandform(int id)
-        //    {
-        //        try
-        //        {
-        //            return LandformRes.initializedInstances[id];
-        //        }
-        //        catch (KeyNotFoundException ex)
-        //        {
-        //            throw new LackOfResourcesException("缺少材质资源;ID: " + id, ex);
-        //        }
-        //    }
-
-        //    protected override MeshRenderer Create()
-        //    {
-        //        var item = GameObject.Instantiate(prefab, Parent);
-        //        item.gameObject.SetActive(true);
-        //        return item;
-        //    }
-
-        //}
-
-
 
         struct Pack
         {

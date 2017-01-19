@@ -68,7 +68,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             TerrainNode node;
             if (path.WorldMap.TryGetValue(path.Current, out node))
             {
-                var descr = NavigationRes.GetNavigationDescr(node.LandformInfo.ID);
+                var descr = NavigationRes.GetNavigationDescr(node.Landform.ID);
                 return descr.SpeedOfTravel * Character.MovingSpeed;
             }
             Debug.LogError("路径点超出地图范围;");

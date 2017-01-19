@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
-        internal const uint EMPTY_LANDFORM_MARK = 0;
+        internal const uint EMPTY_MARK = 0;
 
         /// <summary>
         /// 代表的地形ID;
@@ -35,14 +35,16 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 是否设定了地貌?;
         /// </summary>
-        public bool IsHaveLandform()
+        public bool Exist()
         {
-            return ID != EMPTY_LANDFORM_MARK;
+            return ID != EMPTY_MARK;
         }
 
         public bool Equals(LandformNode other)
         {
-            return other.IsHaveLandform() == IsHaveLandform();
+            return 
+                other.ID == ID && 
+                other.Angle == Angle;
         }
 
         public override bool Equals(object obj)
@@ -54,7 +56,7 @@ namespace KouXiaGu.Terrain3D
 
         public override int GetHashCode()
         {
-            return IsHaveLandform().GetHashCode();
+            return ID.GetHashCode();
         }
 
         public override string ToString()

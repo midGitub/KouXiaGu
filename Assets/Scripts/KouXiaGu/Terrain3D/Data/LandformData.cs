@@ -27,11 +27,11 @@ namespace KouXiaGu.Terrain3D
 
         public LandformNode this[CubicHexCoord coord]
         {
-            get { return Data[coord].LandformInfo; }
+            get { return Data[coord].Landform; }
             set
             {
                 var node = Data[coord];
-                node.LandformInfo = value;
+                node.Landform = value;
                 Data[coord] = node;
             }
         }
@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
         public void Set(CubicHexCoord coord, int id, float angle)
         {
             var node = Data[coord];
-            LandformNode info = node.LandformInfo;
+            LandformNode info = node.Landform;
 
             info.ID = id;
             info.Angle = angle;
@@ -58,8 +58,8 @@ namespace KouXiaGu.Terrain3D
             TerrainNode node;
             if (Data.TryGetValue(coord, out node))
             {
-                info = node.LandformInfo;
-                if (info.IsHaveLandform())
+                info = node.Landform;
+                if (info.Exist())
                     return true;
                 else
                     return false;

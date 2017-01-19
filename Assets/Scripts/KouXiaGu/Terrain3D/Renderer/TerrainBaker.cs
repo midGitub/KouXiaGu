@@ -19,6 +19,64 @@ namespace KouXiaGu.Terrain3D
             IsInitialised = false;
         }
 
+        /// <summary>
+        /// 将要进行烘焙的队列;
+        /// </summary>
+        static readonly LinkedList<IBakeRequest> bakeRequestQueue = new LinkedList<IBakeRequest>();
+
+        /// <summary>
+        /// 烘焙参数;
+        /// </summary>
+        public static BakingParameter Parameter
+        {
+            get { return GetInstance.parameter; }
+            internal set { GetInstance.parameter = value; }
+        }
+
+        /// <summary>
+        /// 烘培使用的相机;
+        /// </summary>
+        static Camera BakingCamera
+        {
+            get { return GetInstance.bakingCamera; }
+        }
+
+        /// <summary>
+        /// 烘焙请求队列;
+        /// </summary>
+        public static LinkedList<IBakeRequest> BakingRequests
+        {
+            get { return bakeRequestQueue; }
+        }
+
+
+        /// <summary>
+        /// 是否已经初始化?
+        /// </summary>
+        public static bool IsInitialised { get; private set; }
+
+        /// <summary>
+        /// 初始化;
+        /// </summary>
+        public static void Initialize()
+        {
+            if (!IsInitialised)
+            {
+                TerrainBaker instance = GetInstance;
+
+                instance.road.Initialise();
+                instance.landform.Initialise();
+
+                instance.decorateBlend.Awake();
+
+                instance.InitBakingCamera();
+                instance.StartCoroutine(instance.Bake());
+
+                IsInitialised = true;
+            }
+        }
+
+
         TerrainBaker() { }
 
         /// <summary>
@@ -42,56 +100,6 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         DecorateBlend decorateBlend;
 
-        /// <summary>
-        /// 将要进行烘焙的队列;
-        /// </summary>
-        LinkedList<IBakeRequest> bakingQueue = new LinkedList<IBakeRequest>();
-
-        public static bool IsInitialised { get; private set; }
-
-        /// <summary>
-        /// 烘焙时的参数;
-        /// </summary>
-        public static BakingParameter Parameter
-        {
-            get { return GetInstance.parameter; }
-            set { GetInstance.parameter = value; }
-        }
-
-        static Camera BakingCamera
-        {
-            get { return GetInstance.bakingCamera; }
-        }
-
-        /// <summary>
-        /// 烘焙请求队列;
-        /// </summary>
-        public static LinkedList<IBakeRequest> BakingRequests
-        {
-            get { return GetInstance.bakingQueue; }
-        }
-
-
-        /// <summary>
-        /// 初始化;
-        /// </summary>
-        public static void Initialize()
-        {
-            if (!IsInitialised)
-            {
-                TerrainBaker instance = GetInstance;
-
-                instance.road.Initialise();
-                instance.landform.Initialise();
-
-                instance.decorateBlend.Awake();
-
-                instance.InitBakingCamera();
-                instance.StartCoroutine(instance.Baking());
-
-                IsInitialised = true;
-            }
-        }
 
         void OnValidate()
         {
@@ -100,11 +108,7 @@ namespace KouXiaGu.Terrain3D
 
         protected override void OnDestroy()
         {
-            bakingQueue.Clear();
-            TerrainBaker instance = GetInstance;
-
-            instance.road.OnDestroy();
-
+            bakeRequestQueue.Clear();
             IsInitialised = false;
             base.OnDestroy();
         }
@@ -132,9 +136,9 @@ namespace KouXiaGu.Terrain3D
         /// 混合高度->混合地表->
         /// 高度生成法线图->完成
         /// </summary>
-        IEnumerator Baking()
+        IEnumerator Bake()
         {
-            CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakingQueue.Count == 0);
+            CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakeRequestQueue.Count == 0);
 
             IBakeRequest request = null;
             RenderTexture normalMapRT = null;
@@ -146,46 +150,56 @@ namespace KouXiaGu.Terrain3D
             while (true)
             {
                 yield return bakingYieldInstruction;
-      
-                request = bakingQueue.Dequeue();
-                var cover = GetCover(request);
-
-                yield return landform.Bake(request, cover);
-                yield return road.Bake(request, cover);
-               
-                heightMapRT = decorateBlend.BlendHeight(landform.HeightRT, road.HeightRT);
-                diffuseMapRT = decorateBlend.BlendDiffuse(landform.DiffuseRT, road.DiffuseRT);
-                normalMapRT = normalMapper.Rander(heightMapRT);
-
-                tex = new TerrainTexPack();
-                tex.heightMap = GetHeightTexture(heightMapRT);
-                tex.normalMap = normalMapper.GetTexture(normalMapRT);
-                tex.diffuseMap = GetDiffuseTexture(diffuseMapRT);
-
-                request.OnComplete(tex);
-                tex = null;
 
                 try
                 {
+                    request = bakeRequestQueue.Dequeue();
+                    var cover = GetCover(request);
+
+                    landform.Bake(request, cover);
+                    road.Bake(request, cover);
+
+                    heightMapRT = decorateBlend.BlendHeight(landform.HeightRT, road.HeightRT);
+                    diffuseMapRT = decorateBlend.BlendDiffuse(landform.DiffuseRT, road.DiffuseRT);
+                    normalMapRT = normalMapper.Rander(heightMapRT);
+
+                    tex = new TerrainTexPack();
+                    tex.heightMap = GetHeightTexture(heightMapRT);
+                    tex.normalMap = normalMapper.GetTexture(normalMapRT);
+                    tex.diffuseMap = GetDiffuseTexture(diffuseMapRT);
+
+                    request.OnComplete(tex);
+                    tex = null;
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogWarning("烘焙时出现错误:" + ex);
-
-                    if(tex != null)
+                    if (tex != null)
                         tex.Destroy();
 
-                    if(request != null)
+                    if (request != null)
                         request.OnError(ex);
                 }
                 finally
                 {
                     landform.Dispose();
                     road.Dispose();
-                    RenderTexture.ReleaseTemporary(normalMapRT);
-                    RenderTexture.ReleaseTemporary(heightMapRT);
-                    RenderTexture.ReleaseTemporary(diffuseMapRT);
+
+                    ReleaseRenderTexture(ref normalMapRT);
+                    ReleaseRenderTexture(ref heightMapRT);
+                    ReleaseRenderTexture(ref diffuseMapRT);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 释放临时的 RenderTexture,并且置为 null;
+        /// </summary>
+        void ReleaseRenderTexture(ref RenderTexture rt)
+        {
+            if (rt != null)
+            {
+                RenderTexture.ReleaseTemporary(rt);
+                rt = null;
             }
         }
 
@@ -286,7 +300,6 @@ namespace KouXiaGu.Terrain3D
             diffuseTex.Apply();
             return diffuseTex;
         }
-
 
     }
 

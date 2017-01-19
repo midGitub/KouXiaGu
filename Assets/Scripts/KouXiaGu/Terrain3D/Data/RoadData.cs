@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
-        const uint EMPTY_ROAD_MARK = RoadNode.EMPTY_ROAD_MARK;
+        const uint EMPTY_ROAD_MARK = RoadNode.EMPTY_MARK;
 
         /// <summary>
         /// 起始的有效ID;
@@ -73,9 +73,9 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainNode node = Data[coord];
 
-            if (!node.RoadInfo.IsHaveRoad())
+            if (!node.Road.Exist())
             {
-                node.RoadInfo.ID = GetNewID();
+                node.Road.ID = GetNewID();
                 Data[coord] = node;
                 return true;
             }
@@ -97,9 +97,9 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainNode node = Data[coord];
 
-            if (node.RoadInfo.IsHaveRoad())
+            if (node.Road.Exist())
             {
-                node.RoadInfo.ID = EMPTY_ROAD_MARK;
+                node.Road.ID = EMPTY_ROAD_MARK;
                 Data[coord] = node;
                 return true;
             }
@@ -136,15 +136,15 @@ namespace KouXiaGu.Terrain3D
             TerrainNode node;
             if (Data.TryGetValue(target, out node))
             {
-                RoadNode targetRoadInfo = node.RoadInfo;
+                RoadNode targetRoadInfo = node.Road;
 
-                if (targetRoadInfo.IsHaveRoad())
+                if (targetRoadInfo.Exist())
                 {
                     foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
                     {
-                        RoadNode neighbourRoadInfo = neighbour.Item.RoadInfo;
+                        RoadNode neighbourRoadInfo = neighbour.Item.Road;
 
-                        if (neighbourRoadInfo.IsHaveRoad() && neighbourRoadInfo.ID > targetRoadInfo.ID)
+                        if (neighbourRoadInfo.Exist() && neighbourRoadInfo.ID > targetRoadInfo.ID)
                         {
                             CubicHexCoord[] path = new CubicHexCoord[4];
 
@@ -173,10 +173,10 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var neighbour in Data.GetNeighbours<CubicHexCoord, HexDirections, TerrainNode>(target))
             {
-                RoadNode neighbourRoadInfo = neighbour.Item.RoadInfo;
+                RoadNode neighbourRoadInfo = neighbour.Item.Road;
 
                 if (neighbour.Point != eliminate &&
-                    neighbourRoadInfo.IsHaveRoad() &&
+                    neighbourRoadInfo.Exist() &&
                     neighbourRoadInfo.ID < minID)
                 {
                     isFind = true;

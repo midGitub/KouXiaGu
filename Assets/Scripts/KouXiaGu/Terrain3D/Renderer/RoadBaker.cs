@@ -91,18 +91,12 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        public void OnDestroy()
-        {
-            Clear();
-        }
 
-
-        public IEnumerator Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
+        public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
         {
             PrepareScene(request, points);
             DiffuseRT = BakeDiffuse();
             HeightRT = BakeHeight();
-            yield break;
         }
 
 
