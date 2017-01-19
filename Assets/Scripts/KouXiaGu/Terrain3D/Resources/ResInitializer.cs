@@ -29,13 +29,13 @@ namespace KouXiaGu.Terrain3D
         /// 地貌配置文件名;
         /// </summary>
         [SerializeField]
-        string landformDescrName = "LandformDescr.xml";
+        string landformDescrName = "Landform.xml";
 
         /// <summary>
         /// 道路配置文件名;
         /// </summary>
         [SerializeField]
-        string roadDescrName = "RoadDescr.xml";
+        string roadDescrName = "Road.xml";
 
         /// <summary>
         /// 建筑信息配置文件名;

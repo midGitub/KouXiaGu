@@ -38,10 +38,10 @@ namespace KouXiaGu.Terrain3D
         [SerializeField, Range(50, 500)]
         float textureSize;
 
-        [SerializeField, Range(0, 3)]
+        [SerializeField, Range(1, 3)]
         int diffuseTexDownsample;
 
-        [SerializeField, Range(0, 3)]
+        [SerializeField, Range(1, 3)]
         int heightMapDownsample;
 
         /// <summary>
@@ -56,10 +56,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 图片裁剪后的尺寸;
         /// </summary>
-        public int DiffuseTexWidth { get; private set; }
-        public int DiffuseTexHeight { get; private set; }
-        public int HeightMapWidth { get; private set; }
-        public int HeightMapHeight { get; private set; }
+        public float DiffuseTexWidth { get; private set; }
+        public float DiffuseTexHeight { get; private set; }
+        public float HeightMapWidth { get; private set; }
+        public float HeightMapHeight { get; private set; }
 
         /// <summary>
         /// 烘焙时的尺寸;
@@ -77,8 +77,8 @@ namespace KouXiaGu.Terrain3D
 
         public BakingParameter(float textureSize, int diffuseTexDownsample, int heightMapDownsample) : this()
         {
-            this.diffuseTexDownsample = diffuseTexDownsample;
-            this.heightMapDownsample = heightMapDownsample;
+            this.diffuseTexDownsample = Math.Max(1, diffuseTexDownsample);
+            this.heightMapDownsample = Math.Max(1, heightMapDownsample);
             SetTextureSize(textureSize);
         }
 
@@ -89,13 +89,13 @@ namespace KouXiaGu.Terrain3D
 
         void SetTextureSize(float size)
         {
-            int chunkWidth = (int)Math.Round(TerrainMesh.CHUNK_WIDTH * size);
-            int chunkHeight = (int)Math.Round(TerrainMesh.CHUNK_HEIGHT * size);
+            float chunkWidth = TerrainMesh.CHUNK_WIDTH * size;
+            float chunkHeight = TerrainMesh.CHUNK_HEIGHT * size;
 
-            this.DiffuseTexWidth = chunkWidth >> diffuseTexDownsample;
-            this.DiffuseTexHeight = chunkHeight >> diffuseTexDownsample;
-            this.HeightMapWidth = chunkWidth >> heightMapDownsample;
-            this.HeightMapHeight = chunkHeight >> heightMapDownsample;
+            this.DiffuseTexWidth = chunkWidth / diffuseTexDownsample;
+            this.DiffuseTexHeight = chunkHeight / diffuseTexDownsample;
+            this.HeightMapWidth = chunkWidth / heightMapDownsample;
+            this.HeightMapHeight = chunkHeight / heightMapDownsample;
 
             this.rDiffuseTexWidth = (int)Math.Round(DiffuseTexWidth + DiffuseTexWidth * OutlineScale);
             this.rDiffuseTexHeight = (int)Math.Round(DiffuseTexHeight + DiffuseTexHeight * OutlineScale);

@@ -284,7 +284,7 @@ namespace KouXiaGu.Terrain3D
         public static Texture2D GetHeightTexture(RenderTexture rt)
         {
             RenderTexture.active = rt;
-            Texture2D heightMap = new Texture2D(Parameter.HeightMapWidth, Parameter.HeightMapHeight, TextureFormat.RGB24, false);
+            Texture2D heightMap = new Texture2D((int)Parameter.HeightMapWidth, (int)Parameter.HeightMapHeight, TextureFormat.RGB24, false);
             heightMap.ReadPixels(Parameter.HeightReadPixel, 0, 0, false);
             heightMap.wrapMode = TextureWrapMode.Clamp;
             heightMap.Apply();
@@ -294,7 +294,7 @@ namespace KouXiaGu.Terrain3D
         public static Texture2D GetDiffuseTexture(RenderTexture rt)
         {
             RenderTexture.active = rt;
-            Texture2D diffuseTex = new Texture2D(Parameter.DiffuseTexWidth, Parameter.DiffuseTexHeight, TextureFormat.RGB24, false);
+            Texture2D diffuseTex = new Texture2D((int)Parameter.DiffuseTexWidth, (int)Parameter.DiffuseTexHeight, TextureFormat.RGB24, false);
             diffuseTex.ReadPixels(Parameter.DiffuseReadPixel, 0, 0, false);
             diffuseTex.wrapMode = TextureWrapMode.Clamp;
             diffuseTex.Apply();

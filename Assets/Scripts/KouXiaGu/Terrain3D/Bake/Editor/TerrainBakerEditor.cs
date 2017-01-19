@@ -9,8 +9,8 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
-    [CustomEditor(typeof(KouXiaGu.Terrain3D.TerrainBaker))]
-    class RendererEditor : Editor
+    [CustomEditor(typeof(TerrainBaker))]
+    class TerrainBakerEditor : Editor
     {
 
         public override void OnInspectorGUI()
@@ -20,15 +20,18 @@ namespace KouXiaGu.Terrain3D
 
         void OnSceneGUI()
         {
-            var par = new BakingParameter(1, 0, 0);
+            var par = new BakingParameter(1, 1, 1);
             Rect rect = par.DiffuseReadPixel;
             Rect rect2 = Rect.MinMaxRect(0, 0, TerrainMesh.CHUNK_WIDTH, TerrainMesh.CHUNK_HEIGHT);
 
             Handles.color = Color.red;
             DrawRect(par.DiffuseReadPixel);
 
-            Handles.color = Color.blue;
-            DrawRect(rect2);
+            //Handles.color = Color.blue;
+            //DrawRect(rect2);
+
+            Handles.color = Color.green;
+            DrawRect(Rect.MinMaxRect(0, 0, par.rDiffuseTexWidth, par.rDiffuseTexHeight));
         }
 
         void DrawRect(Rect rect)
