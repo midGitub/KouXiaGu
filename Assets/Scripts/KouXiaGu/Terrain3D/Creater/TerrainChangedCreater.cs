@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var around in coord.GetNeighbours())
             {
-                TerrainMesh.GetBelongChunks(around, ref chunksCoord);
+                TerrainChunk.GetBelongChunks(around, ref chunksCoord);
                 TerrainCreater.UpdateChunk(chunksCoord[0]);
                 TerrainCreater.UpdateChunk(chunksCoord[1]);
             }

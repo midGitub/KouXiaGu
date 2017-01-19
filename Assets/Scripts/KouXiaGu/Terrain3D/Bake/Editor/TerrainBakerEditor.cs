@@ -22,13 +22,12 @@ namespace KouXiaGu.Terrain3D
         {
             var par = new BakingParameter(1, 1, 1);
             Rect rect = par.DiffuseReadPixel;
-            Rect rect2 = Rect.MinMaxRect(0, 0, TerrainMesh.CHUNK_WIDTH, TerrainMesh.CHUNK_HEIGHT);
 
             Handles.color = Color.red;
             DrawRect(par.DiffuseReadPixel);
 
             //Handles.color = Color.blue;
-            //DrawRect(rect2);
+            //DrawRect(Rect.MinMaxRect(0, 0, TerrainChunk.CHUNK_WIDTH, TerrainChunk.CHUNK_HEIGHT));
 
             Handles.color = Color.green;
             DrawRect(Rect.MinMaxRect(0, 0, par.rDiffuseTexWidth, par.rDiffuseTexHeight));

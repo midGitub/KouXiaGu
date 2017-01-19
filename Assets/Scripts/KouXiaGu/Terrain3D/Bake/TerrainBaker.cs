@@ -278,7 +278,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<CubicHexCoord> GetCover(IBakeRequest request)
         {
-            return TerrainMesh.GetChunkCover(request.ChunkCoord);
+            return TerrainChunk.GetChunkCover(request.ChunkCoord);
         }
 
         public static Texture2D GetHeightTexture(RenderTexture rt)

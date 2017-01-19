@@ -5,9 +5,9 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地表触发器;
+    /// 地表碰撞触发器;
     /// </summary>
-    [RequireComponent(typeof(MeshCollider), typeof(TerrainMesh)), DisallowMultipleComponent]
+    [RequireComponent(typeof(MeshCollider), typeof(TerrainChunk)), DisallowMultipleComponent]
     public class TerrainTrigger : MonoBehaviour
     {
 
@@ -29,16 +29,16 @@ namespace KouXiaGu.Terrain3D
         {
             List<KeyValuePair<Vector3, UV>> list = new List<KeyValuePair<Vector3, UV>>();
 
-            float lengthX = TerrainMesh.CHUNK_WIDTH / SUB_X;
-            float lengthZ = TerrainMesh.CHUNK_HEIGHT / SUB_Z;
+            float lengthX = TerrainChunk.CHUNK_WIDTH / SUB_X;
+            float lengthZ = TerrainChunk.CHUNK_HEIGHT / SUB_Z;
 
             for (int z = 0; z <= SUB_Z; z++)
             {
                 for (int x = 0; x <= SUB_X; x++)
                 {
                     Vector3 vertice = new Vector3(x * lengthX, 0, z * lengthZ);
-                    vertice.x -= TerrainMesh.CHUNK_WIDTH_HALF;
-                    vertice.z -= TerrainMesh.CHUNK_HEIGHT_HALF;
+                    vertice.x -= TerrainChunk.CHUNK_WIDTH_HALF;
+                    vertice.z -= TerrainChunk.CHUNK_HEIGHT_HALF;
 
                     UV uv = new UV(x / (float)SUB_X, z / (float)SUB_Z);
 
@@ -148,11 +148,11 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("重置碰撞网格")]
         public void ResetCollisionMesh()
         {
-            TerrainMesh terrainChunk = GetComponent<TerrainMesh>();
+            TerrainChunk terrainChunk = GetComponent<TerrainChunk>();
             ResetCollisionMesh(terrainChunk);
         }
 
-        public void ResetCollisionMesh(TerrainMesh terrainChunk)
+        public void ResetCollisionMesh(TerrainChunk terrainChunk)
         {
             MeshCollider meshCollider = GetComponent<MeshCollider>();
             Mesh mesh = meshCollider.sharedMesh;
@@ -172,7 +172,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到高度对应的顶点坐标;
         /// </summary>
-        Vector3[] GetVertices(TerrainMesh chunk)
+        Vector3[] GetVertices(TerrainChunk chunk)
         {
             List<Vector3> vertices = new List<Vector3>();
             foreach (var pair in VERTICES)
