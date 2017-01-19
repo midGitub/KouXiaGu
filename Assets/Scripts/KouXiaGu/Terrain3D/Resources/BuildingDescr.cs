@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     [XmlType("Building")]
-    public struct BuildingDescr
+    public struct BuildingDescr : IEquatable<BuildingDescr>
     {
 
         static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(BuildingDescr[]));
@@ -30,14 +30,23 @@ namespace KouXiaGu.Terrain3D
         [XmlAttribute("name")]
         public string Name { get; set; }
 
+        /// <summary>
+        /// 建筑预制物体名;
+        /// </summary>
+        [XmlElement("PrefabName")]
+        public string PrefabName { get; set; }
 
 
+        public bool Equals(BuildingDescr other)
+        {
+            return ID == other.ID;
+        }
 
         public override bool Equals(object obj)
         {
             if (!(obj is BuildingDescr))
                 return false;
-            return ID == ((BuildingDescr)obj).ID;
+            return this.Equals((BuildingDescr)obj);
         }
 
         public override int GetHashCode()
