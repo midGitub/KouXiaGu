@@ -7,7 +7,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地表碰撞触发器;
     /// </summary>
-    [RequireComponent(typeof(MeshCollider), typeof(TerrainChunk)), DisallowMultipleComponent]
+    [RequireComponent(typeof(MeshCollider), typeof(TerrainRenderer)), DisallowMultipleComponent]
     public class TerrainTrigger : MonoBehaviour
     {
 
@@ -148,11 +148,11 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("重置碰撞网格")]
         public void ResetCollisionMesh()
         {
-            TerrainChunk terrainChunk = GetComponent<TerrainChunk>();
+            TerrainRenderer terrainChunk = GetComponent<TerrainRenderer>();
             ResetCollisionMesh(terrainChunk);
         }
 
-        public void ResetCollisionMesh(TerrainChunk terrainChunk)
+        public void ResetCollisionMesh(TerrainRenderer terrainChunk)
         {
             MeshCollider meshCollider = GetComponent<MeshCollider>();
             Mesh mesh = meshCollider.sharedMesh;
@@ -172,7 +172,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到高度对应的顶点坐标;
         /// </summary>
-        Vector3[] GetVertices(TerrainChunk chunk)
+        Vector3[] GetVertices(TerrainRenderer chunk)
         {
             List<Vector3> vertices = new List<Vector3>();
             foreach (var pair in VERTICES)

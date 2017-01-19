@@ -1,23 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地图网格和材质;
+    /// 地形块挂载组建控制;
     /// </summary>
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent]
-    public sealed class TerrainChunk : MonoBehaviour
+    public sealed class TerrainChunk
     {
-        TerrainChunk() { }
 
-        static Shader TerrainShader
+        /// <summary>
+        /// 地形块挂载的脚本;
+        /// </summary>
+        static readonly Type[] TERRAIN_CHUNK_SCRIPTS = new Type[]
+            {
+                typeof(TerrainRenderer),    //渲染;
+                typeof(TerrainMesh),        //地形网格;
+                typeof(TerrainTrigger),     //地形碰撞器;
+            };
+
+
+#if UNITY_EDITOR
+        [MenuItem("GameObject/Create Other/TerrainChunk")]
+#endif
+        static void _CraeteTerrainChunk()
         {
-            get { return TerrainData.TerrainShader; }
+            new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
         }
+
+        /// <summary>
+        /// 实例一个地形块,并指定名称;
+        /// </summary>
+        static GameObject CraeteTerrainChunk()
+        {
+            GameObject gameObject = new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
+#if UNITY_EDITOR
+            gameObject.transform.SetParent(ChunkParent, false);
+#endif
+            return gameObject;
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// 放置地形块的父节点;
+        /// </summary>
+        static Transform chunkParent;
+        static Transform ChunkParent
+        {
+            get { return chunkParent ?? (chunkParent = new GameObject("TerrainChunks").transform); }
+        }
+#endif
+
 
 
         #region 地形块大小(静态)
@@ -29,7 +71,7 @@ namespace KouXiaGu.Terrain3D
         {
             get { return TerrainConvert.hexagon; }
         }
-        
+
         /// <summary>
         /// 地形块大小(需要大于或等于2);
         /// </summary>
@@ -135,167 +177,65 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        #region 地形块网格(静态)
-
-        const string MESH_NAME = "Terrain Mesh";
-
-        static readonly float MESH_HALF_WIDTH = CHUNK_WIDTH_HALF;
-        static readonly float MESH_HALF_HEIGHT = CHUNK_HEIGHT_HALF;
 
         /// <summary>
-        /// 网格生成的高度;
+        /// 创建一个空的地图块到;
         /// </summary>
-        const float ALTITUDE = 0;
-
-        /// <summary>
-        /// 网格顶点数据;
-        /// </summary>
-        internal static readonly Vector3[] VERTICES = new Vector3[]
-            {
-                new Vector3(-MESH_HALF_WIDTH , ALTITUDE, MESH_HALF_HEIGHT),
-                new Vector3(MESH_HALF_WIDTH, ALTITUDE, MESH_HALF_HEIGHT),
-                new Vector3(MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
-                new Vector3(-MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
-            };
-
-        /// <summary>
-        /// 网格三角形数据;
-        /// </summary>
-        internal static readonly int[] TRIANGLES = new int[]
-           {
-                0,1,2,
-                0,2,3,
-           };
-
-        /// <summary>
-        /// 网格UV坐标数据;
-        /// </summary>
-        internal static readonly Vector2[] UV = new Vector2[]
-           {
-                new Vector2(0f, 1f),
-                new Vector2(1f, 1f),
-                new Vector2(1f, 0f),
-                new Vector2(0f, 0f),
-           };
-
-        /// <summary>
-        /// 创建一个新的地形块网格结构;
-        /// </summary>
-        internal static Mesh CreateTerrainMesh()
+        public TerrainChunk()
         {
-            Mesh mesh = new Mesh();
-
-            mesh.name = MESH_NAME;
-            mesh.vertices = VERTICES;
-            mesh.triangles = TRIANGLES;
-            mesh.uv = UV;
-            mesh.RecalculateNormals();
-
-            return mesh;
+            gameObject = CraeteTerrainChunk();
+            Renderer = gameObject.GetComponent<TerrainRenderer>();
+            Trigger = gameObject.GetComponent<TerrainTrigger>();
         }
 
-        static Mesh terrainMesh;
-
-        /// <summary>
-        /// 获取到公共使用的地形块网格结构;
-        /// </summary>
-        static Mesh GetTerrainMesh()
-        {
-            return terrainMesh ?? (terrainMesh = CreateTerrainMesh());
-        }
-
-        #endregion
-
-
-        #region 地形块(实例)
 
         RectCoord coord;
-        Material material;
-        Texture2D heightTexture;
-        Texture2D diffuseTexture;
-        Texture2D normalMap;
+        public GameObject gameObject { get; private set; }
+        public TerrainRenderer Renderer { get; private set; }
+        public TerrainTrigger Trigger { get; private set; }
+
 
         /// <summary>
         /// 地形块坐标;
         /// </summary>
-        public RectCoord Coord
+        public RectCoord ChunkCoord
         {
             get { return coord; }
-            set { transform.position = ChunkGrid.GetCenter(value); coord = value; }
+            set { gameObject.transform.position = ChunkGrid.GetCenter(value); coord = value; }
+        }
+
+
+        /// <summary>
+        /// gameObject.SetActive(value);
+        /// </summary>
+        public void SetActive(bool value)
+        {
+            gameObject.SetActive(value);
+        }
+
+
+        public void Set(TerrainTexPack tex)
+        {
+            Renderer.DiffuseTexture = tex.diffuseMap;
+            Renderer.HeightTexture = tex.heightMap;
+            Renderer.NormalMap = tex.normalMap;
+
+            Trigger.ResetCollisionMesh();
+        }
+
+        public void Set(RectCoord coord, TerrainTexPack tex)
+        {
+            ChunkCoord = coord;
+            Set(tex);
         }
 
         /// <summary>
-        /// 正在使用的材质;
+        /// 清空所有信息;
         /// </summary>
-        Material Material
+        public void Clear()
         {
-            get { return material ?? (material = new Material(TerrainShader)); }
+            Renderer.DestroyTextures();
         }
-
-        /// <summary>
-        /// 漫反射贴图;
-        /// </summary>
-        public Texture2D DiffuseTexture
-        {
-            get { return diffuseTexture; }
-            set { Material.SetTexture("_MainTex", value); diffuseTexture = value; }
-        }
-
-        /// <summary>
-        /// 高度贴图;
-        /// </summary>
-        public Texture2D HeightTexture
-        {
-            get { return heightTexture; }
-            set { Material.SetTexture("_HeightTex", value); heightTexture = value; }
-        }
-
-        /// <summary>
-        /// 法线贴图;
-        /// </summary>
-        public Texture2D NormalMap
-        {
-            get { return normalMap; }
-            set { Material.SetTexture("_NormalMap", value); normalMap = value; }
-        }
-
-        void Awake()
-        {
-            GetComponent<MeshFilter>().mesh = GetTerrainMesh();
-            GetComponent<MeshRenderer>().material = Material;
-        }
-
-        /// <summary>
-        /// 清空贴图引用,但是不销毁;
-        /// </summary>
-        public void ClearTextures()
-        {
-            Coord = RectCoord.Self;
-            DiffuseTexture = null;
-            HeightTexture = null;
-            NormalMap = null;
-        }
-
-        /// <summary>
-        /// 销毁所有贴图;
-        /// </summary>
-        public void DestroyTextures()
-        {
-            Coord = RectCoord.Self;
-            Destroy(DiffuseTexture);
-            Destroy(HeightTexture);
-            Destroy(NormalMap);
-        }
-
-        void Reset()
-        {
-            GetComponent<MeshFilter>().mesh = CreateTerrainMesh();
-            MeshRenderer renderer = GetComponent<MeshRenderer>();
-            if (renderer.sharedMaterial == null)
-                renderer.sharedMaterial = Material;
-        }
-
-        #endregion
 
     }
 

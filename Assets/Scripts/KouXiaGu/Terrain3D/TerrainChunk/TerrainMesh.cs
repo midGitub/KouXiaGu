@@ -1,45 +1,44 @@
-﻿using KouXiaGu.Grids;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 略宽于六边形的矩形;
+    /// 地形网格;
     /// </summary>
-    public class WiderOuterMesh : MonoBehaviour
+    [RequireComponent(typeof(MeshFilter)), DisallowMultipleComponent]
+    public class TerrainMesh : MonoBehaviour
     {
-        WiderOuterMesh() { }
 
-        const string MESH_NAME = "WiderOuterMesh";
+        const string MESH_NAME = "Terrain Mesh";
 
-        /// <summary>
-        /// 游戏使用的六边形参数;
-        /// </summary>
-        static readonly Hexagon HEXAGON = TerrainConvert.hexagon;
+        static readonly float MESH_HALF_WIDTH = TerrainChunk.CHUNK_WIDTH_HALF;
+        static readonly float MESH_HALF_HEIGHT = TerrainChunk.CHUNK_HEIGHT_HALF;
 
         /// <summary>
-        /// 矩形大小;
+        /// 网格生成的高度;
         /// </summary>
-        static readonly float SIZE = (float)(HEXAGON.OuterDiameters + HEXAGON.OuterRadius);
-        static readonly float HALF_SIZE = SIZE / 2;
         const float ALTITUDE = 0;
 
         /// <summary>
         /// 网格顶点数据;
         /// </summary>
-        static readonly Vector3[] VERTICES = new Vector3[]
+        internal static readonly Vector3[] VERTICES = new Vector3[]
             {
-                new Vector3(-HALF_SIZE , ALTITUDE, HALF_SIZE),
-                new Vector3(HALF_SIZE, ALTITUDE, HALF_SIZE),
-                new Vector3(HALF_SIZE, ALTITUDE, -HALF_SIZE),
-                new Vector3(-HALF_SIZE, ALTITUDE, -HALF_SIZE),
+                new Vector3(-MESH_HALF_WIDTH , ALTITUDE, MESH_HALF_HEIGHT),
+                new Vector3(MESH_HALF_WIDTH, ALTITUDE, MESH_HALF_HEIGHT),
+                new Vector3(MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
+                new Vector3(-MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
             };
 
         /// <summary>
         /// 网格三角形数据;
         /// </summary>
-        static readonly int[] TRIANGLES = new int[]
+        internal static readonly int[] TRIANGLES = new int[]
            {
                 0,1,2,
                 0,2,3,
@@ -48,7 +47,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 网格UV坐标数据;
         /// </summary>
-        static readonly Vector2[] UV = new Vector2[]
+        internal static readonly Vector2[] UV = new Vector2[]
            {
                 new Vector2(0f, 1f),
                 new Vector2(1f, 1f),
@@ -56,8 +55,10 @@ namespace KouXiaGu.Terrain3D
                 new Vector2(0f, 0f),
            };
 
-
-        Mesh CreateMesh()
+        /// <summary>
+        /// 创建一个新的地形块网格结构;
+        /// </summary>
+        internal static Mesh CreateMesh()
         {
             Mesh mesh = new Mesh();
 
@@ -72,7 +73,10 @@ namespace KouXiaGu.Terrain3D
 
         static Mesh _publicMesh;
 
-        Mesh PublicMesh
+        /// <summary>
+        /// 获取到公共使用的地形块网格结构;
+        /// </summary>
+        static Mesh PublicMesh
         {
             get { return _publicMesh ?? (_publicMesh = CreateMesh()); }
             set { _publicMesh = value; }

@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 大小为六边形外直径和内直径,宽高比约为 "1.154701";
     /// </summary>
-    public class ClipRectMesh : CustomMesh
+    public class ClipRectMesh : MonoBehaviour
     {
         ClipRectMesh() { }
 
@@ -63,7 +63,7 @@ namespace KouXiaGu.Terrain3D
            };
 
 
-        protected override Mesh CreateMesh()
+        Mesh CreateMesh()
         {
             Mesh mesh = new Mesh();
 
@@ -78,11 +78,23 @@ namespace KouXiaGu.Terrain3D
 
         static Mesh _publicMesh;
 
-        protected override Mesh PublicMesh
+        Mesh PublicMesh
         {
             get { return _publicMesh ?? (_publicMesh = CreateMesh()); }
             set { _publicMesh = value; }
         }
+
+        void Reset()
+        {
+            PublicMesh = CreateMesh();
+            GetComponent<MeshFilter>().sharedMesh = PublicMesh;
+        }
+
+        void Awake()
+        {
+            GetComponent<MeshFilter>().sharedMesh = PublicMesh;
+        }
+
     }
 
 }

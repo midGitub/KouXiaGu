@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static float GetHeight(Vector3 position)
         {
-            TerrainChunkPack chunk;
+            TerrainChunk chunk;
             RectCoord coord;
             UV uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
 
@@ -88,7 +88,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到对应的高度;
         /// </summary>
-        public static float GetHeight(TerrainChunk chunk, UV uv)
+        public static float GetHeight(TerrainRenderer chunk, UV uv)
         {
             Color pixelColor = chunk.HeightTexture.GetPixel(uv);
             return pixelColor.r * Displacement;

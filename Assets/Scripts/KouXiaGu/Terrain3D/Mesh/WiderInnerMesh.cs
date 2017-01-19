@@ -7,7 +7,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 略宽于六边形的矩形;
     /// </summary>
-    public class WiderInnerMesh : CustomMesh
+    public class WiderInnerMesh : MonoBehaviour
     {
         WiderInnerMesh() { }
 
@@ -57,7 +57,7 @@ namespace KouXiaGu.Terrain3D
            };
 
 
-        protected override Mesh CreateMesh()
+        Mesh CreateMesh()
         {
             Mesh mesh = new Mesh();
 
@@ -72,10 +72,21 @@ namespace KouXiaGu.Terrain3D
 
         static Mesh _publicMesh;
 
-        protected override Mesh PublicMesh
+        Mesh PublicMesh
         {
             get { return _publicMesh ?? (_publicMesh = CreateMesh()); }
             set { _publicMesh = value; }
+        }
+
+        void Reset()
+        {
+            PublicMesh = CreateMesh();
+            GetComponent<MeshFilter>().sharedMesh = PublicMesh;
+        }
+
+        void Awake()
+        {
+            GetComponent<MeshFilter>().sharedMesh = PublicMesh;
         }
 
     }

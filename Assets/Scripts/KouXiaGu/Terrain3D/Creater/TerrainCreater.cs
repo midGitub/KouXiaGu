@@ -41,12 +41,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 在场景中激活的地形块;
         /// </summary>
-        static readonly CustomDictionary<RectCoord, TerrainChunkPack> activatedChunks = new CustomDictionary<RectCoord, TerrainChunkPack>();
+        static readonly CustomDictionary<RectCoord, TerrainChunk> activatedChunks = new CustomDictionary<RectCoord, TerrainChunk>();
 
         /// <summary>
         /// 休眠的地形块;
         /// </summary>
-        static readonly Queue<TerrainChunkPack> restingChunks = new Queue<TerrainChunkPack>();
+        static readonly Queue<TerrainChunk> restingChunks = new Queue<TerrainChunk>();
 
         /// <summary>
         /// 是否允许创建地形到场景?
@@ -62,7 +62,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 在场景中激活的地形块;
         /// </summary>
-        public static IReadOnlyDictionary<RectCoord, TerrainChunkPack> ActivatedChunks
+        public static IReadOnlyDictionary<RectCoord, TerrainChunk> ActivatedChunks
         {
             get { return activatedChunks; }
         }
@@ -87,9 +87,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建地形块到场景,若已经存在,则更新其贴图;
         /// </summary>
-        static TerrainChunkPack CreateOrUpdate(RectCoord coord, TerrainTexPack tex)
+        static TerrainChunk CreateOrUpdate(RectCoord coord, TerrainTexPack tex)
         {
-            TerrainChunkPack chunk;
+            TerrainChunk chunk;
 
             if (activatedChunks.TryGetValue(coord, out chunk))
             {
@@ -107,16 +107,16 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从池内获取到或者实例化一个;
         /// </summary>
-        static TerrainChunkPack GetTerrainChunk()
+        static TerrainChunk GetTerrainChunk()
         {
-            TerrainChunkPack terrainChunk;
+            TerrainChunk terrainChunk;
             if (restingChunks.Count > 0)
             {
                 terrainChunk = DequeueTerrainChunk();
             }
             else
             {
-                terrainChunk = new TerrainChunkPack();
+                terrainChunk = new TerrainChunk();
             }
             return terrainChunk;
         }
@@ -124,7 +124,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 从对象池获取到地形块;
         /// </summary>
-        static TerrainChunkPack DequeueTerrainChunk()
+        static TerrainChunk DequeueTerrainChunk()
         {
             var terrainChunk = restingChunks.Dequeue();
             terrainChunk.SetActive(true);
@@ -136,7 +136,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static bool Release(RectCoord coord)
         {
-            TerrainChunkPack terrainChunk;
+            TerrainChunk terrainChunk;
             if (activatedChunks.TryGetValue(coord, out terrainChunk))
             {
                 terrainChunk.Clear();

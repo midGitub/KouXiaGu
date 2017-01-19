@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    [CustomEditor(typeof(TerrainChunk), true)]
+    [CustomEditor(typeof(TerrainRenderer), true)]
     class TerrainChunkEditor : Editor
     {
 
@@ -18,8 +18,7 @@ namespace KouXiaGu.Terrain3D
         {
             base.OnInspectorGUI();
 
-            var target = (TerrainChunk)this.target;
-
+            var target = (TerrainRenderer)this.target;
 
             EditorGUILayout.ObjectField("Diffuse", target.DiffuseTexture, typeof(Texture2D), true);
             EditorGUILayout.ObjectField("Height", target.HeightTexture, typeof(Texture2D), true);
@@ -29,9 +28,9 @@ namespace KouXiaGu.Terrain3D
             {
                 string path = Application.dataPath + "\\TestTex";
 
-                target.DiffuseTexture.SavePNG(path, target.Coord.ToString() + "_d", FileMode.CreateNew);
-                target.HeightTexture.SavePNG(path, target.Coord.ToString() + "_h", FileMode.CreateNew);
-                target.NormalMap.SavePNG(path, target.Coord.ToString() + "_n", FileMode.CreateNew);
+                target.DiffuseTexture.SavePNG(path, target.transform.position.ToString() + "_d", FileMode.CreateNew);
+                target.HeightTexture.SavePNG(path, target.transform.position.ToString() + "_h", FileMode.CreateNew);
+                target.NormalMap.SavePNG(path, target.transform.position.ToString() + "_n", FileMode.CreateNew);
             }
         }
 
