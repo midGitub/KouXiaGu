@@ -20,17 +20,23 @@ namespace KouXiaGu.Terrain3D
 
             var target = (TerrainRenderer)this.target;
 
-            target.DiffuseTexture = (Texture2D)EditorGUILayout.ObjectField("Diffuse", target.DiffuseTexture, typeof(Texture2D), true);
-            target.HeightTexture = (Texture2D)EditorGUILayout.ObjectField("Height", target.HeightTexture, typeof(Texture2D), true);
-            target.NormalMap = (Texture2D)EditorGUILayout.ObjectField("Normal", target.NormalMap, typeof(Texture2D), true);
-
-            if (GUILayout.Button("存储所有贴图"))
+            if (Application.isPlaying)
             {
-                string path = Application.dataPath + "\\TestTex";
+                if (GUILayout.Button("存储所有贴图"))
+                {
+                    string path = Application.dataPath + "\\TestTex";
 
-                target.DiffuseTexture.SavePNG(path, target.transform.position.ToString() + "_d", FileMode.CreateNew);
-                target.HeightTexture.SavePNG(path, target.transform.position.ToString() + "_h", FileMode.CreateNew);
-                target.NormalMap.SavePNG(path, target.transform.position.ToString() + "_n", FileMode.CreateNew);
+                    var name = DateTime.Now.Ticks;
+
+                    if (target.DiffuseMap != null)
+                        target.DiffuseMap.SavePNG(path, name + "_d", FileMode.CreateNew);
+
+                    if (target.HeightMap != null)
+                        target.HeightMap.SavePNG(path, name + "_h", FileMode.CreateNew);
+
+                    if (target.NormalMap != null)
+                        target.NormalMap.SavePNG(path, name + "_n", FileMode.CreateNew);
+                }
             }
         }
 

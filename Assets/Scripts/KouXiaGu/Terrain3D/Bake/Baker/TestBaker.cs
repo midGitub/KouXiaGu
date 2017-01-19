@@ -15,12 +15,19 @@ namespace KouXiaGu.Terrain3D
     {
 
         [SerializeField]
-        MeshRenderer terrainChunk;
+        TerrainRenderer terrainChunk;
 
         public void Bake(IBakeRequest request)
         {
             Vector3 pos = TerrainChunk.ChunkGrid.GetCenter(request.ChunkCoord);
-            GameObject.Instantiate(terrainChunk, pos, Quaternion.identity);
+            TerrainRenderer mesh = GameObject.Instantiate(terrainChunk, pos, Quaternion.identity);
+            mesh.gameObject.SetActive(true);
+
+            var rt = BakeCamera.GetHeightTemporaryRender();
+            BakeCamera.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
+
+            var texture = BakeCamera.GetHeightTexture(rt);
+            mesh.SetDiffuseMap(texture);
         }
 
     }

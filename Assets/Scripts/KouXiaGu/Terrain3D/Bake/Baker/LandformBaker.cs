@@ -156,10 +156,16 @@ namespace KouXiaGu.Terrain3D
         {
             LandformRes res = renderer.Res;
 
-            diffuseMaterial.SetTexture("_MainTex", res.DiffuseTex);
-            diffuseMaterial.SetTexture("_BlendTex", res.DiffuseBlendTex);
+            if (renderer.Rednerer.material != null)
+            {
+                GameObject.Destroy(renderer.Rednerer.material);
+                renderer.Rednerer.material = diffuseMaterial;
+            }
 
-            renderer.Rednerer.material = diffuseMaterial;
+            var material = renderer.Rednerer.material;
+            material.SetTexture("_MainTex", res.DiffuseTex);
+            material.SetTexture("_BlendTex", res.DiffuseBlendTex);
+
         }
 
 
@@ -178,10 +184,15 @@ namespace KouXiaGu.Terrain3D
         {
             LandformRes res = renderer.Res;
 
-            heightMaterial.SetTexture("_MainTex", res.HeightTex);
-            heightMaterial.SetTexture("_BlendTex", res.HeightBlendTex);
+            if (renderer.Rednerer.material != null)
+            {
+                GameObject.Destroy(renderer.Rednerer.material);
+                renderer.Rednerer.material = heightMaterial;
+            }
 
-            renderer.Rednerer.material = heightMaterial;
+            var material = renderer.Rednerer.material;
+            material.SetTexture("_MainTex", res.HeightTex);
+            material.SetTexture("_BlendTex", res.HeightBlendTex);
         }
 
 

@@ -216,9 +216,9 @@ namespace KouXiaGu.Terrain3D
 
         public void Set(TerrainTexPack tex)
         {
-            Renderer.DiffuseTexture = tex.diffuseMap;
-            Renderer.HeightTexture = tex.heightMap;
-            Renderer.NormalMap = tex.normalMap;
+            Renderer.SetDiffuseMap(tex.diffuseMap);
+            Renderer.SetHeightMap(tex.heightMap);
+            Renderer.SetNormalMap(tex.normalMap);
 
             Trigger.ResetCollisionMesh();
         }

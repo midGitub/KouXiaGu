@@ -7,7 +7,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    [RequireComponent(typeof(MeshRenderer)), DisallowMultipleComponent]
+    [RequireComponent(typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
     public class TerrainRenderer : MonoBehaviour
     {
         TerrainRenderer()
@@ -20,37 +20,30 @@ namespace KouXiaGu.Terrain3D
         }
 
         Material material;
-        [SerializeField, HideInInspector]
-        Texture2D heightTexture;
-        [SerializeField, HideInInspector]
-        Texture2D diffuseTexture;
-        [SerializeField, HideInInspector]
-        Texture2D normalMap;
 
-        /// <summary>
-        /// 正在使用的材质;
-        /// </summary>
-        Material Material
-        {
-            get { return material ?? (material = new Material(TerrainShader)); }
-        }
+        [SerializeField]
+        Texture2D diffuseMap;
+
+        [SerializeField]
+        Texture2D heightMap;
+
+        [SerializeField]
+        Texture2D normalMap;
 
         /// <summary>
         /// 漫反射贴图;
         /// </summary>
-        public Texture2D DiffuseTexture
+        public Texture2D DiffuseMap
         {
-            get { return diffuseTexture; }
-            set { Material.SetTexture("_MainTex", value); diffuseTexture = value; }
+            get { return diffuseMap; }
         }
 
         /// <summary>
         /// 高度贴图;
         /// </summary>
-        public Texture2D HeightTexture
+        public Texture2D HeightMap
         {
-            get { return heightTexture; }
-            set { Material.SetTexture("_HeightTex", value); heightTexture = value; }
+            get { return heightMap; }
         }
 
         /// <summary>
@@ -59,12 +52,59 @@ namespace KouXiaGu.Terrain3D
         public Texture2D NormalMap
         {
             get { return normalMap; }
-            set { Material.SetTexture("_NormalMap", value); normalMap = value; }
         }
 
         void Awake()
         {
-            GetComponent<MeshRenderer>().material = Material;
+            InitMaterial();
+            OnValidate();
+        }
+
+        void Reset()
+        {
+            Awake();
+        }
+
+        public void OnValidate()
+        {
+            InitMaterial();
+
+            SetDiffuseMap(diffuseMap);
+            SetHeightMap(heightMap);
+            SetNormalMap(normalMap);
+        }
+
+        void InitMaterial()
+        {
+            if (material == null)
+                GetComponent<MeshRenderer>().sharedMaterial = material = new Material(TerrainShader);
+        }
+
+        /// <summary>
+        /// 设置漫反射贴图;
+        /// </summary>
+        public void SetDiffuseMap(Texture2D diffuseMap)
+        {
+            material.SetTexture("_MainTex", diffuseMap);
+            this.diffuseMap = diffuseMap;
+        }
+
+        /// <summary>
+        /// 设置高度贴图;
+        /// </summary>
+        public void SetHeightMap(Texture2D heightMap)
+        {
+            material.SetTexture("_HeightTex", heightMap);
+            this.heightMap = heightMap;
+        }
+
+        /// <summary>
+        /// 设置法线贴图;
+        /// </summary>
+        public void SetNormalMap(Texture2D normalMap)
+        {
+            material.SetTexture("_NormalMap", normalMap);
+            this.normalMap = normalMap;
         }
 
         /// <summary>
@@ -72,9 +112,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void ClearTextures()
         {
-            DiffuseTexture = null;
-            HeightTexture = null;
-            NormalMap = null;
+            diffuseMap = null;
+            heightMap = null;
+            normalMap = null;
         }
 
         /// <summary>
@@ -82,16 +122,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void DestroyTextures()
         {
-            Destroy(DiffuseTexture);
-            Destroy(HeightTexture);
+            Destroy(DiffuseMap);
+            Destroy(HeightMap);
             Destroy(NormalMap);
-        }
-
-        void Reset()
-        {
-            MeshRenderer renderer = GetComponent<MeshRenderer>();
-            if (renderer.sharedMaterial == null)
-                renderer.sharedMaterial = Material;
         }
 
     }

@@ -144,6 +144,27 @@ namespace KouXiaGu.Terrain3D
         }
 
 
+        public static Texture2D GetDiffuseTexture(RenderTexture rt)
+        {
+            RenderTexture.active = rt;
+            Texture2D diffuseTex = new Texture2D((int)BakeCamera.DiffuseTexWidth, (int)BakeCamera.DiffuseTexHeight, TextureFormat.RGB24, false);
+            diffuseTex.ReadPixels(BakeCamera.DiffuseReadPixel, 0, 0, false);
+            diffuseTex.wrapMode = TextureWrapMode.Clamp;
+            diffuseTex.Apply();
+            return diffuseTex;
+        }
+
+        public static Texture2D GetHeightTexture(RenderTexture rt)
+        {
+            RenderTexture.active = rt;
+            Texture2D heightMap = new Texture2D((int)BakeCamera.HeightMapWidth, (int)BakeCamera.HeightMapHeight, TextureFormat.RGB24, false);
+            heightMap.ReadPixels(BakeCamera.HeightReadPixel, 0, 0, false);
+            heightMap.wrapMode = TextureWrapMode.Clamp;
+            heightMap.Apply();
+            return heightMap;
+        }
+
+
 
         [SerializeField, Range(80, 500)]
         float textureSize = 120;
@@ -157,10 +178,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 图片裁剪后的尺寸;
         /// </summary>
-        public static float DiffuseTexWidth { get; private set; }
-        public static float DiffuseTexHeight { get; private set; }
-        public static float HeightMapWidth { get; private set; }
-        public static float HeightMapHeight { get; private set; }
+        public static int DiffuseTexWidth { get; private set; }
+        public static int DiffuseTexHeight { get; private set; }
+        public static int HeightMapWidth { get; private set; }
+        public static int HeightMapHeight { get; private set; }
 
         /// <summary>
         /// 烘焙时的尺寸;
@@ -216,6 +237,12 @@ namespace KouXiaGu.Terrain3D
             InitBakingCamera();
         }
 
+        void OnValidate()
+        {
+            UpdataTextureSize();
+        }
+
+
         /// <summary>
         /// 初始化烘焙相机参数;
         /// </summary>
@@ -229,21 +256,15 @@ namespace KouXiaGu.Terrain3D
             _camera.backgroundColor = Color.black;
         }
 
-
-        void OnValidate()
-        {
-            UpdataTextureSize();
-        }
-
         void UpdataTextureSize()
         {
             float chunkWidth = TerrainChunk.CHUNK_WIDTH * textureSize;
             float chunkHeight = TerrainChunk.CHUNK_HEIGHT * textureSize;
 
-            DiffuseTexWidth = chunkWidth * diffuseMapRatios;
-            DiffuseTexHeight = chunkHeight * diffuseMapRatios;
-            HeightMapWidth = chunkWidth * heightMapRatios;
-            HeightMapHeight = chunkHeight * heightMapRatios;
+            DiffuseTexWidth = (int)Math.Round(chunkWidth * diffuseMapRatios);
+            DiffuseTexHeight = (int)Math.Round(chunkHeight * diffuseMapRatios);
+            HeightMapWidth = (int)Math.Round(chunkWidth * heightMapRatios);
+            HeightMapHeight = (int)Math.Round(chunkHeight * heightMapRatios);
 
             rDiffuseTexWidth = (int)Math.Round(DiffuseTexWidth + DiffuseTexWidth * OutlineScale);
             rDiffuseTexHeight = (int)Math.Round(DiffuseTexHeight + DiffuseTexHeight * OutlineScale);
@@ -259,8 +280,8 @@ namespace KouXiaGu.Terrain3D
 
             HeightReadPixel =
                 new Rect(
-                    HeightMapWidth * OutlineScale / 4,
-                    HeightMapHeight * OutlineScale / 4,
+                    HeightMapWidth * OutlineScale / 2,
+                    HeightMapHeight * OutlineScale / 2,
                     HeightMapWidth,
                     HeightMapHeight);
         }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+//#define TEST_BAKE
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using KouXiaGu.Grids;
@@ -72,6 +75,10 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         DecorateBlend decorateBlend;
 
+#if TEST_BAKE
+        [SerializeField]
+        TestBaker testBaker;
+#endif
 
         protected override void OnDestroy()
         {
@@ -107,6 +114,9 @@ namespace KouXiaGu.Terrain3D
                 {
                     request = bakeRequestQueue.Dequeue();
                     var cover = GetCover(request);
+#if TEST_BAKE
+                    testBaker.Bake(request);
+#else
 
                     landform.Bake(request, cover);
                     road.Bake(request, cover);
@@ -116,12 +126,13 @@ namespace KouXiaGu.Terrain3D
                     normalMapRT = normalMapper.Rander(heightMapRT);
 
                     tex = new TerrainTexPack();
-                    tex.heightMap = GetHeightTexture(heightMapRT);
+                    tex.heightMap = BakeCamera.GetHeightTexture(heightMapRT);
                     tex.normalMap = normalMapper.GetTexture(normalMapRT);
-                    tex.diffuseMap = GetDiffuseTexture(diffuseMapRT);
+                    tex.diffuseMap = BakeCamera.GetDiffuseTexture(diffuseMapRT);
 
                     request.OnComplete(tex);
                     tex = null;
+#endif
                 }
                 catch (Exception ex)
                 {
@@ -161,26 +172,6 @@ namespace KouXiaGu.Terrain3D
         IEnumerable<CubicHexCoord> GetCover(IBakeRequest request)
         {
             return TerrainChunk.GetChunkCover(request.ChunkCoord);
-        }
-
-        public static Texture2D GetHeightTexture(RenderTexture rt)
-        {
-            RenderTexture.active = rt;
-            Texture2D heightMap = new Texture2D((int)BakeCamera.HeightMapWidth, (int)BakeCamera.HeightMapHeight, TextureFormat.RGB24, false);
-            heightMap.ReadPixels(BakeCamera.HeightReadPixel, 0, 0, false);
-            heightMap.wrapMode = TextureWrapMode.Clamp;
-            heightMap.Apply();
-            return heightMap;
-        }
-
-        public static Texture2D GetDiffuseTexture(RenderTexture rt)
-        {
-            RenderTexture.active = rt;
-            Texture2D diffuseTex = new Texture2D((int)BakeCamera.DiffuseTexWidth, (int)BakeCamera.DiffuseTexHeight, TextureFormat.RGB24, false);
-            diffuseTex.ReadPixels(BakeCamera.DiffuseReadPixel, 0, 0, false);
-            diffuseTex.wrapMode = TextureWrapMode.Clamp;
-            diffuseTex.Apply();
-            return diffuseTex;
         }
 
     }

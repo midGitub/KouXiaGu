@@ -90,7 +90,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static float GetHeight(TerrainRenderer chunk, UV uv)
         {
-            Color pixelColor = chunk.HeightTexture.GetPixel(uv);
+            Color pixelColor = chunk.HeightMap.GetPixel(uv);
             return pixelColor.r * Displacement;
         }
 
