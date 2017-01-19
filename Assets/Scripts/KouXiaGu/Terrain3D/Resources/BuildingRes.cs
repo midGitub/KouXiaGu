@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public class BuildingRes : IEquatable<BuildingRes>, IDisposable
+    public sealed class BuildingRes : IEquatable<BuildingRes>, IDisposable
     {
 
         #region 已初始化合集(静态);
@@ -26,6 +26,15 @@ namespace KouXiaGu.Terrain3D
             get { return initializedDictionary; }
         }
 
+        public static void Clear()
+        {
+            foreach (var item in initializedDictionary.Values)
+            {
+                item.Dispose();
+            }
+            initializedDictionary.Clear();
+        }
+
         #endregion
 
 
@@ -37,7 +46,7 @@ namespace KouXiaGu.Terrain3D
             {
                 if (initializedDictionary.ContainsKey(description.ID))
                 {
-                    Debug.LogWarning("地貌:已经存在相同的ID;跳过此:" + description.ToString());
+                    Debug.LogWarning("建筑:已经存在相同的ID;跳过此:" + description.ToString());
                     continue;
                 }
 
@@ -55,7 +64,7 @@ namespace KouXiaGu.Terrain3D
                 }
                 else
                 {
-                    Debug.LogWarning("地貌:初始化失败,跳过此:" + description.ToString());
+                    Debug.LogWarning("建筑:初始化失败,跳过此:" + description.ToString());
                     res.Dispose();
                 }
                 yield return null;

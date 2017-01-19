@@ -18,6 +18,7 @@ namespace KouXiaGu.Terrain3D
             get { return arraySerializer; }
         }
 
+
         /// <summary>
         /// 唯一标示(0,-1作为保留);
         /// </summary>

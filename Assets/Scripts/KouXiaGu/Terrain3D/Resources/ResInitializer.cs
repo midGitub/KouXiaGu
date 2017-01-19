@@ -37,6 +37,12 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         string roadDescrName = "RoadDescr.xml";
 
+        /// <summary>
+        /// 建筑信息配置文件名;
+        /// </summary>
+        [SerializeField]
+        string buildingDescrName = "Building.xml";
+
 
         public static bool IsInitialized { get; private set; }
 
@@ -54,6 +60,12 @@ namespace KouXiaGu.Terrain3D
         {
             get { return TerrainFiler.Combine(GetInstance.roadDescrName); }
         }
+
+        public static string BuildingDescrFile
+        {
+            get { return TerrainFiler.Combine(GetInstance.buildingDescrName); }
+        }
+
 
         /// <summary>
         /// 初始化地形资源;
@@ -75,15 +87,9 @@ namespace KouXiaGu.Terrain3D
                 yield break;
             }
 
-            IEnumerator loader;
-
-            loader = LoadLandformRes(assetBundle);
-            while (loader.MoveNext())
-                yield return null;
-
-            loader = LoadRoadRes(assetBundle);
-            while (loader.MoveNext())
-                yield return null;
+            yield return LoadLandformRes(assetBundle);
+            yield return LoadRoadRes(assetBundle);
+            yield return LoadBuildingRes(assetBundle);
 
             assetBundle.Unload(false);
             IsInitialized = true;
@@ -108,15 +114,12 @@ namespace KouXiaGu.Terrain3D
 
             if (TryDeserialize(LandformDescr.ArraySerializer, LandformDescrFile, out landformDescrs))
             {
-                IEnumerator loader = LandformRes.Load(landformDescrs, assetBundle);
-                while (loader.MoveNext())
-                    yield return null;
-
+                yield return LandformRes.Load(landformDescrs, assetBundle);
                 Debug.Log(LandformRes.initializedInstances.ToLog("地貌资源初始化完成;"));
             }
             else
             {
-                throw new LackOfResourcesException("地貌:缺少必要的资源用于初始化;");
+                throw new LackOfResourcesException("缺少必要的描述文件用于初始化;");
             }
 
             yield break;
@@ -125,22 +128,35 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 读取道路资源;
         /// </summary>
-        /// <returns></returns>
         static IEnumerator LoadRoadRes(AssetBundle assetBundle)
         {
             RoadDescr[] roadDescrs;
 
             if (TryDeserialize(RoadDescr.ArraySerializer, RoadDescrFile, out roadDescrs))
             {
-                IEnumerator loader = RoadRes.Load(roadDescrs, assetBundle);
-                while (loader.MoveNext())
-                    yield return null;
-
+                yield return RoadRes.Load(roadDescrs, assetBundle);
                 Debug.Log(RoadRes.initializedInstances.ToLog("道路资源初始化完成;"));
             }
             else
             {
-                throw new LackOfResourcesException("道路:缺少必要的资源用于初始化;");
+                throw new LackOfResourcesException("缺少必要的描述文件用于初始化;");
+            }
+
+            yield break;
+        }
+         
+        static IEnumerator LoadBuildingRes(AssetBundle assetBundle)
+        {
+            BuildingDescr[] buildingDescr;
+
+            if (TryDeserialize(BuildingDescr.ArraySerializer, BuildingDescrFile, out buildingDescr))
+            {
+                yield return BuildingRes.Load(buildingDescr, assetBundle);
+                Debug.Log(BuildingRes.initializedInstances.ToLog("建筑资源初始化完成;"));
+            }
+            else
+            {
+                throw new LackOfResourcesException("缺少必要的描述文件用于初始化;");
             }
 
             yield break;
@@ -171,6 +187,7 @@ namespace KouXiaGu.Terrain3D
         {
             LandformRes.Clear();
             RoadRes.Clear();
+            BuildingRes.Clear();
 
             IsInitialized = false;
         }

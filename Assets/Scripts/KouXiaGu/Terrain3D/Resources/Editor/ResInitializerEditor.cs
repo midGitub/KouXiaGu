@@ -6,7 +6,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     [CustomEditor(typeof(ResInitializer), true)]
-    public class TerrainResEditor : Editor
+    public class ResInitializerEditor : Editor
     {
 
         public override void OnInspectorGUI()
@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
             GUILayout.BeginVertical();
             GUILayout.Label("拓展:");
 
-            if (GUILayout.Button("导出缺失模板"))
+            if (GUILayout.Button("导出缺失"))
             {
                 OutputTemplet();
             }
@@ -33,6 +33,28 @@ namespace KouXiaGu.Terrain3D
 
             if (!File.Exists(ResInitializer.LandformDescrFile))
                 LandformDescr.ArraySerializer.SerializeXiaGu(ResInitializer.LandformDescrFile, LandformTemplets);
+
+            if (!File.Exists(ResInitializer.BuildingDescrFile))
+                BuildingDescr.ArraySerializer.SerializeXiaGu(ResInitializer.BuildingDescrFile, BuildingTemplets);
+
+        }
+
+
+        static BuildingDescr[] BuildingTemplets = new BuildingDescr[]
+            {
+                BuildingTemplet(),
+                BuildingTemplet(),
+                BuildingTemplet(),
+            };
+
+        static BuildingDescr BuildingTemplet()
+        {
+            return new BuildingDescr()
+            {
+                ID = 0,
+                Name = "defalut",
+                PrefabName = "prefab",
+            };
         }
 
 
