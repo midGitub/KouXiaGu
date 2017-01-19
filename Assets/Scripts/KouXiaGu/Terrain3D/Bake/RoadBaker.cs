@@ -52,11 +52,6 @@ namespace KouXiaGu.Terrain3D
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
 
-        static BakingParameter Parameter
-        {
-            get { return TerrainBaker.Parameter; }
-        }
-
         IEnumerable<MeshRenderer> Renderers
         {
             get { return inSceneMeshs.Select(item => item.MeshRenderer); }
@@ -95,8 +90,8 @@ namespace KouXiaGu.Terrain3D
         public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
         {
             PrepareScene(request, points);
-            DiffuseRT = BakeDiffuse();
-            HeightRT = BakeHeight();
+            BakeDiffuse();
+            BakeHeight();
         }
 
 
@@ -184,16 +179,15 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Color Transparent = new Color(0, 0, 0, 0);
 
-        RenderTexture BakeDiffuse()
+        void BakeDiffuse()
         {
             foreach (var meshRenderer in Renderers)
             {
                 SetDiffuserMaterial(meshRenderer);
             }
 
-            RenderTexture rt = RenderTexture.GetTemporary(Parameter.rDiffuseTexWidth, Parameter.rDiffuseTexHeight, 24);
-            TerrainBaker.CameraRender(rt, Center, Transparent);
-            return rt;
+            DiffuseRT = BakeCamera.GetDiffuseTemporaryRender();
+            BakeCamera.CameraRender(DiffuseRT, Center, Transparent);
         }
 
         void SetDiffuserMaterial(MeshRenderer renderer)
@@ -203,16 +197,15 @@ namespace KouXiaGu.Terrain3D
 
 
 
-        RenderTexture BakeHeight()
+        void BakeHeight()
         {
             foreach (var meshRenderer in Renderers)
             {
                 SetHeightMaterial(meshRenderer);
             }
 
-            RenderTexture rt = RenderTexture.GetTemporary(Parameter.rHeightMapWidth, Parameter.rHeightMapHeight, 24);
-            TerrainBaker.CameraRender(rt, Center);
-            return rt;
+            HeightRT = BakeCamera.GetHeightTemporaryRender();
+            BakeCamera.CameraRender(HeightRT, Center);
         }
 
         void SetHeightMaterial(MeshRenderer renderer)
@@ -223,8 +216,8 @@ namespace KouXiaGu.Terrain3D
 
         public void Dispose()
         {
-            RenderTexture.ReleaseTemporary(DiffuseRT);
-            RenderTexture.ReleaseTemporary(HeightRT);
+            BakeCamera.ReleaseTemporary(DiffuseRT);
+            BakeCamera.ReleaseTemporary(HeightRT);
 
             DiffuseRT = null;
             HeightRT = null;

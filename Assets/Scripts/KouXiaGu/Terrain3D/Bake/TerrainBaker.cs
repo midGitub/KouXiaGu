@@ -25,30 +25,12 @@ namespace KouXiaGu.Terrain3D
         static readonly LinkedList<IBakeRequest> bakeRequestQueue = new LinkedList<IBakeRequest>();
 
         /// <summary>
-        /// 烘焙参数;
-        /// </summary>
-        public static BakingParameter Parameter
-        {
-            get { return GetInstance.parameter; }
-            internal set { GetInstance.parameter = value; }
-        }
-
-        /// <summary>
-        /// 烘培使用的相机;
-        /// </summary>
-        static Camera BakeCamera
-        {
-            get { return GetInstance.bakingCamera; }
-        }
-
-        /// <summary>
         /// 烘焙请求队列;
         /// </summary>
         public static LinkedList<IBakeRequest> BakingRequests
         {
             get { return bakeRequestQueue; }
         }
-
 
         /// <summary>
         /// 是否已经初始化?
@@ -69,7 +51,6 @@ namespace KouXiaGu.Terrain3D
 
                 instance.decorateBlend.Awake();
 
-                instance.InitBakingCamera();
                 instance.StartCoroutine(instance.Bake());
 
                 IsInitialised = true;
@@ -78,15 +59,6 @@ namespace KouXiaGu.Terrain3D
 
 
         TerrainBaker() { }
-
-        /// <summary>
-        /// 负责渲染的摄像机;
-        /// </summary>
-        [SerializeField]
-        Camera bakingCamera;
-
-        [SerializeField]
-        BakingParameter parameter = new BakingParameter(120, 0, 1);
 
         [SerializeField]
         NormalMapper normalMapper;
@@ -101,31 +73,11 @@ namespace KouXiaGu.Terrain3D
         DecorateBlend decorateBlend;
 
 
-        void OnValidate()
-        {
-            parameter.Reset();
-        }
-
         protected override void OnDestroy()
         {
             bakeRequestQueue.Clear();
             IsInitialised = false;
             base.OnDestroy();
-        }
-
-
-        /// <summary>
-        /// 初始化烘焙相机参数;
-        /// </summary>
-        [ContextMenu("初始化相机")]
-        void InitBakingCamera()
-        {
-            bakingCamera.aspect = BakingParameter.CameraAspect;
-            bakingCamera.orthographicSize = BakingParameter.CameraSize;
-            bakingCamera.transform.rotation = BakingParameter.CameraRotation;
-            bakingCamera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
-
-            bakingCamera.backgroundColor = Color.black;
         }
 
         /// <summary>
@@ -203,76 +155,6 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-
-        /// <summary>
-        /// 使用摄像机指定背景颜色烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, CubicHexCoord cameraPoint, Color backgroundColor)
-        {
-            Color current = BakeCamera.backgroundColor;
-            BakeCamera.backgroundColor = backgroundColor;
-
-            CameraRender(rt, cameraPoint);
-
-            BakeCamera.backgroundColor = current;
-        }
-
-        /// <summary>
-        /// 使用摄像机烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, CubicHexCoord cameraPoint)
-        {
-            Vector3 cameraPixelPoint = cameraPoint.GetTerrainPixel(5f);
-            CameraRender(rt, cameraPixelPoint);
-        }
-
-        /// <summary>
-        /// 使用摄像机指定背景颜色烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, Vector3 cameraPoint, Color backgroundColor)
-        {
-            Color current = BakeCamera.backgroundColor;
-            BakeCamera.backgroundColor = backgroundColor;
-
-            CameraRender(rt, cameraPoint);
-
-            BakeCamera.backgroundColor = current;
-        }
-
-        /// <summary>
-        /// 使用摄像机烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, Vector3 cameraPoint)
-        {
-            Camera bakingCamera = GetInstance.bakingCamera;
-            bakingCamera.transform.position = cameraPoint;
-            CameraRender(rt);
-        }
-
-        /// <summary>
-        /// 使用摄像机指定背景颜色烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt, Color backgroundColor)
-        {
-            Color current = BakeCamera.backgroundColor;
-            BakeCamera.backgroundColor = backgroundColor;
-
-            CameraRender(rt);
-
-            BakeCamera.backgroundColor = current;
-        }
-
-        /// <summary>
-        /// 使用摄像机烘焙;
-        /// </summary>
-        public static void CameraRender(RenderTexture rt)
-        {
-            BakeCamera.targetTexture = rt;
-            BakeCamera.Render();
-            BakeCamera.targetTexture = null;
-        }
-
-
         /// <summary>
         /// 获取到覆盖到的坐标;
         /// </summary>
@@ -284,8 +166,8 @@ namespace KouXiaGu.Terrain3D
         public static Texture2D GetHeightTexture(RenderTexture rt)
         {
             RenderTexture.active = rt;
-            Texture2D heightMap = new Texture2D((int)Parameter.HeightMapWidth, (int)Parameter.HeightMapHeight, TextureFormat.RGB24, false);
-            heightMap.ReadPixels(Parameter.HeightReadPixel, 0, 0, false);
+            Texture2D heightMap = new Texture2D((int)BakeCamera.HeightMapWidth, (int)BakeCamera.HeightMapHeight, TextureFormat.RGB24, false);
+            heightMap.ReadPixels(BakeCamera.HeightReadPixel, 0, 0, false);
             heightMap.wrapMode = TextureWrapMode.Clamp;
             heightMap.Apply();
             return heightMap;
@@ -294,8 +176,8 @@ namespace KouXiaGu.Terrain3D
         public static Texture2D GetDiffuseTexture(RenderTexture rt)
         {
             RenderTexture.active = rt;
-            Texture2D diffuseTex = new Texture2D((int)Parameter.DiffuseTexWidth, (int)Parameter.DiffuseTexHeight, TextureFormat.RGB24, false);
-            diffuseTex.ReadPixels(Parameter.DiffuseReadPixel, 0, 0, false);
+            Texture2D diffuseTex = new Texture2D((int)BakeCamera.DiffuseTexWidth, (int)BakeCamera.DiffuseTexHeight, TextureFormat.RGB24, false);
+            diffuseTex.ReadPixels(BakeCamera.DiffuseReadPixel, 0, 0, false);
             diffuseTex.wrapMode = TextureWrapMode.Clamp;
             diffuseTex.Apply();
             return diffuseTex;

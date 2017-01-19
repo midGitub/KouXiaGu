@@ -109,8 +109,8 @@ namespace KouXiaGu.Terrain3D
             public Texture2D GetTexture(RenderTexture rt)
             {
                 RenderTexture.active = rt;
-                Texture2D normalMap = new Texture2D((int)Parameter.HeightMapWidth, (int)Parameter.HeightMapHeight, TextureFormat.ARGB32, false);
-                normalMap.ReadPixels(Parameter.HeightReadPixel, 0, 0, false);
+                Texture2D normalMap = new Texture2D((int)BakeCamera.HeightMapWidth, (int)BakeCamera.HeightMapHeight, TextureFormat.ARGB32, false);
+                normalMap.ReadPixels(BakeCamera.HeightReadPixel, 0, 0, false);
                 normalMap.wrapMode = TextureWrapMode.Clamp;
                 normalMap.Apply();
 

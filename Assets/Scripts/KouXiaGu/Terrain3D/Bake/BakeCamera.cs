@@ -45,10 +45,36 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘培使用的相机;
         /// </summary>
-        public static Camera Camera
+        static Camera Camera
         {
             get { return GetInstance._camera; }
         }
+
+
+        /// <summary>
+        /// 获取到临时烘焙漫反射贴图的 "RenderTexture";
+        /// </summary>
+        public static RenderTexture GetDiffuseTemporaryRender()
+        {
+            return RenderTexture.GetTemporary(rDiffuseTexWidth, rDiffuseTexHeight);
+        }
+
+        /// <summary>
+        /// 获取到临时烘焙高度贴图的 "RenderTexture";
+        /// </summary>
+        public static RenderTexture GetHeightTemporaryRender()
+        {
+            return RenderTexture.GetTemporary(rHeightMapWidth, rHeightMapHeight);
+        }
+
+        /// <summary>
+        /// 释放临时的 "RenderTexture";
+        /// </summary>
+        public static void ReleaseTemporary(RenderTexture rt)
+        {
+            RenderTexture.ReleaseTemporary(rt);
+        }
+
 
         /// <summary>
         /// 使用摄像机指定背景颜色烘焙;
@@ -187,7 +213,22 @@ namespace KouXiaGu.Terrain3D
         {
             base.Awake();
             _camera = GetComponent<Camera>();
+            InitBakingCamera();
         }
+
+        /// <summary>
+        /// 初始化烘焙相机参数;
+        /// </summary>
+        [ContextMenu("初始化相机")]
+        void InitBakingCamera()
+        {
+            _camera.aspect = BakingParameter.CameraAspect;
+            _camera.orthographicSize = BakingParameter.CameraSize;
+            _camera.transform.rotation = BakingParameter.CameraRotation;
+            _camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
+            _camera.backgroundColor = Color.black;
+        }
+
 
         void OnValidate()
         {
