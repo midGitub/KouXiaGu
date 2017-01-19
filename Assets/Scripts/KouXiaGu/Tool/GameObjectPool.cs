@@ -13,7 +13,7 @@ namespace KouXiaGu
     {
 
         const string DEFAULT_NAME = "GameObject";
-        const int DEFAULT_CAPACITY = 500;
+        const int DEFAULT_CAPACITY = 120;
 
         static Transform parent;
 
