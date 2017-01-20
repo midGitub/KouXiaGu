@@ -31,12 +31,12 @@ namespace KouXiaGu.Terrain3D.Tests
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 CubicHexCoord coord = TerrainTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                MapDataManager.ActiveData.Road.CreateRoad(coord);
+                MapDataManager.ActiveData.Road.Create(coord);
             }
             if (Input.GetKeyDown(KeyCode.Mouse1))
             {
                 CubicHexCoord coord = TerrainTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                MapDataManager.ActiveData.Road.DestroyRoad(coord);
+                MapDataManager.ActiveData.Road.Destroy(coord);
             }
         }
 

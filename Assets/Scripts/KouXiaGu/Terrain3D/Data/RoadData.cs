@@ -69,7 +69,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 向这个坐标添加道路标记,若已存在则返回 false;
         /// </summary>
-        public bool CreateRoad(CubicHexCoord coord)
+        public bool Create(CubicHexCoord coord)
         {
             TerrainNode node = Data[coord];
 
@@ -93,7 +93,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 清除这个坐标的道路标记,若不存在则返回 false;
         /// </summary>
-        public bool DestroyRoad(CubicHexCoord coord)
+        public bool Destroy(CubicHexCoord coord)
         {
             TerrainNode node = Data[coord];
 

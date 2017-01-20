@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
-        internal const uint EMPTY_MARK = 0;
+        internal const int EMPTY_MARK = 0;
 
         /// <summary>
         /// 建筑物类型编号;

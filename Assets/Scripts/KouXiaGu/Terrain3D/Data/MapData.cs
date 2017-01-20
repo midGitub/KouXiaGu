@@ -29,6 +29,7 @@ namespace KouXiaGu.Terrain3D
             map.Data = new ObservableDictionary<CubicHexCoord, TerrainNode>();
             map.Road = new RoadData(map.Data);
             map.Landform = new LandformData(map.Data);
+            map.Building = new BuildingData(map.Data);
             SubscribeChanged(map);
 
             return map;
@@ -43,6 +44,7 @@ namespace KouXiaGu.Terrain3D
 
             map.Road.Data = map.Data;
             map.Landform = new LandformData(map.Data);
+            map.Building = new BuildingData(map.Data);
             SubscribeChanged(map);
 
             return map;
@@ -58,6 +60,7 @@ namespace KouXiaGu.Terrain3D
 
             map.Road = archive.Road;
             map.Landform = new LandformData(map.Data);
+            map.Building = new BuildingData(map.Data);
             SubscribeChanged(map, archive);
 
             return map;
@@ -161,6 +164,8 @@ namespace KouXiaGu.Terrain3D
         public RoadData Road { get; private set; }
 
         public LandformData Landform { get; private set; }
+
+        public BuildingData Building { get; private set; }
 
         /// <summary>
         /// 用于监视地图变化;
