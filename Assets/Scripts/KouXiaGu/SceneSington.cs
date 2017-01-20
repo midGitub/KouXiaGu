@@ -47,6 +47,7 @@ namespace KouXiaGu
                     if (instances.Length == 0)
                     {
                         Debug.LogError("场景不存在实例;" + typeof(T).Name);
+                        throw new ObjectDisposedException("场景不存在实例;" + typeof(T).Name);
                     }
                     else if (instances.Length == 1)
                     {
