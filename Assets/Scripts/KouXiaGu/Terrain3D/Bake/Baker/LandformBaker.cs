@@ -58,15 +58,15 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> points)
+        public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
         {
-            PrepareScene(request, points);
+            PrepareScene(request, displays);
             BakeDiffuse();
             BakeHeight();
         }
 
 
-        public void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
+        void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
         {
             SetTargetCenter(request);
             ClearInSceneMeshs();
@@ -108,7 +108,7 @@ namespace KouXiaGu.Terrain3D
         Vector3 PositionConvert(CubicHexCoord terget)
         {
             CubicHexCoord coord = terget - targetCenter;
-            return (coord + this.center).GetTerrainPixel();
+            return (coord + this.center).GetTerrainPixel(-inSceneMeshs.Count);
         }
 
         /// <summary>
@@ -158,13 +158,11 @@ namespace KouXiaGu.Terrain3D
             if (renderer.Rednerer.material != null)
             {
                 GameObject.Destroy(renderer.Rednerer.material);
-                renderer.Rednerer.material = diffuseMaterial;
             }
 
-            var material = renderer.Rednerer.material;
+            var material = renderer.Rednerer.material = new Material(diffuseMaterial);
             material.SetTexture("_MainTex", res.DiffuseTex);
             material.SetTexture("_BlendTex", res.DiffuseBlendTex);
-
         }
 
 

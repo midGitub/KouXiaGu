@@ -179,6 +179,10 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("初始化相机")]
         void InitBakingCamera()
         {
+#if UNITY_EDITOR
+            if (_camera == null)
+                _camera = GetComponent<Camera>();
+#endif
             _camera.aspect = BakeSettings.CameraAspect;
             _camera.orthographicSize = BakeSettings.CameraSize;
             _camera.transform.rotation = BakeSettings.CameraRotation;

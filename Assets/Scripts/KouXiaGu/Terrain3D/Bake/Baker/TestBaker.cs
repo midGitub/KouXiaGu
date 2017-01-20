@@ -23,10 +23,16 @@ namespace KouXiaGu.Terrain3D
             TerrainRenderer mesh = GameObject.Instantiate(terrainChunk, pos, Quaternion.identity);
             mesh.gameObject.SetActive(true);
 
-            var rt = BakeCamera.GetHeightTemporaryRender();
+            //var rt = BakeCamera.GetHeightTemporaryRender();
+            //BakeCamera.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
+
+            //var texture = BakeCamera.GetHeightTexture(rt);
+            //mesh.SetDiffuseMap(texture);
+
+            var rt = BakeCamera.GetDiffuseTemporaryRender();
             BakeCamera.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
 
-            var texture = BakeCamera.GetHeightTexture(rt);
+            var texture = BakeCamera.GetDiffuseTexture(rt);
             mesh.SetDiffuseMap(texture);
         }
 

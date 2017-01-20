@@ -163,7 +163,7 @@ namespace KouXiaGu.Terrain3D
         Vector3 PointConvertPixel(CubicHexCoord target)
         {
             CubicHexCoord coord = target - targetCenter;
-            return (coord + center).GetTerrainPixel();
+            return (coord + center).GetTerrainPixel(-inSceneMeshs.Count);
         }
 
         protected override RoadMesh Create()

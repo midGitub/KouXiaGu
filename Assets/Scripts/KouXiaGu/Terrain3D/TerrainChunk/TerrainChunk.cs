@@ -113,23 +113,32 @@ namespace KouXiaGu.Terrain3D
         public static IEnumerable<CubicHexCoord> GetChunkCover(RectCoord coord)
         {
             CubicHexCoord hexCenter = GetHexCenter(coord);
-            CubicHexCoord startCoord = CubicHexCoord.GetDirectionOffset(HexDirections.Southwest) * CHUNK_SIZE + hexCenter + CubicHexCoord.DIR_South;
-
-            for (short endX = (short)(Math.Abs(hexCenter.X - startCoord.X) + hexCenter.X);
-                startCoord.X <= endX;
-                startCoord += (startCoord.X & 1) == 0 ?
-                (((CHUNK_SIZE & 1) == 0) ? CubicHexCoord.DIR_Northeast : CubicHexCoord.DIR_Southeast) :
-                (((CHUNK_SIZE & 1) == 0) ? CubicHexCoord.DIR_Southeast : CubicHexCoord.DIR_Northeast))
-            {
-                CubicHexCoord startRow = startCoord;
-                for (short endY = (short)(Math.Abs(hexCenter.Z - startCoord.Z) + hexCenter.Y);
-                    startRow.Y <= endY;
-                    startRow += CubicHexCoord.DIR_North)
-                {
-                    yield return startRow;
-                }
-            }
+            return CubicHexCoord.Range(hexCenter, CHUNK_SIZE + 3);
         }
+
+        ///// <summary>
+        ///// 获取到这个地形块覆盖到的所有地图节点坐标;
+        ///// </summary>
+        //public static IEnumerable<CubicHexCoord> GetChunkCover(RectCoord coord)
+        //{
+        //    CubicHexCoord hexCenter = GetHexCenter(coord);
+        //    CubicHexCoord startCoord = CubicHexCoord.GetDirectionOffset(HexDirections.Southwest) * CHUNK_SIZE + hexCenter + CubicHexCoord.DIR_South;
+
+        //    for (short endX = (short)(Math.Abs(hexCenter.X - startCoord.X) + hexCenter.X);
+        //        startCoord.X <= endX;
+        //        startCoord += (startCoord.X & 1) == 0 ?
+        //        (((CHUNK_SIZE & 1) == 0) ? CubicHexCoord.DIR_Northeast : CubicHexCoord.DIR_Southeast) :
+        //        (((CHUNK_SIZE & 1) == 0) ? CubicHexCoord.DIR_Southeast : CubicHexCoord.DIR_Northeast))
+        //    {
+        //        CubicHexCoord startRow = startCoord;
+        //        for (short endY = (short)(Math.Abs(hexCenter.Z - startCoord.Z) + hexCenter.Y);
+        //            startRow.Y <= endY;
+        //            startRow += CubicHexCoord.DIR_North)
+        //        {
+        //            yield return startRow;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 获取到地图节点所属的地形块;

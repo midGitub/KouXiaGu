@@ -1,5 +1,6 @@
 ﻿
 //#define TEST_BAKE
+//#define TEST_LANDFORM_BAKER
 
 using System;
 using System.Collections.Generic;
@@ -114,6 +115,7 @@ namespace KouXiaGu.Terrain3D
                 {
                     request = bakeRequestQueue.Dequeue();
                     var cover = GetCover(request);
+
 #if TEST_BAKE
                     testBaker.Bake(request);
 #else
@@ -121,8 +123,13 @@ namespace KouXiaGu.Terrain3D
                     landform.Bake(request, cover);
                     road.Bake(request, cover);
 
+#if TEST_LANDFORM_BAKER
+                    heightMapRT = landform.HeightRT;
+                    diffuseMapRT = landform.DiffuseRT;
+#else
                     heightMapRT = decorateBlend.BlendHeight(landform.HeightRT, road.HeightRT);
                     diffuseMapRT = decorateBlend.BlendDiffuse(landform.DiffuseRT, road.DiffuseRT);
+#endif
                     normalMapRT = normalMapper.Rander(heightMapRT);
 
                     tex = new TerrainTexPack();
@@ -148,8 +155,11 @@ namespace KouXiaGu.Terrain3D
                     road.Dispose();
 
                     ReleaseRenderTexture(ref normalMapRT);
+
+#if !TEST_LANDFORM_BAKER
                     ReleaseRenderTexture(ref heightMapRT);
                     ReleaseRenderTexture(ref diffuseMapRT);
+#endif
                 }
             }
         }

@@ -124,30 +124,30 @@ namespace KouXiaGu.Terrain3D
 
         public void UpdataTextureSize()
         {
-            float chunkWidth = TerrainChunk.CHUNK_WIDTH * textureSize;
-            float chunkHeight = TerrainChunk.CHUNK_HEIGHT * textureSize;
+            int chunkWidth = (int)Math.Round(TerrainChunk.CHUNK_WIDTH * textureSize);
+            int chunkHeight = (int)Math.Round(TerrainChunk.CHUNK_HEIGHT * textureSize);
 
             DiffuseTexWidth = (int)Math.Round(chunkWidth * diffuseMapRatios);
             DiffuseTexHeight = (int)Math.Round(chunkHeight * diffuseMapRatios);
             HeightMapWidth = (int)Math.Round(chunkWidth * heightMapRatios);
             HeightMapHeight = (int)Math.Round(chunkHeight * heightMapRatios);
 
-            rDiffuseTexWidth = (int)Math.Round(DiffuseTexWidth + DiffuseTexWidth * OutlineScale);
-            rDiffuseTexHeight = (int)Math.Round(DiffuseTexHeight + DiffuseTexHeight * OutlineScale);
-            rHeightMapWidth = (int)Math.Round(HeightMapWidth + HeightMapWidth * OutlineScale);
-            rHeightMapHeight = (int)Math.Round(HeightMapHeight + HeightMapHeight * OutlineScale);
+            rDiffuseTexWidth = DiffuseTexWidth + (int)(DiffuseTexWidth * OutlineScale);
+            rDiffuseTexHeight = DiffuseTexHeight + (int)(DiffuseTexHeight * OutlineScale);
+            rHeightMapWidth = HeightMapWidth + (int)(HeightMapWidth * OutlineScale);
+            rHeightMapHeight = HeightMapHeight + (int)(HeightMapHeight * OutlineScale);
 
             DiffuseReadPixel =
                 new Rect(
-                    DiffuseTexWidth * OutlineScale / 2,
-                    DiffuseTexHeight * OutlineScale / 2,
+                    (int)(DiffuseTexWidth * OutlineScale / 2),
+                    (int)(DiffuseTexHeight * OutlineScale / 2),
                     DiffuseTexWidth,
                     DiffuseTexHeight);
 
             HeightReadPixel =
                 new Rect(
-                    HeightMapWidth * OutlineScale / 2,
-                    HeightMapHeight * OutlineScale / 2,
+                    (int)(HeightMapWidth * OutlineScale / 2),
+                    (int)(HeightMapHeight * OutlineScale / 2),
                     HeightMapWidth,
                     HeightMapHeight);
         }
