@@ -181,7 +181,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<CubicHexCoord> GetCover(IBakeRequest request)
         {
-            return TerrainChunk.GetChunkCover(request.ChunkCoord);
+            return TerrainOverlayer.GetLandform(request.ChunkCoord);
         }
 
     }
