@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘焙请求队列;
         /// </summary>
-        public static LinkedList<IBakeRequest> BakingRequests
+        public static LinkedList<IBakeRequest> Requested
         {
             get { return bakeRequestQueue; }
         }

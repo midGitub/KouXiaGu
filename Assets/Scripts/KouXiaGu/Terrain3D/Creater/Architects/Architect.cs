@@ -71,7 +71,9 @@ namespace KouXiaGu.Terrain3D
                     request = Dequeue();
                     var overlayes = GetOverlaye(request.ChunkCoord);
 
-                    building.Build(request.Data.Building, overlayes);
+                    var buildings = building.Build(request.Data.Building, overlayes);
+
+                    request.OnComplete(new BuildingGroup(request, buildings));
                 }
                 catch (Exception e)
                 {

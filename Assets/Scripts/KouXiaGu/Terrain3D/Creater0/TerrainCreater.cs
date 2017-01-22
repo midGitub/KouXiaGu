@@ -139,7 +139,7 @@ namespace KouXiaGu.Terrain3D
             TerrainChunk terrainChunk;
             if (activatedChunks.TryGetValue(coord, out terrainChunk))
             {
-                terrainChunk.Clear();
+                terrainChunk.Reset();
 
                 terrainChunk.SetActive(false);
                 restingChunks.Enqueue(terrainChunk);
@@ -172,7 +172,7 @@ namespace KouXiaGu.Terrain3D
                 !activatedChunks.ContainsKey(coord) &&
                 onRenderingChunks.Add(coord))
             {
-                TerrainBaker.BakingRequests.AddLast(new RenderRequest(coord));
+                TerrainBaker.Requested.AddLast(new RenderRequest(coord));
             }
         }
 
@@ -185,7 +185,7 @@ namespace KouXiaGu.Terrain3D
                 activatedChunks.ContainsKey(coord) &&
                 onRenderingChunks.Add(coord))
             {
-                TerrainBaker.BakingRequests.AddLast(new RenderRequest(coord));
+                TerrainBaker.Requested.AddLast(new RenderRequest(coord));
             }
         }
 
@@ -201,7 +201,7 @@ namespace KouXiaGu.Terrain3D
 
             if (onRenderingChunks.Remove(coord))
             {
-                TerrainBaker.BakingRequests.Remove(item => item.ChunkCoord == coord);
+                TerrainBaker.Requested.Remove(item => item.ChunkCoord == coord);
                 return true;
             }
 

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
@@ -17,50 +14,6 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public sealed class TerrainChunk
     {
-
-        /// <summary>
-        /// 地形块挂载的脚本;
-        /// </summary>
-        static readonly Type[] TERRAIN_CHUNK_SCRIPTS = new Type[]
-            {
-                typeof(TerrainRenderer),    //渲染;
-                typeof(TerrainMesh),        //地形网格;
-                typeof(TerrainTrigger),     //地形碰撞器;
-            };
-
-
-#if UNITY_EDITOR
-        [MenuItem("GameObject/Create Other/TerrainChunk")]
-#endif
-        static void _CraeteTerrainChunk()
-        {
-            new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
-        }
-
-        /// <summary>
-        /// 实例一个地形块,并指定名称;
-        /// </summary>
-        static GameObject CraeteTerrainChunk()
-        {
-            GameObject gameObject = new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
-#if UNITY_EDITOR
-            gameObject.transform.SetParent(ChunkParent, false);
-#endif
-            return gameObject;
-        }
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// 放置地形块的父节点;
-        /// </summary>
-        static Transform chunkParent;
-        static Transform ChunkParent
-        {
-            get { return chunkParent ?? (chunkParent = new GameObject("TerrainChunks").transform); }
-        }
-#endif
-
-
 
         #region 地形块大小(静态)
 
@@ -153,6 +106,48 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
         /// <summary>
+        /// 地形块挂载的脚本;
+        /// </summary>
+        static readonly Type[] TERRAIN_CHUNK_SCRIPTS = new Type[]
+            {
+                typeof(TerrainRenderer),    //渲染;
+                typeof(TerrainMesh),        //地形网格;
+                typeof(TerrainTrigger),     //地形碰撞器;
+            };
+
+
+#if UNITY_EDITOR
+        [MenuItem("GameObject/Create Other/TerrainChunk")]
+#endif
+        static void _CraeteTerrainChunk()
+        {
+            new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
+        }
+
+        /// <summary>
+        /// 实例一个地形块,并指定名称;
+        /// </summary>
+        static GameObject CraeteTerrainChunk()
+        {
+            GameObject gameObject = new GameObject("TerrainChunk", TERRAIN_CHUNK_SCRIPTS);
+#if UNITY_EDITOR
+            gameObject.transform.SetParent(ChunkParent, false);
+#endif
+            return gameObject;
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// 放置地形块的父节点;
+        /// </summary>
+        static Transform chunkParent;
+        static Transform ChunkParent
+        {
+            get { return chunkParent ?? (chunkParent = new GameObject("TerrainChunks").transform); }
+        }
+#endif
+
+        /// <summary>
         /// 创建一个空的地图块到;
         /// </summary>
         public TerrainChunk()
@@ -167,6 +162,7 @@ namespace KouXiaGu.Terrain3D
         public GameObject gameObject { get; private set; }
         public TerrainRenderer Renderer { get; private set; }
         public TerrainTrigger Trigger { get; private set; }
+        public BuildingGroup BuildingGroup { get; internal set; }
 
 
         /// <summary>
@@ -178,6 +174,14 @@ namespace KouXiaGu.Terrain3D
             set { gameObject.transform.position = ChunkGrid.GetCenter(value); coord = value; }
         }
 
+        /// <summary>
+        /// 是否有效的?
+        /// </summary>
+        public bool IsEffective
+        {
+            get { return gameObject != null; }
+        }
+
 
         /// <summary>
         /// gameObject.SetActive(value);
@@ -187,7 +191,9 @@ namespace KouXiaGu.Terrain3D
             gameObject.SetActive(value);
         }
 
-
+        /// <summary>
+        /// 设置地形贴图信息;
+        /// </summary>
         public void Set(TerrainTexPack tex)
         {
             Renderer.SetDiffuseMap(tex.diffuseMap);
@@ -197,18 +203,30 @@ namespace KouXiaGu.Terrain3D
             Trigger.ResetCollisionMesh();
         }
 
+        [Obsolete]
         public void Set(RectCoord coord, TerrainTexPack tex)
         {
             ChunkCoord = coord;
             Set(tex);
         }
 
-        /// <summary>
-        /// 清空所有信息;
-        /// </summary>
-        public void Clear()
+
+        public void Reset()
         {
             Renderer.DestroyTextures();
+            BuildingGroup.Destroy();
+            BuildingGroup = null;
+        }
+
+        public void Destroy()
+        {
+            GameObject.Destroy(gameObject);
+            BuildingGroup.Destroy();
+
+            gameObject = null;
+            Renderer = null;
+            Trigger = null;
+            BuildingGroup = null;
         }
 
     }

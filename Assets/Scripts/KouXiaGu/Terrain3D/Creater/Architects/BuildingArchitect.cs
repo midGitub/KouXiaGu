@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
@@ -21,10 +19,18 @@ namespace KouXiaGu.Terrain3D
         public List<GameObject> Build(BuildingData data, IEnumerable<CubicHexCoord> overlayes)
         {
             buildings = new List<GameObject>();
+            data = this.data;
 
             foreach (var coord in overlayes)
             {
-                Build(coord);
+                try
+                {
+                    Build(coord);
+                }
+                catch (KeyNotFoundException e)
+                {
+                    Debug.LogWarning(e);
+                }
             }
 
             return buildings;
@@ -56,8 +62,7 @@ namespace KouXiaGu.Terrain3D
         {
             try
             {
-                var res = BuildingRes.initializedInstances[id];
-                return res;
+                return BuildingRes.initializedInstances[id];
             }
             catch (KeyNotFoundException ex)  
             {

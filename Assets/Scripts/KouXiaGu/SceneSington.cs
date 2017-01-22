@@ -32,7 +32,10 @@ namespace KouXiaGu
             }
         }
 
-        protected bool IsInstanced
+        /// <summary>
+        /// 是否已经实例化?
+        /// </summary>
+        public static bool IsInstanced
         {
             get { return instance != null; }
         }
