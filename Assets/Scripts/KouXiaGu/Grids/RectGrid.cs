@@ -108,6 +108,27 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
+        /// 获取到指定矩形的本地坐标;
+        /// </summary>
+        public Vector2 GetLocal(RectCoord clamp, Vector3 position)
+        {
+            Vector3 center = GetCenter(clamp);
+            Vector2 southwestPoint = new Vector2(center.x - widthHalf, center.z - heightHalf);
+            Vector2 local = new Vector2(position.x - southwestPoint.x, position.z - southwestPoint.y);
+            return local;
+        }
+
+        /// <summary>
+        /// 获取到UV坐标并且限制在指定的矩形之内;
+        /// </summary>
+        public Vector2 GetUV(RectCoord clamp, Vector3 position)
+        {
+            Vector2 local = GetLocal(clamp, position);
+            Vector2 uv = new Vector2(local.x / width, local.y / height);
+            return uv.Clamp01();
+        }
+
+        /// <summary>
         /// 获取到矩形的UV坐标;
         /// </summary>
         public Vector2 GetUV(Vector3 position, out RectCoord coord)

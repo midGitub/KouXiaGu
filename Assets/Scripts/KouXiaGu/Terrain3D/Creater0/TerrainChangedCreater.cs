@@ -43,8 +43,8 @@ namespace KouXiaGu.Terrain3D
             foreach (var around in coord.GetNeighbours())
             {
                 TerrainChunk.GetBelongChunks(around, ref chunksCoord);
-                TerrainCreater.UpdateChunk(chunksCoord[0]);
-                TerrainCreater.UpdateChunk(chunksCoord[1]);
+                ChunkCreater.CreateOrUpdate(chunksCoord[0]);
+                ChunkCreater.CreateOrUpdate(chunksCoord[1]);
             }
         }
 

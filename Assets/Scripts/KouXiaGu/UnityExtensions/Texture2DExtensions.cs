@@ -14,7 +14,7 @@ namespace KouXiaGu
         /// <summary>
         /// UV坐标转换为像素坐标;
         /// </summary>
-        public static Pixel UVToPixel(this Texture2D texture, UV uv)
+        public static Pixel UVToPixel(this Texture2D texture, Vector2 uv)
         {
             return TexCoordConvert.ToPixel(uv, texture.width, texture.height);
         }
@@ -22,13 +22,13 @@ namespace KouXiaGu
         /// <summary>
         /// 像素坐标转换为UV坐标;
         /// </summary>
-        public static UV PixelToUV(this Texture2D texture, Pixel pixel)
+        public static Vector2 PixelToUV(this Texture2D texture, Pixel pixel)
         {
             return TexCoordConvert.ToUV(pixel, texture.width, texture.height);
         }
 
 
-        public static void SetPixel(this Texture2D texture, UV uv, Color color)
+        public static void SetPixel(this Texture2D texture, Vector2 uv, Color color)
         {
             Pixel coord = texture.UVToPixel(uv);
             texture.SetPixel(coord, color);
@@ -40,7 +40,7 @@ namespace KouXiaGu
         }
 
 
-        public static Color GetPixel(this Texture2D texture, UV uv)
+        public static Color GetPixel(this Texture2D texture, Vector2 uv)
         {
             Pixel coord = texture.UVToPixel(uv);
             return texture.GetPixel(coord);

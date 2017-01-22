@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
         public List<GameObject> Build(BuildingData data, IEnumerable<CubicHexCoord> overlayes)
         {
             buildings = new List<GameObject>();
-            data = this.data;
+            this.data = data;
 
             foreach (var coord in overlayes)
             {
@@ -42,20 +42,13 @@ namespace KouXiaGu.Terrain3D
             if (data.TryGetValue(coord, out node))
             {
                 GameObject prefab = GetBuildRes(node.ID).Prefab;
-                Vector3 position = GetTerrainPixel(coord);
+                Vector3 position = coord.GetTerrainPixel();
                 float angle = node.Angle;
 
                 var gameObject = GameObject.Instantiate(prefab, position, Quaternion.Euler(0, angle, 0));
                 buildings.Add(gameObject);
             }
             return;
-        }
-
-        Vector3 GetTerrainPixel(CubicHexCoord coord)
-        {
-            var pixel = coord.GetTerrainPixel();
-            pixel.y = TerrainData.GetHeight(pixel);
-            return pixel;
         }
 
         BuildingRes GetBuildRes(int id)

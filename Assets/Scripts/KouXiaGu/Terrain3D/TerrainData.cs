@@ -76,9 +76,9 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainChunk chunk;
             RectCoord coord;
-            UV uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
+            Vector2 uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
 
-            if (TerrainCreater.ActivatedChunks.TryGetValue(coord, out chunk))
+            if (ChunkCreater.ReadOnlyActivatedChunks.TryGetValue(coord, out chunk))
             {
                 return GetHeight(chunk.Renderer, uv);
             }
@@ -88,11 +88,23 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到对应的高度;
         /// </summary>
-        public static float GetHeight(TerrainRenderer chunk, UV uv)
+        public static float GetHeight(TerrainRenderer chunk, Vector2 uv)
         {
             Color pixelColor = chunk.HeightMap.GetPixel(uv);
             return pixelColor.r * Displacement;
         }
+
+
+        /// <summary>
+        /// 限制到指定地形块,并获取到高度;
+        /// </summary>
+        public static float GetHeight(RectCoord clamp, Vector3 position, Texture2D heightMap)
+        {
+            Vector2 uv = TerrainChunk.ChunkGrid.GetUV(clamp, position);
+            Color pixelColor = heightMap.GetPixel(uv);
+            return pixelColor.r * Displacement;
+        }
+
 
         /// <summary>
         /// 是否超出了地形的定义范围;
@@ -100,7 +112,7 @@ namespace KouXiaGu.Terrain3D
         public static bool IsOutTerrain(Vector3 position)
         {
             RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
-            return TerrainCreater.ActivatedChunks.ContainsKey(coord);
+            return ChunkCreater.ReadOnlyActivatedChunks.ContainsKey(coord);
         }
 
         public void SetSnowLevel(float snow)

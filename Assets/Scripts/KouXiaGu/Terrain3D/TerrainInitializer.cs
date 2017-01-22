@@ -77,7 +77,6 @@ namespace KouXiaGu.Terrain3D
             Architect.Initialize();
 
             TerrainChangedCreater.Initialize(Map);
-            TerrainCreater.AllowCreation = true;
 
             IsCompleted = true;
             yield break;
@@ -96,7 +95,6 @@ namespace KouXiaGu.Terrain3D
             Architect.Initialize();
 
             TerrainChangedCreater.Initialize(Map);
-            TerrainCreater.AllowCreation = true;
 
             IsCompleted = true;
             yield break;

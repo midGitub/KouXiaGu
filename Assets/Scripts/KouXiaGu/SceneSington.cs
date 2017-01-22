@@ -40,6 +40,15 @@ namespace KouXiaGu
             get { return instance != null; }
         }
 
+        /// <summary>
+        /// 若未实例化则返回异常;
+        /// </summary>
+        protected static void NotInstancedException()
+        {
+            if (!IsInstanced)
+                throw new ArgumentNullException("类未实例化");
+        }
+
         static T Initialize()
         {
             lock (asyncObject)

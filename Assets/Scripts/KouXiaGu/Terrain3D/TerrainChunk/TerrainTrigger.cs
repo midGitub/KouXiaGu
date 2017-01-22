@@ -19,15 +19,15 @@ namespace KouXiaGu.Terrain3D
         const int SUB_X = 5;
         const int SUB_Z = 5;
 
-        static readonly List<KeyValuePair<Vector3, UV>> VERTICES = GetVerticesAndUV();
+        static readonly List<KeyValuePair<Vector3, Vector2>> VERTICES = GetVerticesAndUV();
         static readonly int[] TRIANGLES = GetTriangles();
 
         /// <summary>
         /// 获取到细分到的定点坐标 和 对应的UV坐标;
         /// </summary>
-        static List<KeyValuePair<Vector3, UV>> GetVerticesAndUV()
+        static List<KeyValuePair<Vector3, Vector2>> GetVerticesAndUV()
         {
-            List<KeyValuePair<Vector3, UV>> list = new List<KeyValuePair<Vector3, UV>>();
+            List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
             float lengthX = TerrainChunk.CHUNK_WIDTH / SUB_X;
             float lengthZ = TerrainChunk.CHUNK_HEIGHT / SUB_Z;
@@ -40,9 +40,9 @@ namespace KouXiaGu.Terrain3D
                     vertice.x -= TerrainChunk.CHUNK_WIDTH_HALF;
                     vertice.z -= TerrainChunk.CHUNK_HEIGHT_HALF;
 
-                    UV uv = new UV(x / (float)SUB_X, z / (float)SUB_Z);
+                    Vector2 uv = new Vector2(x / (float)SUB_X, z / (float)SUB_Z);
 
-                    KeyValuePair<Vector3, UV> pair = new KeyValuePair<Vector3, UV>(vertice, uv);
+                    KeyValuePair<Vector3, Vector2> pair = new KeyValuePair<Vector3, Vector2>(vertice, uv);
                     list.Add(pair);
                 }
             }
