@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 取首个请求进行放置;
         /// </summary>
-        public static LinkedList<IBuildRequest> RequestQueue
+        public static LinkedList<IBuildRequest> Requested
         {
             get { return GetInstance.requestQueue; }
         }

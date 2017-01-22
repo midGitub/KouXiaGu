@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 using UnityEngine;
@@ -9,9 +6,15 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+
     [DisallowMultipleComponent]
     public class ChunkCreater : SceneSington<ChunkCreater>
     {
+
+        static MapData Data
+        {
+            get { return MapDataManager.ActiveData; }
+        }
 
         /// <summary>
         /// 地形块池;
@@ -43,7 +46,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static bool Create(RectCoord coord)
         {
-            throw new NotImplementedException();
+            if (!IsInstanced)
+                throw new ArgumentNullException("类未实例化");
+
+            if (ActivatedChunks.ContainsKey(coord) || Request.Requested.ContainsKey(coord))
+                return false;
+
+            Request.Create(coord, Data);
+            return true;
         }
 
         /// <summary>
@@ -51,6 +61,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static void Create(RectCoord coord, TerrainTexPack textures, BuildingGroup buildings)
         {
+            if (!IsInstanced)
+                throw new ArgumentNullException("类未实例化");
+
             TerrainChunk chunk = RestingChunks.Get();
 
             chunk.Set(textures);
@@ -64,6 +77,9 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        /// <summary>
+        /// 地形块对象池;
+        /// </summary>
         [SerializeField]
         Pool restingChunks;
 
@@ -77,6 +93,12 @@ namespace KouXiaGu.Terrain3D
             base.Awake();
             restingChunks.Initialize();
             activatedChunks = new CustomDictionary<RectCoord, TerrainChunk>();
+        }
+
+        protected override void OnDestroy()
+        {
+            Request.Clear();
+            base.OnDestroy();
         }
 
 
@@ -100,15 +122,21 @@ namespace KouXiaGu.Terrain3D
         }
 
 
+        /// <summary>
+        /// 地形块创建请求;
+        /// </summary>
         class Request : IEquatable<Request>, IBuildRequest, IBakeRequest
         {
 
             /// <summary>
-            /// 请求创建的地形块;
+            /// 创建请求;
             /// </summary>
             static readonly CustomDictionary<RectCoord, Request> requested =
                 new CustomDictionary<RectCoord, Request>();
 
+            /// <summary>
+            /// 创建请求;
+            /// </summary>
             public static IReadOnlyDictionary<RectCoord, Request> Requested
             {
                 get { return requested; }
@@ -122,38 +150,104 @@ namespace KouXiaGu.Terrain3D
                 if (requested.ContainsKey(chunkCoord))
                     return false;
 
-                Request request = new Request()
-                {
-                    ChunkCoord = chunkCoord,
-                    Data = data,
-                };
+                Request request = new Request(chunkCoord, data);
                 requested.Add(chunkCoord, request);
+                request.RequesteAdd();
+
                 return true;
             }
 
             /// <summary>
             /// 取消创建这个地图块;
             /// </summary>
-            public static void Remove(RectCoord chunkCoord)
+            public static bool Remove(RectCoord chunkCoord)
             {
-                throw new NotImplementedException();
+                Request request;
+                if (requested.TryGetValue(chunkCoord, out request))
+                {
+                    requested.Remove(chunkCoord);
+                    request.RequesteRemove();
+                    request.Destroy();
+                    return true;
+                }
+                return false;
             }
 
-            public static void Clear()
+            /// <summary>
+            /// 清除所有的请求;
+            /// </summary>
+            internal static void Clear()
             {
                 requested.Clear();
             }
 
 
-            Request()
+
+            Request(RectCoord chunkCoord, MapData data)
             {
-                TerrainBaker.Requested.AddLast(this);
+                this.ChunkCoord = chunkCoord;
+                this.Data = data;
             }
 
-
             TerrainTexPack textures;
-            public MapData Data { get; private set; }
+            BuildingGroup buildings;
             public RectCoord ChunkCoord { get; private set; }
+            public MapData Data { get; private set; }
+
+            void RequesteAdd()
+            {
+                TerrainBaker.Requested.AddLast(this);
+                Architect.Requested.AddLast(this);
+            }
+
+            void RequesteRemove()
+            {
+                TerrainBaker.Requested.Remove(this);
+                Architect.Requested.Remove(this);
+            }
+
+            void IBakeRequest.OnComplete(TerrainTexPack textures)
+            {
+                this.textures = textures;
+                CreateChunk();
+            }
+
+            void IBuildRequest.OnComplete(BuildingGroup buildings)
+            {
+                this.buildings = buildings;
+                CreateChunk();
+            }
+
+            void CreateChunk()
+            {
+                if (!requested.ContainsKey(ChunkCoord))
+                    Debug.LogError("请求已经不存在,但是还是要求创建");
+
+                if (textures != null && buildings != null)
+                {
+                    ChunkCreater.Create(ChunkCoord, textures, buildings);
+                    requested.Remove(ChunkCoord);
+                }
+            }
+
+            void Destroy()
+            {
+                if (textures != null)
+                {
+                    textures.Destroy();
+                    textures = null;
+                }
+                if (buildings != null)
+                {
+                    buildings.Destroy();
+                    buildings = null;
+                }
+            }
+
+            public void OnError(Exception ex)
+            {
+                Debug.LogError(ex);
+            }
 
 
             public override bool Equals(object obj)
@@ -168,41 +262,15 @@ namespace KouXiaGu.Terrain3D
 
             public bool Equals(Request other)
             {
-                return other.ChunkCoord == ChunkCoord && other.Data == Data;
+                return 
+                    other != null && 
+                    other.ChunkCoord == ChunkCoord && 
+                    other.Data == Data;
             }
 
             public override int GetHashCode()
             {
                 return ChunkCoord.GetHashCode() ^ Data.GetHashCode();
-            }
-
-            void IBakeRequest.OnComplete(TerrainTexPack textures)
-            {
-                if (requested.ContainsKey(ChunkCoord))
-                {
-                    this.textures = textures;
-                    Architect.RequestQueue.AddLast(this);
-                }
-                else
-                {
-                    textures.Destroy();
-                    requested.Remove(ChunkCoord);
-                }
-            }
-
-            void IBakeRequest.OnError(Exception ex)
-            {
-                Debug.LogError(ex);
-            }
-
-            void IBuildRequest.OnComplete(BuildingGroup buildings)
-            {
-                throw new NotImplementedException();
-            }
-
-            void IBuildRequest.OnError(Exception ex)
-            {
-                Debug.LogError(ex);
             }
 
         }
