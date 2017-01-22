@@ -13,11 +13,6 @@ namespace KouXiaGu.Terrain3D
     {
 
         /// <summary>
-        /// 节点不存在道路时放置的标志;
-        /// </summary>
-        internal const int EMPTY_MARK = 0;
-
-        /// <summary>
         /// 建筑物类型编号;
         /// </summary>
         [ProtoMember(1)]
@@ -29,14 +24,6 @@ namespace KouXiaGu.Terrain3D
         [ProtoMember(2)]
         public float Angle;
 
-
-        /// <summary>
-        /// 是否存在建筑物?;
-        /// </summary>
-        public bool Exist()
-        {
-            return ID != EMPTY_MARK;
-        }
 
         public bool Equals(BuildingNode other)
         {
@@ -54,7 +41,7 @@ namespace KouXiaGu.Terrain3D
 
         public override int GetHashCode()
         {
-            return ID.GetHashCode();
+            return ID.GetHashCode() ^ Angle.GetHashCode();
         }
 
         public override string ToString()

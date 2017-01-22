@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
@@ -76,7 +74,6 @@ namespace KouXiaGu.Terrain3D
             }
             return false;
         }
-
 
         /// <summary>
         /// 是否存在建筑物?
