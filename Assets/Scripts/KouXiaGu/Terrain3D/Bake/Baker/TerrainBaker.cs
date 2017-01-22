@@ -114,7 +114,7 @@ namespace KouXiaGu.Terrain3D
                 try
                 {
                     request = bakeRequestQueue.Dequeue();
-                    var cover = GetCover(request);
+                    var cover = GetOverlaye(request);
 
 #if TEST_BAKE
                     testBaker.Bake(request);
@@ -179,7 +179,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到覆盖到的坐标;
         /// </summary>
-        IEnumerable<CubicHexCoord> GetCover(IBakeRequest request)
+        IEnumerable<CubicHexCoord> GetOverlaye(IBakeRequest request)
         {
             return TerrainOverlayer.GetLandform(request.ChunkCoord);
         }
