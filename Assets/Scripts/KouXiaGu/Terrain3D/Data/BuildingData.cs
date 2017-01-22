@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
         /// 节点不存在道路时放置的标志;
         /// </summary>
         const int EMPTY_MARK = 0;
-
+        const float DEFAULT_ANGLE = 0;
 
         BuildingData()
         {
@@ -29,11 +29,20 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IDictionary<CubicHexCoord, TerrainNode> Data { get; internal set; }
 
+        public BuildingNode this[CubicHexCoord coord]
+        {
+            get { return Data[coord].Building; }
+            set {
+                var node = Data[coord];
+                node.Building = value;
+                Data[coord] = node;
+            }
+        }
 
         /// <summary>
         /// 更新这个节点的内容;
         /// </summary>
-        public bool Update(CubicHexCoord coord, int id)
+        public bool Update(CubicHexCoord coord, int id, float angle)
         {
             TerrainNode node;
             if (Data.TryGetValue(coord, out node))
@@ -41,6 +50,7 @@ namespace KouXiaGu.Terrain3D
                 if (node.Building.ID != id)
                 {
                     node.Building.ID = id;
+                    node.Building.Angle = angle;
                     Data[coord] = node;
                     return true;
                 }
@@ -59,6 +69,7 @@ namespace KouXiaGu.Terrain3D
                 if (node.Building.ID != EMPTY_MARK)
                 {
                     node.Building.ID = EMPTY_MARK;
+                    node.Building.Angle = DEFAULT_ANGLE;
                     Data[coord] = node;
                     return true;
                 }
