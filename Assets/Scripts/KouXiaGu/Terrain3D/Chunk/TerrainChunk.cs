@@ -152,34 +152,24 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public TerrainChunk()
         {
-            gameObject = CraeteTerrainChunk();
-            Renderer = gameObject.GetComponent<TerrainRenderer>();
-            Trigger = gameObject.GetComponent<TerrainTrigger>();
+            ChunkObject = CraeteTerrainChunk();
+            Renderer = ChunkObject.GetComponent<TerrainRenderer>();
+            Trigger = ChunkObject.GetComponent<TerrainTrigger>();
         }
 
 
-        RectCoord coord;
-        public GameObject gameObject { get; private set; }
+        public RectCoord ChunkCoord { get; private set; }
+        public GameObject ChunkObject { get; private set; }
         public TerrainRenderer Renderer { get; private set; }
         public TerrainTrigger Trigger { get; private set; }
-        public BuildingGroup BuildingGroup { get; internal set; }
-
-
-        /// <summary>
-        /// 地形块坐标;
-        /// </summary>
-        public RectCoord ChunkCoord
-        {
-            get { return coord; }
-            set { gameObject.transform.position = ChunkGrid.GetCenter(value); coord = value; }
-        }
+        public BuildingGroup BuildingGroup { get; private set; }
 
         /// <summary>
         /// 是否有效的?
         /// </summary>
         public bool IsEffective
         {
-            get { return gameObject != null; }
+            get { return ChunkObject != null; }
         }
 
 
@@ -188,7 +178,17 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void SetActive(bool value)
         {
-            gameObject.SetActive(value);
+            ChunkObject.SetActive(value);
+        }
+
+
+        /// <summary>
+        /// 设置地形块坐标;
+        /// </summary>
+        public void Set(RectCoord chunkCoord)
+        {
+            ChunkObject.transform.position = ChunkGrid.GetCenter(chunkCoord);
+            ChunkCoord = chunkCoord;
         }
 
         /// <summary>
@@ -201,13 +201,26 @@ namespace KouXiaGu.Terrain3D
             Renderer.SetNormalMap(tex.normalMap);
 
             Trigger.ResetCollisionMesh();
+            ResetBuildingGroupHeight();
         }
 
-        [Obsolete]
-        public void Set(RectCoord coord, TerrainTexPack tex)
+        /// <summary>
+        /// 设置地形块的建筑信息;
+        /// </summary>
+        public void Set(BuildingGroup buildingGroup)
         {
-            ChunkCoord = coord;
-            Set(tex);
+            this.BuildingGroup = buildingGroup;
+
+            ResetBuildingGroupHeight();
+        }
+
+
+        void ResetBuildingGroupHeight()
+        {
+            if (BuildingGroup != null && Renderer.HeightMap != null)
+            {
+                BuildingGroup.ResetHeight(Renderer.HeightMap);
+            }
         }
 
 
@@ -220,10 +233,10 @@ namespace KouXiaGu.Terrain3D
 
         public void Destroy()
         {
-            GameObject.Destroy(gameObject);
+            GameObject.Destroy(ChunkObject);
             BuildingGroup.Destroy();
 
-            gameObject = null;
+            ChunkObject = null;
             Renderer = null;
             Trigger = null;
             BuildingGroup = null;

@@ -100,9 +100,9 @@ namespace KouXiaGu.Terrain3D
                 ActivatedChunks.Add(coord, chunk);
             }
 
-            chunk.ChunkCoord = coord;
+            chunk.Set(coord);
             chunk.Set(textures);
-            chunk.BuildingGroup = buildings;
+            chunk.Set(buildings);
         }
 
         /// <summary>
