@@ -41,9 +41,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static bool IsInitialised { get; private set; }
 
-        /// <summary>
-        /// 初始化;
-        /// </summary>
+
         public static void Initialize()
         {
             if (!IsInitialised)

@@ -72,9 +72,7 @@ namespace KouXiaGu.Terrain3D
             yield return ResInitializer.Initialize();
 
             MapDataManager.Load();
-
             TerrainData.Initialize(MapDataManager.ActiveData);
-            TerrainBaker.Initialize();
 
             TerrainChangedCreater.Initialize(Map);
 
@@ -90,9 +88,7 @@ namespace KouXiaGu.Terrain3D
             yield return ResInitializer.Initialize();
 
             MapDataManager.Load(archive);
-
             TerrainData.Initialize(MapDataManager.ActiveData);
-            TerrainBaker.Initialize();
 
             TerrainChangedCreater.Initialize(Map);
 

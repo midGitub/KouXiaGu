@@ -56,12 +56,12 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public SceneCreater Creater { get; private set; }
+        public static SceneCreater Creater { get; private set; }
 
 
         public static void Initialize(MapData data)
         {
-            GetInstance.Creater = new SceneCreater(data);
+            Creater = new SceneCreater(data);
         }
 
         void Start()
@@ -76,6 +76,13 @@ namespace KouXiaGu.Terrain3D
             Start();
         }
 
+        protected override void OnDestroy()
+        {
+            Creater = null;
+
+            base.OnDestroy();
+        }
+
         #region 地形方法(静态)
 
         /// <summary>
@@ -87,7 +94,7 @@ namespace KouXiaGu.Terrain3D
             RectCoord coord;
             Vector2 uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
 
-            if (TerrainCreater.ReadOnlyActivatedChunks.TryGetValue(coord, out chunk))
+            if (Creater != null && Creater.Landform.ActivatedChunks.TryGetValue(coord, out chunk))
             {
                 return GetHeight(chunk.Renderer, uv);
             }
@@ -121,7 +128,7 @@ namespace KouXiaGu.Terrain3D
         public static bool IsOutTerrain(Vector3 position)
         {
             RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
-            return TerrainCreater.ReadOnlyActivatedChunks.ContainsKey(coord);
+            return Creater == null && Creater.Landform.ActivatedChunks.ContainsKey(coord);
         }
 
         public void SetSnowLevel(float snow)

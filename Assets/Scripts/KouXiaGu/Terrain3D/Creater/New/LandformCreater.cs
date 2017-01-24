@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 using UnityEngine;
@@ -20,6 +17,7 @@ namespace KouXiaGu.Terrain3D
             this.Data = data;
             restingChunks = new Pool();
             activatedChunks = new CustomDictionary<RectCoord, TerrainChunk>();
+            TerrainBaker.Initialize();
         }
 
 
