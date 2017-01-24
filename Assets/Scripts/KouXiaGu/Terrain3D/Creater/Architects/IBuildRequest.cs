@@ -1,12 +1,12 @@
-﻿using System;
+﻿//using System;
 
-namespace KouXiaGu.Terrain3D
-{
+//namespace KouXiaGu.Terrain3D
+//{
 
-    public interface IBuildRequest : IRequest
-    {
-        void OnComplete(BuildingGroup buildings);
-        void OnError(Exception ex);
-    }
+//    public interface IBuildRequest : IRequest
+//    {
+//        void OnComplete(BuildingGroup buildings);
+//        void OnError(Exception ex);
+//    }
 
-}
+//}

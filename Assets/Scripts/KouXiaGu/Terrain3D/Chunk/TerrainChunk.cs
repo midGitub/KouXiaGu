@@ -162,7 +162,6 @@ namespace KouXiaGu.Terrain3D
         public GameObject ChunkObject { get; private set; }
         public TerrainRenderer Renderer { get; private set; }
         public TerrainTrigger Trigger { get; private set; }
-        public BuildingGroup BuildingGroup { get; private set; }
 
         /// <summary>
         /// 是否有效的?
@@ -201,45 +200,21 @@ namespace KouXiaGu.Terrain3D
             Renderer.SetNormalMap(tex.normalMap);
 
             Trigger.ResetCollisionMesh();
-            ResetBuildingGroupHeight();
-        }
-
-        /// <summary>
-        /// 设置地形块的建筑信息;
-        /// </summary>
-        public void Set(BuildingGroup buildingGroup)
-        {
-            this.BuildingGroup = buildingGroup;
-
-            ResetBuildingGroupHeight();
-        }
-
-
-        void ResetBuildingGroupHeight()
-        {
-            if (BuildingGroup != null && Renderer.HeightMap != null)
-            {
-                BuildingGroup.ResetHeight(Renderer.HeightMap);
-            }
         }
 
 
         public void Reset()
         {
             Renderer.DestroyTextures();
-            BuildingGroup.Destroy();
-            BuildingGroup = null;
         }
 
         public void Destroy()
         {
             GameObject.Destroy(ChunkObject);
-            BuildingGroup.Destroy();
 
             ChunkObject = null;
             Renderer = null;
             Trigger = null;
-            BuildingGroup = null;
         }
 
     }

@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形块创建请求;
     /// </summary>
-    class Request : IEquatable<Request>, IBuildRequest, IBakeRequest
+    class Request : IEquatable<Request>, IBakeRequest
     {
 
         /// <summary>
@@ -80,7 +80,6 @@ namespace KouXiaGu.Terrain3D
         Action<Request> callback;
         public RectCoord ChunkCoord { get; private set; }
         public TerrainTexPack Textures { get; private set; }
-        public BuildingGroup Buildings { get; private set; }
 
         public MapData Data
         {
@@ -91,13 +90,11 @@ namespace KouXiaGu.Terrain3D
         void RequesteAdd()
         {
             TerrainBaker.Requested.AddLast(this);
-            Architect.Requested.AddLast(this);
         }
 
         void RequesteRemove()
         {
             TerrainBaker.Requested.Remove(this);
-            Architect.Requested.Remove(this);
         }
 
         void IBakeRequest.OnComplete(TerrainTexPack textures)
@@ -106,18 +103,12 @@ namespace KouXiaGu.Terrain3D
             CreateChunk();
         }
 
-        void IBuildRequest.OnComplete(BuildingGroup buildings)
-        {
-            this.Buildings = buildings;
-            CreateChunk();
-        }
-
         void CreateChunk()
         {
             if (!requested.ContainsKey(ChunkCoord))
                 Debug.LogError("请求已经不存在,但是还是要求创建");
 
-            if (Textures != null && Buildings != null)
+            if (Textures != null)
             {
                 callback(this);
                 requested.Remove(ChunkCoord);
@@ -128,7 +119,6 @@ namespace KouXiaGu.Terrain3D
         void Clear()
         {
             Textures = null;
-            Buildings = null;
             callback = null;
         }
 
@@ -138,11 +128,6 @@ namespace KouXiaGu.Terrain3D
             {
                 Textures.Destroy();
                 Textures = null;
-            }
-            if (Buildings != null)
-            {
-                Buildings.Destroy();
-                Buildings = null;
             }
         }
 

@@ -78,7 +78,7 @@ namespace KouXiaGu.Terrain3D
             RectCoord coord;
             Vector2 uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
 
-            if (ChunkCreater.ReadOnlyActivatedChunks.TryGetValue(coord, out chunk))
+            if (TerrainCreater.ReadOnlyActivatedChunks.TryGetValue(coord, out chunk))
             {
                 return GetHeight(chunk.Renderer, uv);
             }
@@ -112,7 +112,7 @@ namespace KouXiaGu.Terrain3D
         public static bool IsOutTerrain(Vector3 position)
         {
             RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
-            return ChunkCreater.ReadOnlyActivatedChunks.ContainsKey(coord);
+            return TerrainCreater.ReadOnlyActivatedChunks.ContainsKey(coord);
         }
 
         public void SetSnowLevel(float snow)

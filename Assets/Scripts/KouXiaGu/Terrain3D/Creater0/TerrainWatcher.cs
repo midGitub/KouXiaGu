@@ -37,7 +37,7 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var item in displayCoords)
             {
-                ChunkCreater.Create(item);
+                TerrainCreater.Create(item);
             }
         }
 

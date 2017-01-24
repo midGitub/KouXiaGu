@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 using UnityEngine;
@@ -6,9 +7,11 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-
+    /// <summary>
+    /// 地形创建;
+    /// </summary>
     [DisallowMultipleComponent]
-    public class ChunkCreater : SceneSington<ChunkCreater>
+    public class TerrainCreater : SceneSington<TerrainCreater>
     {
 
         /// <summary>
@@ -17,6 +20,11 @@ namespace KouXiaGu.Terrain3D
         static Pool RestingChunks
         {
             get { return GetInstance.restingChunks; }
+        }
+
+        static BuildingCreater BuildingCreater
+        {
+            get { return GetInstance.buildingCreater; }
         }
 
         /// <summary>
@@ -49,32 +57,6 @@ namespace KouXiaGu.Terrain3D
             return true;
         }
 
-        ///// <summary>
-        ///// 通过请求创建到;
-        ///// </summary>
-        //static void Create(Request request)
-        //{
-        //    Create(request.ChunkCoord, request.Textures, request.Buildings);
-        //}
-
-        ///// <summary>
-        ///// 创建一个地图块,并且初始化;
-        ///// </summary>
-        //public static void Create(RectCoord coord, TerrainTexPack textures, BuildingGroup buildings)
-        //{
-        //    NotInstancedException();
-        //    if (textures == null || buildings == null)
-        //        throw new ArgumentNullException();
-
-        //    TerrainChunk chunk = RestingChunks.Get();
-
-        //    chunk.Set(textures);
-        //    chunk.BuildingGroup = buildings;
-
-        //    ActivatedChunks.Add(coord, chunk);
-        //}
-
-
         /// <summary>
         /// 创建或者更新已创建的地图块;
         /// </summary>
@@ -88,11 +70,7 @@ namespace KouXiaGu.Terrain3D
         {
             RectCoord coord = request.ChunkCoord;
             TerrainTexPack textures = request.Textures;
-            BuildingGroup buildings = request.Buildings;
             TerrainChunk chunk;
-
-            if (textures == null || buildings == null)
-                throw new ArgumentNullException();
 
             if (!ActivatedChunks.TryGetValue(request.ChunkCoord, out chunk))
             {
@@ -102,7 +80,20 @@ namespace KouXiaGu.Terrain3D
 
             chunk.Set(coord);
             chunk.Set(textures);
-            chunk.Set(buildings);
+
+            CreateBuildings(coord);
+        }
+
+        /// <summary>
+        /// 创建这个区域的建筑;
+        /// </summary>
+        static void CreateBuildings(RectCoord coord)
+        {
+            IEnumerable<CubicHexCoord> overlayes = TerrainOverlayer.GetBuilding(coord);
+            foreach (var overlaye in overlayes)
+            {
+                BuildingCreater.Create(overlaye);
+            }
         }
 
         /// <summary>
@@ -126,7 +117,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        ChunkCreater()
+        TerrainCreater()
         {
         }
 
@@ -135,6 +126,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [SerializeField]
         Pool restingChunks;
+
+        BuildingCreater buildingCreater;
 
         /// <summary>
         /// 在场景中激活的地形块;
@@ -145,6 +138,7 @@ namespace KouXiaGu.Terrain3D
         {
             base.Awake();
             restingChunks.Initialize();
+            buildingCreater = new BuildingCreater();
             activatedChunks = new CustomDictionary<RectCoord, TerrainChunk>();
         }
 

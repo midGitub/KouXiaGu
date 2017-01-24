@@ -74,7 +74,6 @@ namespace KouXiaGu.Terrain3D
             MapDataManager.Load();
 
             TerrainBaker.Initialize();
-            Architect.Initialize();
 
             TerrainChangedCreater.Initialize(Map);
 
@@ -92,7 +91,6 @@ namespace KouXiaGu.Terrain3D
             MapDataManager.Load(archive);
 
             TerrainBaker.Initialize();
-            Architect.Initialize();
 
             TerrainChangedCreater.Initialize(Map);
 

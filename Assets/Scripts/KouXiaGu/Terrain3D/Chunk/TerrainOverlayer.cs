@@ -33,6 +33,14 @@ namespace KouXiaGu.Terrain3D
             };
 
         /// <summary>
+        /// 一个建筑块存在的建筑节点个数;
+        /// </summary>
+        public static int BuildingCount
+        {
+            get { return buildingOverlay.Length; }
+        }
+
+        /// <summary>
         /// 获取到地形块对应覆盖到的建筑物坐标;
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetBuilding(RectCoord chunkCoord)
@@ -105,6 +113,13 @@ namespace KouXiaGu.Terrain3D
                 new CubicHexCoord(3, -3),
             };
 
+        /// <summary>
+        /// 一个地形块存在的节点个数;
+        /// </summary>
+        public static int LandformCount
+        {
+            get { return landformOverlay.Length; }
+        }
 
         /// <summary>
         /// 获取到地形块对应覆盖到的地貌坐标;
