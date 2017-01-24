@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 using UnityEngine;
@@ -17,14 +16,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形块池;
         /// </summary>
-        static Pool RestingChunks
+        static ChunkPool RestingChunks
         {
             get { return GetInstance.restingChunks; }
-        }
-
-        static BuildingCreater BuildingCreater
-        {
-            get { return GetInstance.buildingCreater; }
         }
 
         /// <summary>
@@ -80,20 +74,6 @@ namespace KouXiaGu.Terrain3D
 
             chunk.Set(coord);
             chunk.Set(textures);
-
-            CreateBuildings(coord);
-        }
-
-        /// <summary>
-        /// 创建这个区域的建筑;
-        /// </summary>
-        static void CreateBuildings(RectCoord coord)
-        {
-            IEnumerable<CubicHexCoord> overlayes = TerrainOverlayer.GetBuilding(coord);
-            foreach (var overlaye in overlayes)
-            {
-                BuildingCreater.Create(overlaye);
-            }
         }
 
         /// <summary>
@@ -125,9 +105,7 @@ namespace KouXiaGu.Terrain3D
         /// 地形块对象池;
         /// </summary>
         [SerializeField]
-        Pool restingChunks;
-
-        BuildingCreater buildingCreater;
+        ChunkPool restingChunks;
 
         /// <summary>
         /// 在场景中激活的地形块;
@@ -138,7 +116,6 @@ namespace KouXiaGu.Terrain3D
         {
             base.Awake();
             restingChunks.Initialize();
-            buildingCreater = new BuildingCreater();
             activatedChunks = new CustomDictionary<RectCoord, TerrainChunk>();
         }
 
@@ -149,9 +126,22 @@ namespace KouXiaGu.Terrain3D
         }
 
 
+        /// <summary>
+        /// 地形块 对象池;
+        /// </summary>
         [Serializable]
-        class Pool : ObjectPool<TerrainChunk>
+        class ChunkPool : ObjectPool<TerrainChunk>
         {
+            const int DEFAULT_CAPACITY = 30;
+
+            public ChunkPool() : base(DEFAULT_CAPACITY)
+            {
+            }
+
+            public ChunkPool(int capacity) : base(capacity)
+            {
+            }
+
             protected override TerrainChunk Instantiate()
             {
                 return new TerrainChunk();

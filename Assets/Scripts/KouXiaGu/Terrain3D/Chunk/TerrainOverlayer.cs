@@ -4,7 +4,9 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
-
+    /// <summary>
+    /// 将地形分为块的拓展方法;
+    /// </summary>
     public static class TerrainOverlayer
     {
 
@@ -52,13 +54,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地形块对应覆盖到的建筑物坐标;
         /// </summary>
-        public static IEnumerable<CubicHexCoord> GetBuilding(CubicHexCoord chunkCenter)
+        static IEnumerable<CubicHexCoord> GetBuilding(CubicHexCoord chunkCenter)
         {
             foreach (var item in buildingOverlay)
             {
                 yield return chunkCenter + item;
             }
         }
+
+
 
         #endregion
 
@@ -133,7 +137,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地形块对应覆盖到的地貌坐标;
         /// </summary>
-        public static IEnumerable<CubicHexCoord> GetLandform(CubicHexCoord chunkCenter)
+        static IEnumerable<CubicHexCoord> GetLandform(CubicHexCoord chunkCenter)
         {
             foreach (var item in landformOverlay)
             {

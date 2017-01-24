@@ -17,6 +17,12 @@ namespace KouXiaGu
             IsInitialized = false;
         }
 
+        public ObjectPool(int capacity)
+        {
+            objectPool = new Queue<T>(capacity);
+            IsInitialized = true;
+        }
+
         public void Initialize()
         {
             if (!IsInitialized)

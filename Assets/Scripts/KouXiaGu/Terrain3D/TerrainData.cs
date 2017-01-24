@@ -55,6 +55,15 @@ namespace KouXiaGu.Terrain3D
             set { Shader.SetGlobalFloat("_TerrainSnow", value); GetInstance.snowLevel = value; }
         }
 
+
+        public SceneCreater Creater { get; private set; }
+
+
+        public static void Initialize(MapData data)
+        {
+            GetInstance.Creater = new SceneCreater(data);
+        }
+
         void Start()
         {
             Tessellation = tessellation;
