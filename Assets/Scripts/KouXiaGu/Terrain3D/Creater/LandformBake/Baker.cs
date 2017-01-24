@@ -12,8 +12,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 负责将传入的请求渲染出基本的
-    /// 高度图\地貌贴图\法线图;
+    /// 烘培地形
     /// </summary>
     [DisallowMultipleComponent]
     public sealed partial class Baker : SceneSington<Baker>

@@ -21,12 +21,11 @@ namespace KouXiaGu.Terrain3D
             get { return GetInstance.terrainShader; }
         }
 
-        [SerializeField, Range(0, 32)]
-        float tessellation = 32f;
-        [SerializeField, Range(0, 5)]
-        float displacement = 2f;
-        [SerializeField, Range(0,20)]
-        float snowLevel = 0f;
+
+
+
+        public static bool IsInitialized { get; private set; }
+        public static SceneCreater Creater { get; private set; }
 
         /// <summary>
         /// 地形细分程度;
@@ -56,13 +55,38 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public static SceneCreater Creater { get; private set; }
-
-
         public static void Initialize(MapData data)
         {
-            Creater = new SceneCreater(data);
+            if (!IsInitialized)
+            {
+                Creater = new SceneCreater(data);
+
+                IsInitialized = true;
+            }
         }
+
+        static void Uninitialize()
+        {
+            if (IsInitialized)
+            {
+                Creater = null;
+                IsInitialized = false;
+            }
+        }
+
+
+        TerrainData()
+        {
+        }
+
+
+        [SerializeField, Range(0, 32)]
+        float tessellation = 32f;
+        [SerializeField, Range(0, 5)]
+        float displacement = 2f;
+        [SerializeField, Range(0, 20)]
+        float snowLevel = 0f;
+
 
         void Start()
         {
@@ -78,8 +102,7 @@ namespace KouXiaGu.Terrain3D
 
         protected override void OnDestroy()
         {
-            Creater = null;
-
+            Uninitialize();
             base.OnDestroy();
         }
 
