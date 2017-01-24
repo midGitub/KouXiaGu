@@ -16,8 +16,8 @@ namespace KouXiaGu.Terrain3D
         {
             this.Data = data;
             restingChunks = new Pool();
-            activatedChunks = new CustomDictionary<RectCoord, TerrainChunk>();
-            TerrainBaker.Initialize();
+            activatedChunks = new CustomDictionary<RectCoord, LandformChunk>();
+            Baker.Initialize();
         }
 
 
@@ -35,13 +35,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 在场景中激活的地形块;
         /// </summary>
-        CustomDictionary<RectCoord, TerrainChunk> activatedChunks;
+        CustomDictionary<RectCoord, LandformChunk> activatedChunks;
 
 
         /// <summary>
         /// 在场景中激活的地形块;
         /// </summary>
-        public IReadOnlyDictionary<RectCoord, TerrainChunk> ActivatedChunks
+        public IReadOnlyDictionary<RectCoord, LandformChunk> ActivatedChunks
         {
             get { return activatedChunks; }
         }
@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D
         {
             RectCoord coord = request.ChunkCoord;
             TerrainTexPack textures = request.Textures;
-            TerrainChunk chunk;
+            LandformChunk chunk;
 
             if (!activatedChunks.TryGetValue(request.ChunkCoord, out chunk))
             {
@@ -88,7 +88,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool Destroy(RectCoord coord)
         {
-            TerrainChunk chunk;
+            LandformChunk chunk;
 
             if (activatedChunks.TryGetValue(coord, out chunk))
             {
@@ -104,19 +104,19 @@ namespace KouXiaGu.Terrain3D
 
 
 
-        class Pool : ObjectPool<TerrainChunk>
+        class Pool : ObjectPool<LandformChunk>
         {
-            protected override TerrainChunk Instantiate()
+            protected override LandformChunk Instantiate()
             {
-                return new TerrainChunk();
+                return new LandformChunk();
             }
 
-            protected override void Reset(TerrainChunk item)
+            protected override void Reset(LandformChunk item)
             {
                 item.Reset();
             }
 
-            protected override void Destroy(TerrainChunk item)
+            protected override void Destroy(LandformChunk item)
             {
                 item.Destroy();
             }
@@ -203,12 +203,12 @@ namespace KouXiaGu.Terrain3D
 
             void RequesteAdd()
             {
-                TerrainBaker.Requested.AddLast(this);
+                Baker.Requested.AddLast(this);
             }
 
             void RequesteRemove()
             {
-                TerrainBaker.Requested.Remove(this);
+                Baker.Requested.Remove(this);
             }
 
             void IBakeRequest.OnComplete(TerrainTexPack textures)

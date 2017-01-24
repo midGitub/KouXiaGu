@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public sealed partial class TerrainBaker : SceneSington<TerrainBaker>
+    public sealed partial class Baker : SceneSington<Baker>
     {
 
         /// <summary>

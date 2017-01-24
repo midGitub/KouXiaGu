@@ -30,12 +30,12 @@ namespace KouXiaGu.Terrain3D.Tests
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                CubicHexCoord coord = TerrainTrigger.MouseRayPointOrDefault().GetTerrainCubic();
+                CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
                 MapDataManager.ActiveData.Road.Create(coord);
             }
             if (Input.GetKeyDown(KeyCode.Mouse1))
             {
-                CubicHexCoord coord = TerrainTrigger.MouseRayPointOrDefault().GetTerrainCubic();
+                CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
                 MapDataManager.ActiveData.Road.Destroy(coord);
             }
         }
@@ -44,7 +44,7 @@ namespace KouXiaGu.Terrain3D.Tests
         string TextUpdate()
         {
             Vector3 mousePoint;
-            if (TerrainTrigger.TryGetMouseRayPoint(out mousePoint))
+            if (LandformTrigger.TryGetMouseRayPoint(out mousePoint))
             {
                 CubicHexCoord coord = mousePoint.GetTerrainCubic();
                 TerrainNode node;

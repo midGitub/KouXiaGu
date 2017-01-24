@@ -74,7 +74,7 @@ namespace KouXiaGu.Test
 
         void Output(RectCoord coord)
         {
-            foreach (var item in TerrainOverlayer.GetLandform(coord))
+            foreach (var item in ChunkPartitioner.GetLandform(coord))
             {
                 this.Instantiate(item);
             }

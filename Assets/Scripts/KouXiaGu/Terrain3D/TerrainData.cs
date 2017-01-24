@@ -90,9 +90,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static float GetHeight(Vector3 position)
         {
-            TerrainChunk chunk;
+            LandformChunk chunk;
             RectCoord coord;
-            Vector2 uv = TerrainChunk.ChunkGrid.GetUV(position, out coord);
+            Vector2 uv = LandformChunk.ChunkGrid.GetUV(position, out coord);
 
             if (Creater != null && Creater.Landform.ActivatedChunks.TryGetValue(coord, out chunk))
             {
@@ -104,7 +104,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到对应的高度;
         /// </summary>
-        public static float GetHeight(TerrainRenderer chunk, Vector2 uv)
+        public static float GetHeight(LandformRenderer chunk, Vector2 uv)
         {
             Color pixelColor = chunk.HeightMap.GetPixel(uv);
             return pixelColor.r * Displacement;
@@ -116,7 +116,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static float GetHeight(RectCoord clamp, Vector3 position, Texture2D heightMap)
         {
-            Vector2 uv = TerrainChunk.ChunkGrid.GetUV(clamp, position);
+            Vector2 uv = LandformChunk.ChunkGrid.GetUV(clamp, position);
             Color pixelColor = heightMap.GetPixel(uv);
             return pixelColor.r * Displacement;
         }
@@ -127,7 +127,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static bool IsOutTerrain(Vector3 position)
         {
-            RectCoord coord = TerrainChunk.ChunkGrid.GetCoord(position);
+            RectCoord coord = LandformChunk.ChunkGrid.GetCoord(position);
             return Creater == null && Creater.Landform.ActivatedChunks.ContainsKey(coord);
         }
 

@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         {
             if (TerrainData.Creater != null)
             {
-                RectCoord center = TerrainChunk.ChunkGrid.GetCoord(position);
+                RectCoord center = LandformChunk.ChunkGrid.GetCoord(position);
                 HashSet<RectCoord> displayCoords = new HashSet<RectCoord>(GetDisplayCoords(center));
 
                 foreach (var item in displayCoords)

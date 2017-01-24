@@ -5,9 +5,9 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 将地形分为块的拓展方法;
+    /// 将地形分为块的拓展;
     /// </summary>
-    public static class TerrainOverlayer
+    public static class ChunkPartitioner
     {
 
         #region 建筑物;
@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetBuilding(RectCoord chunkCoord)
         {
-            CubicHexCoord chunkCenter = TerrainChunk.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            CubicHexCoord chunkCenter = LandformChunk.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
             return GetBuilding(chunkCenter);
         }
 
@@ -130,7 +130,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetLandform(RectCoord chunkCoord)
         {
-            CubicHexCoord chunkCenter = TerrainChunk.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            CubicHexCoord chunkCenter = LandformChunk.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
             return GetLandform(chunkCenter);
         }
 

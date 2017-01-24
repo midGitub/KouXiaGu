@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using System.Xml.Serialization;
 
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 烘培细节设置;
+    /// </summary>
     [XmlType("TerrainBakeSettings"), Serializable]
     public sealed class BakeSettings
     {
@@ -26,14 +26,14 @@ namespace KouXiaGu.Terrain3D
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
         public static readonly float CameraSize =
-            ((TerrainChunk.CHUNK_HEIGHT + (TerrainChunk.CHUNK_HEIGHT * OutlineScale)) / 2);
+            ((LandformChunk.CHUNK_HEIGHT + (LandformChunk.CHUNK_HEIGHT * OutlineScale)) / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
         public static readonly float CameraAspect =
-            (TerrainChunk.CHUNK_WIDTH + TerrainChunk.CHUNK_WIDTH * OutlineScale) /
-            (TerrainChunk.CHUNK_HEIGHT + TerrainChunk.CHUNK_HEIGHT * OutlineScale);
+            (LandformChunk.CHUNK_WIDTH + LandformChunk.CHUNK_WIDTH * OutlineScale) /
+            (LandformChunk.CHUNK_HEIGHT + LandformChunk.CHUNK_HEIGHT * OutlineScale);
 
 
         BakeSettings()
@@ -124,8 +124,8 @@ namespace KouXiaGu.Terrain3D
 
         public void UpdataTextureSize()
         {
-            int chunkWidth = (int)Math.Round(TerrainChunk.CHUNK_WIDTH * textureSize);
-            int chunkHeight = (int)Math.Round(TerrainChunk.CHUNK_HEIGHT * textureSize);
+            int chunkWidth = (int)Math.Round(LandformChunk.CHUNK_WIDTH * textureSize);
+            int chunkHeight = (int)Math.Round(LandformChunk.CHUNK_HEIGHT * textureSize);
 
             DiffuseTexWidth = (int)Math.Round(chunkWidth * diffuseMapRatios);
             DiffuseTexHeight = (int)Math.Round(chunkHeight * diffuseMapRatios);

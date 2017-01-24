@@ -7,8 +7,8 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地表碰撞触发器;
     /// </summary>
-    [RequireComponent(typeof(MeshCollider), typeof(TerrainRenderer)), DisallowMultipleComponent]
-    public class TerrainTrigger : MonoBehaviour
+    [RequireComponent(typeof(MeshCollider), typeof(LandformRenderer)), DisallowMultipleComponent]
+    public class LandformTrigger : MonoBehaviour
     {
 
         #region 网格定义;
@@ -29,16 +29,16 @@ namespace KouXiaGu.Terrain3D
         {
             List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
-            float lengthX = TerrainChunk.CHUNK_WIDTH / SUB_X;
-            float lengthZ = TerrainChunk.CHUNK_HEIGHT / SUB_Z;
+            float lengthX = LandformChunk.CHUNK_WIDTH / SUB_X;
+            float lengthZ = LandformChunk.CHUNK_HEIGHT / SUB_Z;
 
             for (int z = 0; z <= SUB_Z; z++)
             {
                 for (int x = 0; x <= SUB_X; x++)
                 {
                     Vector3 vertice = new Vector3(x * lengthX, 0, z * lengthZ);
-                    vertice.x -= TerrainChunk.CHUNK_WIDTH_HALF;
-                    vertice.z -= TerrainChunk.CHUNK_HEIGHT_HALF;
+                    vertice.x -= LandformChunk.CHUNK_WIDTH_HALF;
+                    vertice.z -= LandformChunk.CHUNK_HEIGHT_HALF;
 
                     Vector2 uv = new Vector2(x / (float)SUB_X, z / (float)SUB_Z);
 
@@ -155,11 +155,11 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("重置碰撞网格")]
         public void ResetCollisionMesh()
         {
-            TerrainRenderer terrainChunk = GetComponent<TerrainRenderer>();
+            LandformRenderer terrainChunk = GetComponent<LandformRenderer>();
             ResetCollisionMesh(terrainChunk);
         }
 
-        public void ResetCollisionMesh(TerrainRenderer terrainChunk)
+        public void ResetCollisionMesh(LandformRenderer terrainChunk)
         {
             MeshCollider meshCollider = GetComponent<MeshCollider>();
             Mesh mesh = meshCollider.sharedMesh;
@@ -179,7 +179,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到高度对应的顶点坐标;
         /// </summary>
-        Vector3[] GetVertices(TerrainRenderer chunk)
+        Vector3[] GetVertices(LandformRenderer chunk)
         {
             List<Vector3> vertices = new List<Vector3>();
             foreach (var pair in VERTICES)

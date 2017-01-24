@@ -16,9 +16,9 @@ namespace KouXiaGu.Terrain3D
     /// 高度图\地貌贴图\法线图;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class TerrainBaker : SceneSington<TerrainBaker>
+    public sealed partial class Baker : SceneSington<Baker>
     {
-        static TerrainBaker()
+        static Baker()
         {
             IsInitialised = false;
         }
@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         {
             if (!IsInitialised)
             {
-                TerrainBaker instance = GetInstance;
+                Baker instance = GetInstance;
 
                 instance.road.Initialise();
                 instance.landform.Initialise();
@@ -60,7 +60,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        TerrainBaker() { }
+        Baker() { }
 
         [SerializeField]
         NormalMapper normalMapper;
@@ -179,7 +179,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         IEnumerable<CubicHexCoord> GetOverlaye(IBakeRequest request)
         {
-            return TerrainOverlayer.GetLandform(request.ChunkCoord);
+            return ChunkPartitioner.GetLandform(request.ChunkCoord);
         }
 
     }

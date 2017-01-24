@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    [CustomEditor(typeof(TerrainRenderer), true)]
+    [CustomEditor(typeof(LandformRenderer), true)]
     class TerrainRendererEditor : Editor
     {
 
@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         {
             base.OnInspectorGUI();
 
-            var target = (TerrainRenderer)this.target;
+            var target = (LandformRenderer)this.target;
 
             if (Application.isPlaying)
             {

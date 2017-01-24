@@ -46,19 +46,19 @@ namespace KouXiaGu.Terrain3D.Tests
         string GetTestPointsLog(Vector3 mousePosition)
         {
 
-            Vector3 terrainPixel = TerrainTrigger.MouseRayPointOrDefault();
+            Vector3 terrainPixel = LandformTrigger.MouseRayPointOrDefault();
             CubicHexCoord cube = TerrainConvert.Grid.GetCubic(terrainPixel);
 
             Vector3 cubePixel = TerrainConvert.Grid.GetPixel(cube);
 
-            RectCoord terrainBlockCoord = TerrainChunk.ChunkGrid.GetCoord(terrainPixel);
-            Vector3 terrainBlockCenter = TerrainChunk.ChunkGrid.GetCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = TerrainChunk.GetHexCenter(terrainBlockCoord);
+            RectCoord terrainBlockCoord = LandformChunk.ChunkGrid.GetCoord(terrainPixel);
+            Vector3 terrainBlockCenter = LandformChunk.ChunkGrid.GetCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = LandformChunk.GetHexCenter(terrainBlockCoord);
 
-            Vector2 terrainBlockLocal = TerrainChunk.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
-            Vector2 terrainBlockUV = TerrainChunk.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
+            Vector2 terrainBlockLocal = LandformChunk.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
+            Vector2 terrainBlockUV = LandformChunk.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
             float terrainHeight = Terrain3D.TerrainData.GetHeight(terrainPixel);
-            RectCoord[] terrainBlocks = TerrainChunk.GetBelongChunks(cube);
+            RectCoord[] terrainBlocks = LandformChunk.GetBelongChunks(cube);
 
             string str = "";
 
