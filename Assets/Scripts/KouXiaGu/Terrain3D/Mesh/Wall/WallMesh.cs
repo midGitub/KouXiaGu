@@ -10,14 +10,17 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 根据地形起伏的城墙;
     /// </summary>
+    [DisallowMultipleComponent, RequireComponent(typeof(MeshFilter))]
     public sealed class WallMesh : MonoBehaviour
     {
 
         MeshFilter meshFilter;
 
+        //public WallVerticeTransfrom Vertices { get; private set; }
+
         void Awake()
         {
-
+            meshFilter = GetComponent<MeshFilter>();
         }
 
 
