@@ -4,6 +4,9 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 点坐标记录;
+    /// </summary>
     public struct CheckPoint : IEquatable<CheckPoint>
     {
 

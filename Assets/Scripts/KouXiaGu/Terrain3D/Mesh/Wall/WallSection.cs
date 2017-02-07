@@ -5,15 +5,30 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 顶点坐标转换,仅绕y轴进行变换;
+    /// 顶点坐标合集转换,仅绕y轴进行变换;
     /// </summary>
-    public class WallSection : List<CheckPoint>
+    public class WallSection
     {
+
+        public WallSection()
+        {
+            this.ID = 0;
+            this.AnchorPoint = Vector3.zero;
+            checkPoints = new List<CheckPoint>();
+        }
 
         public WallSection(int id, Vector3 anchorPoint)
         {
             this.ID = id;
             this.AnchorPoint = anchorPoint;
+            checkPoints = new List<CheckPoint>();
+        }
+
+        public WallSection(int id, Vector3 anchorPoint, IEnumerable<CheckPoint> checkPoints)
+        {
+            this.ID = id;
+            this.AnchorPoint = anchorPoint;
+            checkPoints = new List<CheckPoint>(checkPoints);
         }
 
 
@@ -27,24 +42,37 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Vector3 AnchorPoint { get; set; }
 
+        /// <summary>
+        /// 所有记录点;
+        /// </summary>
+        List<CheckPoint> checkPoints;
+
+        /// <summary>
+        /// 所有记录点;
+        /// </summary>
+        public IList<CheckPoint> CheckPoints
+        {
+            get { return checkPoints; }
+        }
+
 
         /// <summary>
         /// 重新计算并且返回检查点;
         /// </summary>
-        public IEnumerable<CheckPoint> RecalculatePoints(Vector3 nextPoint)
+        public IEnumerable<CheckPoint> Recalculate(Vector3 nextPoint)
         {
             float rotationAngle = AngleY(AnchorPoint, nextPoint);
-            return RecalculatePoints(rotationAngle);
+            return Recalculate(rotationAngle);
         }
 
         /// <summary>
         /// 重新计算并且返回检查点;
         /// </summary>
-        public IEnumerable<CheckPoint> RecalculatePoints(float rotationAngle)
+        public IEnumerable<CheckPoint> Recalculate(float rotationAngle)
         {
-            foreach (var checkPoint in this)
+            foreach (var checkPoint in checkPoints)
             {
-                Vector3 newPoint = TransfromPoint(checkPoint.Point, rotationAngle);
+                Vector3 newPoint = Transfrom(checkPoint.Point, rotationAngle);
                 yield return new CheckPoint(checkPoint.ID, newPoint);
             }
         }
@@ -52,7 +80,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 转换为旋转后的坐标;
         /// </summary>
-        Vector3 TransfromPoint(Vector3 point, float rotationAngle)
+        Vector3 Transfrom(Vector3 point, float rotationAngle)
         {
             float angle = AngleY(AnchorPoint, point);
             float radius = Distance(AnchorPoint, point);

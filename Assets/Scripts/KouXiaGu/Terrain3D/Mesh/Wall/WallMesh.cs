@@ -16,8 +16,6 @@ namespace KouXiaGu.Terrain3D
 
         MeshFilter meshFilter;
 
-        //public WallVerticeTransfrom Vertices { get; private set; }
-
         void Awake()
         {
             meshFilter = GetComponent<MeshFilter>();
