@@ -31,6 +31,7 @@ namespace KouXiaGu.Terrain3D
             foreach (var pos in mesh.vertices)
             {
                 Vector3 newPos = instance.transform.TransformPoint(pos);
+                //Handles.SphereCap(1, newPos, Quaternion.identity, UnityEngine.Random.Range(0.02f, 0.04f));
                 Handles.SphereCap(1, newPos, Quaternion.identity, 0.02f);
             }
 

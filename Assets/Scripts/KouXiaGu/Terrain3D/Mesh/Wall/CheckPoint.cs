@@ -7,18 +7,32 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 点坐标记录;
     /// </summary>
+    [Serializable]
     public struct CheckPoint : IEquatable<CheckPoint>
     {
 
         public CheckPoint(int id, Vector3 point)
         {
-            this.ID = id;
-            this.Point = point;
+            this.id = id;
+            this.point = point;
         }
 
+        [SerializeField]
+        int id;
 
-        public int ID { get; private set; }
-        public Vector3 Point { get; private set; }
+        [SerializeField]
+        Vector3 point;
+
+
+        public int ID
+        {
+            get { return id; }
+        }
+
+        public Vector3 Point
+        {
+            get { return point; }
+        }
 
 
         public bool Equals(CheckPoint other)

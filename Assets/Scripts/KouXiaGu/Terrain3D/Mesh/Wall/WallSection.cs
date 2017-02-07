@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -6,41 +7,35 @@ namespace KouXiaGu.Terrain3D
 
     /// <summary>
     /// 顶点坐标合集转换,仅绕y轴进行变换;
+    /// 默认旋转角度为0,即下一点坐标为+(0, 1, 0);
     /// </summary>
+    [Serializable]
     public class WallSection
     {
 
         public WallSection()
         {
-            this.ID = 0;
             this.AnchorPoint = Vector3.zero;
             checkPoints = new List<CheckPoint>();
         }
 
-        public WallSection(int id, Vector3 anchorPoint)
+        public WallSection(Vector3 anchorPoint)
         {
-            this.ID = id;
             this.AnchorPoint = anchorPoint;
             checkPoints = new List<CheckPoint>();
         }
 
-        public WallSection(int id, Vector3 anchorPoint, IEnumerable<CheckPoint> checkPoints)
+        public WallSection(Vector3 anchorPoint, IEnumerable<CheckPoint> checkPoints)
         {
-            this.ID = id;
             this.AnchorPoint = anchorPoint;
             checkPoints = new List<CheckPoint>(checkPoints);
         }
 
 
         /// <summary>
-        /// 在曲线上的编号;
-        /// </summary>
-        public int ID { get; set; }
-
-        /// <summary>
         /// 锚点;
         /// </summary>
-        public Vector3 AnchorPoint { get; set; }
+        public Vector3 AnchorPoint { get; private set; }
 
         /// <summary>
         /// 所有记录点;
@@ -55,30 +50,40 @@ namespace KouXiaGu.Terrain3D
             get { return checkPoints; }
         }
 
+        /// <summary>
+        /// 顶点总数;
+        /// </summary>
+        public int Count
+        {
+            get { return checkPoints.Count; }
+        }
+
 
         /// <summary>
         /// 重新计算并且返回检查点;
         /// </summary>
-        public IEnumerable<CheckPoint> Recalculate(Vector3 nextPoint)
+        /// <param name="newAnchorPoint">新的锚点</param>
+        /// <param name="nextPoint">下一个点,面向的坐标;</param>
+        public IEnumerable<CheckPoint> Recalculate(Vector3 newAnchorPoint, Vector3 nextPoint)
         {
-            float rotationAngle = AngleY(AnchorPoint, nextPoint);
-            return Recalculate(rotationAngle);
+            float rotationAngle = AngleY(newAnchorPoint, nextPoint);
+            return Recalculate(newAnchorPoint, rotationAngle);
         }
 
         /// <summary>
         /// 重新计算并且返回检查点;
         /// </summary>
-        public IEnumerable<CheckPoint> Recalculate(float rotationAngle)
+        public IEnumerable<CheckPoint> Recalculate(Vector3 newAnchorPoint, float rotationAngle)
         {
             foreach (var checkPoint in checkPoints)
             {
-                Vector3 newPoint = Transfrom(checkPoint.Point, rotationAngle);
+                Vector3 newPoint = Transfrom(checkPoint.Point, rotationAngle) + newAnchorPoint;
                 yield return new CheckPoint(checkPoint.ID, newPoint);
             }
         }
 
         /// <summary>
-        /// 转换为旋转后的坐标;
+        /// 转换为旋转后的坐标,原点(0,0,0);
         /// </summary>
         Vector3 Transfrom(Vector3 point, float rotationAngle)
         {
@@ -86,7 +91,7 @@ namespace KouXiaGu.Terrain3D
             float radius = Distance(AnchorPoint, point);
             float height = point.y - AnchorPoint.y;
 
-            Vector3 result = Circle(radius, rotationAngle + angle) + AnchorPoint;
+            Vector3 result = Circle(radius, rotationAngle + angle);
             result.y += height;
             return result;
         }
