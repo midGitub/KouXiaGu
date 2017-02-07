@@ -32,15 +32,15 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        /// <summary>
-        /// 锚点;
-        /// </summary>
-        public Vector3 AnchorPoint { get; private set; }
+        [SerializeField]
+        Vector3 anchorPoint;
 
         /// <summary>
         /// 所有记录点;
         /// </summary>
+        [SerializeField]
         List<CheckPoint> checkPoints;
+
 
         /// <summary>
         /// 所有记录点;
@@ -48,6 +48,15 @@ namespace KouXiaGu.Terrain3D
         public IList<CheckPoint> CheckPoints
         {
             get { return checkPoints; }
+        }
+
+        /// <summary>
+        /// 锚点;
+        /// </summary>
+        public Vector3 AnchorPoint
+        {
+            get { return anchorPoint; }
+            private set { anchorPoint = value; }
         }
 
         /// <summary>
