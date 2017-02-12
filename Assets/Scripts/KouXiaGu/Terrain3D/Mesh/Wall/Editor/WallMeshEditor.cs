@@ -14,15 +14,80 @@ namespace KouXiaGu.Terrain3D
 
         MeshFilter meshFilter;
 
+        List<PointObject> pointObjects;
+
+
         WallMesh instance
         {
             get { return (WallMesh)target; }
         }
 
+        Transform transform
+        {
+            get { return instance.transform; }
+        }
+
+        Transform pointsParent
+        {
+            get { return transform; }
+        }
+
+
         void OnEnable()
         {
             meshFilter = instance.GetComponent<MeshFilter>();
         }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("开始编辑"))
+            {
+                StartEdit();
+            }
+            if (GUILayout.Button("完成编辑"))
+            {
+
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+
+        void StartEdit()
+        {
+            IList<Vector3> points = meshFilter.sharedMesh.vertices;
+            CreatePointObject(points);
+        }
+
+        void CreatePointObject(IList<Vector3> points)
+        {
+            if(pointObjects.Count == 0 && points.Count > 0)
+            {
+                for (int i = 0; i < points.Count; i++)
+                {
+                   PointObject pointObject = CreatePointObject(i, points[i]);
+                   pointObjects.Add(pointObject);
+                }
+            }
+        }
+
+        PointObject CreatePointObject(int id, Vector3 pos)
+        {
+            GameObject point = new GameObject(id.ToString(), typeof(PointObject));
+            point.transform.SetParent(pointsParent);
+            point.transform.position = pos;
+
+            if (pointObjects == null)
+                pointObjects = new List<PointObject>();
+
+            PointObject pointObject = point.GetComponent<PointObject>();
+            return pointObject;
+        }
+
 
         void OnSceneGUI()
         {
@@ -49,6 +114,8 @@ namespace KouXiaGu.Terrain3D
                     Debug.Log(e.mousePosition);
                 }
             }
+
+            //Selection.gameObjects
 
         }
 

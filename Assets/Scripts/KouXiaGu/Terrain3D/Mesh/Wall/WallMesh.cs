@@ -22,16 +22,16 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         WallVertice wallVertice;
 
-        MeshFilter meshFilter;
+        public MeshFilter _MeshFilter { get; private set; }
 
         void Awake()
         {
-            meshFilter = GetComponent<MeshFilter>();
+            _MeshFilter = GetComponent<MeshFilter>();
         }
 
         void Reset()
         {
-            wallVertice.Vertices = meshFilter.sharedMesh.vertices;
+            wallVertice.Vertices = _MeshFilter.sharedMesh.vertices;
         }
 
 
