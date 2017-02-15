@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -57,24 +59,57 @@ namespace KouXiaGu.Initialization
             }
         }
 
+        /// <summary>
+        /// 直接开始游戏;
+        /// </summary>
         void StartGame()
         {
-            var operates = GetComponentsInChildren<IStartOperate>();
-            foreach (var operate in operates)
+            var operaters = GetComponentsInChildren<IStartOperate>();
+            var errorList = new List<IStartOperate>();
+
+            for (int i = 0; i < operaters.Length; i++)
             {
-                operate.Initialize();
+                var operater = operaters[i];
+                try
+                {
+                    operater.Initialize();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("跳过等待" + operater + ",因为在初始化时遇到异常:\n" + e);
+                    errorList.Add(operater);
+                }
             }
-            StartWait(operates);
+
+            StartWait(operaters.
+                Where(item => !errorList.Contains(item)).
+                Cast<IOperateAsync>().ToList());
         }
 
+        /// <summary>
+        /// 从存档开始游戏;
+        /// </summary>
         void StartGameFromArchive()
         {
-            var operates = GetComponentsInChildren<IRecoveryOperate>();
-            foreach (var operate in operates)
+            var operaters = GetComponentsInChildren<IRecoveryOperate>();
+            var errorList = new List<IRecoveryOperate>();
+
+            foreach (var operater in operaters)
             {
-                operate.Initialize(Archived);
+                try
+                {
+                    operater.Initialize(Archived);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("跳过等待" + operater + ",因为从存档初始化时遇到异常:\n" + e);
+                    errorList.Add(operater);
+                }
             }
-            StartWait(operates);
+
+            StartWait(operaters.
+              Where(item => !errorList.Contains(item)).
+              Cast<IOperateAsync>().ToList());
         }
 
         protected override void OnComplete(IOperateAsync operater)
@@ -82,6 +117,9 @@ namespace KouXiaGu.Initialization
             return;
         }
 
+        /// <summary>
+        /// 当所有完成时调用;
+        /// </summary>
         protected override void OnCompleteAll()
         {
             if (onGameInitializedEvent != null)
@@ -95,6 +133,9 @@ namespace KouXiaGu.Initialization
             enabled = false;
         }
 
+        /// <summary>
+        /// 当出现异常是调用;
+        /// </summary>
         protected override void OnFail(IOperateAsync operater)
         {
             Debug.LogError(operater.Ex);

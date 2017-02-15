@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace KouXiaGu.Initialization
@@ -20,7 +22,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 所有操作者的数组;
         /// </summary>
-        IOperateAsync[] operaters;
+        IList<IOperateAsync> operaters;
 
 
         /// <summary>
@@ -28,7 +30,7 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public IOperateAsync current
         {
-            get { return operaters == null || currentPointer < 0 || currentPointer >= operaters.Length ? null : operaters[currentPointer]; }
+            get { return operaters == null || currentPointer < 0 || currentPointer >= operaters.Count ? null : operaters[currentPointer]; }
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public int Total
         {
-            get { return operaters == null ? -1 : operaters.Length; }
+            get { return operaters == null ? -1 : operaters.Count; }
         }
 
         /// <summary>
@@ -44,7 +46,7 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public int Remainder
         {
-            get { return operaters == null ? -1 : operaters.Length - currentPointer; }
+            get { return operaters == null ? -1 : operaters.Count - currentPointer; }
         }
 
         /// <summary>
@@ -55,17 +57,16 @@ namespace KouXiaGu.Initialization
             get { return currentPointer != -1; }
         }
 
-
         /// <summary>
         /// 开始进行等待;
         /// </summary>
-        protected void StartWait(IOperateAsync[] operaters)
+        protected void StartWait(IList<IOperateAsync> operaters)
         {
             if (IsWaiting)
                 throw new ArgumentException("正在等待;");
 
             this.operaters = operaters;
-            if (operaters.Length == 0)
+            if (operaters.Count == 0)
             {
                 Complete();
             }
@@ -114,7 +115,7 @@ namespace KouXiaGu.Initialization
 
                     currentPointer++;
 
-                    if (currentPointer >= operaters.Length)
+                    if (currentPointer >= operaters.Count)
                     {
                         Complete();
                         break;
