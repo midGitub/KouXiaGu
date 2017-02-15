@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.World
 {
 
 
@@ -111,10 +111,10 @@ namespace KouXiaGu
     /// 游戏世界时间;
     /// </summary>
     [Serializable]
-    public struct WorldTime : IEquatable<WorldTime>, IComparable<WorldTime>
+    public struct WorldDateTime : IEquatable<WorldDateTime>, IComparable<WorldDateTime>
     {
 
-        public WorldTime(int year, int month, int day) : this()
+        public WorldDateTime(int year, int month, int day) : this()
         {
             this._year = year;
             this._month = month;
@@ -151,7 +151,7 @@ namespace KouXiaGu
         /// <summary>
         /// 增加一天,若超出这个月则增加一月;
         /// </summary>
-        public WorldTime AddDay()
+        public WorldDateTime AddDay()
         {
             Day++;
             if (Day > GetDayOfMonth(Year, Month))
@@ -165,7 +165,7 @@ namespace KouXiaGu
         /// <summary>
         /// 增加一月,若超过这年则增加一年;
         /// </summary>
-        WorldTime AddMonth()
+        WorldDateTime AddMonth()
         {
             Month++;
             if (Month > GetMonthOfYear(Year))
@@ -179,7 +179,7 @@ namespace KouXiaGu
         /// <summary>
         /// 增加一年;
         /// </summary>
-        WorldTime AddYear()
+        WorldDateTime AddYear()
         {
             Year++;
             return this;
@@ -191,7 +191,7 @@ namespace KouXiaGu
         }
 
 
-        public int CompareTo(WorldTime other)
+        public int CompareTo(WorldDateTime other)
         {
             if (other.Year > Year)
                 return 1;
@@ -216,12 +216,12 @@ namespace KouXiaGu
 
         public override bool Equals(object obj)
         {
-            if (!(obj is WorldTime))
+            if (!(obj is WorldDateTime))
                 return false;
-            return this.Equals((WorldTime)obj);
+            return this.Equals((WorldDateTime)obj);
         }
 
-        public bool Equals(WorldTime other)
+        public bool Equals(WorldDateTime other)
         {
             return 
                 Year == other.Year &&

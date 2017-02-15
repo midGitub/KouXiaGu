@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Initialization;
 using UnityEngine;
 
-namespace KouXiaGu
+
+namespace KouXiaGu.World
 {
+
 
     public class TimeInitializer : MonoBehaviour, IStartOperate, IRecoveryOperate, IArchiveOperate
     {
