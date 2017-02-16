@@ -17,9 +17,8 @@ namespace KouXiaGu.World
         {
         }
 
-
         [SerializeField]
-        TimeScale timeScale;
+        TimeScale scale;
 
         [SerializeField, Range(1, 200)]
         short lengthOfDay = 120;
@@ -73,11 +72,12 @@ namespace KouXiaGu.World
         void Reset()
         {
             time.Reset();
+            scale.Reset();
         }
 
         public void OnValidate()
         {
-            timeScale.OnValidate();
+            scale.OnValidate();
         }
 
     }

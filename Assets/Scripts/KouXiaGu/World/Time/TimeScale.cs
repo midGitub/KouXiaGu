@@ -13,13 +13,24 @@ namespace KouXiaGu.World
     public class TimeScale
     {
 
+        static readonly float[] DEFAULT_TIME_SCALES_ARRAY = new float[]
+        {
+            1,
+            1.5f,
+            2,
+        };
+
+        static readonly int DEFAULT_TIME_SCALE_INDEX = 0;
+        const float PAUSE_TIME_SCALE = 0f;
+
+
         TimeScale()
         {
         }
 
-        public TimeScale(float[] timeScales, int timeScaleIndex)
+        public TimeScale(float[] timeScales, int timeScaleIndex) : this()
         {
-            SetSpeedLevel(timeScales, timeScaleIndex);
+            SetTimeScale(timeScales, timeScaleIndex);
         }
 
 
@@ -27,7 +38,7 @@ namespace KouXiaGu.World
         /// 可用的时间流逝速度;
         /// </summary>
         [SerializeField]
-        float[] timeScales;
+        float[] timeScalesArray;
 
         /// <summary>
         /// 现在使用的时间流逝速度;
@@ -39,10 +50,10 @@ namespace KouXiaGu.World
         /// <summary>
         /// 可用的时间流逝速度;
         /// </summary>
-        public float[] TimeScales
+        public float[] TimeScalesArray
         {
-            get { return timeScales; }
-            private set { timeScales = value; }
+            get { return timeScalesArray; }
+            private set { timeScalesArray = value; }
         }
 
         /// <summary>
@@ -59,7 +70,7 @@ namespace KouXiaGu.World
         /// </summary>
         public float CurrentTimeScale
         {
-            get { return timeScales[timeScaleIndex]; }
+            get { return timeScalesArray[timeScaleIndex]; }
         }
 
         /// <summary>
@@ -71,37 +82,90 @@ namespace KouXiaGu.World
             private set { Time.timeScale = value; }
         }
 
+        /// <summary>
+        /// 是否被暂停了?
+        /// </summary>
+        public bool IsPause
+        {
+            get { return Scale == PAUSE_TIME_SCALE; }
+        }
 
+
+        /// <summary>
+        /// 恢复到默认;
+        /// </summary>
+        public void Reset()
+        {
+            SetTimeScale(DEFAULT_TIME_SCALES_ARRAY, DEFAULT_TIME_SCALE_INDEX);
+        }
+
+        /// <summary>
+        /// 重新设置到时间缩放级别;
+        /// </summary>
         public void OnValidate()
         {
-            this.Scale = CurrentTimeScale;
+            SetTimeScale(timeScaleIndex);
         }
+
 
         /// <summary>
         /// 设置时间流逝速度;
         /// </summary>
         /// <param name="timeScales">新的流逝级别</param>
         /// <param name="timeScaleIndex">流逝级别的数组下标</param>
-        public void SetSpeedLevel(float[] timeScales, int timeScaleIndex)
+        public void SetTimeScale(float[] timeScales, int timeScaleIndex)
         {
             if (timeScales == null)
                 throw new ArgumentNullException();
 
-            this.TimeScales = (float[])timeScales.Clone();
-            SetSpeedLevel(timeScaleIndex);
+            this.TimeScalesArray = (float[])timeScales.Clone();
+            SetTimeScale(timeScaleIndex);
         }
 
         /// <summary>
         /// 设置时间流逝速度;
         /// </summary>
         /// <param name="timeScaleIndex">流逝级别的数组下标</param>
-        public void SetSpeedLevel(int timeScaleIndex)
+        public void SetTimeScale(int timeScaleIndex)
         {
-            if (timeScaleIndex < 0 || timeScaleIndex >= this.timeScales.Length)
-                throw new IndexOutOfRangeException();
-
             this.TimeScaleIndex = timeScaleIndex;
-            OnValidate();
+            this.Scale = CurrentTimeScale;
+        }
+
+        /// <summary>
+        /// 设置到上一个缩放级别;
+        /// 若已经到头了则返回false;
+        /// </summary>
+        public bool Previous()
+        {
+            if (this.timeScaleIndex > 0)
+            {
+                SetTimeScale(this.timeScaleIndex - 1);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 设置到下一个缩放级别;
+        /// 若已经到头了则返回false;
+        /// </summary>
+        public bool Next()
+        {
+            if (this.timeScaleIndex < timeScalesArray.Length)
+            {
+                SetTimeScale(this.timeScaleIndex + 1);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 暂停;
+        /// </summary>
+        public void Pause()
+        {
+            Scale = PAUSE_TIME_SCALE;
         }
 
     }
