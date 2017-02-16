@@ -9,9 +9,9 @@ namespace KouXiaGu.Initialization
     public interface IStartOperate : IOperateAsync
     {
         /// <summary>
-        /// 初始化内容;
+        /// 初始化内容,返回当所有内容初始化完成后的回调;
         /// </summary>
-        void Initialize();
+        Action Initialize();
     }
 
 }

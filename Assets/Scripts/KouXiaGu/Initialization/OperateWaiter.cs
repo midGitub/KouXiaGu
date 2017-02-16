@@ -106,7 +106,7 @@ namespace KouXiaGu.Initialization
                 {
                     if (current.IsFaulted)
                     {
-                        OnFail(current);
+                        OnFail(current, current.Ex);
                     }
                     else
                     {
@@ -134,7 +134,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 当存在一个任务失败时调用;
         /// </summary>
-        protected abstract void OnFail(IOperateAsync operater);
+        protected abstract void OnFail(IOperateAsync operater, Exception e);
 
     }
 

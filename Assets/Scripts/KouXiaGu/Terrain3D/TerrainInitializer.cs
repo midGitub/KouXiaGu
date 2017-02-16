@@ -40,19 +40,21 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用类信息初始化;
         /// </summary>
-        void IStartOperate.Initialize()
+        Action IStartOperate.Initialize()
         {
             ResetState();
             StartCoroutine(Begin());
+            return null;
         }
 
         /// <summary>
         /// 使用存档初始化;
         /// </summary>
-        void IRecoveryOperate.Initialize(ArchiveFile archive)
+        Action IRecoveryOperate.Initialize(ArchiveFile archive)
         {
             ResetState();
             StartCoroutine(Begin(archive));
+            return null;
         }
 
         /// <summary>

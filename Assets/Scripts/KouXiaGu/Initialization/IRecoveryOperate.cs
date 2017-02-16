@@ -14,7 +14,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 初始化内容;
         /// </summary>
-        void Initialize(ArchiveFile archive);
+        Action Initialize(ArchiveFile archive);
     }
 
 }

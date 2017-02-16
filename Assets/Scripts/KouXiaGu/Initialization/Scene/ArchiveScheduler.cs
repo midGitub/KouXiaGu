@@ -58,9 +58,9 @@ namespace KouXiaGu.Initialization
             return;
         }
 
-        protected override void OnFail(IOperateAsync operater)
+        protected override void OnFail(IOperateAsync operater, Exception e)
         {
-            Debug.Log(operater.Ex);
+            Debug.Log(e);
         }
 
     }

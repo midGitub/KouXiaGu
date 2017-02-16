@@ -42,13 +42,14 @@ namespace KouXiaGu.Globalization
             this.Ex = ex;
         }
 
-        void IStartOperate.Initialize()
+        Action IStartOperate.Initialize()
         {
 #if USE_THREAD
             ThreadPool.QueueUserWorkItem(_ => FirstRead());
 #else
             FirstRead();
 #endif
+            return null;
         }
 
 

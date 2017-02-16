@@ -65,6 +65,11 @@ namespace KouXiaGu.World
             }
         }
 
+        void Reset()
+        {
+            
+        }
+
     }
 
 }

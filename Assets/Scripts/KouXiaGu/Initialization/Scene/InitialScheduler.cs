@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace KouXiaGu.Initialization
@@ -37,9 +38,9 @@ namespace KouXiaGu.Initialization
             Destroy(this);
         }
 
-        protected override void OnFail(IOperateAsync operater)
+        protected override void OnFail(IOperateAsync operater, Exception e)
         {
-            Debug.LogError(operater.Ex);
+            Debug.LogError(e);
         }
     }
 

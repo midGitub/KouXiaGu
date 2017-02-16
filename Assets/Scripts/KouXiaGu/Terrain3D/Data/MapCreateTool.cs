@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
         protected override void Awake()
         {
             base.Awake();
-            GameScheduler.OnGameInitializedEvent += Initialize;
+            GameObject.FindObjectOfType<GameScheduler>().OnGameInitializedEvent += Initialize;
         }
 
         /// <summary>

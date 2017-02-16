@@ -114,12 +114,16 @@ namespace KouXiaGu.World
     public struct WorldDateTime : IEquatable<WorldDateTime>, IComparable<WorldDateTime>
     {
 
-        public WorldDateTime(int year, int month, int day) : this()
+        public WorldDateTime(int year, int month, int day)
         {
+            if (year <= 0 || month <= 0 || day <= 0)
+                throw new ArgumentOutOfRangeException();
+
             this._year = year;
             this._month = month;
             this._day = day;
         }
+
 
         [SerializeField]
         int _year;
@@ -188,6 +192,13 @@ namespace KouXiaGu.World
         public bool IsLeapMonth()
         {
             return IsLeapMonth(Year, Month);
+        }
+
+        void Reset()
+        {
+            _year = 1;
+            _month = 1;
+            _day = 1;
         }
 
 

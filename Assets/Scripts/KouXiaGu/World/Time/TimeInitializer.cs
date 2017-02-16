@@ -23,13 +23,13 @@ namespace KouXiaGu.World
             Ex = null;
         }
 
-        void IStartOperate.Initialize()
+        Action IStartOperate.Initialize()
         {
             ResetState();
             throw new NotImplementedException();
         }
 
-        void IRecoveryOperate.Initialize(ArchiveFile archive)
+        Action IRecoveryOperate.Initialize(ArchiveFile archive)
         {
             ResetState();
             throw new NotImplementedException();

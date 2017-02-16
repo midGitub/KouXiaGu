@@ -29,23 +29,20 @@ namespace KouXiaGu.Initialization
             get { return Archived != null; }
         }
 
-        static event Action onGameInitializedEvent;
-
-        /// <summary>
-        /// 在游戏初始化完成后调用,调用后既清空,在Update之前加入有效;
-        /// </summary>
-        public static event Action OnGameInitializedEvent
-        {
-            add { onGameInitializedEvent += value; }
-            remove { onGameInitializedEvent -= value; }
-        }
-
-
         /// <summary>
         /// 提供外部设置,在游戏初始化完成后调用;
         /// </summary>
         [SerializeField]
-        UnityEvent onGameInitialized;
+        Action onGameInitializedEvent;
+
+        /// <summary>
+        /// 在游戏初始化完成后调用,在Update之前加入有效;
+        /// </summary>
+        public event Action OnGameInitializedEvent
+        {
+            add { onGameInitializedEvent += value; }
+            remove { onGameInitializedEvent -= value; }
+        }
 
         void Awake()
         {
@@ -72,11 +69,13 @@ namespace KouXiaGu.Initialization
                 var operater = operaters[i];
                 try
                 {
-                    operater.Initialize();
+                    Action callBack = operater.Initialize();
+                    onGameInitializedEvent += callBack;
                 }
                 catch (Exception e)
                 {
                     Debug.LogError("跳过等待" + operater + ",因为在初始化时遇到异常:\n" + e);
+                    OnFail(operater, e);
                     errorList.Add(operater);
                 }
             }
@@ -103,6 +102,7 @@ namespace KouXiaGu.Initialization
                 catch (Exception e)
                 {
                     Debug.LogError("跳过等待" + operater + ",因为从存档初始化时遇到异常:\n" + e);
+                    OnFail(operater, e);
                     errorList.Add(operater);
                 }
             }
@@ -123,22 +123,16 @@ namespace KouXiaGu.Initialization
         protected override void OnCompleteAll()
         {
             if (onGameInitializedEvent != null)
-            {
                 onGameInitializedEvent();
-                onGameInitializedEvent = null;
-            }
-
-            onGameInitialized.Invoke();
-
             enabled = false;
         }
 
         /// <summary>
         /// 当出现异常是调用;
         /// </summary>
-        protected override void OnFail(IOperateAsync operater)
+        protected override void OnFail(IOperateAsync operater, Exception e)
         {
-            Debug.LogError(operater.Ex);
+            Debug.LogError(e);
         }
 
 
