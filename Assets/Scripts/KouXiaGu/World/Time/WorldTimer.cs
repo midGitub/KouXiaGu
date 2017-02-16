@@ -7,7 +7,9 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
-
+    /// <summary>
+    /// 游戏世界时间;
+    /// </summary>
     [DisallowMultipleComponent]
     public class WorldTimer : MonoBehaviour
     {
@@ -15,6 +17,9 @@ namespace KouXiaGu.World
         {
         }
 
+
+        [SerializeField]
+        TimeScale timeScale;
 
         [SerializeField, Range(1, 200)]
         short lengthOfDay = 120;
@@ -67,7 +72,12 @@ namespace KouXiaGu.World
 
         void Reset()
         {
-            
+            time.Reset();
+        }
+
+        public void OnValidate()
+        {
+            timeScale.OnValidate();
         }
 
     }

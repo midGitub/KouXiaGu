@@ -70,7 +70,8 @@ namespace KouXiaGu.Initialization
                 try
                 {
                     Action callBack = operater.Initialize();
-                    onGameInitializedEvent += callBack;
+                    if(callBack != null)
+                        onGameInitializedEvent += callBack;
                 }
                 catch (Exception e)
                 {
@@ -97,7 +98,9 @@ namespace KouXiaGu.Initialization
             {
                 try
                 {
-                    operater.Initialize(Archived);
+                    Action callBack = operater.Initialize(Archived);
+                    if (callBack != null)
+                        onGameInitializedEvent += callBack;
                 }
                 catch (Exception e)
                 {

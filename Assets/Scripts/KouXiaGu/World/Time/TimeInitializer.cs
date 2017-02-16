@@ -8,9 +8,22 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
-
+    /// <summary>
+    /// 游戏时间系统初始化;
+    /// </summary>
+    [DisallowMultipleComponent]
     public class TimeInitializer : MonoBehaviour, IStartOperate, IRecoveryOperate, IArchiveOperate
     {
+
+        /// <summary>
+        /// 游戏开始时间;
+        /// </summary>
+        public static WorldDateTime StartTime;
+
+
+
+        [SerializeField]
+        WorldTimer timer;
 
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
@@ -26,8 +39,30 @@ namespace KouXiaGu.World
         Action IStartOperate.Initialize()
         {
             ResetState();
-            throw new NotImplementedException();
+            try
+            {
+                timer.Time = StartTime;
+                timer.OnValidate();
+
+                IsCompleted = true;
+                return OnInitialized;
+            }
+            catch (Exception e)
+            {
+                IsFaulted = true;
+                Ex = e;
+                return null;
+            }
         }
+
+        /// <summary>
+        /// 当初始化完成后(开始游戏时)调用;
+        /// </summary>
+        void OnInitialized()
+        {
+            timer.IsRuning = true;
+        }
+
 
         Action IRecoveryOperate.Initialize(ArchiveFile archive)
         {
