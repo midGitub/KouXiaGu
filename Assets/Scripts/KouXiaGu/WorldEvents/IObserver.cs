@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.EventSystem
+namespace KouXiaGu.WorldEvents
 {
 
     /// <summary>
-    /// 可观察变量;
+    /// 变量观察者;
     /// </summary>
-    public interface IObservable
+    public interface IObserver
     {
 
         /// <summary>
-        /// 观察者订阅;
+        /// 当变量发生变化时调用;
         /// </summary>
-        IDisposable Subscribe(IObserver observer);
+        void OnNext(IObservable provider);
     }
 
 }

@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using KouXiaGu.Collections;
 
-namespace KouXiaGu.EventSystem
+namespace KouXiaGu.WorldEvents
 {
 
     /// <summary>
