@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.EventSystem
 {
 
     /// <summary>
-    /// 游戏世界数据;
+    /// 观察和接收事件的独立单元;
     /// </summary>
-    public class WorldData
+    public class Independent
     {
-
 
     }
 

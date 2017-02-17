@@ -18,6 +18,10 @@ namespace KouXiaGu
         public static T Dequeue<T>(this LinkedList<T> collection)
         {
             LinkedListNode<T> first = collection.First;
+
+            if (first == null)
+                throw new ArgumentException();
+
             collection.Remove(first);
             T value = first.Value;
             return value;

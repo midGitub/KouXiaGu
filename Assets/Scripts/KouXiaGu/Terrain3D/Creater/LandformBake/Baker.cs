@@ -52,14 +52,14 @@ namespace KouXiaGu.Terrain3D
 
                 instance.decorateBlend.Awake();
 
-                instance.StartCoroutine(instance.Bake());
-
                 IsInitialised = true;
             }
         }
 
 
-        Baker() { }
+        Baker()
+        {
+        }
 
         [SerializeField]
         NormalMapper normalMapper;
@@ -78,11 +78,31 @@ namespace KouXiaGu.Terrain3D
         TestBaker testBaker;
 #endif
 
+        public bool IsRunning
+        {
+            get { return enabled; }
+            set { enabled = value; }
+        }
+
         protected override void OnDestroy()
         {
             bakeRequestQueue.Clear();
             IsInitialised = false;
             base.OnDestroy();
+        }
+
+        void Update()
+        {
+            if (CanUpdate())
+            {
+                IBakeRequest request = bakeRequestQueue.Dequeue();
+                Bake(request);
+            }
+        }
+
+        bool CanUpdate()
+        {
+            return bakeRequestQueue.Count > 0;
         }
 
         /// <summary>
@@ -93,72 +113,62 @@ namespace KouXiaGu.Terrain3D
         /// 混合高度->混合地表->
         /// 高度生成法线图->完成
         /// </summary>
-        IEnumerator Bake()
+        void Bake(IBakeRequest request)
         {
-            CustomYieldInstruction bakingYieldInstruction = new WaitWhile(() => bakeRequestQueue.Count == 0);
-
-            IBakeRequest request = null;
             RenderTexture normalMapRT = null;
             RenderTexture heightMapRT = null;
             RenderTexture diffuseMapRT = null;
-
             TerrainTexPack tex = null;
 
-            while (true)
+            try
             {
-                yield return bakingYieldInstruction;
-
-                try
-                {
-                    request = bakeRequestQueue.Dequeue();
-                    var cover = GetOverlaye(request);
+                var cover = GetOverlaye(request);
 
 #if TEST_BAKE
-                    testBaker.Bake(request);
+                testBaker.Bake(request);
 #else
 
-                    landform.Bake(request, cover);
-                    road.Bake(request, cover);
+                landform.Bake(request, cover);
+                road.Bake(request, cover);
 
 #if TEST_LANDFORM_BAKER
-                    heightMapRT = landform.HeightRT;
-                    diffuseMapRT = landform.DiffuseRT;
+                heightMapRT = landform.HeightRT;
+                diffuseMapRT = landform.DiffuseRT;
 #else
-                    heightMapRT = decorateBlend.BlendHeight(landform.HeightRT, road.HeightRT);
-                    diffuseMapRT = decorateBlend.BlendDiffuse(landform.DiffuseRT, road.DiffuseRT);
+                heightMapRT = decorateBlend.BlendHeight(landform.HeightRT, road.HeightRT);
+                diffuseMapRT = decorateBlend.BlendDiffuse(landform.DiffuseRT, road.DiffuseRT);
 #endif
-                    normalMapRT = normalMapper.Rander(heightMapRT);
+                normalMapRT = normalMapper.Rander(heightMapRT);
 
-                    tex = new TerrainTexPack();
-                    tex.heightMap = BakeCamera.GetHeightTexture(heightMapRT);
-                    tex.normalMap = normalMapper.GetTexture(normalMapRT);
-                    tex.diffuseMap = BakeCamera.GetDiffuseTexture(diffuseMapRT);
+                tex = new TerrainTexPack();
+                tex.heightMap = BakeCamera.GetHeightTexture(heightMapRT);
+                tex.normalMap = normalMapper.GetTexture(normalMapRT);
+                tex.diffuseMap = BakeCamera.GetDiffuseTexture(diffuseMapRT);
 
-                    request.OnComplete(tex);
-                    tex = null;
+                request.OnComplete(tex);
+                tex = null;
 #endif
-                }
-                catch (Exception ex)
-                {
-                    if (tex != null)
-                        tex.Destroy();
+            }
+            catch (Exception ex)
+            {
+                if (tex != null)
+                    tex.Destroy();
 
-                    if (request != null)
-                        request.OnError(ex);
-                }
-                finally
-                {
-                    landform.Dispose();
-                    road.Dispose();
+                request.OnError(ex);
+            }
+            finally
+            {
+                landform.Dispose();
+                road.Dispose();
 
-                    ReleaseRenderTexture(ref normalMapRT);
+                ReleaseRenderTexture(ref normalMapRT);
 
 #if !TEST_LANDFORM_BAKER
-                    ReleaseRenderTexture(ref heightMapRT);
-                    ReleaseRenderTexture(ref diffuseMapRT);
+                ReleaseRenderTexture(ref heightMapRT);
+                ReleaseRenderTexture(ref diffuseMapRT);
 #endif
-                }
             }
+
         }
 
         /// <summary>
