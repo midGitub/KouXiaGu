@@ -7,22 +7,19 @@ namespace KouXiaGu.WorldEvents
 {
 
     /// <summary>
-    /// 建筑物;
+    /// 效果类型;
     /// </summary>
-    public class Building
+    public enum EffectSourceType
     {
-
-        public Building()
-        {
-
-        }
+        /// <summary>
+        /// 建筑物;
+        /// </summary>
+        Building,
 
         /// <summary>
-        /// 所归属的城镇;
+        /// 法令;
         /// </summary>
-        public Town town { get; private set; }
-
-
+        Decree,
 
 
     }

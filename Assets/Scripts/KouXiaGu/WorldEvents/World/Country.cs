@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Collections;
 
 namespace KouXiaGu.WorldEvents
@@ -10,12 +9,16 @@ namespace KouXiaGu.WorldEvents
     /// <summary>
     /// 国家;
     /// </summary>
-    public class Country
+    public class Country : IEquatable<Country>
     {
 
-        Country(int id)
+        public Country(
+            int id,
+            IEnumerable<int> resIdentifications,
+            IEnumerable<int> townIdentifications)
         {
             this.ID = id;
+            this.towns = townIdentifications.ToDictionary(townIdentification => new Town(townIdentification));
         }
 
 
@@ -27,18 +30,42 @@ namespace KouXiaGu.WorldEvents
         /// <summary>
         /// 资源信息;
         /// </summary>
-        CustomDictionary<int, Resource> resources;
+        public ResourceGroup Resources { get; private set; }
+
+        /// <summary>
+        /// 城镇信息;
+        /// </summary>
+        CustomDictionary<int, Town> towns;
 
 
         /// <summary>
-        /// 资源信息;
+        /// 城镇信息;
         /// </summary>
-        public IReadOnlyDictionary<int, Resource> Resources
+        public IDictionary<int, Town> Towns
         {
-            get { return resources; }
+            get { return towns; }
         }
 
 
+        public bool Equals(Country other)
+        {
+            return this.ID == other.ID;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Country;
+
+            if (other == null)
+                return false;
+
+            return Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return ID;
+        }
 
     }
 

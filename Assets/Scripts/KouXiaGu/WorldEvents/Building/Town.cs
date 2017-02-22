@@ -12,6 +12,21 @@ namespace KouXiaGu.WorldEvents
     public class Town
     {
 
+        public Town()
+        {
+
+        }
+
+        public Town(int id)
+        {
+            this.ID = id;
+        }
+
+        /// <summary>
+        /// 唯一标识;
+        /// </summary>
+        public int ID { get; private set; }
+
 
 
 

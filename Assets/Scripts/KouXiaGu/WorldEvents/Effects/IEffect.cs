@@ -12,16 +12,6 @@ namespace KouXiaGu.WorldEvents
     public interface IEffect
     {
 
-        /// <summary>
-        /// 启用;
-        /// </summary>
-        void Enable();
-
-        /// <summary>
-        /// 停用;
-        /// </summary>
-        void Disable();
-
     }
 
 }

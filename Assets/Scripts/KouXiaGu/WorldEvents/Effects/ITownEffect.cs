@@ -7,24 +7,20 @@ namespace KouXiaGu.WorldEvents
 {
 
     /// <summary>
-    /// 建筑物;
+    /// 对城镇启用的效果;
     /// </summary>
-    public class Building
+    public interface ITownEffect
     {
 
-        public Building()
-        {
-
-        }
+        /// <summary>
+        /// 启用;
+        /// </summary>
+        void Enable(Town country);
 
         /// <summary>
-        /// 所归属的城镇;
+        /// 停用;
         /// </summary>
-        public Town town { get; private set; }
-
-
-
-
+        void Disable(Town country);
     }
 
 }

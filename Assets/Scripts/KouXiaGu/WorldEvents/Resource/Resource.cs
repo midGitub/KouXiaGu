@@ -6,10 +6,11 @@ namespace KouXiaGu.WorldEvents
     /// <summary>
     /// 资源;
     /// </summary>
-    public class Resource : IEquatable<Resource>
+    [Obsolete]
+    public class Resource
     {
 
-        Resource()
+        public Resource()
         {
             Stock = 0f;
             Capacity = 0f;
@@ -18,17 +19,6 @@ namespace KouXiaGu.WorldEvents
             Consume = 0f;
             ConsumePercentage = 1f;
         }
-
-        public Resource(int id) : this()
-        {
-            this.ID = id;
-        }
-
-
-        /// <summary>
-        /// 唯一编号;
-        /// </summary>
-        public int ID { get; private set; }
 
 
         /// <summary>
@@ -147,26 +137,6 @@ namespace KouXiaGu.WorldEvents
             AddStock(this, Surplus);
         }
 
-
-        public bool Equals(Resource other)
-        {
-            return other.ID == ID;
-        }
-
-        public override bool Equals(object obj)
-        {
-            Resource other = obj as Resource;
-
-            if (other == null)
-                return false;
-
-            return Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return ID;
-        }
 
     }
 
