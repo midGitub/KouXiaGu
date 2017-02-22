@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace KouXiaGu.WorldEvents
 {
@@ -9,10 +8,10 @@ namespace KouXiaGu.WorldEvents
     /// <summary>
     /// 可观察的变量;
     /// </summary>
-    public abstract class ObservableVariable : IObservable, IEnumerable<IObserver>
+    public abstract class ObservableResource : IObservable, IEnumerable<IObserver>
     {
 
-        protected ObservableVariable()
+        protected ObservableResource()
         {
         }
 
@@ -82,7 +81,7 @@ namespace KouXiaGu.WorldEvents
         /// </summary>
         class Unsubscriber : IDisposable
         {
-            public Unsubscriber(ObservableVariable provider, LinkedListNode<IObserver> node)
+            public Unsubscriber(ObservableResource provider, LinkedListNode<IObserver> node)
             {
                 if (provider == null || node == null)
                     throw new ArgumentNullException();
@@ -91,7 +90,7 @@ namespace KouXiaGu.WorldEvents
                 this.node = node;
             }
 
-            ObservableVariable provider;
+            ObservableResource provider;
             LinkedListNode<IObserver> node;
 
             public void Dispose()

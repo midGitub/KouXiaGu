@@ -9,13 +9,11 @@ namespace KouXiaGu.WorldEvents
     /// <summary>
     /// 效果 组/合集;
     /// </summary>
-    public class EffectGroup : IEffect, ICollection<IEffect>
+    public class EffectGroup : ICollection<IEffect>, IEffect
     {
 
-        public EffectGroup()
+        public EffectGroup() : this(false)
         {
-            this.effects = new List<IEffect>();
-            this.Effective = false;
         }
 
         public EffectGroup(bool effective)
@@ -28,6 +26,15 @@ namespace KouXiaGu.WorldEvents
         {
             this.effects = new List<IEffect>(effects);
             SetEffective(effective);
+        }
+
+        /// <summary>
+        /// 获取到一个未启用的效果组副本;
+        /// </summary>
+        public EffectGroup(EffectGroup effects)
+        {
+            this.effects = new List<IEffect>(effects);
+            this.Effective = false;
         }
 
 
@@ -75,11 +82,14 @@ namespace KouXiaGu.WorldEvents
         /// </summary>
         public void Enable()
         {
-            foreach (var effect in effects)
+            if (!Effective)
             {
-                effect.Enable();
+                foreach (var effect in effects)
+                {
+                    effect.Enable();
+                }
+                Effective = true;
             }
-            Effective = true;
         }
 
         /// <summary>
@@ -87,35 +97,27 @@ namespace KouXiaGu.WorldEvents
         /// </summary>
         public void Disable()
         {
-            foreach (var effect in effects)
+            if (Effective)
             {
-                effect.Disable();
+                foreach (var effect in effects)
+                {
+                    effect.Disable();
+                }
+                Effective = false;
             }
-            Effective = false;
         }
+
 
         /// <summary>
         /// 添加一个效果;
         /// </summary>
         public void Add(IEffect effect)
         {
-            SetEffective(effect);
-            effects.Add(effect);
-        }
-
-        /// <summary>
-        /// 设置效果是否启用;
-        /// </summary>
-        void SetEffective(IEffect effect)
-        {
             if (this.Effective)
             {
                 effect.Enable();
             }
-            else
-            {
-                effect.Disable();
-            }
+            effects.Add(effect);
         }
 
         /// <summary>
@@ -123,8 +125,15 @@ namespace KouXiaGu.WorldEvents
         /// </summary>
         public bool Remove(IEffect effect)
         {
-            SetEffective(effect);
-            return effects.Remove(effect);
+            if (effects.Remove(effect))
+            {
+                if (this.Effective)
+                {
+                    effect.Disable();
+                }
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -132,10 +141,7 @@ namespace KouXiaGu.WorldEvents
         /// </summary>
         public void Clear()
         {
-            if (this.Effective)
-            {
-                Disable();
-            }
+            Disable();
             this.effects.Clear();
         }
 

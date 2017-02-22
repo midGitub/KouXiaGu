@@ -7,16 +7,10 @@ namespace KouXiaGu.WorldEvents
 {
 
     /// <summary>
-    /// 产生效果的;
+    /// 效果,对世界产生影响的效果;
     /// </summary>
     public interface IEffect
     {
-
-        /// <summary>
-        /// 是否生效中?
-        /// </summary>
-        bool Effective { get; }
-
 
         /// <summary>
         /// 启用;
