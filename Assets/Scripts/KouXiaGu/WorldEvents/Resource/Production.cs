@@ -13,7 +13,6 @@ namespace KouXiaGu.WorldEvents
         {
             Stock = 0f;
             Capacity = 0f;
-            Throughput = 0f;
         }
 
         public Production(ResourceType type) : this()
@@ -37,11 +36,6 @@ namespace KouXiaGu.WorldEvents
         /// </summary>
         public float Capacity { get; private set; }
 
-        /// <summary>
-        /// 产量;
-        /// </summary>
-        public float Throughput { get; private set; }
-
 
         /// <summary>
         /// 改变存量;
@@ -58,14 +52,6 @@ namespace KouXiaGu.WorldEvents
         {
             const float minCapacity = 0;
             this.Capacity = Math.Max(this.Capacity + number, minCapacity);
-        }
-
-        /// <summary>
-        /// 改变产量;
-        /// </summary>
-        public void ChangeThroughput(float number)
-        {
-            this.Throughput += number;
         }
 
     }

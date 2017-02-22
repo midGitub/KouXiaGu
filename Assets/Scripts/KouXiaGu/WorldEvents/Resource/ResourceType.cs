@@ -9,7 +9,7 @@ namespace KouXiaGu.WorldEvents
     /// <summary>
     /// 资源类型;
     /// </summary>
-    public struct ResourceType : IEquatable<ResourceType>
+    public struct ResourceType : IEquatable<ResourceType>, IEquatable<int>
     {
 
         public ResourceType(int id)
@@ -23,6 +23,11 @@ namespace KouXiaGu.WorldEvents
 
         public int ID { get; private set; }
 
+
+        public bool Equals(int other)
+        {
+            return this.ID == other;
+        }
 
         public bool Equals(ResourceType other)
         {
@@ -45,6 +50,16 @@ namespace KouXiaGu.WorldEvents
         public static implicit operator int(ResourceType type)
         {
             return type.ID;
+        }
+
+        public static bool operator ==(ResourceType type, int id)
+        {
+            return type.ID == id;
+        }
+
+        public static bool operator !=(ResourceType type, int id)
+        {
+            return !(type == id);
         }
 
     }
