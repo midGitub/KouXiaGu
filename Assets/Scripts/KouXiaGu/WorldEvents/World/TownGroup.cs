@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.WorldEvents
 {
 
     /// <summary>
-    /// 效果,对世界产生影响的效果;
+    /// 城镇合集管理;
     /// </summary>
-    public interface IEffect
+    public class TownGroup
     {
+
 
     }
 

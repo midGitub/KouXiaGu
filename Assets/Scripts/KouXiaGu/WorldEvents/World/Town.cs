@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using KouXiaGu.Collections;
+using System.Text;
 
 namespace KouXiaGu.WorldEvents
 {
 
     /// <summary>
-    /// 国家;
+    /// 城镇;
     /// </summary>
-    public class Country : IEquatable<Country>
+    public class Town : IEquatable<Town>
     {
 
-        internal Country()
+        internal Town()
         {
         }
 
-        internal Country(int id)
+        internal Town(int id)
         {
             this.ID = id;
         }
@@ -27,16 +27,20 @@ namespace KouXiaGu.WorldEvents
         /// </summary>
         public int ID { get; private set; }
 
+        /// <summary>
+        /// 城镇所属国家;
+        /// </summary>
+        public Country BelongCountry { get; private set; }
 
 
-        public bool Equals(Country other)
+        public bool Equals(Town other)
         {
             return other.ID == this.ID;
         }
 
         public override bool Equals(object obj)
         {
-            var other = obj as Country;
+            var other = obj as Town;
 
             if (other == null)
                 return false;
@@ -50,12 +54,12 @@ namespace KouXiaGu.WorldEvents
         }
 
 
-        public static bool operator ==(Country v1, Country v2)
+        public static bool operator ==(Town v1, Town v2)
         {
             return v1.Equals(v2);
         }
 
-        public static bool operator !=(Country v1, Country v2)
+        public static bool operator !=(Town v1, Town v2)
         {
             return !v1.Equals(v2);
         }
