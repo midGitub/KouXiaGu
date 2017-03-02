@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using ProtoBuf;
+using UnityEngine;
 
 namespace JiongXiaGu.SimplifiedTime
 {
@@ -10,6 +13,7 @@ namespace JiongXiaGu.SimplifiedTime
     /// 简化版的 System.DateTime,但是实现原理不同;
     /// 仅有年月日;
     /// </summary>
+    [Serializable, XmlType("SimplifiedDateTime"), ProtoContract]
     public struct SimplifiedDateTime : IEquatable<SimplifiedDateTime>, IComparable<SimplifiedDateTime>
     {
 
@@ -31,29 +35,37 @@ namespace JiongXiaGu.SimplifiedTime
         public SimplifiedDateTime(Calendar Calendar)
         {
             this.Calendar = Calendar;
-            this.Ticks = DEFAULT_TICKS;
+            this.ticks = DEFAULT_TICKS;
         }
 
         public SimplifiedDateTime(Calendar Calendar, int ticks)
         {
             this.Calendar = Calendar;
-            this.Ticks = ticks;
+            this.ticks = ticks;
         }
 
         public SimplifiedDateTime(Calendar Calendar, short year, byte month, byte day)
         {
             this.Calendar = Calendar;
-            this.Ticks = DEFAULT_TICKS;
+            this.ticks = DEFAULT_TICKS;
             this.Year = year;
             this.Month = month;
             this.Day = day;
         }
 
 
+        [SerializeField, ProtoMember(1)]
+        int ticks;
+
         /// <summary>
         /// 周期数;年占用前两个字节,其后到月占用一字节,日占用一字节;
         /// </summary>
-        public int Ticks { get; set; }
+        [XmlAttribute("ticks")]
+        public int Ticks
+        {
+            get { return ticks; }
+            private set { ticks = value; }
+        }
 
         /// <summary>
         /// 日历;

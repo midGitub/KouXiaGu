@@ -7,26 +7,6 @@ namespace KouXiaGu.World
 {
 
 
-    /// <summary>
-    /// 十二生肖;
-    /// </summary>
-    public enum ChineseZodiac
-    {
-        Mouse,
-        Ox,
-        Tiger,
-        Rabbit,
-        Dragon,
-        Snake,
-        Horse,
-        Sheep,
-        Monkey,
-        Rooster,
-        Dog,
-        Pig
-    }
-
-
     public class ChineseCalendar
     {
 

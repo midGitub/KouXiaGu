@@ -130,7 +130,7 @@ namespace JiongXiaGu.SimplifiedTime
         /// </summary>
         public void SetCurrentDateTime(DateTime currentDateTime)
         {
-            currentTime.Ticks = currentDateTime.SimplifiedDateTimeTicks;
+            currentTime = new SimplifiedDateTime(currentTime.Calendar, currentDateTime.SimplifiedDateTimeTicks);
             CurrentHour = currentDateTime.Hour;
             CurrentMinute = currentDateTime.Minute;
 

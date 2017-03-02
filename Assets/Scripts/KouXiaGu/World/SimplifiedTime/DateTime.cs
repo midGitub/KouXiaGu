@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using UnityEngine;
+using ProtoBuf;
 
 namespace JiongXiaGu.SimplifiedTime
 {
@@ -9,9 +12,9 @@ namespace JiongXiaGu.SimplifiedTime
     /// <summary>
     /// 仅记录年 月 日 时 分 秒;
     /// </summary>
+    [Serializable, XmlType("DateTime"), ProtoContract]
     public struct DateTime : IEquatable<DateTime>, IComparable<DateTime>
     {
-
 
         const byte FIRSET_MINUTE_IN_HOUR = 0;
         const byte FIRSET_HOUR_IN_DAY = 0;
@@ -24,8 +27,8 @@ namespace JiongXiaGu.SimplifiedTime
 
         public DateTime(SimplifiedDateTime time)
         {
-            this.Ticks = 0;
-            this.Ticks |= ((long)time.Ticks << 32);
+            this.ticks = 0;
+            this.ticks |= ((long)time.Ticks << 32);
         }
 
         public DateTime(SimplifiedDateTime time, byte hour, byte minute, byte second) : this(time)
@@ -44,14 +47,23 @@ namespace JiongXiaGu.SimplifiedTime
             this.Minute = minute;
             this.Second = second;
         }
+        
 
+        [SerializeField, ProtoMember(1)]
+        long ticks;
 
         /// <summary>
         /// 周期数;
         /// 年占用最前的两个字节,其后到月占用一字节,日占用一字节,
         /// 时占用其后一字节,分占用一个字节,秒占用一字节,空余一个字节;
         /// </summary>
-        public long Ticks { get; private set; }
+        [XmlAttribute("ticks")]
+        public long Ticks
+        {
+            get { return ticks; }
+            private set { ticks = value; }
+        }
+
 
         /// <summary>
         /// int类型的周期数,仅有 年月日;
