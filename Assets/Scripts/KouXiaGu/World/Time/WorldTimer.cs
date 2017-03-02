@@ -46,8 +46,15 @@ namespace KouXiaGu.World
         }
 
 
+        byte time;
+
+        [SerializeField, Range(0, 200)]
+        byte timeLenght = 50;
+
+
         void Awake()
         {
+            time = 0;
             trigger = new Trigger<DateTime>();
         }
 
@@ -56,8 +63,13 @@ namespace KouXiaGu.World
         /// </summary>
         void FixedUpdate()
         {
-            currentTime.AddHour();
-            Triggering();
+            time++;
+            if (time > timeLenght)
+            {
+                time = 0;
+                currentTime.AddHour();
+                Triggering();
+            }
         }
 
 

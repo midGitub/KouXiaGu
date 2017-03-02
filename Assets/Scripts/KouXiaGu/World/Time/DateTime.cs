@@ -18,7 +18,9 @@ namespace KouXiaGu.World
         /// <summary>
         /// 一年一月一日零时零分零秒;
         /// </summary>
-        const long DEFAULT_TICKS = 0x1010100000000;
+        //const long DEFAULT_TICKS = 0x1010100000000;
+        const long DEFAULT_TICKS = 0x0;
+
 
         /// <summary>
         /// 一年一月一日,默认的日历;
@@ -84,36 +86,55 @@ namespace KouXiaGu.World
             get { return (int)(Ticks >> 32); }
         }
 
+
+        /// <summary>
+        /// 年份: -32,768 到 32,767
+        /// </summary>
         public short Year
         {
             get { return (short)(Ticks >> 48); }
             set { Ticks = (Ticks & 0xFFFFFFFFFFFF) | ((long)value << 48); }
         }
 
+        /// <summary>
+        /// 月份;0 到 12;
+        /// </summary>
         public byte Month
         {
             get { return (byte)((Ticks & 0xFF0000000000) >> 40); }
             set { Ticks = (Ticks & -0xFF0000000001) | ((long)value << 40); }
         }
 
+        /// <summary>
+        /// 天: 0 到 29
+        /// </summary>
         public byte Day
         {
             get { return (byte)((Ticks & 0xFF00000000) >> 32); }
             set { Ticks = (Ticks & -0xFF00000001) | ((long)value << 32); }
         }
 
+        /// <summary>
+        /// 小时; 0 到 23
+        /// </summary>
         public byte Hour
         {
             get { return (byte)((Ticks & 0xFF000000) >> 24); }
             set { Ticks = (Ticks & -0xFF000001) | ((long)value << 24); }
         }
 
+        /// <summary>
+        /// 分钟; 0 到 59
+        /// </summary>
         public byte Minute
         {
             get { return (byte)((Ticks & 0xFF0000) >> 16); }
             set { Ticks = (Ticks & -0xFF0001) | ((long)value << 16); }
         }
 
+        /// <summary>
+        /// 秒钟; 0 到 59
+        /// </summary>
         public byte Second
         {
             get { return (byte)((Ticks & 0xFF00) >> 8); }
@@ -184,7 +205,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 月份的第一天;
         /// </summary>
-        const byte FIRSET_DAY_IN_MONTH = 1;
+        const byte FIRSET_DAY_IN_MONTH = 0;
 
         /// <summary>
         /// 增加一天;
@@ -194,7 +215,7 @@ namespace KouXiaGu.World
             Day++;
             byte daysInMonth = GetDaysInMonth();
 
-            if (Day > daysInMonth)
+            if (Day >= daysInMonth)
             {
                 AddMonth();
                 Day = FIRSET_DAY_IN_MONTH;
@@ -214,7 +235,7 @@ namespace KouXiaGu.World
             days += Day;
 
             for (byte daysInMonth = GetDaysInMonth();
-                days > daysInMonth;
+                days >= daysInMonth;
                 daysInMonth = GetDaysInMonth())
             {
                 days -= daysInMonth;
@@ -234,7 +255,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 一年的第一个月;
         /// </summary>
-        const byte FIRSET_MONTH_IN_YEAR = 1;
+        const byte FIRSET_MONTH_IN_YEAR = 0;
 
         /// <summary>
         /// 增加一个月;
@@ -244,7 +265,7 @@ namespace KouXiaGu.World
             Month++;
             byte monthInYear = GetMonthsInYear();
 
-            if (Month > monthInYear)
+            if (Month >= monthInYear)
             {
                 AddYear();
                 Month = FIRSET_MONTH_IN_YEAR;
@@ -264,7 +285,7 @@ namespace KouXiaGu.World
             months += Month;
 
             for (byte monthInYear = GetMonthsInYear();
-                months > monthInYear;
+                months >= monthInYear;
                 monthInYear = GetMonthsInYear())
             {
                 months -= monthInYear;
@@ -308,7 +329,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 是否年数记录已经到头了;
         /// </summary>
-        bool IsMaxYear()
+        public bool IsMaxYear()
         {
             return this.Ticks > 0x7FFF0000;
         }

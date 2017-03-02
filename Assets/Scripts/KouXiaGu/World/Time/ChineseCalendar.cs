@@ -34,7 +34,7 @@ namespace KouXiaGu.World
 
 
         /// <summary>
-        /// 获取到这一年的天数;
+        /// 获取到这一年的天数; 1 ~ max;
         /// </summary>
         public static short GetDaysInYear(short year)
         {
@@ -47,7 +47,7 @@ namespace KouXiaGu.World
         }
 
         /// <summary>
-        /// 这一个月的天数;
+        /// 这一个月的天数; 0 ~ max;
         /// </summary>
         public static byte GetDaysInMonth(short year, byte month)
         {
@@ -58,11 +58,11 @@ namespace KouXiaGu.World
                 month--;
             }
 
-            return _dayOfMonth[--month];
+            return _dayOfMonth[month];
         }
 
         /// <summary>
-        /// 这一年的月数;
+        /// 这一年的月数; 1 ~ max;
         /// </summary>
         public static byte GetMonthsInYear(short year)
         {
