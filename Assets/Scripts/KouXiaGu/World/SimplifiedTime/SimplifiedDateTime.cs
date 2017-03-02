@@ -10,8 +10,7 @@ namespace JiongXiaGu.SimplifiedTime
 {
 
     /// <summary>
-    /// 简化版的 System.DateTime,但是实现原理不同;
-    /// 仅有年月日;
+    /// 仅记录年月日;
     /// </summary>
     [Serializable, XmlType("SimplifiedDateTime"), ProtoContract]
     public struct SimplifiedDateTime : IEquatable<SimplifiedDateTime>, IComparable<SimplifiedDateTime>
@@ -31,23 +30,23 @@ namespace JiongXiaGu.SimplifiedTime
         }
 
 
-
-        public SimplifiedDateTime(Calendar Calendar)
+        public SimplifiedDateTime(DateTime time)
         {
-            this.Calendar = Calendar;
-            this.ticks = DEFAULT_TICKS;
+            this.ticks = time.SimplifiedDateTimeTicks;
+            this.calendar = time.Calendar;
         }
 
         public SimplifiedDateTime(Calendar Calendar, int ticks)
         {
-            this.Calendar = Calendar;
+            this.calendar = Calendar;
             this.ticks = ticks;
         }
 
         public SimplifiedDateTime(Calendar Calendar, short year, byte month, byte day)
         {
-            this.Calendar = Calendar;
+            this.calendar = Calendar;
             this.ticks = DEFAULT_TICKS;
+
             this.Year = year;
             this.Month = month;
             this.Day = day;
@@ -67,10 +66,22 @@ namespace JiongXiaGu.SimplifiedTime
             private set { ticks = value; }
         }
 
+
         /// <summary>
         /// 日历;
         /// </summary>
-        public Calendar Calendar { get; private set; }
+        [SerializeField, ProtoMember(2)]
+        Calendar calendar;
+
+        /// <summary>
+        /// 日历;
+        /// </summary>
+        [XmlElement("Calendar")]
+        public Calendar Calendar
+        {
+            get { return calendar; }
+            private set { calendar = value; }
+        }
 
 
         /// <summary>
@@ -79,7 +90,7 @@ namespace JiongXiaGu.SimplifiedTime
         public short Year
         {
             get { return (short)(Ticks >> 16); }
-            set { Ticks = (Ticks & 0xFFFF) | ((int)value << 16); }
+            private set { Ticks = (Ticks & 0xFFFF) | ((int)value << 16); }
         }
 
         /// <summary>
@@ -88,7 +99,7 @@ namespace JiongXiaGu.SimplifiedTime
         public byte Month
         {
             get { return (byte)((Ticks & 0xFF00) >> 8); }
-            set { Ticks = (Ticks & -0xFF01) | (value << 8); }
+            private set { Ticks = (Ticks & -0xFF01) | (value << 8); }
         }
 
         /// <summary>
@@ -97,140 +108,7 @@ namespace JiongXiaGu.SimplifiedTime
         public byte Day
         {
             get { return (byte)(Ticks & 0xFF); }
-            set { Ticks = (Ticks & -0x100) | value; }
-        }
-
-
-        /// <summary>
-        /// 月份的第一天;
-        /// </summary>
-        const byte FIRSET_DAY_IN_MONTH = 1;
-
-        /// <summary>
-        /// 增加一天;
-        /// </summary>
-        public SimplifiedDateTime AddDay()
-        {
-            Day++;
-            byte daysInMonth = GetDaysInMonth();
-
-            if (Day > daysInMonth)
-            {
-                AddMonth();
-                Day = FIRSET_DAY_IN_MONTH;
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// 增加天数;
-        /// </summary>
-        public SimplifiedDateTime AddDay(int days)
-        {
-            if (days < 0)
-                throw new ArgumentOutOfRangeException();
-
-            days += Day;
-
-            for (byte daysInMonth = GetDaysInMonth();
-                days > daysInMonth;
-                daysInMonth = GetDaysInMonth())
-            {
-                days -= daysInMonth;
-                AddMonth();
-            }
-
-            Day = Convert.ToByte(days);
-            return this;
-        }
-
-        byte GetDaysInMonth()
-        {
-            return Calendar.GetDaysInMonth(Year, Month);
-        }
-
-
-        /// <summary>
-        /// 一年的第一个月;
-        /// </summary>
-        const byte FIRSET_MONTH_IN_YEAR = 1;
-
-        /// <summary>
-        /// 增加一个月;
-        /// </summary>
-        public SimplifiedDateTime AddMonth()
-        {
-            Month++;
-            byte monthInYear = GetMonthsInYear();
-
-            if (Month > monthInYear)
-            {
-                AddYear();
-                Month = FIRSET_MONTH_IN_YEAR;
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// 增加月数;
-        /// </summary>
-        public SimplifiedDateTime AddMonth(int months)
-        {
-            if (months < 0)
-                throw new ArgumentOutOfRangeException();
-
-            months += Month;
-
-            for (byte monthInYear = GetMonthsInYear();
-                months > monthInYear;
-                monthInYear = GetMonthsInYear())
-            {
-                months -= monthInYear;
-                AddYear();
-            }
-
-            Month = Convert.ToByte(months);
-            return this;
-        }
-
-        byte GetMonthsInYear()
-        {
-            return Calendar.GetMonthsInYear(Year);
-        }
-
-
-        /// <summary>
-        /// 增加一年;
-        /// </summary>
-        public SimplifiedDateTime AddYear()
-        {
-            if (IsMaxYear())
-                return this;
-
-            Year++;
-            return this;
-        }
-
-        /// <summary>
-        /// 增加年数;
-        /// </summary>
-        public SimplifiedDateTime AddYear(short years)
-        {
-            if (IsMaxYear())
-                return this;
-
-            Year += years;
-            return this;
-        }
-
-        /// <summary>
-        /// 是否年数记录已经到头了;
-        /// </summary>
-        bool IsMaxYear()
-        {
-            return this.Ticks > 0x7FFF0000;
+            private set { Ticks = (Ticks & -0x100) | value; }
         }
 
 

@@ -16,48 +16,30 @@ namespace JiongXiaGu.SimplifiedTime
         const byte FIRSET_MINUTE_IN_HOUR = 0;
         const byte FIRSET_HOUR_IN_DAY = 0;
 
+
         /// <summary>
         /// 构造函数;
         /// </summary>
         /// <param name="time">起始时间;</param>
         /// <param name="minutesInHour">一小时有多少分钟;</param>
-        public Timer(SimplifiedDateTime time, byte minutesInHour)
+        public Timer(DateTime time)
         {
             this.currentTime = time;
-            this.minutesInHour = minutesInHour;
-            this.CurrentMinute = FIRSET_MINUTE_IN_HOUR;
             trigger = new Trigger<SimplifiedDateTime>();
-        }
-
-        public Timer(SimplifiedDateTime time, byte hoursInDay, byte minutesInHour) : this(time, minutesInHour)
-        {
-            this.hoursInDay = hoursInDay;
-            CurrentHour = FIRSET_HOUR_IN_DAY;
         }
 
 
         /// <summary>
         /// 时间信息;
         /// </summary>
-        SimplifiedDateTime currentTime;
-
-        /// <summary>
-        /// 当前分钟; 数值: 1 - secondsInHour
-        /// </summary>
-        public byte CurrentMinute { get; set; }
-
-        /// <summary>
-        /// 当前的小时数;数值: 0 - 23;
-        /// </summary>
-        public byte CurrentHour { get; set; }
+        DateTime currentTime;
 
         /// <summary>
         /// 时间信息;
         /// </summary>
         public SimplifiedDateTime CurrentSimplifiedDateTime
         {
-            get { return currentTime; }
-            private set { currentTime = value; }
+            get { return new SimplifiedDateTime(currentTime); }
         }
 
         /// <summary>
@@ -65,42 +47,14 @@ namespace JiongXiaGu.SimplifiedTime
         /// </summary>
         public DateTime CurrentDateTime
         {
-            get { return new DateTime(currentTime, CurrentHour, CurrentMinute, 0); }
-        }
-
-
-        byte hoursInDay = 24;
-
-        public byte HoursInDay
-        {
-            get { return hoursInDay; }
-            set { hoursInDay = value; }
-        }
-
-        ushort minutesInHour = 20;
-
-        public ushort MinutesInHour
-        {
-            get { return minutesInHour; }
-            set { minutesInHour = value; }
+            get { return currentTime; }
+            private set { currentTime = value; }
         }
 
         internal void FixedUpdate()
         {
-            CurrentMinute++;
-            if (CurrentMinute >= minutesInHour)
-            {
-                CurrentMinute = FIRSET_MINUTE_IN_HOUR;
-
-                CurrentHour++;
-                if (CurrentHour >= hoursInDay)
-                {
-                    CurrentHour = FIRSET_HOUR_IN_DAY;
-
-                    currentTime.AddDay();
-                    Triggering();
-                }
-            }
+            currentTime.AddHour();
+            Triggering();
         }
 
 
@@ -110,7 +64,7 @@ namespace JiongXiaGu.SimplifiedTime
         Trigger<SimplifiedDateTime> trigger;
 
         /// <summary>
-        /// 当时间 天数 发生变化时推送;
+        /// 当时间发生变化时推送;
         /// </summary>
         public IDisposable Subscribe(IObserver<SimplifiedDateTime> observer)
         {
@@ -122,7 +76,7 @@ namespace JiongXiaGu.SimplifiedTime
         /// </summary>
         public void Triggering()
         {
-            trigger.Triggering(currentTime);
+            trigger.Triggering(CurrentSimplifiedDateTime);
         }
 
         /// <summary>
@@ -130,10 +84,7 @@ namespace JiongXiaGu.SimplifiedTime
         /// </summary>
         public void SetCurrentDateTime(DateTime currentDateTime)
         {
-            currentTime = new SimplifiedDateTime(currentTime.Calendar, currentDateTime.SimplifiedDateTimeTicks);
-            CurrentHour = currentDateTime.Hour;
-            CurrentMinute = currentDateTime.Minute;
-
+            currentTime = currentDateTime;
             Triggering();
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Rx;
+using UnityEngine;
 
 namespace JiongXiaGu.SimplifiedTime
 {
@@ -28,7 +29,7 @@ namespace JiongXiaGu.SimplifiedTime
 
         public override void OnNext(SimplifiedDateTime item)
         {
-            Console.WriteLine(Designation + item.ToString());
+            Debug.Log(Designation + item.ToString());
         }
 
     }
