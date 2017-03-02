@@ -125,7 +125,17 @@ namespace KouXiaGu.Grids
         {
             Vector2 local = GetLocal(clamp, position);
             Vector2 uv = new Vector2(local.x / width, local.y / height);
-            return uv.Clamp01();
+            return Clamp01(uv);
+        }
+
+        /// <summary>
+        /// 将其值限制在0~1之间;
+        /// </summary>
+        Vector2 Clamp01(Vector2 v1)
+        {
+            v1.x = Mathf.Clamp01(v1.x);
+            v1.y = Mathf.Clamp01(v1.y);
+            return v1;
         }
 
         /// <summary>
