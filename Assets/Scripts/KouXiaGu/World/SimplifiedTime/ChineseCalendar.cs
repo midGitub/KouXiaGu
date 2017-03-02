@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace JiongXiaGu.SimplifiedTime
+namespace KouXiaGu.SimplifiedTime
 {
 
     /// <summary>

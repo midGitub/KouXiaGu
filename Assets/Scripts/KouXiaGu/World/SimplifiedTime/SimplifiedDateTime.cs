@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using ProtoBuf;
 using UnityEngine;
 
-namespace JiongXiaGu.SimplifiedTime
+namespace KouXiaGu.SimplifiedTime
 {
 
     /// <summary>

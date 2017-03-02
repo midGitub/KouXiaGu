@@ -5,7 +5,7 @@ using System.Text;
 using KouXiaGu.Rx;
 using UnityEngine;
 
-namespace JiongXiaGu.SimplifiedTime
+namespace KouXiaGu.SimplifiedTime
 {
 
     /// <summary>

@@ -1,31 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Rx;
+using UnityEngine;
 
-namespace JiongXiaGu.SimplifiedTime
+namespace KouXiaGu.SimplifiedTime
 {
 
     /// <summary>
     /// 时间记录;
     /// </summary>
-    public class Timer : IObservable<SimplifiedDateTime>
+    public class WorldTimer : MonoBehaviour, IObservable<DateTime>
     {
 
-        const byte FIRSET_MINUTE_IN_HOUR = 0;
-        const byte FIRSET_HOUR_IN_DAY = 0;
-
-
-        /// <summary>
-        /// 构造函数;
-        /// </summary>
-        /// <param name="time">起始时间;</param>
-        /// <param name="minutesInHour">一小时有多少分钟;</param>
-        public Timer(DateTime time)
+        WorldTimer()
         {
-            this.currentTime = time;
-            trigger = new Trigger<SimplifiedDateTime>();
+        }
+
+
+        public bool IsRunning
+        {
+            get { return enabled; }
+            set { enabled = value; }
         }
 
 
@@ -35,6 +29,15 @@ namespace JiongXiaGu.SimplifiedTime
         DateTime currentTime;
 
         /// <summary>
+        /// 完整的时间信息;
+        /// </summary>
+        public DateTime CurrentDateTime
+        {
+            get { return currentTime; }
+            set { currentTime = value; }
+        }
+
+        /// <summary>
         /// 时间信息;
         /// </summary>
         public SimplifiedDateTime CurrentSimplifiedDateTime
@@ -42,16 +45,16 @@ namespace JiongXiaGu.SimplifiedTime
             get { return new SimplifiedDateTime(currentTime); }
         }
 
-        /// <summary>
-        /// 完整的时间信息,秒数为0;
-        /// </summary>
-        public DateTime CurrentDateTime
+
+        void Awake()
         {
-            get { return currentTime; }
-            private set { currentTime = value; }
+            trigger = new Trigger<DateTime>();
         }
 
-        internal void FixedUpdate()
+        /// <summary>
+        /// 每次更新增加一小时;
+        /// </summary>
+        void FixedUpdate()
         {
             currentTime.AddHour();
             Triggering();
@@ -61,12 +64,12 @@ namespace JiongXiaGu.SimplifiedTime
         /// <summary>
         /// 时间触发器;
         /// </summary>
-        Trigger<SimplifiedDateTime> trigger;
+        Trigger<DateTime> trigger;
 
         /// <summary>
         /// 当时间发生变化时推送;
         /// </summary>
-        public IDisposable Subscribe(IObserver<SimplifiedDateTime> observer)
+        public IDisposable Subscribe(IObserver<DateTime> observer)
         {
             return this.trigger.Subscribe(observer);
         }
@@ -76,11 +79,11 @@ namespace JiongXiaGu.SimplifiedTime
         /// </summary>
         public void Triggering()
         {
-            trigger.Triggering(CurrentSimplifiedDateTime);
+            trigger.Triggering(currentTime);
         }
 
         /// <summary>
-        /// 设置为新的时间;
+        /// 设置为新的时间,并且推送到所有观察者;
         /// </summary>
         public void SetCurrentDateTime(DateTime currentDateTime)
         {

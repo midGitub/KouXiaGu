@@ -5,7 +5,7 @@ using KouXiaGu.Initialization;
 using UnityEngine;
 
 
-namespace KouXiaGu.World
+namespace KouXiaGu.SimplifiedTime
 {
 
     /// <summary>
@@ -18,8 +18,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 游戏开始时间;
         /// </summary>
-        public static WorldDateTime StartTime;
-
+        public static DateTime StartTime = new DateTime(Calendar.Default);
 
 
         [SerializeField]
@@ -41,8 +40,7 @@ namespace KouXiaGu.World
             ResetState();
             try
             {
-                timer.Time = StartTime;
-                timer.OnValidate();
+                timer.CurrentDateTime = StartTime;
 
                 IsCompleted = true;
                 return OnInitialized;
@@ -60,7 +58,7 @@ namespace KouXiaGu.World
         /// </summary>
         void OnInitialized()
         {
-            timer.IsRuning = true;
+            timer.IsRunning = true;
         }
 
 

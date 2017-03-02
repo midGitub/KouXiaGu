@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using ProtoBuf;
 
-namespace JiongXiaGu.SimplifiedTime
+namespace KouXiaGu.SimplifiedTime
 {
 
     /// <summary>
@@ -42,6 +42,12 @@ namespace JiongXiaGu.SimplifiedTime
             this.Hour = hour;
             this.Minute = minute;
             this.Second = second;
+        }
+
+        public DateTime(Calendar calendar)
+        {
+            this.ticks = DEFAULT_TICKS;
+            this.calendar = calendar;
         }
 
         public DateTime(Calendar calendar, long ticks)
