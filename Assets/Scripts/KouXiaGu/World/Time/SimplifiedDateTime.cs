@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using ProtoBuf;
 using UnityEngine;
 
-namespace KouXiaGu.SimplifiedTime
+namespace KouXiaGu.World
 {
 
     /// <summary>

@@ -5,7 +5,7 @@ using KouXiaGu.Initialization;
 using UnityEngine;
 
 
-namespace KouXiaGu.SimplifiedTime
+namespace KouXiaGu.World
 {
 
     /// <summary>
