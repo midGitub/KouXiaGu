@@ -18,7 +18,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 游戏开始时间;
         /// </summary>
-        public static DateTime StartTime = new DateTime(Calendar.Default);
+        public static DateTime StartTime;
 
 
         [SerializeField]

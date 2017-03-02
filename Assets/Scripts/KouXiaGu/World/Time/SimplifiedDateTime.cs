@@ -26,25 +26,22 @@ namespace KouXiaGu.World
         /// </summary>
         public static SimplifiedDateTime Default
         {
-            get { return new SimplifiedDateTime(Calendar.Default, DEFAULT_TICKS); }
+            get { return new SimplifiedDateTime(DEFAULT_TICKS); }
         }
 
 
         public SimplifiedDateTime(DateTime time)
         {
             this.ticks = time.SimplifiedDateTimeTicks;
-            this.calendar = time.Calendar;
         }
 
-        public SimplifiedDateTime(Calendar Calendar, int ticks)
+        public SimplifiedDateTime(int ticks)
         {
-            this.calendar = Calendar;
             this.ticks = ticks;
         }
 
-        public SimplifiedDateTime(Calendar Calendar, short year, byte month, byte day)
+        public SimplifiedDateTime(short year, byte month, byte day)
         {
-            this.calendar = Calendar;
             this.ticks = DEFAULT_TICKS;
 
             this.Year = year;
@@ -64,23 +61,6 @@ namespace KouXiaGu.World
         {
             get { return ticks; }
             private set { ticks = value; }
-        }
-
-
-        /// <summary>
-        /// 日历;
-        /// </summary>
-        [SerializeField, ProtoMember(2)]
-        Calendar calendar;
-
-        /// <summary>
-        /// 日历;
-        /// </summary>
-        [XmlElement("Calendar")]
-        public Calendar Calendar
-        {
-            get { return calendar; }
-            private set { calendar = value; }
         }
 
 

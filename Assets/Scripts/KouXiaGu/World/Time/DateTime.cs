@@ -25,14 +25,12 @@ namespace KouXiaGu.World
         /// </summary>
         public static DateTime Default
         {
-            get { return new DateTime(Calendar.Default, DEFAULT_TICKS); }
+            get { return new DateTime(DEFAULT_TICKS); }
         }
 
 
         public DateTime(SimplifiedDateTime time)
         {
-            this.calendar = time.Calendar;
-
             this.ticks = 0;
             this.ticks |= ((long)time.Ticks << 32);
         }
@@ -44,22 +42,14 @@ namespace KouXiaGu.World
             this.Second = second;
         }
 
-        public DateTime(Calendar calendar)
-        {
-            this.ticks = DEFAULT_TICKS;
-            this.calendar = calendar;
-        }
-
-        public DateTime(Calendar calendar, long ticks)
+        public DateTime(long ticks)
         {
             this.ticks = ticks;
-            this.calendar = calendar;
         }
 
-        public DateTime(Calendar calendar, short year, byte month, byte day, byte hour, byte minute, byte second)
+        public DateTime(short year, byte month, byte day, byte hour, byte minute, byte second)
         {
             this.ticks = 0;
-            this.calendar = calendar;
 
             this.Year = year;
             this.Month = month;
@@ -83,20 +73,6 @@ namespace KouXiaGu.World
         {
             get { return ticks; }
             private set { ticks = value; }
-        }
-
-
-        [SerializeField, ProtoMember(2)]
-        Calendar calendar;
-
-        /// <summary>
-        /// 日历;
-        /// </summary>
-        [XmlElement("Calendar")]
-        public Calendar Calendar
-        {
-            get { return calendar; }
-            private set { calendar = value; }
         }
 
 
@@ -251,7 +227,7 @@ namespace KouXiaGu.World
 
         byte GetDaysInMonth()
         {
-            return Calendar.GetDaysInMonth(Year, Month);
+            return ChineseCalendar.GetDaysInMonth(Year, Month);
         }
 
 
@@ -301,7 +277,7 @@ namespace KouXiaGu.World
 
         byte GetMonthsInYear()
         {
-            return Calendar.GetMonthsInYear(Year);
+            return ChineseCalendar.GetMonthsInYear(Year);
         }
 
 

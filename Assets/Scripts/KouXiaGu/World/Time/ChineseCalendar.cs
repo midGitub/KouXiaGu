@@ -10,7 +10,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 游戏使用的日历;
     /// </summary>
-    public class ChineseCalendar : Calendar
+    public static class ChineseCalendar
     {
 
         /// <summary>
@@ -32,10 +32,24 @@ namespace KouXiaGu.World
                 30,
             };
 
+
+        /// <summary>
+        /// 获取到这一年的天数;
+        /// </summary>
+        public static short GetDaysInYear(short year)
+        {
+            short day = 0;
+            for (byte month = GetMonthsInYear(year); month > 0; month--)
+            {
+                day += GetDaysInMonth(year, month);
+            }
+            return day;
+        }
+
         /// <summary>
         /// 这一个月的天数;
         /// </summary>
-        public override byte GetDaysInMonth(short year, byte month)
+        public static byte GetDaysInMonth(short year, byte month)
         {
             int leapMonth = GetLeapMonth(year);
 
@@ -50,7 +64,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 这一年的月数;
         /// </summary>
-        public override byte GetMonthsInYear(short year)
+        public static byte GetMonthsInYear(short year)
         {
             /// <summary>
             /// 闰年月数;
@@ -81,7 +95,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 获取到这一年闰几月,若闰7月则返回8,八月返回9,若不存在则返回 0;
         /// </summary>
-        public override byte GetLeapMonth(short year)
+        public static byte GetLeapMonth(short year)
         {
             if (IsLeapYear(year))
             {
@@ -98,7 +112,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 这个月是否为闰月?
         /// </summary>
-        public override bool IsLeapMonth(short year, byte month)
+        public static bool IsLeapMonth(short year, byte month)
         {
             byte leapMonth = GetLeapMonth(year);
             return leapMonth != 0 && leapMonth == month;
@@ -107,7 +121,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 这年是否为闰年?
         /// </summary>
-        public override bool IsLeapYear(short year)
+        public static bool IsLeapYear(short year)
         {
             /// <summary>
             /// 每几年置闰年;
