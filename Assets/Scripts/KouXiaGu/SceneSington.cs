@@ -8,8 +8,8 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 只允许内部访问的,延迟实例化的单例;
-    /// 主要是"限制一个场景多个实例";
+    /// 延迟实例化的单例;
+    /// 限制一个场景多个实例;
     /// </summary>
     public class SceneSington<T> : MonoBehaviour
         where T : SceneSington<T>
@@ -17,9 +17,8 @@ namespace KouXiaGu
         protected SceneSington() { }
 
         static T instance;
-        static readonly object asyncObject = new object();
 
-        protected static T GetInstance
+        public static T GetInstance
         {
             get
             {
@@ -31,6 +30,7 @@ namespace KouXiaGu
 //#endif
             }
         }
+
 
         /// <summary>
         /// 是否已经实例化?
@@ -48,6 +48,9 @@ namespace KouXiaGu
             if (!IsInstanced)
                 throw new ArgumentNullException("类未实例化");
         }
+
+
+        static readonly object asyncObject = new object();
 
         static T Initialize()
         {

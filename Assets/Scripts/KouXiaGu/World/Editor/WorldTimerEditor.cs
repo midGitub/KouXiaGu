@@ -20,7 +20,6 @@ namespace KouXiaGu.World
 
             EditorGUILayout.LabelField(targt.CurrentSimplifiedDateTime.ToString());
             EditorGUILayout.LabelField("Hour:" + targt.CurrentDateTime.Hour);
-            EditorGUILayout.LabelField("Minute:" + targt.CurrentDateTime.Minute);
 
         }
 
