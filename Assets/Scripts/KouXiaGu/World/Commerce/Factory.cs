@@ -6,28 +6,34 @@ using System.Text;
 namespace KouXiaGu.World.Commerce
 {
 
-
-    public class ProductionLine : IEquatable<ProductionLine>
+    public class Factory
     {
-        public ProductionLine()
+
+        public Factory()
         {
+
         }
 
         /// <summary>
-        /// 生产资源类型;
+        /// 所有生产线;
         /// </summary>
-        public Resource Type { get; set; }
+        public List<Workshop> ProductionLines { get; private set; }
 
         /// <summary>
-        /// 产品存储到的位置;
+        /// 成品储存到;
         /// </summary>
-        public ProductRoom ProductRoom { get; set; }
+        public Product Storage { get; set; }
+
 
         /// <summary>
-        /// 生产者数目;
+        /// 开始生产该物品;
         /// </summary>
-        public byte ProducerCount { get; set; }
+        /// <param name="type">物品类型;</param>
+        /// <param name="productType">生产者数目;</param>
+        public void Add(Product type, byte producerCount)
+        {
 
+        }
 
         /// <summary>
         /// 生产当前资源,并存储到;
@@ -38,45 +44,12 @@ namespace KouXiaGu.World.Commerce
         }
 
 
-        public bool Equals(ProductionLine other)
+        public class ProductionLine
         {
-            return other.Type == this.Type;
-        }
 
-        public override bool Equals(object obj)
-        {
-            var item = obj as ProductionLine;
-
-            if (item == null)
-                return false;
-
-            return Equals(item);
-        }
-
-        public override int GetHashCode()
-        {
-            return Type.GetHashCode();
-        }
-
-    }
-
-
-    public class Factory : List<ProductionLine>
-    {
-
-        /// <summary>
-        /// 成品储存到;
-        /// </summary>
-        public Product Storage { get; private set; }
-
-
-        /// <summary>
-        /// 开始生产该物品;
-        /// </summary>
-        /// <param name="type">物品类型;</param>
-        /// <param name="productType">生产者数目;</param>
-        public void Add(Resource type, byte producerCount)
-        {
+            public bool Enabled { get; private set; }
+            public Workshop Workshop { get; private set; }
+            public Warehouse.Room ProductRoom { get; private set; }
 
         }
 

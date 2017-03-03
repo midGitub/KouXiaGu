@@ -7,11 +7,11 @@ namespace KouXiaGu.World.Commerce
 {
 
 
-    public class ResourceManager
+    public class ProductManager
     {
 
 
-        Dictionary<int, Resource> resourcesDictionary;
+        Dictionary<int, Product> resourcesDictionary;
 
 
 

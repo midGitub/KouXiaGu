@@ -9,7 +9,7 @@ namespace KouXiaGu.World.Commerce
     /// <summary>
     /// 资源类别;
     /// </summary>
-    public class ResoureCategorie : IEquatable<ResoureCategorie>
+    public class ProductCategorie : IEquatable<ProductCategorie>
     {
 
         /// <summary>
@@ -23,17 +23,17 @@ namespace KouXiaGu.World.Commerce
         public bool Storable { get; private set; }
 
 
-        public bool Equals(ResoureCategorie other)
+        public bool Equals(ProductCategorie other)
         {
             return other.ID == this.ID;
         }
 
         public override bool Equals(object obj)
         {
-            if (!(obj is ResoureCategorie))
+            if (!(obj is ProductCategorie))
                 return false;
 
-            return Equals((ResoureCategorie)obj);
+            return Equals((ProductCategorie)obj);
         }
 
         public override int GetHashCode()
