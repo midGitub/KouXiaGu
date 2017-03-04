@@ -14,15 +14,16 @@ namespace KouXiaGu.World.Commerce
 
         }
 
+
         /// <summary>
         /// 所有生产线;
         /// </summary>
-        public List<Workshop> ProductionLines { get; private set; }
+        public List<ProductionLine> ProductionLines { get; private set; }
 
         /// <summary>
         /// 成品储存到;
         /// </summary>
-        public Product Storage { get; set; }
+        public Warehouse Warehouse { get; set; }
 
 
         /// <summary>
@@ -40,16 +41,19 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         public void Producing()
         {
-
+            foreach (var productionLine in ProductionLines)
+            {
+                if (!productionLine.Enabled)
+                    continue;
+            }
         }
-
 
         public class ProductionLine
         {
 
             public bool Enabled { get; private set; }
             public Workshop Workshop { get; private set; }
-            public Warehouse.Room ProductRoom { get; private set; }
+            public Warehouse.Room Product { get; private set; }
 
         }
 

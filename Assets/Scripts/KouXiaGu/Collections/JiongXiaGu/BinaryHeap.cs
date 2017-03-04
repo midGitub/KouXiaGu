@@ -8,43 +8,59 @@ namespace KouXiaGu.Collections
     /// <summary>
     /// 二叉堆,随机的迭代顺序;
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class BinaryHeap<T> : ICollection<T>, IEnumerable<T>
+    public class BinaryHeap<T> : ICollection<T>, IEnumerable<T>
     {
+
         public BinaryHeap()
         {
-            collection = new List<T>();
-            collection.Add(default(T));
+            this.Comparer = Comparer<T>.Default;
+            this.collection = CreateCollection();
         }
+
+        public BinaryHeap(IComparer<T> comparer)
+        {
+            this.Comparer = comparer;
+            this.collection = CreateCollection();
+        }
+
         public BinaryHeap(int capacity)
         {
-            collection = new List<T>(capacity);
-            collection.Add(default(T));
+            this.Comparer = Comparer<T>.Default;
+            this.collection = CreateCollection();
         }
+
         /// <summary>
-        /// 克隆;
+        /// 深拷贝;
         /// </summary>
-        public BinaryHeap(BinaryHeap<T> binaryHeap)
+        public BinaryHeap(BinaryHeap<T> other)
         {
-            this.collection = new List<T>(binaryHeap.collection);
+            this.Comparer = other.Comparer;
+            this.collection = new List<T>(other.collection);
         }
+
 
         /// <summary>
         /// 根索引值;
         /// </summary>
         const int rootIndex = 1;
 
+        /// <summary>
+        /// 元素合集,带头节点(为了方便计算);
+        /// </summary>
         List<T> collection;
+
+        /// <summary>
+        /// 使用的比较器;
+        /// </summary>
+        public IComparer<T> Comparer { get; private set; }
+
 
         /// <summary>
         /// 结构存在有效的元素个数;
         /// </summary>
         public int Count
         {
-            get
-            {
-                return collection.Count - 1;
-            }
+            get { return collection.Count - 1; }
         }
 
         /// <summary>
@@ -52,32 +68,22 @@ namespace KouXiaGu.Collections
         /// </summary>
         public T Root
         {
-            get
-            {
-                return collection[rootIndex];
-            }
+            get { return collection[rootIndex]; }
         }
 
+        /// <summary>
+        /// 最后一个元素下标;
+        /// </summary>
         int lastNodeIndex
         {
-            get
-            {
-                return collection.Count - 1;
-            }
+            get { return collection.Count - 1; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return ((ICollection<T>)this.collection).IsReadOnly;
-            }
+            get { return ((ICollection<T>)this.collection).IsReadOnly; }
         }
 
-        /// <summary>
-        /// 比较 other 是否置于 current 之前;
-        /// </summary>
-        protected abstract bool Compare(T current, T other);
 
         /// <summary>
         /// 按循序加入到数据结构;
@@ -88,6 +94,9 @@ namespace KouXiaGu.Collections
             BubbleUp(lastNodeIndex);
         }
 
+        /// <summary>
+        /// 移除指定元素,若移除成功返回true,否则返回false;
+        /// </summary>
         public bool Remove(T item)
         {
             if (Count == 0)
@@ -120,6 +129,9 @@ namespace KouXiaGu.Collections
             return result;
         }
 
+        /// <summary>
+        /// 确认是否存在此元素;
+        /// </summary>
         public bool Contains(T item)
         {
             return collection.Contains(item);
@@ -130,10 +142,31 @@ namespace KouXiaGu.Collections
             collection.CopyTo(array, arrayIndex);
         }
 
+        /// <summary>
+        /// 创建新的合集结构;
+        /// </summary>
+        List<T> CreateCollection()
+        {
+            List<T> collection = new List<T>();
+            collection.Add(default(T));
+            return collection;
+        }
+
+        /// <summary>
+        /// 清空;
+        /// </summary>
         public void Clear()
         {
             collection.Clear();
             collection.Add(default(T));
+        }
+
+        /// <summary>
+        /// 比较 other 是否置于 current 之前;
+        /// </summary>
+        bool Compare(T current, T other)
+        {
+            return Comparer.Compare(current, other) >= 0;
         }
 
         void BubbleUp(int index)
@@ -185,16 +218,25 @@ namespace KouXiaGu.Collections
             collection[currentIndex] = current;
         }
 
+        /// <summary>
+        /// 获取到父节点下标;
+        /// </summary>
         int GetParentIndex(int index)
         {
             return (int)decimal.Floor(index / 2);
         }
 
+        /// <summary>
+        /// 获取到左孩子下标;
+        /// </summary>
         int GetLeftChildIndex(int index)
         {
             return (2 * index);
         }
 
+        /// <summary>
+        /// 获取到右孩子下标;
+        /// </summary>
         int GetRightChildIndex(int index)
         {
             return (2 * index + 1);
@@ -211,31 +253,5 @@ namespace KouXiaGu.Collections
         }
 
     }
-
-    public class MinHeap<T> : BinaryHeap<T>
-        where T : IComparable<T>
-    {
-        public MinHeap() { }
-        public MinHeap(int capacity) : base(capacity) { }
-
-        protected override bool Compare(T current, T other)
-        {
-            return other.CompareTo(current) < 0;
-        }
-    }
-
-    public class MaxHeap<T> : BinaryHeap<T>
-        where T : IComparable<T>
-    {
-        public MaxHeap() { }
-        public MaxHeap(int capacity) : base(capacity) { }
-
-        protected override bool Compare(T current, T other)
-        {
-            return other.CompareTo(current) > 0;
-        }
-    }
-
-
 
 }

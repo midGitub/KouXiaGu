@@ -20,7 +20,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 是否为可存储的;
         /// </summary>
-        public bool Storable { get; private set; }
+        public bool IsStorable { get; private set; }
 
 
         public bool Equals(ProductCategorie other)

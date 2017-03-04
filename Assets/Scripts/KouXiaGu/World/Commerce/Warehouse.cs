@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,22 @@ namespace KouXiaGu.World.Commerce
     /// <summary>
     /// 存放\记录 一类型产品的数目;
     /// </summary>
-    public class Warehouse
+    public class Warehouse : IEnumerable<Warehouse.Room>
     {
+
+        const int DefaultNumber = 0;
+
+
+        public Warehouse(ProductCategorie categorie)
+        {
+            if (!categorie.IsStorable)
+                throw new ArgumentException();
+
+            this.Categorie = categorie;
+            this.Rooms = new List<Room>();
+            this.Number = DefaultNumber;
+        }
+
 
         /// <summary>
         /// 存放的资源类型;
@@ -31,6 +46,14 @@ namespace KouXiaGu.World.Commerce
 
         /// <summary>
         /// 获取到资源对应的库房;
+        /// </summary>
+        public Room Find(Product type)
+        {
+            return Rooms.Find(item => item.Type == type);
+        }
+
+        /// <summary>
+        /// 获取到资源对应的库房,若不存在则创建一个;
         /// </summary>
         public Room FindOrCreate(Product type)
         {
@@ -60,19 +83,48 @@ namespace KouXiaGu.World.Commerce
             return number;
         }
 
+        /// <summary>
+        /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
+        /// </summary>
+        public bool TryRemoveProduct(int number)
+        {
+            if (Number < number)
+                return false;
+
+            RemoveProduct(number);
+            return true;
+        }
+
+        /// <summary>
+        /// 移除所有空的房间,返回 移除的元素数;
+        /// </summary>
+        public int RemoveEmptyRooms()
+        {
+            return Rooms.RemoveAll(room => room.IsEmpty);
+        }
 
 
+        public IEnumerator<Room> GetEnumerator()
+        {
+            return Rooms.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Rooms.GetEnumerator();
+        }
 
 
         /// <summary>
         /// 存放\记录 产品的数目;
         /// </summary>
-        public class Room : StorageRoom, IEquatable<Room>
+        public class Room : StorageRoom
         {
 
             const int DefaultProductNumber = 0;
 
-            public Room(Product type, Warehouse warehouse)
+
+            internal Room(Product type, Warehouse warehouse)
             {
                 this.Type = type;
                 this.Warehouse = warehouse;
@@ -86,7 +138,7 @@ namespace KouXiaGu.World.Commerce
 
 
             /// <summary>
-            /// 房间是否为空?是否允许移除?
+            /// 房间是否为空?
             /// </summary>
             public override bool IsEmpty
             {
@@ -95,9 +147,10 @@ namespace KouXiaGu.World.Commerce
 
 
             /// <summary>
-            /// 增加或减少产品数目,并且返回总数;
+            /// 增加或减少产品数目;
             /// 若减少数目大于已存在数,那结果都为0;
             /// </summary>
+            [Obsolete]
             public void ChangeProduct(int increment)
             {
                 int result = this.Number + increment;
@@ -144,23 +197,16 @@ namespace KouXiaGu.World.Commerce
                 }
             }
 
-
-            public bool Equals(Room other)
+            /// <summary>
+            /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
+            /// </summary>
+            public bool TryRemoveProduct(int number)
             {
-                return other.Type == this.Type;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is Room))
+                if (Number < number)
                     return false;
 
-                return Equals((Room)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return Type.GetHashCode();
+                RemoveProduct(number);
+                return true;
             }
 
         }
