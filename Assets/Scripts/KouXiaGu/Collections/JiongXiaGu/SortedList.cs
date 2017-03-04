@@ -25,15 +25,15 @@ namespace KouXiaGu.Collections
         public SortedList(IEnumerable<T> items)
         {
             this.Comparer = Comparer<T>.Default;
-            collection = new List<T>();
-            Add(items);
+            collection = new List<T>(items);
+            collection.Sort(Comparer);
         }
 
         public SortedList(IEnumerable<T> items, IComparer<T> comparer)
         {
             this.Comparer = comparer;
-            collection = new List<T>();
-            Add(items);
+            collection = new List<T>(items);
+            collection.Sort(Comparer);
         }
 
         /// <summary>
@@ -69,13 +69,12 @@ namespace KouXiaGu.Collections
             get { return ((ICollection<T>)this.collection).IsReadOnly; }
         }
 
-
-        public void Add(IEnumerable<T> items)
+        /// <summary>
+        /// 对 合集 进行重新排序;
+        /// </summary>
+        public void Sort()
         {
-            foreach (var item in items)
-            {
-                Add(item);
-            }
+            collection.Sort(Comparer);
         }
 
         /// <summary>
@@ -83,14 +82,20 @@ namespace KouXiaGu.Collections
         /// </summary>
         public void Add(T item)
         {
-            int index = GetInsertIndex(item);
+            //int index = collection.BinarySearch(item, Comparer);
+            //if (index < 0)
+            //    collection.Insert(~index, item);
+            //else
+            //    collection.Insert(index, item);
+
+            int index = BinarySearch(item);
             collection.Insert(index, item);
         }
 
         /// <summary>
         /// 获取到插入下标;
         /// </summary>
-        int GetInsertIndex(T item)
+        int BinarySearch(T item)
         {
             int low = 0;
             int high = collection.Count - 1;
@@ -117,7 +122,13 @@ namespace KouXiaGu.Collections
         /// </summary>
         public bool Remove(T item)
         {
-            return collection.Remove(item);
+            int index = collection.BinarySearch(item);
+            if (index > 0)
+            {
+                collection.RemoveAt(index);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -125,7 +136,8 @@ namespace KouXiaGu.Collections
         /// </summary>
         public bool Contains(T item)
         {
-            return collection.Contains(item);
+            int index = collection.BinarySearch(item);
+            return index >= 0;
         }
 
         /// <summary>
