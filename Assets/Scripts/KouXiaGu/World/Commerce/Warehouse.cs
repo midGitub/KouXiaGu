@@ -7,6 +7,79 @@ using System.Text;
 namespace KouXiaGu.World.Commerce
 {
 
+    /// <summary>
+    /// 整合仓库内容;
+    /// </summary>
+    public class Storage
+    {
+
+        public Storage()
+        {
+            warehouses = new List<Warehouse>();
+        }
+
+
+        List<Warehouse> warehouses;
+
+
+        /// <summary>
+        /// 获取到这个类型的库房;若不存在则返回 null;
+        /// </summary>
+        public Warehouse Find(int categorie)
+        {
+            return warehouses.Find(item => item.Categorie == categorie);
+        }
+
+        /// <summary>
+        /// 获取到这个类型的库房索引值;若不存在则返回 -1;
+        /// </summary>
+        public int FindIndex(int categorie)
+        {
+            return warehouses.FindIndex(item => item.Categorie == categorie);
+        }
+
+        /// <summary>
+        /// 获取到这个类型的库房;若不存在则创建并返回;
+        /// </summary>
+        public Warehouse FindOrCreate(int categorie)
+        {
+            var house = warehouses.Find(item => item.Categorie == categorie);
+
+            if (house == null)
+            {
+                house = new Warehouse(categorie);
+                warehouses.Add(house);
+            }
+
+            return house;
+        }
+
+        /// <summary>
+        /// 尝试摧毁这个仓库,若不存在引用则摧毁,返回true;若不存在,或者存在引用,则不摧毁返回false;
+        /// </summary>
+        public bool TryDestroy(int categorie)
+        {
+            var roomIndex = FindIndex(categorie);
+
+            if (roomIndex != -1 && !warehouses[roomIndex].ExistsReference())
+            {
+                warehouses.RemoveAt(roomIndex);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 移除所有空的库房,并返回移除数目;
+        /// </summary>
+        public int RemoveEmptyAll()
+        {
+            return warehouses.RemoveAll(item => !item.ExistsReference() && item.Total == 0);
+        }
+
+    }
+
 
     /// <summary>
     /// 存放\记录 一类型产品的数目;
@@ -17,21 +90,18 @@ namespace KouXiaGu.World.Commerce
         const int DefaultNumber = 0;
 
 
-        public Warehouse(ProductCategorie categorie)
+        public Warehouse(int categorie)
         {
-            if (!categorie.IsStorable)
-                throw new ArgumentException();
-
             this.Categorie = categorie;
             this.Rooms = new List<Room>();
-            this.Number = DefaultNumber;
+            this.Total = DefaultNumber;
         }
 
 
         /// <summary>
         /// 存放的资源类型;
         /// </summary>
-        public ProductCategorie Categorie { get; private set; }
+        public int Categorie { get; private set; }
 
         /// <summary>
         /// 资源库房;
@@ -39,29 +109,29 @@ namespace KouXiaGu.World.Commerce
         public List<Room> Rooms { get; private set; }
 
         /// <summary>
-        /// 总数;
+        /// 总量;
         /// </summary>
-        public int Number { get; private set; }
+        public int Total { get; private set; }
 
 
         /// <summary>
         /// 获取到资源对应的库房;
         /// </summary>
-        public Room Find(Product type)
+        public Room Find(int productType)
         {
-            return Rooms.Find(item => item.Type == type);
+            return Rooms.Find(item => item.ProductType == productType);
         }
 
         /// <summary>
         /// 获取到资源对应的库房,若不存在则创建一个;
         /// </summary>
-        public Room FindOrCreate(Product type)
+        public Room FindOrCreate(int productType)
         {
-            var room = Rooms.Find(item => item.Type == type);
+            var room = Rooms.Find(item => item.ProductType == productType);
 
             if (room == null)
             {
-                room = new Room(type, this);
+                room = new Room(productType, this);
                 Rooms.Add(room);
             }
 
@@ -88,7 +158,7 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         public bool TryRemoveProduct(int number)
         {
-            if (Number < number)
+            if (Total < number)
                 return false;
 
             RemoveProduct(number);
@@ -98,11 +168,42 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 移除所有空的房间,返回 移除的元素数;
         /// </summary>
-        public int RemoveEmptyRooms()
+        public int DestroyEmptyRooms()
         {
-            return Rooms.RemoveAll(room => room.IsEmpty);
+            return Rooms.RemoveAll(room => room.ExistsReference && room.IsEmpty);
         }
 
+        /// <summary>
+        /// 尝试摧毁这个产品的房间,若摧毁成功返回true,否则返回false;
+        /// </summary>
+        public bool TryDestroyRoom(int productType)
+        {
+            int index = Rooms.FindIndex(room => room.ProductType == productType);
+
+            if (index == -1)
+            {
+                return false;
+            }
+
+            var productRoom = Rooms[index];
+            if (!productRoom.ExistsReference)
+            {
+                Rooms.RemoveAt(index);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 库房是否被引用;
+        /// </summary>
+        public bool ExistsReference()
+        {
+            return
+                Rooms.Count == 0 ||
+                (Rooms.FindIndex(item => item.ExistsReference) > 0);
+        }
 
         public IEnumerator<Room> GetEnumerator()
         {
@@ -121,59 +222,45 @@ namespace KouXiaGu.World.Commerce
         public class Room : StorageRoom
         {
 
-            const int DefaultProductNumber = 0;
-
-
-            internal Room(Product type, Warehouse warehouse)
+            internal Room(int productType, Warehouse warehouse)
             {
-                this.Type = type;
-                this.Warehouse = warehouse;
-                this.Number = DefaultProductNumber;
+                this.ProductType = productType;
+                this.House = warehouse;
+                this.Total = 0;
             }
 
 
-            public Product Type { get; private set; }
-            public Warehouse Warehouse { get; private set; }
-            public int Number { get; private set; }
+            /// <summary>
+            /// 产品类型;
+            /// </summary>
+            public int ProductType { get; private set; }
 
+            /// <summary>
+            /// 归属;
+            /// </summary>
+            public Warehouse House { get; private set; }
+
+            /// <summary>
+            /// 资源总数;
+            /// </summary>
+            public int Total { get; private set; }
 
             /// <summary>
             /// 房间是否为空?
             /// </summary>
-            public override bool IsEmpty
+            public bool IsEmpty
             {
-                get { return base.IsEmpty && Number == 0; }
+                get { return Total == 0; }
             }
 
-
-            /// <summary>
-            /// 增加或减少产品数目;
-            /// 若减少数目大于已存在数,那结果都为0;
-            /// </summary>
-            [Obsolete]
-            public void ChangeProduct(int increment)
-            {
-                int result = this.Number + increment;
-
-                if (result < 0)
-                {
-                    Warehouse.Number -= Number;
-                    Number = 0;
-                }
-                else
-                {
-                    Warehouse.Number += increment;
-                    Number = result;
-                }
-            }
 
             /// <summary>
             /// 增加产品数目; number 大于或等于 0;
             /// </summary>
             public void AddProduct(int number)
             {
-                Number += number;
-                Warehouse.Number += number;
+                Total += number;
+                House.Total += number;
             }
 
             /// <summary>
@@ -181,18 +268,17 @@ namespace KouXiaGu.World.Commerce
             /// </summary>
             public int RemoveProduct(int number)
             {
-                int result = Number - number;
-
-                if (result <= 0)
+                if (number > Total)
                 {
-                    Warehouse.Number -= Number;
-                    Number = 0;
+                    int result = Total - number;
+                    House.Total -= Total;
+                    Total = 0;
                     return Math.Abs(result);
                 }
                 else
                 {
-                    Number = result;
-                    Warehouse.Number -= number;
+                    House.Total -= number;
+                    Total -= number;
                     return 0;
                 }
             }
@@ -202,10 +288,11 @@ namespace KouXiaGu.World.Commerce
             /// </summary>
             public bool TryRemoveProduct(int number)
             {
-                if (Number < number)
+                if (Total < number)
                     return false;
 
-                RemoveProduct(number);
+                House.Total -= number;
+                Total -= number;
                 return true;
             }
 

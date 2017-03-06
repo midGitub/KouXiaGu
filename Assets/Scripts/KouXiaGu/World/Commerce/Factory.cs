@@ -11,7 +11,7 @@ namespace KouXiaGu.World.Commerce
 
         public Factory()
         {
-
+            
         }
 
 
@@ -21,9 +21,22 @@ namespace KouXiaGu.World.Commerce
         public List<ProductionLine> ProductionLines { get; private set; }
 
         /// <summary>
-        /// 成品储存到;
+        /// 所归属的城镇;
+        /// </summary>
+        public Town Attribution { get; set; }
+
+        /// <summary>
+        /// 成品储存到仓库;
         /// </summary>
         public Warehouse Warehouse { get; set; }
+
+        /// <summary>
+        /// 可以获取到的人力资源;
+        /// </summary>
+        DynamicResource humanResource
+        {
+            get { return Attribution.HumanResource; }
+        }
 
 
         /// <summary>

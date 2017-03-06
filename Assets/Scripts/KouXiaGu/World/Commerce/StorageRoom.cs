@@ -26,9 +26,9 @@ namespace KouXiaGu.World.Commerce
         public int ObserverCount { get; private set; }
 
         /// <summary>
-        /// 是否为空?
+        /// 房间是被引用?
         /// </summary>
-        public virtual bool IsEmpty
+        public virtual bool ExistsReference
         {
             get { return EmptyObserverCount == ObserverCount; }
         }
@@ -42,7 +42,7 @@ namespace KouXiaGu.World.Commerce
             ObserverCount++;
             return new Unsubscriber(this);
         }
-
+        
         class Unsubscriber : IDisposable
         {
             public Unsubscriber(StorageRoom storageRoom)

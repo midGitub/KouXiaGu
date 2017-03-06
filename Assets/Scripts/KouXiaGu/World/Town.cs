@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using KouXiaGu.World.Commerce;
 
 namespace KouXiaGu.World
 {
@@ -42,7 +43,6 @@ namespace KouXiaGu.World
         /// 人力资源;
         /// </summary>
         public DynamicResource HumanResource { get; private set; }
-
 
 
         [XmlArrayItem("Neighbours")]

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.World.Commerce
 {
 
     /// <summary>
