@@ -38,6 +38,12 @@ namespace KouXiaGu.World
             private set { id = value; }
         }
 
+        /// <summary>
+        /// 人力资源;
+        /// </summary>
+        public DynamicResource HumanResource { get; private set; }
+
+
 
         [XmlArrayItem("Neighbours")]
         List<int> neighbours;

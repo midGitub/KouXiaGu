@@ -5,7 +5,7 @@ namespace KouXiaGu.Collections
 {
 
     /// <summary>
-    /// 排序合集;使用二分插入排序;
+    /// 不稳定的排序合集;使用二分插入排序;
     /// </summary>
     public class SortedList<T> : ICollection<T>, IEnumerable<T>
     {
@@ -57,6 +57,14 @@ namespace KouXiaGu.Collections
         public IComparer<T> Comparer { get; private set; }
 
         /// <summary>
+        /// 根据下标获取到元素;
+        /// </summary>
+        public T this[int index]
+        {
+            get { return collection[index]; }
+        }
+
+        /// <summary>
         /// 元素总数;
         /// </summary>
         public int Count
@@ -82,14 +90,14 @@ namespace KouXiaGu.Collections
         /// </summary>
         public void Add(T item)
         {
-            //int index = collection.BinarySearch(item, Comparer);
-            //if (index < 0)
-            //    collection.Insert(~index, item);
-            //else
-            //    collection.Insert(index, item);
+            int index = collection.BinarySearch(item, Comparer);
+            if (index < 0)
+                collection.Insert(~index, item);
+            else
+                collection.Insert(index, item);
 
-            int index = BinarySearch(item);
-            collection.Insert(index, item);
+            //int index = BinarySearch(item);
+            //collection.Insert(index, item);
         }
 
         /// <summary>
@@ -122,7 +130,15 @@ namespace KouXiaGu.Collections
         /// </summary>
         public bool Remove(T item)
         {
-            int index = collection.BinarySearch(item);
+            return collection.Remove(item);
+        }
+
+        /// <summary>
+        /// 使用 Comparer 对比,移除指定元素;
+        /// </summary>
+        public bool CompareRemove(T item)
+        {
+            int index = collection.BinarySearch(item, Comparer);
             if (index > 0)
             {
                 collection.RemoveAt(index);
@@ -136,7 +152,15 @@ namespace KouXiaGu.Collections
         /// </summary>
         public bool Contains(T item)
         {
-            int index = collection.BinarySearch(item);
+            return collection.Contains(item);
+        }
+
+        /// <summary>
+        /// 使用 Comparer 对比,确认是否存在此元素;
+        /// </summary>
+        public bool ComparerContains(T item)
+        {
+            int index = collection.BinarySearch(item, Comparer);
             return index >= 0;
         }
 
