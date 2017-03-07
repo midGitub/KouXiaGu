@@ -6,14 +6,13 @@ using System.Text;
 namespace KouXiaGu.World.Commerce
 {
 
-    public class Factory
+    public class ProductFactory
     {
 
-        public Factory()
+        public ProductFactory()
         {
             
         }
-
 
         /// <summary>
         /// 所有生产线;
@@ -28,7 +27,10 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 成品储存到仓库;
         /// </summary>
-        public Warehouse Warehouse { get; set; }
+        public ProductHouse Warehouse
+        {
+            get { return Attribution.Warehouse; }
+        }
 
         /// <summary>
         /// 可以获取到的人力资源;
@@ -61,12 +63,27 @@ namespace KouXiaGu.World.Commerce
             }
         }
 
+
         public class ProductionLine
         {
 
             public bool Enabled { get; private set; }
-            public Workshop Workshop { get; private set; }
-            public ProductRoom Product { get; private set; }
+
+            /// <summary>
+            /// 产品类型;
+            /// </summary>
+            public Product ProductType { get; private set; }
+
+            /// <summary>
+            /// 库房;
+            /// </summary>
+            public ProductRoom ProductRoom { get; private set; }
+
+
+            public void Producing()
+            {
+
+            }
 
         }
 

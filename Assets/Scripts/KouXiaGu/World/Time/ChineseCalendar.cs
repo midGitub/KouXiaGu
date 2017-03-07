@@ -51,7 +51,7 @@ namespace KouXiaGu.World
         /// </summary>
         public static byte GetDaysInMonth(short year, byte month)
         {
-            int leapMonth = GetLeapMonth(year);
+            byte leapMonth = GetLeapMonth(year);
 
             if (leapMonth != 0 && month >= leapMonth)
             {
@@ -129,6 +129,38 @@ namespace KouXiaGu.World
             const int LEAP_YEAR_INTERAVAL = 3;
 
             return year % LEAP_YEAR_INTERAVAL == 0;
+        }
+
+
+        static readonly Months[] MonthsArray = new Months[]
+            {
+                Months.January,
+                Months.February,
+                Months.March,
+                Months.April,
+                Months.May,
+                Months.June,
+                Months.July,
+                Months.August,
+                Months.September,
+                Months.October,
+                Months.November,
+                Months.December,
+            };
+
+        /// <summary>
+        /// 获取到枚举类型的月份表示;
+        /// </summary>
+        public static Months GetMonth(short year, byte month)
+        {
+            byte leapMonth = GetLeapMonth(year);
+
+            if (leapMonth != 0 && month >= leapMonth)
+            {
+                month--;
+            }
+
+            return MonthsArray[month];
         }
 
     }

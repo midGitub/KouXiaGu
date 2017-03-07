@@ -45,6 +45,13 @@ namespace KouXiaGu.World
         public DynamicResource HumanResource { get; private set; }
 
 
+        /// <summary>
+        /// 仓库;
+        /// </summary>
+        public ProductHouse Warehouse { get; private set; }
+
+
+
         [XmlArrayItem("Neighbours")]
         List<int> neighbours;
 
