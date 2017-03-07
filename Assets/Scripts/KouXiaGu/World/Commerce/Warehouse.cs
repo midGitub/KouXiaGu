@@ -145,7 +145,7 @@ namespace KouXiaGu.World.Commerce
             }
 
             var productRoom = Rooms[index];
-            if (!productRoom.ExistsReference)
+            if (productRoom.IsRemovable())
             {
                 Rooms.RemoveAt(index);
                 return true;
@@ -170,7 +170,7 @@ namespace KouXiaGu.World.Commerce
         bool DayUpdateAndRemove(ProductRoom room)
         {
             room.DayUpdate();
-            return room.IsEmpty && !room.ExistsReference;
+            return room.IsEmpty && room.IsRemovable();
         }
 
 
@@ -190,7 +190,7 @@ namespace KouXiaGu.World.Commerce
     /// <summary>
     /// 存放\记录 产品的数目;
     /// </summary>
-    public class ProductRoom : StorageRoom
+    public class ProductRoom
     {
 
         public ProductRoom(int productType, Warehouse warehouse)
@@ -202,14 +202,14 @@ namespace KouXiaGu.World.Commerce
 
 
         /// <summary>
-        /// 产品类型;
-        /// </summary>
-        public int ProductType { get; private set; }
-
-        /// <summary>
         /// 归属;
         /// </summary>
         public Warehouse House { get; private set; }
+
+        /// <summary>
+        /// 产品类型;
+        /// </summary>
+        public int ProductType { get; private set; }
 
         /// <summary>
         /// 资源总数;
@@ -217,11 +217,24 @@ namespace KouXiaGu.World.Commerce
         public int Total { get; private set; }
 
         /// <summary>
+        /// 影响因素;
+        /// </summary>
+        public NumericalFactor InfluenceFactor { get; private set; }
+
+        /// <summary>
         /// 房间是否为空?
         /// </summary>
         public bool IsEmpty
         {
             get { return Total == 0; }
+        }
+
+        /// <summary>
+        /// 是否允许移除;
+        /// </summary>
+        public bool IsRemovable()
+        {
+            return InfluenceFactor.IsRemovable();
         }
 
 
@@ -266,15 +279,8 @@ namespace KouXiaGu.World.Commerce
 
         public void DayUpdate()
         {
-
-        }
-
-        /// <summary>
-        /// 产品存储时的影响因素;
-        /// </summary>
-        public class InfluencingFactor
-        {
-
+            Total = (int)(Total * InfluenceFactor.Percentage);
+            Total += InfluenceFactor.Increment;
         }
 
     }

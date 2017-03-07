@@ -66,7 +66,7 @@ namespace KouXiaGu.World.Commerce
 
             public bool Enabled { get; private set; }
             public Workshop Workshop { get; private set; }
-            public Warehouse.ProductRoom Product { get; private set; }
+            public ProductRoom Product { get; private set; }
 
         }
 

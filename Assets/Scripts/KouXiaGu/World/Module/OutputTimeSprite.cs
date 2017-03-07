@@ -30,7 +30,7 @@ namespace KouXiaGu.World
 
         void Start()
         {
-           unsubscribe = timer.Subscribe(this);
+            unsubscribe = timer.Subscribe(this);
         }
 
         public void OnNext(DateTime item)
