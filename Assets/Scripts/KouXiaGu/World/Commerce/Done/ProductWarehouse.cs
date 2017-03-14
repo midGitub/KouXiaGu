@@ -4,7 +4,15 @@ using System.Collections.Generic;
 namespace KouXiaGu.World.Commerce
 {
 
-    public interface ICategorieWareroom
+    public interface IOccupied
+    {
+        /// <summary>
+        /// 标记占用;即当存储量为 0 时也不移除此库房;
+        /// </summary>
+        IDisposable Occupy(object sender);
+    }
+
+    public interface ICategorieWareroom : IOccupied
     {
         /// <summary>
         /// 存储量;
@@ -17,6 +25,11 @@ namespace KouXiaGu.World.Commerce
         ProductCategorie Categorie { get; }
 
         /// <summary>
+        /// 是否为有效的库房;
+        /// </summary>
+        bool IsEffective { get; }
+
+        /// <summary>
         /// 移除产品数目,并返回未能移除的数目; number 大于或等于 0;
         /// </summary>
         int Remove(int number);
@@ -25,9 +38,14 @@ namespace KouXiaGu.World.Commerce
         /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
         /// </summary>
         bool TryRemove(int number);
+
+        /// <summary>
+        /// 尝试摧毁这个房间,若还有其它类标记占用则不移除,返回false;若移除成功,并返回true;
+        /// </summary>
+        bool TryDestroy();
     }
 
-    public interface IWareroom
+    public interface IWareroom : IOccupied
     {
         /// <summary>
         /// 存储量;
@@ -43,11 +61,6 @@ namespace KouXiaGu.World.Commerce
         /// 是否为有效的库房;
         /// </summary>
         bool IsEffective { get; }
-
-        /// <summary>
-        /// 标记占用;即当存储量为 0 时也不移除此库房;
-        /// </summary>
-        IDisposable Occupy(object sender);
 
         /// <summary>
         /// 增加产品数目; number 大于或等于 0;
@@ -75,6 +88,12 @@ namespace KouXiaGu.World.Commerce
         /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
         /// </summary>
         bool TryRemove(int number);
+
+        /// <summary>
+        /// 尝试摧毁这个房间,若还有其它类标记占用则不移除,返回false;若移除成功,并返回true;
+        /// </summary>
+        bool TryDestroy();
+
     }
 
 
@@ -86,13 +105,13 @@ namespace KouXiaGu.World.Commerce
 
         public ProductWarehouse()
         {
-            rooms = new List<CategorieRoom>();
+            rooms = new List<ProductCategorieRoom>();
         }
 
         /// <summary>
         /// 资源存储单元;
         /// </summary>
-        List<CategorieRoom> rooms;
+        List<ProductCategorieRoom> rooms;
 
         /// <summary>
         /// 获取此类资源存储到的单元实例,若不存在则返回 null;
@@ -122,7 +141,7 @@ namespace KouXiaGu.World.Commerce
 
             if (room == null)
             {
-                var categorieRoom = new CategorieRoom(this, product.Categorie);
+                var categorieRoom = new ProductCategorieRoom(this, product.Categorie);
                 rooms.Add(categorieRoom);
                 room = categorieRoom.FindOrCreate(product);
             }
@@ -139,7 +158,7 @@ namespace KouXiaGu.World.Commerce
 
             if (categorieRoom == null)
             {
-                categorieRoom = new CategorieRoom(this, categorie);
+                categorieRoom = new ProductCategorieRoom(this, categorie);
                 rooms.Add(categorieRoom);
             }
 
@@ -150,7 +169,7 @@ namespace KouXiaGu.World.Commerce
         /// 移除指定分类库房;
         /// </summary>
         /// <param name="room"></param>
-        void DestroyRoom(CategorieRoom room)
+        void DestroyRoom(ProductCategorieRoom room)
         {
             rooms.Remove(room);
         }
@@ -158,20 +177,19 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 资源类别合集;
         /// </summary>
-        class CategorieRoom : Occupied<object>, ICategorieWareroom
+        class ProductCategorieRoom : Occupied<object>, ICategorieWareroom
         {
 
-            public CategorieRoom(ProductWarehouse parent, ProductCategorie categorie)
+            public ProductCategorieRoom(ProductWarehouse parent, ProductCategorie categorie)
             {
                 this.Parent = parent;
-                this.rooms = new List<Room>();
+                this.rooms = new List<ProductRoom>();
                 this.Categorie = categorie;
                 this.Total = 0;
                 this.IsEffective = true;
             }
 
-            
-            List<Room> rooms;
+            List<ProductRoom> rooms;
 
             /// <summary>
             /// 这类资源总数;
@@ -218,17 +236,17 @@ namespace KouXiaGu.World.Commerce
 
             public IWareroom Find(Product product)
             {
-                Room room = rooms.Find(item => item.Product == product);
+                ProductRoom room = rooms.Find(item => item.Product == product);
                 return room;
             }
 
             public IWareroom FindOrCreate(Product product)
             {
-                Room room = rooms.Find(item => item.Product == product);
+                ProductRoom room = rooms.Find(item => item.Product == product);
 
                 if (room == null)
                 {
-                    room = new Room(this, product);
+                    room = new ProductRoom(this, product);
                     rooms.Add(room);
                 }
 
@@ -238,29 +256,38 @@ namespace KouXiaGu.World.Commerce
             /// <summary>
             /// 移除指定库房;
             /// </summary>
-            void DestroyRoom(Room room)
+            void DestroyRoom(ProductRoom room)
             {
                 rooms.Remove(room);
+                TryDestroy();
+            }
 
+            /// <summary>
+            /// 尝试摧毁这个分类,若还有其它类标记占用 或 有其它下级房间 则不移除,返回false;若移除成功,并返回true;
+            /// </summary>
+            public bool TryDestroy()
+            {
                 if (rooms.Count == 0 && !IsOccupy)
                 {
                     Parent.DestroyRoom(this);
                     IsEffective = false;
+                    return true;
                 }
+                return false;
             }
 
 
             /// <summary>
             /// 资源数量记录;
             /// </summary>
-            internal class Room : Occupied<object>, IWareroom
+            internal class ProductRoom : Occupied<object>, IWareroom
             {
 
-                public Room(CategorieRoom parent, Product product) : this(parent, product, 0)
+                public ProductRoom(ProductCategorieRoom parent, Product product) : this(parent, product, 0)
                 {
                 }
 
-                public Room(CategorieRoom parent, Product product, int total)
+                public ProductRoom(ProductCategorieRoom parent, Product product, int total)
                 {
                     this.Parent = parent;
                     this.Product = product;
@@ -268,7 +295,7 @@ namespace KouXiaGu.World.Commerce
                     IsEffective = true;
                 }
 
-                public CategorieRoom Parent { get; private set; }
+                public ProductCategorieRoom Parent { get; private set; }
                 public Product Product { get; private set; }
                 public int Total { get; private set; }
                 public bool IsEffective { get; private set; }
@@ -373,7 +400,6 @@ namespace KouXiaGu.World.Commerce
         }
 
     }
-
 
     public class Occupied<T>
     {
