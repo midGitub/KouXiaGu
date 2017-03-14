@@ -37,7 +37,7 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         public int Produce
         {
-            get { return Producer * Type.Productivity; }
+            get { throw new NotImplementedException(); }
         }
 
     }

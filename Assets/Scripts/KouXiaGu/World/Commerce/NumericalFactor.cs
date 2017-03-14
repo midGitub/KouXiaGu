@@ -11,7 +11,7 @@ namespace KouXiaGu.World.Commerce
     public enum NumericalFactorMode
     {
         /// <summary>
-        /// 仅为标记,不影响其它;
+        /// 仅为标记,不影响数目;
         /// </summary>
         MarkOnly,
 

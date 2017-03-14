@@ -7,7 +7,7 @@ namespace KouXiaGu.World.Commerce
 {
 
     /// <summary>
-    /// 产品信息;
+    /// 资源信息;
     /// </summary>
     public class Product : IEquatable<Product>
     {
@@ -15,35 +15,17 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 资源编号;
         /// </summary>
-        public int ID { get; private set; }
-
-        /// <summary>
-        /// 可生产月份;
-        /// </summary>
-        public Months ProductionDate { get; private set; }
-
-
-        /// <summary>
-        /// 生产效率; 0 ~ max;
-        /// </summary>
-        public int Productivity { get; private set; }
-
-        /// <summary>
-        /// 升一级的最大工人数量改变;
-        /// </summary>
-        public int MaxProducerLevel { get; private set; }
-
-
+        public int ProductID { get; private set; }
 
         /// <summary>
         /// 资源属于的类别;
         /// </summary>
-        public ProductCategorie Categorie { get; set; }
+        public ProductCategorie Categorie { get; private set; }
 
 
         public bool Equals(Product other)
         {
-            return other.ID == this.ID;
+            return other.ProductID == this.ProductID;
         }
 
         public override bool Equals(object obj)
@@ -56,7 +38,7 @@ namespace KouXiaGu.World.Commerce
 
         public override int GetHashCode()
         {
-            return ID;
+            return ProductID;
         }
 
 

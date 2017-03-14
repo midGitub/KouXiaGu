@@ -15,17 +15,11 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 编号;
         /// </summary>
-        public int ID { get; private set; }
-
-        /// <summary>
-        /// 是否为可存储的;
-        /// </summary>
-        public bool IsStorable { get; private set; }
-
+        public int CategorieID { get; private set; }
 
         public bool Equals(ProductCategorie other)
         {
-            return other.ID == this.ID;
+            return other.CategorieID == this.CategorieID;
         }
 
         public override bool Equals(object obj)
@@ -38,7 +32,18 @@ namespace KouXiaGu.World.Commerce
 
         public override int GetHashCode()
         {
-            return ID;
+            return CategorieID;
+        }
+
+
+        public static bool operator ==(ProductCategorie v1, ProductCategorie v2)
+        {
+            return v1.Equals(v2);
+        }
+
+        public static bool operator !=(ProductCategorie v1, ProductCategorie v2)
+        {
+            return !v1.Equals(v2);
         }
 
     }

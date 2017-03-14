@@ -36,7 +36,7 @@ namespace KouXiaGu.World.Commerce
         public int Total { get; private set; }
 
         /// <summary>
-        /// 影响因素;
+        /// 对仓存数量的影响因素;
         /// </summary>
         public NumericalFactor InfluenceFactor { get; private set; }
 
