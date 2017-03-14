@@ -37,6 +37,13 @@ namespace KouXiaGu.World.Commerce
             return productionLine;
         }
 
+        public void Update()
+        {
+            foreach (var productionLine in productionLines)
+            {
+                productionLine.Update();
+            }
+        }
 
         /// <summary>
         /// 生产线;
