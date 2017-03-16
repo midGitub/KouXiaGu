@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace KouXiaGu.World.Commerce
 {
 
+    /// <summary>
+    /// 生产信息;
+    /// </summary>
     public interface IProductionInfo
     {
         /// <summary>
@@ -16,6 +19,93 @@ namespace KouXiaGu.World.Commerce
         /// 每次更新的产量;
         /// </summary>
         int Capacity { get; }
+    }
+
+    /// <summary>
+    /// 生产信息合集;
+    /// </summary>
+    public class ProductionInfoGroup : IEnumerable<IProductionInfo>
+    {
+        public ProductionInfoGroup()
+        {
+            productionInfos = new List<IProductionInfo>();
+            endProductionList = new List<IDisposable>();
+        }
+
+        List<IProductionInfo> productionInfos;
+        List<IDisposable> endProductionList;
+        Production production;
+
+        public bool IsEnable
+        {
+            get { return production != null; }
+        }
+
+        public void Add(IProductionInfo productionInfo)
+        {
+            productionInfos.Add(productionInfo);
+
+            if (IsEnable)
+            {
+                IDisposable endProduction = production.Create(productionInfo);
+                endProductionList.Add(endProduction);
+            }
+        }
+
+        public bool Remove(IProductionInfo productionInfo)
+        {
+            int index = productionInfos.FindIndex(item => item == productionInfo);
+
+            if (index >= 0)
+            {
+                IDisposable endProduction = endProductionList[index];
+                endProduction.Dispose();
+                productionInfos.RemoveAt(index);
+                endProductionList.RemoveAt(index);
+                return true;
+            }
+            return false;
+        }
+
+        public void Enable(Production production)
+        {
+            if (IsEnable)
+                throw new ArgumentException("已经启用;");
+
+            this.production = production;
+            for (int i = 0; i < productionInfos.Count; i++)
+            {
+                IProductionInfo productionInfo = productionInfos[i];
+                IDisposable endProduction = production.Create(productionInfo);
+                endProductionList.Add(endProduction);
+            }
+        }
+
+        public bool Disable()
+        {
+            if (IsEnable)
+            {
+                foreach (var item in endProductionList)
+                {
+                    item.Dispose();
+                }
+                endProductionList.Clear();
+                production = null;
+                return true;
+            }
+            return false;
+        }
+
+        public IEnumerator<IProductionInfo> GetEnumerator()
+        {
+            return ((IEnumerable<IProductionInfo>)this.productionInfos).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<IProductionInfo>)this.productionInfos).GetEnumerator();
+        }
+
     }
 
     /// <summary>

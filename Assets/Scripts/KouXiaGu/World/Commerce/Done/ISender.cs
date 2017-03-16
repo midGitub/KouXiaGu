@@ -6,15 +6,8 @@ using System.Text;
 namespace KouXiaGu.World.Commerce
 {
 
-
-    public class ProductManager
+    public interface ISender
     {
-
-
-        Dictionary<int, Product> resourcesDictionary;
-
-
-
 
     }
 

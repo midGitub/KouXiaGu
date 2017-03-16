@@ -75,6 +75,10 @@ namespace KouXiaGu.World
         /// </summary>
         December = 2048,
 
+        /// <summary>
+        /// 所有月份
+        /// </summary>
+        All = 0xFFF,
     }
 
 }
