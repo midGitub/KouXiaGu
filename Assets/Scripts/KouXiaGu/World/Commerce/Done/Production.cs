@@ -18,7 +18,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 每次更新的产量;
         /// </summary>
-        int Capacity { get; }
+        int Yields { get; }
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ namespace KouXiaGu.World.Commerce
             /// </summary>
             public void Update()
             {
-                Wareroom.Add(Production.Capacity);
+                Wareroom.Add(Production.Yields);
             }
 
             /// <summary>
