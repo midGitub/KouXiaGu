@@ -5,6 +5,9 @@ using System.Linq;
 namespace KouXiaGu.World.Commerce
 {
 
+    /// <summary>
+    /// 转换内容;
+    /// </summary>
     public class ProductTransformPremise
     {
 
@@ -33,10 +36,61 @@ namespace KouXiaGu.World.Commerce
     }
 
 
+    public class ProductionLine
+    {
+
+        /// <summary>
+        /// 产品的产品;
+        /// </summary>
+        List<ProductItem> product;
+
+
+
+    }
+
+
+    class ProductItem : IDisposable
+    {
+
+        public ProductItem(ProductBox box, ProductWarehouse warehouse)
+        {
+            this.Box = box;
+            this.Wareroom = warehouse.FindOrCreate(box.Product);
+            this.occupyCanceler = Wareroom.Occupy(this);
+        }
+
+        public ProductBox Box { get; private set; }
+        public IWareroom Wareroom { get; private set; }
+        IDisposable occupyCanceler;
+
+        /// <summary>
+        /// 增加产品;
+        /// </summary>
+        public void Add(int multiple)
+        {
+            Wareroom.Add(multiple * Box.Number);
+        }
+
+        /// <summary>
+        /// 移除产品,若无法移除则返回false;
+        /// </summary>
+        public bool Remove(int multiple)
+        {
+            return Wareroom.TryRemove(multiple * Box.Number);
+        }
+
+        public void Dispose()
+        {
+            occupyCanceler.Dispose();
+        }
+
+    }
+
+
     /// <summary>
     /// 转换产品到另一种产品;
     /// </summary>
-    public class ProductTransformation
+    public class ProductTransformation : IDisposable
     {
 
         public ProductTransformation(ProductWarehouse warehouse, ProductTransformPremise premise)
@@ -129,41 +183,18 @@ namespace KouXiaGu.World.Commerce
         }
 
 
-        class ProductItem : IDisposable
+        public void Dispose()
         {
+            Dispose(required);
+            Dispose(product);
+        }
 
-            public ProductItem(ProductBox box, ProductWarehouse warehouse)
+        void Dispose(List<ProductItem> items)
+        {
+            foreach (var item in items)
             {
-                this.Box = box;
-                this.Wareroom = warehouse.FindOrCreate(box.Product);
-                this.occupyCanceler = Wareroom.Occupy(this);
+                item.Dispose();
             }
-
-            public ProductBox Box { get; private set; }
-            public IWareroom Wareroom { get; private set; }
-            IDisposable occupyCanceler;
-
-            /// <summary>
-            /// 增加产品;
-            /// </summary>
-            public void Add(int multiple)
-            {
-                Wareroom.Add(multiple * Box.Number);
-            }
-
-            /// <summary>
-            /// 移除产品,若无法移除则返回false;
-            /// </summary>
-            public bool Remove(int multiple)
-            {
-                return Wareroom.TryRemove(multiple * Box.Number);
-            }
-
-            public void Dispose()
-            {
-                occupyCanceler.Dispose();
-            }
-
         }
 
     }
@@ -183,6 +214,9 @@ namespace KouXiaGu.World.Commerce
         public int Number { get; private set; }
 
     }
+
+
+
 
 
 
