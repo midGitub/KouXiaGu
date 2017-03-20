@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
 
-namespace KouXiaGu.World.Commerce
-{
+//namespace KouXiaGu.World.Commerce
+//{
 
 
-    public class TownCommerce
-    {
+//    public class TownCommerce
+//    {
 
-        public TownCommerce()
-        {
-            Production = new Production();
-        }
+//        public TownCommerce()
+//        {
+//            Production = new Production();
+//        }
 
-        public Production Production { get; private set; }
+//        //public Production Production { get; private set; }
 
-    }
+//    }
 
-}
+//}

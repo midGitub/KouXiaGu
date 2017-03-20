@@ -47,6 +47,11 @@ namespace KouXiaGu.World.Commerce
             get { return categorieTypes; }
         }
 
+        /// <summary>
+        /// 当前月份;
+        /// </summary>
+        public Months CurrentMonth { get; private set; }
+
 
         /// <summary>
         /// 获取到这个种类的所以产品;

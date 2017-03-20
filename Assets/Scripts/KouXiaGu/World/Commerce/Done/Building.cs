@@ -15,10 +15,10 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         public int BuildingID { get; private set; }
 
-        /// <summary>
-        /// 生产信息;
-        /// </summary>
-        public ProductionInfoGroup ProductionInfo { get; private set; }
+        ///// <summary>
+        ///// 生产信息;
+        ///// </summary>
+        //public ProductionInfoGroup ProductionInfo { get; private set; }
 
 
         public bool Equals(Building other)

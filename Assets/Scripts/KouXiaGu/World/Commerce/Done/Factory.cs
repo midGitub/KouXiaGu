@@ -1,52 +1,114 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.World.Commerce
 {
 
-
-    /// <summary>
-    /// 产出产品;
-    /// </summary>
-    public interface IProduce
+    public class ProductTransformPremise
     {
-        /// <summary>
-        /// 产品类型;
-        /// </summary>
-        Product Product { get; }
 
-        /// <summary>
-        /// 每次更新的产量;
-        /// </summary>
-        int Yields { get; }
-    }
+        public ProductTransformPremise()
+        {
+            Required = new List<ProductBox>();
+            Product = new List<ProductBox>();
+        }
 
-    /// <summary>
-    /// 转换产品到另一种产品;
-    /// </summary>
-    public class TransformProduct
-    {
+        public ProductTransformPremise(IEnumerable<ProductBox> required, IEnumerable<ProductBox> product)
+        {
+            Required = new List<ProductBox>(required);
+            Product = new List<ProductBox>(product);
+        }
 
         /// <summary>
         /// 需要的产品;
         /// </summary>
-        List<ProductItem> requiredProducts;
+        public List<ProductBox> Required { get; private set; }
 
         /// <summary>
         /// 产品的产品;
         /// </summary>
-        List<ProductItem> productProducts;
+        public List<ProductBox> Product { get; private set; }
+
+    }
+
+
+    /// <summary>
+    /// 转换产品到另一种产品;
+    /// </summary>
+    public class ProductTransformation
+    {
+
+        public ProductTransformation(ProductWarehouse warehouse, ProductTransformPremise premise)
+        {
+            MaxProduct = int.MaxValue;
+            this.required = this.CreateList(warehouse, premise.Required);
+            this.product = this.CreateList(warehouse, premise.Product);
+        }
 
         /// <summary>
-        /// 
+        /// 需要的产品;
         /// </summary>
-        public int MaxProduct { get; private set; }
+        List<ProductItem> required;
 
-        public void Product()
+        /// <summary>
+        /// 产品的产品;
+        /// </summary>
+        List<ProductItem> product;
+
+        /// <summary>
+        /// 最大转换次数;
+        /// </summary>
+        public int MaxProduct { get; set; }
+
+        /// <summary>
+        /// 需求;
+        /// </summary>
+        public IEnumerable<ProductBox> Required
         {
-            int numer = GetNumberOfProduction(requiredProducts, MaxProduct);
+            get { return required.Select(item => item.Box); }
+        }
+
+        /// <summary>
+        /// 产出;
+        /// </summary>
+        public IEnumerable<ProductBox> Product
+        {
+            get { return product.Select(item => item.Box); }
+        }
+
+
+        List<ProductItem> CreateList(ProductWarehouse warehouse, IEnumerable<ProductBox> items)
+        {
+            List<ProductItem> list = new List<ProductItem>();
+
+            foreach (var item in items)
+            {
+                list.Add(new ProductItem(item, warehouse));
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 进行转换;
+        /// </summary>
+        public void Transform()
+        {
+            int number = GetNumberOfProduction(required, MaxProduct);
+
+            foreach (var required in required)
+            {
+                if(!required.Remove(number))
+                {
+                    throw new ArgumentException("无法移除所需的资源");
+                }
+            }
+
+            foreach (var product in product)
+            {
+                product.Add(number);
+            }
+
         }
 
         /// <summary>
@@ -70,10 +132,10 @@ namespace KouXiaGu.World.Commerce
         class ProductItem : IDisposable
         {
 
-            public ProductItem(ProductBox Box, ProductWarehouse Warehouse)
+            public ProductItem(ProductBox box, ProductWarehouse warehouse)
             {
-                this.Box = Box;
-                this.Wareroom = Warehouse.FindOrCreate(Box.Product);
+                this.Box = box;
+                this.Wareroom = warehouse.FindOrCreate(box.Product);
                 this.occupyCanceler = Wareroom.Occupy(this);
             }
 
@@ -81,15 +143,34 @@ namespace KouXiaGu.World.Commerce
             public IWareroom Wareroom { get; private set; }
             IDisposable occupyCanceler;
 
+            /// <summary>
+            /// 增加产品;
+            /// </summary>
+            public void Add(int multiple)
+            {
+                Wareroom.Add(multiple * Box.Number);
+            }
+
+            /// <summary>
+            /// 移除产品,若无法移除则返回false;
+            /// </summary>
+            public bool Remove(int multiple)
+            {
+                return Wareroom.TryRemove(multiple * Box.Number);
+            }
+
             public void Dispose()
             {
                 occupyCanceler.Dispose();
             }
+
         }
 
     }
 
-
+    /// <summary>
+    /// 产品 和 数量;
+    /// </summary>
     public class ProductBox
     {
         public ProductBox(Product Product, int Number)
@@ -104,20 +185,22 @@ namespace KouXiaGu.World.Commerce
     }
 
 
-    //public class Equivalent
-    //{
-    //    /// <summary>
-    //    /// 需要的产品;
-    //    /// </summary>
-    //    List<ProductBox> requiredProducts;
 
-    //    /// <summary>
-    //    /// 产品的产品;
-    //    /// </summary>
-    //    List<ProductBox> productProducts;
+    /// <summary>
+    /// 产出产品;
+    /// </summary>
+    public interface IProduce
+    {
+        /// <summary>
+        /// 产品类型;
+        /// </summary>
+        Product Product { get; }
 
-    //}
-
+        /// <summary>
+        /// 每次更新的产量;
+        /// </summary>
+        int Yields { get; }
+    }
 
     public class Factory
     {
@@ -188,7 +271,6 @@ namespace KouXiaGu.World.Commerce
                 int temp = (int)(Product.MonthOfProduction & month);
                 return temp >= 1;
             }
-
 
         }
 

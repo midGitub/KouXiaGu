@@ -206,6 +206,38 @@ namespace KouXiaGu.World.Commerce
         #region 生产;
 
         /// <summary>
+        /// 每日损失\腐坏的比例;
+        /// </summary>
+        public ProportionItems SpoilPercent { get; private set; }
+
+        /// <summary>
+        /// 生产加成\比例,默认为 1;
+        /// </summary>
+        public ProportionItems ProportionOfProduction { get; private set; }
+
+        /// <summary>
+        /// 在这些月份正常产出;
+        /// </summary>
+        public Months MonthOfProduction { get; private set; }
+
+        /// <summary>
+        /// 非季节产出比例;
+        /// </summary>
+        public ProportionItems NonSeasonalPercent { get; private set; }
+
+        /// <summary>
+        /// 产量加成;
+        /// </summary>
+        public float YieldProduction
+        {
+            get {
+                return IsProductionMonth() ?
+                  ProportionOfProduction * Categorie.ProportionOfProduction :
+                  ProportionOfProduction * Categorie.ProportionOfProduction * NonSeasonalPercent;
+            }
+        }
+
+        /// <summary>
         /// 初始化产出信息;
         /// </summary>
         void InsProduction()
@@ -217,24 +249,21 @@ namespace KouXiaGu.World.Commerce
         }
 
         /// <summary>
-        /// 生产加成\比例,默认为 1;
+        /// 现在是否为合适产出的月份?
         /// </summary>
-        public ProportionItems ProportionOfProduction { get; private set; }
+        public bool IsProductionMonth()
+        {
+            return IsProductionMonth(Manager.CurrentMonth);
+        }
 
         /// <summary>
-        /// 每日损失的比例;
+        /// 这个月份是否为合适产出的月份?
         /// </summary>
-        public ProportionItems SpoilPercent { get; private set; }
-
-        /// <summary>
-        /// 在这些月份正常产出;
-        /// </summary>
-        public Months MonthOfProduction { get; private set; }
-
-        /// <summary>
-        /// 非季节产出比例;
-        /// </summary>
-        public ProportionItems NonSeasonalPercent { get; private set; }
+        bool IsProductionMonth(Months month)
+        {
+            int temp = (int)(MonthOfProduction & month);
+            return temp >= 1;
+        }
 
         #endregion
 
