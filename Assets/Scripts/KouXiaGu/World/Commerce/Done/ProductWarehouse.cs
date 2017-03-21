@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KouXiaGu.World.Commerce
 {
 
-    public interface IOccupied
-    {
-        /// <summary>
-        /// 标记占用;即当存储量为 0 时也不移除此库房;
-        /// </summary>
-        IDisposable Occupy(object sender);
-    }
 
-    public interface ICategorieWareroom : IOccupied
+    public interface IReadOnlyCategorieWareroom
     {
         /// <summary>
         /// 存储量;
@@ -25,27 +19,45 @@ namespace KouXiaGu.World.Commerce
         ProductCategorie Categorie { get; }
 
         /// <summary>
-        /// 是否为有效的库房;
+        /// 其下的所有库房;
         /// </summary>
-        bool IsEffective { get; }
+        IEnumerable<IReadOnlyWareroom> ReadOnlyWarerooms { get; }
+
+    }
+
+    public interface ICategorieWareroom : IDisposable
+    {
+        /// <summary>
+        /// 存储量;
+        /// </summary>
+        int Total { get; }
 
         /// <summary>
-        /// 移除产品数目,并返回未能移除的数目; number 大于或等于 0;
+        /// 产品类别;
         /// </summary>
-        int Remove(int number);
+        ProductCategorie Categorie { get; }
 
         /// <summary>
         /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
         /// </summary>
-        bool TryRemove(int number);
+        bool Remove(int number);
 
-        /// <summary>
-        /// 尝试摧毁这个房间,若还有其它类标记占用则不移除,返回false;若移除成功,并返回true;
-        /// </summary>
-        bool TryDestroy();
     }
 
-    public interface IWareroom : IOccupied
+    public interface IReadOnlyWareroom
+    {
+        /// <summary>
+        /// 存储量;
+        /// </summary>
+        int Total { get; }
+
+        /// <summary>
+        /// 产品类型;
+        /// </summary>
+        Product Product { get; }
+    }
+
+    public interface IWareroom : IDisposable
     {
         /// <summary>
         /// 存储量;
@@ -58,42 +70,31 @@ namespace KouXiaGu.World.Commerce
         Product Product { get; }
 
         /// <summary>
-        /// 是否为有效的库房;
-        /// </summary>
-        bool IsEffective { get; }
-
-        /// <summary>
         /// 增加产品数目; number 大于或等于 0;
         /// </summary>
         void Add(int number);
 
         /// <summary>
-        /// 移除产品数目,并返回未能移除的数目; number 大于或等于 0;
-        /// </summary>
-        int Remove(int number);
-
-        /// <summary>
-        /// 按百分百增加产品数目;
-        /// </summary>
-        /// <param name="percent">0 ~ max</param>
-        void AddPercent(float percent);
-
-        /// <summary>
-        /// 按百分百移除产品数目;
-        /// </summary>
-        /// <param name="percent">0 ~ 1</param>
-        void RemovePercent(float percent);
-
-        /// <summary>
         /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
         /// </summary>
-        bool TryRemove(int number);
+        bool Remove(int number);
+
+    }
+
+    /// <summary>
+    /// 监视库房创建和销毁,所给的库房不会标识占用;
+    /// </summary>
+    public interface IWarehouseObserver
+    {
+        /// <summary>
+        /// 当这个库房创建后调用,在这个方法内不允许取消订阅;
+        /// </summary>
+        void OnCreated(IWareroom room);
 
         /// <summary>
-        /// 尝试摧毁这个房间,若还有其它类标记占用则不移除,返回false;若移除成功,并返回true;
+        /// 当这个库房将要销毁前调用,在这个方法内不允许取消订阅;
         /// </summary>
-        bool TryDestroy();
-
+        void OnDestroy(IWareroom room);
     }
 
 
@@ -105,99 +106,183 @@ namespace KouXiaGu.World.Commerce
 
         public ProductWarehouse()
         {
-            rooms = new List<ProductCategorieRoom>();
+            rooms = new List<CategorieRoom>();
+            observers = new List<IWarehouseObserver>();
         }
 
+        List<CategorieRoom> rooms;
+        List<IWarehouseObserver> observers;
+
         /// <summary>
-        /// 资源存储单元;
+        /// 获取到保存的所有类型的库房;
         /// </summary>
-        List<ProductCategorieRoom> rooms;
+        public IEnumerable<IReadOnlyCategorieWareroom> ReadOnlyWarerooms
+        {
+            get { return rooms.OfType<IReadOnlyCategorieWareroom>(); }
+        }
 
         /// <summary>
         /// 获取此类资源存储到的单元实例,若不存在则返回 null;
         /// </summary>
-        public IWareroom Find(Product product)
+        public IWareroom Find(object sender, Product product)
         {
             var categorieRoom = rooms.Find(item => item.Categorie == product.Categorie);
-            var room = categorieRoom.Find(product);
+            IWareroom room = categorieRoom.Find(sender, product);
             return room;
-        }
-
-        /// <summary>
-        /// 获取此类资源存储到的单元实例,若不存在则返回 null;
-        /// </summary>
-        public ICategorieWareroom Find(ProductCategorie categorie)
-        {
-            var categorieRoom = rooms.Find(item => item.Categorie == categorie);
-            return categorieRoom;
         }
 
         /// <summary>
         /// 获取此类资源存储到的单元实例,若不存在则创建到;
         /// </summary>
-        public IWareroom FindOrCreate(Product product)
+        public IWareroom FindOrCreate(object sender, Product product)
         {
-            var room = Find(product);
+            var room = Find(sender, product);
 
             if (room == null)
             {
-                var categorieRoom = new ProductCategorieRoom(this, product.Categorie);
+                var categorieRoom = new CategorieRoom(this, product.Categorie);
                 rooms.Add(categorieRoom);
-                room = categorieRoom.FindOrCreate(product);
+                room = categorieRoom.FindOrCreate(sender, product);
             }
 
             return room;
         }
 
         /// <summary>
+        /// 获取此类资源存储到的单元实例,若不存在则返回 null;
+        /// </summary>
+        public ICategorieWareroom Find(object sender, ProductCategorie categorie)
+        {
+            var categorieRoom = rooms.Find(item => item.Categorie == categorie);
+
+            if (categorieRoom != null)
+                return categorieRoom.Occupy(sender);
+            else
+                return null;
+        }
+
+        /// <summary>
         /// 获取此类资源存储到的单元实例,若不存在则创建到;
         /// </summary>
-        public ICategorieWareroom FindOrCreate(ProductCategorie categorie)
+        public ICategorieWareroom FindOrCreate(object sender, ProductCategorie categorie)
         {
             var categorieRoom = rooms.Find(item => item.Categorie == categorie);
 
             if (categorieRoom == null)
             {
-                categorieRoom = new ProductCategorieRoom(this, categorie);
+                categorieRoom = new CategorieRoom(this, categorie);
                 rooms.Add(categorieRoom);
             }
 
-            return categorieRoom;
+            return categorieRoom.Occupy(sender);
         }
 
         /// <summary>
-        /// 移除指定分类库房;
+        /// 清除所有空的房间;
         /// </summary>
-        /// <param name="room"></param>
-        void DestroyRoom(ProductCategorieRoom room)
+        public void ClearEmptyRooms()
         {
-            rooms.Remove(room);
+            rooms.RemoveAll(delegate (CategorieRoom room)
+            {
+                room.ClearEmptyRooms();
+                room.OnDestory();
+                return room.IsEmpty;
+            });
+        }
+
+        /// <summary>
+        /// 订阅创建销毁消息;
+        /// </summary>
+        public IDisposable Subscribe(IWarehouseObserver observer)
+        {
+            if (observers.Contains(observer))
+                throw new ArgumentException();
+
+            observers.Add(observer);
+            return new Unsubscriber(observers, observer);
+        }
+
+        /// <summary>
+        /// 当创建一个新库房后调用,传入为不记录占用的库房;
+        /// </summary>
+        void OnCreatedWareroom(IWareroom room)
+        {
+            foreach (var observer in observers)
+            {
+                observer.OnCreated(room);
+            }
+        }
+
+        /// <summary>
+        /// 当要销毁这个库房前调用,传入为不记录占用的库房;
+        /// </summary>
+        void OnDestroyWareroom(IWareroom room)
+        {
+            foreach (var observer in observers)
+            {
+                observer.OnDestroy(room);
+            }
+        }
+
+        /// <summary>
+        /// 取消订阅器;
+        /// </summary>
+        class Unsubscriber : IDisposable
+        {
+
+            public Unsubscriber(ICollection<IWarehouseObserver> collection, IWarehouseObserver observer)
+            {
+                this.collection = collection;
+                this.observer = observer;
+            }
+
+            ICollection<IWarehouseObserver> collection;
+            IWarehouseObserver observer;
+
+            public void Dispose()
+            {
+                if (observer != null)
+                {
+                    collection.Remove(observer);
+                    collection = null;
+                    observer = null;
+                }
+            }
+
         }
 
         /// <summary>
         /// 资源类别合集;
         /// </summary>
-        class ProductCategorieRoom : Occupied<object>, ICategorieWareroom
+        class CategorieRoom : IReadOnlyCategorieWareroom
         {
 
-            public ProductCategorieRoom(ProductWarehouse parent, ProductCategorie categorie)
+            public CategorieRoom(ProductWarehouse warehouse, ProductCategorie categorie)
             {
-                this.Parent = parent;
-                this.rooms = new List<ProductRoom>();
+                this.Warehouse = warehouse;
                 this.Categorie = categorie;
                 this.Total = 0;
                 this.IsEffective = true;
+                this.rooms = new List<ProductRoom>();
+                this.occupiers = new LinkedList<object>();
             }
 
             List<ProductRoom> rooms;
-
-            /// <summary>
-            /// 这类资源总数;
-            /// </summary>
+            LinkedList<object> occupiers;
             public int Total { get; private set; }
-            public ProductWarehouse Parent { get; private set; }
-            public ProductCategorie Categorie { get; private set; }
             public bool IsEffective { get; private set; }
+            public ProductWarehouse Warehouse { get; private set; }
+            public ProductCategorie Categorie { get; private set; }
+
+            public int OccupierCount
+            {
+                get { return occupiers.Count; }
+            }
+
+            public bool IsEmpty
+            {
+                get { return Total <= 0 && OccupierCount == 0; }
+            }
 
             /// <summary>
             /// 存在库房数量;
@@ -208,39 +293,55 @@ namespace KouXiaGu.World.Commerce
             }
 
             /// <summary>
-            /// 移除产品数目,并返回未能移除的数目; number 大于或等于 0;
+            /// 迭代所有库房;
             /// </summary>
-            public int Remove(int number)
+            public IEnumerable<IReadOnlyWareroom> ReadOnlyWarerooms
             {
-                foreach (var room in rooms)
-                {
-                    number = room.Remove(number);
-
-                    if (number == 0)
-                        break;
-                }
-                return number;
+                get { return rooms.OfType<IReadOnlyWareroom>(); }
             }
 
             /// <summary>
             /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
             /// </summary>
-            public bool TryRemove(int number)
+            public bool Remove(int number)
             {
                 if (number > Total)
                     return false;
 
-                this.Total -= number;
+                foreach (var room in rooms)
+                {
+                    if (room.Total < number)
+                    {
+                        number -= room.Total;
+                        room.Remove(room.Total);
+                    }
+                    else
+                    {
+                        room.Remove(number);
+                        break;
+                    }
+                }
+
                 return true;
             }
 
-            public IWareroom Find(Product product)
+            /// <summary>
+            /// 获取到这个产品存储的仓库,若不存在则返回null;(在使用完毕后记得 Dispose() );
+            /// </summary>
+            public IWareroom Find(object sender, Product product)
             {
                 ProductRoom room = rooms.Find(item => item.Product == product);
-                return room;
+
+                if (room != null)
+                    return room.Occupy(sender);
+                else
+                    return null;
             }
 
-            public IWareroom FindOrCreate(Product product)
+            /// <summary>
+            /// 获取到这个产品存储的仓库,若不存在则创建并返回;(在使用完毕后记得 Dispose() );
+            /// </summary>
+            public IWareroom FindOrCreate(object sender, Product product)
             {
                 ProductRoom room = rooms.Find(item => item.Product == product);
 
@@ -248,57 +349,132 @@ namespace KouXiaGu.World.Commerce
                 {
                     room = new ProductRoom(this, product);
                     rooms.Add(room);
+                    Warehouse.OnCreatedWareroom(room);
                 }
 
-                return room;
+                return room.Occupy(sender);
             }
 
             /// <summary>
-            /// 移除指定库房;
+            /// 清除所有空的房间;
             /// </summary>
-            void DestroyRoom(ProductRoom room)
+            public void ClearEmptyRooms()
             {
-                rooms.Remove(room);
-                TryDestroy();
-            }
-
-            /// <summary>
-            /// 尝试摧毁这个分类,若还有其它类标记占用 或 有其它下级房间 则不移除,返回false;若移除成功,并返回true;
-            /// </summary>
-            public bool TryDestroy()
-            {
-                if (rooms.Count == 0 && !IsOccupy)
+                rooms.RemoveAll(delegate (ProductRoom room)
                 {
-                    Parent.DestroyRoom(this);
-                    IsEffective = false;
-                    return true;
-                }
-                return false;
+                    if (room.IsEmpty)
+                    {
+                        Warehouse.OnDestroyWareroom(room);
+                        room.OnDestory();
+                        return true;
+                    }
+                    return false;
+                });
             }
 
+            /// <summary>
+            /// 当销毁时调用;
+            /// </summary>
+            public void OnDestory()
+            {
+                IsEffective = false;
+            }
+
+            /// <summary>
+            /// 标识占用到这个类,既这个类在没有 Dispose 之前,一直处于有效状态;
+            /// </summary>
+            public ICategorieWareroom Occupy(object sender)
+            {
+                var node = occupiers.AddLast(sender);
+                return new OccupiedWareroom(this, occupiers, node);
+            }
+
+            /// <summary>
+            /// 提供给外部占用和使用;
+            /// </summary>
+            internal class OccupiedWareroom : ICategorieWareroom
+            {
+                public OccupiedWareroom(CategorieRoom room, LinkedList<object> list, LinkedListNode<object> node)
+                {
+                    this.Room = room;
+                    this.list = list;
+                    this.node = node;
+                }
+
+                LinkedList<object> list;
+                LinkedListNode<object> node;
+                public CategorieRoom Room { get; private set; }
+
+                public object Sender
+                {
+                    get { return node.Value; }
+                }
+
+                ProductCategorie ICategorieWareroom.Categorie
+                {
+                    get { return Room.Categorie; }
+                }
+
+                int ICategorieWareroom.Total
+                {
+                    get { return Room.Total; }
+                }
+
+                bool ICategorieWareroom.Remove(int number)
+                {
+                    return Room.Remove(number);
+                }
+
+                void IDisposable.Dispose()
+                {
+                    if (list != null)
+                    {
+                        list.Remove(node);
+                        list = null;
+                    }
+                }
+
+            }
 
             /// <summary>
             /// 资源数量记录;
             /// </summary>
-            internal class ProductRoom : Occupied<object>, IWareroom
+            internal class ProductRoom : IWareroom, IReadOnlyWareroom
             {
 
-                public ProductRoom(ProductCategorieRoom parent, Product product) : this(parent, product, 0)
+                public ProductRoom(CategorieRoom categorieRoom, Product product, int total)
                 {
-                }
-
-                public ProductRoom(ProductCategorieRoom parent, Product product, int total)
-                {
-                    this.Parent = parent;
+                    this.CategorieRoom = categorieRoom;
                     this.Product = product;
                     this.Total = total;
-                    IsEffective = true;
+                    this.IsEffective = true;
+                    occupiers = new LinkedList<object>();
                 }
 
-                public ProductCategorieRoom Parent { get; private set; }
-                public Product Product { get; private set; }
+                public ProductRoom(CategorieRoom categorieRoom, Product product) : this(categorieRoom, product, 0)
+                {
+                }
+
                 public int Total { get; private set; }
+                public CategorieRoom CategorieRoom { get; private set; }
+                public Product Product { get; private set; }
                 public bool IsEffective { get; private set; }
+                LinkedList<object> occupiers;
+
+                public IEnumerable<object> Occupiers
+                {
+                    get { return occupiers; }
+                }
+
+                public int OccupierCount
+                {
+                    get { return occupiers.Count; }
+                }
+
+                public bool IsEmpty
+                {
+                    get { return Total <= 0 && OccupierCount == 0; }
+                }
 
                 /// <summary>
                 /// 增加产品数目; number 大于或等于 0;
@@ -309,81 +485,20 @@ namespace KouXiaGu.World.Commerce
                         throw new ArgumentOutOfRangeException();
 
                     Total += number;
-                    Parent.Total += number;
-                }
-
-                /// <summary>
-                /// 按百分百增加产品数目;
-                /// </summary>
-                /// <param name="percent">0 ~ max</param>
-                public void AddPercent(float percent)
-                {
-                    if (percent < 0)
-                        throw new ArgumentOutOfRangeException();
-
-                    Total = (int)(Total * percent);
-                }
-
-                /// <summary>
-                /// 移除产品数目,并返回未能移除的数目; number 大于或等于 0;
-                /// </summary>
-                public int Remove(int number)
-                {
-                    if (number > Total)
-                    {
-                        int result = Total - number;
-                        Total = 0;
-                        Parent.Total -= Total;
-                        return Math.Abs(result);
-                    }
-                    else
-                    {
-                        Total -= number;
-                        Parent.Total -= number;
-                        return 0;
-                    }
-                }
-
-                /// <summary>
-                /// 按百分百移除产品数目;
-                /// </summary>
-                /// <param name="percent">0 ~ 1</param>
-                public void RemovePercent(float percent)
-                {
-                    if (percent < 0 || percent > 1)
-                        throw new ArgumentOutOfRangeException();
-
-                    int result = (int)(Total * percent);
-                    Total -= result;
-                    Parent.Total -= result;
+                    CategorieRoom.Total += number;
                 }
 
                 /// <summary>
                 /// 尝试移除这类产品数目,若无法移除则返回false,移除成功返回true;
                 /// </summary>
-                public bool TryRemove(int number)
+                public bool Remove(int number)
                 {
                     if (Total < number)
                         return false;
 
                     Total -= number;
-                    Parent.Total -= number;
+                    CategorieRoom.Total -= number;
                     return true;
-                }
-
-                /// <summary>
-                /// 尝试摧毁这个房间,若还有其它类标记占用则不移除,返回false;若移除成功,并返回true;
-                /// </summary>
-                public bool TryDestroy()
-                {
-                    if (!IsOccupy)
-                    {
-                        Reset();
-                        Parent.DestroyRoom(this);
-                        IsEffective = false;
-                        return true;
-                    }
-                    return false;
                 }
 
                 /// <summary>
@@ -391,59 +506,89 @@ namespace KouXiaGu.World.Commerce
                 /// </summary>
                 public void Reset()
                 {
-                    Parent.Total -= Total;
+                    CategorieRoom.Total -= Total;
                     Total = 0;
                 }
 
-            }
-
-        }
-
-    }
-
-    public class Occupied<T>
-    {
-
-        List<T> occupySenders = new List<T>();
-
-        /// <summary>
-        /// 是否存在占用?
-        /// </summary>
-        public bool IsOccupy
-        {
-            get { return occupySenders.Count != 0; }
-        }
-
-        /// <summary>
-        /// 标记占用;
-        /// </summary>
-        public IDisposable Occupy(T sender)
-        {
-            var item = new Canceler(occupySenders, sender);
-            occupySenders.Add(sender);
-            return item;
-        }
-
-        class Canceler : IDisposable
-        {
-            public Canceler(List<T> occupySenders, T sender)
-            {
-                this.occupySenders = occupySenders;
-                this.sender = sender;
-            }
-
-            List<T> occupySenders;
-            T sender;
-
-            public virtual void Dispose()
-            {
-                if (occupySenders != null)
+                /// <summary>
+                /// 标识占用到这个类,既这个类在没有 Dispose 之前,一直处于有效状态;
+                /// </summary>
+                public IWareroom Occupy(object sender)
                 {
-                    occupySenders.Remove(sender);
-                    occupySenders = null;
-                    sender = default(T);
+                    var node = occupiers.AddLast(sender);
+                    return new OccupiedWareroom(this, occupiers, node);
                 }
+
+                /// <summary>
+                /// 当销毁时调用;
+                /// </summary>
+                public void OnDestory()
+                {
+                    IsEffective = false;
+                }
+
+                /// <summary>
+                /// 不实现;
+                /// </summary>
+                void IDisposable.Dispose()
+                {
+                    return;
+                }
+
+                /// <summary>
+                /// 提供给需要记录占用的模块;
+                /// </summary>
+                internal class OccupiedWareroom : IWareroom
+                {
+                    public OccupiedWareroom(ProductRoom room, LinkedList<object> list, LinkedListNode<object> node)
+                    {
+                        this.Room = room;
+                        this.list = list;
+                        this.node = node;
+                    }
+
+                    public ProductRoom Room { get; private set; }
+                    LinkedList<object> list;
+                    LinkedListNode<object> node;
+
+                    public object Sender
+                    {
+                        get { return node.Value; }
+                    }
+
+                    public Product Product
+                    {
+                        get { return Room.Product; }
+                    }
+
+                    public int Total
+                    {
+                        get { return Room.Total; }
+                    }
+
+                    public void Add(int number)
+                    {
+                        Room.Add(number);
+                    }
+
+                    public bool Remove(int number)
+                    {
+                        return Room.Remove(number);
+                    }
+
+                    public void Dispose()
+                    {
+                        if (list != null)
+                        {
+                            list.Remove(node);
+                            list = null;
+                        }
+                    }
+
+                }
+
             }
+
         }
 
     }
