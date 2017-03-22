@@ -1,99 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace KouXiaGu.World.Commerce
 {
 
-    /// <summary>
-    /// ProductInfo 合集;
-    /// </summary>
-    public class ProductInfoGroup : IMonthObserver
+    [XmlType("Production")]
+    public struct ProductionInfo
     {
-
-        public ProductInfoGroup(IEnumerable<Product> items)
-        {
-            infos = CreateCollection(items);
-        }
+        /// <summary>
+        /// 在这些月份正常产出;
+        /// </summary>
+        [XmlElement("MonthOfProduction")]
+        public Months MonthOfProduction { get; set; }
 
         /// <summary>
-        /// 产品信息合集;
+        /// 非季节产出比例 0 ~ 1;
         /// </summary>
-        Dictionary<int, ProductInfo> infos;
-
-        /// <summary>
-        /// 产品信息合集;
-        /// </summary>
-        public IDictionary<int, ProductInfo> Infos
-        {
-            get { return infos; }
-        }
-
-        /// <summary>
-        /// 构建信息合集;
-        /// </summary>
-        Dictionary<int, ProductInfo> CreateCollection(IEnumerable<Product> items)
-        {
-            var collection = new Dictionary<int, ProductInfo>();
-
-            foreach (var item in items)
-            {
-                var info = new ProductInfo(item);
-                collection.Add(info.ProductID, info);
-            }
-
-            return collection;
-        }
-
-        void IMonthObserver.OnNext(Months month)
-        {
-            foreach (var info in infos.Values)
-            {
-                (info as IMonthObserver).OnNext(month);
-            }
-        }
+        [XmlElement("NonSeasonalPercent")]
+        public float NonSeasonalPercent { get; set; }
 
     }
 
     /// <summary>
-    /// 产品信息;
+    /// 产品生产信息;
     /// </summary>
-    public class ProductInfo : Product, IMonthObserver
+    public class ProductProductionInfo : IMonthObserver
     {
 
-        public ProductInfo(Product product) : base(product)
-        {
-            Production = new ProductProductionInfo(product);
-        }
-
-        /// <summary>
-        /// 生产信息;
-        /// </summary>
-        public ProductProductionInfo Production { get; private set; }
-
-        void IMonthObserver.OnNext(Months month)
-        {
-            (Production as IMonthObserver).OnNext(month);
-        }
-
-    }
-
-    /// <summary>
-    /// 产品产出信息;
-    /// </summary>
-    public class ProductProductionInfo : Product, IMonthObserver
-    {
-        public ProductProductionInfo(Product product) : base(product)
+        public ProductProductionInfo(ProductionInfo info)
         {
             ProportionOfProduction = new ProportionItems(1);
-            SpoilPercent = new ProportionItems(Type.SpoilPercent);
-            MonthOfProduction = Type.MonthOfProduction;
-            NonSeasonalPercent = new ProportionItems(Type.NonSeasonalPercent);
-        }
+            MonthOfProduction = info.MonthOfProduction;
+            NonSeasonalPercent = new ProportionItems(info.NonSeasonalPercent);
 
-        /// <summary>
-        /// 每日损失\腐坏的比例;
-        /// </summary>
-        public ProportionItems SpoilPercent { get; private set; }
+            yieldProportion = YieldProportion;
+        }
 
         /// <summary>
         /// 生产加成\比例,默认为 1;
@@ -156,6 +98,35 @@ namespace KouXiaGu.World.Commerce
         {
             return ProportionOfProduction * NonSeasonalPercent;
         }
+
+    }
+
+
+    [XmlType("Spoil")]
+    public struct SpoilInfo
+    {
+        /// <summary>
+        /// 每日损失的比例 0 ~ 1;
+        /// </summary>
+        [XmlElement("SpoilPercent")]
+        public float SpoilPercent { get; set; }
+
+    }
+
+    /// <summary>
+    /// 产品腐坏信息;
+    /// </summary>
+    public class ProductSpoilInfo
+    {
+        public ProductSpoilInfo(SpoilInfo info)
+        {
+            SpoilPercent = new ProportionItems(info.SpoilPercent);
+        }
+
+        /// <summary>
+        /// 每日损失\腐坏的比例;
+        /// </summary>
+        public ProportionItems SpoilPercent { get; private set; }
 
     }
 

@@ -36,8 +36,10 @@ namespace KouXiaGu.World.Commerce
         IEnumerable<ProductContainer> Output { get; }
     }
 
-    public class Production
+    public class TownProduction
     {
+
+
 
     }
 

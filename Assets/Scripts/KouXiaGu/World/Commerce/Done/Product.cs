@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace KouXiaGu.World.Commerce
 
 
     /// <summary>
-    /// 资源信息;
+    /// 用于序列化的产品信息;
     /// </summary>
     [XmlType("Product")]
     public struct ProductType : IEquatable<ProductType>
@@ -32,6 +33,10 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         [XmlAttribute("categorie")]
         public int CategorieID { get; set; }
+
+
+        public ProductionInfo Production { get; set; }
+        public SpoilInfo Spoil { get; set; }
 
 
         public override string ToString()
@@ -67,61 +72,11 @@ namespace KouXiaGu.World.Commerce
             return !v1.Equals(v2);
         }
 
-
-        #region 本地化;
-
-        /// <summary>
-        /// 名字的本地化标识;
-        /// </summary>
-        [XmlElement("Name")]
-        public string LocalizationNameID { get; set; }
-
-        /// <summary>
-        /// 描述的本地化标识;
-        /// </summary>
-        [XmlElement("Description")]
-        public string LocalizationDescID { get; set; }
-
-        #endregion
-
-
-        #region 生产;
-
-        /// <summary>
-        /// 每日损失的比例 0 ~ 1;
-        /// </summary>
-        [XmlElement("SpoilPercent")]
-        public float SpoilPercent { get; set; }
-
-        /// <summary>
-        /// 在这些月份正常产出;
-        /// </summary>
-        [XmlElement("MonthOfProduction")]
-        public Months MonthOfProduction { get; set; }
-
-        /// <summary>
-        /// 非季节产出比例 0 ~ 1;
-        /// </summary>
-        [XmlElement("NonSeasonalPercent")]
-        public float NonSeasonalPercent { get; set; }
-
-        #endregion
-
-
-        #region 商业;
-
-        /// <summary>
-        /// 价值;1个单位的产品对应的价值;
-        /// </summary>
-        [XmlElement("Worth")]
-        public int Worth { get; set; }
-
-        #endregion
-
     }
 
+
     /// <summary>
-    /// 资源信息;
+    /// 产品基类;
     /// </summary>
     public class Product : IEquatable<Product>
     {
@@ -139,17 +94,11 @@ namespace KouXiaGu.World.Commerce
         public ProductManager Manager { get; private set; }
         public ProductType Type { get; private set; }
 
-        /// <summary>
-        /// 资源编号;
-        /// </summary>
         public int ProductID
         {
             get { return Type.ProductID; }
         }
 
-        /// <summary>
-        /// 资源属于的类别;
-        /// </summary>
         public ProductCategorie Categorie
         {
             get { return Manager.CategorieDictionary[Type.CategorieID]; }
@@ -173,6 +122,12 @@ namespace KouXiaGu.World.Commerce
             return ProductID;
         }
 
+
+        public static implicit operator int(Product v)
+        {
+            return v.ProductID;
+        }
+
         public static bool operator ==(Product v1, Product v2)
         {
             return v1.Equals(v2);
@@ -185,5 +140,154 @@ namespace KouXiaGu.World.Commerce
 
     }
 
+
+    /// <summary>
+    /// 产品信息,用于后期拓展内容的产品实例;
+    /// </summary>
+    public class ProductInfo : Product, IMonthObserver
+    {
+
+        public ProductInfo(Product product) : this(product.Manager, product.Type)
+        {
+        }
+
+        public ProductInfo(ProductManager manager, ProductType type) : base(manager, type)
+        {
+            Production = new ProductProductionInfo(type.Production);
+            Spoil = new ProductSpoilInfo(type.Spoil);
+        }
+
+        public ProductProductionInfo Production { get; private set; }
+        public ProductSpoilInfo Spoil { get; private set; }
+
+        void IMonthObserver.OnNext(Months month)
+        {
+            (Production as IMonthObserver).OnNext(month);
+        }
+
+    }
+
+
+    /// <summary>
+    /// 产品信息合集;比如存放单个 国家 科技组 的加成信息;
+    /// </summary>
+    public class ProductInfoGroup : IDictionary<int, ProductInfo>, IMonthObserver
+    {
+
+        public ProductInfoGroup(IEnumerable<Product> items)
+        {
+            infos = CreateCollection(items);
+        }
+
+        /// <summary>
+        /// 产品信息合集;
+        /// </summary>
+        Dictionary<int, ProductInfo> infos;
+
+        public ICollection<int> Keys
+        {
+            get { return ((IDictionary<int, ProductInfo>)this.infos).Keys; }
+        }
+
+        public ICollection<ProductInfo> Values
+        {
+            get { return ((IDictionary<int, ProductInfo>)this.infos).Values; }
+        }
+
+        public int Count
+        {
+            get { return ((IDictionary<int, ProductInfo>)this.infos).Count; }
+        }
+
+        bool ICollection<KeyValuePair<int, ProductInfo>>.IsReadOnly
+        {
+            get { return false; }
+        }
+
+        public ProductInfo this[int key]
+        {
+            get { return ((IDictionary<int, ProductInfo>)this.infos)[key]; }
+            set { ((IDictionary<int, ProductInfo>)this.infos)[key] = value; }
+        }
+
+        /// <summary>
+        /// 构建信息合集;
+        /// </summary>
+        Dictionary<int, ProductInfo> CreateCollection(IEnumerable<Product> items)
+        {
+            var collection = new Dictionary<int, ProductInfo>();
+
+            foreach (var item in items)
+            {
+                var info = new ProductInfo(item);
+                collection.Add(info.ProductID, info);
+            }
+
+            return collection;
+        }
+
+        void IMonthObserver.OnNext(Months month)
+        {
+            foreach (var info in infos.Values)
+            {
+                (info as IMonthObserver).OnNext(month);
+            }
+        }
+
+        public void Add(int key, ProductInfo value)
+        {
+            ((IDictionary<int, ProductInfo>)this.infos).Add(key, value);
+        }
+
+        public bool ContainsKey(int key)
+        {
+            return ((IDictionary<int, ProductInfo>)this.infos).ContainsKey(key);
+        }
+
+        public bool Remove(int key)
+        {
+            return ((IDictionary<int, ProductInfo>)this.infos).Remove(key);
+        }
+
+        public bool TryGetValue(int key, out ProductInfo value)
+        {
+            return ((IDictionary<int, ProductInfo>)this.infos).TryGetValue(key, out value);
+        }
+
+        public void Add(KeyValuePair<int, ProductInfo> item)
+        {
+            ((IDictionary<int, ProductInfo>)this.infos).Add(item);
+        }
+
+        public void Clear()
+        {
+            ((IDictionary<int, ProductInfo>)this.infos).Clear();
+        }
+
+        public bool Contains(KeyValuePair<int, ProductInfo> item)
+        {
+            return ((IDictionary<int, ProductInfo>)this.infos).Contains(item);
+        }
+
+        public void CopyTo(KeyValuePair<int, ProductInfo>[] array, int arrayIndex)
+        {
+            ((IDictionary<int, ProductInfo>)this.infos).CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(KeyValuePair<int, ProductInfo> item)
+        {
+            return ((IDictionary<int, ProductInfo>)this.infos).Remove(item);
+        }
+
+        public IEnumerator<KeyValuePair<int, ProductInfo>> GetEnumerator()
+        {
+            return ((IDictionary<int, ProductInfo>)this.infos).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IDictionary<int, ProductInfo>)this.infos).GetEnumerator();
+        }
+    }
 
 }
