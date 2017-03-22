@@ -70,39 +70,6 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         public ProductProductionInfo Production { get; private set; }
 
-        //#region 本地化;
-
-        ///// <summary>
-        ///// 产品名字的本地化标识;
-        ///// </summary>
-        //public string LocalizationNameID
-        //{
-        //    get { return Type.LocalizationNameID; }
-        //}
-
-        ///// <summary>
-        ///// 产品描述的本地化标识;
-        ///// </summary>
-        //public string LocalizationDescID
-        //{
-        //    get { return Type.LocalizationDescID; }
-        //}
-
-        //#endregion
-
-
-        //#region 商业;
-
-        ///// <summary>
-        ///// 价值;1个单位的产品对应的价值;
-        ///// </summary>
-        //public int Worth
-        //{
-        //    get { return Type.Worth; }
-        //}
-
-        //#endregion
-
         void IMonthObserver.OnNext(Months month)
         {
             (Production as IMonthObserver).OnNext(month);
