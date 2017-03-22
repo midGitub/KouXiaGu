@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace KouXiaGu.World.Commerce
 {
 
     /// <summary>
-    /// 百分比表示;
+    /// 表示百分比,记录改变这个值的请求者;
     /// </summary>
     public class ProportionItems
     {
@@ -46,7 +45,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 增加或减少百分比;
         /// </summary>
-        public IDisposable Add(ISender sender, float increment)
+        public IDisposable Add(object sender, float increment)
         {
             var item = new CancelableItem(sender, increment, this);
             Proportion += increment;
@@ -79,13 +78,13 @@ namespace KouXiaGu.World.Commerce
 
         public class Item
         {
-            public Item(ISender sender, float increment)
+            public Item(object sender, float increment)
             {
                 this.Sender = sender;
                 this.Increment = increment;
             }
 
-            public ISender Sender { get; private set; }
+            public object Sender { get; private set; }
             public float Increment { get; private set; }
 
             public override string ToString()
@@ -96,7 +95,7 @@ namespace KouXiaGu.World.Commerce
 
         public class CancelableItem : Item, IDisposable
         {
-            public CancelableItem(ISender sender, float increment, ProportionItems percentage) : base(sender, increment)
+            public CancelableItem(object sender, float increment, ProportionItems percentage) : base(sender, increment)
             {
                 this.Percentage = percentage;
             }

@@ -134,14 +134,14 @@ namespace KouXiaGu.World.Commerce
         public ProportionItems ProportionOfProduction { get; private set; }
 
         /// <summary>
-        /// 在这些月份正常产出;
-        /// </summary>
-        public Months MonthOfProduction { get; private set; }
-
-        /// <summary>
         /// 非季节产出比例;
         /// </summary>
         public ProportionItems NonSeasonalPercent { get; private set; }
+
+        /// <summary>
+        /// 在这些月份正常产出;
+        /// </summary>
+        public Months MonthOfProduction { get; private set; }
 
         /// <summary>
         /// 产量加成;
@@ -179,7 +179,7 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         float YieldProportion()
         {
-            return ProportionOfProduction * Categorie.ProportionOfProduction;
+            return ProportionOfProduction;
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         float NonSeasonalYieldProportion()
         {
-            return ProportionOfProduction * Categorie.ProportionOfProduction * NonSeasonalPercent;
+            return ProportionOfProduction * NonSeasonalPercent;
         }
 
     }
