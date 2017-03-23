@@ -45,6 +45,12 @@ namespace KouXiaGu.World.Commerce
             return "[Product:" + Product.ToString() + ",Count:" + Count + "]";
         }
 
+
+        public static implicit operator Product(ProductContainer v)
+        {
+            return v.Product;
+        }
+
     }
 
 }

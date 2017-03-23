@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 namespace KouXiaGu.World.Commerce
 {
 
+
     [XmlType("Production")]
     public struct ProductionInfo
     {

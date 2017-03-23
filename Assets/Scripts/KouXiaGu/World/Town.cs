@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
 using KouXiaGu.World.Commerce;
 
 namespace KouXiaGu.World
@@ -10,64 +9,52 @@ namespace KouXiaGu.World
     /// <summary>
     /// 城镇信息;
     /// </summary>
-    [XmlType("Town")]
     public class Town : IEquatable<Town>
     {
 
         public Town(int id)
         {
-            this.ID = id;
-            this.Neighbours = new List<int>();
+            TownID = id;
+            Warehouse = new ProductWarehouse();
         }
 
-        public Town(int id, IEnumerable<int> neighbours)
+
+        /// <summary>
+        /// 唯一编号;
+        /// </summary>
+        public int TownID { get; private set; }
+
+        /// <summary>
+        /// 城镇所归属的国家;
+        /// </summary>
+        public Country Ascription { get; private set; }
+
+        /// <summary>
+        /// 城镇仓库;
+        /// </summary>
+        public ProductWarehouse Warehouse { get; private set; }
+
+        /// <summary>
+        /// 产品信息;
+        /// </summary>
+        public ProductInfoGroup ProductInfo
         {
-            this.ID = id;
-            this.Neighbours = new List<int>(neighbours);
+            get { return Ascription.ProductInfo; }
         }
 
-
-        [XmlAttribute("id")]
-        int id;
-
         /// <summary>
-        /// 城镇编号;
+        /// 设置新的归属;
         /// </summary>
-        public int ID
+        public void SetAscription(Country ascription)
         {
-            get { return id; }
-            private set { id = value; }
+            Ascription = ascription;
         }
 
-        /// <summary>
-        /// 人力资源;
-        /// </summary>
-        public DynamicResource HumanResource { get; private set; }
-
-
-        /// <summary>
-        /// 仓库;
-        /// </summary>
-        public ProductHouse Warehouse { get; private set; }
-
-
-
-        [XmlArrayItem("Neighbours")]
-        List<int> neighbours;
-
-        /// <summary>
-        /// 相邻城镇;
-        /// </summary>
-        public List<int> Neighbours
-        {
-            get { return neighbours; }
-            private set { neighbours = value; }
-        }
 
 
         public bool Equals(Town other)
         {
-            return other.ID == this.ID;
+            return other.TownID == this.TownID;
         }
 
         public override bool Equals(object obj)
@@ -82,7 +69,7 @@ namespace KouXiaGu.World
 
         public override int GetHashCode()
         {
-            return this.ID;
+            return this.TownID;
         }
 
     }

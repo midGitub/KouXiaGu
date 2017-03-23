@@ -171,12 +171,22 @@ namespace KouXiaGu.World.Commerce
     /// <summary>
     /// 产品信息合集;比如存放单个 国家 科技组 的加成信息;
     /// </summary>
-    public class ProductInfoGroup : IDictionary<int, ProductInfo>, IMonthObserver
+    public class ProductInfoGroup : IMonthObserver
     {
+
+        public ProductInfoGroup()
+        {
+            infos = new Dictionary<int, ProductInfo>();
+        }
 
         public ProductInfoGroup(IEnumerable<Product> items)
         {
             infos = CreateCollection(items);
+        }
+
+        public ProductInfoGroup(ProductManager info)
+        {
+            infos = CreateCollection(info.ProductDictionary.Values);
         }
 
         /// <summary>
@@ -184,30 +194,12 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         Dictionary<int, ProductInfo> infos;
 
-        public ICollection<int> Keys
+        /// <summary>
+        /// 产品信息合集;
+        /// </summary>
+        public IDictionary<int, ProductInfo> Infos
         {
-            get { return ((IDictionary<int, ProductInfo>)this.infos).Keys; }
-        }
-
-        public ICollection<ProductInfo> Values
-        {
-            get { return ((IDictionary<int, ProductInfo>)this.infos).Values; }
-        }
-
-        public int Count
-        {
-            get { return ((IDictionary<int, ProductInfo>)this.infos).Count; }
-        }
-
-        bool ICollection<KeyValuePair<int, ProductInfo>>.IsReadOnly
-        {
-            get { return false; }
-        }
-
-        public ProductInfo this[int key]
-        {
-            get { return ((IDictionary<int, ProductInfo>)this.infos)[key]; }
-            set { ((IDictionary<int, ProductInfo>)this.infos)[key] = value; }
+            get { return infos; }
         }
 
         /// <summary>
@@ -234,60 +226,6 @@ namespace KouXiaGu.World.Commerce
             }
         }
 
-        public void Add(int key, ProductInfo value)
-        {
-            ((IDictionary<int, ProductInfo>)this.infos).Add(key, value);
-        }
-
-        public bool ContainsKey(int key)
-        {
-            return ((IDictionary<int, ProductInfo>)this.infos).ContainsKey(key);
-        }
-
-        public bool Remove(int key)
-        {
-            return ((IDictionary<int, ProductInfo>)this.infos).Remove(key);
-        }
-
-        public bool TryGetValue(int key, out ProductInfo value)
-        {
-            return ((IDictionary<int, ProductInfo>)this.infos).TryGetValue(key, out value);
-        }
-
-        public void Add(KeyValuePair<int, ProductInfo> item)
-        {
-            ((IDictionary<int, ProductInfo>)this.infos).Add(item);
-        }
-
-        public void Clear()
-        {
-            ((IDictionary<int, ProductInfo>)this.infos).Clear();
-        }
-
-        public bool Contains(KeyValuePair<int, ProductInfo> item)
-        {
-            return ((IDictionary<int, ProductInfo>)this.infos).Contains(item);
-        }
-
-        public void CopyTo(KeyValuePair<int, ProductInfo>[] array, int arrayIndex)
-        {
-            ((IDictionary<int, ProductInfo>)this.infos).CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove(KeyValuePair<int, ProductInfo> item)
-        {
-            return ((IDictionary<int, ProductInfo>)this.infos).Remove(item);
-        }
-
-        public IEnumerator<KeyValuePair<int, ProductInfo>> GetEnumerator()
-        {
-            return ((IDictionary<int, ProductInfo>)this.infos).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IDictionary<int, ProductInfo>)this.infos).GetEnumerator();
-        }
     }
 
 }
