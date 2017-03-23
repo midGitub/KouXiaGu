@@ -6,20 +6,26 @@ using System.Text;
 namespace KouXiaGu.World.Commerce
 {
 
-
     public class Building : IEquatable<Building>
     {
+
+        public Building(int id)
+        {
+            BuildingID = id;
+        }
 
         /// <summary>
         /// 编号;
         /// </summary>
         public int BuildingID { get; private set; }
 
-        ///// <summary>
-        ///// 生产信息;
-        ///// </summary>
-        //public ProductionInfoGroup ProductionInfo { get; private set; }
-
+        /// <summary>
+        /// 建造此建筑的前提;
+        /// </summary>
+        public bool Precondition(Town town)
+        {
+            throw new NotImplementedException();
+        }
 
         public bool Equals(Building other)
         {
@@ -30,7 +36,6 @@ namespace KouXiaGu.World.Commerce
         {
             if (!(obj is Building))
                 return false;
-
             return Equals((Building)obj);
         }
 
@@ -42,12 +47,12 @@ namespace KouXiaGu.World.Commerce
 
         public static bool operator ==(Building v1, Building v2)
         {
-            return v1.Equals(v2);
+            return v1.BuildingID == v2.BuildingID;
         }
 
         public static bool operator !=(Building v1, Building v2)
         {
-            return !v1.Equals(v2);
+            return v1.BuildingID != v2.BuildingID;
         }
 
     }
