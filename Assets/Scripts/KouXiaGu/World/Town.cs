@@ -107,15 +107,8 @@ namespace KouXiaGu.World
         /// </summary>
         public void DayUpdate()
         {
-            Production.Produce();
-        }
-
-        /// <summary>
-        /// 每月更新项目;
-        /// </summary>
-        public void MonthUpdate(Months month)
-        {
-
+            Warehouse.DayUpdate();
+            Production.DayUpdate();
         }
 
 

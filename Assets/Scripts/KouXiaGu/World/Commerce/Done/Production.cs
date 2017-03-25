@@ -117,7 +117,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 将生产内容加到库房;
         /// </summary>
-        public void Produce()
+        public void DayUpdate()
         {
             foreach (var productionLine in productionLines)
             {
