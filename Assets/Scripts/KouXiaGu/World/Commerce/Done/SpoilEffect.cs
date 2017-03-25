@@ -65,7 +65,7 @@ namespace KouXiaGu.World.Commerce
 
             public void DayUpdate()
             {
-                float spoilPercent = MathI.Clamp01(Info.SpoilPercent);
+                float spoilPercent = Info.SpoilPercent;
                 int number = (int)(Room.Total * spoilPercent);
                 Room.Remove(number);
             }

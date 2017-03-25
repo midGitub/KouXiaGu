@@ -54,11 +54,11 @@ namespace KouXiaGu.World.Commerce
         public Months MonthOfProduction { get; private set; }
 
         /// <summary>
-        /// 产量加成;
+        /// 产量加成;取值范围 0 ~ max
         /// </summary>
         public float YieldProduction
         {
-            get { return yieldProportion(); }
+            get { return Math.Max(0, yieldProportion()); }
         }
 
         /// <summary>
@@ -121,13 +121,21 @@ namespace KouXiaGu.World.Commerce
     {
         public ProductSpoilInfo(SpoilInfo info)
         {
-            SpoilPercent = new ProportionItems(info.SpoilPercent);
+            SpoilItems = new ProportionItems(info.SpoilPercent);
         }
 
         /// <summary>
-        /// 每日损失\腐坏的比例;
+        /// 每日损失\腐坏的比例 条目合集;
         /// </summary>
-        public ProportionItems SpoilPercent { get; private set; }
+        public ProportionItems SpoilItems { get; private set; }
+
+        /// <summary>
+        /// 每日损失\腐坏的比例,取值范围 0 ~ 1;
+        /// </summary>
+        public float SpoilPercent
+        {
+            get { return MathI.Clamp01(SpoilItems); }
+        }
 
     }
 

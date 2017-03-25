@@ -134,7 +134,7 @@ namespace KouXiaGu.World.Commerce
 
             if (item == null)
             {
-                item = new ProductionLine(Warehouse, product);
+                item = new ProductionLine(this, Warehouse, product);
                 productionLines.Add(item);
             }
 
@@ -185,8 +185,11 @@ namespace KouXiaGu.World.Commerce
 
         class ProductionLine : IDisposable
         {
-            public ProductionLine(ProductWarehouse warehouse, Product product)
+            public ProductionLine(Production production, ProductWarehouse warehouse, Product product)
             {
+                this.Production = production;
+                ProductInfo = production.ProductInfo[product];
+
                 Product = product;
                 Wareroom = warehouse.FindOrCreate(this, product);
                 Number = 0;
@@ -195,6 +198,13 @@ namespace KouXiaGu.World.Commerce
             public Product Product { get; private set; }
             public IWareroom Wareroom { get; private set; }
             public int Number { get; private set; }
+            public Production Production { get; private set; }
+            public ProductInfo ProductInfo { get; private set; }
+
+            public ProductProductionInfo Info
+            {
+                get { return ProductInfo.Production; }
+            }
 
             /// <summary>
             /// 增加产量;
@@ -206,7 +216,8 @@ namespace KouXiaGu.World.Commerce
 
             public void Produce()
             {
-                Wareroom.Add(Number);
+                int yield = (int)(Info.YieldProduction * Number);
+                Wareroom.Add(yield);
             }
 
             public void Dispose()
