@@ -7,7 +7,7 @@ namespace KouXiaGu.World.Commerce
 {
 
     /// <summary>
-    /// 表示 产品 和其 数量;
+    /// 表示 产品 和 数量;
     /// </summary>
     public struct ProductContainer : IEquatable<ProductContainer>
     {
