@@ -81,37 +81,21 @@ namespace KouXiaGu.World.Commerce
 
     }
 
-    /// <summary>
-    /// 监视库房创建和销毁,所给的库房不会标识占用;
-    /// </summary>
-    public interface IWarehouseObserver
-    {
-        /// <summary>
-        /// 当这个库房创建后调用,在这个方法内不允许取消订阅;
-        /// </summary>
-        void OnCreated(IWareroom room);
-
-        /// <summary>
-        /// 当这个库房将要销毁前调用,在这个方法内不允许取消订阅;
-        /// </summary>
-        void OnDestroy(IWareroom room);
-    }
-
 
     /// <summary>
     /// 资源存储,记录资源数目,更新损耗;
     /// </summary>
-    public class ProductWarehouse
+    public class ProductWarehouse : National
     {
 
-        public ProductWarehouse()
+        public ProductWarehouse(Country belongToCountry) : base(belongToCountry)
         {
             rooms = new List<CategorieRoom>();
-            observers = new List<IWarehouseObserver>();
+            Spoil = new SpoilEffect(belongToCountry);
         }
 
         List<CategorieRoom> rooms;
-        List<IWarehouseObserver> observers;
+        public SpoilEffect Spoil { get; private set; }
 
         /// <summary>
         /// 获取到保存的所有类型的库房;
@@ -120,6 +104,8 @@ namespace KouXiaGu.World.Commerce
         {
             get { return rooms.OfType<IReadOnlyCategorieWareroom>(); }
         }
+
+        #region Find;
 
         /// <summary>
         /// 获取此类资源存储到的单元实例,若不存在则返回 null;
@@ -177,6 +163,8 @@ namespace KouXiaGu.World.Commerce
             return categorieRoom.Occupy(sender);
         }
 
+        #endregion
+
         /// <summary>
         /// 清除所有空的房间;
         /// </summary>
@@ -184,77 +172,38 @@ namespace KouXiaGu.World.Commerce
         {
             rooms.RemoveAll(delegate (CategorieRoom room)
             {
-                room.ClearEmptyRooms();
-                room.OnDestory();
-                return room.IsEmpty;
+                return room.OnTryDestory();
             });
         }
 
         /// <summary>
-        /// 订阅创建销毁消息;
+        /// 每日更新一次;
         /// </summary>
-        public IDisposable Subscribe(IWarehouseObserver observer)
+        public void DayUpdate()
         {
-            if (observers.Contains(observer))
-                throw new ArgumentException();
-
-            observers.Add(observer);
-            return new Unsubscriber(observers, observer);
+            Spoil.DayUpdate();
         }
 
         /// <summary>
-        /// 当创建一个新库房后调用,传入为不记录占用的库房;
+        /// 创建一个新库房之后调用;
         /// </summary>
-        void OnCreatedWareroom(IWareroom room)
+        /// <param name="room">传入的库房不记录占用;</param>
+        /// <returns>返回销毁库房时需要同时销毁的内容</returns>
+        ICollection<IDisposable> OnCreatedWareroom(IWareroom room)
         {
-            foreach (var observer in observers)
-            {
-                observer.OnCreated(room);
-            }
-        }
-
-        /// <summary>
-        /// 当要销毁这个库房前调用,传入为不记录占用的库房;
-        /// </summary>
-        void OnDestroyWareroom(IWareroom room)
-        {
-            foreach (var observer in observers)
-            {
-                observer.OnDestroy(room);
-            }
-        }
-
-        /// <summary>
-        /// 取消订阅器;
-        /// </summary>
-        class Unsubscriber : IDisposable
-        {
-
-            public Unsubscriber(ICollection<IWarehouseObserver> collection, IWarehouseObserver observer)
-            {
-                this.collection = collection;
-                this.observer = observer;
-            }
-
-            ICollection<IWarehouseObserver> collection;
-            IWarehouseObserver observer;
-
-            public void Dispose()
-            {
-                if (observer != null)
+            IDisposable[] disposer = new IDisposable[]
                 {
-                    collection.Remove(observer);
-                    collection = null;
-                    observer = null;
-                }
-            }
+                    Spoil.OnCreated(room),
+                };
 
+            return disposer;
         }
+
 
         /// <summary>
         /// 资源类别合集;
         /// </summary>
-        class CategorieRoom : IReadOnlyCategorieWareroom
+        public class CategorieRoom : IReadOnlyCategorieWareroom
         {
 
             public CategorieRoom(ProductWarehouse warehouse, ProductCategorie categorie)
@@ -349,7 +298,7 @@ namespace KouXiaGu.World.Commerce
                 {
                     room = new ProductRoom(this, product);
                     rooms.Add(room);
-                    Warehouse.OnCreatedWareroom(room);
+                    OnCreatedWareroom(room);
                 }
 
                 return room.Occupy(sender);
@@ -362,22 +311,22 @@ namespace KouXiaGu.World.Commerce
             {
                 rooms.RemoveAll(delegate (ProductRoom room)
                 {
-                    if (room.IsEmpty)
-                    {
-                        Warehouse.OnDestroyWareroom(room);
-                        room.OnDestory();
-                        return true;
-                    }
-                    return false;
+                    return room.OnTryDestory();
                 });
             }
 
             /// <summary>
             /// 当销毁时调用;
             /// </summary>
-            public void OnDestory()
+            public bool OnTryDestory()
             {
-                IsEffective = false;
+                ClearEmptyRooms();
+                if (IsEmpty)
+                {
+                    IsEffective = false;
+                    return true;
+                }
+                return false;
             }
 
             /// <summary>
@@ -390,9 +339,19 @@ namespace KouXiaGu.World.Commerce
             }
 
             /// <summary>
+            /// 创建一个新库房之后调用;
+            /// </summary>
+            /// <param name="room">传入的库房不记录占用;</param>
+            /// <returns>返回销毁库房时需要同时销毁的内容</returns>
+            ICollection<IDisposable> OnCreatedWareroom(IWareroom room)
+            {
+                return Warehouse.OnCreatedWareroom(room);
+            }
+
+            /// <summary>
             /// 提供给外部占用和使用;
             /// </summary>
-            internal class OccupiedWareroom : ICategorieWareroom
+            class OccupiedWareroom : ICategorieWareroom
             {
                 public OccupiedWareroom(CategorieRoom room, LinkedList<object> list, LinkedListNode<object> node)
                 {
@@ -439,8 +398,18 @@ namespace KouXiaGu.World.Commerce
             /// <summary>
             /// 资源数量记录;
             /// </summary>
-            internal class ProductRoom : IWareroom, IReadOnlyWareroom
+            public class ProductRoom : IWareroom, IReadOnlyWareroom
             {
+
+                public ProductRoom(CategorieRoom categorieRoom, Product product, IEnumerable<IDisposable> disposers) :
+                    this(categorieRoom, product)
+                {
+                    Disposers = disposers;
+                }
+
+                public ProductRoom(CategorieRoom categorieRoom, Product product) : this(categorieRoom, product, 0)
+                {
+                }
 
                 public ProductRoom(CategorieRoom categorieRoom, Product product, int total)
                 {
@@ -451,14 +420,11 @@ namespace KouXiaGu.World.Commerce
                     occupiers = new LinkedList<object>();
                 }
 
-                public ProductRoom(CategorieRoom categorieRoom, Product product) : this(categorieRoom, product, 0)
-                {
-                }
-
                 public int Total { get; private set; }
                 public CategorieRoom CategorieRoom { get; private set; }
                 public Product Product { get; private set; }
                 public bool IsEffective { get; private set; }
+                public IEnumerable<IDisposable> Disposers { get; private set; }
                 LinkedList<object> occupiers;
 
                 public IEnumerable<object> Occupiers
@@ -520,17 +486,30 @@ namespace KouXiaGu.World.Commerce
                 }
 
                 /// <summary>
-                /// 当销毁时调用;
+                /// 尝试销毁这个库房,若成功则返回true,否则返回false;
                 /// </summary>
-                public void OnDestory()
+                public bool OnTryDestory()
                 {
-                    IsEffective = false;
+                    if (IsEmpty)
+                    {
+                        IsEffective = false;
+
+                        if (Disposers != null)
+                        {
+                            foreach (var disposer in Disposers)
+                            {
+                                disposer.Dispose();
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
                 }
 
                 /// <summary>
                 /// 不实现;
                 /// </summary>
-                void IDisposable.Dispose()
+                public void Dispose()
                 {
                     return;
                 }
@@ -538,7 +517,7 @@ namespace KouXiaGu.World.Commerce
                 /// <summary>
                 /// 提供给需要记录占用的模块;
                 /// </summary>
-                internal class OccupiedWareroom : IWareroom
+                class OccupiedWareroom : IWareroom
                 {
                     public OccupiedWareroom(ProductRoom room, LinkedList<object> list, LinkedListNode<object> node)
                     {

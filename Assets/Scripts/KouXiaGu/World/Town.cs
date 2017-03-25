@@ -24,7 +24,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 所使用的产品信息;
         /// </summary>
-        public ProductInfoGroup ProductInfo
+        public ProductInfoGroup ProductInfos
         {
             get { return BelongToCountry.ProductInfo; }
         }
@@ -83,7 +83,7 @@ namespace KouXiaGu.World
         public Town(int id, Country belongToCountry) : base(belongToCountry)
         {
             TownID = id;
-            Warehouse = new ProductWarehouse();
+            Warehouse = new ProductWarehouse(belongToCountry);
             Production = new Production(this);
         }
 
