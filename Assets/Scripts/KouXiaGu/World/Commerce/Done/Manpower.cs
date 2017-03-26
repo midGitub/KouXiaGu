@@ -16,7 +16,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 每日需求;
         /// </summary>
-        public IEnumerable<Container> DailyRequirements { get; private set; }
+        public IEnumerable<Container<Product>> DailyRequirements { get; private set; }
 
     }
 

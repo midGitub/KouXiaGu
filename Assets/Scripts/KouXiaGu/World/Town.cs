@@ -112,8 +112,9 @@ namespace KouXiaGu.World
         /// </summary>
         public void DayUpdate()
         {
-            Warehouse.DayUpdate();
-            Production.DayUpdate();
+            Production.Update();
+            Consume.Update();
+            Warehouse.Update();
         }
 
 

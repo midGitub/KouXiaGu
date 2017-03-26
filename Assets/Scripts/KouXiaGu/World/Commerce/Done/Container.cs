@@ -48,51 +48,51 @@ namespace KouXiaGu.World.Commerce
     }
 
 
-    /// <summary>
-    /// 表示 产品 和 数量;
-    /// </summary>
-    [Obsolete]
-    public struct Container : IEquatable<Container>
-    {
-        public Container(Product product, int count)
-        {
-            this.Product = product;
-            this.Count = count;
-        }
+    ///// <summary>
+    ///// 表示 产品 和 数量;
+    ///// </summary>
+    //[Obsolete]
+    //public struct Container : IEquatable<Container>
+    //{
+    //    public Container(Product product, int count)
+    //    {
+    //        this.Product = product;
+    //        this.Number = count;
+    //    }
 
-        public Product Product { get; private set; }
-        public int Count { get; private set; }
+    //    public Product Product { get; private set; }
+    //    public int Number { get; private set; }
 
-        public bool Equals(Container other)
-        {
-            return
-               Object.Equals(Product, other.Product) &&
-               Object.Equals(Count, other.Count);
-        }
+    //    public bool Equals(Container other)
+    //    {
+    //        return
+    //           Object.Equals(Product, other.Product) &&
+    //           Object.Equals(Number, other.Number);
+    //    }
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is Container))
-                return false;
+    //    public override bool Equals(object obj)
+    //    {
+    //        if (!(obj is Container))
+    //            return false;
 
-            return Equals((Container)obj);
-        }
+    //        return Equals((Container)obj);
+    //    }
 
-        public override int GetHashCode()
-        {
-            return Product.GetHashCode() ^ Count.GetHashCode();
-        }
+    //    public override int GetHashCode()
+    //    {
+    //        return Product.GetHashCode() ^ Number.GetHashCode();
+    //    }
 
-        public override string ToString()
-        {
-            return "[Product:" + Product.ToString() + ",Count:" + Count + "]";
-        }
+    //    public override string ToString()
+    //    {
+    //        return "[Product:" + Product.ToString() + ",Count:" + Number + "]";
+    //    }
 
-        public static implicit operator Product(Container v)
-        {
-            return v.Product;
-        }
+    //    public static implicit operator Product(Container v)
+    //    {
+    //        return v.Product;
+    //    }
 
-    }
+    //}
 
 }

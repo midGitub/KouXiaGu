@@ -41,6 +41,9 @@ namespace KouXiaGu.World.Commerce
             return new ConsumeCategorie(this, sender, categorie);
         }
 
+        /// <summary>
+        /// 对所有消耗进行更新;
+        /// </summary>
         public void Update()
         {
             var consumersArray = consumersList.ToArray();

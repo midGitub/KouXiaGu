@@ -177,9 +177,9 @@ namespace KouXiaGu.World.Commerce
         }
 
         /// <summary>
-        /// 每日更新一次;
+        /// 对仓库产品腐坏效果进行更新;
         /// </summary>
-        public void DayUpdate()
+        public void Update()
         {
             Spoil.DayUpdate();
         }

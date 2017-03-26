@@ -11,17 +11,17 @@ namespace KouXiaGu.World.Commerce
     public class Factory : Building
     {
 
-        public Factory(int id, IEnumerable<Container> output) : base(id)
+        public Factory(int id, IEnumerable<Container<Product>> output) : base(id)
         {
-            this.output = new List<Container>(output);
+            this.output = new List<Container<Product>>(output);
         }
 
-        List<Container> output;
+        List<Container<Product>> output;
 
         /// <summary>
         /// 产出;
         /// </summary>
-        public IEnumerable<Container> Output
+        public IEnumerable<Container<Product>> Output
         {
             get { return output; }
         }
@@ -117,7 +117,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 将生产内容加到库房;
         /// </summary>
-        public void DayUpdate()
+        public void Update()
         {
             foreach (var productionLine in productionLines)
             {
@@ -161,8 +161,8 @@ namespace KouXiaGu.World.Commerce
 
                 foreach (var productInfo in Factory.Output)
                 {
-                    var productionLine = Production.FindOrCreate(productInfo);
-                    var disposer = productionLine.Increase(productInfo.Count);
+                    var productionLine = Production.FindOrCreate(productInfo.Product);
+                    var disposer = productionLine.Increase(productInfo.Number);
                     disposers.Add(disposer);
                 }
             }
