@@ -102,6 +102,8 @@ namespace KouXiaGu.World
         /// </summary>
         public Production Production { get; private set; }
 
+
+
         /// <summary>
         /// 每日更新项目;
         /// </summary>

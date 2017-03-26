@@ -11,17 +11,17 @@ namespace KouXiaGu.World.Commerce
     public class Factory : Building
     {
 
-        public Factory(int id, IEnumerable<ProductContainer> output) : base(id)
+        public Factory(int id, IEnumerable<Container> output) : base(id)
         {
-            this.output = new List<ProductContainer>(output);
+            this.output = new List<Container>(output);
         }
 
-        List<ProductContainer> output;
+        List<Container> output;
 
         /// <summary>
         /// 产出;
         /// </summary>
-        public IEnumerable<ProductContainer> Output
+        public IEnumerable<Container> Output
         {
             get { return output; }
         }
