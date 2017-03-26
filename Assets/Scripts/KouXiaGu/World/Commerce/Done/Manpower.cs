@@ -5,36 +5,45 @@ using System.Text;
 
 namespace KouXiaGu.World.Commerce
 {
-    
 
     /// <summary>
-    /// 人力资源级别要求;
+    /// 人力资源提高要求;
     /// </summary>
-    public class ManpowerLevel
+    public class ManpowerRequirement
     {
+        public ManpowerRequirement(Manpower parent)
+        {
+            Parent = parent;
+        }
+        
+        public Manpower Parent { get; private set; }
 
-        /// <summary>
-        /// 每日需求;
-        /// </summary>
-        public IEnumerable<Container<Product>> DailyRequirements { get; private set; }
 
     }
 
     /// <summary>
     /// 人力资源;
     /// </summary>
-    public class Manpower
+    public class Manpower : Townish
     {
+
+        public Manpower(Town belongToTown) : base(belongToTown)
+        {
+        }
+
+        int[] level;
 
         /// <summary>
         /// 数量;
         /// </summary>
-        public int Number { get; private set; }
+        public int ManpowerNumber { get; private set; }
 
         /// <summary>
-        /// 每日更新一次;
+        /// 成长值;
         /// </summary>
-        public void DayUpdate()
+        public int GrowthValue { get; private set; }
+
+        public void AddGrowth()
         {
 
         }
