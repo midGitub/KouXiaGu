@@ -6,19 +6,6 @@ using System.Text;
 namespace KouXiaGu.World.Commerce
 {
 
-    public interface IProductConsumer
-    {
-        /// <summary>
-        /// 当满足条件时调用;
-        /// </summary>
-        void OnEnough();
-
-        /// <summary>
-        /// 当不满足条件时调用;
-        /// </summary>
-        void OnNotEnough();
-    }
-
     /// <summary>
     /// 产品消耗;
     /// </summary>
@@ -88,7 +75,7 @@ namespace KouXiaGu.World.Commerce
 
             public abstract void Update();
 
-            void IDisposable.Dispose()
+            public virtual void Dispose()
             {
                 if (node != null)
                 {
@@ -121,6 +108,17 @@ namespace KouXiaGu.World.Commerce
                     Sender.OnNotEnough();
             }
 
+            public override void Dispose()
+            {
+                base.Dispose();
+
+                if (room != null)
+                {
+                    room.Dispose();
+                    room = null;
+                }
+            }
+
         }
 
         /// <summary>
@@ -144,6 +142,17 @@ namespace KouXiaGu.World.Commerce
                     Sender.OnEnough();
                 else
                     Sender.OnNotEnough();
+            }
+
+            public override void Dispose()
+            {
+                base.Dispose();
+
+                if (room != null)
+                {
+                    room.Dispose();
+                    room = null;
+                }
             }
 
         }

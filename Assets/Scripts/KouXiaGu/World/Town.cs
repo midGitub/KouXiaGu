@@ -102,7 +102,10 @@ namespace KouXiaGu.World
         /// </summary>
         public Production Production { get; private set; }
 
-
+        /// <summary>
+        /// 消耗;
+        /// </summary>
+        public ProductConsume Consume { get; private set; }
 
         /// <summary>
         /// 每日更新项目;
