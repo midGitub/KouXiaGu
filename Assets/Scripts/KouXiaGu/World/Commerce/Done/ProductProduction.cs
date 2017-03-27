@@ -1,57 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.World.Commerce
 {
 
-    public interface IConsumable
+    public interface IProducible
     {
-        void OnConsume();
+        /// <summary>
+        /// 进行生产更新;
+        /// </summary>
+        void OnProduce();
     }
 
     /// <summary>
-    /// 产品消耗;
+    /// 负责生产项目更新;
     /// </summary>
-    public class ProductConsumption
+    public class ProductProduction
     {
-        public ProductConsumption()
+        public ProductProduction()
         {
-            items = new LinkedList<IConsumable>();
+            items = new LinkedList<IProducible>();
         }
 
-        LinkedList<IConsumable> items;
+        LinkedList<IProducible> items;
 
         /// <summary>
-        /// 更新所有消耗项目;
+        /// 更新所有生产项目;
         /// </summary>
         public void Update()
         {
             var itemsArray = items.ToArray();
             foreach (var item in itemsArray)
             {
-                item.OnConsume();
+                item.OnProduce();
             }
         }
 
-        public IDisposable Add(IConsumable item)
+        public IDisposable Add(IProducible item)
         {
             return new Canceler(this, item);
         }
 
         class Canceler : IDisposable
         {
-            public Canceler(ProductConsumption parent, IConsumable item)
+            public Canceler(ProductProduction parent, IProducible item)
             {
                 Parent = parent;
                 node = Items.AddLast(item);
             }
 
-            public ProductConsumption Parent { get; private set; }
-            LinkedListNode<IConsumable> node;
+            public ProductProduction Parent { get; private set; }
+            LinkedListNode<IProducible> node;
 
-            LinkedList<IConsumable> Items
+            LinkedList<IProducible> Items
             {
                 get { return Parent.items; }
             }
@@ -67,5 +69,6 @@ namespace KouXiaGu.World.Commerce
         }
 
     }
+
 
 }

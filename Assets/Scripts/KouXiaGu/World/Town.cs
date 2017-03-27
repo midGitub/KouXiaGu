@@ -84,7 +84,8 @@ namespace KouXiaGu.World
         {
             TownID = id;
             Warehouse = new ProductWarehouse(belongToCountry);
-            Production = new Production(this);
+            Production = new ProductProduction();
+            Consume = new ProductConsumption();
         }
 
         /// <summary>
@@ -100,12 +101,12 @@ namespace KouXiaGu.World
         /// <summary>
         /// 生产;
         /// </summary>
-        public Production Production { get; private set; }
+        public ProductProduction Production { get; private set; }
 
         /// <summary>
         /// 消耗;
         /// </summary>
-        public ProductConsume Consume { get; private set; }
+        public ProductConsumption Consume { get; private set; }
 
         /// <summary>
         /// 每日更新项目;
