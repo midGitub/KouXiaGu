@@ -30,6 +30,11 @@ namespace KouXiaGu.World
         /// </summary>
         public ProductInfoGroup ProductInfo { get; private set; }
 
+        /// <summary>
+        /// 人口信息;
+        /// </summary>
+        public ManpowerNationalInfo Manpower { get; private set; }
+
 
         public bool Equals(Country other)
         {

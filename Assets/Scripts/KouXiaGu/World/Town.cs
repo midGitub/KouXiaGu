@@ -83,6 +83,10 @@ namespace KouXiaGu.World
         public Town(int id, Country belongToCountry) : base(belongToCountry)
         {
             TownID = id;
+
+            Manpower = new Manpower();
+            ManpowerDailyGrowth = new ManpowerDailyGrowth(belongToCountry, Manpower);
+
             Warehouse = new ProductWarehouse(belongToCountry);
             Production = new ProductProduction();
             Consume = new ProductConsumption();
@@ -93,10 +97,19 @@ namespace KouXiaGu.World
         /// </summary>
         public int TownID { get; private set; }
 
+
+        /// <summary>
+        /// 人力资源;
+        /// </summary>
+        public Manpower Manpower { get; private set; }
+        public ManpowerDailyGrowth ManpowerDailyGrowth { get; private set; }
+
+
         /// <summary>
         /// 仓库;
         /// </summary>
         public ProductWarehouse Warehouse { get; private set; }
+
 
         /// <summary>
         /// 生产;
@@ -108,11 +121,13 @@ namespace KouXiaGu.World
         /// </summary>
         public ProductConsumption Consume { get; private set; }
 
+
         /// <summary>
         /// 每日更新项目;
         /// </summary>
         public void DayUpdate()
         {
+            ManpowerDailyGrowth.Update();
             Production.Update();
             Consume.Update();
             Warehouse.Update();

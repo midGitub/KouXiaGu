@@ -5,21 +5,21 @@ namespace KouXiaGu.World.Commerce
 {
 
     /// <summary>
-    /// 表示百分比,记录改变这个值的请求者;
+    /// 表示一个比例,并且记录改变这个值的请求者;
     /// </summary>
     public class ProportionItems
     {
 
-        public ProportionItems(float percent)
+        public ProportionItems(float proportion)
         {
-            this.Proportion = percent;
-            senderItems = new List<Item>();
+            this.Proportion = proportion;
+            senderItems = new LinkedList<Item>();
         }
 
         /// <summary>
         /// 增减条目链表;
         /// </summary>
-        List<Item> senderItems;
+        LinkedList<Item> senderItems;
 
         /// <summary>
         /// 百分比 -max ~ max;
@@ -29,7 +29,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 发起变更的项目总数;
         /// </summary>
-        public int Count
+        public int ItemCount
         {
             get { return senderItems.Count; }
         }
@@ -45,28 +45,9 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 增加或减少百分比;
         /// </summary>
-        public IDisposable Add(object sender, float increment)
+        public IDisposable Add(IRequestor requestor, float increment)
         {
-            var item = new CancelableItem(sender, increment, this);
-            Proportion += increment;
-            senderItems.Add(item);
-            return item;
-        }
-
-        /// <summary>
-        /// 移除这个条目;
-        /// </summary>
-        bool Remove(Item item)
-        {
-            bool isRemove = senderItems.Remove(item);
-
-            if (isRemove)
-            {
-                Proportion -= item.Increment;
-                return true;
-            }
-
-            return false;
+            return new CancelableItem(requestor, increment, this);
         }
 
 
@@ -78,38 +59,54 @@ namespace KouXiaGu.World.Commerce
 
         public class Item
         {
-            public Item(object sender, float increment)
+            public Item(IRequestor requestor, float increment)
             {
-                this.Sender = sender;
+                this.Requestor = requestor;
                 this.Increment = increment;
             }
 
-            public object Sender { get; private set; }
+            public IRequestor Requestor { get; private set; }
             public float Increment { get; private set; }
 
             public override string ToString()
             {
-                return "[Sender:" + Sender.ToString() + "Increment:" + Increment + "]";
+                return "[Sender:" + Requestor.ToString() + "Increment:" + Increment + "]";
             }
         }
 
-        public class CancelableItem : Item, IDisposable
+        class CancelableItem : Item, IDisposable
         {
-            public CancelableItem(object sender, float increment, ProportionItems percentage) : base(sender, increment)
+            public CancelableItem(IRequestor requestor, float increment, ProportionItems percentage) :
+                base(requestor, increment)
             {
-                this.Percentage = percentage;
+                Percentage = percentage;
+                node = senderItems.AddLast(this);
+                Proportion += increment;
             }
 
             public ProportionItems Percentage { get; private set; }
+            LinkedListNode<Item> node;
 
-            public void Dispose()
+            LinkedList<Item> senderItems
             {
-                if (Percentage != null)
+                get { return Percentage.senderItems; }
+            }
+
+            float Proportion
+            {
+                get { return Percentage.Proportion; }
+                set { Percentage.Proportion = value; }
+            }
+
+            void IDisposable.Dispose()
+            {
+                if (node != null)
                 {
-                    Percentage.Remove(this);
-                    Percentage = null;
+                    senderItems.Remove(node);
+                    node = null;
                 }
             }
+
         }
 
     }
