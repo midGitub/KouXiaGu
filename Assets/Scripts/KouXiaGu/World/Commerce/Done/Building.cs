@@ -62,45 +62,71 @@ namespace KouXiaGu.World.Commerce
     /// <summary>
     /// 工厂;
     /// </summary>
-    public class Factory : Building
+    public class Factory
     {
 
-        public Factory(int id, IEnumerable<Container<Product>> output) : base(id)
+    }
+
+    /// <summary>
+    /// 单物品产出的工厂;
+    /// </summary>
+    public class SingleProductFactory : IProducible, IDisposable
+    {
+        public SingleProductFactory(
+            Container<Product> product,
+            IRequestor requestor,
+            ProductWarehouse warehouse,
+            ProductProduction production)
         {
-            this.output = new List<Container<Product>>(output);
+            if (product.Number <= 0)
+                throw new ArgumentException();
+
+            ProductContainer = product;
+            wareroom = warehouse.FindOrCreate(requestor, product.Product);
+            productionCanceler = production.Add(this);
         }
 
-        List<Container<Product>> output;
+        public Container<Product> ProductContainer { get; private set; }
+        IWareroom wareroom;
+        IDisposable productionCanceler;
 
-        /// <summary>
-        /// 产出;
-        /// </summary>
-        public IEnumerable<Container<Product>> Output
+        void IProducible.OnProduce()
         {
-            get { return output; }
+            wareroom.Add(ProductContainer.Number);
         }
 
-        public override bool Equals(object obj)
+        public void Dispose()
         {
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public static bool operator ==(Factory v1, Factory v2)
-        {
-            return v1.BuildingID == v2.BuildingID;
-        }
-
-        public static bool operator !=(Factory v1, Factory v2)
-        {
-            return v1.BuildingID != v2.BuildingID;
+            if (productionCanceler != null)
+            {
+                wareroom.Dispose();
+                productionCanceler.Dispose();
+                productionCanceler = null;
+            }
         }
 
     }
 
+    /// <summary>
+    /// 多个产品产出的工厂;
+    /// </summary>
+    public class ProductFactory : IProducible
+    {
+        public void OnProduce()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// 将这类产品转换成另外一种产品的工厂;
+    /// </summary>
+    public class ConvertedFactory : IProducible
+    {
+        public void OnProduce()
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 }

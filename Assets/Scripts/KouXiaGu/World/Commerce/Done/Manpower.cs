@@ -105,6 +105,15 @@ namespace KouXiaGu.World.Commerce
             return true;
         }
 
+
+        /// <summary>
+        /// 返回人力资源数目;
+        /// </summary>
+        public static implicit operator float(Manpower item)
+        {
+            return item.Total;
+        }
+
     }
 
 }
