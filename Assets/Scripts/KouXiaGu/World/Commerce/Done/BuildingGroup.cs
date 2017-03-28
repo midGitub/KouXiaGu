@@ -13,10 +13,10 @@ namespace KouXiaGu.World.Commerce
     {
         public BuildingGroup(Town belongToTown) : base(belongToTown)
         {
-            buildingList = new List<ITownBuilding>();
+            buildingList = new List<TownFactory>();
         }
 
-        List<ITownBuilding> buildingList;
+        List<TownFactory> buildingList;
 
         /// <summary>
         /// 创建这个建筑物,若存在相同的建筑物则不创建到,并返回false;
@@ -26,7 +26,7 @@ namespace KouXiaGu.World.Commerce
             if (Contains(building))
                 return false;
 
-            ITownBuilding instance = building.GetTownBuilding(requestor, BelongToTown);
+            TownFactory instance = building.GetTownBuilding(requestor, BelongToTown);
             buildingList.Add(instance);
             return true;
         }

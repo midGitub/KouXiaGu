@@ -202,6 +202,9 @@ namespace KouXiaGu.World.Commerce
             get { return infos; }
         }
 
+        /// <summary>
+        /// 获取这个产品的信息;
+        /// </summary>
         public ProductInfo this[Product type]
         {
             get { return infos[type.ProductID]; }

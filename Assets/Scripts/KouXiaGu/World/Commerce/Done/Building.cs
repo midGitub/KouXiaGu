@@ -52,7 +52,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 获取到城镇建筑类型实例;
         /// </summary>
-        public abstract ITownBuilding GetTownBuilding(IRequestor requestor, Town belongToTown);
+        public abstract TownFactory GetTownBuilding(IRequestor requestor, Town belongToTown);
 
         /// <summary>
         /// 建造此建筑的前提;
@@ -92,29 +92,77 @@ namespace KouXiaGu.World.Commerce
     }
 
     /// <summary>
-    /// 城镇建筑实例;
+    /// 城镇建筑抽象类;
     /// </summary>
-    public interface ITownBuilding : IDisposable
+    public abstract class TownFactory : Townish, IDisposable
     {
-        /// <summary>
-        /// 所归属的城镇;
-        /// </summary>
-        Town BelongToTown { get; }
+        public TownFactory(Building building, Town belongToTown) : base(belongToTown)
+        {
+            BuildingInfo = building;
+        }
 
         /// <summary>
         /// 建筑信息;
         /// </summary>
-        Building BuildingInfo { get; }
+        public Building BuildingInfo { get; private set; }
+
+        /// <summary>
+        /// 生产模块;
+        /// </summary>
+        protected ProductProduction Production
+        {
+            get { return BelongToTown.Production; }
+        }
+
+        /// <summary>
+        /// 消耗模块;
+        /// </summary>
+        protected ProductConsumption Consume
+        {
+            get { return BelongToTown.Consume; }
+        }
+
+        /// <summary>
+        /// 人力资源;
+        /// </summary>
+        protected Manpower Manpower
+        {
+            get { return BelongToTown.Manpower; }
+        }
+
+        /// <summary>
+        /// 取消这个建筑;
+        /// </summary>
+        public abstract void Dispose();
+
+
+        /// <summary>
+        /// 获取到生产因子;
+        /// </summary>
+        public float GetProduceFactor(Product product)
+        {
+            return GetProduceFactor(product, Manpower);
+        }
+
+        /// <summary>
+        /// 获取到生产因子,指定人力数量;
+        /// </summary>
+        public float GetProduceFactor(Product product, int manpower)
+        {
+            float productYieldProportion = ProductInfos[product].Production.YieldProportion;
+            return productYieldProportion * manpower;
+        }
+
     }
 
     /// <summary>
-    /// 单物品固定产出的工厂;
+    /// 单物品产出的工厂;
     /// </summary>
     public class SingleProductFactory : Building
     {
         public SingleProductFactory(BuildingManager manager, int id, Container<Product> produce) : base(manager, id)
         {
-            if (produce.Number <= 0 && produce.Product == null)
+            if (produce.Number <= 0 || produce.Product == null)
                 throw new ArgumentException();
 
             Produce = produce;
@@ -128,18 +176,18 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 获取到城镇建筑类型实例;
         /// </summary>
-        public override ITownBuilding GetTownBuilding(IRequestor requestor, Town belongToTown)
+        public override TownFactory GetTownBuilding(IRequestor requestor, Town belongToTown)
         {
-            return new TownFactory(this, requestor, belongToTown);
+            return new Factory(this, requestor, belongToTown);
         }
 
         /// <summary>
         /// 城镇建筑实例;
         /// </summary>
-        class TownFactory : Townish, IProducible, ITownBuilding
+        class Factory : TownFactory, IProducible
         {
-            public TownFactory(SingleProductFactory parent, IRequestor requestor, Town belongToTown) :
-                base(belongToTown)
+            public Factory(SingleProductFactory parent, IRequestor requestor, Town belongToTown) :
+                base(parent, belongToTown)
             {
                 Parent = parent;
                 wareroom = belongToTown.Warehouse.FindOrCreate(requestor, ProductContainer.Product);
@@ -158,34 +206,14 @@ namespace KouXiaGu.World.Commerce
                 get { return Parent.Produce; }
             }
 
-            /// <summary>
-            /// 所使用的产品信息;
-            /// </summary>
-            public ProductInfoGroup ProductInfo
-            {
-                get { return BelongToTown.ProductInfos; }
-            }
-
-            /// <summary>
-            /// 产出加成信息;
-            /// </summary>
-            ProductProductionInfo productionInfo
-            {
-                get { return ProductInfo[ProductContainer.Product].Production; }
-            }
-
-            Building ITownBuilding.BuildingInfo
-            {
-                get { return Parent; }
-            }
-
             void IProducible.OnProduce()
             {
-                int yield = (int)(productionInfo.YieldProportion * ProductContainer.Number);
+                float factor = GetProduceFactor(ProductContainer.Product);
+                int yield = (int)(factor * ProductContainer.Number);
                 wareroom.Add(yield);
             }
 
-            public void Dispose()
+            public override void Dispose()
             {
                 if (productionCanceler != null)
                 {
@@ -200,7 +228,7 @@ namespace KouXiaGu.World.Commerce
     }
 
     /// <summary>
-    /// 多个产品固定产出的工厂;
+    /// 多个产品产出的工厂;
     /// </summary>
     public class ProductFactory : Building
     {
@@ -213,6 +241,9 @@ namespace KouXiaGu.World.Commerce
             this.produces = produces.ToArray();
         }
 
+        /// <summary>
+        /// 所有产出;
+        /// </summary>
         Container<Product>[] produces;
 
         /// <summary>
@@ -228,34 +259,29 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         bool IsEffective(IEnumerable<Container<Product>> products)
         {
-            foreach (var product in products)
-            {
-                if (product.Number <= 0 && product.Product == null)
-                    return false;
-            }
-            return true;
+            return produces.Any(produce => produce.Number > 0 || produce.Product != null);
         }
 
         /// <summary>
         /// 获取到城镇建筑类型实例;
         /// </summary>
-        public override ITownBuilding GetTownBuilding(IRequestor requestor, Town belongToTown)
+        public override TownFactory GetTownBuilding(IRequestor requestor, Town belongToTown)
         {
-            return new TownFactory(this, requestor, belongToTown);
+            return new Factory(this, requestor, belongToTown);
         }
 
 
         /// <summary>
         /// 城镇建筑实例;
         /// </summary>
-        class TownFactory : Townish, IProducible, ITownBuilding
+        class Factory : TownFactory, IProducible
         {
-            public TownFactory(ProductFactory parent, IRequestor requestor, Town belongToTown) :
-                base(belongToTown)
+            public Factory(ProductFactory parent, IRequestor requestor, Town belongToTown) :
+                base(parent, belongToTown)
             {
                 Parent = parent;
                 itemList = GetItemList(belongToTown, parent.Products);
-                productionCanceler = belongToTown.Production.Add(this);
+                productionCanceler = Production.Add(this);
             }
 
             public ProductFactory Parent { get; private set; }
@@ -270,15 +296,10 @@ namespace KouXiaGu.World.Commerce
                 get { return itemList.Select(item => item.ProductContainer); }
             }
 
-            Building ITownBuilding.BuildingInfo
-            {
-                get { return Parent; }
-            }
-
             ICollection<Item> GetItemList(Town belongToTown, IEnumerable<Container<Product>> productContainers)
             {
                 return productContainers.
-                    Select(productContainer => new Item(belongToTown, productContainer)).
+                    Select(productContainer => new Item(this, productContainer)).
                     ToArray();
             }
 
@@ -290,7 +311,7 @@ namespace KouXiaGu.World.Commerce
                 }
             }
 
-            public void Dispose()
+            public override void Dispose()
             {
                 if (itemList != null)
                 {
@@ -306,26 +327,27 @@ namespace KouXiaGu.World.Commerce
 
             class Item : IDisposable
             {
-                public Item(Town belongToTown, Container<Product> productContainer)
+                public Item(Factory parent, Container<Product> productContainer)
                 {
-                    Wareroom = belongToTown.Warehouse.FindOrCreate(this, productContainer.Product);
-                    ProductionInfo = belongToTown.ProductInfos[productContainer.Product].Production;
+                    Parent = parent;
+                    wareroom = parent.BelongToTown.Warehouse.FindOrCreate(this, productContainer.Product);
                     ProductContainer = productContainer;
                 }
 
-                public IWareroom Wareroom { get; private set; }
-                public ProductProductionInfo ProductionInfo { get; private set; }
+                public Factory Parent { get; private set; }
+                IWareroom wareroom;
                 public Container<Product> ProductContainer { get; private set; }
 
                 public void OnProduce()
                 {
-                    int yield = (int)(ProductionInfo.YieldProportion * ProductContainer.Number);
-                    Wareroom.Add(yield);
+                    float factor = Parent.GetProduceFactor(ProductContainer.Product);
+                    int yield = (int)(factor * ProductContainer.Number);
+                    wareroom.Add(yield);
                 }
 
                 public void Dispose()
                 {
-                    Wareroom.Dispose();
+                    wareroom.Dispose();
                 }
 
             }
@@ -335,11 +357,15 @@ namespace KouXiaGu.World.Commerce
     }
 
     /// <summary>
-    /// 转换产品类型固定产出的工厂;
+    /// 单个产品转换单个类型的工厂;
     /// </summary>
     public class SingleConvertedFactory : Building
     {
-        public SingleConvertedFactory(BuildingManager manager, int id, Container<Product> raw, Container<Product> produce) :
+        public SingleConvertedFactory(
+            BuildingManager manager,
+            int id,
+            Container<Product> raw, 
+            Container<Product> produce) :
             base(manager, id)
         {
             if (!IsIsEffective(raw) && !IsIsEffective(produce))
@@ -365,31 +391,34 @@ namespace KouXiaGu.World.Commerce
         bool IsIsEffective(Container<Product> produce)
         {
             return
-                produce.Product != null &&
+                produce.Product != null ||
                 produce.Number > 0;
         }
 
         /// <summary>
         /// 获取到城镇建筑类型实例;
         /// </summary>
-        public override ITownBuilding GetTownBuilding(IRequestor requestor, Town belongToTown)
+        public override TownFactory GetTownBuilding(IRequestor requestor, Town belongToTown)
         {
-            return new TownFactory(this, requestor, belongToTown);
+            return new Factory(this, requestor, belongToTown);
         }
 
         /// <summary>
         /// 城镇建筑实例;
         /// </summary>
-        class TownFactory : Townish, ITownBuilding, IProducible, IConsumable
+        class Factory : TownFactory, IProducible, IConsumable
         {
-            public TownFactory(SingleConvertedFactory parent, IRequestor requestor, Town belongToTown) : base(belongToTown)
+            public Factory(SingleConvertedFactory parent, IRequestor requestor, Town belongToTown) :
+                base(parent, belongToTown)
             {
                 Parent = parent;
                 rawWareroom = belongToTown.Warehouse.FindOrCreate(requestor, Raw.Product);
                 produceWareroom = belongToTown.Warehouse.FindOrCreate(requestor, Produce.Product);
                 productionCanceler = belongToTown.Production.Add(this);
                 consumeCanceler = belongToTown.Consume.Add(this);
+
                 IsProcurement = false;
+                ProcuredTempFactor = 0;
             }
 
             public SingleConvertedFactory Parent { get; private set; }
@@ -404,6 +433,10 @@ namespace KouXiaGu.World.Commerce
             /// </summary>
             public bool IsProcurement { get; private set; }
 
+            /// <summary>
+            /// 暂存消耗的因子数;
+            /// </summary>
+            public float ProcuredTempFactor { get; private set; }
 
             /// <summary>
             /// 消耗;
@@ -421,26 +454,28 @@ namespace KouXiaGu.World.Commerce
                 get { return Parent.Produce; }
             }
 
-            Building ITownBuilding.BuildingInfo
-            {
-                get { return Parent; }
-            }
-
             void IConsumable.OnConsume()
             {
                 IsProcurement = rawWareroom.Remove(Raw.Number);
+                if (IsProcurement)
+                {
+                    ProcuredTempFactor = GetProduceFactor(Produce);
+                }
             }
 
             void IProducible.OnProduce()
             {
                 if (IsProcurement)
                 {
-                    int yield = (int)(ProductInfos[Produce.Product].Production.YieldProportion * Produce.Number);
+                    //因子取 昨日"采购" 和 今日"产出" 最小的;
+                    float factor = Math.Min(ProcuredTempFactor, GetProduceFactor(Produce));
+                    int yield = (int)(factor * Produce.Number);
                     produceWareroom.Add(yield);
+                    IsProcurement = false;
                 }
             }
 
-            void IDisposable.Dispose()
+            public override void Dispose()
             {
                 rawWareroom.Dispose();
                 produceWareroom.Dispose();
@@ -453,11 +488,82 @@ namespace KouXiaGu.World.Commerce
     }
 
     /// <summary>
-    /// 单物品浮动产出的工厂;
+    /// 多个产品转换成多个产品的工厂;
     /// </summary>
-    public class SingleProductDynamicFactory
+    public class ConvertedFactory : Building
     {
+        public ConvertedFactory(
+            BuildingManager manager,
+            int id,
+            IEnumerable<Container<Product>> raws,
+            IEnumerable<Container<Product>> produces) :
+            base(manager, id)
+        {
+            if (!IsIsEffective(raws) || !IsIsEffective(produces))
+                throw new ArgumentException();
+
+            this.raws = raws.ToArray();
+            this.produces = produces.ToArray();
+        }
+
+        ICollection<Container<Product>> raws;
+        ICollection<Container<Product>> produces;
+
+        /// <summary>
+        /// 该物体格式是否合法?
+        /// </summary>
+        bool IsIsEffective(IEnumerable<Container<Product>> produces)
+        {
+            return produces.Any(produce => produce.Number > 0 || produce.Product != null);
+        }
+
+        public override TownFactory GetTownBuilding(IRequestor requestor, Town belongToTown)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 城镇建筑实例;
+        /// </summary>
+        class Factory : TownFactory, IProducible, IConsumable
+        {
+            public Factory(Building building, Town belongToTown) : base(building, belongToTown)
+            {
+
+            }
+
+            ICollection<Item> raws;
+            ICollection<Item> produces;
+
+            ICollection<Item> GetCollection(IEnumerable<Container<Product>> produces)
+            {
+                throw new NotImplementedException();
+            }
+
+            void IConsumable.OnConsume()
+            {
+                throw new NotImplementedException();
+            }
+
+            void IProducible.OnProduce()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Dispose()
+            {
+                throw new NotImplementedException();
+            }
+
+            class Item
+            {
+                public IWareroom Wareroom { get; private set; }
+                public Container<Product> ProductContainer { get; private set; }
+            }
+
+        }
 
     }
+
 
 }

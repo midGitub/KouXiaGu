@@ -109,7 +109,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 返回人力资源数目;
         /// </summary>
-        public static implicit operator float(Manpower item)
+        public static implicit operator int(Manpower item)
         {
             return item.Total;
         }

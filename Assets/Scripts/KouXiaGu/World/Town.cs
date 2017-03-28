@@ -64,7 +64,7 @@ namespace KouXiaGu.World
         }
 
         /// <summary>
-        /// 所使用的产品信息;
+        /// 所使用的产品信息, 获取到的 实例 仅为临时变量;
         /// </summary>
         public ProductInfoGroup ProductInfos
         {
