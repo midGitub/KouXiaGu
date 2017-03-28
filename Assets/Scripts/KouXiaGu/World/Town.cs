@@ -66,7 +66,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 所使用的产品信息;
         /// </summary>
-        public ProductInfoGroup ProductInfo
+        public ProductInfoGroup ProductInfos
         {
             get { return BelongToCountry.ProductInfo; }
         }

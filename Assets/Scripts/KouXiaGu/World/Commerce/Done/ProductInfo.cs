@@ -35,7 +35,7 @@ namespace KouXiaGu.World.Commerce
             MonthOfProduction = info.MonthOfProduction;
             NonSeasonalPercent = new ProportionItems(info.NonSeasonalPercent);
 
-            yieldProportion = YieldProportion;
+            yieldProportion = GetYieldProportion;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 产量加成;取值范围 0 ~ max
         /// </summary>
-        public float YieldProduction
+        public float YieldProportion
         {
             get { return Math.Max(0, yieldProportion()); }
         }
@@ -70,9 +70,9 @@ namespace KouXiaGu.World.Commerce
         void IMonthObserver.OnNext(Months item)
         {
             if (IsProductionMonth(item))
-                yieldProportion = YieldProportion;
+                yieldProportion = GetYieldProportion;
             else
-                yieldProportion = NonSeasonalYieldProportion;
+                yieldProportion = GetNonSeasonalYieldProportion;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 符合季节产出的产量比例;
         /// </summary>
-        float YieldProportion()
+        float GetYieldProportion()
         {
             return ProportionOfProduction;
         }
@@ -95,7 +95,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 不符合季节产出的产量比例;
         /// </summary>
-        float NonSeasonalYieldProportion()
+        float GetNonSeasonalYieldProportion()
         {
             return ProportionOfProduction * NonSeasonalPercent;
         }
