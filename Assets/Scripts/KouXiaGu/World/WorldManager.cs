@@ -14,7 +14,13 @@ namespace KouXiaGu.World
         {
             BasicInfo = basicInfo;
             Info = info;
+            Time = SceneObject.GetObject<TimeManager>();
         }
+
+        /// <summary>
+        /// 基础信息;
+        /// </summary>
+        public BasicInformation BasicInfo { get; private set; }
 
         /// <summary>
         /// 世界信息;
@@ -25,11 +31,6 @@ namespace KouXiaGu.World
         /// 时间;
         /// </summary>
         public TimeManager Time { get; private set; }
-
-        /// <summary>
-        /// 基础信息;
-        /// </summary>
-        public BasicInformation BasicInfo { get; private set; }
 
     }
 

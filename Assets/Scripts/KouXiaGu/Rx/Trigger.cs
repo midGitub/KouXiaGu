@@ -7,8 +7,9 @@ namespace KouXiaGu.Rx
 {
 
     /// <summary>
-    /// 观察者结构;
+    /// 观察者结构,使用哈希表存储;
     /// </summary>
+    [Obsolete]
     public class Trigger<T> : IObservable<T>
     {
 

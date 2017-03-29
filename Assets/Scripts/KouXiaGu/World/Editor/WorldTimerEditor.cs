@@ -8,7 +8,7 @@ namespace KouXiaGu.World
 {
 
 
-    [CustomEditor(typeof(WorldTimer)), CanEditMultipleObjects]
+    [CustomEditor(typeof(TimeManager)), CanEditMultipleObjects]
     public class WorldTimerEditor : Editor
     {
 
@@ -16,10 +16,10 @@ namespace KouXiaGu.World
         {
             base.OnInspectorGUI();
 
-            var targt = (WorldTimer)this.target;
+            var targt = (TimeManager)this.target;
 
-            EditorGUILayout.LabelField(targt.CurrentSimplifiedDateTime.ToString());
-            EditorGUILayout.LabelField("Hour:" + targt.CurrentDateTime.Hour);
+            EditorGUILayout.LabelField(targt.CurrentTime.ToString());
+            EditorGUILayout.LabelField("Hour:" + targt.CurrentTime.Hour);
 
         }
 

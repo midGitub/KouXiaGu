@@ -20,7 +20,7 @@ namespace KouXiaGu.World
 
 
         [SerializeField]
-        WorldTimer timer;
+        TimeManager timer;
 
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
@@ -38,7 +38,7 @@ namespace KouXiaGu.World
             ResetState();
             try
             {
-                timer.CurrentDateTime = StartTime;
+                timer.CurrentTime = StartTime;
 
                 IsCompleted = true;
                 return OnInitialized;

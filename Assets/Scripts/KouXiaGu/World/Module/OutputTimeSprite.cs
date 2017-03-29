@@ -24,7 +24,7 @@ namespace KouXiaGu.World
         Text textObject;
 
         [SerializeField]
-        WorldTimer timer;
+        TimeManager timer;
 
         IDisposable unsubscribe;
 
