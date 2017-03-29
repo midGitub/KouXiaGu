@@ -7,10 +7,12 @@ using KouXiaGu.World.Commerce;
 namespace KouXiaGu.World
 {
 
+
     public class WorldManager
     {
-        public WorldManager(WorldInfo info)
+        public WorldManager(BasicInformation basicInfo, WorldInfo info)
         {
+            BasicInfo = basicInfo;
             Info = info;
         }
 
@@ -20,15 +22,14 @@ namespace KouXiaGu.World
         public WorldInfo Info { get; private set; }
 
         /// <summary>
-        /// 资源\产品;
+        /// 时间;
         /// </summary>
-        public ProductManager Product { get; private set; }
+        public TimeManager Time { get; private set; }
 
         /// <summary>
-        /// 建筑物;
+        /// 基础信息;
         /// </summary>
-        public BuildingManager Building { get; private set; }
-
+        public BasicInformation BasicInfo { get; private set; }
 
     }
 

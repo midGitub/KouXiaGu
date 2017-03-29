@@ -10,6 +10,11 @@ namespace KouXiaGu.World
     {
 
         /// <summary>
+        /// 开始时间;
+        /// </summary>
+        public DateTime StartTime { get; set; }
+
+        /// <summary>
         /// 人口每日增长比例;
         /// </summary>
         public float ProportionOfDailyGrowth { get; set; }
