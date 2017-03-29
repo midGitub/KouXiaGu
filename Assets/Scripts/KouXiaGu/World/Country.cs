@@ -17,6 +17,7 @@ namespace KouXiaGu.World
         {
             CountryID = id;
             ProductInfo = new ProductInfoGroup(manager.Product);
+            ManpowerFactor = new ManpowerNationalFactor(manager.Info);
         }
 
 
@@ -31,9 +32,9 @@ namespace KouXiaGu.World
         public ProductInfoGroup ProductInfo { get; private set; }
 
         /// <summary>
-        /// 人口信息;
+        /// 人口影响因素;
         /// </summary>
-        public ManpowerNationalInfo Manpower { get; private set; }
+        public ManpowerNationalFactor ManpowerFactor { get; private set; }
 
 
         public bool Equals(Country other)

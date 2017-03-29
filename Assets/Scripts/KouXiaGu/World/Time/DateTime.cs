@@ -16,30 +16,14 @@ namespace KouXiaGu.World
         /// <summary>
         /// 一年一月一日零时零分零秒;
         /// </summary>
-        //const long DEFAULT_TICKS = 0x1010100000000;
-        const long DEFAULT_TICKS = 0x0;
-
+        internal const long DefaultTicks = 0x0;
 
         /// <summary>
         /// 一年一月一日,默认的日历;
         /// </summary>
         public static DateTime Default
         {
-            get { return new DateTime(DEFAULT_TICKS); }
-        }
-
-
-        public DateTime(SimplifiedDateTime time)
-        {
-            this.ticks = 0;
-            this.ticks |= ((long)time.Ticks << 32);
-        }
-
-        public DateTime(SimplifiedDateTime time, byte hour, byte minute, byte second) : this(time)
-        {
-            this.Hour = hour;
-            this.Minute = minute;
-            this.Second = second;
+            get { return new DateTime(DefaultTicks); }
         }
 
         public DateTime(long ticks)
@@ -75,16 +59,6 @@ namespace KouXiaGu.World
             private set { ticks = value; }
         }
 
-
-        /// <summary>
-        /// int类型的周期数,仅有 年月日;
-        /// </summary>
-        public int SimplifiedDateTimeTicks
-        {
-            get { return (int)(Ticks >> 32); }
-        }
-
-
         /// <summary>
         /// 年份: -32,768 到 32,767
         /// </summary>
@@ -95,7 +69,7 @@ namespace KouXiaGu.World
         }
 
         /// <summary>
-        /// 月份;0 到 12;
+        /// 月份;
         /// </summary>
         public byte Month
         {
@@ -104,7 +78,7 @@ namespace KouXiaGu.World
         }
 
         /// <summary>
-        /// 天: 0 到 29
+        /// 天:
         /// </summary>
         public byte Day
         {
@@ -139,9 +113,9 @@ namespace KouXiaGu.World
             set { Ticks = (Ticks & -0xFF01) | ((long)value << 8); }
         }
 
-
-        const byte FIRSET_SECOND_IN_MINUTE = 0;
-        const byte SECONDS_IN_MINUTE = 60;
+        
+        const byte FirstSecondInMinute = 0;
+        const byte SecondsInMinute = 60;
 
         /// <summary>
         /// 增加一秒钟;
@@ -150,18 +124,23 @@ namespace KouXiaGu.World
         {
             Second++;
 
-            if (Second >= SECONDS_IN_MINUTE)
+            if (Second >= SecondsInMinute)
             {
                 AddMinute();
-                Second = FIRSET_SECOND_IN_MINUTE;
+                ResetSecond();
             }
 
             return this;
         }
 
+        void ResetSecond()
+        {
+            Second = FirstSecondInMinute;
+        }
 
-        const byte FIRSET_MINUTE_IN_HOUR = 0;
-        const byte MINUTES_IN_HOUR = 60;
+
+        const byte FirstMinuteInHour = 0;
+        const byte MinutesInHour = 60;
 
         /// <summary>
         /// 增加一分钟;
@@ -170,18 +149,23 @@ namespace KouXiaGu.World
         {
             Minute++;
 
-            if (Minute >= MINUTES_IN_HOUR)
+            if (Minute >= MinutesInHour)
             {
                 AddHour();
-                Minute = FIRSET_MINUTE_IN_HOUR;
+                ResetMinute();
             }
 
             return this;
         }
 
+        void ResetMinute()
+        {
+            Minute = FirstMinuteInHour;
+        }
 
-        const byte FIRSET_HOUR_IN_DAY = 0;
-        const byte HOURS_IN_DAY = 24;
+
+        const byte FirstHourInDay = 0;
+        const byte HoursInDay = 24;
 
         /// <summary>
         /// 增加一小时;
@@ -190,20 +174,25 @@ namespace KouXiaGu.World
         {
             Hour++;
 
-            if (Hour >= HOURS_IN_DAY)
+            if (Hour >= HoursInDay)
             {
                 AddDay();
-                Hour = FIRSET_HOUR_IN_DAY;
+                ResetHour();
             }
 
             return this;
+        }
+
+        void ResetHour()
+        {
+            Hour = FirstHourInDay;
         }
 
 
         /// <summary>
         /// 月份的第一天;
         /// </summary>
-        const byte FIRSET_DAY_IN_MONTH = 0;
+        const byte FirstDayInMonth = 0;
 
         /// <summary>
         /// 增加一天;
@@ -216,10 +205,15 @@ namespace KouXiaGu.World
             if (Day >= daysInMonth)
             {
                 AddMonth();
-                Day = FIRSET_DAY_IN_MONTH;
+                ResetDay();
             }
 
             return this;
+        }
+
+        void ResetDay()
+        {
+            Day = FirstDayInMonth;
         }
 
         /// <summary>
@@ -253,7 +247,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 一年的第一个月;
         /// </summary>
-        const byte FIRSET_MONTH_IN_YEAR = 0;
+        const byte FirstMonthInYear = 0;
 
         /// <summary>
         /// 增加一个月;
@@ -266,10 +260,15 @@ namespace KouXiaGu.World
             if (Month >= monthInYear)
             {
                 AddYear();
-                Month = FIRSET_MONTH_IN_YEAR;
+                ResetMonth();
             }
 
             return this;
+        }
+
+        void ResetMonth()
+        {
+            Month = FirstMonthInYear;
         }
 
         /// <summary>
@@ -357,7 +356,7 @@ namespace KouXiaGu.World
 
         public override int GetHashCode()
         {
-            return Ticks.GetHashCode();
+            return unchecked((int)Ticks) ^ (int)(Ticks >> 32);
         }
 
         public override string ToString()
@@ -386,27 +385,6 @@ namespace KouXiaGu.World
         public static bool operator <(DateTime v1, DateTime v2)
         {
             return v1.Ticks < v2.Ticks;
-        }
-
-
-        public static bool operator ==(DateTime v1, SimplifiedDateTime v2)
-        {
-            return v1.SimplifiedDateTimeTicks == v2.Ticks;
-        }
-
-        public static bool operator !=(DateTime v1, SimplifiedDateTime v2)
-        {
-            return v1.SimplifiedDateTimeTicks != v2.Ticks;
-        }
-
-        public static bool operator >(DateTime v1, SimplifiedDateTime v2)
-        {
-            return v1.SimplifiedDateTimeTicks > v2.Ticks;
-        }
-
-        public static bool operator <(DateTime v1, SimplifiedDateTime v2)
-        {
-            return v1.SimplifiedDateTimeTicks < v2.Ticks;
         }
 
     }

@@ -16,7 +16,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 一年一月一日;
         /// </summary>
-        const int DEFAULT_TICKS = 0x10101;
+        const int DEFAULT_TICKS = 0x0;
 
         /// <summary>
         /// 一年一月一日,默认的日历;
@@ -29,7 +29,7 @@ namespace KouXiaGu.World
 
         public SimplifiedDateTime(DateTime time)
         {
-            this.ticks = time.SimplifiedDateTimeTicks;
+            this.ticks = GetSimplifiedDateTimeTicks(time);
         }
 
         public SimplifiedDateTime(int ticks)
@@ -136,6 +136,41 @@ namespace KouXiaGu.World
         public static bool operator <(SimplifiedDateTime v1, SimplifiedDateTime v2)
         {
             return v1.Ticks < v2.Ticks;
+        }
+
+
+        public static bool operator ==(DateTime v1, SimplifiedDateTime v2)
+        {
+            return GetSimplifiedDateTimeTicks(v1) == v2.Ticks;
+        }
+
+        public static bool operator !=(DateTime v1, SimplifiedDateTime v2)
+        {
+            return GetSimplifiedDateTimeTicks(v1) != v2.Ticks;
+        }
+
+        public static bool operator >(DateTime v1, SimplifiedDateTime v2)
+        {
+            return GetSimplifiedDateTimeTicks(v1) > v2.Ticks;
+        }
+
+        public static bool operator <(DateTime v1, SimplifiedDateTime v2)
+        {
+            return GetSimplifiedDateTimeTicks(v1) < v2.Ticks;
+        }
+
+
+        /// <summary>
+        /// 转换为int类型的周期数,仅有 年月日;
+        /// </summary>
+        static int GetSimplifiedDateTimeTicks(DateTime v)
+        {
+            return (int)(v.Ticks >> 32);
+        }
+
+        public static implicit operator SimplifiedDateTime(DateTime v)
+        {
+            return new SimplifiedDateTime(GetSimplifiedDateTimeTicks(v));
         }
 
     }

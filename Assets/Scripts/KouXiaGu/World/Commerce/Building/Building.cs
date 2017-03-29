@@ -15,15 +15,6 @@ namespace KouXiaGu.World.Commerce
     }
 
     /// <summary>
-    /// 建筑管理;
-    /// </summary>
-    public class BuildingManager
-    {
-        public IReadOnlyDictionary<int, Building> Buildings { get; private set; }
-        public IReadOnlyDictionary<int, BuildingInfo> BuildingInfos { get; private set; }
-    }
-
-    /// <summary>
     /// 建筑物基类;
     /// </summary>
     public abstract class Building : IEquatable<Building>

@@ -8,16 +8,18 @@ namespace KouXiaGu.World.Commerce
 
 
     /// <summary>
-    /// 人力资源全局信息;
+    /// 人力资源全局影响信息;
     /// </summary>
-    public class ManpowerNationalInfo
+    public class ManpowerNationalFactor
     {
 
-        const float DefaultProportionOfDailyGrowth = 0;
-
-        public ManpowerNationalInfo()
+        public ManpowerNationalFactor(WorldInfo info) : this(info.ProportionOfDailyGrowth)
         {
-            ProportionOfDailyGrowthItems = new ProportionItems(DefaultProportionOfDailyGrowth);
+        }
+
+        public ManpowerNationalFactor(float proportionOfDailyGrowth)
+        {
+            ProportionOfDailyGrowthItems = new ProportionItems(proportionOfDailyGrowth);
         }
 
         /// <summary>
@@ -47,9 +49,9 @@ namespace KouXiaGu.World.Commerce
 
         public Manpower Manpower { get; private set; }
 
-        public ManpowerNationalInfo Info
+        public ManpowerNationalFactor Factor
         {
-            get { return BelongToCountry.Manpower; }
+            get { return BelongToCountry.ManpowerFactor; }
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace KouXiaGu.World.Commerce
         /// </summary>
         public void Update()
         {
-            int increment = (int)(Manpower.Total * Info.ProportionOfDailyGrowth);
+            int increment = (int)(Manpower.Total * Factor.ProportionOfDailyGrowth);
             Manpower.Increase(this, increment);
         }
 
