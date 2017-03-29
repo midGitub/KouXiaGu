@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.Rx
 {
@@ -42,7 +41,7 @@ namespace KouXiaGu.Rx
         public abstract IDisposable Subscribe(IObserver<T> observer);
 
         /// <summary>
-        /// 推送消息到所有订阅者;
+        /// 推送消息到所有订阅者 OnNext() 方法;
         /// </summary>
         public virtual void Track(T item)
         {
@@ -53,7 +52,22 @@ namespace KouXiaGu.Rx
             }
         }
 
-        public void EndTrack()
+        /// <summary>
+        /// 推送消息到所有订阅者 OnError() 方法;
+        /// </summary>
+        public virtual void Track(Exception ex)
+        {
+            IObserver<T>[] observerArray = observers.ToArray();
+            foreach (var observer in observerArray)
+            {
+                observer.OnError(ex);
+            }
+        }
+
+        /// <summary>
+        /// 调用订阅者的 OnCompleted() 方法;
+        /// </summary>
+        public virtual void EndTrack()
         {
             IObserver<T>[] observerArray = observers.ToArray();
             foreach (var observer in observerArray)
@@ -93,9 +107,9 @@ namespace KouXiaGu.Rx
     /// 使用 HashSet 存储观察者的订阅器;
     /// 加入 O(1), 移除 O(1);
     /// </summary>
-    public class HashTracker<T> : Tracker<T>
+    public class HashSetTracker<T> : Tracker<T>
     {
-        public HashTracker()
+        public HashSetTracker()
         {
             observersSet = new HashSet<IObserver<T>>();
         }

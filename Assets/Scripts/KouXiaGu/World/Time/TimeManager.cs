@@ -9,7 +9,7 @@ namespace KouXiaGu.World
     /// 时间记录;
     /// </summary>
     [DisallowMultipleComponent]
-    public class TimeManager : MonoBehaviour, IObservable<DateTime>
+    public class TimeManager : MonoBehaviour
     {
         TimeManager()
         {
@@ -31,23 +31,37 @@ namespace KouXiaGu.World
         }
 
         /// <summary>
+        /// 当时间的 小时数 发生变化时推送;
+        /// </summary>
+        public Tracker<DateTime> TimeTracker { get; private set; }
+
+        /// <summary>
         /// 当前间隔时间缓存变量;
         /// </summary>
-        byte time;
+        int hourInterval;
 
         /// <summary>
         /// 时间间隔长度;
         /// </summary>
         [SerializeField, Range(0, 200)]
-        byte timeLenght = 50;
+        int hourIntervalLenght = 50;
 
         /// <summary>
-        /// 观察者;
+        /// 时间信息缓存;
         /// </summary>
-        Tracker<DateTime> tracker;
+        WorldTimeInfo tempInfo;
 
         /// <summary>
-        /// 时间是否在更新中?
+        /// 时间信息缓存;
+        /// </summary>
+        public WorldTimeInfo TempInfo
+        { 
+            get { return tempInfo; }
+            private set { tempInfo = value; }
+        }
+
+        /// <summary>
+        /// 设定时间是否更新;
         /// </summary>
         public bool IsRunning
         {
@@ -55,11 +69,12 @@ namespace KouXiaGu.World
             set { enabled = value; }
         }
 
+        const int DefaultHourInterval = 0;
 
         void Awake()
         {
-            time = 0;
-            tracker = new ListTracker<DateTime>();
+            hourInterval = DefaultHourInterval;
+            TimeTracker = new ListTracker<DateTime>();
         }
 
         /// <summary>
@@ -67,45 +82,22 @@ namespace KouXiaGu.World
         /// </summary>
         void FixedUpdate()
         {
-            time++;
-            if (time > timeLenght)
+            hourInterval++;
+            if (hourInterval > hourIntervalLenght)
             {
-                time = 0;
+                hourInterval = DefaultHourInterval;
                 currentTime.AddHour();
                 TrackTime();
             }
         }
 
         /// <summary>
-        /// 当时间的 小时数 发生变化时推送;
-        /// </summary>
-        public IDisposable Subscribe(IObserver<DateTime> observer)
-        {
-            return this.tracker.Subscribe(observer);
-        }
-
-        /// <summary>
         /// 立即推送当前时间到观察者;
         /// </summary>
-        public void TrackTime()
+        void TrackTime()
         {
-            tracker.Track(currentTime);
+            TimeTracker.Track(currentTime);
         }
-
-        /// <summary>
-        /// 设置为新的时间,并且推送到所有观察者;
-        /// </summary>
-        public void SetCurrentTime(DateTime time)
-        {
-            this.currentTime = time;
-            TrackTime();
-        }
-
-
-        /// <summary>
-        /// 时间信息缓存;
-        /// </summary>
-        WorldTimeInfo info;
 
         /// <summary>
         /// 根据信息初始化类;
@@ -113,7 +105,7 @@ namespace KouXiaGu.World
         /// <param name="info"></param>
         public void Initialize(WorldTimeInfo info)
         {
-            this.info = info;
+            this.tempInfo = info;
             currentTime = info.CurrentTime;
         }
 
@@ -122,8 +114,8 @@ namespace KouXiaGu.World
         /// </summary>
         public WorldTimeInfo GetInfo()
         {
-            info.CurrentTime = currentTime;
-            return info;
+            tempInfo.CurrentTime = currentTime;
+            return tempInfo;
         }
 
     }
