@@ -254,7 +254,7 @@ namespace KouXiaGu.World.Commerce
             /// </summary>
             public bool Remove(int number)
             {
-                if (number > Total)
+                if (number > Total || number < 0) 
                     return false;
 
                 foreach (var room in rooms)
@@ -459,7 +459,7 @@ namespace KouXiaGu.World.Commerce
                 /// </summary>
                 public bool Remove(int number)
                 {
-                    if (Total < number)
+                    if (Total < number || number < 0)
                         return false;
 
                     Total -= number;

@@ -9,14 +9,14 @@ namespace KouXiaGu.World.Commerce
     /// <summary>
     /// 建筑组;
     /// </summary>
-    public class BuildingGroup : Townish
+    public class TownBuildingGroup : Townish
     {
-        public BuildingGroup(Town belongToTown) : base(belongToTown)
+        public TownBuildingGroup(Town belongToTown) : base(belongToTown)
         {
-            buildingList = new List<TownFactory>();
+            buildingList = new List<ITownBuilding>();
         }
 
-        List<TownFactory> buildingList;
+        List<ITownBuilding> buildingList;
 
         /// <summary>
         /// 创建这个建筑物,若存在相同的建筑物则不创建到,并返回false;
@@ -26,7 +26,7 @@ namespace KouXiaGu.World.Commerce
             if (Contains(building))
                 return false;
 
-            TownFactory instance = building.GetTownBuilding(requestor, BelongToTown);
+            ITownBuilding instance = building.GetTownBuilding(requestor, BelongToTown);
             buildingList.Add(instance);
             return true;
         }
