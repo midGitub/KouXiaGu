@@ -26,7 +26,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 当前使用的日历;
         /// </summary>
-        public static ICalendar CurrentCalendar { get; private set; }
+        public static ICalendar CurrentCalendar { get; set; }
 
         /// <summary>
         /// 一年一月一日,默认的日历;
@@ -273,7 +273,7 @@ namespace KouXiaGu.World
             return this;
         }
 
-        byte GetDaysInMonth()
+        public byte GetDaysInMonth()
         {
             return CurrentCalendar.GetDaysInMonth(Year, Month);
         }
@@ -328,7 +328,7 @@ namespace KouXiaGu.World
             return this;
         }
 
-        byte GetMonthsInYear()
+        public byte GetMonthsInYear()
         {
             return CurrentCalendar.GetMonthsInYear(Year);
         }
@@ -365,6 +365,34 @@ namespace KouXiaGu.World
         {
             bool isMaxYear = this.Ticks >= 0x7FFF000000000000;
             return isMaxYear;
+        }
+
+
+        /// <summary>
+        /// 获取到月份枚举类型表示;
+        /// </summary>
+        public MonthType GetMonthType()
+        {
+            bool isLeapMonth;
+            return CurrentCalendar.GetMonthType(Year, Month, out isLeapMonth);
+        }
+
+        /// <summary>
+        /// 获取到月份枚举类型表示;
+        /// </summary>
+        public MonthType GetMonthType(out bool isLeapMonth)
+        {
+            return CurrentCalendar.GetMonthType(Year, Month, out isLeapMonth);
+        }
+
+        public bool IsLeapMonth()
+        {
+            return CurrentCalendar.IsLeapMonth(Year, Month);
+        }
+
+        public bool IsLeapYear()
+        {
+            return CurrentCalendar.IsLeapYear(Year);
         }
 
 

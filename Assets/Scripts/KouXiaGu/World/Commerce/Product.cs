@@ -160,7 +160,7 @@ namespace KouXiaGu.World
         public ProductProductionInfo Production { get; private set; }
         public ProductSpoilInfo Spoil { get; private set; }
 
-        void IMonthObserver.OnNext(Months month)
+        void IMonthObserver.OnNext(MonthType month)
         {
             (Production as IMonthObserver).OnNext(month);
         }
@@ -226,7 +226,7 @@ namespace KouXiaGu.World
             return collection;
         }
 
-        void IMonthObserver.OnNext(Months month)
+        void IMonthObserver.OnNext(MonthType month)
         {
             foreach (var info in infos.Values)
             {

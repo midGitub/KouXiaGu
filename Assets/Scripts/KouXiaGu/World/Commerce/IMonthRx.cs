@@ -16,7 +16,7 @@ namespace KouXiaGu.World
     /// </summary>
     public interface IMonthObserver
     {
-        void OnNext(Months month);
+        void OnNext(MonthType month);
     }
 
 }

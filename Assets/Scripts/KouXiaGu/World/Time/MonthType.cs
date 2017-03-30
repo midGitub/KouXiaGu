@@ -7,7 +7,7 @@ namespace KouXiaGu.World
 {
 
     [Flags]
-    public enum Months
+    public enum MonthType
     {
 
         /// <summary>

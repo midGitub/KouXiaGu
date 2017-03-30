@@ -13,7 +13,7 @@ namespace KouXiaGu.World
         /// 在这些月份正常产出;
         /// </summary>
         [XmlElement("MonthOfProduction")]
-        public Months MonthOfProduction { get; set; }
+        public MonthType MonthOfProduction { get; set; }
 
         /// <summary>
         /// 非季节产出比例 0 ~ 1;
@@ -51,7 +51,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 在这些月份正常产出;
         /// </summary>
-        public Months MonthOfProduction { get; private set; }
+        public MonthType MonthOfProduction { get; private set; }
 
         /// <summary>
         /// 产量加成;取值范围 0 ~ max
@@ -67,7 +67,7 @@ namespace KouXiaGu.World
         event Func<float> yieldProportion;
 
 
-        void IMonthObserver.OnNext(Months item)
+        void IMonthObserver.OnNext(MonthType item)
         {
             if (IsProductionMonth(item))
                 yieldProportion = GetYieldProportion;
@@ -78,7 +78,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 这个月份是否为合适产出的月份?
         /// </summary>
-        bool IsProductionMonth(Months month)
+        bool IsProductionMonth(MonthType month)
         {
             int temp = (int)(MonthOfProduction & month);
             return temp >= 1;

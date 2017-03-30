@@ -156,35 +156,23 @@ namespace KouXiaGu.World
             get { return Path.Combine(Application.streamingAssetsPath, "Scripts/Calendar.lua"); }
         }
 
-
         [CSharpCallLua]
-        public interface ICalc
-        {
-            int Add(int a, int b);
-            int Dpp(int a, int b);
-            int Mult { get; set; }
-            int Number { get; set; }
-        }
+        public delegate ICalendar CalendarCreater();
 
-        [CSharpCallLua]
-        public delegate ICalc CalcNew(int mult, int number);
-
-        public void LoadCalendar()
+        /// <summary>
+        /// 从Lua文件获取到日历信息;
+        /// </summary>
+        public void LoadCalendarFromLua()
         {
             LuaEnv luaenv = LuaManager.Luaenv;
-            CalcNew calc_new = luaenv.Global.GetInPath<CalcNew>("Calc.New");
-            ICalc calc1 = calc_new(10, 2);
-            Debug.Log("Dpp:" + calc1.Dpp(10, 0));
-
-            ICalc calc2 = calc_new(10, 2);
-            Debug.Log("Dpp:" + calc1.Dpp(100, 0));
-
-            Debug.Log("Add:" + calc2.Add(10, 10));
+            CalendarCreater creater = luaenv.Global.GetInPath<CalendarCreater>("Calendar.New");
+            ICalendar calendar = creater();
+            DateTime.CurrentCalendar = calendar;
         }
 
         void Start()
         {
-            LoadCalendar();
+            LoadCalendarFromLua();
         }
 
     }
@@ -219,7 +207,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 获取到枚举类型的月份表示;
         /// </summary>
-        Months GetMonth(short year, byte month);
+        MonthType GetMonthType(short year, byte month, out bool isLeapMonth);
     }
 
 
@@ -348,34 +336,37 @@ namespace KouXiaGu.World
         }
 
 
-        static readonly Months[] MonthsArray = new Months[]
+        static readonly MonthType[] MonthsArray = new MonthType[]
             {
-                Months.January,
-                Months.February,
-                Months.March,
-                Months.April,
-                Months.May,
-                Months.June,
-                Months.July,
-                Months.August,
-                Months.September,
-                Months.October,
-                Months.November,
-                Months.December,
+                MonthType.January,
+                MonthType.February,
+                MonthType.March,
+                MonthType.April,
+                MonthType.May,
+                MonthType.June,
+                MonthType.July,
+                MonthType.August,
+                MonthType.September,
+                MonthType.October,
+                MonthType.November,
+                MonthType.December,
             };
 
         /// <summary>
         /// 获取到枚举类型的月份表示;
         /// </summary>
-        public Months GetMonth(short year, byte month)
+        public MonthType GetMonthType(short year, byte month, out bool isLeapMonth)
         {
             byte leapMonth = GetLeapMonth(year);
 
             if (leapMonth != 0 && month >= leapMonth)
             {
+                isLeapMonth = leapMonth == month;
                 month--;
+                return MonthsArray[month];
             }
 
+            isLeapMonth = false;
             return MonthsArray[month];
         }
 
