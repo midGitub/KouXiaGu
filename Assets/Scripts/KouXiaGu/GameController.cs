@@ -8,7 +8,7 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 游戏控制器;
+    /// 在程序一开始就存在的物体,保持该物体不随场景切换销毁;
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class GameController : MonoBehaviour

@@ -13,6 +13,11 @@ namespace KouXiaGu.World
     public struct DateTime : IEquatable<DateTime>, IComparable<DateTime>
     {
 
+        static DateTime()
+        {
+            CurrentCalendar = new ChineseCalendar();
+        }
+
         /// <summary>
         /// 一年一月一日零时零分零秒;
         /// </summary>
@@ -270,7 +275,7 @@ namespace KouXiaGu.World
 
         byte GetDaysInMonth()
         {
-            return ChineseCalendar.GetDaysInMonth(Year, Month);
+            return CurrentCalendar.GetDaysInMonth(Year, Month);
         }
 
 
@@ -325,7 +330,7 @@ namespace KouXiaGu.World
 
         byte GetMonthsInYear()
         {
-            return ChineseCalendar.GetMonthsInYear(Year);
+            return CurrentCalendar.GetMonthsInYear(Year);
         }
 
 
