@@ -57,23 +57,23 @@ namespace KouXiaGu.World
         public Tracker<DateTime> TimeTracker { get; private set; }
 
         /// <summary>
-        /// 当前间隔时间缓存变量;
+        /// 当前分钟缓存变量;
         /// </summary>
-        int hourInterval;
+        int currenMinute;
 
         /// <summary>
         /// 时间间隔长度;
         /// </summary>
         [SerializeField, Range(0, 200)]
-        int hourIntervalLenght = 50;
+        int hourInterval = 50;
 
         /// <summary>
         /// 时间间隔长度;
         /// </summary>
-        public int HourIntervalLenght
+        public int HourInterval
         {
-            get { return hourIntervalLenght; }
-            private set { hourIntervalLenght = value; }
+            get { return hourInterval; }
+            private set { hourInterval = value; }
         }
 
         /// <summary>
@@ -99,7 +99,6 @@ namespace KouXiaGu.World
             set { enabled = value; }
         }
 
-
         void Awake()
         {
             IsRunning = false;
@@ -111,10 +110,10 @@ namespace KouXiaGu.World
         /// </summary>
         void FixedUpdate()
         {
-            hourInterval++;
-            if (hourInterval > hourIntervalLenght)
+            currenMinute++;
+            if (currenMinute > hourInterval)
             {
-                hourInterval = 0;
+                currenMinute = 0;
                 currentTime.AddHour();
                 TrackTime();
             }
@@ -136,7 +135,7 @@ namespace KouXiaGu.World
         {
             this.tempInfo = info;
             currentTime = info.CurrentTime;
-            hourIntervalLenght = info.HourIntervalLenght;
+            hourInterval = info.HourIntervalLenght;
         }
 
         /// <summary>
@@ -145,7 +144,7 @@ namespace KouXiaGu.World
         public WorldTimeInfo GetInfo()
         {
             tempInfo.CurrentTime = currentTime;
-            tempInfo.HourIntervalLenght = hourIntervalLenght;
+            tempInfo.HourIntervalLenght = hourInterval;
             return tempInfo;
         }
 

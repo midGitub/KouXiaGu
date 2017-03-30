@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 目标点更新协程;
         /// </summary>
-        Coroutine targetPointUpdateCoroutine;
+        UnityEngine.Coroutine targetPointUpdateCoroutine;
 
         public float AlternateDistance
         {

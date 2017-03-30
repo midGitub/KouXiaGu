@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using UnityEditor;
 
 namespace KouXiaGu.World
@@ -20,6 +21,8 @@ namespace KouXiaGu.World
 
             EditorGUILayout.LabelField(targt.CurrentTime.ToString());
             EditorGUILayout.LabelField("Hour:" + targt.CurrentTime.Hour);
+
+            Time.timeScale = EditorGUILayout.FloatField("TimeScale", Time.timeScale);
 
         }
 

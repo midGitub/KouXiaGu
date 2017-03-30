@@ -19,6 +19,11 @@ namespace KouXiaGu.World
         internal const long DefaultTicks = 0x0;
 
         /// <summary>
+        /// 当前使用的日历;
+        /// </summary>
+        public static ICalendar CurrentCalendar { get; private set; }
+
+        /// <summary>
         /// 一年一月一日,默认的日历;
         /// </summary>
         public static DateTime Default
@@ -163,6 +168,18 @@ namespace KouXiaGu.World
             Minute = FirstMinuteInHour;
         }
 
+        public DateTime AddMinutes(int minutes)
+        {
+            if (minutes < 0)
+                throw new ArgumentOutOfRangeException();
+
+            minutes += Minute;
+            int hours = Math.DivRem(minutes, MinutesInHour, out minutes);
+            AddHours(hours);
+            Minute = Convert.ToByte(minutes);
+
+            return this;
+        }
 
         const byte FirstHourInDay = 0;
         const byte HoursInDay = 24;
@@ -186,6 +203,19 @@ namespace KouXiaGu.World
         void ResetHour()
         {
             Hour = FirstHourInDay;
+        }
+
+        public DateTime AddHours(int hours)
+        {
+            if (hours < 0)
+                throw new ArgumentOutOfRangeException();
+
+            hours += Hour;
+            int day = Math.DivRem(hours, HoursInDay, out hours);
+            AddDays(day);
+            Hour = Convert.ToByte(hours);
+
+            return this;
         }
 
 
@@ -219,7 +249,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 增加天数;
         /// </summary>
-        public DateTime AddDay(int days)
+        public DateTime AddDays(int days)
         {
             if (days < 0)
                 throw new ArgumentOutOfRangeException();
@@ -274,7 +304,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 增加月数;
         /// </summary>
-        public DateTime AddMonth(int months)
+        public DateTime AddMonths(int months)
         {
             if (months < 0)
                 throw new ArgumentOutOfRangeException();
@@ -314,7 +344,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 增加年数;
         /// </summary>
-        public DateTime AddYear(short years)
+        public DateTime AddYears(short years)
         {
             if (IsMaxYear())
                 return this;
@@ -328,7 +358,8 @@ namespace KouXiaGu.World
         /// </summary>
         public bool IsMaxYear()
         {
-            return this.Ticks > 0x7FFF0000;
+            bool isMaxYear = this.Ticks >= 0x7FFF000000000000;
+            return isMaxYear;
         }
 
 

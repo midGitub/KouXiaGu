@@ -8,6 +8,37 @@ namespace KouXiaGu.World
 {
 
     /// <summary>
+    /// 日历接口;
+    /// </summary>
+    public interface ICalendar
+    {
+        /// <summary>
+        /// 这一个月存在的天数; 0 ~ max;
+        /// </summary>
+        byte GetDaysInMonth(short year, byte month);
+
+        /// <summary>
+        /// 这一年存在的月数; 1 ~ max;
+        /// </summary>
+        byte GetMonthsInYear(short year);
+
+        /// <summary>
+        /// 这个月是否为闰月?
+        /// </summary>
+        bool IsLeapMonth(short year, byte month);
+
+        /// <summary>
+        /// 这年是否为闰年?
+        /// </summary>
+        bool IsLeapYear(short year);
+
+        /// <summary>
+        /// 获取到枚举类型的月份表示;
+        /// </summary>
+        Months GetMonth(short year, byte month);
+    }
+
+    /// <summary>
     /// 游戏使用的日历;
     /// </summary>
     public static class ChineseCalendar
