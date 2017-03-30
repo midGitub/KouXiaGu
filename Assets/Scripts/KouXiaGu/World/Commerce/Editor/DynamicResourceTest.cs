@@ -4,7 +4,7 @@
 //using System.Text;
 //using NUnit.Framework;
 
-//namespace KouXiaGu.World.Commerce
+//namespace KouXiaGu.World
 //{
 
 //    [TestFixture]

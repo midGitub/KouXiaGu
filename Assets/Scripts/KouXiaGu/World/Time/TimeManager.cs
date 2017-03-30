@@ -6,6 +6,28 @@ namespace KouXiaGu.World
 {
 
     /// <summary>
+    /// 世界时间初始化信息;
+    /// </summary>
+    public struct WorldTimeInfo
+    {
+        /// <summary>
+        /// 开始时间;
+        /// </summary>
+        public DateTime StartTime { get; set; }
+
+        /// <summary>
+        /// 当前时间;
+        /// </summary>
+        public DateTime CurrentTime { get; set; }
+
+        /// <summary>
+        /// 时间间隔长度;
+        /// </summary>
+        public int HourIntervalLenght { get; set; }
+
+    }
+
+    /// <summary>
     /// 时间记录;
     /// </summary>
     [DisallowMultipleComponent]
@@ -14,7 +36,6 @@ namespace KouXiaGu.World
         TimeManager()
         {
         }
-
 
         /// <summary>
         /// 时间信息;
@@ -47,6 +68,15 @@ namespace KouXiaGu.World
         int hourIntervalLenght = 50;
 
         /// <summary>
+        /// 时间间隔长度;
+        /// </summary>
+        public int HourIntervalLenght
+        {
+            get { return hourIntervalLenght; }
+            private set { hourIntervalLenght = value; }
+        }
+
+        /// <summary>
         /// 时间信息缓存;
         /// </summary>
         WorldTimeInfo tempInfo;
@@ -69,11 +99,10 @@ namespace KouXiaGu.World
             set { enabled = value; }
         }
 
-        const int DefaultHourInterval = 0;
 
         void Awake()
         {
-            hourInterval = DefaultHourInterval;
+            IsRunning = false;
             TimeTracker = new ListTracker<DateTime>();
         }
 
@@ -85,7 +114,7 @@ namespace KouXiaGu.World
             hourInterval++;
             if (hourInterval > hourIntervalLenght)
             {
-                hourInterval = DefaultHourInterval;
+                hourInterval = 0;
                 currentTime.AddHour();
                 TrackTime();
             }
@@ -107,6 +136,7 @@ namespace KouXiaGu.World
         {
             this.tempInfo = info;
             currentTime = info.CurrentTime;
+            hourIntervalLenght = info.HourIntervalLenght;
         }
 
         /// <summary>
@@ -115,6 +145,7 @@ namespace KouXiaGu.World
         public WorldTimeInfo GetInfo()
         {
             tempInfo.CurrentTime = currentTime;
+            tempInfo.HourIntervalLenght = hourIntervalLenght;
             return tempInfo;
         }
 

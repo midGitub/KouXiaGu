@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.World.Commerce
+namespace KouXiaGu.World
 {
 
     /// <summary>

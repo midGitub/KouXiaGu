@@ -6,20 +6,6 @@ using System.Text;
 namespace KouXiaGu.World
 {
 
-    public struct WorldTimeInfo
-    {
-        /// <summary>
-        /// 开始时间;
-        /// </summary>
-        public DateTime StartTime { get; set; }
-
-        /// <summary>
-        /// 当前时间;
-        /// </summary>
-        public DateTime CurrentTime { get; set; }
-
-    }
-
     public struct WorldInfo
     {
 

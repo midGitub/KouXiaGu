@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.World.Commerce
+namespace KouXiaGu.World
 {
 
 

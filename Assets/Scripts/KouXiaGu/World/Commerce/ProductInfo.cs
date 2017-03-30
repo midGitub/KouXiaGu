@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace KouXiaGu.World.Commerce
+namespace KouXiaGu.World
 {
 
 

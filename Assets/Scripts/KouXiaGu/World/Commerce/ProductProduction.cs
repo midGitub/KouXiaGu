@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KouXiaGu.World.Commerce
+namespace KouXiaGu.World
 {
 
     public interface IProducible

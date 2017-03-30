@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace KouXiaGu.World.Commerce
+namespace KouXiaGu.World
 {
 
     /// <summary>
