@@ -168,7 +168,6 @@ namespace KouXiaGu.World
         void Start()
         {
             LoadCalendarFromLua();
-            CurrentTime = new DateTime(1, 5, 0, 0, 0, 0);
         }
 
     }

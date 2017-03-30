@@ -275,7 +275,6 @@ namespace KouXiaGu.World
 
         public int GetDaysInMonth()
         {
-            Debug.Log("Year:" + Year + ",Month:" + Month);
             return CurrentCalendar.GetDaysInMonth(Year, Month);
         }
 
