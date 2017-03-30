@@ -235,7 +235,7 @@ namespace KouXiaGu.World
         public DateTime AddDay()
         {
             Day++;
-            byte daysInMonth = GetDaysInMonth();
+            int daysInMonth = GetDaysInMonth();
 
             if (Day >= daysInMonth)
             {
@@ -261,7 +261,7 @@ namespace KouXiaGu.World
 
             days += Day;
 
-            for (byte daysInMonth = GetDaysInMonth();
+            for (int daysInMonth = GetDaysInMonth();
                 days >= daysInMonth;
                 daysInMonth = GetDaysInMonth())
             {
@@ -273,8 +273,9 @@ namespace KouXiaGu.World
             return this;
         }
 
-        public byte GetDaysInMonth()
+        public int GetDaysInMonth()
         {
+            Debug.Log("Year:" + Year + ",Month:" + Month);
             return CurrentCalendar.GetDaysInMonth(Year, Month);
         }
 
@@ -290,7 +291,7 @@ namespace KouXiaGu.World
         public DateTime AddMonth()
         {
             Month++;
-            byte monthInYear = GetMonthsInYear();
+            int monthInYear = GetMonthsInYear();
 
             if (Month >= monthInYear)
             {
@@ -316,7 +317,7 @@ namespace KouXiaGu.World
 
             months += Month;
 
-            for (byte monthInYear = GetMonthsInYear();
+            for (int monthInYear = GetMonthsInYear();
                 months >= monthInYear;
                 monthInYear = GetMonthsInYear())
             {
@@ -328,7 +329,7 @@ namespace KouXiaGu.World
             return this;
         }
 
-        public byte GetMonthsInYear()
+        public int GetMonthsInYear()
         {
             return CurrentCalendar.GetMonthsInYear(Year);
         }
@@ -374,7 +375,7 @@ namespace KouXiaGu.World
         public MonthType GetMonthType()
         {
             bool isLeapMonth;
-            return CurrentCalendar.GetMonthType(Year, Month, out isLeapMonth);
+            return GetMonthType(out isLeapMonth);
         }
 
         /// <summary>

@@ -35,7 +35,9 @@ namespace KouXiaGu.World
 
         public void OnNext(DateTime item)
         {
-            textObject.text = item.ToString();
+            string str = item.ToString();
+            str += "\n" + item.GetMonthType();
+            textObject.text = str;
         }
 
         public void OnError(Exception error)

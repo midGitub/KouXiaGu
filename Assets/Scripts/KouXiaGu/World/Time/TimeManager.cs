@@ -151,11 +151,6 @@ namespace KouXiaGu.World
         }
 
 
-        static string CalendarScriptPath
-        {
-            get { return Path.Combine(Application.streamingAssetsPath, "Scripts/Calendar.lua"); }
-        }
-
         [CSharpCallLua]
         public delegate ICalendar CalendarCreater();
 
@@ -173,6 +168,7 @@ namespace KouXiaGu.World
         void Start()
         {
             LoadCalendarFromLua();
+            CurrentTime = new DateTime(1, 5, 0, 0, 0, 0);
         }
 
     }
@@ -187,27 +183,27 @@ namespace KouXiaGu.World
         /// <summary>
         /// 这一个月存在的天数; 0 ~ max;
         /// </summary>
-        byte GetDaysInMonth(short year, byte month);
+        int GetDaysInMonth(int year, int month);
 
         /// <summary>
         /// 这一年存在的月数; 1 ~ max;
         /// </summary>
-        byte GetMonthsInYear(short year);
+        int GetMonthsInYear(int year);
 
         /// <summary>
         /// 这个月是否为闰月?
         /// </summary>
-        bool IsLeapMonth(short year, byte month);
+        bool IsLeapMonth(int year, int month);
 
         /// <summary>
         /// 这年是否为闰年?
         /// </summary>
-        bool IsLeapYear(short year);
+        bool IsLeapYear(int year);
 
         /// <summary>
         /// 获取到枚举类型的月份表示;
         /// </summary>
-        MonthType GetMonthType(short year, byte month, out bool isLeapMonth);
+        MonthType GetMonthType(int year, int month, out bool isLeapMonth);
     }
 
 
@@ -238,24 +234,11 @@ namespace KouXiaGu.World
 
 
         /// <summary>
-        /// 获取到这一年的天数; 1 ~ max;
-        /// </summary>
-        public short GetDaysInYear(short year)
-        {
-            short day = 0;
-            for (byte month = GetMonthsInYear(year); month > 0; month--)
-            {
-                day += GetDaysInMonth(year, month);
-            }
-            return day;
-        }
-
-        /// <summary>
         /// 这一个月的天数; 0 ~ max;
         /// </summary>
-        public byte GetDaysInMonth(short year, byte month)
+        public int GetDaysInMonth(int year, int month)
         {
-            byte leapMonth = GetLeapMonth(year);
+            int leapMonth = GetLeapMonth(year);
 
             if (leapMonth != 0 && month >= leapMonth)
             {
@@ -268,17 +251,17 @@ namespace KouXiaGu.World
         /// <summary>
         /// 这一年的月数; 1 ~ max;
         /// </summary>
-        public byte GetMonthsInYear(short year)
+        public int GetMonthsInYear(int year)
         {
             /// <summary>
             /// 闰年月数;
             /// </summary>
-            const byte LEAP_YEAR_MONTH_COUNT = 13;
+            const int LEAP_YEAR_MONTH_COUNT = 13;
 
             /// <summary>
             /// 非闰年月数;
             /// </summary>
-            const byte NOT_LEAP_YEAR_MONTH_COUNT = 12;
+            const int NOT_LEAP_YEAR_MONTH_COUNT = 12;
 
             return IsLeapYear(year) ? LEAP_YEAR_MONTH_COUNT : NOT_LEAP_YEAR_MONTH_COUNT;
         }
@@ -288,7 +271,7 @@ namespace KouXiaGu.World
         /// 闰月分配表,需要不能被三整除的容量;
         /// 4  的顺序: 0 3 2 1 ...
         /// </summary>
-        static readonly byte[] _leapMonthDistribution = new byte[]
+        static readonly int[] _leapMonthDistribution = new int[]
             {
                 11,
                 8,
@@ -299,7 +282,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 获取到这一年闰几月,若闰7月则返回8,八月返回9,若不存在则返回 0;
         /// </summary>
-        public byte GetLeapMonth(short year)
+        public int GetLeapMonth(int year)
         {
             if (IsLeapYear(year))
             {
@@ -316,16 +299,16 @@ namespace KouXiaGu.World
         /// <summary>
         /// 这个月是否为闰月?
         /// </summary>
-        public bool IsLeapMonth(short year, byte month)
+        public bool IsLeapMonth(int year, int month)
         {
-            byte leapMonth = GetLeapMonth(year);
+            int leapMonth = GetLeapMonth(year);
             return leapMonth != 0 && leapMonth == month;
         }
 
         /// <summary>
         /// 这年是否为闰年?
         /// </summary>
-        public bool IsLeapYear(short year)
+        public bool IsLeapYear(int year)
         {
             /// <summary>
             /// 每几年置闰年;
@@ -355,9 +338,9 @@ namespace KouXiaGu.World
         /// <summary>
         /// 获取到枚举类型的月份表示;
         /// </summary>
-        public MonthType GetMonthType(short year, byte month, out bool isLeapMonth)
+        public MonthType GetMonthType(int year, int month, out bool isLeapMonth)
         {
-            byte leapMonth = GetLeapMonth(year);
+            int leapMonth = GetLeapMonth(year);
 
             if (leapMonth != 0 && month >= leapMonth)
             {
