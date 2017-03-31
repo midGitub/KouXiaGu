@@ -16,12 +16,12 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 文件后缀;
         /// </summary>
-        public const string FILE_EXTENSION = ".xml";
+        public const string FileExtension = ".xml";
 
         /// <summary>
         /// 语言文件匹配的搜索字符串;
         /// </summary>
-        const string LANGUAGE_PACK_SEARCH_PATTERN = "*" + FILE_EXTENSION;
+        const string LanguagePackSearchPattern = "*" + FileExtension;
 
 
         const string ROOT_ELEMENT_NAME = "LocalizationTexts";
@@ -169,7 +169,7 @@ namespace KouXiaGu.Globalization
         /// </summary>
         public static IEnumerable<LanguageFile> GetPacks(string directoryPath, SearchOption searchOption)
         {
-            var paths = Directory.GetFiles(directoryPath, LANGUAGE_PACK_SEARCH_PATTERN, searchOption);
+            var paths = Directory.GetFiles(directoryPath, LanguagePackSearchPattern, searchOption);
 
             foreach (var path in paths)
             {

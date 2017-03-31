@@ -75,30 +75,35 @@ namespace KouXiaGu.Rx
                 observer.OnCompleted();
             }
         }
+    }
 
+    /// <summary>
+    /// 取消订阅器,不进行 Add() 操作;;
+    /// </summary>
+    class CollectionUnsubscriber<T> : IDisposable
+    {
         /// <summary>
-        /// 取消订阅器;
+        /// 不进行 Add() 操作;
         /// </summary>
-        protected class Unsubscriber : IDisposable
+        public CollectionUnsubscriber(ICollection<T> collection, T observer)
         {
-            public Unsubscriber(ICollection<IObserver<T>> collection, IObserver<T> observer)
+            if (collection == null || observer == null)
+                throw new ArgumentNullException();
+
+            Collection = collection;
+            Observer = observer;
+        }
+
+        public ICollection<T> Collection { get; private set; }
+        public T Observer { get; private set; }
+
+        public void Dispose()
+        {
+            if (Collection != null)
             {
-                Collection = collection;
-                Observer = observer;
+                Collection.Remove(Observer);
+                Collection = null;
             }
-
-            public ICollection<IObserver<T>> Collection { get; private set; }
-            public IObserver<T> Observer { get; private set; }
-
-            public void Dispose()
-            {
-                if (Collection != null)
-                {
-                    Collection.Remove(Observer);
-                    Collection = null;
-                }
-            }
-
         }
 
     }
@@ -126,7 +131,7 @@ namespace KouXiaGu.Rx
             if (!observersSet.Add(observer))
                 throw new ArgumentException();
 
-            return new Unsubscriber(observersSet, observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observersSet, observer);
         }
 
     }
@@ -155,9 +160,36 @@ namespace KouXiaGu.Rx
                 throw new ArgumentException();
 
             observersList.Add(observer);
-            return new Unsubscriber(observersList, observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observersList, observer);
         }
 
+    }
+
+    /// <summary>
+    /// 取消订阅器,不进行 Add() 操作;;
+    /// </summary>
+    public class LinkedListUnsubscriber<T> : IDisposable
+    {
+        public LinkedListUnsubscriber(LinkedList<T> observers, LinkedListNode<T> observer)
+        {
+            if (observers == null || observer == null)
+                throw new ArgumentNullException();
+
+            Observers = observers;
+            Observer = observer;
+        }
+
+        public LinkedList<T> Observers { get; private set; }
+        LinkedListNode<T> Observer;
+
+        public void Dispose()
+        {
+            if (Observers != null)
+            {
+                Observers.Remove(Observer);
+                Observers = null;
+            }
+        }
     }
 
     /// <summary>
@@ -186,32 +218,10 @@ namespace KouXiaGu.Rx
             if (observersList.Contains(observer))
                 throw new ArgumentException();
 
-            return new LinkedListUnsubscriber(observersList, observer);
+            var node = observersList.AddLast(observer);
+            return new LinkedListUnsubscriber<IObserver<T>>(observersList, node);
         }
-
-        class LinkedListUnsubscriber : IDisposable
-        {
-            public LinkedListUnsubscriber(LinkedList<IObserver<T>> list, IObserver<T> observer)
-            {
-                List = list;
-                Observer = observer;
-                this.node = list.AddLast(observer);
-            }
-
-            public LinkedList<IObserver<T>> List { get; private set; }
-            public IObserver<T> Observer { get; private set; }
-            LinkedListNode<IObserver<T>> node;
-
-            public void Dispose()
-            {
-                if (List != null)
-                {
-                    List.Remove(node);
-                    List = null;
-                }
-            }
-        }
-
+       
     }
 
 }

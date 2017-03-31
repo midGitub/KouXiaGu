@@ -8,7 +8,7 @@ namespace KouXiaGu.Globalization
 {
 
 
-    public class TextDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, IReadOnlyDictionary,
+    public class TextDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, ITextDictionary,
         IEnumerable<TextItem>
     {
         public TextDictionary() : base() { }

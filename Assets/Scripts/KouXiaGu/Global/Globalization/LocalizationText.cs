@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using KouXiaGu.Collections;
+using KouXiaGu.Rx;
 
 namespace KouXiaGu.Globalization
 {
@@ -11,12 +12,12 @@ namespace KouXiaGu.Globalization
     public static class LocalizationText
     {
 
-        static IReadOnlyDictionary textDictionary;
+        static ITextDictionary textDictionary;
 
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
 
 
-        public static IReadOnlyDictionary TextDictionary
+        public static ITextDictionary TextDictionary
         {
             get { return textDictionary; }
         }
@@ -63,7 +64,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 更新文本字典,应在主线程内调用;
         /// </summary>
-        public static void UpdateTextDictionary(IReadOnlyDictionary textDictionary)
+        public static void UpdateTextDictionary(ITextDictionary textDictionary)
         {
             if (textDictionary == null)
                 throw new ArgumentNullException();

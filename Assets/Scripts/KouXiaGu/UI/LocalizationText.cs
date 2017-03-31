@@ -39,7 +39,7 @@ namespace KouXiaGu.UI
             unSubscriber = null;
         }
 
-        public void UpdateTexts(IReadOnlyDictionary textDictionary)
+        public void UpdateTexts(ITextDictionary textDictionary)
         {
             string text;
             if (textDictionary.TryGetValue(Key, out text))
