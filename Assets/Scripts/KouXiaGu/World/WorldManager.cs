@@ -13,7 +13,9 @@ namespace KouXiaGu.World
         {
             BasicInfo = basicInfo;
             Info = info;
+
             Time = SceneObject.GetObject<TimeManager>();
+            Time.Initialize(info.Time);
         }
 
         /// <summary>

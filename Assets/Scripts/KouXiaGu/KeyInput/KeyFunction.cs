@@ -1,6 +1,6 @@
 ﻿
 
-namespace KouXiaGu.KeyInput
+namespace KouXiaGu
 {
 
     /// <summary>

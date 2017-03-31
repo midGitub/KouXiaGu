@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using KouXiaGu.Rx;
 using UnityEngine;
 using XLua;
@@ -23,9 +22,9 @@ namespace KouXiaGu.World
         public DateTime CurrentTime { get; set; }
 
         /// <summary>
-        /// 时间间隔长度;
+        /// 一个小时间隔多少次 FixedUpdate() ?
         /// </summary>
-        public int HourIntervalLenght { get; set; }
+        public int HourInterval { get; set; }
 
     }
 
@@ -137,7 +136,8 @@ namespace KouXiaGu.World
         {
             this.tempInfo = info;
             currentTime = info.CurrentTime;
-            hourInterval = info.HourIntervalLenght;
+            hourInterval = info.HourInterval;
+            InitCalendar();
         }
 
         /// <summary>
@@ -146,28 +146,33 @@ namespace KouXiaGu.World
         public WorldTimeInfo GetInfo()
         {
             tempInfo.CurrentTime = currentTime;
-            tempInfo.HourIntervalLenght = hourInterval;
+            tempInfo.HourInterval = hourInterval;
             return tempInfo;
         }
 
-
-        [CSharpCallLua]
-        public delegate ICalendar CalendarCreater();
-
-        /// <summary>
-        /// 从Lua文件获取到日历信息;
-        /// </summary>
-        public void LoadCalendarFromLua()
+        public void InitCalendar()
         {
-            LuaEnv luaenv = LuaManager.Luaenv;
-            CalendarCreater creater = luaenv.Global.GetInPath<CalendarCreater>("Calendar.New");
-            ICalendar calendar = creater();
-            DateTime.CurrentCalendar = calendar;
+            DateTime.CurrentCalendar = GetCalendarFromLua();
         }
 
-        void Start()
+        [CSharpCallLua]
+        internal delegate ICalendar CalendarCreater();
+
+        public ICalendar GetCalendarFromLua()
         {
-            LoadCalendarFromLua();
+            const string luaScriptName = "Calendar.New";
+            const string errorString = "无法从Lua获取到日历信息;";
+
+            LuaEnv luaenv = LuaManager.Luaenv;
+            CalendarCreater creater = luaenv.Global.GetInPath<CalendarCreater>(luaScriptName);
+            if (creater == null)
+                throw new ArgumentException(errorString);
+
+            ICalendar calendar = creater();
+            if (calendar == null)
+                throw new ArgumentException(errorString);
+
+            return calendar;
         }
 
     }

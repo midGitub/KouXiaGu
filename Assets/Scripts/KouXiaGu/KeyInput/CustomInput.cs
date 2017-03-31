@@ -6,67 +6,224 @@ using System.Xml.Serialization;
 using System.IO;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.KeyInput
+namespace KouXiaGu
 {
+
+    public interface ICustomKeyFiler
+    {
+        IEnumerable<CustomKey> ReadKeys();
+        void WriteKeys(CustomKey[] keys);
+    }
+
+    public class XmlCustomKeyFiler : ICustomKeyFiler
+    {
+        public XmlCustomKeyFiler()
+        {
+        }
+
+        const string CustomKeyFileName = "Input\\Keyboard.xml";
+
+        static readonly XmlSerializer keyArraySerializer = new XmlSerializer(typeof(CustomKey[]));
+
+        public IEnumerable<CustomKey> ReadKeys()
+        {
+            string filePath = GetFilePath();
+            var customKeys = (CustomKey[])keyArraySerializer.DeserializeXiaGu(filePath);
+            return customKeys;
+        }
+
+        public void WriteKeys(CustomKey[] keys)
+        {
+            string filePath = GetFilePath();
+            string directoryPath = Path.GetDirectoryName(filePath);
+
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+            keyArraySerializer.SerializeXiaGu(filePath, keys, FileMode.Create);
+        }
+
+        /// <summary>
+        /// 获取到默认存放到的文件路径;
+        /// </summary>
+        public static string GetFilePath()
+        {
+            return ResourcePath.CombineConfiguration(CustomKeyFileName);
+        }
+
+    }
+
+    [XmlType("Key")]
+    public struct CustomKey : IEquatable<CustomKey>
+    {
+        public CustomKey(KeyFunction function, KeyCode keyCode)
+        {
+            this.function = function;
+            this.keyCode = keyCode;
+        }
+
+        [XmlAttribute("function")]
+        public KeyFunction function { get; private set; }
+
+        [XmlAttribute("key")]
+        public KeyCode keyCode { get; private set; }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is CustomKey))
+                return false;
+            return Equals((CustomKey)obj);
+        }
+
+        public bool Equals(CustomKey other)
+        {
+            return  this.function == other.function &&
+                this.keyCode == other.keyCode;
+        }
+
+        public override int GetHashCode()
+        {
+            return ((int)function) ^ ((int)keyCode);
+        }
+
+        public override string ToString()
+        {
+            return "Function:" + function.ToString() + ";Key:" + keyCode.ToString();
+        }
+
+    }
 
     /// <summary>
     /// 对 UnityEngine.Input 进行包装;
     /// </summary>
-    [DisallowMultipleComponent]
-    public class CustomInput : MonoBehaviour
+    public static class CustomInput
     {
 
-        internal static readonly KeyFunction[] Functions = Enum.GetValues(typeof(KeyFunction)).Cast<KeyFunction>().ToArray();
+        static readonly KeyFunction[] functionArray = Enum.GetValues(typeof(KeyFunction)).
+            Cast<KeyFunction>().ToArray();
+
+        public static IEnumerable<KeyFunction> FunctionKeys
+        {
+            get { return functionArray; }
+        }
+
+        static readonly Dictionary<int, KeyCode> keyMap = 
+            functionArray.ToDictionary(function => new KeyValuePair<int, KeyCode>((int)function, KeyCode.None));
+
+        internal static ICustomKeyFiler Filer { get; private set; }
+
+        static CustomInput()
+        {
+            Filer = new XmlCustomKeyFiler();
+        }
+
+        internal static void Initialize()
+        {
+            Filer = new XmlCustomKeyFiler();
+            ReadFromFile();
+
+            var emptyKeys = GetEmptyKeys().ToList();
+            if (emptyKeys.Count != 0)
+            {
+                Debug.LogWarning("未定义的按键:" + emptyKeys.ToLog());
+            }
+        }
 
         /// <summary>
-        /// 按键映射表;
+        /// 从文件读取到所以按键信息;
         /// </summary>
-        static readonly Dictionary<int, KeyCode> keyMap = 
-            Functions.ToDictionary(function => new KeyValuePair<int, KeyCode>((int)function, KeyCode.None));
+        public static void ReadFromFile()
+        {
+            var keys = Filer.ReadKeys();
+            UpdateKeyMap(keys);
+        }
 
+        static void UpdateKeyMap(IEnumerable<CustomKey> customKeys)
+        {
+            foreach (var key in customKeys)
+            {
+                SetKey(key);
+            }
+        }
+
+        public static void SetKey(CustomKey key)
+        {
+            SetKey(key.function, key.keyCode);
+        }
+
+        public static void SetKey(KeyFunction function, KeyCode key)
+        {
+            keyMap[(int)function] = key;
+        }
+
+        /// <summary>
+        /// 设置到按键,并且保存;
+        /// </summary>
+        public static void SetKeysAndWrite(IEnumerable<CustomKey> keys)
+        {
+            foreach (var key in keys)
+            {
+                SetKey(key);
+            }
+            WriteToFile();
+        }
+
+        /// <summary>
+        /// 将所以按键输出\保存到文件;
+        /// </summary>
+        public static void WriteToFile()
+        {
+            CustomKey[] keys = GetKeys().ToArray();
+            Filer.WriteKeys(keys);
+        }
+
+        /// <summary>
+        /// 获取到所有对应的按键信息;
+        /// </summary>
+        public static IEnumerable<CustomKey> GetKeys()
+        {
+            return keyMap.Select(pair => PairToCustomKey(pair));
+        }
+
+        static CustomKey PairToCustomKey(KeyValuePair<int, KeyCode> pair)
+        {
+            KeyFunction function = (KeyFunction)pair.Key;
+            KeyCode key = pair.Value;
+            return new CustomKey(function, key);
+        }
 
         /// <summary>
         /// 获取到所有按键值为空的功能键;
         /// </summary>
-        public static List<KeyFunction> EmptyKeys()
+        public static IEnumerable<KeyFunction> GetEmptyKeys()
         {
-            List<KeyFunction> noneFunctionKeys = new List<KeyFunction>();
             foreach (var key in keyMap)
             {
-                KeyFunction function = (KeyFunction)key.Key;
-
-                if (IsEmptyKes(function))
-                    noneFunctionKeys.Add(function);
+                if (key.Value == KeyCode.None)
+                {
+                    KeyFunction function = (KeyFunction)key.Key;
+                    yield return function;
+                }
             }
-            return noneFunctionKeys;
         }
 
         /// <summary>
         /// 是为未设置 具体按键的 功能键;
         /// </summary>
-        public static bool IsEmptyKes(KeyFunction function)
+        public static bool IsEmptyKey(KeyFunction function)
         {
             KeyCode keyCode = keyMap[(int)function];
             return keyCode == KeyCode.None;
         }
 
         /// <summary>
-        /// 设置按键到映射表(但是不做保存);
-        /// </summary>
-        public static void SetKey(KeyFunction function, KeyCode keyCode)
-        {
-            keyMap[(int)function] = keyCode;
-        }
-
-        /// <summary>
-        /// 对按键进行转换;
+        /// 获取到对应;
         /// </summary>
         public static KeyCode GetKey(KeyFunction function)
         {
             KeyCode keycode = keyMap[(int)function];
             return keycode;
         }
-
 
         /// <summary>
         /// 用户有按着 相关按键 时一直返回true;
@@ -94,153 +251,6 @@ namespace KouXiaGu.KeyInput
             KeyCode keycode = GetKey(function);
             return Input.GetKeyUp(keycode);
         }
-
-        #region 按键映射储存为XML
-
-        const string CUSTIM_KEY_FILE_NAME = "Input\\Keyboard.xml";
-
-        static readonly XmlSerializer customKeyListSerializer = new XmlSerializer(typeof(List<CustomKey>));
-
-        public static XmlSerializer CustomKeyListSerializer
-        {
-            get { return customKeyListSerializer; }
-        }
-
-        /// <summary>
-        /// 将按键信息已XML格式,保存到预定义的目录下;
-        /// </summary>
-        public static void Save()
-        {
-            string filePath = GetDefaultFilePath();
-
-            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-            Save(filePath);
-        }
-
-        /// <summary>
-        /// 从默认的路径获取到自定义Key,并且更新按键映射字典;
-        /// </summary>
-        public static void Load()
-        {
-            string filePath = GetDefaultFilePath();
-            Load(filePath);
-        }
-
-        /// <summary>
-        /// 获取到默认存放到的文件路径;
-        /// </summary>
-        static string GetDefaultFilePath()
-        {
-            return ResourcePath.CombineConfiguration(CUSTIM_KEY_FILE_NAME);
-        }
-
-        /// <summary>
-        /// 将按键信息已XML格式保存到此路径下;
-        /// </summary>
-        public static void Save(string filePath)
-        {
-            var customKeyList = GetCustomKeyList();
-            customKeyListSerializer.SerializeXiaGu(filePath, customKeyList, FileMode.Create);
-        }
-
-        /// <summary>
-        /// 获取到需要保存的自定义Key;
-        /// </summary>
-        static List<CustomKey> GetCustomKeyList()
-        {
-            List<CustomKey> customKeyList = new List<CustomKey>(keyMap.Count);
-            foreach (var item in keyMap)
-            {
-                CustomKey customKey = new CustomKey(item.Key, item.Value);
-                customKeyList.Add(customKey);
-            }
-            return customKeyList;
-        }
-
-        /// <summary>
-        /// 获取到自定义Key,并且从更新按键映射字典;
-        /// </summary>
-        public static void Load(string filePath)
-        {
-            var customKeys = (List<CustomKey>)customKeyListSerializer.DeserializeXiaGu(filePath);
-            UpdateKeyMap(customKeys);
-        }
-
-        /// <summary>
-        /// 更新按键映射字典;
-        /// </summary>
-        public static void UpdateKeyMap(IEnumerable<CustomKey> customKeys)
-        {
-            keyMap.Clear();
-            foreach (var item in customKeys)
-            {
-                keyMap[item.function] = item.keyCode;
-            }
-        }
-
-        [XmlType("Key")]
-        public struct CustomKey
-        {
-            public CustomKey(int function, KeyCode keyCode)
-            {
-                this.function = function;
-                this.keyCode = keyCode;
-            }
-
-            [XmlAttribute("function")]
-            public int function { get; private set; }
-            [XmlAttribute("key")]
-            public KeyCode keyCode { get; private set; }
-
-            public override string ToString()
-            {
-                return "Function:" + function + ";Key:" + keyCode.ToString();
-            }
-        }
-
-        #endregion
-
-        #region 实例部分;
-
-        CustomInput() { }
-
-        static bool initialized = false;
-
-        void Awake()
-        {
-            if (initialized)
-            {
-                Destroy(this);
-                Debug.LogWarning("重复实例的Input类;" + name);
-            }
-            else
-            {
-                initialized = true;
-                initialize();
-            }
-        }
-
-        void initialize()
-        {
-            try
-            {
-                Load();
-                var emptyKeys = EmptyKeys();
-                if (emptyKeys.Count != 0)
-                {
-                    Debug.LogWarning("未定义的按键:" + emptyKeys.ToLog());
-                }
-                emptyKeys.Clear();
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning("按键初始化失败;" + e);
-            }
-        }
-
-        #endregion
 
     }
 
