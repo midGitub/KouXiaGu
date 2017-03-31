@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using KouXiaGu.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,7 +40,7 @@ namespace KouXiaGu.UI
             unSubscriber = null;
         }
 
-        public void UpdateTexts(ITextDictionary textDictionary)
+        public void UpdateTexts(IDictionary<string, string> textDictionary)
         {
             string text;
             if (textDictionary.TryGetValue(Key, out text))

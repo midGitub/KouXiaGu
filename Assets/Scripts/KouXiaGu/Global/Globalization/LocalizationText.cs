@@ -57,7 +57,8 @@ namespace KouXiaGu.Globalization
         /// </summary>
         public static void UpdateTextObserver(ITextObserver textObserver)
         {
-            textObserver.UpdateTexts(textDictionary);
+            throw new NotImplementedException();
+            //textObserver.UpdateTexts(textDictionary);
         }
 
 

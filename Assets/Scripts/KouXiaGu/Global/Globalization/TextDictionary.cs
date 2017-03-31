@@ -7,6 +7,9 @@ using KouXiaGu.Collections;
 namespace KouXiaGu.Globalization
 {
 
+    public interface ITextDictionary : IReadOnlyDictionary<string, string>
+    {
+    }
 
     public class TextDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, ITextDictionary,
         IEnumerable<TextItem>
