@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Globalization;
 using KouXiaGu.KeyInput;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ namespace KouXiaGu
         void Start()
         {
             InitCustomInput();
+            InitLanguage();
 
         }
 
@@ -46,7 +48,7 @@ namespace KouXiaGu
         /// </summary>
         void InitLanguage()
         {
-
+            LanguagePackReader.Init();
         }
 
     }
