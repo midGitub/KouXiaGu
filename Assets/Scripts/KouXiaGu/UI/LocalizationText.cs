@@ -31,7 +31,7 @@ namespace KouXiaGu.UI
             textObject = GetComponent<Text>();
 
             key = textObject.text;
-            unSubscriber = Globalization.LocalizationText.Subscribe(this);
+            unSubscriber = Localization.Subscribe(this);
         }
 
         void OnDestroy()
@@ -55,12 +55,8 @@ namespace KouXiaGu.UI
 
         void OnTextNotFound()
         {
-#if COLLECT_LACKED_KEYS
-            LackingTextCollecter.Collecting(key);
-            Text = key;
-#else
             Debug.Log(name + " 无法找到对应文本:" + key);
-#endif
+            Text = key;
         }
 
     }

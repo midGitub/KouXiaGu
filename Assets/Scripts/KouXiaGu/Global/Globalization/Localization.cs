@@ -1,193 +1,134 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
-using UnityEngine;
+using KouXiaGu.Collections;
+using KouXiaGu.Rx;
 
 namespace KouXiaGu.Globalization
 {
 
-
     /// <summary>
-    /// 本地信息提供;
+    /// 本地化语言文本管理;
     /// </summary>
-    [XmlType("LocalizationConfig"), Serializable]
-    public class Localization
+    public static class Localization
     {
-        Localization() { }
 
+        public static IDictionary<string, string> textDictionary { get; private set; }
+        static readonly HashSet<ITextObserver> observers = new HashSet<ITextObserver>();
+        static List<LanguagePack> languages;
+        static int languageIndex;
 
-        const string FILE_NAME = "Localization";
-        const string FILE_EXTENSION = ".xml";
-
-        static readonly XmlSerializer serializer = new XmlSerializer(typeof(Localization));
-
-
-        static string ConfigFilePath
+        /// <summary>
+        /// 词条总数;
+        /// </summary>
+        public static int EntriesCount
         {
-            get { return Path.Combine(Resources.DirectoryPath, FILE_NAME); }
-        }
-
-
-        /// <summary>
-        /// 所有存在的语言;
-        /// </summary>
-        public static List<LanguageFile> ReadOnlyLanguageFiles { get; private set; }
-
-        /// <summary>
-        /// 所有存在的语言;
-        /// </summary>
-        public static List<string> ReadOnlyLanguageNames { get; private set; }
-
-        /// <summary>
-        /// 选中的下标;
-        /// </summary>
-        public static int LanguageIndex { get; private set; }
-
-        /// <summary>
-        /// 当前选中的语言,若不存在则返回 null;
-        /// </summary>
-        public static LanguageFile LanguageFile
-        {
-            get
-            {
-                return LanguageIndex >= ReadOnlyLanguageFiles.Count || LanguageIndex < 0 ?
-                    null :
-                    ReadOnlyLanguageFiles[LanguageIndex];
-            }
+            get { return textDictionary != null ? textDictionary.Count : 0; }
         }
 
         /// <summary>
-        /// 当前语言信息,若不存在则返回 默认的;
+        /// 只读的语言文件合集;
         /// </summary>
-        public static Culture Culture
+        public static List<LanguagePack> Languages
         {
-            get
-            {
-                return LanguageIndex >= ReadOnlyLanguageFiles.Count || LanguageIndex < 0 ?
-                    Culture.CurrentLanguage :
-                    ReadOnlyLanguageFiles[LanguageIndex].Language;
-            }
+            get { return languages; }
         }
-
 
         /// <summary>
-        /// 初始化;
+        /// 当前读取的语言文件下标;
         /// </summary>
-        /// <param name="languages">存在的语言信息;</param>
-        public static void Initialize(List<LanguageFile> languageFiles)
+        public static int LanguageIndex
         {
-            ReadOnlyLanguageFiles = languageFiles;
-            ReadOnlyLanguageNames = languageFiles.Select(item => item.Language.LanguageName).ToList();
-            Localization config = Read();
-
-            LanguageIndex = config.FindIndex(ReadOnlyLanguageNames);
+            get { return languageIndex; }
         }
 
-        static Localization Read()
+        /// <summary>
+        /// 订阅到文本变化;
+        /// </summary>
+        public static IDisposable Subscribe(ITextObserver observer)
         {
-            string filePath = Path.ChangeExtension(ConfigFilePath, FILE_EXTENSION);
-            var descr = (Localization)serializer.DeserializeXiaGu(filePath);
-            return descr;
-        }
-
-
-        public static void SetLanguage(int index)
-        {
-            LanguageFile languageFile = ReadOnlyLanguageFiles[index];
-            Localization config;
-            try
-            {
-                config = Read();
-                config.FirstLanguage = languageFile.Language.LanguageName;
-            }
-            catch 
-            {
-                config = new Localization(languageFile.Language.LanguageName);
-            }
-            Write(config);
-
-            LanguageIndex = index;
-        }
-
-        public static void SetLanguage(Localization config)
-        {
-            Write(config);
-            LanguageIndex = config.FindIndex(ReadOnlyLanguageNames);
-        }
-
-        static void Write(Localization config)
-        {
-            string filePath = Path.ChangeExtension(ConfigFilePath, FILE_EXTENSION);
-            serializer.SerializeXiaGu(filePath, config);
-        }
-
-
-
-        public Localization(params string[] languagePrioritys)
-        {
-            if (languagePrioritys == null)
+            if (observer == null)
                 throw new ArgumentNullException();
-            if (languagePrioritys.Length < 1)
-                throw new ArgumentOutOfRangeException();
+            if (!observers.Add(observer))
+                throw new ArgumentException();
 
-            this.languagePrioritys = languagePrioritys;
+            if(textDictionary != null)
+                TrackObserver(observer);
+
+            return new CollectionUnsubscriber<ITextObserver>(observers, observer);
+        }
+
+        static void TrackObserver(ITextObserver observer)
+        {
+            observer.UpdateTexts(textDictionary);
         }
 
         /// <summary>
-        /// 语言读取顺序
+        /// 设置新的 文本字典, 需要手动 TrackAll() 所有订阅者;
         /// </summary>
-        [SerializeField]
-        string[] languagePrioritys = new string[]
+        public static void SetTextDictionary(IDictionary<string, string> textDictionary)
+        {
+            if (textDictionary == null)
+                throw new ArgumentNullException();
+
+            Localization.textDictionary = textDictionary;
+        }
+
+        /// <summary>
+        /// 需要在Unity线程内调用;
+        /// </summary>
+        public static void TrackAll()
+        {
+            ITextObserver[] observerArray = observers.ToArray();
+            foreach (var observer in observerArray)
             {
-                "English",
-                "English",
-                "简体中文",
-                "中文",
-            };
-
-
-        [XmlArray("LanguagePriority"), XmlArrayItem("Language")]
-        public string[] LanguagePrioritys
-        {
-            get { return languagePrioritys; }
-            private set { languagePrioritys = value; }
-        }
-
-        [XmlIgnore]
-        public string FirstLanguage
-        {
-            get { return LanguagePrioritys[0]; }
-            set { LanguagePrioritys[0] = value; }
-        }
-
-
-        /// <summary>
-        /// 获取到优先级最高的语言 下标,若不存在则返回 -1;
-        /// </summary>
-        /// <param name="languages">存在的语言;</param>
-        public int FindIndex(IList<string> languages)
-        {
-            string[] prioritys = LanguagePrioritys;
-            return FindIndex(languages, prioritys);
-        }
-
-        /// <summary>
-        /// 获取到优先级最高的语言 下标,若不存在则返回 -1;
-        /// </summary>
-        /// <param name="languages">存在的语言;</param>
-        /// <param name="prioritys">优先级降序排序;</param>
-        int FindIndex(IList<string> languages, IEnumerable<string> prioritys)
-        {
-            int index = -1;
-            foreach (var priority in prioritys)
-            {
-                index = languages.IndexOf(priority);
-                if (index != -1)
-                    return index;
+                TrackObserver(observer);
             }
-            return index;
+        }
+
+        /// <summary>
+        /// 需要在Unity线程内调用;
+        /// </summary>
+        public static IEnumerator TrackAllAsync()
+        {
+            ITextObserver[] observerArray = observers.ToArray();
+            foreach (var observer in observerArray)
+            {
+                TrackObserver(observer);
+                yield return null;
+            }
+        }
+
+        public static bool Contains(ITextObserver observer)
+        {
+            return observers.Contains(observer);
+        }
+
+        /// <summary>
+        /// 使用默认的方式初始化;
+        /// </summary>
+        internal static void Init()
+        {
+            languages = LanguagePackReader.Read(out languageIndex);
+        }
+
+        /// <summary>
+        /// 设置到语言;
+        /// </summary>
+        public static void SetLanguage(int languageIndex)
+        {
+            var pack = Languages[languageIndex];
+            SetTextDictionaryToNull();
+            LanguagePackReader.Read(pack, textDictionary);
+        }
+
+        /// <summary>
+        /// 设置语言字典到空;
+        /// </summary>
+        static void SetTextDictionaryToNull()
+        {
+            Localization.textDictionary = null;
         }
 
     }

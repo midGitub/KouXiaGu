@@ -48,7 +48,7 @@ namespace KouXiaGu
         /// </summary>
         void InitLanguage()
         {
-            LanguagePackReader.Init();
+            Localization.Init();
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 using KouXiaGu.Globalization;
 
 namespace KouXiaGu.UI
@@ -17,7 +18,7 @@ namespace KouXiaGu.UI
         {
             languageDropdown.ClearOptions();
 
-            languageDropdown.AddOptions(Localization.ReadOnlyLanguageNames);
+            languageDropdown.AddOptions(Localization.Languages.Select(pack => pack.Name).ToList());
                 languageDropdown.value = Localization.LanguageIndex;
 
             languageDropdown.onValueChanged.AddListener(OnChanged);
@@ -28,7 +29,6 @@ namespace KouXiaGu.UI
             if (Localization.LanguageIndex != index)
             {
                 Localization.SetLanguage(index);
-                LocalizationInitializer.Read();
             }
         }
 
