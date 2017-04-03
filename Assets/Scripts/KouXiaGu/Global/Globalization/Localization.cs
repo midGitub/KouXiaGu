@@ -119,8 +119,9 @@ namespace KouXiaGu.Globalization
         public static void SetLanguage(int languageIndex)
         {
             var pack = Languages[languageIndex];
+            var temp = textDictionary;
             SetTextDictionaryToNull();
-            LanguagePackReader.Read(pack, textDictionary);
+            LanguagePackReader.Read(pack, temp);
         }
 
         /// <summary>

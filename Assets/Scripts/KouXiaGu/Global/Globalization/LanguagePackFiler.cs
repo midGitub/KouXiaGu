@@ -124,7 +124,7 @@ namespace KouXiaGu.Globalization
 
         const string RootElementName = "LocalizationTexts";
         const string LanguageNameAttributeName = "name";
-        const string LanguageLocNameAttributeName = "languageTag";
+        const string LanguageLocNameAttributeName = "locName";
 
         const string TextElementName = "Text";
         const string KeyAttributeName = "key";

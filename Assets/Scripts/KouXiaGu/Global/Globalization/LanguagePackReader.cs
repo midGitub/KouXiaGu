@@ -142,7 +142,7 @@ namespace KouXiaGu.Globalization
             IsInitialized = false;
             effective = default(LanguagePack);
             textDictionary = null;
-            Destroy(this);
+            Destroy(gameObject);
         }
 
 
