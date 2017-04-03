@@ -13,7 +13,7 @@ namespace KouXiaGu
     /// 负责对游戏资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameManager : MonoBehaviour
+    public class GameManager : OperateWaiter
     {
         GameManager()
         {
@@ -22,17 +22,18 @@ namespace KouXiaGu
         /// <summary>
         /// 对内容进行初始化;
         /// </summary>
-        void Start()
+        protected override void Awake()
         {
-            InitCustomInput();
-            InitLanguage();
+            base.Awake();
 
+            InitInput();
+            InitLanguage();
         }
 
         /// <summary>
         /// 初始化自定义按键模块;
         /// </summary>
-        void InitCustomInput()
+        void InitInput()
         {
             CustomInput.ReadFromFile();
 
@@ -48,7 +49,8 @@ namespace KouXiaGu
         /// </summary>
         void InitLanguage()
         {
-            Localization.Init();
+            var operater = Localization.Init();
+            AddOperater(operater);
         }
 
     }

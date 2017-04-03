@@ -11,7 +11,7 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 负责读取本地化文本;
     /// </summary>
-    public sealed class LanguagePackReader : MonoBehaviour
+    public sealed class LanguagePackReader : MonoBehaviour, IOperateAsync
     {
         static LanguagePackReader()
         {
@@ -30,7 +30,6 @@ namespace KouXiaGu.Globalization
         /// 是否已经在读取中?
         /// </summary>
         public static bool IsInitialized { get; private set; }
-
         static LanguagePack effective;
         static IDictionary<string, string> textDictionary;
 
@@ -42,20 +41,20 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 读取到新的语言文件;
         /// </summary>
-        public static void Read(LanguagePack pack, IDictionary<string, string> dictionary)
+        public static IOperateAsync Read(LanguagePack pack, IDictionary<string, string> dictionary)
         {
             effective = pack;
             textDictionary = dictionary;
-            StartRead();
+            return StartRead();
         }
 
         /// <summary>
         /// 根据预留的语言信息,读取到最适合的语言文件;
         /// </summary>
-        public static List<LanguagePack> Read(out int choice)
+        public static IOperateAsync Read(out List<LanguagePack> packs, out int choice)
         {
             Config config;
-            List<LanguagePack> packs = GetMainLanguagePacks();
+            packs = GetMainLanguagePacks();
 
             if (packs.Count == 0)
                 Debug.LogWarning("Not Found Any LanguagePack In :" + MainLanguagePackDirectory);
@@ -72,8 +71,7 @@ namespace KouXiaGu.Globalization
             effective = GetPack(packs, config.LocName, out choice);
             textDictionary = new Dictionary<string, string>();
 
-            StartRead();
-            return packs;
+            return StartRead();
         }
 
         static LanguagePack GetPack(List<LanguagePack> packs, string locName, out int index)
@@ -103,13 +101,15 @@ namespace KouXiaGu.Globalization
             return new List<LanguagePack>(packs);
         }
 
-        static void StartRead()
+        static IOperateAsync StartRead()
         {
             if (IsInitialized)
                 throw new ArgumentException("语言文件已经在读取中;");
 
             IsInitialized = true;
             var instance = new GameObject("LanguagePackReader", typeof(LanguagePackReader));
+            var i = instance.GetComponent<LanguagePackReader>();
+            return i;
         }
 
 
@@ -117,8 +117,15 @@ namespace KouXiaGu.Globalization
         {
         }
 
-        void Start()
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public Exception Ex { get; private set; }
+
+        void Awake()
         {
+            IsCompleted = false;
+            IsFaulted = false;
+            Ex = null;
             ReadLanguagePack();
         }
 
@@ -129,12 +136,23 @@ namespace KouXiaGu.Globalization
 
         void ReadLanguagePack()
         {
-            var texts = Filer.Read(effective);
-            textDictionary.AddOrUpdate(texts);
+            try
+            {
+                var texts = Filer.Read(effective);
+                textDictionary.AddOrUpdate(texts);
 
-            Localization.SetTextDictionary(textDictionary);
-            Localization.TrackAll();
-            Clear();
+                Localization.SetTextDictionary(textDictionary);
+                Localization.TrackAll();
+                Clear();
+
+                IsCompleted = true;
+            }
+            catch (Exception ex)
+            {
+                IsCompleted = true;
+                IsFaulted = true;
+                Ex = ex;
+            }
         }
 
         void Clear()

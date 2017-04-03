@@ -16,7 +16,7 @@ namespace KouXiaGu
     public class LuaManager : MonoBehaviour
     {
 
-        static readonly LuaEnv luaEnv = new LuaEnv(); //all lua behaviour shared one luaenv only!
+        static readonly LuaEnv luaEnv = new LuaEnv();
 
         public static LuaEnv Luaenv
         {
@@ -24,7 +24,7 @@ namespace KouXiaGu
         }
 
         internal static float lastGCTime = 0;
-        internal const float GCInterval = 1; //1 second 
+        internal const float GCInterval = 1; //second 
 
         public static string SpritesPath
         {

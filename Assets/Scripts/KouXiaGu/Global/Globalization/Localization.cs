@@ -108,9 +108,9 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 使用默认的方式初始化;
         /// </summary>
-        internal static void Init()
+        internal static IOperateAsync Init()
         {
-            languages = LanguagePackReader.Read(out languageIndex);
+            return LanguagePackReader.Read(out languages, out languageIndex);
         }
 
         /// <summary>

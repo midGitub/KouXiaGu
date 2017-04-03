@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 
-namespace KouXiaGu.Initialization
+namespace KouXiaGu
 {
 
     [CustomEditor(typeof(OperateWaiter), true)]
+    [CanEditMultipleObjects]
     public class StartOperateWaiterEditor : Editor
     {
 
@@ -17,11 +18,8 @@ namespace KouXiaGu.Initialization
 
             OperateWaiter target = (OperateWaiter)this.target;
 
-            EditorGUILayout.LabelField("等待总数:" + target.Total);
             EditorGUILayout.LabelField("剩余总数:" + target.Remainder);
-            EditorGUILayout.LabelField("等待中:", target.current != null ? target.current .GetType().Name : "Unknown");
-            EditorGUILayout.LabelField("完成?", target.current != null ? target.current.IsCompleted.ToString() : "Unknown");
-            EditorGUILayout.LabelField("失败?", target.current != null ? target.current.IsFaulted.ToString() : "Unknown");
+            EditorGUILayout.LabelField("失败?", target.FaultedList != null ? target.IsFaulted.ToString() : "Unknown");
         }
 
     }

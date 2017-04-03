@@ -117,18 +117,6 @@ namespace KouXiaGu
             Filer = new XmlCustomKeyFiler();
         }
 
-        internal static void Initialize()
-        {
-            Filer = new XmlCustomKeyFiler();
-            ReadFromFile();
-
-            var emptyKeys = GetEmptyKeys().ToList();
-            if (emptyKeys.Count != 0)
-            {
-                Debug.LogWarning("未定义的按键:" + emptyKeys.ToLog());
-            }
-        }
-
         /// <summary>
         /// 从文件读取到所以按键信息;
         /// </summary>
