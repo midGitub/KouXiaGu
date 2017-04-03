@@ -11,6 +11,11 @@ namespace KouXiaGu.World
     /// </summary>
     public class BasicInformation
     {
+        public BasicInformation()
+        {
+            Product = new ProductManager();
+            Building = new BuildingManager();
+        }
 
         /// <summary>
         /// 资源\产品;

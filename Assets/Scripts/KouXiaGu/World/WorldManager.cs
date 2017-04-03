@@ -2,21 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace KouXiaGu.World
 {
 
-
     public class WorldManager
     {
-        public WorldManager(BasicInformation basicInfo, WorldInfo info)
-        {
-            BasicInfo = basicInfo;
-            Info = info;
-
-            Time = SceneObject.GetObject<TimeManager>();
-            Time.Initialize(info.Time);
-        }
 
         /// <summary>
         /// 基础信息;
@@ -32,6 +24,16 @@ namespace KouXiaGu.World
         /// 时间;
         /// </summary>
         public TimeManager Time { get; private set; }
+
+        public WorldManager(BasicInformation basicInfo, WorldInfo info)
+        {
+            BasicInfo = basicInfo;
+            Info = info;
+
+            Time = SceneObject.GetObject<TimeManager>();
+            Time.Initialize(info.Time);
+        }
+
 
     }
 

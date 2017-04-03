@@ -9,7 +9,7 @@ namespace KouXiaGu
 
     [CustomEditor(typeof(OperateWaiter), true)]
     [CanEditMultipleObjects]
-    public class StartOperateWaiterEditor : Editor
+    public class OperateWaiterEditor : Editor
     {
 
         public override void OnInspectorGUI()
@@ -19,7 +19,7 @@ namespace KouXiaGu
             OperateWaiter target = (OperateWaiter)this.target;
 
             EditorGUILayout.LabelField("剩余总数:" + target.Remainder);
-            EditorGUILayout.LabelField("失败?", target.FaultedList != null ? target.IsFaulted.ToString() : "Unknown");
+            EditorGUILayout.LabelField("失败?", target.IsFaulted.ToString());
         }
 
     }
