@@ -11,7 +11,7 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 负责读取本地化文本;
     /// </summary>
-    public sealed class LanguagePackReader : MonoBehaviour, IOperateAsync
+    public sealed class LanguagePackReader : MonoBehaviour, IAsync
     {
         static LanguagePackReader()
         {
@@ -41,7 +41,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 读取到新的语言文件;
         /// </summary>
-        public static IOperateAsync Read(LanguagePack pack, IDictionary<string, string> dictionary)
+        public static IAsync Read(LanguagePack pack, IDictionary<string, string> dictionary)
         {
             effective = pack;
             textDictionary = dictionary;
@@ -51,7 +51,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 根据预留的语言信息,读取到最适合的语言文件;
         /// </summary>
-        public static IOperateAsync Read(out List<LanguagePack> packs, out int choice)
+        public static IAsync Read(out List<LanguagePack> packs, out int choice)
         {
             Config config;
             packs = GetMainLanguagePacks();
@@ -101,7 +101,7 @@ namespace KouXiaGu.Globalization
             return new List<LanguagePack>(packs);
         }
 
-        static IOperateAsync StartRead()
+        static IAsync StartRead()
         {
             if (IsInitialized)
                 throw new ArgumentException("语言文件已经在读取中;");

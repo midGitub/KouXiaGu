@@ -17,10 +17,10 @@ namespace KouXiaGu.Terrain3D
         {
             base.OnInspectorGUI();
 
-            if (MapDataManager.ActiveData != null)
+            if (MapDataManager.Data != null)
             {
-                EditorGUILayout.LabelField("地图容量:", MapDataManager.ActiveData.Data.Count.ToString());
-                EditorGUILayout.LabelField("归档容量:", MapDataManager.ActiveData.ArchiveData.Count.ToString());
+                EditorGUILayout.LabelField("地图容量:", MapDataManager.Data.Data.Count.ToString());
+                EditorGUILayout.LabelField("归档容量:", MapDataManager.Data.ArchiveData.Count.ToString());
 
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("保存预制"))
@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
                 }
                 if (GUILayout.Button("清除记录"))
                 {
-                    MapDataManager.ActiveData.ClearArchiveData();
+                    MapDataManager.Data.ClearArchiveData();
                 }
                 if (GUILayout.Button("清空地图"))
                 {

@@ -83,7 +83,7 @@ namespace KouXiaGu.Initialization
 
             StartWait(operaters.
                 Where(item => !errorList.Contains(item)).
-                Cast<IOperateAsync>().ToList());
+                Cast<IAsync>().ToList());
         }
 
         /// <summary>
@@ -112,10 +112,10 @@ namespace KouXiaGu.Initialization
 
             StartWait(operaters.
               Where(item => !errorList.Contains(item)).
-              Cast<IOperateAsync>().ToList());
+              Cast<IAsync>().ToList());
         }
 
-        protected override void OnComplete(IOperateAsync operater)
+        protected override void OnComplete(IAsync operater)
         {
             return;
         }
@@ -133,7 +133,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 当出现异常是调用;
         /// </summary>
-        protected override void OnFail(IOperateAsync operater, Exception e)
+        protected override void OnFail(IAsync operater, Exception e)
         {
             Debug.LogError(e);
         }

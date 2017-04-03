@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D.Tests
 
         IDictionary<CubicHexCoord, TerrainNode> Data
         {
-            get { return MapDataManager.ActiveData.Data; }
+            get { return MapDataManager.Data.Data; }
         }
 
         void Update()
@@ -31,12 +31,12 @@ namespace KouXiaGu.Terrain3D.Tests
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                MapDataManager.ActiveData.Road.Create(coord);
+                MapDataManager.Data.Road.Create(coord);
             }
             if (Input.GetKeyDown(KeyCode.Mouse1))
             {
                 CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                MapDataManager.ActiveData.Road.Destroy(coord);
+                MapDataManager.Data.Road.Destroy(coord);
             }
         }
 

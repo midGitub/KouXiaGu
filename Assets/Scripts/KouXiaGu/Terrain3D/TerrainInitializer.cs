@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
 
         }
 
-        class BuildWorld : MonoBehaviour, IOperateAsync
+        class BuildWorld : MonoBehaviour, IAsync
         {
             BuildWorld()
             {
@@ -59,7 +59,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static ObservableDictionary<CubicHexCoord, TerrainNode> Map
         {
-            get { return MapDataManager.ActiveData.Data; }
+            get { return MapDataManager.Data.Data; }
         }
 
         void ResetState()
@@ -106,7 +106,7 @@ namespace KouXiaGu.Terrain3D
             yield return ResInitializer.Initialize();
 
             MapDataManager.Load();
-            TerrainData.Initialize(MapDataManager.ActiveData);
+            TerrainData.Initialize(MapDataManager.Data);
 
             TerrainChangedCreater.Initialize(Map);
 
@@ -122,7 +122,7 @@ namespace KouXiaGu.Terrain3D
             yield return ResInitializer.Initialize();
 
             MapDataManager.Load(archive);
-            TerrainData.Initialize(MapDataManager.ActiveData);
+            TerrainData.Initialize(MapDataManager.Data);
 
             TerrainChangedCreater.Initialize(Map);
 

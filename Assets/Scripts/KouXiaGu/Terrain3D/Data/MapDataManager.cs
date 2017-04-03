@@ -14,6 +14,11 @@ namespace KouXiaGu.Terrain3D
     public static class MapDataManager
     {
 
+        static MapDataManager()
+        {
+            Filer = new ProtoMapFiler();
+        }
+
         public static MapFiler Filer { get; private set; }
 
         /// <summary>
@@ -24,7 +29,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏的地形数据;
         /// </summary>
-        public static MapData ActiveData { get; private set; }
+        public static MapData Data { get; private set; }
 
         /// <summary>
         /// 加载地形数据;
@@ -34,12 +39,12 @@ namespace KouXiaGu.Terrain3D
             try
             {
                 string filePath = TerrainFiler.Combine(DATA_FILE_NAME);
-                ActiveData = MapData.Create(filePath);
+                Data = Filer.Read(filePath);
             }
             catch (FileNotFoundException e)
             {
                 Debug.LogWarning("未找到地形地图数据文件或地图损坏,从新的地图加载游戏" + e);
-                ActiveData = MapData.Create();
+                //ActiveData = Filer.Read();
             }
         }
 
@@ -50,7 +55,8 @@ namespace KouXiaGu.Terrain3D
         {
             string filePath = TerrainFiler.Combine(DATA_FILE_NAME);
             string archivefilePath = archive.CombineToTerrain(DATA_FILE_NAME);
-            ActiveData = MapData.Create(filePath, archivefilePath);
+            //Data = MapData.Create(filePath, archivefilePath);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace KouXiaGu.Terrain3D
         public static void Save()
         {
             string filePath = TerrainFiler.Combine(DATA_FILE_NAME);
-            MapData.Write(filePath, ActiveData);
+            Filer.Write(filePath, Data);
         }
 
         /// <summary>
@@ -68,7 +74,8 @@ namespace KouXiaGu.Terrain3D
         public static void Save(ArchiveFile archive)
         {
             string archivefilePath = archive.CombineToTerrain(DATA_FILE_NAME);
-            MapData.WriteArchive(archivefilePath, ActiveData);
+            //MapData.WriteArchive(archivefilePath, Data);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -76,7 +83,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void Unload()
         {
-            ActiveData = null;
+            Data = null;
         }
 
     }

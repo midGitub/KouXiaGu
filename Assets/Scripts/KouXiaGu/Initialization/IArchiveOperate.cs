@@ -6,7 +6,7 @@ namespace KouXiaGu.Initialization
     /// <summary>
     /// 游戏存档操作;
     /// </summary>
-    public interface IArchiveOperate : IOperateAsync
+    public interface IArchiveOperate : IAsync
     {
         /// <summary>
         /// 进行保存;

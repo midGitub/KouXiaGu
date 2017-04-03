@@ -6,10 +6,15 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    /// <summary>
-    /// 异步操作;
-    /// </summary>
-    public interface IOperateAsync
+    public interface IAsync<TResult> : IAsync
+    {
+        /// <summary>
+        /// 返回的结果;
+        /// </summary>
+        TResult Result { get; }
+    }
+
+    public interface IAsync
     {
 
         /// <summary>

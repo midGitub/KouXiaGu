@@ -146,7 +146,7 @@ namespace KouXiaGu.Terrain3D
         {
             ArchiveMapFile archive = new ArchiveMapFile()
             {
-                ArchiveData = ArchiveData,
+                Data = ArchiveData,
                 Road = Road,
             };
             return archive;
@@ -157,7 +157,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void AddArchiveFile(ArchiveMapFile file)
         {
-            AddArchiveData(file.ArchiveData);
+            AddArchiveData(file.Data);
             AddRoadDate(file.Road);
             file.Clear();
         }
@@ -202,7 +202,7 @@ namespace KouXiaGu.Terrain3D
         /// 地图变化信息;
         /// </summary>
         [ProtoMember(1)]
-        public DictionaryArchiver<CubicHexCoord, TerrainNode> ArchiveData { get; set; }
+        public DictionaryArchiver<CubicHexCoord, TerrainNode> Data { get; set; }
 
         /// <summary>
         /// 地形道路信息;
@@ -212,7 +212,7 @@ namespace KouXiaGu.Terrain3D
 
         public void Clear()
         {
-            ArchiveData = null;
+            Data = null;
             Road = null;
         }
     }
