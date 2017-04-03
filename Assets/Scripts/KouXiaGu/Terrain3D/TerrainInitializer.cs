@@ -12,6 +12,38 @@ namespace KouXiaGu.Terrain3D
     /// 地形资源初始化,负责初始化次序;
     /// 控制整个地形初始化;
     /// </summary>
+    public static class TerrainInitializer0
+    {
+
+        public static void Init()
+        {
+
+        }
+
+        class BuildWorld : MonoBehaviour, IOperateAsync
+        {
+            BuildWorld()
+            {
+            }
+
+            public bool IsCompleted { get; private set; }
+            public bool IsFaulted { get; private set; }
+            public Exception Ex { get; private set; }
+
+            public static void StartBuildWorld()
+            {
+
+            }
+
+        }
+
+    }
+
+
+    /// <summary>
+    /// 地形资源初始化,负责初始化次序;
+    /// 控制整个地形初始化;
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class TerrainInitializer : MonoBehaviour, IStartOperate, IRecoveryOperate, IArchiveOperate
     {
@@ -50,7 +82,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用存档初始化;
         /// </summary>
-        Action IRecoveryOperate.Initialize(ArchiveFile archive)
+        Action IRecoveryOperate.Initialize(Initialization.ArchiveFile archive)
         {
             ResetState();
             StartCoroutine(Begin(archive));
@@ -60,7 +92,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 保存状态为存档;
         /// </summary>
-        void IArchiveOperate.SaveState(ArchiveFile archive)
+        void IArchiveOperate.SaveState(Initialization.ArchiveFile archive)
         {
             ResetState();
             StartCoroutine(SaveState(archive));
@@ -85,7 +117,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用存档初始化;
         /// </summary>
-        IEnumerator Begin(ArchiveFile archive)
+        IEnumerator Begin(Initialization.ArchiveFile archive)
         {
             yield return ResInitializer.Initialize();
 
@@ -101,7 +133,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 保存游戏内容;
         /// </summary>
-        IEnumerator SaveState(ArchiveFile archive)
+        IEnumerator SaveState(Initialization.ArchiveFile archive)
         {
             MapDataManager.Save(archive);
 

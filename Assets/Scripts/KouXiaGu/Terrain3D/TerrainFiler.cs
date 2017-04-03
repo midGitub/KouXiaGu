@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
 
         public static string resPath
         {
-            get { return Path.Combine(ResourcePath.ConfigurationDirectoryPath, ResDirectory); }
+            get { return Path.Combine(ResourcePath.ConfigDirectoryPath, ResDirectory); }
         }
 
         /// <summary>

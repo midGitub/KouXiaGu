@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Initialization;
 using System.IO;
 using UnityEngine;
@@ -14,6 +13,9 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public static class MapDataManager
     {
+
+        public static MapFiler Filer { get; private set; }
+
         /// <summary>
         /// 预制地图数据文件;
         /// </summary>

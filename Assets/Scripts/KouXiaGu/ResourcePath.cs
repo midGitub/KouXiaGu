@@ -25,7 +25,7 @@ namespace KouXiaGu
         /// <summary>
         /// 存放配置文件的文件夹路径;
         /// </summary>
-        public static readonly string ConfigurationDirectoryPath = Application.streamingAssetsPath;
+        public static readonly string ConfigDirectoryPath = Application.streamingAssetsPath;
 
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace KouXiaGu
         /// </summary>
         public static string CombineConfiguration(string path)
         {
-            return Path.Combine(ConfigurationDirectoryPath, path);
+            return Path.Combine(ConfigDirectoryPath, path);
         }
 
     }
