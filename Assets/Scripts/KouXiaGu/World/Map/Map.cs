@@ -43,25 +43,6 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public class Map
     {
-        public static Map Read(MapReader reader, MapFile file)
-        {
-            string filePath = GetMapDataFilePath(reader, file);
-            Map map = reader.Read(filePath);
-            map.File = file;
-            return map;
-        }
-
-        public static void Write(MapReader reader, Map map)
-        {
-            string filePath = GetMapDataFilePath(reader, map.File);
-            reader.Write(filePath, map);
-        }
-
-        static string GetMapDataFilePath(MapReader reader, MapFile file)
-        {
-            return Path.ChangeExtension(file.InfoPath, reader.FileExtension);
-        }
-
 
         [ProtoMember(1)]
         public ObservableDictionary<CubicHexCoord, MapNode> Data { get; private set; }
@@ -69,44 +50,34 @@ namespace KouXiaGu.World.Map
         [ProtoMember(2)]
         public RoadInfo Road { get; private set; }
 
-        public MapFile File { get; private set; }
-
-        Map()
-        {
-        }
-
-        public Map(MapFile file)
+        public Map()
         {
             Data = new ObservableDictionary<CubicHexCoord, MapNode>();
             Road = new RoadInfo();
-            File = file;
         }
 
     }
 
     /// <summary>
-    /// 地图文件;
+    /// 地图文件 管理\记录;
     /// </summary>
     public class MapFile
     {
         static MapFile()
         {
-            infoReader = new MapInfoReader();
+            defaultInfoReader = new MapInfoReader();
+            defaultMapReader = new ProtoMapReader();
         }
 
-        static readonly MapInfoReader infoReader;
+        static readonly MapInfoReader defaultInfoReader;
+        static readonly MapReader defaultMapReader;
 
         public MapInfo Info { get; private set; }
         public string InfoPath { get; private set; }
 
-        public MapInfoReader InfoReader
-        {
-            get { return infoReader; }
-        }
-
         public string InfoFileSearchPattern
         {
-            get { return "*" + InfoReader.FileExtension; }
+            get { return "*" + defaultInfoReader.FileExtension; }
         }
 
         public MapFile(string filePath)
@@ -128,14 +99,42 @@ namespace KouXiaGu.World.Map
         void ReadInfo(string filePath)
         {
             InfoPath = filePath;
-            Info = InfoReader.Read(filePath);
+            Info = defaultInfoReader.Read(filePath);
         }
 
         public void WriteInfo(MapInfo info)
         {
             string filePath = InfoPath;
-            InfoReader.Write(filePath, info);
+            defaultInfoReader.Write(filePath, info);
             this.Info = info;
+        }
+
+        public Map ReadMap()
+        {
+            return Read(defaultMapReader);
+        }
+
+        Map Read(MapReader reader)
+        {
+            string filePath = GetMapDataFilePath(reader);
+            Map map = reader.Read(filePath);
+            return map;
+        }
+
+        public void WriteMap(Map map)
+        {
+            Write(defaultMapReader, map);
+        }
+
+        void Write(MapReader reader, Map map)
+        {
+            string filePath = GetMapDataFilePath(reader);
+            reader.Write(filePath, map);
+        }
+
+        string GetMapDataFilePath(MapReader reader)
+        {
+            return Path.ChangeExtension(InfoPath, reader.FileExtension);
         }
 
     }

@@ -7,13 +7,10 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
+
+    [Obsolete]
     public class WorldManager
     {
-
-        /// <summary>
-        /// 基础信息;
-        /// </summary>
-        public BasicInformation BasicInfo { get; private set; }
 
         /// <summary>
         /// 世界信息;
@@ -21,13 +18,22 @@ namespace KouXiaGu.World
         public WorldInfo Info { get; private set; }
 
         /// <summary>
+        /// 资源\产品;
+        /// </summary>
+        public ProductManager Product { get; private set; }
+
+        /// <summary>
+        /// 建筑物;
+        /// </summary>
+        public BuildingManager Building { get; private set; }
+
+        /// <summary>
         /// 时间;
         /// </summary>
         public TimeManager Time { get; private set; }
 
-        public WorldManager(BasicInformation basicInfo, WorldInfo info)
+        public WorldManager(WorldInfo info)
         {
-            BasicInfo = basicInfo;
             Info = info;
 
             Time = SceneObject.GetObject<TimeManager>();

@@ -7,7 +7,10 @@ using KouXiaGu.World.Map;
 namespace KouXiaGu.World
 {
 
-    public struct WorldInfo
+    /// <summary>
+    /// 提供初始化的世界信息;
+    /// </summary>
+    public class WorldInfo
     {
 
         /// <summary>
@@ -18,7 +21,14 @@ namespace KouXiaGu.World
         /// <summary>
         /// 使用的地图信息;
         /// </summary>
-        public MapInfo Map { get; set; }
+        public MapFile Map { get; set; }
+
+        public ArchiveWorldInfo ArchiveInfo { get; set; }
+
+        public bool IsInitializeFromArchive
+        {
+            get { return ArchiveInfo != null; }
+        }
 
         /// <summary>
         /// 人口每日增长比例;
@@ -26,5 +36,14 @@ namespace KouXiaGu.World
         public float ProportionOfDailyGrowth { get; set; }
 
     }
+
+    public class ArchiveWorldInfo
+    {
+        /// <summary>
+        /// 存档地图信息;
+        /// </summary>
+        public ArchiveMapFile ArchiveMap { get; set; }
+    }
+
 
 }

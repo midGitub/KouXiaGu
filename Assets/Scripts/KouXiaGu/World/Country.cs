@@ -15,7 +15,7 @@ namespace KouXiaGu.World
         public Country(int id, WorldManager manager)
         {
             CountryID = id;
-            ProductInfo = new ProductInfoGroup(manager.BasicInfo.Product);
+            ProductInfo = new ProductInfoGroup(manager.Product);
             ManpowerFactor = new ManpowerNationalFactor(manager.Info);
         }
 

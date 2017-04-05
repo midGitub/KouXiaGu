@@ -71,4 +71,12 @@ namespace KouXiaGu.World.Map
         public int ID { get; set; }
     }
 
+    /// <summary>
+    /// 存档地图文件 管理\记录;
+    /// </summary>
+    public class ArchiveMapFile
+    {
+
+    }
+
 }
