@@ -14,9 +14,6 @@ namespace KouXiaGu.Terrain3D
     public struct LandformNode : IEquatable<LandformNode>
     {
 
-        /// <summary>
-        /// 节点不存在道路时放置的标志;
-        /// </summary>
         internal const uint EMPTY_MARK = 0;
 
         /// <summary>

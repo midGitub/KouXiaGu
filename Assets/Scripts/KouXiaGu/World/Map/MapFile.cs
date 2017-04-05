@@ -9,8 +9,14 @@ namespace KouXiaGu.World.Map
 
     public class MapFile
     {
-        static readonly MapInfoReader infoReader = new MapInfoReader();
-        static readonly MapReader mapReader = new ProtoMapReader();
+        static MapFile()
+        {
+            infoReader = new MapInfoReader();
+            mapReader = new ProtoMapReader();
+        }
+
+        static readonly MapInfoReader infoReader;
+        static readonly MapReader mapReader;
 
         public MapInfo Info { get; private set; }
         public string InfoPath { get; private set; }

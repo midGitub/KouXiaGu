@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
-using KouXiaGu.Terrain3D;
 using ProtoBuf;
-using System.IO;
-using System.Xml.Serialization;
 
 namespace KouXiaGu.World.Map
 {
@@ -46,55 +43,17 @@ namespace KouXiaGu.World.Map
     public class Map
     {
         [ProtoMember(1)]
-        public ObservableDictionary<CubicHexCoord, TerrainNode> Data { get; private set; }
+        public ObservableDictionary<CubicHexCoord, MapNode> Data { get; private set; }
 
         [ProtoMember(2)]
         public RoadInfo Road { get; set; }
 
         public Map()
         {
-            Data = new ObservableDictionary<CubicHexCoord, TerrainNode>();
+            Data = new ObservableDictionary<CubicHexCoord, MapNode>();
             Road = new RoadInfo();
         }
+
     }
-
-
-
-    public abstract class ArchiveMapReader
-    {
-        public abstract string FileExtension { get; }
-        public abstract ArchiveMap Read(string filePath);
-        public abstract void Write(string filePath, ArchiveMap data);
-    }
-
-    public class ProtoArchiveMapReader : ArchiveMapReader
-    {
-        public override string FileExtension
-        {
-            get { return ".aMap"; }
-        }
-
-        public override ArchiveMap Read(string filePath)
-        {
-            ArchiveMap data = ProtoBufExtensions.Deserialize<ArchiveMap>(filePath);
-            return data;
-        }
-
-        public override void Write(string filePath, ArchiveMap data)
-        {
-            ProtoBufExtensions.Serialize(filePath, data);
-        }
-    }
-
-    [ProtoContract]
-    public class ArchiveMap
-    {
-        [ProtoMember(1)]
-        public DictionaryArchiver<CubicHexCoord, TerrainNode> Data { get; set; }
-
-        [ProtoMember(2)]
-        public RoadInfo Road { get; set; }
-    }
-
 
 }
