@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 using ProtoBuf;
@@ -38,16 +39,36 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public class ArchiveMap
     {
+
+        static ArchiveMap()
+        {
+            reader = new ProtoArchiveMapReader();
+        }
+
+        static readonly ArchiveMapReader reader;
+
         [ProtoMember(1)]
         public DictionaryArchiver<CubicHexCoord, MapNode> Data { get; set; }
 
         [ProtoMember(2)]
         public RoadInfo Road { get; set; }
 
-        public ArchiveMap()
+        public ArchiveMap(Map map)
         {
+            Data.Subscribe(map.Data);
+            Road = map.Road;
         }
 
+    }
+
+    [ProtoContract]
+    public struct ArchiveMapInfo
+    {
+        /// <summary>
+        /// 地图ID;
+        /// </summary>
+        [XmlAttribute("id")]
+        public int ID { get; set; }
     }
 
 }
