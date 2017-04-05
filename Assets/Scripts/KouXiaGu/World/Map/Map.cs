@@ -69,78 +69,113 @@ namespace KouXiaGu.World.Map
     /// </summary>
     public class MapFile
     {
+
+        static readonly MapInfoReader defaultInfoReader;
+        static readonly MapReader defaultMapReader;
+
+        public static string DefaultMapsDirectory
+        {
+            get { return Path.Combine(ResourcePath.ConfigDirectoryPath, "Maps"); }
+        }
+
+        public static string InfoFileSearchPattern
+        {
+            get { return "*" + defaultInfoReader.FileExtension; }
+        }
+
         static MapFile()
         {
             defaultInfoReader = new MapInfoReader();
             defaultMapReader = new ProtoMapReader();
         }
 
-        static readonly MapInfoReader defaultInfoReader;
-        static readonly MapReader defaultMapReader;
-
-        public MapInfo Info { get; private set; }
-        public string InfoPath { get; private set; }
-
-        public string InfoFileSearchPattern
-        {
-            get { return "*" + defaultInfoReader.FileExtension; }
-        }
-
-        public MapFile(string filePath)
-        {
-            ReadInfo(filePath);
-        }
-
-        public MapFile(string dirPath, SearchOption searchOption)
+        public static IEnumerable<MapFile> SearchAll(string dirPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             var filePaths = Directory.GetFiles(dirPath, InfoFileSearchPattern, searchOption);
 
-            if (filePaths.Length == 0)
-                throw new FileNotFoundException();
-
-            string filePath = filePaths[0];
-            ReadInfo(filePath);
+            foreach (var filePath in filePaths)
+            {
+                MapInfo info;
+                if (TryReadInfo(filePath, out info))
+                {
+                    MapFile file = new MapFile(filePath, info);
+                    yield return file;
+                }
+            }
         }
 
-        void ReadInfo(string filePath)
+        static bool TryReadInfo(string filePath, out MapInfo info)
         {
-            InfoPath = filePath;
-            Info = defaultInfoReader.Read(filePath);
+            try
+            {
+                info = defaultInfoReader.Read(filePath);
+                return true;
+            }
+            catch
+            {
+                info = default(MapInfo);
+                return false;
+            }
         }
 
-        public void WriteInfo(MapInfo info)
+        public static MapFile Create(MapInfo Info)
         {
-            string filePath = InfoPath;
-            defaultInfoReader.Write(filePath, info);
-            this.Info = info;
+            string dirPath = Path.Combine(DefaultMapsDirectory, Info.ID.ToString());
+
+            if (Directory.Exists(dirPath) && Directory.GetFiles(dirPath).Length != 0)
+                throw new ArgumentException("已经存在相同ID的地图;ID:" + Info.ID);
+
+            return Create(dirPath, Info);
+        }
+
+        public static MapFile Create(string dirPath, MapInfo Info)
+        {
+            Directory.CreateDirectory(dirPath);
+            string infoPath = Path.Combine(dirPath, Info.Name.ToString());
+            Path.ChangeExtension(infoPath, defaultInfoReader.FileExtension);
+
+            var file = new MapFile(infoPath, Info);
+            file.WriteInfo();
+            return file;
+        }
+
+
+        public string InfoPath { get; private set; }
+        public MapInfo Info { get; set; }
+
+        public MapFile(string infoPath, MapInfo info)
+        {
+            InfoPath = infoPath;
+            Info = info;
+        }
+
+        public MapInfo RereadInfo()
+        {
+            Info = defaultInfoReader.Read(InfoPath);
+            return Info;
+        }
+
+        public void WriteInfo()
+        {
+            defaultInfoReader.Write(InfoPath, Info);
         }
 
         public Map ReadMap()
         {
-            return Read(defaultMapReader);
-        }
-
-        Map Read(MapReader reader)
-        {
-            string filePath = GetMapDataFilePath(reader);
-            Map map = reader.Read(filePath);
+            string filePath = GetMapDataFilePath();
+            Map map = defaultMapReader.Read(filePath);
             return map;
         }
 
         public void WriteMap(Map map)
         {
-            Write(defaultMapReader, map);
+            string filePath = GetMapDataFilePath();
+            defaultMapReader.Write(filePath, map);
         }
 
-        void Write(MapReader reader, Map map)
+        public string GetMapDataFilePath()
         {
-            string filePath = GetMapDataFilePath(reader);
-            reader.Write(filePath, map);
-        }
-
-        string GetMapDataFilePath(MapReader reader)
-        {
-            return Path.ChangeExtension(InfoPath, reader.FileExtension);
+            return Path.ChangeExtension(InfoPath, defaultMapReader.FileExtension);
         }
 
     }

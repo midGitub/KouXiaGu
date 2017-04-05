@@ -66,7 +66,7 @@ namespace KouXiaGu.World.Map
     public struct ArchiveMapInfo
     {
         /// <summary>
-        /// 地图ID;
+        /// 使用的地图ID;
         /// </summary>
         [XmlAttribute("id")]
         public int ID { get; set; }
