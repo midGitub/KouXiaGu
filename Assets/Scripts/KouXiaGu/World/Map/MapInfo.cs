@@ -6,32 +6,7 @@ using System.Xml.Serialization;
 
 namespace KouXiaGu.World.Map
 {
-
-    public class MapInfoReader
-    {
-        public MapInfoReader()
-        {
-            serializer = new XmlSerializer(typeof(MapInfo));
-        }
-
-        XmlSerializer serializer;
-
-        public string FileExtension
-        {
-            get { return ".xml"; }
-        }
-
-        public MapInfo Read(string filePath)
-        {
-            return (MapInfo)serializer.DeserializeXiaGu(filePath);
-        }
-
-        public void Write(string filePath, MapInfo data)
-        {
-            serializer.SerializeXiaGu(filePath, data);
-        }
-    }
-
+    
     [XmlType("MapInfo")]
     public struct MapInfo
     {
