@@ -5,9 +5,9 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    public abstract class OperateWaiter : MonoBehaviour
+    public abstract class Initializer : MonoBehaviour
     {
-        protected OperateWaiter()
+        protected Initializer()
         {
         }
 

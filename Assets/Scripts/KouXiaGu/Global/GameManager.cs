@@ -13,7 +13,7 @@ namespace KouXiaGu
     /// 负责对游戏资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameManager : OperateWaiter
+    public class GameManager : Initializer
     {
         GameManager()
         {

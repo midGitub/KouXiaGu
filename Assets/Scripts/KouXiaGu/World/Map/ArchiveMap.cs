@@ -10,32 +10,6 @@ using ProtoBuf;
 namespace KouXiaGu.World.Map
 {
 
-    public abstract class ArchiveMapReader
-    {
-        public abstract string FileExtension { get; }
-        public abstract ArchiveMap Read(string filePath);
-        public abstract void Write(string filePath, ArchiveMap data);
-    }
-
-    public class ProtoArchiveMapReader : ArchiveMapReader
-    {
-        public override string FileExtension
-        {
-            get { return ".aMap"; }
-        }
-
-        public override ArchiveMap Read(string filePath)
-        {
-            ArchiveMap data = ProtoBufExtensions.Deserialize<ArchiveMap>(filePath);
-            return data;
-        }
-
-        public override void Write(string filePath, ArchiveMap data)
-        {
-            ProtoBufExtensions.Serialize(filePath, data);
-        }
-    }
-
     [ProtoContract]
     public class ArchiveMap
     {
@@ -52,24 +26,14 @@ namespace KouXiaGu.World.Map
 
         public ArchiveMap(Map map)
         {
-            Subscribe(map);
+            Data.Subscribe(map.Data);
+            Road = map.Road;
         }
 
         public void Subscribe(Map map)
         {
             Data.Subscribe(map.Data);
-            Road = map.Road;
         }
-    }
-
-    [ProtoContract]
-    public struct ArchiveMapInfo
-    {
-        /// <summary>
-        /// 使用的地图ID;
-        /// </summary>
-        [XmlAttribute("id")]
-        public int ID { get; set; }
     }
 
     /// <summary>

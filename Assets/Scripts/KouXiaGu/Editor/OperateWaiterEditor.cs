@@ -7,7 +7,7 @@ using UnityEditor;
 namespace KouXiaGu
 {
 
-    [CustomEditor(typeof(OperateWaiter), true)]
+    [CustomEditor(typeof(Initializer), true)]
     [CanEditMultipleObjects]
     public class OperateWaiterEditor : Editor
     {
@@ -16,7 +16,7 @@ namespace KouXiaGu
         {
             base.OnInspectorGUI();
 
-            OperateWaiter target = (OperateWaiter)this.target;
+            Initializer target = (Initializer)this.target;
 
             EditorGUILayout.LabelField("剩余总数:" + target.Remainder);
             EditorGUILayout.LabelField("失败?", target.IsFaulted.ToString());

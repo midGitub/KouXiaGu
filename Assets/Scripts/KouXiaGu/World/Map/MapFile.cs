@@ -21,10 +21,6 @@ namespace KouXiaGu.World.Map
             get { return Path.Combine(ResourcePath.ConfigDirectoryPath, "Maps"); }
         }
 
-        public MapFileManager()
-        {
-        }
-
         public virtual IEnumerable<MapFile> SearchAll(string dirPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             var filePaths = Directory.GetFiles(dirPath, defaultInfoReader.FileSearchPattern, searchOption);

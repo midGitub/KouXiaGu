@@ -40,7 +40,7 @@ namespace KouXiaGu.World
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : OperateWaiter, IWorld
+    public class WorldInitializer : Initializer, IWorld
     {
 
         #region 静态;
