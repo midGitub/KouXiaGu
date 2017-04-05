@@ -8,7 +8,6 @@ namespace KouXiaGu.World.Map
 
     public class MapManager
     {
-
         public bool IsInitialized { get; private set; }
         public Map Map { get; private set; }
         public ArchiveMap ArchiveMap { get; private set; }
@@ -91,7 +90,7 @@ namespace KouXiaGu.World.Map
                 try
                 {
                     Map map = info.Map.ReadMap();
-                    ArchiveMap archiveMap = info.ArchiveInfo.ArchiveMap.Read();
+                    ArchiveMap archiveMap = info.ArchiveInfo.Map.Read();
                     manager.UpdateMap(map, archiveMap);
                 }
                 catch (Exception ex)
