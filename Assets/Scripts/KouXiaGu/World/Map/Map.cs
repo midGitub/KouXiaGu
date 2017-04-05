@@ -56,6 +56,12 @@ namespace KouXiaGu.World.Map
             Road = new RoadInfo();
         }
 
+        public void Update(ArchiveMap archive)
+        {
+            Data.AddOrUpdate(archive.Data);
+            Road = archive.Road;
+        }
+
     }
 
     /// <summary>

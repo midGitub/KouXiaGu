@@ -40,25 +40,26 @@ namespace KouXiaGu.World.Map
     public class ArchiveMap
     {
 
-        static ArchiveMap()
-        {
-            reader = new ProtoArchiveMapReader();
-        }
-
-        static readonly ArchiveMapReader reader;
-
         [ProtoMember(1)]
         public DictionaryArchiver<CubicHexCoord, MapNode> Data { get; set; }
 
         [ProtoMember(2)]
         public RoadInfo Road { get; set; }
 
+        public ArchiveMap()
+        {
+        }
+
         public ArchiveMap(Map map)
+        {
+            Subscribe(map);
+        }
+
+        public void Subscribe(Map map)
         {
             Data.Subscribe(map.Data);
             Road = map.Road;
         }
-
     }
 
     [ProtoContract]
@@ -76,6 +77,16 @@ namespace KouXiaGu.World.Map
     /// </summary>
     public class ArchiveMapFile
     {
+
+        public ArchiveMap Read()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Write(ArchiveMap map)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 
