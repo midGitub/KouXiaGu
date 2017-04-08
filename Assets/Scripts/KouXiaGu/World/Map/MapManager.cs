@@ -26,20 +26,6 @@ namespace KouXiaGu.World.Map
             return new Initializer(this, info);
         }
 
-        void UpdateMap(Map map)
-        {
-            Map = map;
-            ArchiveMap = new ArchiveMap(Map);
-        }
-
-        void UpdateMap(Map map, ArchiveMap archiveMap)
-        {
-            Map = map;
-            ArchiveMap = archiveMap;
-            Map.Update(archiveMap);
-            ArchiveMap.Subscribe(map);
-        }
-
         class Initializer : IAsync
         {
             MapManager manager;
@@ -48,6 +34,17 @@ namespace KouXiaGu.World.Map
             public bool IsCompleted { get; private set; }
             public bool IsFaulted { get; private set; }
             public Exception Ex { get; private set; }
+
+            public Map Map
+            {
+                get { return manager.Map; }
+                private set { manager.Map = value; }
+            }
+            public ArchiveMap ArchiveMap
+            {
+                get { return manager.ArchiveMap; }
+                private set { manager.ArchiveMap = value; }
+            }
 
             Initializer(MapManager manager)
             {
@@ -72,7 +69,7 @@ namespace KouXiaGu.World.Map
                 try
                 {
                     Map map = info.Map.ReadMap();
-                    manager.UpdateMap(map);
+                    UpdateMap(map);
                 }
                 catch (Exception ex)
                 {
@@ -91,7 +88,7 @@ namespace KouXiaGu.World.Map
                 {
                     Map map = info.Map.ReadMap();
                     ArchiveMap archiveMap = info.ArchiveInfo.Map.Read();
-                    manager.UpdateMap(map, archiveMap);
+                    UpdateMap(map, archiveMap);
                 }
                 catch (Exception ex)
                 {
@@ -103,6 +100,27 @@ namespace KouXiaGu.World.Map
                     IsCompleted = true;
                 }
             }
+
+
+            void UpdateMap(Map map)
+            {
+                Map = map;
+                Map.Enable();
+
+                ArchiveMap = new ArchiveMap(Map);
+            }
+
+            void UpdateMap(Map map, ArchiveMap archiveMap)
+            {
+                Map = map;
+                ArchiveMap = archiveMap;
+
+                Map.Update(archiveMap);
+                Map.Enable();
+
+                ArchiveMap.Subscribe(map);
+            }
+
 
         }
 

@@ -36,6 +36,9 @@ namespace KouXiaGu.World.Map
             IsActivated = false;
         }
 
+        /// <summary>
+        /// 更新地图内容,并且取消启用状态;
+        /// </summary>
         public void Update(ArchiveMap archive)
         {
             Disable();
@@ -43,10 +46,11 @@ namespace KouXiaGu.World.Map
             Data.AddOrUpdate(archive.Data);
             Road = archive.Road;
             Town = archive.Town;
-
-            Enable();
         }
 
+        /// <summary>
+        /// 初始化地图,需要手动调用;
+        /// </summary>
         public void Enable()
         {
             if (!IsActivated)
