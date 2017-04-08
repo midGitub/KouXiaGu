@@ -15,10 +15,13 @@ namespace KouXiaGu.World.Map
     {
 
         [ProtoMember(1)]
-        public DictionaryArchiver<CubicHexCoord, MapNode> Data { get; set; }
+        public ArchiveDictionary<CubicHexCoord, MapNode> Data { get; set; }
 
         [ProtoMember(2)]
         public RoadInfo Road { get; set; }
+
+        [ProtoMember(3)]
+        public TownInfo Town { get; set; }
 
         public ArchiveMap()
         {
@@ -28,6 +31,7 @@ namespace KouXiaGu.World.Map
         {
             Data.Subscribe(map.Data);
             Road = map.Road;
+            Town = map.Town;
         }
 
         public void Subscribe(Map map)

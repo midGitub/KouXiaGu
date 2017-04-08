@@ -33,7 +33,7 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
-        internal const uint EmptyRoadMark = 0;
+        internal const uint EmptyRoadID = 0;
 
         public RoadInfo() : this(0)
         {
@@ -48,39 +48,46 @@ namespace KouXiaGu.World.Map
         /// 当前有效的ID;
         /// </summary>
         [ProtoMember(1)]
-        public uint EffectiveID { get; internal set; }
+        public uint EffectiveID { get; private set; }
+
+        /// <summary>
+        /// 获取到一个唯一的有效ID;
+        /// </summary>
+        public uint GetEffectiveID()
+        {
+            return EffectiveID++;
+        }
 
     }
 
     public static class RoadExtensions
     {
 
-        /// <summary>
-        /// 该节点是否存在道路;
-        /// </summary>
-        public static bool ExistRoad(this RoadNode node)
+        public static bool ExistRoad(this MapNode node)
         {
-            return node.ID != RoadInfo.EmptyRoadMark;
+            return node.Road.ExistRoad();
         }
 
-        /// <summary>
-        /// 设置道路信息到此位置;
-        /// </summary>
-        public static bool SetRoadAt(this Map map, CubicHexCoord pos, int roadType)
+        public static bool ExistRoad(this RoadNode node)
         {
-            MapNode node;
-            if (map.Data.TryGetValue(pos, out node))
+            return node.ID != RoadInfo.EmptyRoadID;
+        }
+
+
+        public static MapNode CreateRoad(this MapNode node, Map map, int roadType)
+        {
+            node.Road = CreateRoad(node.Road, map.Road, roadType);
+            return node;
+        }
+
+        public static RoadNode CreateRoad(this RoadNode node, RoadInfo road, int roadType)
+        {
+            if (!node.ExistRoad())
             {
-                if (!node.Road.ExistRoad())
-                {
-                    map.Road.EffectiveID++;
-                    node.Road.ID = map.Road.EffectiveID;
-                }
-                node.Road.Type = roadType;
-                map.Data[pos] = node;
-                return true;
+                node.ID = road.GetEffectiveID();
             }
-            return false;
+            node.Type = roadType;
+            return node;
         }
 
     }

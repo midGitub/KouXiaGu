@@ -7,7 +7,8 @@ using UniRx;
 namespace KouXiaGu.Collections
 {
 
-    public abstract class DictionaryObserver<TKey, TValue> : IObserver<DictionaryChange<TKey, TValue>>
+    [Obsolete]
+    public abstract class ODictionaryObserver<TKey, TValue> : IObserver<DictionaryChange<TKey, TValue>>
     {
 
         IDisposable unsubscriber;
@@ -47,7 +48,7 @@ namespace KouXiaGu.Collections
         protected abstract void Remove(TKey key, TValue originalValue);
         protected abstract void Update(TKey key, TValue originalValue, TValue newValue);
 
-        public void Subscribe(IObservable<DictionaryChange<TKey, TValue>> provider)
+        public virtual void Subscribe(IObservable<DictionaryChange<TKey, TValue>> provider)
         {
             if (IsSubscribed)
                 throw new ArgumentException("已经存在监视内容;");
@@ -57,7 +58,7 @@ namespace KouXiaGu.Collections
             unsubscriber = provider.Subscribe(this);
         }
 
-        public void Unsubscribe()
+        public virtual void Unsubscribe()
         {
             if (unsubscriber != null)
             {

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UniRx;
 
 namespace KouXiaGu.Collections
 {
 
-    public interface IObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
+    [Obsolete]
+    public interface OIObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         IObservable<DictionaryChange<TKey, TValue>>
     {
         bool Contains(IObserver<DictionaryChange<TKey, TValue>> observer);

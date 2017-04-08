@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ProtoBuf;
-using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 using KouXiaGu.Rx;
 using UnityEngine;
@@ -28,18 +27,13 @@ namespace KouXiaGu.World.Map
     public class TownInfo : DictionaryObserver<CubicHexCoord, MapNode>
     {
 
-        public const int EmptyTownID = 0;
+        internal const int EmptyTownID = 0;
 
         /// <summary>
         /// 映射城镇坐标;
         /// </summary>
-        [ProtoMember(2)]
+        [ProtoMember(1)]
         Dictionary<int, CubicHexCoord> townMap;
-
-        public IEnumerable<int> Towns
-        {
-            get { return townMap.Keys; }
-        }
 
         public TownInfo()
         {
@@ -73,7 +67,7 @@ namespace KouXiaGu.World.Map
             }
         }
 
-        protected override void Add(CubicHexCoord key, MapNode newValue)
+        public override void OnAdded(CubicHexCoord key, MapNode newValue)
         {
             if (newValue.ExistTown())
             {
@@ -81,7 +75,7 @@ namespace KouXiaGu.World.Map
             }
         }
 
-        protected override void Remove(CubicHexCoord key, MapNode originalValue)
+        public override void OnRemoved(CubicHexCoord key, MapNode originalValue)
         {
             if (originalValue.ExistTown())
             {
@@ -89,7 +83,7 @@ namespace KouXiaGu.World.Map
             }
         }
 
-        protected override void Update(CubicHexCoord key, MapNode originalValue, MapNode newValue)
+        public override void OnUpdated(CubicHexCoord key, MapNode originalValue, MapNode newValue)
         {
             if (originalValue.Town.TownID != newValue.Town.TownID)
             {
@@ -109,16 +103,15 @@ namespace KouXiaGu.World.Map
     public static class TownExtensions
     {
 
+        public static bool ExistTown(this MapNode node)
+        {
+            return node.Town.ExistTown();
+        }
+
         public static bool ExistTown(this TownNode node)
         {
             return node.TownID != TownInfo.EmptyTownID;
         }
-
-        public static bool ExistTown(this MapNode node)
-        {
-            return node.Town.TownID != TownInfo.EmptyTownID;
-        }
-
 
     }
 

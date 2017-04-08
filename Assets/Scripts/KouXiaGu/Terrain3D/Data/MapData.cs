@@ -77,7 +77,7 @@ namespace KouXiaGu.Terrain3D
         /// 地图数据;
         /// </summary>
         [ProtoMember(1)]
-        public ObservableDictionary<CubicHexCoord, TerrainNode> Data { get; private set; }
+        public OObservableDictionary<CubicHexCoord, TerrainNode> Data { get; private set; }
 
         [ProtoMember(2)]
         public RoadData Road { get; private set; }
@@ -96,7 +96,7 @@ namespace KouXiaGu.Terrain3D
 
         public MapData(bool isArchive)
         {
-            Data = new ObservableDictionary<CubicHexCoord, TerrainNode>();
+            Data = new OObservableDictionary<CubicHexCoord, TerrainNode>();
             Road = new RoadData(Data);
             Landform = new LandformData(Data);
             Building = new BuildingData(Data);

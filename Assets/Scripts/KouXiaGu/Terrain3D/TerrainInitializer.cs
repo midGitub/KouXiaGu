@@ -57,7 +57,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 当前游戏使用的地图,若不在游戏中则为null;
         /// </summary>
-        public static ObservableDictionary<CubicHexCoord, TerrainNode> Map
+        public static OObservableDictionary<CubicHexCoord, TerrainNode> Map
         {
             get { return MapDataManager.Data.Data; }
         }

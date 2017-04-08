@@ -12,22 +12,23 @@ namespace KouXiaGu.Collections
     /// 可以监视变化的字典结构;
     /// </summary>
     [ProtoContract]
-    public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>
+    [Obsolete]
+    public class OObservableDictionary<TKey, TValue> : OIObservableDictionary<TKey, TValue>
     {
 
-        public ObservableDictionary()
+        public OObservableDictionary()
         {
             this.dictionary = new Dictionary<TKey, TValue>();
             this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
         }
 
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
+        public OObservableDictionary(IDictionary<TKey, TValue> dictionary)
         {
             this.dictionary = new Dictionary<TKey, TValue>(dictionary);
             this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
         }
 
-        public ObservableDictionary(int capacity)
+        public OObservableDictionary(int capacity)
         {
             this.dictionary = new Dictionary<TKey, TValue>(capacity);
             this.observers = new List<IObserver<DictionaryChange<TKey, TValue>>>();
