@@ -12,6 +12,11 @@ namespace KouXiaGu.Collections
 
         IDisposable unsubscriber;
 
+        public bool IsSubscribed
+        {
+            get { return unsubscriber != null; }
+        }
+
         void IObserver<DictionaryChange<TKey, TValue>>.OnCompleted()
         {
             Unsubscribe();
@@ -44,12 +49,12 @@ namespace KouXiaGu.Collections
 
         public void Subscribe(IObservable<DictionaryChange<TKey, TValue>> provider)
         {
-            if (this.unsubscriber != null)
+            if (IsSubscribed)
                 throw new ArgumentException("已经存在监视内容;");
             if (provider == null)
                 throw new ArgumentNullException();
 
-            this.unsubscriber = provider.Subscribe(this);
+            unsubscriber = provider.Subscribe(this);
         }
 
         public void Unsubscribe()

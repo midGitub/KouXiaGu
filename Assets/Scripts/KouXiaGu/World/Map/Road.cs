@@ -60,7 +60,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public static bool ExistRoad(this RoadNode node)
         {
-            return node.ID == RoadInfo.EmptyRoadMark;
+            return node.ID != RoadInfo.EmptyRoadMark;
         }
 
         /// <summary>

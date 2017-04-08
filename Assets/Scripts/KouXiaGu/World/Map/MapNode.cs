@@ -21,6 +21,9 @@ namespace KouXiaGu.World.Map
 
         [ProtoMember(3)]
         public BuildingNode Building;
+
+        [ProtoMember(4)]
+        public TownNode Town;
     }
     
     /// <summary>
@@ -33,7 +36,7 @@ namespace KouXiaGu.World.Map
         /// 代表的地形ID;
         /// </summary>
         [ProtoMember(1)]
-        public int ID;
+        public int LandformID;
 
         /// <summary>
         /// 地形旋转角度;
@@ -52,7 +55,7 @@ namespace KouXiaGu.World.Map
         /// 建筑物类型编号;
         /// </summary>
         [ProtoMember(1)]
-        public int ID;
+        public int BuildingID;
 
         /// <summary>
         /// 建筑物旋转的角度;

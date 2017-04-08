@@ -22,10 +22,14 @@ namespace KouXiaGu.World.Map
         [ProtoMember(2)]
         public RoadInfo Road { get; private set; }
 
+        [ProtoMember(3)]
+        public TownInfo Town { get; private set; }
+
         public Map()
         {
             Data = new ObservableDictionary<CubicHexCoord, MapNode>();
             Road = new RoadInfo();
+            Town = new TownInfo();
         }
 
         public void Update(ArchiveMap archive)
