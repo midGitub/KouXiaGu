@@ -8,7 +8,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 地图文件;
     /// </summary>
-    public class MapFile
+    public class MapFile : IMapReader
     {
 
         public string InfoPath { get; private set; }
@@ -57,6 +57,11 @@ namespace KouXiaGu.World.Map
         public string GetMapDataFilePath()
         {
             return Path.ChangeExtension(InfoPath, defaultMapReader.FileExtension);
+        }
+
+        Map IMapReader.Read()
+        {
+            return ReadMap();
         }
 
     }

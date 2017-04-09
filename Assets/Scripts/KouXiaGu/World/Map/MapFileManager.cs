@@ -12,6 +12,7 @@ namespace KouXiaGu.World.Map
     /// </summary>
     public class MapFileManager
     {
+        public static readonly MapFileManager Default = new MapFileManager();
 
         MapInfoReader defaultInfoReader
         {
@@ -21,6 +22,11 @@ namespace KouXiaGu.World.Map
         public virtual string DefaultMapsDirectory
         {
             get { return Path.Combine(ResourcePath.ConfigDirectoryPath, "Maps"); }
+        }
+
+        public IEnumerable<MapFile> SearchAll()
+        {
+            return SearchAll(DefaultMapsDirectory);
         }
 
         public virtual IEnumerable<MapFile> SearchAll(string dirPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
