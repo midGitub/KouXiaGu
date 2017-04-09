@@ -30,7 +30,7 @@ namespace KouXiaGu.World.Map
         }
 
 
-        public MapInfo RereadInfo()
+        public MapInfo ReadInfo()
         {
             var info = defaultInfoReader.Read(InfoPath);
             return info;

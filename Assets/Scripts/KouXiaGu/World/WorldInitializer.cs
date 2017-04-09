@@ -127,9 +127,9 @@ namespace KouXiaGu.World
 
         void InitMap()
         {
-            Map = new MapManager();
-            IAsync operater = Map.Initialize(Info);
-            AddOperater(operater);
+            Map = MapManager.Create(Info);
+            //IAsync operater = Map.InitializeAsync(Info);
+            //AddOperater(operater);
         }
 
     }

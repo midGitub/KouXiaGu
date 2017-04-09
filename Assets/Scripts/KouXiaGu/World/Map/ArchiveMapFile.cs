@@ -28,9 +28,15 @@ namespace KouXiaGu.World.Map
             get { return ArchiveMapReader.DefaultReader; }
         }
 
-        public ArchiveMapFile(string archiveDir)
+        ArchiveMapFile(string archiveDir)
         {
             ArchiveDir = archiveDir;
+        }
+
+
+        public static ArchiveMapFile Create(string archiveDir)
+        {
+            return new ArchiveMapFile(archiveDir);
         }
 
         public ArchiveMapInfo ReadInfo()

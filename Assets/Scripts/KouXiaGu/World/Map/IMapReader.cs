@@ -43,7 +43,7 @@ namespace KouXiaGu.World.Map
         public MapFromArchived(string archiveDir)
         {
             ArchiveDir = archiveDir;
-            archiveMapFile = new ArchiveMapFile(archiveDir);
+            archiveMapFile = ArchiveMapFile.Create(archiveDir);
             Predefined = FindMapFile(archiveMapFile);
         }
 

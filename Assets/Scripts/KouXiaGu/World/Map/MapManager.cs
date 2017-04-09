@@ -2,74 +2,101 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace KouXiaGu.World.Map
 {
 
     public class MapManager
     {
-        public bool IsInitialized { get; private set; }
+        public WorldInfo Info { get; private set; }
         public Map Map { get; private set; }
         public ArchiveMap ArchiveMap { get; private set; }
 
-        public MapManager()
+        public IMapReader Reader
         {
-            IsInitialized = false;
+            get { return Info.Map; }
         }
 
-        public IAsync Initialize(WorldInfo info)
-        {
-            if (IsInitialized)
-                throw new ArgumentException();
 
-            IsInitialized = true;
-            return new Initializer(this, info);
+        public static MapManager Create(WorldInfo info)
+        {
+            var item = new MapManager(info);
+            item.Initialize();
+            return item;
         }
 
-        class Initializer : IAsync
+        public static IAsync<MapManager> CreateAsync(WorldInfo info)
+        {
+            var item = new MapManager(info);
+            throw new NotImplementedException();
+        }
+
+        public MapManager(WorldInfo info)
+        {
+            Info = info;
+        }
+
+        /// <summary>
+        /// 初始化;
+        /// </summary>
+        void Initialize()
+        {
+            ReadMap();
+        }
+
+        public void ReadMap()
+        {
+            Map = Reader.GetMap();
+            Map.Enable();
+
+            ArchiveMap = Reader.GetArchiveMap();
+            ArchiveMap.Subscribe(Map);
+        }
+
+        public void WriteMap()
+        {
+            Reader.Predefined.WriteMap(Map);
+        }
+
+        public void WriteArchived(string archivedDir)
+        {
+            ArchiveMapFile file = ArchiveMapFile.Create(archivedDir);
+            ArchiveMapInfo info = new ArchiveMapInfo(Reader.Predefined);
+
+            file.WriteInfo(info);
+            file.WriteMap(ArchiveMap);
+        }
+
+        /// <summary>
+        /// 暂时同步读取;
+        /// </summary>
+        class AsyncInitializer : IAsync<MapManager>
         {
             MapManager manager;
-            WorldInfo info;
-
             public bool IsCompleted { get; private set; }
             public bool IsFaulted { get; private set; }
+            public MapManager Result { get; private set; }
             public Exception Ex { get; private set; }
 
-            public Map Map
-            {
-                get { return manager.Map; }
-                private set { manager.Map = value; }
-            }
-            public ArchiveMap ArchiveMap
-            {
-                get { return manager.ArchiveMap; }
-                private set { manager.ArchiveMap = value; }
-            }
-
-            Initializer()
+            AsyncInitializer()
             {
                 IsCompleted = false;
                 IsFaulted = false;
                 Ex = null;
             }
 
-            public Initializer(MapManager manager, WorldInfo info) : this()
+            public AsyncInitializer(MapManager manager) : this()
             {
                 this.manager = manager;
-                this.info = info;
-                ReadMap();
+                ThreadPool.QueueUserWorkItem(Initialize);
             }
 
-            void ReadMap()
+            void Initialize(object state)
             {
-                IMapReader reader = info.Map;
                 try
                 {
-                    Map = reader.GetMap();
-                    Map.Enable();
-
-                    ArchiveMap = reader.GetArchiveMap();
-                    ArchiveMap.Subscribe(Map);
+                    manager.Initialize();
                 }
                 catch (Exception ex)
                 {
@@ -78,6 +105,7 @@ namespace KouXiaGu.World.Map
                 }
                 finally
                 {
+                    Result = manager;
                     IsCompleted = true;
                 }
             }
