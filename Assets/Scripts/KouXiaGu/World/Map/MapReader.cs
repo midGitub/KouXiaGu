@@ -9,14 +9,14 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 读取游戏地图方法类;
     /// </summary>
-    public abstract class MapFileReader
+    public abstract class MapReader
     {
-        static readonly MapFileReader defaultReader = new ProtoMapReader();
+        static readonly MapReader defaultReader = new ProtoMapReader();
 
         /// <summary>
         /// 默认的读写方式;
         /// </summary>
-        public static MapFileReader DefaultReader
+        public static MapReader DefaultReader
         {
             get { return defaultReader; }
         }
@@ -39,7 +39,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 使用 ProtoBuf 的方式读取游戏地图;
     /// </summary>
-    public class ProtoMapReader : MapFileReader
+    public class ProtoMapReader : MapReader
     {
         public override string FileExtension
         {

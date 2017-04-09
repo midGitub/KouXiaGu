@@ -18,9 +18,9 @@ namespace KouXiaGu.World.Map
             get { return MapInfoReader.DefaultReader; }
         }
 
-        MapFileReader defaultMapReader
+        MapReader defaultMapReader
         {
-            get { return MapFileReader.DefaultReader; }
+            get { return MapReader.DefaultReader; }
         }
 
 

@@ -46,16 +46,16 @@ namespace KouXiaGu.World.Map
                 private set { manager.ArchiveMap = value; }
             }
 
-            Initializer(MapManager manager)
+            Initializer()
             {
                 IsCompleted = false;
                 IsFaulted = false;
                 Ex = null;
-                this.manager = manager;
             }
 
-            public Initializer(MapManager manager, WorldInfo info) : this(manager)
+            public Initializer(MapManager manager, WorldInfo info) : this()
             {
+                this.manager = manager;
                 this.info = info;
                 ReadMap();
             }
