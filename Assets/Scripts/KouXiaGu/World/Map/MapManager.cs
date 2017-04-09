@@ -57,19 +57,19 @@ namespace KouXiaGu.World.Map
             public Initializer(MapManager manager, WorldInfo info) : this(manager)
             {
                 this.info = info;
-
-                if(info.IsInitializeFromArchive)
-                    ReadMapFromArchive();
-                else
-                    ReadMapOnly();
+                ReadMap();
             }
 
-            void ReadMapOnly()
+            void ReadMap()
             {
+                IMapReader reader = info.Map;
                 try
                 {
-                    Map map = info.Map.ReadMap();
-                    UpdateMap(map);
+                    Map = reader.GetMap();
+                    Map.Enable();
+
+                    ArchiveMap = reader.GetArchiveMap();
+                    ArchiveMap.Subscribe(Map);
                 }
                 catch (Exception ex)
                 {
@@ -81,46 +81,6 @@ namespace KouXiaGu.World.Map
                     IsCompleted = true;
                 }
             }
-
-            void ReadMapFromArchive()
-            {
-                try
-                {
-                    Map map = info.Map.ReadMap();
-                    ArchiveMap archiveMap = info.ArchiveInfo.Map.Read();
-                    UpdateMap(map, archiveMap);
-                }
-                catch (Exception ex)
-                {
-                    IsFaulted = true;
-                    Ex = ex;
-                }
-                finally
-                {
-                    IsCompleted = true;
-                }
-            }
-
-
-            void UpdateMap(Map map)
-            {
-                Map = map;
-                Map.Enable();
-
-                ArchiveMap = new ArchiveMap(Map);
-            }
-
-            void UpdateMap(Map map, ArchiveMap archiveMap)
-            {
-                Map = map;
-                ArchiveMap = archiveMap;
-
-                Map.Update(archiveMap);
-                Map.Enable();
-
-                ArchiveMap.Subscribe(map);
-            }
-
 
         }
 

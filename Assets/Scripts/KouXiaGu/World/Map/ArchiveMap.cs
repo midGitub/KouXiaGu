@@ -40,22 +40,4 @@ namespace KouXiaGu.World.Map
         }
     }
 
-    /// <summary>
-    /// 存档地图文件 管理\记录;
-    /// </summary>
-    public class ArchiveMapFile
-    {
-
-        public ArchiveMap Read()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Write(ArchiveMap map)
-        {
-            throw new NotImplementedException();
-        }
-
-    }
-
 }

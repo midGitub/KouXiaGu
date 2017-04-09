@@ -24,12 +24,12 @@ namespace KouXiaGu.World.Map
             get { return Path.Combine(ResourcePath.ConfigDirectoryPath, "Maps"); }
         }
 
-        public IEnumerable<MapFile> SearchAll()
+        public IEnumerable<KeyValuePair<MapFile, MapInfo>> SearchAll()
         {
             return SearchAll(DefaultMapsDirectory);
         }
 
-        public virtual IEnumerable<MapFile> SearchAll(string dirPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public virtual IEnumerable<KeyValuePair<MapFile, MapInfo>> SearchAll(string dirPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             var filePaths = Directory.GetFiles(dirPath, defaultInfoReader.FileSearchPattern, searchOption);
 
@@ -38,8 +38,8 @@ namespace KouXiaGu.World.Map
                 MapInfo info;
                 if (TryReadInfo(filePath, out info))
                 {
-                    MapFile file = new MapFile(filePath, info);
-                    yield return file;
+                    MapFile file = new MapFile(filePath);
+                    yield return new KeyValuePair<MapFile, MapInfo>(file, info);
                 }
             }
         }
@@ -74,8 +74,8 @@ namespace KouXiaGu.World.Map
             string infoPath = Path.Combine(dirPath, Info.Name.ToString());
             Path.ChangeExtension(infoPath, defaultInfoReader.FileExtension);
 
-            var file = new MapFile(infoPath, Info);
-            file.WriteInfo();
+            var file = new MapFile(infoPath);
+            file.WriteInfo(Info);
             return file;
         }
 

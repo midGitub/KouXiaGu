@@ -8,11 +8,10 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 地图文件;
     /// </summary>
-    public class MapFile : IMapReader
+    public class MapFile
     {
 
         public string InfoPath { get; private set; }
-        public MapInfo Info { get; set; }
 
         MapInfoReader defaultInfoReader
         {
@@ -24,22 +23,24 @@ namespace KouXiaGu.World.Map
             get { return MapFileReader.DefaultReader; }
         }
 
-        public MapFile(string infoPath, MapInfo info)
+
+        public MapFile(string infoPath)
         {
             InfoPath = infoPath;
-            Info = info;
         }
+
 
         public MapInfo RereadInfo()
         {
-            Info = defaultInfoReader.Read(InfoPath);
-            return Info;
+            var info = defaultInfoReader.Read(InfoPath);
+            return info;
         }
 
-        public void WriteInfo()
+        public void WriteInfo(MapInfo info)
         {
-            defaultInfoReader.Write(InfoPath, Info);
+            defaultInfoReader.Write(InfoPath, info);
         }
+
 
         public Map ReadMap()
         {
@@ -57,11 +58,6 @@ namespace KouXiaGu.World.Map
         public string GetMapDataFilePath()
         {
             return Path.ChangeExtension(InfoPath, defaultMapReader.FileExtension);
-        }
-
-        Map IMapReader.Read()
-        {
-            return ReadMap();
         }
 
     }

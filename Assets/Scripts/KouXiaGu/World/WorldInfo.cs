@@ -20,7 +20,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 使用的地图信息;
         /// </summary>
-        public MapFile Map { get; set; }
+        public IMapReader Map { get; set; }
 
 
 
