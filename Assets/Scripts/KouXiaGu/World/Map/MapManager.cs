@@ -9,6 +9,7 @@ namespace KouXiaGu.World.Map
 
     public class MapManager
     {
+
         public WorldInfo Info { get; private set; }
         public Map Map { get; private set; }
         public ArchiveMap ArchiveMap { get; private set; }
@@ -18,6 +19,10 @@ namespace KouXiaGu.World.Map
             get { return Info.Map; }
         }
 
+        MapManager(WorldInfo info)
+        {
+            Info = info;
+        }
 
         public static MapManager Create(WorldInfo info)
         {
@@ -29,12 +34,7 @@ namespace KouXiaGu.World.Map
         public static IAsync<MapManager> CreateAsync(WorldInfo info)
         {
             var item = new MapManager(info);
-            throw new NotImplementedException();
-        }
-
-        public MapManager(WorldInfo info)
-        {
-            Info = info;
+            return new AsyncInitializer(item);
         }
 
         /// <summary>
@@ -63,14 +63,10 @@ namespace KouXiaGu.World.Map
         {
             ArchiveMapFile file = ArchiveMapFile.Create(archivedDir);
             ArchiveMapInfo info = new ArchiveMapInfo(Reader.Predefined);
-
             file.WriteInfo(info);
             file.WriteMap(ArchiveMap);
         }
 
-        /// <summary>
-        /// 暂时同步读取;
-        /// </summary>
         class AsyncInitializer : IAsync<MapManager>
         {
             MapManager manager;

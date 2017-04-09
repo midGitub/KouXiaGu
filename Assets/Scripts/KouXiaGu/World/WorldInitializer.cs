@@ -128,8 +128,6 @@ namespace KouXiaGu.World
         void InitMap()
         {
             Map = MapManager.Create(Info);
-            //IAsync operater = Map.InitializeAsync(Info);
-            //AddOperater(operater);
         }
 
     }
