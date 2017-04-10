@@ -13,7 +13,7 @@ namespace KouXiaGu
 
     public interface IReader<TResult, T>
     {
-        TResult Read(T source);
+        TResult ReadMap(T source);
     }
 
     public interface IReader<TResult, T1, T2>

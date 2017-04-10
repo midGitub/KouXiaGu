@@ -110,8 +110,7 @@ namespace KouXiaGu.World
 
         void Start()
         {
-            InitTime();
-            InitMap();
+            Initialize();
         }
 
         void OnDestroy()
@@ -119,14 +118,11 @@ namespace KouXiaGu.World
             initialized = false;
         }
 
-        void InitTime()
+        void Initialize()
         {
             Time = SceneObject.GetObject<TimeManager>();
             Time.Initialize(Info.Time);
-        }
 
-        void InitMap()
-        {
             Map = new MapManager();
         }
 

@@ -9,13 +9,13 @@ namespace KouXiaGu.World.Map
 
     public class Data
     {
-        MapFile file;
+        static readonly MapDataReader mapReader = MapDataReader.Create();
+
         public MapData Map { get; private set; }
         public ArchiveMap ArchiveMap { get; private set; }
 
-        public Data(MapFile file, MapData map, ArchiveMap archive)
+        public Data(MapData map, ArchiveMap archive)
         {
-            this.file = file;
             Map = map;
             ArchiveMap = archive;
 
@@ -24,20 +24,11 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 创建为一个新的地图;
-        /// </summary>
-        public void CreateMap(MapInfo info)
-        {
-            file = MapFileManager.Create(info);
-            WriteMap();
-        }
-
-        /// <summary>
         /// 重新输出地图(保存修改后的地图);
         /// </summary>
         public void WriteMap()
         {
-            file.WriteMap(Map);
+            mapReader.Write(Map);
         }
 
         /// <summary>
@@ -45,10 +36,8 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public void WriteArchived(string archivedDir)
         {
-            ArchiveMapFile archiveFile = ArchiveMapFile.Create(archivedDir);
-            ArchiveMapInfo info = new ArchiveMapInfo(file);
-            archiveFile.WriteInfo(info);
-            archiveFile.WriteMap(ArchiveMap);
+            ArchiveMapReader reader = ArchiveMapReader.Create(archivedDir);
+            reader.Write(ArchiveMap);
         }
 
     }
@@ -59,18 +48,13 @@ namespace KouXiaGu.World.Map
     /// </summary>
     public class DataReader : IReader<Data>
     {
-        MapFile file;
-
-        public DataReader(MapFile mapFile)
-        {
-            file = mapFile;
-        }
+        static readonly MapDataReader mapReader = MapDataReader.Create();
 
         public Data Read()
         {
-            MapData map = file.ReadMap();
+            MapData map = mapReader.Read();
             ArchiveMap archive = new ArchiveMap();
-            return new Data(file, map, archive);
+            return new Data(map, archive);
         }
     }
 
@@ -80,28 +64,12 @@ namespace KouXiaGu.World.Map
     /// </summary>
     public class ArchivedDataReader : IReader<Data>
     {
-        MapFile file;
-        ArchiveMapFile archiveFile;
+        static readonly MapDataReader mapReader = MapDataReader.Create();
+        ArchiveMapReader archiveReader;
 
         public ArchivedDataReader(string archiveDir)
         {
-            archiveFile = ArchiveMapFile.Create(archiveDir);
-            file = FindMapFile(archiveFile);
-        }
-
-        MapFile FindMapFile(ArchiveMapFile archiveMapFile)
-        {
-            ArchiveMapInfo archiveInfo = archiveMapFile.ReadInfo();
-            try
-            {
-                var maps = MapFileManager.SearchAll();
-                var file = maps.First(item => item.Value.ID == archiveInfo.ID);
-                return file.Key;
-            }
-            catch (InvalidOperationException)
-            {
-                throw new FileNotFoundException("未找到对应的地图文件;MapID:" + archiveInfo.ID);
-            }
+            archiveReader = ArchiveMapReader.Create(archiveDir);
         }
 
         /// <summary>
@@ -109,11 +77,11 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public Data Read()
         {
-            MapData map = file.ReadMap();
-            ArchiveMap archiveMap = archiveFile.ReadMap();
+            MapData map = mapReader.Read();
+            ArchiveMap archiveMap = archiveReader.Read();
             map.Update(archiveMap);
 
-            Data data = new Data(file, map, archiveMap);
+            Data data = new Data(map, archiveMap);
             return data;
         }
 

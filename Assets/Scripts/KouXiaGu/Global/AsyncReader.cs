@@ -58,7 +58,7 @@ namespace KouXiaGu
 
             protected override TResult Operate()
             {
-                return reader.Read(t1);
+                return reader.ReadMap(t1);
             }
         }
 

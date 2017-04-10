@@ -17,15 +17,6 @@ namespace KouXiaGu.World
         /// </summary>
         public WorldTimeInfo Time { get; set; }
 
-
-        public ArchiveWorldInfo ArchiveInfo { get; set; }
-
-        public bool IsInitializeFromArchive
-        {
-            get { return ArchiveInfo != null; }
-        }
-
-
         /// <summary>
         /// 人口每日增长比例;
         /// </summary>
