@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -14,6 +15,8 @@ namespace KouXiaGu.World.Map
     [XmlType("Landform")]
     public struct LandformInfo
     {
+        internal const string ArrayFileName = "World/LandformInfo";
+
         [XmlAttribute("id")]
         public int ID;
 
@@ -22,17 +25,46 @@ namespace KouXiaGu.World.Map
 
     }
 
-    public class LandformInfoXmlReader : IReader<LandformInfo[]>, IReader<Dictionary<int, LandformInfo>>
+    public class LandformInfoXmlSerializer : IReader<List<LandformInfo>>, IReader<Dictionary<int, LandformInfo>>
     {
-        public LandformInfo[] Read()
+        static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));
+
+        protected string FileExtension
         {
-            throw new NotImplementedException();
+            get { return ".xml"; }
         }
 
         Dictionary<int, LandformInfo> IReader<Dictionary<int, LandformInfo>>.Read()
         {
-            throw new NotImplementedException();
+            var infoArray = Read();
+            var infoDictionary = infoArray.ToDictionary(item => item.ID);
+            return infoDictionary;
         }
+
+        public virtual List<LandformInfo> Read()
+        {
+            string filePath = GetDefaultFilePath();
+
+            if (!File.Exists(filePath))
+                return new List<LandformInfo>();
+            else
+                return Read(filePath).ToList();
+        }
+
+        protected string GetDefaultFilePath()
+        {
+            string path = ResourcePath.CombineConfiguration(LandformInfo.ArrayFileName);
+            path = Path.ChangeExtension(path, FileExtension);
+            return path;
+        }
+
+        public LandformInfo[] Read(string filePath)
+        {
+            var item = (LandformInfo[])serializer.DeserializeXiaGu(filePath);
+            return item;
+        }
+
     }
+
 
 }

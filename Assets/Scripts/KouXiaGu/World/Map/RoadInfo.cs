@@ -15,6 +15,8 @@ namespace KouXiaGu.World.Map
     [XmlType("Road")]
     public struct RoadInfo
     {
+        internal const string ArrayFileName = "World/Road";
+
         [XmlAttribute("id")]
         public int ID;
 
@@ -29,10 +31,9 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 道路信息读取;
     /// </summary>
-    public class RoadInfoXmlReader : IReader<RoadInfo[]>, IReader<Dictionary<int, RoadInfo>>
+    public class RoadInfoXmlReader : IReader<List<RoadInfo>>, IReader<Dictionary<int, RoadInfo>>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
-        internal const string InfosFileName = "World/Road";
 
         protected string FileExtension
         {
@@ -46,29 +47,27 @@ namespace KouXiaGu.World.Map
             return infoDictionary;
         }
 
-        public virtual RoadInfo[] Read()
+        public virtual List<RoadInfo> Read()
         {
-            string filePath = GetFilePath(InfosFileName);
-            return ReadOrDefault(filePath);
-        }
+            string filePath = GetDefaultFilePath();
 
-        /// <summary>
-        /// 若不存在此文件,则返回空的数组;
-        /// </summary>
-        protected RoadInfo[] ReadOrDefault(string filePath)
-        {
             if (!File.Exists(filePath))
-                return new RoadInfo[0];
-
-            var item = (RoadInfo[])serializer.DeserializeXiaGu(filePath);
-            return item;
+                return new List<RoadInfo>();
+            else
+                return Read(filePath).ToList();
         }
 
-        protected string GetFilePath(string fileName)
+        protected string GetDefaultFilePath()
         {
-            string path = ResourcePath.CombineConfiguration(fileName);
+            string path = ResourcePath.CombineConfiguration(RoadInfo.ArrayFileName);
             path = Path.ChangeExtension(path, FileExtension);
             return path;
+        }
+
+        protected RoadInfo[] Read(string filePath)
+        {
+            var item = (RoadInfo[])serializer.DeserializeXiaGu(filePath);
+            return item;
         }
 
     }

@@ -22,7 +22,7 @@ namespace KouXiaGu.World.Map
         static MapManager()
         {
             RoadReader = new RoadInfoXmlReader();
-            LandformReader = new LandformInfoXmlReader();
+            LandformReader = new LandformInfoXmlSerializer();
         }
 
         public MapManager()

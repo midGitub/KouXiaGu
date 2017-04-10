@@ -21,7 +21,7 @@ namespace KouXiaGu.World.Map
         static MapElements()
         {
             RoadReader = new RoadInfoXmlReader();
-            LandformReader = new LandformInfoXmlReader();
+            LandformReader = new LandformInfoXmlSerializer();
         }
 
         public MapElements()
