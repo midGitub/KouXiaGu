@@ -2,14 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using UnityEngine;
+
 
 namespace KouXiaGu.World.Map
 {
 
-    public class MapManager
+    public sealed class MapManager
     {
         internal static IReader<Data> DataReader { get; set; }
         internal static IReader<Dictionary<int, RoadInfo>> RoadReader { get; set; }

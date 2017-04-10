@@ -14,8 +14,6 @@ namespace KouXiaGu.World.Map
     [XmlType("Road")]
     public struct RoadInfo
     {
-        internal const string ArrayFileName = "World/Road";
-
         [XmlAttribute("id")]
         public int ID;
 
@@ -26,6 +24,15 @@ namespace KouXiaGu.World.Map
         public TerrainRoadInfo Terrain;
     }
 
+    class RoadInfoFile : CustomFile
+    {
+        const string fileName = "World/Road";
+
+        public override string FileName
+        {
+            get { return fileName; }
+        }
+    }
 
     /// <summary>
     /// 道路信息读取;
@@ -33,6 +40,7 @@ namespace KouXiaGu.World.Map
     public class RoadInfoXmlReader : IReader<List<RoadInfo>>, IReader<Dictionary<int, RoadInfo>>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
+        static readonly RoadInfoFile file = new RoadInfoFile();
 
         protected string FileExtension
         {
@@ -48,19 +56,19 @@ namespace KouXiaGu.World.Map
 
         public virtual List<RoadInfo> Read()
         {
-            string filePath = GetDefaultFilePath();
+            List<RoadInfo> item = new List<RoadInfo>();
 
-            if (!File.Exists(filePath))
-                return new List<RoadInfo>();
-            else
-                return Read(filePath).ToList();
-        }
+            foreach (var path in file.GetFilePaths())
+            {
+                string newPath = Path.ChangeExtension(path, FileExtension);
+                if (File.Exists(newPath))
+                {
+                    var array = Read(newPath);
+                    item.AddRange(array);
+                }
+            }
 
-        protected string GetDefaultFilePath()
-        {
-            string path = ResourcePath.CombineConfiguration(RoadInfo.ArrayFileName);
-            path = Path.ChangeExtension(path, FileExtension);
-            return path;
+            return item;
         }
 
         protected RoadInfo[] Read(string filePath)

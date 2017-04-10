@@ -14,8 +14,6 @@ namespace KouXiaGu.World.Map
     [XmlType("Landform")]
     public struct LandformInfo
     {
-        internal const string ArrayFileName = "World/Landform";
-
         [XmlAttribute("id")]
         public int ID;
 
@@ -26,6 +24,18 @@ namespace KouXiaGu.World.Map
         public TerrainLandformInfo Terrain;
     }
 
+    /// <summary>
+    /// 地形信息文件路径;
+    /// </summary>
+    class LandformInfosFile : CustomFile
+    {
+        const string fileName = "World/Landform";
+
+        public override string FileName
+        {
+            get { return fileName; }
+        }
+    }
 
     /// <summary>
     /// 地形信息读取;
@@ -33,6 +43,7 @@ namespace KouXiaGu.World.Map
     public class LandformInfoXmlSerializer : IReader<List<LandformInfo>>, IReader<Dictionary<int, LandformInfo>>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));
+        static readonly LandformInfosFile file = new LandformInfosFile();
 
         protected string FileExtension
         {
@@ -46,21 +57,19 @@ namespace KouXiaGu.World.Map
             return infoDictionary;
         }
 
-        public virtual List<LandformInfo> Read()
+        public List<LandformInfo> Read()
         {
-            string filePath = GetDefaultFilePath();
-
-            if (!File.Exists(filePath))
-                return new List<LandformInfo>();
-            else
-                return Read(filePath).ToList();
-        }
-
-        protected string GetDefaultFilePath()
-        {
-            string path = ResourcePath.CombineConfiguration(LandformInfo.ArrayFileName);
-            path = Path.ChangeExtension(path, FileExtension);
-            return path;
+            List<LandformInfo> item = new List<LandformInfo>();
+            foreach (var filePath in file.GetFilePaths())
+            {
+                string newPath = Path.ChangeExtension(filePath, FileExtension);
+                if (File.Exists(newPath))
+                {
+                    var array = Read(newPath);
+                    item.AddRange(array);
+                }
+            }
+            return item;
         }
 
         public LandformInfo[] Read(string filePath)

@@ -17,12 +17,6 @@ namespace KouXiaGu.World
         /// </summary>
         public WorldTimeInfo Time { get; set; }
 
-        /// <summary>
-        /// 使用的地图信息;
-        /// </summary>
-        public IMapReader Map { get; set; }
-
-
 
         public ArchiveWorldInfo ArchiveInfo { get; set; }
 
