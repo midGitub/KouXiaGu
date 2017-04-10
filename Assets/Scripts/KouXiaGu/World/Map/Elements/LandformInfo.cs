@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-using UnityEngine;
+using KouXiaGu.Terrain3D;
 
 namespace KouXiaGu.World.Map
 {
@@ -15,7 +14,7 @@ namespace KouXiaGu.World.Map
     [XmlType("Landform")]
     public struct LandformInfo
     {
-        internal const string ArrayFileName = "World/LandformInfo";
+        internal const string ArrayFileName = "World/Landform";
 
         [XmlAttribute("id")]
         public int ID;
@@ -23,8 +22,14 @@ namespace KouXiaGu.World.Map
         [XmlAttribute("name")]
         public string Name;
 
+        [XmlElement("Terrain")]
+        public TerrainLandformInfo Terrain;
     }
 
+
+    /// <summary>
+    /// 地形信息读取;
+    /// </summary>
     public class LandformInfoXmlSerializer : IReader<List<LandformInfo>>, IReader<Dictionary<int, LandformInfo>>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));

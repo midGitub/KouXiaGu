@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路资源定义;
     /// </summary>
-    [XmlType("Road"), XmlRoot("Roads")]
+    [XmlType("Road")]
     public struct TerrainRoadInfo
     {
         /// <summary>
