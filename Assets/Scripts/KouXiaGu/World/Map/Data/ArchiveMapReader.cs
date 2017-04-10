@@ -8,7 +8,7 @@ namespace KouXiaGu.World.Map
 
     public abstract class ArchiveMapReader
     {
-        static readonly ArchiveMapReader defaultReader = new ProtoArchiveMapReader();
+        static readonly ArchiveMapReader defaultReader = new ArchiveMapProtoReader();
 
         public static ArchiveMapReader DefaultReader
         {
@@ -20,7 +20,7 @@ namespace KouXiaGu.World.Map
         public abstract void Write(string filePath, ArchiveMap data);
     }
 
-    public class ProtoArchiveMapReader : ArchiveMapReader
+    public class ArchiveMapProtoReader : ArchiveMapReader
     {
         public override string FileExtension
         {
