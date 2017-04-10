@@ -38,7 +38,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 道路信息读取;
     /// </summary>
-    public class RoadInfoXmlReader : IReader<Dictionary<int, RoadInfo>>, IWriter<RoadInfo[]>
+    public class RoadInfoXmlSerializer : IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
         static readonly RoadInfoFilePath file = new RoadInfoFilePath();
@@ -91,15 +91,14 @@ namespace KouXiaGu.World.Map
 
 
         /// <summary>
-        /// 输出覆盖保存到主要文件上;
+        /// 输出/保存到 文件夹下;
         /// </summary>
-        public void Write(RoadInfo[] infos)
+        /// <param name="infos">内容</param>
+        /// <param name="dirPath">输出的文件夹</param>
+        public void Write(RoadInfo[] infos, string dirPath)
         {
-            Write(infos, file.MainFilePath);
-        }
-
-        public void Write(RoadInfo[] infos, string filePath)
-        {
+            string filePath = file.Combine(dirPath);
+            filePath = Path.ChangeExtension(filePath, FileExtension);
             serializer.SerializeXiaGu(filePath, infos);
         }
     }

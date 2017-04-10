@@ -3,35 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace KouXiaGu.World.Map
 {
 
     public sealed class MapManager
     {
         internal static IReader<Data> DataReader { get; set; }
-        internal static IReader<Dictionary<int, RoadInfo>> RoadReader { get; set; }
-        internal static IReader<Dictionary<int, LandformInfo>> LandformReader { get; set; }
-
-        public Data Map { get; private set; }
-        public Dictionary<int, RoadInfo> RoadInfos { get; private set; }
-        public Dictionary<int, LandformInfo> LandformInfos { get; private set; }
+        internal static IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
+        internal static IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
 
         static MapManager()
         {
             DataReader = new DataReader();
-            RoadReader = new RoadInfoXmlReader();
+            RoadReader = new RoadInfoXmlSerializer();
             LandformReader = new LandformInfoXmlSerializer();
         }
+
+
+        public Data Map { get; private set; }
+        public Dictionary<int, RoadInfo> RoadInfos { get; private set; }
+        public Dictionary<int, LandformInfo> LandformInfos { get; private set; }
 
         public MapManager()
         {
             Initialize();
         }
 
-        /// <summary>
-        /// 初始化;
-        /// </summary>
         void Initialize()
         {
             Map = DataReader.Read();

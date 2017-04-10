@@ -41,7 +41,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 地形信息读取;
     /// </summary>
-    public class LandformInfoXmlSerializer : IReader<Dictionary<int, LandformInfo>>, IWriter<LandformInfo[]>
+    public class LandformInfoXmlSerializer : IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));
         static readonly LandformInfosFilePath file = new LandformInfosFilePath();
@@ -51,7 +51,7 @@ namespace KouXiaGu.World.Map
             get { return ".xml"; }
         }
 
-        Dictionary<int, LandformInfo> IReader<Dictionary<int, LandformInfo>>.Read()
+        public Dictionary<int, LandformInfo> Read()
         {
             Dictionary<int, LandformInfo> dictionary = new Dictionary<int, LandformInfo>();
             var filePaths = GetFilePaths();
@@ -92,17 +92,15 @@ namespace KouXiaGu.World.Map
             return item;
         }
 
-
         /// <summary>
-        /// 输出覆盖保存到主要文件上;
+        /// 输出/保存到 文件夹下;
         /// </summary>
-        public void Write(LandformInfo[] infos)
+        /// <param name="infos">内容</param>
+        /// <param name="dirPath">输出的文件夹</param>
+        public void Write(LandformInfo[] infos, string dirPath)
         {
-            Write(infos, file.MainFilePath);
-        }
-
-        public void Write(LandformInfo[] infos, string filePath)
-        {
+            string filePath = file.Combine(dirPath);
+            filePath = Path.ChangeExtension(filePath, FileExtension);
             serializer.SerializeXiaGu(filePath, infos);
         }
     }

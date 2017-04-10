@@ -26,4 +26,20 @@ namespace KouXiaGu
         TResult Read(T1 s1, T2 s2, T3 s3);
     }
 
+
+    public interface IWriter<TContent>
+    {
+        void Write(TContent item);
+    }
+
+    public interface IWriter<TContent, T1>
+    {
+        void Write(TContent item, T1 t1);
+    }
+
+
+    public interface IReaderWriter<TR, TW> : IReader<TR>, IWriter<TW, string>
+    {
+    }
+
 }

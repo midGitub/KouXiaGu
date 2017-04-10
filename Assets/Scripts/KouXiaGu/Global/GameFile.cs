@@ -43,6 +43,11 @@ namespace KouXiaGu
             get { return Path.Combine(ResourcePath.ConfigDirectoryPath, FileName); }
         }
 
+        public string Combine(string dirPath)
+        {
+            return Path.Combine(dirPath, FileName);
+        }
+
     }
 
     abstract class CustomFilePath : FilePath, ICustomFilePath
