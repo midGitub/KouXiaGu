@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using UnityEngine;
 
 namespace KouXiaGu.World.Map
 {
@@ -13,6 +15,7 @@ namespace KouXiaGu.World.Map
         public WorldInfo Info { get; private set; }
         public Map Map { get; private set; }
         public ArchiveMap ArchiveMap { get; private set; }
+        public MapElement Element { get; private set; }
 
         public IMapReader Reader
         {
@@ -107,15 +110,6 @@ namespace KouXiaGu.World.Map
             }
 
         }
-
-    }
-
-
-    /// <summary>
-    /// 地图存在的元素;
-    /// </summary>
-    public class MapElement
-    {
 
     }
 

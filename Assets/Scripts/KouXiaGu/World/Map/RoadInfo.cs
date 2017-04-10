@@ -3,19 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.IO;
 using KouXiaGu.Terrain3D;
+using UnityEngine;
 
 namespace KouXiaGu.World.Map
 {
-
-    /// <summary>
-    /// 道路信息;
-    /// </summary>
-    public class RoadType
-    {
-        public int ID { get; private set; }
-        public TerrainRoad Terrain { get; private set; }
-    }
 
     /// <summary>
     /// 道路信息;
@@ -33,18 +26,43 @@ namespace KouXiaGu.World.Map
         public TerrainRoadInfo Terrain;
     }
 
+
     /// <summary>
-    /// 读取道路资源信息;
+    /// 道路信息读取;
     /// </summary>
-    public class RoadTypeReader
+    public class XmlRoadInfoReader : IReader<RoadInfo[]>
     {
-        public RoadTypeReader()
+        static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
+        internal const string InfosFileName = "World/Road";
+
+        protected string FileExtension
         {
+            get { return ".xml"; }
         }
 
-        public RoadType Read(RoadInfo info)
+        public virtual RoadInfo[] Read()
         {
-            throw new NotImplementedException();
+            string filePath = GetFilePath(InfosFileName);
+            return ReadOrDefault(filePath);
+        }
+
+        /// <summary>
+        /// 若不存在此文件,则返回空的数组;
+        /// </summary>
+        protected RoadInfo[] ReadOrDefault(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return new RoadInfo[0];
+
+            var item = (RoadInfo[])serializer.DeserializeXiaGu(filePath);
+            return item;
+        }
+
+        protected string GetFilePath(string fileName)
+        {
+            string path = ResourcePath.CombineConfiguration(fileName);
+            path = Path.ChangeExtension(path, FileExtension);
+            return path;
         }
     }
 

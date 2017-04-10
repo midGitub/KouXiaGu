@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -50,11 +49,13 @@ namespace KouXiaGu.Terrain3D
         public Texture DiffuseBlendTex { get; internal set; }
 
         /// <summary>
-        /// 是否不为空?
+        /// 是否全部不为 null;
         /// </summary>
-        public bool IsNotEmpty
+        public bool IsComplete
         {
-            get { return DiffuseTex != null || HeightAdjustTex != null || DiffuseBlendTex != null || HeightAdjustBlendTex != null; }
+            get { return DiffuseTex != null && DiffuseBlendTex != null &&
+                    HeightAdjustTex != null && HeightAdjustBlendTex != null;
+            }
         }
 
         public void Dispose()
@@ -62,11 +63,11 @@ namespace KouXiaGu.Terrain3D
             GameObject.Destroy(DiffuseTex);
             DiffuseTex = null;
 
-            GameObject.Destroy(HeightAdjustTex);
-            HeightAdjustTex = null;
-
             GameObject.Destroy(DiffuseBlendTex);
             DiffuseBlendTex = null;
+
+            GameObject.Destroy(HeightAdjustTex);
+            HeightAdjustTex = null;
 
             GameObject.Destroy(HeightAdjustBlendTex);
             HeightAdjustBlendTex = null;
@@ -79,6 +80,8 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class TerrainRoadReader
     {
+        internal static readonly TerrainRoadReader DefaultReader = new TerrainRoadReader();
+
 
         public TerrainRoadReader()
         {
@@ -93,6 +96,12 @@ namespace KouXiaGu.Terrain3D
                 HeightAdjustTex = LoadTexture(terrain, info.HeightAdjustTex),
                 HeightAdjustBlendTex = LoadTexture(terrain, info.HeightAdjustTex),
             };
+
+            if (!item.IsComplete)
+            {
+                item.Dispose();
+                throw new ArgumentNullException("缺少贴图;");
+            }
             return item;
         }
 

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace KouXiaGu
 {
@@ -31,6 +33,40 @@ namespace KouXiaGu
         /// 导致提前结束的异常;
         /// </summary>
         Exception Ex { get; }
+
+    }
+
+    public class AsyncOperation<TResult> : IAsync<TResult>
+    {
+        public bool IsCompleted { get; protected set; }
+        public bool IsFaulted { get; protected set; }
+        public TResult Result { get; protected set; }
+        public Exception Ex { get; protected set; }
+
+        public AsyncOperation()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            Result = default(TResult);
+            Ex = null;
+        }
+
+    }
+
+    public class MonoAsyncOperation<TResult> : MonoBehaviour, IAsync<TResult>
+    {
+        public bool IsCompleted { get; protected set; }
+        public bool IsFaulted { get; protected set; }
+        public TResult Result { get; protected set; }
+        public Exception Ex { get; protected set; }
+
+        protected virtual void Awake()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            Result = default(TResult);
+            Ex = null;
+        }
 
     }
 
