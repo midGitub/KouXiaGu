@@ -32,7 +32,7 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 输出为存档;
+        /// 输出存档;
         /// </summary>
         public void WriteArchived(string archivedDir)
         {
@@ -42,6 +42,19 @@ namespace KouXiaGu.World.Map
 
     }
 
+
+    /// <summary>
+    /// 创建空白的地图;
+    /// </summary>
+    public class EmptyDataReader : IReader<Data>
+    {
+        public Data Read()
+        {
+            MapData map = new MapData();
+            ArchiveMap archive = new ArchiveMap();
+            return new Data(map, archive);
+        }
+    }
 
     /// <summary>
     /// 直接读取预定义的地图文件;
@@ -57,7 +70,6 @@ namespace KouXiaGu.World.Map
             return new Data(map, archive);
         }
     }
-
 
     /// <summary>
     /// 从存档读取到地图;
@@ -84,7 +96,6 @@ namespace KouXiaGu.World.Map
             Data data = new Data(map, archiveMap);
             return data;
         }
-
     }
 
 }
