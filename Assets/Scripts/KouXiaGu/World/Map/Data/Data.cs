@@ -9,8 +9,6 @@ namespace KouXiaGu.World.Map
 
     public class Data
     {
-        static readonly MapDataReader mapReader = MapDataReader.Create();
-
         public MapData Map { get; private set; }
         public ArchiveMap ArchiveMap { get; private set; }
 
@@ -28,7 +26,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public void WriteMap()
         {
-            mapReader.Write(Map);
+            MapDataReader.instance.Write(Map);
         }
 
         /// <summary>
@@ -42,6 +40,23 @@ namespace KouXiaGu.World.Map
 
     }
 
+    /// <summary>
+    /// 直接读取预定义的地图文件;
+    /// </summary>
+    public class DataReader : IReader<Data>
+    {
+        protected MapDataReader MapDataReader
+        {
+            get { return MapDataReader.instance; }
+        }
+
+        public virtual Data Read()
+        {
+            MapData map = MapDataReader.Read();
+            ArchiveMap archive = new ArchiveMap();
+            return new Data(map, archive);
+        }
+    }
 
     /// <summary>
     /// 创建空白的地图;
@@ -57,26 +72,10 @@ namespace KouXiaGu.World.Map
     }
 
     /// <summary>
-    /// 直接读取预定义的地图文件;
-    /// </summary>
-    public class DataReader : IReader<Data>
-    {
-        static readonly MapDataReader mapReader = MapDataReader.Create();
-
-        public Data Read()
-        {
-            MapData map = mapReader.Read();
-            ArchiveMap archive = new ArchiveMap();
-            return new Data(map, archive);
-        }
-    }
-
-    /// <summary>
     /// 从存档读取到地图;
     /// </summary>
-    public class ArchivedDataReader : IReader<Data>
+    public class ArchivedDataReader : DataReader
     {
-        static readonly MapDataReader mapReader = MapDataReader.Create();
         ArchiveMapReader archiveReader;
 
         public ArchivedDataReader(string archiveDir)
@@ -87,9 +86,9 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 读取到地图,包括存档内容;
         /// </summary>
-        public Data Read()
+        public override Data Read()
         {
-            MapData map = mapReader.Read();
+            MapData map = MapDataReader.Read();
             ArchiveMap archiveMap = archiveReader.Read();
             map.Update(archiveMap);
 

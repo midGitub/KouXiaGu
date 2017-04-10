@@ -18,20 +18,23 @@ namespace KouXiaGu
         
     }
 
-    public interface ICustomFile
+    interface IFilePath
     {
         /// <summary>
         /// 获取到主要的文件路径;
         /// </summary>
         string MainFilePath { get; }
+    }
 
+    interface ICustomFilePath : IFilePath
+    {
         /// <summary>
         /// 获取到所有的文件路径;
         /// </summary>
         IEnumerable<string> GetFilePaths();
     }
 
-    abstract class CustomFilePath : ICustomFile
+    abstract class FilePath : IFilePath
     {
         public abstract string FileName { get; }
 
@@ -40,6 +43,10 @@ namespace KouXiaGu
             get { return Path.Combine(ResourcePath.ConfigDirectoryPath, FileName); }
         }
 
+    }
+
+    abstract class CustomFilePath : FilePath, ICustomFilePath
+    {
         /// <summary>
         /// 获取到文件路径;
         /// </summary>

@@ -7,20 +7,25 @@ using System.Text;
 namespace KouXiaGu.World.Map
 {
 
+    class MapDataFilePath : FilePath
+    {
+        public override string FileName
+        {
+            get { return "World/Map"; }
+        }
+    }
+
     /// <summary>
     /// 读取游戏地图方法类;
     /// </summary>
-    public abstract class MapDataReader : IReader<MapData>
+    public class MapDataReader : IReader<MapData>
     {
-        internal const string MapFileName = "Map/Map";
+        static readonly MapDataFilePath file = new MapDataFilePath();
+        internal static readonly MapDataReader instance = new MapDataReader();
 
-        public abstract string FileExtension { get; }
-        public abstract MapData Read(string filePath);
-        public abstract void Write(string filePath, MapData data);
-
-        public static MapDataReader Create()
+        public string FileExtension
         {
-            return new ProtoMapReader();
+            get { return ".map"; }
         }
 
         public MapData Read()
@@ -29,37 +34,26 @@ namespace KouXiaGu.World.Map
             return Read(filePath);
         }
 
+        public string GetFilePath()
+        {
+            string filePath = Path.ChangeExtension(file.MainFilePath, FileExtension);
+            return filePath;
+        }
+
+        public MapData Read(string filePath)
+        {
+            MapData data = ProtoBufExtensions.Deserialize<MapData>(filePath);
+            return data;
+        }
+
+
         public void Write(MapData data)
         {
             string filePath = GetFilePath();
             Write(filePath, data);
         }
 
-        public string GetFilePath()
-        {
-            string filePath = Path.Combine(ResourcePath.ConfigDirectoryPath, MapFileName);
-            filePath = Path.ChangeExtension(filePath, FileExtension);
-            return filePath;
-        }
-    }
-
-    /// <summary>
-    /// 使用 ProtoBuf 的方式读取游戏地图;
-    /// </summary>
-    public class ProtoMapReader : MapDataReader
-    {
-        public override string FileExtension
-        {
-            get { return ".map"; }
-        }
-
-        public override MapData Read(string filePath)
-        {
-            MapData data = ProtoBufExtensions.Deserialize<MapData>(filePath);
-            return data;
-        }
-
-        public override void Write(string filePath, MapData data)
+        public void Write(string filePath, MapData data)
         {
             ProtoBufExtensions.Serialize(filePath, data);
         }
