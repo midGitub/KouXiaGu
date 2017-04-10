@@ -12,24 +12,22 @@ namespace KouXiaGu.World.Map
     /// </summary>
     public class MapFileManager
     {
-        public static readonly MapFileManager Default = new MapFileManager();
-
-        MapInfoReader defaultInfoReader
+        static MapInfoReader defaultInfoReader
         {
             get { return MapInfoReader.DefaultReader; }
         }
 
-        public virtual string DefaultMapsDirectory
+        public static string DefaultMapsDirectory
         {
             get { return Path.Combine(ResourcePath.ConfigDirectoryPath, "Maps"); }
         }
 
-        public IEnumerable<KeyValuePair<MapFile, MapInfo>> SearchAll()
+        public static IEnumerable<KeyValuePair<MapFile, MapInfo>> SearchAll()
         {
             return SearchAll(DefaultMapsDirectory);
         }
 
-        public virtual IEnumerable<KeyValuePair<MapFile, MapInfo>> SearchAll(string dirPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public static IEnumerable<KeyValuePair<MapFile, MapInfo>> SearchAll(string dirPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             var filePaths = Directory.GetFiles(dirPath, defaultInfoReader.FileSearchPattern, searchOption);
 
@@ -44,7 +42,7 @@ namespace KouXiaGu.World.Map
             }
         }
 
-        bool TryReadInfo(string filePath, out MapInfo info)
+        static bool TryReadInfo(string filePath, out MapInfo info)
         {
             try
             {
@@ -58,7 +56,7 @@ namespace KouXiaGu.World.Map
             }
         }
 
-        public MapFile Create(MapInfo Info)
+        public static MapFile Create(MapInfo Info)
         {
             string dirPath = Path.Combine(DefaultMapsDirectory, Info.ID.ToString());
 
@@ -68,7 +66,7 @@ namespace KouXiaGu.World.Map
             return Create(dirPath, Info);
         }
 
-        public virtual MapFile Create(string dirPath, MapInfo Info)
+        public static MapFile Create(string dirPath, MapInfo Info)
         {
             Directory.CreateDirectory(dirPath);
             string infoPath = Path.Combine(dirPath, Info.Name.ToString());

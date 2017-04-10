@@ -23,11 +23,26 @@ namespace KouXiaGu.World.Map
             ArchiveMap.Subscribe(Map);
         }
 
+        /// <summary>
+        /// 创建为一个新的地图;
+        /// </summary>
+        public void CreateMap(MapInfo info)
+        {
+            file = MapFileManager.Create(info);
+            WriteMap();
+        }
+
+        /// <summary>
+        /// 重新输出地图(保存修改后的地图);
+        /// </summary>
         public void WriteMap()
         {
             file.WriteMap(Map);
         }
 
+        /// <summary>
+        /// 输出为存档;
+        /// </summary>
         public void WriteArchived(string archivedDir)
         {
             ArchiveMapFile archiveFile = ArchiveMapFile.Create(archivedDir);
@@ -35,6 +50,7 @@ namespace KouXiaGu.World.Map
             archiveFile.WriteInfo(info);
             archiveFile.WriteMap(ArchiveMap);
         }
+
     }
 
 
@@ -56,7 +72,6 @@ namespace KouXiaGu.World.Map
             ArchiveMap archive = new ArchiveMap();
             return new Data(file, map, archive);
         }
-
     }
 
 
@@ -79,7 +94,7 @@ namespace KouXiaGu.World.Map
             ArchiveMapInfo archiveInfo = archiveMapFile.ReadInfo();
             try
             {
-                var maps = MapFileManager.Default.SearchAll();
+                var maps = MapFileManager.SearchAll();
                 var file = maps.First(item => item.Value.ID == archiveInfo.ID);
                 return file.Key;
             }

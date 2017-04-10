@@ -27,7 +27,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 地形信息文件路径;
     /// </summary>
-    class LandformInfosFile : CustomFile
+    class LandformInfosFilePath : CustomFilePath
     {
         const string fileName = "World/Landform";
 
@@ -43,7 +43,7 @@ namespace KouXiaGu.World.Map
     public class LandformInfoXmlSerializer : IReader<List<LandformInfo>>, IReader<Dictionary<int, LandformInfo>>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));
-        static readonly LandformInfosFile file = new LandformInfosFile();
+        static readonly LandformInfosFilePath file = new LandformInfosFilePath();
 
         protected string FileExtension
         {

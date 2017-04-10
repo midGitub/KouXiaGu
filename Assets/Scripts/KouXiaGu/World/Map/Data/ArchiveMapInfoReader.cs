@@ -9,7 +9,7 @@ namespace KouXiaGu.World.Map
 
     public abstract class ArchiveMapInfoReader
     {
-        public static readonly ArchiveMapInfoReader defaultReader = new XmlArchiveMapInfoReader();
+        public static readonly ArchiveMapInfoReader defaultReader = new ArchiveMapInfoXmlReader();
 
         public static ArchiveMapInfoReader DefaultReader
         {
@@ -21,7 +21,7 @@ namespace KouXiaGu.World.Map
         public abstract void Write(string filePath, ArchiveMapInfo data);
     }
 
-    public class XmlArchiveMapInfoReader : ArchiveMapInfoReader
+    public class ArchiveMapInfoXmlReader : ArchiveMapInfoReader
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(ArchiveMapInfo));
 

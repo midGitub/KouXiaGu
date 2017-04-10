@@ -26,7 +26,7 @@ namespace KouXiaGu
         IEnumerable<string> GetFilePaths();
     }
 
-    abstract class CustomFile : ICustomFile
+    abstract class CustomFilePath : ICustomFile
     {
         public abstract string FileName { get; }
 

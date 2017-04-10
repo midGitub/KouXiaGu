@@ -24,7 +24,7 @@ namespace KouXiaGu.World.Map
         public TerrainRoadInfo Terrain;
     }
 
-    class RoadInfoFile : CustomFile
+    class RoadInfoFilePath : CustomFilePath
     {
         const string fileName = "World/Road";
 
@@ -40,7 +40,7 @@ namespace KouXiaGu.World.Map
     public class RoadInfoXmlReader : IReader<List<RoadInfo>>, IReader<Dictionary<int, RoadInfo>>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
-        static readonly RoadInfoFile file = new RoadInfoFile();
+        static readonly RoadInfoFilePath file = new RoadInfoFilePath();
 
         protected string FileExtension
         {
