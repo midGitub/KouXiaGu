@@ -19,6 +19,7 @@ namespace KouXiaGu.World.Map
 
         static MapManager()
         {
+            DataReader = new DataReader();
             RoadReader = new RoadInfoXmlReader();
             LandformReader = new LandformInfoXmlSerializer();
         }
