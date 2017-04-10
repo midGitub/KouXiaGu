@@ -14,7 +14,7 @@ namespace KouXiaGu.World.Map
     /// 游戏地图数据;
     /// </summary>
     [ProtoContract]
-    public class Map
+    public class MapData
     {
 
         [ProtoMember(1)]
@@ -28,7 +28,7 @@ namespace KouXiaGu.World.Map
 
         public bool IsActivated { get; private set; }
 
-        public Map()
+        public MapData()
         {
             Data = new ObservableDictionary<CubicHexCoord, MapNode>();
             Road = new MapRoad();

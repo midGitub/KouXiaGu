@@ -127,7 +127,7 @@ namespace KouXiaGu.World
 
         void InitMap()
         {
-            Map = MapManager.Create(Info);
+            Map = new MapManager();
         }
 
     }

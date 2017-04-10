@@ -32,8 +32,8 @@ namespace KouXiaGu.World.Map
         }
 
         public abstract string FileExtension { get; }
-        public abstract Map Read(string filePath);
-        public abstract void Write(string filePath, Map data);
+        public abstract MapData Read(string filePath);
+        public abstract void Write(string filePath, MapData data);
     }
 
     /// <summary>
@@ -46,13 +46,13 @@ namespace KouXiaGu.World.Map
             get { return ".map"; }
         }
 
-        public override Map Read(string filePath)
+        public override MapData Read(string filePath)
         {
-            Map data = ProtoBufExtensions.Deserialize<Map>(filePath);
+            MapData data = ProtoBufExtensions.Deserialize<MapData>(filePath);
             return data;
         }
 
-        public override void Write(string filePath, Map data)
+        public override void Write(string filePath, MapData data)
         {
             ProtoBufExtensions.Serialize(filePath, data);
         }

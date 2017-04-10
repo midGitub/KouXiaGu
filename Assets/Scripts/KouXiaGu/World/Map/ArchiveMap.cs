@@ -27,14 +27,14 @@ namespace KouXiaGu.World.Map
         {
         }
 
-        public ArchiveMap(Map map)
+        public ArchiveMap(MapData map)
         {
             Data.Subscribe(map.Data);
             Road = map.Road;
             Town = map.Town;
         }
 
-        public void Subscribe(Map map)
+        public void Subscribe(MapData map)
         {
             Data.Subscribe(map.Data);
         }

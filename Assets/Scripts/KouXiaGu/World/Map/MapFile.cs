@@ -42,14 +42,14 @@ namespace KouXiaGu.World.Map
         }
 
 
-        public Map ReadMap()
+        public MapData ReadMap()
         {
             string filePath = GetMapDataFilePath();
-            Map map = defaultMapReader.Read(filePath);
+            MapData map = defaultMapReader.Read(filePath);
             return map;
         }
 
-        public void WriteMap(Map map)
+        public void WriteMap(MapData map)
         {
             string filePath = GetMapDataFilePath();
             defaultMapReader.Write(filePath, map);

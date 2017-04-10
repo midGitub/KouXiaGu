@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -18,7 +19,6 @@ namespace KouXiaGu
 
     public interface IAsync
     {
-
         /// <summary>
         /// 是否完成?
         /// </summary>
@@ -36,12 +36,17 @@ namespace KouXiaGu
 
     }
 
-    public class AsyncOperation<TResult> : IAsync<TResult>
+    public abstract class AsyncOperation<TResult> : IAsync<TResult>, IEnumerator
     {
         public bool IsCompleted { get; protected set; }
         public bool IsFaulted { get; protected set; }
         public TResult Result { get; protected set; }
         public Exception Ex { get; protected set; }
+
+        public object Current
+        {
+            get { return Result; }
+        }
 
         public AsyncOperation()
         {
@@ -49,6 +54,43 @@ namespace KouXiaGu
             IsFaulted = false;
             Result = default(TResult);
             Ex = null;
+        }
+
+        /// <summary>
+        /// 开始在多线程内操作,手动开始;
+        /// </summary>
+        public void Start()
+        {
+            ThreadPool.QueueUserWorkItem(OperateAsync);
+        }
+
+        void OperateAsync(object state)
+        {
+            try
+            {
+                Result = Operate();
+            }
+            catch (Exception ex)
+            {
+                Ex = ex;
+                IsFaulted = true;
+            }
+            finally
+            {
+                IsCompleted = true;
+            }
+        }
+
+        protected abstract TResult Operate();
+
+        public virtual bool MoveNext()
+        {
+            return !IsCompleted;
+        }
+
+        public void Reset()
+        {
+            return;
         }
 
     }

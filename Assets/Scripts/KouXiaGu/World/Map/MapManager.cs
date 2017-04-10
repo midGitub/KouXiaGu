@@ -11,33 +11,23 @@ namespace KouXiaGu.World.Map
 
     public class MapManager
     {
+        internal static IReader<Data> DataReader { get; set; }
+        internal static IReader<Dictionary<int, RoadInfo>> RoadReader { get; set; }
+        internal static IReader<Dictionary<int, LandformInfo>> LandformReader { get; set; }
 
-        public WorldInfo Info { get; private set; }
-        public Map Map { get; private set; }
-        public ArchiveMap ArchiveMap { get; private set; }
-        public MapElement Element { get; private set; }
+        public Data Map { get; private set; }
+        public Dictionary<int, RoadInfo> RoadInfos { get; private set; }
+        public Dictionary<int, LandformInfo> LandformInfos { get; private set; }
 
-        public IMapReader Reader
+        static MapManager()
         {
-            get { return Info.Map; }
+            RoadReader = new RoadInfoXmlReader();
+            LandformReader = new LandformInfoXmlReader();
         }
 
-        MapManager(WorldInfo info)
+        public MapManager()
         {
-            Info = info;
-        }
-
-        public static MapManager Create(WorldInfo info)
-        {
-            var item = new MapManager(info);
-            item.Initialize();
-            return item;
-        }
-
-        public static IAsync<MapManager> CreateAsync(WorldInfo info)
-        {
-            var item = new MapManager(info);
-            return new AsyncInitializer(item);
+            Initialize();
         }
 
         /// <summary>
@@ -45,70 +35,27 @@ namespace KouXiaGu.World.Map
         /// </summary>
         void Initialize()
         {
-            ReadMap();
+            Map = DataReader.Read();
+            RoadInfos = RoadReader.Read();
+            LandformInfos = LandformReader.Read();
         }
 
-        public void ReadMap()
-        {
-            Map = Reader.GetMap();
-            Map.Enable();
 
-            ArchiveMap = Reader.GetArchiveMap();
-            ArchiveMap.Subscribe(Map);
+        public static AsyncOperation<MapManager> CreateAsync()
+        {
+            var item = new AsyncInitializer();
+            item.Start();
+            return item;
         }
 
-        public void WriteMap()
+        class AsyncInitializer : AsyncOperation<MapManager>
         {
-            Reader.Predefined.WriteMap(Map);
-        }
-
-        public void WriteArchived(string archivedDir)
-        {
-            ArchiveMapFile file = ArchiveMapFile.Create(archivedDir);
-            ArchiveMapInfo info = new ArchiveMapInfo(Reader.Predefined);
-            file.WriteInfo(info);
-            file.WriteMap(ArchiveMap);
-        }
-
-        class AsyncInitializer : IAsync<MapManager>
-        {
-            MapManager manager;
-            public bool IsCompleted { get; private set; }
-            public bool IsFaulted { get; private set; }
-            public MapManager Result { get; private set; }
-            public Exception Ex { get; private set; }
-
-            AsyncInitializer()
+            protected override MapManager Operate()
             {
-                IsCompleted = false;
-                IsFaulted = false;
-                Ex = null;
+                MapManager item = new MapManager();
+                item.Initialize();
+                return item;
             }
-
-            public AsyncInitializer(MapManager manager) : this()
-            {
-                this.manager = manager;
-                ThreadPool.QueueUserWorkItem(Initialize);
-            }
-
-            void Initialize(object state)
-            {
-                try
-                {
-                    manager.Initialize();
-                }
-                catch (Exception ex)
-                {
-                    IsFaulted = true;
-                    Ex = ex;
-                }
-                finally
-                {
-                    Result = manager;
-                    IsCompleted = true;
-                }
-            }
-
         }
 
     }

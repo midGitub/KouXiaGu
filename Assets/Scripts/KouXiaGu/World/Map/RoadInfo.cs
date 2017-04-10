@@ -5,7 +5,6 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using KouXiaGu.Terrain3D;
-using UnityEngine;
 
 namespace KouXiaGu.World.Map
 {
@@ -13,7 +12,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 道路信息;
     /// </summary>
-    [XmlType("RoadInfo")]
+    [XmlType("Road")]
     public struct RoadInfo
     {
         [XmlAttribute("id")]
@@ -30,7 +29,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 道路信息读取;
     /// </summary>
-    public class XmlRoadInfoReader : IReader<RoadInfo[]>
+    public class RoadInfoXmlReader : IReader<RoadInfo[]>, IReader<Dictionary<int, RoadInfo>>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
         internal const string InfosFileName = "World/Road";
@@ -38,6 +37,13 @@ namespace KouXiaGu.World.Map
         protected string FileExtension
         {
             get { return ".xml"; }
+        }
+
+        Dictionary<int, RoadInfo> IReader<Dictionary<int, RoadInfo>>.Read()
+        {
+            var infoArray = Read();
+            var infoDictionary = infoArray.ToDictionary(item => item.ID);
+            return infoDictionary;
         }
 
         public virtual RoadInfo[] Read()
@@ -64,6 +70,7 @@ namespace KouXiaGu.World.Map
             path = Path.ChangeExtension(path, FileExtension);
             return path;
         }
+
     }
 
 }
