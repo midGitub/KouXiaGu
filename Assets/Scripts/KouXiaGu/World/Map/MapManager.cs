@@ -110,4 +110,13 @@ namespace KouXiaGu.World.Map
 
     }
 
+
+    /// <summary>
+    /// 地图存在的元素;
+    /// </summary>
+    public class MapElement
+    {
+
+    }
+
 }

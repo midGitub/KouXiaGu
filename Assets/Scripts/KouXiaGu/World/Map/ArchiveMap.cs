@@ -18,10 +18,10 @@ namespace KouXiaGu.World.Map
         public ArchiveDictionary<CubicHexCoord, MapNode> Data { get; set; }
 
         [ProtoMember(2)]
-        public RoadInfo Road { get; set; }
+        public MapRoad Road { get; set; }
 
         [ProtoMember(3)]
-        public TownInfo Town { get; set; }
+        public MapTown Town { get; set; }
 
         public ArchiveMap()
         {

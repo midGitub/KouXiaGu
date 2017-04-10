@@ -23,7 +23,7 @@ namespace KouXiaGu.World.Map
     }
 
     [ProtoContract]
-    public class TownInfo : DictionaryObserver<CubicHexCoord, MapNode>
+    public class MapTown : DictionaryObserver<CubicHexCoord, MapNode>
     {
 
         internal const int EmptyTownID = 0;
@@ -34,12 +34,12 @@ namespace KouXiaGu.World.Map
         [ProtoMember(1)]
         Dictionary<int, CubicHexCoord> townMap;
 
-        public TownInfo()
+        public MapTown()
         {
             townMap = new Dictionary<int, CubicHexCoord>();
         }
 
-        public TownInfo(Map map) : this()
+        public MapTown(Map map) : this()
         {
             Subscribe(map.Data);
         }
@@ -109,7 +109,7 @@ namespace KouXiaGu.World.Map
 
         public static bool ExistTown(this TownNode node)
         {
-            return node.TownID != TownInfo.EmptyTownID;
+            return node.TownID != MapTown.EmptyTownID;
         }
 
     }

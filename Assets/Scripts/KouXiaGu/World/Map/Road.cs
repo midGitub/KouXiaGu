@@ -28,18 +28,18 @@ namespace KouXiaGu.World.Map
     }
 
     [ProtoContract]
-    public class RoadInfo
+    public class MapRoad
     {
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
         internal const uint EmptyRoadID = 0;
 
-        public RoadInfo() : this(0)
+        public MapRoad() : this(0)
         {
         }
 
-        public RoadInfo(uint effectiveID)
+        public MapRoad(uint effectiveID)
         {
             EffectiveID = effectiveID;
         }
@@ -70,7 +70,7 @@ namespace KouXiaGu.World.Map
 
         public static bool ExistRoad(this RoadNode node)
         {
-            return node.ID != RoadInfo.EmptyRoadID;
+            return node.ID != MapRoad.EmptyRoadID;
         }
 
 
@@ -80,7 +80,7 @@ namespace KouXiaGu.World.Map
             return node;
         }
 
-        public static RoadNode CreateRoad(this RoadNode node, RoadInfo road, int roadType)
+        public static RoadNode CreateRoad(this RoadNode node, MapRoad road, int roadType)
         {
             if (!node.ExistRoad())
             {
@@ -91,6 +91,5 @@ namespace KouXiaGu.World.Map
         }
 
     }
-
 
 }

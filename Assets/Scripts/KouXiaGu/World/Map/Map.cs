@@ -21,18 +21,18 @@ namespace KouXiaGu.World.Map
         public ObservableDictionary<CubicHexCoord, MapNode> Data { get; private set; }
 
         [ProtoMember(2)]
-        public RoadInfo Road { get; private set; }
+        public MapRoad Road { get; private set; }
 
         [ProtoMember(3)]
-        public TownInfo Town { get; private set; }
+        public MapTown Town { get; private set; }
 
         public bool IsActivated { get; private set; }
 
         public Map()
         {
             Data = new ObservableDictionary<CubicHexCoord, MapNode>();
-            Road = new RoadInfo();
-            Town = new TownInfo();
+            Road = new MapRoad();
+            Town = new MapTown();
             IsActivated = false;
         }
 
