@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using System.IO;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.World.Map
 {
@@ -37,7 +38,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 道路信息读取;
     /// </summary>
-    public class RoadInfoXmlReader : IReader<List<RoadInfo>>, IReader<Dictionary<int, RoadInfo>>
+    public class RoadInfoXmlReader : IReader<Dictionary<int, RoadInfo>>, IWriter<RoadInfo[]>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
         static readonly RoadInfoFilePath file = new RoadInfoFilePath();
@@ -47,28 +48,39 @@ namespace KouXiaGu.World.Map
             get { return ".xml"; }
         }
 
-        Dictionary<int, RoadInfo> IReader<Dictionary<int, RoadInfo>>.Read()
+        public Dictionary<int, RoadInfo> Read()
         {
-            var infoArray = Read();
-            var infoDictionary = infoArray.ToDictionary(item => item.ID);
-            return infoDictionary;
+            Dictionary<int, RoadInfo> dictionary = new Dictionary<int, RoadInfo>();
+            var filePaths = GetFilePaths();
+
+            foreach (var filePath in filePaths)
+            {
+                var infos = Read(filePath);
+                AddOrUpdate(dictionary, infos);
+            }
+
+            return dictionary;
         }
 
-        public virtual List<RoadInfo> Read()
+        IEnumerable<string> GetFilePaths()
         {
-            List<RoadInfo> item = new List<RoadInfo>();
-
             foreach (var path in file.GetFilePaths())
             {
                 string newPath = Path.ChangeExtension(path, FileExtension);
+
                 if (File.Exists(newPath))
                 {
-                    var array = Read(newPath);
-                    item.AddRange(array);
+                    yield return newPath;
                 }
             }
+        }
 
-            return item;
+        void AddOrUpdate(Dictionary<int, RoadInfo> dictionary, IEnumerable<RoadInfo> infos)
+        {
+            foreach (var info in infos)
+            {
+                dictionary.AddOrUpdate(info.ID, info);
+            }
         }
 
         protected RoadInfo[] Read(string filePath)
@@ -77,6 +89,19 @@ namespace KouXiaGu.World.Map
             return item;
         }
 
+
+        /// <summary>
+        /// 输出覆盖保存到主要文件上;
+        /// </summary>
+        public void Write(RoadInfo[] infos)
+        {
+            Write(infos, file.MainFilePath);
+        }
+
+        public void Write(RoadInfo[] infos, string filePath)
+        {
+            serializer.SerializeXiaGu(filePath, infos);
+        }
     }
 
 }
