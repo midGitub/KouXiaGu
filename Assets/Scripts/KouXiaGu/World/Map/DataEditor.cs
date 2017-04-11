@@ -11,12 +11,12 @@ namespace KouXiaGu.World.Map
     public class DataEditor
     {
 
-        static IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
+        static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
         {
             get { return MapManager.RoadReader; }
         }
 
-        static IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader
+        static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader
         {
             get { return MapManager.LandformReader; }
         }
@@ -38,6 +38,8 @@ namespace KouXiaGu.World.Map
     static class DataTemplate
     {
 
+        const string StrNone = "None";
+
         /// <summary>
         /// 输出空的模版文件;
         /// </summary>
@@ -45,11 +47,12 @@ namespace KouXiaGu.World.Map
         /// <param name="overlay">是否覆盖已经存在的文件?</param>
         public static void WriteTemplateAll(string dirPath, bool overlay)
         {
-
+            WriteRoadTemplate(dirPath, overlay);
+            WriteLandformTemplate(dirPath, overlay);
         }
 
 
-        const string StrNone = "None";
+        #region Road;
 
         static readonly RoadInfo RoadTemplate = new RoadInfo()
         {
@@ -70,15 +73,22 @@ namespace KouXiaGu.World.Map
                 RoadTemplate,
             };
 
-        static IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
+        static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
         {
             get { return MapManager.RoadReader; }
         }
 
         public static void WriteRoadTemplate(string dirPath, bool overlay)
         {
+            if (!overlay && RoadReader.File.Exists(dirPath))
+                return;
+
             RoadReader.Write(RoadTemplates, dirPath);
         }
+
+        #endregion
+
+        #region Landform;
 
         static readonly LandformInfo LandformTemplate = new LandformInfo()
         {
@@ -99,10 +109,20 @@ namespace KouXiaGu.World.Map
                 LandformTemplate,
            };
 
-        static IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader
+        static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader
         {
             get { return MapManager.LandformReader; }
         }
+
+        public static void WriteLandformTemplate(string dirPath, bool overlay)
+        {
+            if (!overlay && LandformReader.File.Exists(dirPath))
+                return;
+
+            LandformReader.Write(LandformTemplates, dirPath);
+        }
+
+        #endregion
 
     }
 

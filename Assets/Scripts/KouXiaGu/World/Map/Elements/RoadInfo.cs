@@ -27,41 +27,43 @@ namespace KouXiaGu.World.Map
 
     public class RoadInfoFilePath : CustomFilePath
     {
-        const string fileName = "World/Road";
+        public RoadInfoFilePath(string fileExtension) : base(fileExtension)
+        {
+        }
 
         public override string FileName
         {
-            get { return fileName; }
-        }
-
-        public RoadInfoFilePath(string fileExtension) : base(fileExtension)
-        {
+            get { return "World/Road"; }
         }
     }
 
     /// <summary>
     /// 道路信息读取;
     /// </summary>
-    public class RoadInfoXmlSerializer : IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]>
+    public class RoadInfoXmlSerializer : DataReader<Dictionary<int, RoadInfo>, RoadInfo[]>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
 
         public RoadInfoXmlSerializer()
         {
-            File = new RoadInfoFilePath(FileExtension);
+            file = new RoadInfoFilePath(FileExtension);
         }
 
-        public RoadInfoFilePath File { get; private set; }
+        RoadInfoFilePath file;
 
-        public string FileExtension
+        public override string FileExtension
         {
             get { return ".xml"; }
         }
 
-        public Dictionary<int, RoadInfo> Read()
+        public override CustomFilePath File
+        {
+            get { return file; }
+        }
+
+        public override Dictionary<int, RoadInfo> Read(IEnumerable<string> filePaths)
         {
             Dictionary<int, RoadInfo> dictionary = new Dictionary<int, RoadInfo>();
-            var filePaths = GetFilePaths();
 
             foreach (var filePath in filePaths)
             {
@@ -72,17 +74,10 @@ namespace KouXiaGu.World.Map
             return dictionary;
         }
 
-        IEnumerable<string> GetFilePaths()
+        RoadInfo[] Read(string filePath)
         {
-            foreach (var path in File.GetFilePaths())
-            {
-                string newPath = Path.ChangeExtension(path, FileExtension);
-
-                if (File.Exists(newPath))
-                {
-                    yield return newPath;
-                }
-            }
+            var item = (RoadInfo[])serializer.DeserializeXiaGu(filePath);
+            return item;
         }
 
         void AddOrUpdate(Dictionary<int, RoadInfo> dictionary, IEnumerable<RoadInfo> infos)
@@ -93,22 +88,8 @@ namespace KouXiaGu.World.Map
             }
         }
 
-        protected RoadInfo[] Read(string filePath)
+        public override void Write(RoadInfo[] infos, string filePath)
         {
-            var item = (RoadInfo[])serializer.DeserializeXiaGu(filePath);
-            return item;
-        }
-
-
-        /// <summary>
-        /// 输出/保存到 文件夹下;
-        /// </summary>
-        /// <param name="infos">内容</param>
-        /// <param name="dirPath">输出的文件夹</param>
-        public void Write(RoadInfo[] infos, string dirPath)
-        {
-            string filePath = File.Combine(dirPath);
-            filePath = Path.ChangeExtension(filePath, FileExtension);
             serializer.SerializeXiaGu(filePath, infos);
         }
     }

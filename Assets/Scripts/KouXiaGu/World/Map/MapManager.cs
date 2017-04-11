@@ -9,8 +9,8 @@ namespace KouXiaGu.World.Map
     public sealed class MapManager
     {
         internal static IReader<MapData> DataReader { get; set; }
-        internal static IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
-        internal static IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
+        internal static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
+        internal static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
 
         static MapManager()
         {
