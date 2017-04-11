@@ -126,6 +126,13 @@ namespace KouXiaGu.World
             Map = new MapManager();
         }
 
+        [ContextMenu("输出模版文件")]
+        public void Test()
+        {
+            WorldElementTemplate item = new WorldElementTemplate();
+            item.WriteToDirectory(GameFile.MainDirectory, false);
+        }
+
     }
 
 

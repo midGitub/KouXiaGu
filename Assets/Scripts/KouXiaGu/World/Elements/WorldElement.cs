@@ -67,6 +67,11 @@ namespace KouXiaGu.World
             BuildingInfos = BuildingReader.Read();
         }
 
+        /// <summary>
+        /// 输出所有信息到文件夹内;
+        /// </summary>
+        /// <param name="overlay">输出到的文件夹;</param>
+        /// <param name="overlay">是否覆盖已经存在的文件?</param>
         public void WriteToDirectory(string dirPath, bool overlay)
         {
             WriteToDirectory(RoadReader, RoadInfos, dirPath, overlay);

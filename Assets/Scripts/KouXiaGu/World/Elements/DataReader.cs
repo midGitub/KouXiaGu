@@ -27,11 +27,11 @@ namespace KouXiaGu.World
         {
             foreach (var path in File.GetFilePaths())
             {
-                string newPath = Path.ChangeExtension(path, FileExtension);
+                string filePath = Path.ChangeExtension(path, FileExtension);
 
-                if (System.IO.File.Exists(newPath))
+                if (System.IO.File.Exists(filePath))
                 {
-                    yield return newPath;
+                    yield return filePath;
                 }
             }
         }
@@ -46,6 +46,7 @@ namespace KouXiaGu.World
         public void WriteToDirectory(TW item, string dirPath)
         {
             string filePath = File.Combine(dirPath);
+            filePath = Path.ChangeExtension(filePath, FileExtension);
             Write(item, filePath);
         }
     }

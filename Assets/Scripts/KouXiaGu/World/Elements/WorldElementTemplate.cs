@@ -3,25 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.World
 {
 
+    /// <summary>
+    /// 预定义模版;
+    /// </summary>
     class WorldElementTemplate : WorldElement
     {
 
         const string StrNone = "None";
-
-        /// <summary>
-        /// 输出空的模版文件;
-        /// </summary>
-        /// <param name="overlay">输出到的文件夹;</param>
-        /// <param name="overlay">是否覆盖已经存在的文件?</param>
-        public static void WriteTemplateAll(string dirPath, bool overlay)
-        {
-            WriteRoadTemplate(dirPath, overlay);
-            WriteLandformTemplate(dirPath, overlay);
-        }
 
         #region Road;
 
@@ -41,16 +34,7 @@ namespace KouXiaGu.World
         static readonly RoadInfo[] RoadTemplates = new RoadInfo[]
             {
                 RoadTemplate,
-                RoadTemplate,
             };
-
-        public static void WriteRoadTemplate(string dirPath, bool overlay)
-        {
-            if (!overlay && RoadReader.File.Exists(dirPath))
-                return;
-
-            RoadReader.Write(RoadTemplates, dirPath);
-        }
 
         #endregion
 
@@ -73,18 +57,22 @@ namespace KouXiaGu.World
         static readonly LandformInfo[] LandformTemplates = new LandformInfo[]
            {
                 LandformTemplate,
-                LandformTemplate,
            };
 
-        public static void WriteLandformTemplate(string dirPath, bool overlay)
-        {
-            if (!overlay && LandformReader.File.Exists(dirPath))
-                return;
+        #endregion
 
-            LandformReader.Write(LandformTemplates, dirPath);
+
+        public WorldElementTemplate() : base()
+        {
+            AddDictionary(RoadInfos, RoadTemplates);
+            AddDictionary(LandformInfos, LandformTemplates);
         }
 
-        #endregion
+        void AddDictionary<T>(Dictionary<int, T> dictionary, IEnumerable<T> items)
+            where T : IMarked
+        {
+            dictionary.AddOrUpdate(items, item => item.ID);
+        }
 
     }
 
