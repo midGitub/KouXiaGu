@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地貌信息;
     /// </summary>
-    [XmlType("Landform")]
+    [XmlType("TerrainLandform")]
     public class TerrainLandformInfo
     {
         /// <summary>

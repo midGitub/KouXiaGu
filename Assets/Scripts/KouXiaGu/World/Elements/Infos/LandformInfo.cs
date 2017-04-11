@@ -14,7 +14,7 @@ namespace KouXiaGu.World
     public class LandformInfo : ElementInfo
     {
         [XmlElement("Terrain")]
-        public TerrainLandformInfo Terrain;
+        public TerrainLandformInfo Terrain { get; set; }
     }
 
     /// <summary>

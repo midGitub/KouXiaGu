@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using KouXiaGu.Collections;
+using KouXiaGu.Terrain3D;
 
 namespace KouXiaGu.World
 {
@@ -14,6 +15,8 @@ namespace KouXiaGu.World
     [XmlType("Building")]
     public class BuildingInfo : ElementInfo
     {
+        [XmlElement("Terrain")]
+        public TerrainBuildingInfo Terrain { get; set; }
     }
 
     /// <summary>
