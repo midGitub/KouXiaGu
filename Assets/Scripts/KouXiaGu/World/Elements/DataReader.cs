@@ -47,6 +47,11 @@ namespace KouXiaGu.World
         {
             string filePath = File.Combine(dirPath);
             filePath = Path.ChangeExtension(filePath, FileExtension);
+
+            string directoryName = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directoryName))
+                Directory.CreateDirectory(directoryName);
+
             Write(item, filePath);
         }
     }
