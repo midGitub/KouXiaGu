@@ -10,14 +10,10 @@ namespace KouXiaGu.World.Map
     {
         static MapManager()
         {
-            DataReader = new MapDataReader();
-            RoadReader = new RoadInfoXmlSerializer();
-            LandformReader = new LandformInfoXmlSerializer();
+            MapReader = new MapDataReader();
         }
 
-        internal static IReader<MapData> DataReader { get; set; }
-        internal static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
-        internal static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
+        internal static IReader<MapData> MapReader { get; set; }
 
 
         public MapManager()
@@ -26,29 +22,10 @@ namespace KouXiaGu.World.Map
         }
 
         public MapData Map { get; private set; }
-        public Dictionary<int, RoadInfo> RoadInfos { get; private set; }
-        public Dictionary<int, LandformInfo> LandformInfos { get; private set; }
 
         void Initialize()
         {
-            Map = DataReader.Read();
-            RoadInfos = RoadReader.Read();
-            LandformInfos = LandformReader.Read();
-        }
-
-
-        public void WriteInfosToMainDirectory()
-        {
-            WriteInfosToDirectory(GameFile.MainDirectory);
-        }
-
-        public void WriteInfosToDirectory(string dirPath)
-        {
-            var roadInfos = RoadInfos.Values.ToArray();
-            RoadReader.WriteToDirectory(roadInfos, dirPath);
-
-            var landformInfos = LandformInfos.Values.ToArray();
-            LandformReader.WriteToDirectory(landformInfos, dirPath);
+            Map = MapReader.Read();
         }
 
 

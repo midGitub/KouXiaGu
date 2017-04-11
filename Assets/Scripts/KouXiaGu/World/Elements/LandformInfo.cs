@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Xml.Serialization;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.World.Map
+namespace KouXiaGu.World
 {
 
     /// <summary>

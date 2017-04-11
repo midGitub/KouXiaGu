@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
-namespace KouXiaGu.World.Map
+namespace KouXiaGu.World
 {
 
     public abstract class DataReader<TR, TW>
