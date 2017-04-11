@@ -11,10 +11,10 @@ namespace KouXiaGu.World
     /// 道路信息;
     /// </summary>
     [XmlType("Road")]
-    public struct RoadInfo
+    public struct RoadInfo : IMarked
     {
         [XmlAttribute("id")]
-        public int ID;
+        public int ID { get; set; }
 
         [XmlAttribute("name")]
         public string Name;
@@ -38,10 +38,8 @@ namespace KouXiaGu.World
     /// <summary>
     /// 道路信息读取;
     /// </summary>
-    public class RoadInfoXmlSerializer : DataReader<Dictionary<int, RoadInfo>, RoadInfo[]>
+    public class RoadInfoXmlSerializer : DataXmlSerializer<RoadInfo>
     {
-        static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
-
         public RoadInfoXmlSerializer()
         {
             file = new RoadInfoFilePath(FileExtension);
@@ -49,46 +47,9 @@ namespace KouXiaGu.World
 
         RoadInfoFilePath file;
 
-        public override string FileExtension
-        {
-            get { return ".xml"; }
-        }
-
         public override CustomFilePath File
         {
             get { return file; }
-        }
-
-        public override Dictionary<int, RoadInfo> Read(IEnumerable<string> filePaths)
-        {
-            Dictionary<int, RoadInfo> dictionary = new Dictionary<int, RoadInfo>();
-
-            foreach (var filePath in filePaths)
-            {
-                var infos = Read(filePath);
-                AddOrUpdate(dictionary, infos);
-            }
-
-            return dictionary;
-        }
-
-        RoadInfo[] Read(string filePath)
-        {
-            var item = (RoadInfo[])serializer.DeserializeXiaGu(filePath);
-            return item;
-        }
-
-        void AddOrUpdate(Dictionary<int, RoadInfo> dictionary, IEnumerable<RoadInfo> infos)
-        {
-            foreach (var info in infos)
-            {
-                dictionary.AddOrUpdate(info.ID, info);
-            }
-        }
-
-        public override void Write(RoadInfo[] infos, string filePath)
-        {
-            serializer.SerializeXiaGu(filePath, infos);
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using KouXiaGu.Collections;
 
@@ -48,7 +49,7 @@ namespace KouXiaGu.World
     }
 
 
-    public abstract class DataXmlSerializer<T> : DataReader<Dictionary<int, T>, T[]>
+    public abstract class DataXmlSerializer<T> : DataReader<Dictionary<int, T>, IEnumerable<T>>
         where T : IMarked
     {
         protected static readonly XmlSerializer serializer = new XmlSerializer(typeof(T[]));
@@ -85,9 +86,10 @@ namespace KouXiaGu.World
             }
         }
 
-        public override void Write(T[] item, string filePath)
+        public override void Write(IEnumerable<T> item, string filePath)
         {
-            serializer.SerializeXiaGu(filePath, item);
+            T[] array = item.ToArray();
+            serializer.SerializeXiaGu(filePath, array);
         }
     }
 

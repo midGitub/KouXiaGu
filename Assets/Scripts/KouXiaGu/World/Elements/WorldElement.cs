@@ -15,9 +15,9 @@ namespace KouXiaGu.World
             BuildingReader = new BuildingInfosXmlSerializer();
         }
 
-        internal static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
-        internal static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
-        internal static DataReader<Dictionary<int, BuildingInfo>, BuildingInfo[]> BuildingReader { get; set; }
+        internal static DataReader<Dictionary<int, RoadInfo>, IEnumerable<RoadInfo>> RoadReader { get; set; }
+        internal static DataReader<Dictionary<int, LandformInfo>, IEnumerable<LandformInfo>> LandformReader { get; set; }
+        internal static DataReader<Dictionary<int, BuildingInfo>, IEnumerable<BuildingInfo>> BuildingReader { get; set; }
 
         /// <summary>
         /// 同步读取所有信息;
@@ -74,7 +74,7 @@ namespace KouXiaGu.World
         }
 
         void WriteToDirectory<T>(
-            DataReader<Dictionary<int, T>, T[]> reader,
+            DataReader<Dictionary<int, T>, IEnumerable<T>> reader,
             Dictionary<int, T> dictionary,
             string dirPath,
             bool overlay)
@@ -82,7 +82,7 @@ namespace KouXiaGu.World
             if (!overlay && reader.File.Exists(dirPath))
                 return;
 
-            var infos = dictionary.Values.ToArray();
+            IEnumerable<T> infos = dictionary.Values;
             reader.WriteToDirectory(infos, dirPath);
         }
 

@@ -11,10 +11,10 @@ namespace KouXiaGu.World
     /// 地形信息;
     /// </summary>
     [XmlType("Landform")]
-    public struct LandformInfo
+    public struct LandformInfo : IMarked
     {
         [XmlAttribute("id")]
-        public int ID;
+        public int ID { get; set; }
 
         [XmlAttribute("name")]
         public string Name;
@@ -41,10 +41,8 @@ namespace KouXiaGu.World
     /// <summary>
     /// 地形信息读取;
     /// </summary>
-    public class LandformInfoXmlSerializer : DataReader<Dictionary<int, LandformInfo>, LandformInfo[]>
+    public class LandformInfoXmlSerializer : DataXmlSerializer<LandformInfo>
     {
-        static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));
-
         public LandformInfoXmlSerializer()
         {
             file = new LandformInfosFilePath(FileExtension);
@@ -52,47 +50,11 @@ namespace KouXiaGu.World
 
         LandformInfosFilePath file;
 
-        public override string FileExtension
-        {
-            get { return ".xml"; }
-        }
-
         public override CustomFilePath File
         {
             get { return file; }
         }
 
-        public override Dictionary<int, LandformInfo> Read(IEnumerable<string> filePaths)
-        {
-            Dictionary<int, LandformInfo> dictionary = new Dictionary<int, LandformInfo>();
-
-            foreach (var filePath in filePaths)
-            {
-                var infos = Read(filePath);
-                AddOrUpdate(dictionary, infos);
-            }
-
-            return dictionary;
-        }
-
-        LandformInfo[] Read(string filePath)
-        {
-            var item = (LandformInfo[])serializer.DeserializeXiaGu(filePath);
-            return item;
-        }
-
-        void AddOrUpdate(Dictionary<int, LandformInfo> dictionary, IEnumerable<LandformInfo> infos)
-        {
-            foreach (var info in infos)
-            {
-                dictionary.AddOrUpdate(info.ID, info);
-            }
-        }
-
-        public override void Write(LandformInfo[] item, string filePath)
-        {
-            serializer.SerializeXiaGu(filePath, item);
-        }
     }
 
 }
