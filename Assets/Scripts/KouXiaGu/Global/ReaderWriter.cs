@@ -37,9 +37,19 @@ namespace KouXiaGu
         void Write(TContent item, T1 t1);
     }
 
-
     public interface IReaderWriter<TR, TW> : IReader<TR>, IWriter<TW, string>
     {
     }
+
+
+
+    public interface IFileReader<T>
+    {
+        FilePath File { get; }
+        T ReadFile(string dirPath);
+        void WriteFile(T item, string dirPath);
+    }
+
+
 
 }

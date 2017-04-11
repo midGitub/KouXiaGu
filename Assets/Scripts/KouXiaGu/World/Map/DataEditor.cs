@@ -1,0 +1,110 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+using KouXiaGu.Terrain3D;
+
+namespace KouXiaGu.World.Map
+{
+
+    public class DataEditor
+    {
+
+        static IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
+        {
+            get { return MapManager.RoadReader; }
+        }
+
+        static IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader
+        {
+            get { return MapManager.LandformReader; }
+        }
+
+        public MapManager Manager { get; private set; }
+
+        public DataEditor()
+        {
+            Manager = new MapManager();
+        }
+
+        public DataEditor(MapManager manager)
+        {
+            Manager = manager;
+        }
+
+    }
+
+    static class DataTemplate
+    {
+
+        /// <summary>
+        /// 输出空的模版文件;
+        /// </summary>
+        /// <param name="overlay">输出到的文件夹;</param>
+        /// <param name="overlay">是否覆盖已经存在的文件?</param>
+        public static void WriteTemplateAll(string dirPath, bool overlay)
+        {
+
+        }
+
+
+        const string StrNone = "None";
+
+        static readonly RoadInfo RoadTemplate = new RoadInfo()
+        {
+            ID = 1,
+            Name = StrNone,
+            Terrain = new TerrainRoadInfo()
+            {
+                DiffuseBlendTex = StrNone,
+                DiffuseTex = StrNone,
+                HeightAdjustBlendTex = StrNone,
+                HeightAdjustTex = StrNone,
+            },
+        };
+
+        static readonly RoadInfo[] RoadTemplates = new RoadInfo[]
+            {
+                RoadTemplate,
+                RoadTemplate,
+            };
+
+        static IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
+        {
+            get { return MapManager.RoadReader; }
+        }
+
+        public static void WriteRoadTemplate(string dirPath, bool overlay)
+        {
+            RoadReader.Write(RoadTemplates, dirPath);
+        }
+
+        static readonly LandformInfo LandformTemplate = new LandformInfo()
+        {
+            ID = 1,
+            Name = StrNone,
+            Terrain = new TerrainLandformInfo()
+            {
+                DiffuseBlendTex = StrNone,
+                DiffuseTex = StrNone,
+                HeightBlendTex = StrNone,
+                HeightTex = StrNone,
+            },
+        };
+
+        static readonly LandformInfo[] LandformTemplates = new LandformInfo[]
+           {
+                LandformTemplate,
+                LandformTemplate,
+           };
+
+        static IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader
+        {
+            get { return MapManager.LandformReader; }
+        }
+
+    }
+
+
+}

@@ -9,6 +9,10 @@ namespace KouXiaGu.World.Map
 
     class MapDataFilePath : FilePath
     {
+        public MapDataFilePath(string fileExtension) : base(fileExtension)
+        {
+        }
+
         public override string FileName
         {
             get { return "World/Map"; }
@@ -20,8 +24,14 @@ namespace KouXiaGu.World.Map
     /// </summary>
     public class MapDataReader : IReader<MapData>
     {
-        static readonly MapDataFilePath file = new MapDataFilePath();
         internal static readonly MapDataReader instance = new MapDataReader();
+
+        public MapDataReader()
+        {
+            File = new MapDataFilePath(FileExtension);
+        }
+
+        internal MapDataFilePath File { get; private set; }
 
         public string FileExtension
         {
@@ -36,7 +46,7 @@ namespace KouXiaGu.World.Map
 
         public string GetFilePath()
         {
-            string filePath = Path.ChangeExtension(file.MainFilePath, FileExtension);
+            string filePath = Path.ChangeExtension(File.MainFilePath, FileExtension);
             return filePath;
         }
 

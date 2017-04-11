@@ -8,39 +8,38 @@ namespace KouXiaGu
 {
 
 
-    static class GameFile
+    public static class GameFile
     {
 
         /// <summary>
         /// 游戏文件路径;
         /// </summary>
-        public static List<string> GameDirectorys = new List<string>();
+        public static List<string> GameDirectorys = new List<string>()
+        {
+            ResourcePath.ConfigDirectoryPath,
+        };
         
     }
 
-    interface IFilePath
-    {
-        /// <summary>
-        /// 获取到主要的文件路径;
-        /// </summary>
-        string MainFilePath { get; }
-    }
 
-    interface ICustomFilePath : IFilePath
+    public abstract class FilePath
     {
-        /// <summary>
-        /// 获取到所有的文件路径;
-        /// </summary>
-        IEnumerable<string> GetFilePaths();
-    }
+        public FilePath(string fileExtension)
+        {
+            FileExtension = fileExtension;
+        }
 
-    abstract class FilePath : IFilePath
-    {
         public abstract string FileName { get; }
+        public string FileExtension { get; private set; }
 
         public string MainFilePath
         {
-            get { return Path.Combine(ResourcePath.ConfigDirectoryPath, FileName); }
+            get { return Path.Combine(MainDirPath, FileName); }
+        }
+
+        public string MainDirPath
+        {
+            get { return ResourcePath.ConfigDirectoryPath; }
         }
 
         public string Combine(string dirPath)
@@ -48,16 +47,29 @@ namespace KouXiaGu
             return Path.Combine(dirPath, FileName);
         }
 
+        public bool Exists(string dirPath)
+        {
+            return File.Exists(MainFilePath);
+        }
+
     }
 
-    abstract class CustomFilePath : FilePath, ICustomFilePath
+    public abstract class CustomFilePath : FilePath
     {
+        public CustomFilePath(string fileExtension) : base(fileExtension)
+        {
+        }
+
+        public IEnumerable<string> GetDirPaths()
+        {
+            return GameFile.GameDirectorys;
+        }
+
         /// <summary>
         /// 获取到文件路径;
         /// </summary>
         public IEnumerable<string> GetFilePaths()
         {
-            yield return MainFilePath;
             foreach (var dir in GameFile.GameDirectorys)
             {
                 yield return Path.Combine(dir, FileName);

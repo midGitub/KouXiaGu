@@ -25,13 +25,17 @@ namespace KouXiaGu.World.Map
         public TerrainRoadInfo Terrain;
     }
 
-    class RoadInfoFilePath : CustomFilePath
+    public class RoadInfoFilePath : CustomFilePath
     {
         const string fileName = "World/Road";
 
         public override string FileName
         {
             get { return fileName; }
+        }
+
+        public RoadInfoFilePath(string fileExtension) : base(fileExtension)
+        {
         }
     }
 
@@ -41,9 +45,15 @@ namespace KouXiaGu.World.Map
     public class RoadInfoXmlSerializer : IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(RoadInfo[]));
-        static readonly RoadInfoFilePath file = new RoadInfoFilePath();
 
-        protected string FileExtension
+        public RoadInfoXmlSerializer()
+        {
+            File = new RoadInfoFilePath(FileExtension);
+        }
+
+        public RoadInfoFilePath File { get; private set; }
+
+        public string FileExtension
         {
             get { return ".xml"; }
         }
@@ -64,7 +74,7 @@ namespace KouXiaGu.World.Map
 
         IEnumerable<string> GetFilePaths()
         {
-            foreach (var path in file.GetFilePaths())
+            foreach (var path in File.GetFilePaths())
             {
                 string newPath = Path.ChangeExtension(path, FileExtension);
 
@@ -97,7 +107,7 @@ namespace KouXiaGu.World.Map
         /// <param name="dirPath">输出的文件夹</param>
         public void Write(RoadInfo[] infos, string dirPath)
         {
-            string filePath = file.Combine(dirPath);
+            string filePath = File.Combine(dirPath);
             filePath = Path.ChangeExtension(filePath, FileExtension);
             serializer.SerializeXiaGu(filePath, infos);
         }

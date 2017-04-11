@@ -28,13 +28,15 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 地形信息文件路径;
     /// </summary>
-    class LandformInfosFilePath : CustomFilePath
+    public class LandformInfosFilePath : CustomFilePath
     {
-        const string fileName = "World/Landform";
+        public LandformInfosFilePath(string fileExtension) : base(fileExtension)
+        {
+        }
 
         public override string FileName
         {
-            get { return fileName; }
+            get { return "World/Landform"; }
         }
     }
 
@@ -44,9 +46,15 @@ namespace KouXiaGu.World.Map
     public class LandformInfoXmlSerializer : IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));
-        static readonly LandformInfosFilePath file = new LandformInfosFilePath();
 
-        protected string FileExtension
+        public LandformInfoXmlSerializer()
+        {
+            File = new LandformInfosFilePath(FileExtension);
+        }
+
+        public LandformInfosFilePath File { get; private set; }
+
+        public string FileExtension
         {
             get { return ".xml"; }
         }
@@ -75,11 +83,11 @@ namespace KouXiaGu.World.Map
 
         IEnumerable<string> GetFilePaths()
         {
-            foreach (var path in file.GetFilePaths())
+            foreach (var path in File.GetFilePaths())
             {
                 string newPath = Path.ChangeExtension(path, FileExtension);
 
-                if (File.Exists(newPath))
+                if (System.IO.File.Exists(newPath))
                 {
                     yield return newPath;
                 }
@@ -99,7 +107,7 @@ namespace KouXiaGu.World.Map
         /// <param name="dirPath">输出的文件夹</param>
         public void Write(LandformInfo[] infos, string dirPath)
         {
-            string filePath = file.Combine(dirPath);
+            string filePath = File.Combine(dirPath);
             filePath = Path.ChangeExtension(filePath, FileExtension);
             serializer.SerializeXiaGu(filePath, infos);
         }
