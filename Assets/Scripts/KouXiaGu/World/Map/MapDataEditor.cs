@@ -33,6 +33,15 @@ namespace KouXiaGu.World.Map
             Manager = manager;
         }
 
+        public void WriteToMain()
+        {
+            var roadInfos = Manager.RoadInfos.Values.ToArray();
+            RoadReader.WriteToDirectory(roadInfos);
+
+            var LandformInfos = Manager.LandformInfos.Values.ToArray();
+            LandformReader.WriteToDirectory(LandformInfos);
+        }
+
     }
 
     static class DataTemplate
