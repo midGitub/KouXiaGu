@@ -39,7 +39,7 @@ namespace KouXiaGu.World.Map
             townMap = new Dictionary<int, CubicHexCoord>();
         }
 
-        public MapTown(MapData map) : this()
+        public MapTown(PredefinedMap map) : this()
         {
             Subscribe(map.Data);
         }

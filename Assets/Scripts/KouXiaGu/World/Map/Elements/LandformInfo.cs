@@ -43,26 +43,31 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 地形信息读取;
     /// </summary>
-    public class LandformInfoXmlSerializer : IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]>
+    public class LandformInfoXmlSerializer : DataReader<Dictionary<int, LandformInfo>, LandformInfo[]>, 
+        IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]>
     {
         static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandformInfo[]));
 
         public LandformInfoXmlSerializer()
         {
-            File = new LandformInfosFilePath(FileExtension);
+            file = new LandformInfosFilePath(FileExtension);
         }
 
-        public LandformInfosFilePath File { get; private set; }
+        LandformInfosFilePath file;
 
-        public string FileExtension
+        public override string FileExtension
         {
             get { return ".xml"; }
         }
 
-        public Dictionary<int, LandformInfo> Read()
+        public override CustomFilePath File
+        {
+            get { return file; }
+        }
+
+        public override Dictionary<int, LandformInfo> Read(IEnumerable<string> filePaths)
         {
             Dictionary<int, LandformInfo> dictionary = new Dictionary<int, LandformInfo>();
-            var filePaths = GetFilePaths();
 
             foreach (var filePath in filePaths)
             {
@@ -73,6 +78,12 @@ namespace KouXiaGu.World.Map
             return dictionary;
         }
 
+        LandformInfo[] Read(string filePath)
+        {
+            var item = (LandformInfo[])serializer.DeserializeXiaGu(filePath);
+            return item;
+        }
+
         void AddOrUpdate(Dictionary<int, LandformInfo> dictionary, IEnumerable<LandformInfo> infos)
         {
             foreach (var info in infos)
@@ -81,36 +92,22 @@ namespace KouXiaGu.World.Map
             }
         }
 
-        IEnumerable<string> GetFilePaths()
+        public override void Write(LandformInfo[] item, string filePath)
         {
-            foreach (var path in File.GetFilePaths())
-            {
-                string newPath = Path.ChangeExtension(path, FileExtension);
-
-                if (System.IO.File.Exists(newPath))
-                {
-                    yield return newPath;
-                }
-            }
+            serializer.SerializeXiaGu(filePath, item);
         }
 
-        public LandformInfo[] Read(string filePath)
-        {
-            var item = (LandformInfo[])serializer.DeserializeXiaGu(filePath);
-            return item;
-        }
-
-        /// <summary>
-        /// 输出/保存到 文件夹下;
-        /// </summary>
-        /// <param name="infos">内容</param>
-        /// <param name="dirPath">输出的文件夹</param>
-        public void Write(LandformInfo[] infos, string dirPath)
-        {
-            string filePath = File.Combine(dirPath);
-            filePath = Path.ChangeExtension(filePath, FileExtension);
-            serializer.SerializeXiaGu(filePath, infos);
-        }
+        ///// <summary>
+        ///// 输出/保存到 文件夹下;
+        ///// </summary>
+        ///// <param name="infos">内容</param>
+        ///// <param name="dirPath">输出的文件夹</param>
+        //public void Write(LandformInfo[] infos, string dirPath)
+        //{
+        //    string filePath = file.Combine(dirPath);
+        //    filePath = Path.ChangeExtension(filePath, FileExtension);
+        //    serializer.SerializeXiaGu(filePath, infos);
+        //}
     }
 
 }

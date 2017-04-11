@@ -2,91 +2,60 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using KouXiaGu.Collections;
-using KouXiaGu.Grids;
-using KouXiaGu.Rx;
-using ProtoBuf;
+using System.Text;
 
 namespace KouXiaGu.World.Map
 {
 
-    /// <summary>
-    /// 游戏地图数据;
-    /// </summary>
-    [ProtoContract]
     public class MapData
     {
+        public PredefinedMap Map { get; private set; }
+        public ArchiveMap ArchiveMap { get; private set; }
 
-        [ProtoMember(1)]
-        public ObservableDictionary<CubicHexCoord, MapNode> Data { get; private set; }
-
-        [ProtoMember(2)]
-        public MapRoad Road { get; private set; }
-
-        [ProtoMember(3)]
-        public MapTown Town { get; private set; }
-
-        public bool IsReadOnly
+        public MapData(PredefinedMap map)
         {
-            get { return Data.IsReadOnly; }
-            private set { Data.IsReadOnly = value; }
-        }
-
-        public MapData()
-        {
-            Data = new ObservableDictionary<CubicHexCoord, MapNode>(false);
-            Road = new MapRoad();
-            Town = new MapTown();
-            Enable();
+            Map = map;
+            ArchiveMap = new ArchiveMap();
+            ArchiveMap.Subscribe(Map);
         }
 
         /// <summary>
-        /// 更新地图内容,并允许编辑地图;
+        /// 构造;
         /// </summary>
-        public void Update(ArchiveMap archive)
+        /// <param name="map">不包含存档内容的地图数据;</param>
+        /// <param name="archive">变化内容,存档内容</param>
+        public MapData(PredefinedMap map, ArchiveMap archive)
         {
-            Disable();
-
-            Data.AddOrUpdate(archive.Data);
-            Road = archive.Road;
-            Town = archive.Town;
-
-            Enable();
+            Map = map;
+            ArchiveMap = archive;
+            Map.Update(ArchiveMap);
+            ArchiveMap.Subscribe(Map);
         }
 
         /// <summary>
-        /// 初始化地图,需要手动调用;
+        /// 重新输出地图(保存修改后的地图);
         /// </summary>
-        void Enable()
+        public void WriteMap()
         {
-            if (IsReadOnly)
-            {
-                try
-                {
-                    Town.Subscribe(Data);
-                }
-                finally
-                {
-                    IsReadOnly = true;
-                }
-            }
+            PredefinedMapReader.instance.Write(Map);
         }
 
-        void Disable()
+        /// <summary>
+        /// 输出存档;
+        /// </summary>
+        public void WriteArchived(string archivedDir)
         {
-            if (!IsReadOnly)
-            {
-                try
-                {
-                    Town.Unsubscribe();
-                }
-                finally
-                {
-                    IsReadOnly = false;
-                }
-            }
+            ArchiveMapReader reader = ArchiveMapReader.Create(archivedDir);
+            reader.Write(ArchiveMap);
         }
 
+        public void SetArchiveMap(ArchiveMap archive)
+        {
+            ArchiveMap.Unsubscribe();
+            Map.Update(archive);
+            ArchiveMap = archive;
+            archive.Subscribe(Map);
+        }
     }
 
 }

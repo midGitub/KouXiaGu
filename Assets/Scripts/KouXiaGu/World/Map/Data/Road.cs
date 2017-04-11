@@ -74,7 +74,7 @@ namespace KouXiaGu.World.Map
         }
 
 
-        public static MapNode CreateRoad(this MapNode node, MapData map, int roadType)
+        public static MapNode CreateRoad(this MapNode node, PredefinedMap map, int roadType)
         {
             node.Road = CreateRoad(node.Road, map.Road, roadType);
             return node;

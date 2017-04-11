@@ -8,19 +8,19 @@ namespace KouXiaGu.World.Map
 
     public sealed class MapManager
     {
-        internal static IReader<Data> DataReader { get; set; }
+        internal static IReader<MapData> DataReader { get; set; }
         internal static IReaderWriter<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
         internal static IReaderWriter<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
 
         static MapManager()
         {
-            DataReader = new DataReader();
+            DataReader = new MapDataReader();
             RoadReader = new RoadInfoXmlSerializer();
             LandformReader = new LandformInfoXmlSerializer();
         }
 
 
-        public Data Map { get; private set; }
+        public MapData Map { get; private set; }
         public Dictionary<int, RoadInfo> RoadInfos { get; private set; }
         public Dictionary<int, LandformInfo> LandformInfos { get; private set; }
 

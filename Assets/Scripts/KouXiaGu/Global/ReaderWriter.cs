@@ -43,13 +43,4 @@ namespace KouXiaGu
 
 
 
-    public interface IFileReader<T>
-    {
-        FilePath File { get; }
-        T ReadFile(string dirPath);
-        void WriteFile(T item, string dirPath);
-    }
-
-
-
 }

@@ -1,71 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace KouXiaGu.World.Map
 {
 
-    class MapDataFilePath : FilePath
+    /// <summary>
+    /// 直接读取预定义的地图文件;
+    /// </summary>
+    public class MapDataReader : IReader<MapData>
     {
-        public MapDataFilePath(string fileExtension) : base(fileExtension)
+        protected PredefinedMapReader PredefinedMapReader
         {
+            get { return PredefinedMapReader.instance; }
         }
 
-        public override string FileName
+        public virtual MapData Read()
         {
-            get { return "World/Map"; }
+            PredefinedMap map = PredefinedMapReader.Read();
+            return new MapData(map);
         }
     }
 
     /// <summary>
-    /// 读取游戏地图方法类;
+    /// 创建空白的地图;
     /// </summary>
-    public class MapDataReader : IReader<MapData>
+    public class EmptyMapDataReader : IReader<MapData>
     {
-        internal static readonly MapDataReader instance = new MapDataReader();
-
-        public MapDataReader()
-        {
-            File = new MapDataFilePath(FileExtension);
-        }
-
-        internal MapDataFilePath File { get; private set; }
-
-        public string FileExtension
-        {
-            get { return ".map"; }
-        }
-
         public MapData Read()
         {
-            string filePath = GetFilePath();
-            return Read(filePath);
+            PredefinedMap map = new PredefinedMap();
+            return new MapData(map);
+        }
+    }
+
+    /// <summary>
+    /// 从存档读取到地图;
+    /// </summary>
+    public class ArchivedDataReader : MapDataReader
+    {
+        ArchiveMapReader archiveReader;
+
+        public ArchivedDataReader(string archiveDir)
+        {
+            archiveReader = ArchiveMapReader.Create(archiveDir);
         }
 
-        public string GetFilePath()
+        /// <summary>
+        /// 读取到地图,包括存档内容;
+        /// </summary>
+        public override MapData Read()
         {
-            string filePath = Path.ChangeExtension(File.MainFilePath, FileExtension);
-            return filePath;
-        }
-
-        public MapData Read(string filePath)
-        {
-            MapData data = ProtoBufExtensions.Deserialize<MapData>(filePath);
+            PredefinedMap map = PredefinedMapReader.Read();
+            ArchiveMap archiveMap = archiveReader.Read();
+            MapData data = new MapData(map, archiveMap);
             return data;
-        }
-
-
-        public void Write(MapData data)
-        {
-            string filePath = GetFilePath();
-            Write(filePath, data);
-        }
-
-        public void Write(string filePath, MapData data)
-        {
-            ProtoBufExtensions.Serialize(filePath, data);
         }
     }
 
