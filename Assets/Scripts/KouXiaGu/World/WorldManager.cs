@@ -32,6 +32,11 @@ namespace KouXiaGu.World
         /// </summary>
         public TimeManager Time { get; private set; }
 
+        /// <summary>
+        /// 基础信息;
+        /// </summary>
+        public WorldElementManager ElementInfo { get; private set; }
+
         public WorldManager(WorldInfo info)
         {
             Info = info;
