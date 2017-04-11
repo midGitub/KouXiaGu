@@ -38,7 +38,6 @@ namespace KouXiaGu.World
 
         #endregion
 
-
         #region Landform;
 
         static readonly LandformInfo LandformTemplate = new LandformInfo()
@@ -61,11 +60,30 @@ namespace KouXiaGu.World
 
         #endregion
 
+        #region Building
+
+        static readonly BuildingInfo BuildingTemplate = new BuildingInfo()
+        {
+            ID = 1,
+            Name = StrNone,
+            Terrain = new TerrainBuildingInfo()
+            {
+                PrefabName = StrNone,
+            },
+        };
+
+        static readonly BuildingInfo[] BuildingTemplates = new BuildingInfo[]
+          {
+                BuildingTemplate,
+          };
+
+        #endregion
 
         public WorldElementTemplate() : base()
         {
             AddDictionary(RoadInfos, RoadTemplates);
             AddDictionary(LandformInfos, LandformTemplates);
+            AddDictionary(BuildingInfos, BuildingTemplates);
         }
 
         void AddDictionary<T>(Dictionary<int, T> dictionary, IEnumerable<T> items)
