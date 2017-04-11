@@ -79,11 +79,27 @@ namespace KouXiaGu.World
 
         #endregion
 
+        #region Product
+
+        static readonly ProductElementInfo ProductTemplate = new ProductElementInfo()
+        {
+            ID = 1,
+            Name = StrNone,
+        };
+
+        static readonly ProductElementInfo[] ProductTemplates = new ProductElementInfo[]
+          {
+                ProductTemplate,
+          };
+
+        #endregion
+
         public WorldElementTemplate() : base()
         {
             AddDictionary(RoadInfos, RoadTemplates);
             AddDictionary(LandformInfos, LandformTemplates);
             AddDictionary(BuildingInfos, BuildingTemplates);
+            AddDictionary(ProductInfos, ProductTemplates);
         }
 
         void AddDictionary<T>(Dictionary<int, T> dictionary, IEnumerable<T> items)
