@@ -19,8 +19,7 @@ namespace KouXiaGu.World.Map
         public virtual Data Read()
         {
             MapData map = MapDataReader.Read();
-            ArchiveMap archive = new ArchiveMap();
-            return new Data(map, archive);
+            return new Data(map);
         }
     }
 
@@ -32,8 +31,7 @@ namespace KouXiaGu.World.Map
         public Data Read()
         {
             MapData map = new MapData();
-            ArchiveMap archive = new ArchiveMap();
-            return new Data(map, archive);
+            return new Data(map);
         }
     }
 
@@ -56,8 +54,6 @@ namespace KouXiaGu.World.Map
         {
             MapData map = MapDataReader.Read();
             ArchiveMap archiveMap = archiveReader.Read();
-            map.Update(archiveMap);
-
             Data data = new Data(map, archiveMap);
             return data;
         }

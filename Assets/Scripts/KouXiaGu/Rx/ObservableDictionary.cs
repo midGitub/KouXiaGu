@@ -27,12 +27,15 @@ namespace KouXiaGu.Rx
 
         Dictionary<TKey, TValue> dictionary;
         List<IDictionaryObserver<TKey, TValue>> observers;
+        bool isReadOnly = false;
 
         public TValue this[TKey key]
         {
             get { return dictionary[key]; }
             set
             {
+                ReadOnlyCheck();
+
                 TValue original;
                 if (dictionary.TryGetValue(key, out original))
                 {
@@ -63,7 +66,8 @@ namespace KouXiaGu.Rx
 
         public bool IsReadOnly
         {
-            get { return ((IDictionary<TKey, TValue>)this.dictionary).IsReadOnly; }
+            get { return isReadOnly; }
+            set { isReadOnly = value; }
         }
 
         public IEnumerable<IDictionaryObserver<TKey, TValue>> Observers
@@ -71,11 +75,15 @@ namespace KouXiaGu.Rx
             get { return observers; }
         }
 
-
         public ObservableDictionary()
         {
             this.dictionary = new Dictionary<TKey, TValue>();
             this.observers = new List<IDictionaryObserver<TKey, TValue>>();
+        }
+
+        public ObservableDictionary(bool isReadOnly) : this()
+        {
+            IsReadOnly = isReadOnly;
         }
 
         public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
@@ -90,6 +98,11 @@ namespace KouXiaGu.Rx
             this.observers = new List<IDictionaryObserver<TKey, TValue>>();
         }
 
+        void ReadOnlyCheck()
+        {
+            if (IsReadOnly)
+                throw new ArgumentException();
+        }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
@@ -101,6 +114,8 @@ namespace KouXiaGu.Rx
         /// </summary>
         public void Add(TKey key, TValue value)
         {
+            ReadOnlyCheck();
+
             this.dictionary.Add(key, value);
             TrackAdd(key, value);
         }
@@ -112,6 +127,8 @@ namespace KouXiaGu.Rx
 
         public bool Remove(TKey key)
         {
+            ReadOnlyCheck();
+
             TValue original;
             if (dictionary.TryGetValue(key, out original))
             {
@@ -142,6 +159,8 @@ namespace KouXiaGu.Rx
 
         public void Clear()
         {
+            ReadOnlyCheck();
+
             foreach (var item in dictionary)
             {
                 TrackRemove(item.Key, item.Value);

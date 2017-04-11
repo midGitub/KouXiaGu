@@ -23,6 +23,11 @@ namespace KouXiaGu.World.Map
 
         public MapManager Manager { get; private set; }
 
+        public MapEditor()
+        {
+            Manager = new MapManager();
+        }
+
         public MapEditor(MapManager manager)
         {
             Manager = manager;

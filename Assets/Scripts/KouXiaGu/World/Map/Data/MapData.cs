@@ -26,18 +26,22 @@ namespace KouXiaGu.World.Map
         [ProtoMember(3)]
         public MapTown Town { get; private set; }
 
-        public bool IsActivated { get; private set; }
+        public bool IsReadOnly
+        {
+            get { return Data.IsReadOnly; }
+            private set { Data.IsReadOnly = value; }
+        }
 
         public MapData()
         {
-            Data = new ObservableDictionary<CubicHexCoord, MapNode>();
+            Data = new ObservableDictionary<CubicHexCoord, MapNode>(false);
             Road = new MapRoad();
             Town = new MapTown();
-            IsActivated = false;
+            Enable();
         }
 
         /// <summary>
-        /// 更新地图内容,并且取消启用状态;
+        /// 更新地图内容,并允许编辑地图;
         /// </summary>
         public void Update(ArchiveMap archive)
         {
@@ -46,14 +50,16 @@ namespace KouXiaGu.World.Map
             Data.AddOrUpdate(archive.Data);
             Road = archive.Road;
             Town = archive.Town;
+
+            Enable();
         }
 
         /// <summary>
         /// 初始化地图,需要手动调用;
         /// </summary>
-        public void Enable()
+        void Enable()
         {
-            if (!IsActivated)
+            if (IsReadOnly)
             {
                 try
                 {
@@ -61,14 +67,14 @@ namespace KouXiaGu.World.Map
                 }
                 finally
                 {
-                    IsActivated = true;
+                    IsReadOnly = true;
                 }
             }
         }
 
-        public void Disable()
+        void Disable()
         {
-            if (IsActivated)
+            if (!IsReadOnly)
             {
                 try
                 {
@@ -76,7 +82,7 @@ namespace KouXiaGu.World.Map
                 }
                 finally
                 {
-                    IsActivated = false;
+                    IsReadOnly = false;
                 }
             }
         }

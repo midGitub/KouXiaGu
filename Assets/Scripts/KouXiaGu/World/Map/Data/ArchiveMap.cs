@@ -38,6 +38,11 @@ namespace KouXiaGu.World.Map
         {
             Data.Subscribe(map.Data);
         }
+
+        public void Unsubscribe()
+        {
+            Data.Unsubscribe();
+        }
     }
 
 }
