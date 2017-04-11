@@ -19,6 +19,7 @@ namespace KouXiaGu.World
         internal static DataReader<Dictionary<int, RoadInfo>, IEnumerable<RoadInfo>> RoadReader { get; set; }
         internal static DataReader<Dictionary<int, LandformInfo>, IEnumerable<LandformInfo>> LandformReader { get; set; }
         internal static DataReader<Dictionary<int, BuildingInfo>, IEnumerable<BuildingInfo>> BuildingReader { get; set; }
+        internal static DataReader<Dictionary<int, ProductElementInfo>, IEnumerable<ProductElementInfo>> ProductReader { get; set; }
 
         /// <summary>
         /// 同步读取所有信息;
@@ -44,6 +45,7 @@ namespace KouXiaGu.World
             RoadInfos = new Dictionary<int, RoadInfo>();
             LandformInfos = new Dictionary<int, LandformInfo>();
             BuildingInfos = new Dictionary<int, BuildingInfo>();
+            ProductInfos = new Dictionary<int, ProductElementInfo>();
         }
 
         /// <summary>
@@ -56,6 +58,7 @@ namespace KouXiaGu.World
         public Dictionary<int, RoadInfo> RoadInfos { get; protected set; }
         public Dictionary<int, LandformInfo> LandformInfos { get; protected set; }
         public Dictionary<int, BuildingInfo> BuildingInfos { get; protected set; }
+        public Dictionary<int, ProductElementInfo> ProductInfos { get; protected set; }
 
         /// <summary>
         /// 同步的读取所有信息;
@@ -65,6 +68,7 @@ namespace KouXiaGu.World
             RoadInfos = RoadReader.Read();
             LandformInfos = LandformReader.Read();
             BuildingInfos = BuildingReader.Read();
+            ProductInfos = ProductReader.Read();
         }
 
         /// <summary>
@@ -77,6 +81,7 @@ namespace KouXiaGu.World
             WriteToDirectory(RoadReader, RoadInfos, dirPath, overlay);
             WriteToDirectory(LandformReader, LandformInfos, dirPath, overlay);
             WriteToDirectory(BuildingReader, BuildingInfos, dirPath, overlay);
+            WriteToDirectory(ProductReader, ProductInfos, dirPath, overlay);
         }
 
         void WriteToDirectory<T>(
