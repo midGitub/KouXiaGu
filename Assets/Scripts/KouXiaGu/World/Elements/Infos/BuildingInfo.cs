@@ -12,13 +12,8 @@ namespace KouXiaGu.World
     /// 地形信息;
     /// </summary>
     [XmlType("Building")]
-    public struct BuildingInfo : IMarked
+    public class BuildingInfo : ElementInfo
     {
-        [XmlAttribute("id")]
-        public int ID { get; set; }
-
-        [XmlAttribute("name")]
-        public string Name;
     }
 
     /// <summary>

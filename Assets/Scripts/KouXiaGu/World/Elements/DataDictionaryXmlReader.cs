@@ -12,7 +12,7 @@ namespace KouXiaGu.World
     /// 通过序列化读取的资源;
     /// </summary>
     public abstract class DataDictionaryXmlReader<T> : DataDictionaryReader<T, IEnumerable<T>>
-        where T : IMarked
+        where T : ElementInfo
     {
         protected static readonly XmlSerializer serializer = new XmlSerializer(typeof(T[]));
 

@@ -11,14 +11,8 @@ namespace KouXiaGu.World
     /// 地形信息;
     /// </summary>
     [XmlType("Landform")]
-    public struct LandformInfo : IMarked
+    public class LandformInfo : ElementInfo
     {
-        [XmlAttribute("id")]
-        public int ID { get; set; }
-
-        [XmlAttribute("name")]
-        public string Name;
-
         [XmlElement("Terrain")]
         public TerrainLandformInfo Terrain;
     }

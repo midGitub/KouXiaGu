@@ -11,7 +11,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 预定义模版;
     /// </summary>
-    class WorldElementTemplate : WorldElement
+    class WorldElementTemplate : WorldElementManager
     {
 
         const string StrNone = "None";
@@ -69,7 +69,7 @@ namespace KouXiaGu.World
         }
 
         void AddDictionary<T>(Dictionary<int, T> dictionary, IEnumerable<T> items)
-            where T : IMarked
+            where T : ElementInfo
         {
             dictionary.AddOrUpdate(items, item => item.ID);
         }

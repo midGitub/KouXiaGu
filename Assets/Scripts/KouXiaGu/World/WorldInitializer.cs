@@ -127,10 +127,22 @@ namespace KouXiaGu.World
         }
 
         [ContextMenu("输出模版文件")]
-        public void Test()
+        void Test()
         {
             WorldElementTemplate item = new WorldElementTemplate();
             item.WriteToDirectory(GameFile.MainDirectory, false);
+        }
+
+        [ContextMenu("检查")]
+        void Test2()
+        {
+            WorldElementManager item = WorldElementManager.Read();
+
+            RoadInfo info;
+            if (item.RoadInfos.TryGetValue(2, out info))
+            {
+                Debug.Log((info.Terrain == null).ToString());
+            }
         }
 
     }

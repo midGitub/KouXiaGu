@@ -11,16 +11,10 @@ namespace KouXiaGu.World
     /// 道路信息;
     /// </summary>
     [XmlType("Road")]
-    public struct RoadInfo : IMarked
+    public class RoadInfo : ElementInfo
     {
-        [XmlAttribute("id")]
-        public int ID { get; set; }
-
-        [XmlAttribute("name")]
-        public string Name;
-
         [XmlElement("Terrain")]
-        public TerrainRoadInfo Terrain;
+        public TerrainRoadInfo Terrain { get; set; }
     }
 
     public class RoadInfoFilePath : CustomFilePath

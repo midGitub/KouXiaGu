@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 地貌信息;
     /// </summary>
     [XmlType("Landform")]
-    public struct TerrainLandformInfo
+    public class TerrainLandformInfo
     {
         /// <summary>
         /// 高度调整贴图名;
@@ -36,6 +36,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [XmlElement("DiffuseBlendTex")]
         public string DiffuseBlendTex { get; set; }
+
     }
 
 }

@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 道路资源定义;
     /// </summary>
     [XmlType("Road")]
-    public struct TerrainRoadInfo
+    public class TerrainRoadInfo
     {
         /// <summary>
         /// 高度调整贴图名;

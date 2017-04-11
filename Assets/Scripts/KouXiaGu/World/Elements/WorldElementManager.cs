@@ -7,9 +7,9 @@ namespace KouXiaGu.World
 {
 
 
-    public class WorldElement
+    public class WorldElementManager
     {
-        static WorldElement()
+        static WorldElementManager()
         {
             RoadReader = new RoadInfoXmlSerializer();
             LandformReader = new LandformInfoXmlSerializer();
@@ -23,9 +23,9 @@ namespace KouXiaGu.World
         /// <summary>
         /// 同步读取所有信息;
         /// </summary>
-        public static WorldElement Read()
+        public static WorldElementManager Read()
         {
-            var item = new WorldElement(false);
+            var item = new WorldElementManager(false);
             item.Initialize();
             return item;
         }
@@ -39,7 +39,7 @@ namespace KouXiaGu.World
         }
 
 
-        public WorldElement()
+        public WorldElementManager()
         {
             RoadInfos = new Dictionary<int, RoadInfo>();
             LandformInfos = new Dictionary<int, LandformInfo>();
@@ -49,7 +49,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 不进行任何方法的构造函数;
         /// </summary>
-        internal WorldElement(bool none)
+        internal WorldElementManager(bool none)
         {
         }
 

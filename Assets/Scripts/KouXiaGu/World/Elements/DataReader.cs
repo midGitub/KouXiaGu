@@ -60,7 +60,7 @@ namespace KouXiaGu.World
     /// 读取为 字典格式;
     /// </summary>
     public abstract class DataDictionaryReader<T, TW> : DataReader<Dictionary<int, T>, TW>
-        where T : IMarked
+        where T : ElementInfo
     {
         protected abstract IEnumerable<T> Read(string filePath);
 
