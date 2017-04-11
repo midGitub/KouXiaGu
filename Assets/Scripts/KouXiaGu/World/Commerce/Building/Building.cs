@@ -9,7 +9,8 @@ namespace KouXiaGu.World
     /// <summary>
     /// 建筑信息;
     /// </summary>
-    public struct BuildingInfo
+    [Obsolete]
+    public struct OBuildingInfo
     {
 
     }
@@ -35,7 +36,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 建筑物信息;
         /// </summary>
-        public BuildingInfo Info
+        public OBuildingInfo Info
         {
             get { return Manager.BuildingInfos[BuildingID]; }
         }

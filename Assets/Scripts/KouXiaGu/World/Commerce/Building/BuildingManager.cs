@@ -18,7 +18,7 @@ namespace KouXiaGu.World
         }
 
         public IReadOnlyDictionary<int, Building> Buildings { get; private set; }
-        public IReadOnlyDictionary<int, BuildingInfo> BuildingInfos { get; private set; }
+        public IReadOnlyDictionary<int, OBuildingInfo> BuildingInfos { get; private set; }
 
 
 

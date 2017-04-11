@@ -7,7 +7,7 @@ using KouXiaGu.Terrain3D;
 namespace KouXiaGu.World
 {
 
-    static class WorldElementTemplate
+    class WorldElementTemplate : WorldElement
     {
 
         const string StrNone = "None";
@@ -44,11 +44,6 @@ namespace KouXiaGu.World
                 RoadTemplate,
             };
 
-        static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
-        {
-            get { return WorldElement.RoadReader; }
-        }
-
         public static void WriteRoadTemplate(string dirPath, bool overlay)
         {
             if (!overlay && RoadReader.File.Exists(dirPath))
@@ -80,11 +75,6 @@ namespace KouXiaGu.World
                 LandformTemplate,
                 LandformTemplate,
            };
-
-        static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader
-        {
-            get { return WorldElement.LandformReader; }
-        }
 
         public static void WriteLandformTemplate(string dirPath, bool overlay)
         {
