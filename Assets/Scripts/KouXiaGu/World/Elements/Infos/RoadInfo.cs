@@ -38,7 +38,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 道路信息读取;
     /// </summary>
-    public class RoadInfoXmlSerializer : DataXmlSerializer<RoadInfo>
+    public class RoadInfoXmlSerializer : DataDictionaryXmlReader<RoadInfo>
     {
         public RoadInfoXmlSerializer()
         {

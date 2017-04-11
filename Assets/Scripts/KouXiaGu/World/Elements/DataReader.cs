@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.World
 {
@@ -46,6 +47,39 @@ namespace KouXiaGu.World
         {
             string filePath = File.Combine(dirPath);
             Write(item, filePath);
+        }
+    }
+
+    /// <summary>
+    /// 读取为 字典格式;
+    /// </summary>
+    public abstract class DataDictionaryReader<T, TW> : DataReader<Dictionary<int, T>, TW>
+        where T : IMarked
+    {
+        protected abstract IEnumerable<T> Read(string filePath);
+
+        public override Dictionary<int, T> Read(IEnumerable<string> filePaths)
+        {
+            Dictionary<int, T> dictionary = new Dictionary<int, T>();
+
+            foreach (var filePath in filePaths)
+            {
+                var infos = Read(filePath);
+                AddToDictionary(dictionary, infos);
+            }
+
+            return dictionary;
+        }
+
+        /// <summary>
+        /// 添加到字典内,默认为替换已经存在的元素;
+        /// </summary>
+        protected virtual void AddToDictionary(Dictionary<int, T> dictionary, IEnumerable<T> infos)
+        {
+            foreach (var info in infos)
+            {
+                dictionary.AddOrUpdate(info.ID, info);
+            }
         }
     }
 

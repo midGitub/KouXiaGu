@@ -39,7 +39,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 地形信息读取;
     /// </summary>
-    public class BuildingInfosXmlSerializer : DataXmlSerializer<BuildingInfo>
+    public class BuildingInfosXmlSerializer : DataDictionaryXmlReader<BuildingInfo>
     {
         public BuildingInfosXmlSerializer()
         {

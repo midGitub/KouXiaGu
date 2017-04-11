@@ -41,7 +41,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 地形信息读取;
     /// </summary>
-    public class LandformInfoXmlSerializer : DataXmlSerializer<LandformInfo>
+    public class LandformInfoXmlSerializer : DataDictionaryXmlReader<LandformInfo>
     {
         public LandformInfoXmlSerializer()
         {
