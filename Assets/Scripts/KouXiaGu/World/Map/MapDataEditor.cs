@@ -8,7 +8,7 @@ using KouXiaGu.Terrain3D;
 namespace KouXiaGu.World.Map
 {
 
-    public class DataEditor
+    public class MapDataEditor
     {
 
         static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader
@@ -23,12 +23,12 @@ namespace KouXiaGu.World.Map
 
         public MapManager Manager { get; private set; }
 
-        public DataEditor()
+        public MapDataEditor()
         {
             Manager = new MapManager();
         }
 
-        public DataEditor(MapManager manager)
+        public MapDataEditor(MapManager manager)
         {
             Manager = manager;
         }
