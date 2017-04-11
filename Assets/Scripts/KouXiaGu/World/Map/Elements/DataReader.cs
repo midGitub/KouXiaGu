@@ -40,12 +40,6 @@ namespace KouXiaGu.World.Map
             return Read(filePaths);
         }
 
-        public void WriteToDirectory(TW item)
-        {
-            string filePath = File.MainFilePath;
-            Write(item, filePath);
-        }
-
         public void WriteToDirectory(TW item, string dirPath)
         {
             string filePath = File.Combine(dirPath);

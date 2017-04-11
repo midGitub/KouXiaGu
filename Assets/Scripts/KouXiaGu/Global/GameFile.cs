@@ -19,6 +19,11 @@ namespace KouXiaGu
             ResourcePath.ConfigDirectoryPath,
         };
         
+        public static string MainDirectory
+        {
+            get { return ResourcePath.ConfigDirectoryPath; }
+        }
+
     }
 
 
@@ -39,7 +44,7 @@ namespace KouXiaGu
 
         public string MainDirPath
         {
-            get { return ResourcePath.ConfigDirectoryPath; }
+            get { return GameFile.MainDirectory; }
         }
 
         public string Combine(string dirPath)

@@ -49,6 +49,9 @@ namespace KouXiaGu.World.Map
             reader.Write(ArchiveMap);
         }
 
+        /// <summary>
+        /// 设置新的存档信息;
+        /// </summary>
         public void SetArchiveMap(ArchiveMap archive)
         {
             ArchiveMap.Unsubscribe();

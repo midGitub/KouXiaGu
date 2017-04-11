@@ -8,6 +8,7 @@ using KouXiaGu.Terrain3D;
 namespace KouXiaGu.World.Map
 {
 
+
     public class MapDataEditor
     {
 
@@ -21,7 +22,6 @@ namespace KouXiaGu.World.Map
             get { return MapManager.LandformReader; }
         }
 
-        public MapManager Manager { get; private set; }
 
         public MapDataEditor()
         {
@@ -33,16 +33,9 @@ namespace KouXiaGu.World.Map
             Manager = manager;
         }
 
-        public void WriteToMain()
-        {
-            var roadInfos = Manager.RoadInfos.Values.ToArray();
-            RoadReader.WriteToDirectory(roadInfos);
-
-            var LandformInfos = Manager.LandformInfos.Values.ToArray();
-            LandformReader.WriteToDirectory(LandformInfos);
-        }
-
+        public MapManager Manager { get; private set; }
     }
+
 
     static class DataTemplate
     {
@@ -59,7 +52,6 @@ namespace KouXiaGu.World.Map
             WriteRoadTemplate(dirPath, overlay);
             WriteLandformTemplate(dirPath, overlay);
         }
-
 
         #region Road;
 

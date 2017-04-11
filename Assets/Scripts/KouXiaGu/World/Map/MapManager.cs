@@ -8,10 +8,6 @@ namespace KouXiaGu.World.Map
 
     public sealed class MapManager
     {
-        internal static IReader<MapData> DataReader { get; set; }
-        internal static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
-        internal static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
-
         static MapManager()
         {
             DataReader = new MapDataReader();
@@ -19,21 +15,40 @@ namespace KouXiaGu.World.Map
             LandformReader = new LandformInfoXmlSerializer();
         }
 
+        internal static IReader<MapData> DataReader { get; set; }
+        internal static DataReader<Dictionary<int, RoadInfo>, RoadInfo[]> RoadReader { get; set; }
+        internal static DataReader<Dictionary<int, LandformInfo>, LandformInfo[]> LandformReader { get; set; }
 
-        public MapData Map { get; private set; }
-        public Dictionary<int, RoadInfo> RoadInfos { get; private set; }
-        public Dictionary<int, LandformInfo> LandformInfos { get; private set; }
 
         public MapManager()
         {
             Initialize();
         }
 
+        public MapData Map { get; private set; }
+        public Dictionary<int, RoadInfo> RoadInfos { get; private set; }
+        public Dictionary<int, LandformInfo> LandformInfos { get; private set; }
+
         void Initialize()
         {
             Map = DataReader.Read();
             RoadInfos = RoadReader.Read();
             LandformInfos = LandformReader.Read();
+        }
+
+
+        public void WriteInfosToMainDirectory()
+        {
+            WriteInfosToDirectory(GameFile.MainDirectory);
+        }
+
+        public void WriteInfosToDirectory(string dirPath)
+        {
+            var roadInfos = RoadInfos.Values.ToArray();
+            RoadReader.WriteToDirectory(roadInfos, dirPath);
+
+            var landformInfos = LandformInfos.Values.ToArray();
+            LandformReader.WriteToDirectory(landformInfos, dirPath);
         }
 
 
