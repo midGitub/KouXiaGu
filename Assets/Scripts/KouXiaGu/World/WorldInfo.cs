@@ -10,12 +10,11 @@ namespace KouXiaGu.World
     /// <summary>
     /// 提供初始化的世界信息;
     /// </summary>
+    [Serializable]
     public class WorldInfo
     {
-        /// <summary>
-        /// 时间;
-        /// </summary>
-        public WorldTimeInfo Time { get; set; }
+
+        public WorldTimeInfo Time;
 
         /// <summary>
         /// 人口每日增长比例;

@@ -25,6 +25,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 一个小时间隔多少次 FixedUpdate() ?
         /// </summary>
+        [Range(0, 50)]
         public int HourInterval;
     }
 

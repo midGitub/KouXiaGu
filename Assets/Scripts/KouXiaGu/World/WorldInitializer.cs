@@ -35,7 +35,7 @@ namespace KouXiaGu.World
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : Initializer, IWorld
+    public class WorldInitializer : Initializer
     {
 
         #region 静态;
@@ -63,33 +63,18 @@ namespace KouXiaGu.World
 
         #endregion
 
-
-        /// <summary>
-        /// 世界信息;
-        /// </summary>
-        public WorldInfo Info
-        {
-            get { return WorldInfo; }
-        }
-
-        /// <summary>
-        /// 地图信息;
-        /// </summary>
-        public MapManager Map { get; private set; }
-
-        /// <summary>
-        /// 资源\产品;
-        /// </summary>
-        public ProductManager Product { get; private set; }
-
-        /// <summary>
-        /// 建筑物;
-        /// </summary>
-        public BuildingManager Building { get; private set; }
-
-
         WorldInitializer()
         {
+        }
+
+        [SerializeField]
+        WorldInfo info;
+        public WorldManager World { get; private set; }
+
+        public WorldInfo Info
+        {
+            get { return info; }
+            set { info = value; }
         }
 
         protected override void Awake()
@@ -110,7 +95,7 @@ namespace KouXiaGu.World
 
         void Initialize()
         {
-            Map = new MapManager();
+            World = new WorldManager(info);
         }
 
 
