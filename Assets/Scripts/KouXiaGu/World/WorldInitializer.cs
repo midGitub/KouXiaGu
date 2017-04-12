@@ -16,11 +16,6 @@ namespace KouXiaGu.World
         WorldInfo Info { get; }
 
         /// <summary>
-        /// 时间;
-        /// </summary>
-        TimeManager Time { get; }
-
-        /// <summary>
         /// 地图信息;
         /// </summary>
         MapManager Map { get; }
@@ -78,11 +73,6 @@ namespace KouXiaGu.World
         }
 
         /// <summary>
-        /// 时间;
-        /// </summary>
-        public TimeManager Time { get; private set; }
-
-        /// <summary>
         /// 地图信息;
         /// </summary>
         public MapManager Map { get; private set; }
@@ -120,11 +110,11 @@ namespace KouXiaGu.World
 
         void Initialize()
         {
-            Time = SceneObject.GetObject<TimeManager>();
-            Time.Initialize(Info.Time);
-
             Map = new MapManager();
         }
+
+
+
 
         [ContextMenu("输出模版文件")]
         void Test()

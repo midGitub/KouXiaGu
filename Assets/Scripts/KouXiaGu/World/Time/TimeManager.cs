@@ -9,115 +9,59 @@ namespace KouXiaGu.World
     /// <summary>
     /// 世界时间初始化信息;
     /// </summary>
-    public struct WorldTimeInfo
+    [Serializable]
+    public class WorldTimeInfo
     {
         /// <summary>
         /// 开始时间;
         /// </summary>
-        public DateTime StartTime { get; set; }
+        public DateTime StartTime;
 
         /// <summary>
         /// 当前时间;
         /// </summary>
-        public DateTime CurrentTime { get; set; }
+        public DateTime CurrentTime;
 
         /// <summary>
         /// 一个小时间隔多少次 FixedUpdate() ?
         /// </summary>
-        public int HourInterval { get; set; }
-
+        public int HourInterval;
     }
 
-    /// <summary>
-    /// 时间记录;
-    /// </summary>
-    [DisallowMultipleComponent]
-    public class TimeManager : MonoBehaviour
+
+    public class TimeManager
     {
-        TimeManager()
+
+        public TimeManager(WorldTimeInfo info)
         {
+            Info = info;
+            TimeTracker = new ListTracker<DateTime>();
+            updater = TimeUpdater.Create(this);
+            InitCalendar();
         }
 
-        /// <summary>
-        /// 时间信息;
-        /// </summary>
-        DateTime currentTime;
+        public WorldTimeInfo Info { get; private set; }
+        public Tracker<DateTime> TimeTracker { get; private set; }
+        TimeUpdater updater;
 
-        /// <summary>
-        /// 完整的时间信息;
-        /// </summary>
         public DateTime CurrentTime
         {
-            get { return currentTime; }
-            set { currentTime = value; }
+            get { return Info.CurrentTime; }
+            private set { Info.CurrentTime = value; }
         }
 
-        /// <summary>
-        /// 当时间的 小时数 发生变化时推送;
-        /// </summary>
-        public Tracker<DateTime> TimeTracker { get; private set; }
-
-        /// <summary>
-        /// 当前分钟缓存变量;
-        /// </summary>
-        int currenMinute;
-
-        /// <summary>
-        /// 时间间隔长度;
-        /// </summary>
-        [SerializeField, Range(0, 200)]
-        int hourInterval = 50;
+        public bool IsTimeUpdating
+        {
+            get { return updater != null && updater.IsRunning; }
+        }
 
         /// <summary>
         /// 时间间隔长度;
         /// </summary>
         public int HourInterval
         {
-            get { return hourInterval; }
-            private set { hourInterval = value; }
-        }
-
-        /// <summary>
-        /// 时间信息缓存;
-        /// </summary>
-        WorldTimeInfo tempInfo;
-
-        /// <summary>
-        /// 时间信息缓存;
-        /// </summary>
-        public WorldTimeInfo TempInfo
-        { 
-            get { return tempInfo; }
-            private set { tempInfo = value; }
-        }
-
-        /// <summary>
-        /// 设定时间是否更新;
-        /// </summary>
-        public bool IsRunning
-        {
-            get { return enabled; }
-            set { enabled = value; }
-        }
-
-        void Awake()
-        {
-            IsRunning = false;
-            TimeTracker = new ListTracker<DateTime>();
-        }
-
-        /// <summary>
-        /// 每次更新增加一小时;
-        /// </summary>
-        void FixedUpdate()
-        {
-            currenMinute++;
-            if (currenMinute > hourInterval)
-            {
-                currenMinute = 0;
-                currentTime.AddHour();
-                TrackTime();
-            }
+            get { return Info.HourInterval; }
+            set { Info.HourInterval = value; }
         }
 
         /// <summary>
@@ -125,32 +69,10 @@ namespace KouXiaGu.World
         /// </summary>
         void TrackTime()
         {
-            TimeTracker.Track(currentTime);
+            TimeTracker.Track(CurrentTime);
         }
 
-        /// <summary>
-        /// 根据信息初始化类;
-        /// </summary>
-        /// <param name="info"></param>
-        public void Initialize(WorldTimeInfo info)
-        {
-            this.tempInfo = info;
-            currentTime = info.CurrentTime;
-            hourInterval = info.HourInterval;
-            InitCalendar();
-        }
-
-        /// <summary>
-        /// 获取到当前的时间信息;
-        /// </summary>
-        public WorldTimeInfo GetInfo()
-        {
-            tempInfo.CurrentTime = currentTime;
-            tempInfo.HourInterval = hourInterval;
-            return tempInfo;
-        }
-
-        public void InitCalendar()
+        void InitCalendar()
         {
             DateTime.CurrentCalendar = GetCalendarFromLua();
         }
@@ -158,7 +80,7 @@ namespace KouXiaGu.World
         [CSharpCallLua]
         internal delegate ICalendar CalendarCreater();
 
-        public ICalendar GetCalendarFromLua()
+        internal ICalendar GetCalendarFromLua()
         {
             const string luaScriptName = "Calendar.New";
             const string errorString = "无法从Lua获取到日历信息;";
@@ -173,6 +95,66 @@ namespace KouXiaGu.World
                 throw new ArgumentException(errorString);
 
             return calendar;
+        }
+
+
+        /// <summary>
+        /// 时间更新器;
+        /// </summary>
+        [DisallowMultipleComponent]
+        internal class TimeUpdater : MonoBehaviour
+        {
+            static bool isCreated = false;
+
+            public static TimeUpdater Create(TimeManager manager)
+            {
+                if (isCreated)
+                    throw new ArgumentException();
+
+                var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
+                var item = gameObject.GetComponent<TimeUpdater>();
+                item.manager = manager;
+                return item;
+            }
+
+            TimeUpdater()
+            {
+            }
+
+            TimeManager manager;
+            int currenMinute;
+
+            public bool IsRunning
+            {
+                get { return transform != null && enabled; }
+            }
+
+            public DateTime CurrentTime
+            {
+                get { return manager.CurrentTime; }
+            }
+
+            public int HourInterval
+            {
+                get { return manager.HourInterval; }
+            }
+
+            void FixedUpdate()
+            {
+                currenMinute++;
+                if (currenMinute > HourInterval)
+                {
+                    currenMinute = 0;
+                    CurrentTime.AddHour();
+                    manager.TrackTime();
+                }
+            }
+
+            void OnDestroy()
+            {
+                isCreated = false;
+            }
+
         }
 
     }

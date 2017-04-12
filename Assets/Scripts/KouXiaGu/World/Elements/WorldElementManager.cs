@@ -40,6 +40,9 @@ namespace KouXiaGu.World
         }
 
 
+        /// <summary>
+        /// 初始化为空;
+        /// </summary>
         public WorldElementManager()
         {
             RoadInfos = new Dictionary<int, RoadInfo>();

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.World.Map;
+using KouXiaGu.World.Navigation;
 using UnityEngine;
 
 namespace KouXiaGu.World
 {
 
 
-    [Obsolete]
     public class WorldManager
     {
 
@@ -27,6 +28,16 @@ namespace KouXiaGu.World
         /// </summary>
         public BuildingManager Building { get; private set; }
 
+
+
+        public WorldManager(WorldInfo info)
+        {
+            Time = new TimeManager(info.Time);
+            ElementInfo = new WorldElementManager();
+            Map = new MapManager();
+            Navigation = new NavigationManager(this);
+        }
+
         /// <summary>
         /// 时间;
         /// </summary>
@@ -37,14 +48,15 @@ namespace KouXiaGu.World
         /// </summary>
         public WorldElementManager ElementInfo { get; private set; }
 
-        public WorldManager(WorldInfo info)
-        {
-            Info = info;
+        /// <summary>
+        /// 地图信息;
+        /// </summary>
+        public MapManager Map { get; private set; }
 
-            Time = SceneObject.GetObject<TimeManager>();
-            Time.Initialize(info.Time);
-        }
-
+        /// <summary>
+        /// 路径导航;
+        /// </summary>
+        public NavigationManager Navigation { get; private set; }
 
     }
 
