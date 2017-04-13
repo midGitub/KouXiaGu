@@ -9,16 +9,15 @@ namespace KouXiaGu.World
 {
 
     /// <summary>
-    /// 游戏数据,启动程序时读取;
+    /// 游戏数据,开始游戏前需要读取的资源;
     /// </summary>
     public class GameData
     {
 
-        //public static IAsync<GameData> CreateAsync()
-        //{
-
-        //}
- 
+        public static IAsyncOperation<GameData> Create()
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 基础信息;
@@ -26,24 +25,23 @@ namespace KouXiaGu.World
         public WorldElementResource ElementInfo { get; private set; }
 
         /// <summary>
-        /// 地形资源读取;
+        /// 地形资源;
         /// </summary>
         public TerrainResource Terrain { get; private set; }
 
-        IEnumerator Initialize()
+        void Initialize()
         {
-            var elementInfoReader = WorldElementResource.ReadAsync();
-            yield return elementInfoReader;
-            ElementInfo = elementInfoReader.Result;
-
-
+            WorldElementResource.ReadAsync().Subscribe(delegate (IAsyncOperation<WorldElementResource> result)
+            {
+                ElementInfo = result.Result;
+                TerrainResource.ReadAsync(ElementInfo).Subscribe(terrainResult => Terrain = terrainResult.Result, OnError);
+            },OnError);
         }
 
-        //void Initialize()
-        //{
-        //    IAsync<WorldElementResource> ElementInfo = WorldElementResource.ReadAsync();
-        //    IAsync<WorldElementResource> Terrain = TerrainResource.ReadAsync(ElementInfo);
-        //}
+        void OnError<T>(IAsyncOperation<T> operation)
+        {
+
+        }
 
     }
 

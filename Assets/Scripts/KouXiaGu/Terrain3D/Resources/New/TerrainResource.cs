@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IAsyncOperation<TerrainResource> ReadAsync(WorldElementResource elementInfos)
         {
-            return TerrainResourceReader.Create(elementInfos);
+            return TerrainResourceCreater.Create(elementInfos);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化方法;
         /// </summary>
-        class TerrainResourceReader : CoroutineOperation<TerrainResource>
+        class TerrainResourceCreater : CoroutineOperation<TerrainResource>
         {
             const string assetBundleName = "terrain";
             static readonly ISegmented DefaultSegmented = new SegmentedBlock();
@@ -49,16 +49,16 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 需要在Unity线程内调用;
             /// </summary>
-            public static TerrainResourceReader Create(WorldElementResource elementInfos)
+            public static TerrainResourceCreater Create(WorldElementResource elementInfos)
             {
-                var gameObject = new GameObject("TerrainResourceReader", typeof(TerrainResourceReader));
-                var item = gameObject.GetComponent<TerrainResourceReader>();
+                var gameObject = new GameObject("TerrainResourceReader", typeof(TerrainResourceCreater));
+                var item = gameObject.GetComponent<TerrainResourceCreater>();
                 item.elementInfos = elementInfos;
                 return item;
             }
 
 
-            TerrainResourceReader()
+            TerrainResourceCreater()
             {
             }
 

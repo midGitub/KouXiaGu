@@ -6,6 +6,9 @@ namespace KouXiaGu.World
 {
 
 
+    /// <summary>
+    /// 基本资源;
+    /// </summary>
     public class WorldElementResource
     {
 
@@ -57,7 +60,7 @@ namespace KouXiaGu.World
         public Dictionary<int, ProductElementInfo> ProductInfos { get; protected set; }
 
         /// <summary>
-        /// 同步的读取所有信息;
+        /// 同步的初始化;
         /// </summary>
         void Initialize()
         {
