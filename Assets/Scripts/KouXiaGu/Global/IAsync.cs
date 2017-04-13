@@ -36,24 +36,37 @@ namespace KouXiaGu
 
     }
 
+    /// <summary>
+    /// 表示在多线程内进行的操作;
+    /// </summary>
     public abstract class AsyncOperation<TResult> : IAsync<TResult>, IEnumerator
     {
-        public bool IsCompleted { get; protected set; }
-        public bool IsFaulted { get; protected set; }
-        public TResult Result { get; protected set; }
-        public Exception Ex { get; protected set; }
-
-        public object Current
-        {
-            get { return Result; }
-        }
-
         public AsyncOperation()
         {
             IsCompleted = false;
             IsFaulted = false;
             Result = default(TResult);
             Ex = null;
+        }
+
+        public bool IsCompleted { get; protected set; }
+        public bool IsFaulted { get; protected set; }
+        public TResult Result { get; protected set; }
+        public Exception Ex { get; protected set; }
+
+        object IEnumerator.Current
+        {
+            get { return Result; }
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            return !IsCompleted;
+        }
+
+        void IEnumerator.Reset()
+        {
+            return;
         }
 
         /// <summary>
@@ -81,35 +94,31 @@ namespace KouXiaGu
             }
         }
 
+        /// <summary>
+        /// 需要在线程内进行的操作;
+        /// </summary>
         protected abstract TResult Operate();
 
-        public virtual bool MoveNext()
+    }
+
+    /// <summary>
+    /// 表示在协程内进行的操作;
+    /// </summary>
+    public abstract class CoroutineOperation<TResult> : IEnumerator
+    {
+        public TResult Current { get; protected set; }
+
+        object IEnumerator.Current
         {
-            return !IsCompleted;
+            get { return Current; }
         }
 
-        public void Reset()
+        void IEnumerator.Reset()
         {
             return;
         }
 
-    }
-
-    public class MonoAsyncOperation<TResult> : MonoBehaviour, IAsync<TResult>
-    {
-        public bool IsCompleted { get; protected set; }
-        public bool IsFaulted { get; protected set; }
-        public TResult Result { get; protected set; }
-        public Exception Ex { get; protected set; }
-
-        protected virtual void Awake()
-        {
-            IsCompleted = false;
-            IsFaulted = false;
-            Result = default(TResult);
-            Ex = null;
-        }
-
+        public abstract bool MoveNext();
     }
 
 }

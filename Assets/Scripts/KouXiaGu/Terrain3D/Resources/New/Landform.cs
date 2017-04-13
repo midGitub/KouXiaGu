@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using KouXiaGu.World;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -36,7 +38,80 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [XmlElement("DiffuseBlendTex")]
         public string DiffuseBlendTex { get; set; }
+    }
 
+
+    public class TerrainLandform : TerrainElementInfo<LandformInfo>, IDisposable
+    {
+        public TerrainLandform(LandformInfo info) : base(info)
+        {
+        }
+
+        public Texture DiffuseTex { get; internal set; }
+        public Texture DiffuseBlendTex { get; internal set; }
+        public Texture HeightTex { get; internal set; }
+        public Texture HeightBlendTex { get; internal set; }
+
+        public bool IsEmpty
+        {
+            get {
+                return 
+                    DiffuseTex == null &&
+                    DiffuseBlendTex == null &&
+                    HeightTex == null &&
+                    HeightBlendTex == null;
+            }
+        }
+
+        public bool IsLoadComplete
+        {
+            get {
+                return 
+                    DiffuseTex != null &&
+                    DiffuseBlendTex != null &&
+                    HeightTex != null && 
+                    HeightBlendTex != null;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!IsEmpty)
+            {
+                GameObject.Destroy(DiffuseTex);
+                DiffuseTex = null;
+
+                GameObject.Destroy(DiffuseBlendTex);
+                DiffuseBlendTex = null;
+
+                GameObject.Destroy(HeightTex);
+                HeightTex = null;
+
+                GameObject.Destroy(HeightBlendTex);
+                HeightBlendTex = null;
+            }
+        }
+    }
+
+
+    public class LandformReader : TerrainAssetReader<TerrainLandform, LandformInfo>
+    {
+
+        public LandformReader(AssetBundle assetBundle) : base(assetBundle)
+        {
+        }
+
+        public override TerrainLandform Read(LandformInfo info)
+        {
+            TerrainLandformInfo tInfo = info.Terrain;
+            return new TerrainLandform(info)
+            {
+                DiffuseTex = ReadTexture(tInfo.DiffuseTex),
+                DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
+                HeightTex = ReadTexture(tInfo.HeightTex),
+                HeightBlendTex = ReadTexture(tInfo.HeightBlendTex),
+            };
+        }
     }
 
 }
