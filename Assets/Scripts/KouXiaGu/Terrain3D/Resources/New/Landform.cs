@@ -96,8 +96,9 @@ namespace KouXiaGu.Terrain3D
 
     public class LandformReader : TerrainAssetReader<TerrainLandform, LandformInfo>
     {
-
-
+        public LandformReader(ISegmented segmented) : base(segmented)
+        {
+        }
 
         public override bool TryRead(AssetBundle asset, LandformInfo info, out TerrainLandform item)
         {
@@ -111,7 +112,6 @@ namespace KouXiaGu.Terrain3D
             };
             return item.IsLoadComplete;
         }
-
     }
 
 }
