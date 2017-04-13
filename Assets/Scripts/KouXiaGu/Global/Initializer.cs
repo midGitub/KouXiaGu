@@ -11,15 +11,15 @@ namespace KouXiaGu
         {
         }
 
-        List<IAsync> operaterList;
-        List<IAsync> faultedList;
+        List<IAsyncOperation> operaterList;
+        List<IAsyncOperation> faultedList;
 
-        public List<IAsync> OperaterList
+        public List<IAsyncOperation> OperaterList
         {
             get { return operaterList; }
         }
 
-        public List<IAsync> FaultedList
+        public List<IAsyncOperation> FaultedList
         {
             get { return faultedList; }
         }
@@ -39,8 +39,8 @@ namespace KouXiaGu
 
         protected virtual void Awake()
         {
-            operaterList = new List<IAsync>();
-            faultedList = new List<IAsync>();
+            operaterList = new List<IAsyncOperation>();
+            faultedList = new List<IAsyncOperation>();
         }
 
         protected virtual void Update()
@@ -74,7 +74,7 @@ namespace KouXiaGu
             return true;
         }
 
-        protected void AddOperater(IAsync operater)
+        protected void AddOperater(IAsyncOperation operater)
         {
             operaterList.Add(operater);
         }

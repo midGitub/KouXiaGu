@@ -13,7 +13,7 @@ namespace KouXiaGu
         /// <summary>
         /// 在其它线程读取到;
         /// </summary>
-        public static AsyncOperation<TResult> ReadAsync<TResult>(this IReader<TResult> reader)
+        public static ThreadOperation<TResult> ReadAsync<TResult>(this IReader<TResult> reader)
         {
             var item = new AsyncReader<TResult>(reader);
             item.Start();
@@ -23,14 +23,14 @@ namespace KouXiaGu
         /// <summary>
         /// 在其它线程读取到;
         /// </summary>
-        public static AsyncOperation<TResult> ReadAsync<TResult, T1>(this IReader<TResult, T1> reader, T1 t1)
+        public static ThreadOperation<TResult> ReadAsync<TResult, T1>(this IReader<TResult, T1> reader, T1 t1)
         {
             var item = new AsyncReader<TResult, T1>(reader, t1);
             item.Start();
             return item;
         }
 
-        class AsyncReader<TResult> : AsyncOperation<TResult>
+        class AsyncReader<TResult> : ThreadOperation<TResult>
         {
             IReader<TResult> reader;
 
@@ -45,7 +45,7 @@ namespace KouXiaGu
             }
         }
 
-        class AsyncReader<TResult, T1> : AsyncOperation<TResult>
+        class AsyncReader<TResult, T1> : ThreadOperation<TResult>
         {
             IReader<TResult, T1> reader;
             T1 t1;

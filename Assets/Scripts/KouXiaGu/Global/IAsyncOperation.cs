@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using KouXiaGu.Rx;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -72,11 +73,58 @@ namespace KouXiaGu
     }
 
     /// <summary>
-    /// 表示在多线程内进行的操作;
+    /// 表示异步的操作;
     /// </summary>
     public abstract class AsyncOperation<TResult> : IAsyncOperation<TResult>
     {
-        public AsyncOperation()
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public TResult Result { get; private set; }
+        public Exception Ex { get; private set; }
+
+        object IEnumerator.Current
+        {
+            get { return Result; }
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            return !IsCompleted;
+        }
+
+        void IEnumerator.Reset()
+        {
+            return;
+        }
+
+        protected void OnCompleted(TResult result)
+        {
+            Result = result;
+            IsCompleted = true;
+        }
+
+        protected void OnError(Exception ex)
+        {
+            Ex = ex;
+            IsFaulted = true;
+            IsCompleted = true;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() +
+                "[IsCompleted:" + IsCompleted +
+                ",IsFaulted:" + IsFaulted +
+                ",Exception:" + Ex + "]";
+        }
+    }
+
+    /// <summary>
+    /// 表示在多线程内进行的操作;
+    /// </summary>
+    public abstract class ThreadOperation<TResult> : IAsyncOperation<TResult>
+    {
+        public ThreadOperation()
         {
             IsCompleted = false;
             IsFaulted = false;
@@ -137,7 +185,7 @@ namespace KouXiaGu
     }
 
     /// <summary>
-    /// 表示在协程内进行的操作;
+    /// 表示在Unity线程内进行的异步操作;
     /// </summary>
     public abstract class CoroutineOperation<TResult> : MonoBehaviour, IAsyncOperation<TResult>
     {
@@ -188,14 +236,8 @@ namespace KouXiaGu
 
     }
 
-    public interface IOperation
-    {
-        bool OnNext();
-    }
-
-
     /// <summary>
-    /// 异步操作拓展,都在 unity 线程内调用;
+    /// 异步操作拓展,都需要在 unity 线程内调用;
     /// </summary>
     public static class AsyncOperationExtensions
     {
@@ -203,13 +245,13 @@ namespace KouXiaGu
         /// <summary>
         /// 当操作完成时,在unity线程内回调;
         /// </summary>
-        public static void Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onError)
+        public static IDisposable Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onError)
             where T : IAsyncOperation
         {
             if (onCompleted == null || onError == null)
                 throw new ArgumentNullException();
 
-            AddOperation(delegate ()
+            IDisposable disposer = new Operation(delegate ()
             {
                 if (operation.IsCompleted)
                 {
@@ -225,6 +267,42 @@ namespace KouXiaGu
                 }
                 return true;
             });
+
+            return disposer;
+        }
+
+        /// <summary>
+        /// 当所有完成时调用 onCompleted(), 若其中一个出现错误,则调用 onError();
+        /// </summary>
+        public static IDisposable OnCompleted<T>(this IEnumerable<T> operations, Action onCompleted, Action<T> onError)
+            where T : IAsyncOperation
+        {
+            if (onCompleted == null || onError == null)
+                throw new ArgumentNullException();
+
+            var operationArray = operations.ToArray();
+            int index = 0;
+
+            IDisposable disposer = new Operation(delegate ()
+            {
+                if (index < operationArray.Length)
+                {
+                    var operation = operationArray[index];
+                    if (operation.IsCompleted)
+                    {
+                        index++;
+                        if (operation.IsFaulted)
+                        {
+                            onError(operation);
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            });
+
+            return disposer;
         }
 
 
@@ -233,30 +311,33 @@ namespace KouXiaGu
             get { return AsyncOperationObserver.Instance; }
         }
 
-        static void AddOperation(Func<bool> moveNext)
+        class Operation : IDisposable
         {
-            operationObserver.Add(new Operation(moveNext));
-        }
-
-        class Operation : IOperation
-        {
-            /// <summary>
-            /// 构造;
-            /// </summary>
-            /// <param name="func">不允许出现异常;</param>
-            public Operation(Func<bool> func)
+            public Operation(Func<bool> moveNext)
             {
-                if (func == null)
+                if (moveNext == null)
                     throw new ArgumentNullException();
 
-                this.func = func;
+                this.func = moveNext;
+                disposer = operationObserver.Subscribe(this);
             }
 
+            IDisposable disposer;
             Func<bool> func;
 
             public bool OnNext()
             {
                 return func();
+            }
+
+            public void OnCompleted()
+            {
+                disposer = null;
+            }
+
+            public void Dispose()
+            {
+                this.disposer.Dispose();
             }
         }
 
@@ -287,7 +368,7 @@ namespace KouXiaGu
             {
             }
 
-            List<IOperation> operationList;
+            List<Operation> operationList;
 
             public int Count
             {
@@ -297,14 +378,14 @@ namespace KouXiaGu
             void Awake()
             {
                 DontDestroyOnLoad(gameObject);
-                operationList = new List<IOperation>();
+                operationList = new List<Operation>();
             }
 
             void Update()
             {
                 for (int i = 0; i < operationList.Count;)
                 {
-                    IOperation operation = operationList[i];
+                    Operation operation = operationList[i];
 
                     if (operation.OnNext())
                     {
@@ -317,17 +398,13 @@ namespace KouXiaGu
                 }
             }
 
-            public void Add(IOperation operation)
+            public IDisposable Subscribe(Operation operation)
             {
                 operationList.Add(operation);
+                return new CollectionUnsubscriber<Operation>(operationList, operation);
             }
 
-            public bool Remove(IOperation operation)
-            {
-                return operationList.Remove(operation);
-            }
-
-            public bool Contains(IOperation operation)
+            public bool Contains(Operation operation)
             {
                 return operationList.Contains(operation);
             }

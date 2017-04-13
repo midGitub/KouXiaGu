@@ -30,6 +30,7 @@ namespace KouXiaGu
 
             InitInput();
             InitLanguage();
+            InitGameData();
         }
 
         /// <summary>
@@ -52,6 +53,12 @@ namespace KouXiaGu
         void InitLanguage()
         {
             var operater = Localization.ReadAsync();
+            AddOperater(operater);
+        }
+
+        void InitGameData()
+        {
+            var operater = GameData.Create();
             AddOperater(operater);
         }
 

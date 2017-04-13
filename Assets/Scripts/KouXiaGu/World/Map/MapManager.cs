@@ -29,14 +29,14 @@ namespace KouXiaGu.World.Map
         }
 
 
-        public static AsyncOperation<MapManager> CreateAsync()
+        public static ThreadOperation<MapManager> CreateAsync()
         {
             var item = new AsyncInitializer();
             item.Start();
             return item;
         }
 
-        class AsyncInitializer : AsyncOperation<MapManager>
+        class AsyncInitializer : ThreadOperation<MapManager>
         {
             protected override MapManager Operate()
             {

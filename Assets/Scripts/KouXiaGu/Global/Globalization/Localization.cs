@@ -108,7 +108,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 异步读取语言文件;
         /// </summary>
-        internal static IAsync ReadAsync()
+        internal static IAsyncOperation ReadAsync()
         {
             return LanguagePackReader.ReadAsync(out languages, out languageIndex);
         }

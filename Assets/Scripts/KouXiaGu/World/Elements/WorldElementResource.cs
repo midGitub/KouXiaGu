@@ -30,7 +30,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 异步读取所有信息;
         /// </summary>
-        public static AsyncOperation<WorldElementResource> ReadAsync()
+        public static ThreadOperation<WorldElementResource> ReadAsync()
         {
             return new AsyncReader();
         }
@@ -100,7 +100,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 多线程读取到;
         /// </summary>
-        class AsyncReader : AsyncOperation<WorldElementResource>
+        class AsyncReader : ThreadOperation<WorldElementResource>
         {
             protected override WorldElementResource Operate()
             {

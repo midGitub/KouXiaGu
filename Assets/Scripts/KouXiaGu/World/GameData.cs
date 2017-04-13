@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.World;
 
-namespace KouXiaGu.World
+namespace KouXiaGu
 {
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace KouXiaGu.World
 
         public static IAsyncOperation<GameData> Create()
         {
-            throw new NotImplementedException();
+            return new GameDataCreater();
         }
 
         /// <summary>
@@ -29,17 +30,41 @@ namespace KouXiaGu.World
         /// </summary>
         public TerrainResource Terrain { get; private set; }
 
-        void Initialize()
+        GameData()
         {
-            WorldElementResource.ReadAsync().Subscribe(delegate (IAsyncOperation<WorldElementResource> result)
-            {
-                ElementInfo = result.Result;
-                TerrainResource.ReadAsync(ElementInfo).Subscribe(terrainResult => Terrain = terrainResult.Result, OnError);
-            },OnError);
+
         }
 
-        void OnError<T>(IAsyncOperation<T> operation)
+        class GameDataCreater : AsyncOperation<GameData>
         {
+            public GameDataCreater()
+            {
+                Initialize();
+                data = new GameData();
+            }
+
+            GameData data;
+
+            void Initialize()
+            {
+                WorldElementResource.ReadAsync().Subscribe(delegate (IAsyncOperation<WorldElementResource> result)
+                {
+                    data.ElementInfo = result.Result;
+
+                    var terrainReader = TerrainResource.ReadAsync(data.ElementInfo);
+                    terrainReader.Subscribe(delegate (IAsyncOperation<TerrainResource> terrainResult)
+                    {
+                        data.Terrain = terrainResult.Result;
+                        OnCompleted(data);
+                    }, OnError);
+
+                }, OnError);
+            }
+
+            void OnError<T>(IAsyncOperation<T> operation)
+            {
+                OnError(operation.Ex);
+            }
 
         }
 

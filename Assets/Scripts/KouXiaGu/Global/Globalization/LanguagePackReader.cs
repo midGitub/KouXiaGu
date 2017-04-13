@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using KouXiaGu.Collections;
 using UnityEngine;
 using System.Threading;
+using System.Collections;
 
 namespace KouXiaGu.Globalization
 {
@@ -12,7 +13,7 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 负责读取本地化文本;
     /// </summary>
-    public sealed class LanguagePackReader : MonoBehaviour, IAsync
+    public sealed class LanguagePackReader : MonoBehaviour, IAsyncOperation
     {
         static LanguagePackReader()
         {
@@ -42,7 +43,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 读取到新的语言文件;
         /// </summary>
-        public static IAsync Read(LanguagePack pack, IDictionary<string, string> dictionary)
+        public static IAsyncOperation Read(LanguagePack pack, IDictionary<string, string> dictionary)
         {
             effective = pack;
             textDictionary = dictionary;
@@ -52,7 +53,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 根据预留的语言信息,读取到最适合的语言文件;
         /// </summary>
-        public static IAsync ReadAsync(out List<LanguagePack> packs, out int choice)
+        public static IAsyncOperation ReadAsync(out List<LanguagePack> packs, out int choice)
         {
             Config config;
             packs = GetMainLanguagePacks();
@@ -102,7 +103,7 @@ namespace KouXiaGu.Globalization
             return new List<LanguagePack>(packs);
         }
 
-        static IAsync StartRead()
+        static IAsyncOperation StartRead()
         {
             if (IsInitialized)
                 throw new ArgumentException("语言文件已经在读取中;");
@@ -122,6 +123,11 @@ namespace KouXiaGu.Globalization
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public Exception Ex { get; private set; }
+
+        object IEnumerator.Current
+        {
+            get { return null; }
+        }
 
         void Awake()
         {
@@ -181,6 +187,15 @@ namespace KouXiaGu.Globalization
             Destroy(gameObject);
         }
 
+        bool IEnumerator.MoveNext()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IEnumerator.Reset()
+        {
+            throw new NotImplementedException();
+        }
 
         [XmlType("Config")]
         public struct Config
