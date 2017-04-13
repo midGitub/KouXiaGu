@@ -15,7 +15,7 @@ namespace KouXiaGu.World
 
         static DateTime()
         {
-            CurrentCalendar = new ChineseCalendar();
+            CurrentCalendar = new Calendar();
         }
 
         /// <summary>
