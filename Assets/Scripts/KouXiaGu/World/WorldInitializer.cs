@@ -3,89 +3,68 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using KouXiaGu.World.Map;
+using KouXiaGu.Rx;
 
 namespace KouXiaGu.World
 {
 
+    /// <summary>
+    /// 场景实例;
+    /// </summary>
     public interface IWorld
     {
-        /// <summary>
-        /// 世界信息;
-        /// </summary>
         WorldInfo Info { get; }
-
-        /// <summary>
-        /// 地图信息;
-        /// </summary>
-        MapManager Map { get; }
-
-        /// <summary>
-        /// 资源\产品;
-        /// </summary>
-        ProductManager Product { get; }
-
-        /// <summary>
-        /// 建筑物;
-        /// </summary>
-        BuildingManager Building { get; }
+        WorldManager World { get; }
     }
 
     /// <summary>
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : Initializer
+    public class WorldInitializer : MonoBehaviour, IWorld, IObservable<IWorld>
     {
 
-        #region 静态;
-
-        static bool initialized;
-        static WorldInfo worldInfo;
+        static bool initialized = false;
+        static WorldInfo staticWorldInfo;
 
         /// <summary>
         /// 提供初始化的世界信息;
         /// </summary>
         public static WorldInfo WorldInfo
         {
-            get { return worldInfo; }
+            get { return staticWorldInfo; }
             set {
                 if (initialized)
                     throw new ArgumentException();
-                worldInfo = value;
+                staticWorldInfo = value;
             }
         }
 
-        static WorldInitializer()
-        {
-            initialized = false;
-        }
-
-        #endregion
 
         WorldInitializer()
         {
         }
 
         [SerializeField]
-        WorldInfo info;
+        bool useEditorialInfo = false;
+        [SerializeField]
+        WorldInfo editorialInfo;
+        internal ListTracker<IWorld> Tracker { get; private set; }
         public WorldManager World { get; private set; }
 
         public WorldInfo Info
         {
-            get { return info; }
-            set { info = value; }
+            get { return useEditorialInfo ? editorialInfo : staticWorldInfo; }
         }
 
-        protected override void Awake()
+        void Awake()
         {
-            base.Awake();
             initialized = true;
         }
 
         void Start()
         {
-            Initialize();
+            StartInit();
         }
 
         void OnDestroy()
@@ -93,9 +72,37 @@ namespace KouXiaGu.World
             initialized = false;
         }
 
+        public IDisposable Subscribe(IObserver<IWorld> observer)
+        {
+            if(Tracker == null)
+                Tracker = new ListTracker<IWorld>();
+
+            return Tracker.Subscribe(observer);
+        }
+
+        /// <summary>
+        /// 同步的初始化,手动调用;
+        /// </summary>
+        public void StartInit()
+        {
+            try
+            {
+                Initialize();
+                Tracker.Track(this);
+            }
+            catch (Exception ex)
+            {
+                Tracker.Track(ex);
+            }
+            finally
+            {
+                Tracker.EndTrack();
+            }
+        }
+
         void Initialize()
         {
-            World = new WorldManager(info);
+            World = new WorldManager(Info);
         }
 
 

@@ -19,7 +19,7 @@ namespace KouXiaGu.World
         /// </summary>
         static float InputOnUpdate
         {
-            get { return Time.deltaTime; }
+            get { return UnityEngine.Time.deltaTime; }
         }
 
         [SerializeField, Range(2f, 20)]

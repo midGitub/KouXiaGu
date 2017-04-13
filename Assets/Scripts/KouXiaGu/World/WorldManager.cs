@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.World.Map;
 using KouXiaGu.World.Navigation;
+using KouXiaGu.Rx;
 using UnityEngine;
 
 namespace KouXiaGu.World
 {
 
 
-    public class WorldManager
+    public class WorldManager : IObserver<IWorld>
     {
 
         /// <summary>
@@ -57,6 +58,26 @@ namespace KouXiaGu.World
         /// 路径导航;
         /// </summary>
         public NavigationManager Navigation { get; private set; }
+
+        public void StartWorld()
+        {
+            
+        }
+
+        void IObserver<IWorld>.OnNext(IWorld item)
+        {
+            return;
+        }
+
+        void IObserver<IWorld>.OnError(Exception error)
+        {
+            return;
+        }
+
+        void IObserver<IWorld>.OnCompleted()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 

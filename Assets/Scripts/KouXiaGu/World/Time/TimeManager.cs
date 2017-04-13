@@ -30,7 +30,7 @@ namespace KouXiaGu.World
     }
 
 
-    public class TimeManager
+    public class TimeManager : IObservable<DateTime>
     {
 
         public TimeManager(WorldTimeInfo info)
@@ -42,7 +42,7 @@ namespace KouXiaGu.World
         }
 
         public WorldTimeInfo Info { get; private set; }
-        public Tracker<DateTime> TimeTracker { get; private set; }
+        internal Tracker<DateTime> TimeTracker { get; private set; }
         TimeUpdater updater;
 
         public DateTime CurrentTime
@@ -68,7 +68,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 立即推送当前时间到观察者;
         /// </summary>
-        void TrackTime()
+        internal void TrackTime()
         {
             TimeTracker.Track(CurrentTime);
         }
@@ -76,6 +76,11 @@ namespace KouXiaGu.World
         void InitCalendar()
         {
             DateTime.CurrentCalendar = GetCalendarFromLua();
+        }
+
+        public IDisposable Subscribe(IObserver<DateTime> observer)
+        {
+            return ((IObservable<DateTime>)this.TimeTracker).Subscribe(observer);
         }
 
         [CSharpCallLua]
@@ -99,66 +104,127 @@ namespace KouXiaGu.World
         }
 
 
-        /// <summary>
-        /// 时间更新器;
-        /// </summary>
-        [DisallowMultipleComponent]
-        internal class TimeUpdater : MonoBehaviour
-        {
-            static bool isCreated = false;
+        ///// <summary>
+        ///// 时间更新器;
+        ///// </summary>
+        //[DisallowMultipleComponent]
+        //public class TimeUpdater : MonoBehaviour
+        //{
+        //    static bool isCreated = false;
 
-            public static TimeUpdater Create(TimeManager manager)
-            {
-                if (isCreated)
-                    throw new ArgumentException();
+        //    internal static TimeUpdater Create(TimeManager manager)
+        //    {
+        //        if (isCreated)
+        //            throw new ArgumentException();
 
-                var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
-                var item = gameObject.GetComponent<TimeUpdater>();
-                item.manager = manager;
-                return item;
-            }
+        //        Debug.Log("123123");
+        //        var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
+        //        var item = gameObject.GetComponent<TimeUpdater>();
+        //        item.manager = manager;
+        //        return item;
+        //    }
 
-            TimeUpdater()
-            {
-            }
+        //    TimeUpdater()
+        //    {
+        //    }
 
-            TimeManager manager;
-            int currenMinute;
+        //    TimeManager manager;
+        //    int currenMinute;
 
-            public bool IsRunning
-            {
-                get { return transform != null && enabled; }
-            }
+        //    public bool IsRunning
+        //    {
+        //        get { return transform != null && enabled; }
+        //    }
 
-            public DateTime CurrentTime
-            {
-                get { return manager.CurrentTime; }
-            }
+        //    public DateTime CurrentTime
+        //    {
+        //        get { return manager.CurrentTime; }
+        //    }
 
-            public int HourInterval
-            {
-                get { return manager.HourInterval; }
-            }
+        //    public int HourInterval
+        //    {
+        //        get { return manager.HourInterval; }
+        //    }
 
-            void FixedUpdate()
-            {
-                currenMinute++;
-                if (currenMinute > HourInterval)
-                {
-                    currenMinute = 0;
-                    CurrentTime.AddHour();
-                    manager.TrackTime();
-                }
-            }
+        //    void FixedUpdate()
+        //    {
+        //        currenMinute++;
+        //        if (currenMinute > HourInterval)
+        //        {
+        //            currenMinute = 0;
+        //            CurrentTime.AddHour();
+        //            manager.TrackTime();
+        //        }
+        //    }
 
-            void OnDestroy()
-            {
-                isCreated = false;
-            }
-
-        }
-
+        //    void OnDestroy()
+        //    {
+        //        isCreated = false;
+        //    }
+        //}
     }
+
+
+    ///// <summary>
+    ///// 时间更新器;
+    ///// </summary>
+    //[DisallowMultipleComponent]
+    //public class TimeUpdater : MonoBehaviour
+    //{
+    //    static bool isCreated = false;
+
+    //    internal static TimeUpdater Create(TimeManager manager)
+    //    {
+    //        if (isCreated)
+    //            throw new ArgumentException();
+
+    //        Debug.Log("123123");
+    //        var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
+    //        var item = gameObject.GetComponent<TimeUpdater>();
+    //        item.manager = manager;
+    //        return item;
+    //    }
+
+    //    TimeUpdater()
+    //    {
+    //    }
+
+    //    TimeManager manager;
+    //    int currenMinute;
+
+    //    public bool IsRunning
+    //    {
+    //        get { return transform != null && enabled; }
+    //    }
+
+    //    public DateTime CurrentTime
+    //    {
+    //        get { return manager.CurrentTime; }
+    //    }
+
+    //    public int HourInterval
+    //    {
+    //        get { return manager.HourInterval; }
+    //    }
+
+    //    void FixedUpdate()
+    //    {
+    //        currenMinute++;
+    //        if (currenMinute > HourInterval)
+    //        {
+    //            currenMinute = 0;
+    //            CurrentTime.AddHour();
+    //            manager.TrackTime();
+    //        }
+    //    }
+
+    //    void OnDestroy()
+    //    {
+    //        isCreated = false;
+    //    }
+
+    //}
+
 
 
     /// <summary>

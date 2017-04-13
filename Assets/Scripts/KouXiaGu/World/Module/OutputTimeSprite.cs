@@ -13,7 +13,7 @@ namespace KouXiaGu.World
     /// 在控制台输出时间信息;
     /// </summary>
     [DisallowMultipleComponent]
-    class OutputTimeSprite : MonoBehaviour, IObserver<DateTime>
+    class OutputTimeSprite : MonoBehaviour, IObserver<IWorld>, IObserver<DateTime>
     {
 
         OutputTimeSprite()
@@ -24,13 +24,18 @@ namespace KouXiaGu.World
         Text textObject;
 
         [SerializeField]
-        TimeManager timer;
+        WorldInitializer world;
 
         IDisposable unsubscribe;
 
         void Start()
         {
-            unsubscribe = timer.TimeTracker.Subscribe(this);
+            unsubscribe = world.Subscribe(this);
+        }
+
+        public void OnNext(IWorld item)
+        {
+            item.World.Time.Subscribe(this);
         }
 
         public void OnNext(DateTime item)
