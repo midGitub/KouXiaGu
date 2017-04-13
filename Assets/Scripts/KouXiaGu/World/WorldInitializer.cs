@@ -46,19 +46,13 @@ namespace KouXiaGu.World
         {
         }
 
+#if UNITY_EDITOR
+
         [SerializeField]
         bool useEditorialInfo = false;
         [SerializeField]
         WorldInfo editorialInfo;
-        internal ListTracker<IWorld> Tracker { get; private set; }
-        public WorldManager World { get; private set; }
 
-        /// <summary>
-        /// 基础信息;
-        /// </summary>
-        public WorldElementManager ElementInfo { get; private set; }
-
-#if UNITY_EDITOR
         public bool UseEditorialInfo
         {
             get { return useEditorialInfo; }
@@ -68,11 +62,26 @@ namespace KouXiaGu.World
 
         public WorldInfo Info
         {
-            get { return useEditorialInfo ? editorialInfo : staticWorldInfo; }
 #if UNITY_EDITOR
+            get { return useEditorialInfo ? editorialInfo : staticWorldInfo; }
             set { editorialInfo = value; }
+#else
+             get { return staticWorldInfo; }
 #endif
         }
+
+
+        ListTracker<IWorld> tracker;
+
+        /// <summary>
+        /// 世界信息;
+        /// </summary>
+        public WorldManager World { get; private set; }
+
+        /// <summary>
+        /// 基础信息;
+        /// </summary>
+        public WorldElementManager ElementInfo { get; private set; }
 
         void Awake()
         {
@@ -91,10 +100,10 @@ namespace KouXiaGu.World
 
         public IDisposable Subscribe(IObserver<IWorld> observer)
         {
-            if(Tracker == null)
-                Tracker = new ListTracker<IWorld>();
+            if(tracker == null)
+                tracker = new ListTracker<IWorld>();
 
-            return Tracker.Subscribe(observer);
+            return tracker.Subscribe(observer);
         }
 
         /// <summary>
@@ -105,16 +114,16 @@ namespace KouXiaGu.World
             try
             {
                 Initialize();
-                Tracker.Track(this);
+                tracker.Track(this);
             }
             catch (Exception ex)
             {
                 Debug.LogError(ex);
-                Tracker.TrackError(ex);
+                tracker.TrackError(ex);
             }
             finally
             {
-                Tracker.TrackCompleted();
+                tracker.TrackCompleted();
             }
         }
 
