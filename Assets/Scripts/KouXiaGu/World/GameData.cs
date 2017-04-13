@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World;
+using UnityEngine;
 
 namespace KouXiaGu
 {
@@ -39,8 +40,8 @@ namespace KouXiaGu
         {
             public GameDataCreater()
             {
-                Initialize();
                 data = new GameData();
+                Initialize();
             }
 
             GameData data;
@@ -63,6 +64,7 @@ namespace KouXiaGu
 
             void OnError<T>(IAsyncOperation<T> operation)
             {
+                Debug.LogError(operation.Ex);
                 OnError(operation.Ex);
             }
 

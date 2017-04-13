@@ -102,6 +102,11 @@ namespace KouXiaGu.World
         /// </summary>
         class AsyncReader : ThreadOperation<WorldElementResource>
         {
+            public AsyncReader()
+            {
+                Start();
+            }
+
             protected override WorldElementResource Operate()
             {
                 return WorldElementResource.Read();
