@@ -14,6 +14,7 @@ namespace KouXiaGu.World
             RoadReader = new RoadInfoXmlSerializer();
             LandformReader = new LandformInfoXmlSerializer();
             BuildingReader = new BuildingInfosXmlSerializer();
+            ProductReader = new ProductInfosXmlSerializer();
         }
 
         internal static DataReader<Dictionary<int, RoadInfo>, IEnumerable<RoadInfo>> RoadReader { get; set; }
@@ -87,7 +88,7 @@ namespace KouXiaGu.World
             WriteToDirectory(ProductReader, ProductInfos, dirPath, overlay);
         }
 
-        void WriteToDirectory<T>(
+        protected virtual void WriteToDirectory<T>(
             DataReader<Dictionary<int, T>, IEnumerable<T>> reader,
             Dictionary<int, T> dictionary,
             string dirPath,

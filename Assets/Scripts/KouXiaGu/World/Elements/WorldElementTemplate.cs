@@ -94,7 +94,7 @@ namespace KouXiaGu.World
 
         #endregion
 
-        public WorldElementTemplate() : base()
+        public WorldElementTemplate() : this(true)
         {
             AddDictionary(RoadInfos, RoadTemplates);
             AddDictionary(LandformInfos, LandformTemplates);
@@ -102,10 +102,34 @@ namespace KouXiaGu.World
             AddDictionary(ProductInfos, ProductTemplates);
         }
 
+        public WorldElementTemplate(bool changeFileName) : base()
+        {
+            this.ChangeFileName = changeFileName;
+        }
+
+        /// <summary>
+        /// 当存在相同文件时,是否改名后保存?
+        /// </summary>
+        public bool ChangeFileName { get; set; }
+
         void AddDictionary<T>(Dictionary<int, T> dictionary, IEnumerable<T> items)
             where T : ElementInfo
         {
             dictionary.AddOrUpdate(items, item => item.ID);
+        }
+
+        protected override void WriteToDirectory<T>(
+            DataReader<Dictionary<int, T>, IEnumerable<T>> reader,
+            Dictionary<int, T> dictionary,
+            string dirPath,
+            bool overlay)
+        {
+            IEnumerable<T> infos = dictionary.Values;
+
+            if (!overlay && reader.File.Exists(dirPath) && ChangeFileName)
+                reader.WriteToDirectory(infos, dirPath, "_Template_");
+            else
+                base.WriteToDirectory(reader, dictionary, dirPath, overlay);
         }
 
     }

@@ -39,7 +39,12 @@ namespace KouXiaGu
 
         public string MainFilePath
         {
-            get { return Path.Combine(MainDirPath, FileName); }
+            get
+            {
+                string path = Path.Combine(MainDirPath, FileName);
+                path = Path.ChangeExtension(path, FileExtension);
+                return path;
+            }
         }
 
         public string MainDirPath

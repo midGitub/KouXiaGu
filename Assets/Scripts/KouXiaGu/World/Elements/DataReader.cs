@@ -43,6 +43,11 @@ namespace KouXiaGu.World
             return Read(filePaths);
         }
 
+        /// <summary>
+        /// 输出到目录下;
+        /// </summary>
+        /// <param name="item">内容</param>
+        /// <param name="dirPath">输出到的目录;</param>
         public void WriteToDirectory(TW item, string dirPath)
         {
             string filePath = File.Combine(dirPath);
@@ -54,6 +59,28 @@ namespace KouXiaGu.World
 
             Write(item, filePath);
         }
+
+        /// <summary>
+        /// 输出到目录下,并且在文件名之前加上字符串;
+        /// </summary>
+        /// <param name="item">内容</param>
+        /// <param name="dirPath">输出到的目录;</param>
+        /// <param name="prefix">增加的字符串;</param>
+        public void WriteToDirectory(TW item, string dirPath, string prefix)
+        {
+            string filePath = File.Combine(dirPath);
+            string fileName = prefix + Path.GetFileName(filePath);
+            string directoryName = Path.GetDirectoryName(filePath);
+
+            filePath = Path.Combine(directoryName, fileName);
+            filePath = Path.ChangeExtension(filePath, FileExtension);
+
+            if (!Directory.Exists(directoryName))
+                Directory.CreateDirectory(directoryName);
+
+            Write(item, filePath);
+        }
+
     }
 
     /// <summary>
