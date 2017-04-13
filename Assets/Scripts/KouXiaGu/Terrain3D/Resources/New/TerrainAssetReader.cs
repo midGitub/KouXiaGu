@@ -12,28 +12,19 @@ namespace KouXiaGu.Terrain3D
     public abstract class TerrainAssetReader<T, TInfo>
         where TInfo : ElementInfo
     {
+        public abstract bool TryRead(AssetBundle asset, TInfo info, out T item);
 
-        static readonly ISegmented DefaultSegmented = new SegmentedBlock();
-
-        public TerrainAssetReader(AssetBundle assetBundle)
+        protected Texture ReadTexture(AssetBundle asset, string name)
         {
-            this.assetBundle = assetBundle;
-        }
-
-        protected AssetBundle assetBundle { get; private set; }
-        public abstract bool TryRead(TInfo info, out T item);
-
-        public Texture ReadTexture(string name)
-        {
-            return assetBundle.LoadAsset<Texture>(name);
+            return asset.LoadAsset<Texture>(name);
         }
 
         /// <summary>
         /// 尝试读取到,若无法读取则输出错误信息,并返回false;
         /// </summary>
-        bool TryReadAndReport(TInfo info, out T item)
+        bool TryReadAndReport(AssetBundle asset, TInfo info, out T item)
         {
-            if (TryRead(info, out item))
+            if (TryRead(asset, info, out item))
             {
                 return true;
             }
@@ -42,19 +33,30 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 异步读取到信息合集;
+        /// 同步读取到;
         /// </summary>
-        public CoroutineOperation<Dictionary<int, T>> ReadAsync(IEnumerable<TInfo> infos)
+        public Dictionary<int, T> Read(AssetBundle asset, IEnumerable<TInfo> infos)
         {
-            return ReadAsync(infos, DefaultSegmented);
+            Dictionary<int, T> dictionary = new Dictionary<int, T>();
+
+            foreach (var info in infos)
+            {
+                T item;
+                if (TryReadAndReport(asset, info, out item))
+                {
+                    dictionary.Add(info.ID, item);
+                }
+            }
+
+            return dictionary;
         }
 
         /// <summary>
         /// 异步读取到信息合集;
         /// </summary>
-        public CoroutineOperation<Dictionary<int, T>> ReadAsync(IEnumerable<TInfo> infos, ISegmented segmented)
+        public CoroutineOperation<Dictionary<int, T>> ReadAsync(AssetBundle asset, IEnumerable<TInfo> infos, ISegmented segmented)
         {
-            return new AsyncReader(this, infos.GetEnumerator(), segmented);
+            return new AsyncReader(this, asset, infos.GetEnumerator(), segmented);
         }
 
 
@@ -63,7 +65,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         class AsyncReader : CoroutineOperation<Dictionary<int, T>>
         {
-            public AsyncReader(TerrainAssetReader<T, TInfo> reader, IEnumerator<TInfo> infos, ISegmented segmented)
+            public AsyncReader(TerrainAssetReader<T, TInfo> reader, AssetBundle asset, IEnumerator<TInfo> infos, ISegmented segmented)
             {
                 this.reader = reader;
                 this.infos = infos;
@@ -74,6 +76,7 @@ namespace KouXiaGu.Terrain3D
             TerrainAssetReader<T, TInfo> reader;
             IEnumerator<TInfo> infos;
             ISegmented segmented;
+            AssetBundle asset;
 
             public override bool MoveNext()
             {
@@ -82,7 +85,7 @@ namespace KouXiaGu.Terrain3D
                     TInfo info = infos.Current;
                     T item;
 
-                    if (reader.TryReadAndReport(info, out item))
+                    if (reader.TryReadAndReport(asset, info, out item))
                     {
                         Current.Add(info.ID, item);
                     }

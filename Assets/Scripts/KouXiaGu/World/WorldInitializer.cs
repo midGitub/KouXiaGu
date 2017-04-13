@@ -15,7 +15,6 @@ namespace KouXiaGu.World
     {
         WorldInfo Info { get; }
         WorldManager World { get; }
-        WorldElementManager ElementInfo { get; }
     }
 
     /// <summary>
@@ -78,19 +77,9 @@ namespace KouXiaGu.World
         /// </summary>
         public WorldManager World { get; private set; }
 
-        /// <summary>
-        /// 基础信息;
-        /// </summary>
-        public WorldElementManager ElementInfo { get; private set; }
-
         void Awake()
         {
             initialized = true;
-        }
-
-        void Start()
-        {
-            StartInit();
         }
 
         void OnDestroy()
@@ -109,11 +98,11 @@ namespace KouXiaGu.World
         /// <summary>
         /// 同步的初始化,手动调用;
         /// </summary>
-        public void StartInit()
+        public void StartInit(GameData data)
         {
             try
             {
-                Initialize();
+                Initialize(data);
                 tracker.Track(this);
             }
             catch (Exception ex)
@@ -127,11 +116,9 @@ namespace KouXiaGu.World
             }
         }
 
-        void Initialize()
+        void Initialize(GameData data)
         {
-            ElementInfo = WorldElementManager.Read();
-
-            World = new WorldManager(Info, ElementInfo);
+            World = new WorldManager(Info, data.ElementInfo);
             Subscribe(World);
         }
 

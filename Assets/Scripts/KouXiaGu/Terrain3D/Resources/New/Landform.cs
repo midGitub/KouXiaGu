@@ -96,22 +96,22 @@ namespace KouXiaGu.Terrain3D
 
     public class LandformReader : TerrainAssetReader<TerrainLandform, LandformInfo>
     {
-        public LandformReader(AssetBundle assetBundle) : base(assetBundle)
-        {
-        }
 
-        public override bool TryRead(LandformInfo info, out TerrainLandform item)
+
+
+        public override bool TryRead(AssetBundle asset, LandformInfo info, out TerrainLandform item)
         {
             TerrainLandformInfo tInfo = info.Terrain;
             item = new TerrainLandform(info)
             {
-                DiffuseTex = ReadTexture(tInfo.DiffuseTex),
-                DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
-                HeightTex = ReadTexture(tInfo.HeightTex),
-                HeightBlendTex = ReadTexture(tInfo.HeightBlendTex),
+                DiffuseTex = ReadTexture(asset, tInfo.DiffuseTex),
+                DiffuseBlendTex = ReadTexture(asset, tInfo.DiffuseBlendTex),
+                HeightTex = ReadTexture(asset, tInfo.HeightTex),
+                HeightBlendTex = ReadTexture(asset, tInfo.HeightBlendTex),
             };
             return item.IsLoadComplete;
         }
+
     }
 
 }
