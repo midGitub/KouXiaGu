@@ -80,7 +80,14 @@ namespace KouXiaGu.World
 
         void InitCalendar()
         {
-            DateTime.CurrentCalendar = CalendarFormLuaScript.Read();
+            try
+            {
+                DateTime.CurrentCalendar = CalendarFormLuaScript.Read();
+            }
+            catch(Exception ex)
+            {
+                Debug.LogError(ex);
+            }
         }
 
         /// <summary>
