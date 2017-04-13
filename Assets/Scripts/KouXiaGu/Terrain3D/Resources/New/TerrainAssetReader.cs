@@ -21,6 +21,9 @@ namespace KouXiaGu.Terrain3D
         public ISegmented Segmented { get; set; }
         public abstract bool TryRead(AssetBundle asset, TInfo info, out T item);
 
+        /// <summary>
+        /// 从资源包内读取贴图;
+        /// </summary>
         protected Texture ReadTexture(AssetBundle asset, string name)
         {
             return asset.LoadAsset<Texture>(name);
@@ -79,5 +82,4 @@ namespace KouXiaGu.Terrain3D
             }
         }
     }
-
 }

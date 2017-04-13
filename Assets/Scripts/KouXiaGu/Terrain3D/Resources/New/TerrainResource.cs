@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.World;
 using UnityEngine;
+using System.IO;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -86,12 +87,16 @@ namespace KouXiaGu.Terrain3D
                 AssetBundle assetBundle = bundleLoadRequest.assetBundle;
                 if (assetBundle == null)
                 {
-                    Debug.LogError("目录不存在贴图资源包或者在编辑器中进行读取,地形资源初始化失败;");
+                    IsFaulted = true;
+                    IsCompleted = true;
+                    Debug.LogError("未找到地形资源包;");
+                    Ex = new FileNotFoundException("未找到地形资源包;");
                     yield break;
                 }
 
                 yield return LandformReader.Read(assetBundle, resource.LandformInfos, elementInfos.LandformInfos);
 
+                assetBundle.Unload(false);
                 IsCompleted = true;
                 Result = resource;
             }
