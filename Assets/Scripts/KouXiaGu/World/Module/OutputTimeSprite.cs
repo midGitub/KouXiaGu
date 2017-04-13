@@ -33,12 +33,12 @@ namespace KouXiaGu.World
             unsubscribe = world.Subscribe(this);
         }
 
-        public void OnNext(IWorld item)
+        void IObserver<IWorld>.OnNext(IWorld item)
         {
             item.World.Time.Subscribe(this);
         }
 
-        public void OnNext(DateTime item)
+        void IObserver<DateTime>.OnNext(DateTime item)
         {
             string str = item.ToString();
             str += "\n" + item.GetMonthType();

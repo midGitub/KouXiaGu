@@ -55,7 +55,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 推送消息到所有订阅者 OnError() 方法;
         /// </summary>
-        public virtual void Track(Exception ex)
+        public virtual void TrackError(Exception ex)
         {
             IObserver<T>[] observerArray = observers.ToArray();
             foreach (var observer in observerArray)
@@ -65,16 +65,18 @@ namespace KouXiaGu.Rx
         }
 
         /// <summary>
-        /// 调用订阅者的 OnCompleted() 方法;
+        /// 调用订阅者的 OnCompleted() 方法,并移除所有订阅者;
         /// </summary>
-        public virtual void EndTrack()
+        public virtual void TrackCompleted()
         {
             IObserver<T>[] observerArray = observers.ToArray();
+            observers.Clear();
             foreach (var observer in observerArray)
             {
                 observer.OnCompleted();
             }
         }
+
     }
 
     /// <summary>
@@ -186,8 +188,17 @@ namespace KouXiaGu.Rx
         {
             if (Observers != null)
             {
-                Observers.Remove(Observer);
-                Observers = null;
+                try
+                {
+                    Observers.Remove(Observer);
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                finally
+                {
+                    Observers = null;
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ namespace KouXiaGu.World.Map
     {
         static MapManager()
         {
-            MapReader = new MapDataReader();
+            MapReader = new MapDataReaderOrEmpty();
         }
 
         internal static IReader<MapData> MapReader { get; set; }

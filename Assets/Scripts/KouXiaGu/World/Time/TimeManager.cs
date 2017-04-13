@@ -36,13 +36,13 @@ namespace KouXiaGu.World
         public TimeManager(WorldTimeInfo info)
         {
             Info = info;
-            TimeTracker = new ListTracker<DateTime>();
+            timeTracker = new ListTracker<DateTime>();
             updater = TimeUpdater.Create(this);
             InitCalendar();
         }
 
         public WorldTimeInfo Info { get; private set; }
-        internal Tracker<DateTime> TimeTracker { get; private set; }
+        Tracker<DateTime> timeTracker;
         TimeUpdater updater;
 
         public DateTime CurrentTime
@@ -68,9 +68,9 @@ namespace KouXiaGu.World
         /// <summary>
         /// 立即推送当前时间到观察者;
         /// </summary>
-        internal void TrackTime()
+        void TrackTime()
         {
-            TimeTracker.Track(CurrentTime);
+            timeTracker.Track(CurrentTime);
         }
 
         void InitCalendar()
@@ -80,7 +80,7 @@ namespace KouXiaGu.World
 
         public IDisposable Subscribe(IObserver<DateTime> observer)
         {
-            return ((IObservable<DateTime>)this.TimeTracker).Subscribe(observer);
+            return ((IObservable<DateTime>)this.timeTracker).Subscribe(observer);
         }
 
         [CSharpCallLua]
@@ -103,65 +103,67 @@ namespace KouXiaGu.World
             return calendar;
         }
 
+        /// <summary>
+        /// 时间更新器;
+        /// </summary>
+        [DisallowMultipleComponent]
+        class TimeUpdater : MonoBehaviour
+        {
+            static bool isCreated = false;
 
-        ///// <summary>
-        ///// 时间更新器;
-        ///// </summary>
-        //[DisallowMultipleComponent]
-        //public class TimeUpdater : MonoBehaviour
-        //{
-        //    static bool isCreated = false;
+            internal static TimeUpdater Create(TimeManager manager)
+            {
+                if (isCreated)
+                    throw new ArgumentException();
 
-        //    internal static TimeUpdater Create(TimeManager manager)
-        //    {
-        //        if (isCreated)
-        //            throw new ArgumentException();
+                var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
+                var item = gameObject.GetComponent<TimeUpdater>();
+                item.manager = manager;
+                return item;
+            }
 
-        //        Debug.Log("123123");
-        //        var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
-        //        var item = gameObject.GetComponent<TimeUpdater>();
-        //        item.manager = manager;
-        //        return item;
-        //    }
+            TimeUpdater()
+            {
+            }
 
-        //    TimeUpdater()
-        //    {
-        //    }
+            TimeManager manager;
+            int currenMinute;
 
-        //    TimeManager manager;
-        //    int currenMinute;
+            public bool IsRunning
+            {
+                get { return transform != null && enabled; }
+                private set { enabled = value; }
+            }
 
-        //    public bool IsRunning
-        //    {
-        //        get { return transform != null && enabled; }
-        //    }
+            public DateTime CurrentTime
+            {
+                get { return manager.CurrentTime; }
+                private set { manager.CurrentTime = value; }
+            }
 
-        //    public DateTime CurrentTime
-        //    {
-        //        get { return manager.CurrentTime; }
-        //    }
+            public int HourInterval
+            {
+                get { return manager.HourInterval; }
+            }
 
-        //    public int HourInterval
-        //    {
-        //        get { return manager.HourInterval; }
-        //    }
+            void FixedUpdate()
+            {
+                currenMinute++;
+                if (currenMinute > HourInterval)
+                {
+                    currenMinute = 0;
+                    CurrentTime = CurrentTime.AddHour();
+                    manager.TrackTime();
+                }
+            }
 
-        //    void FixedUpdate()
-        //    {
-        //        currenMinute++;
-        //        if (currenMinute > HourInterval)
-        //        {
-        //            currenMinute = 0;
-        //            CurrentTime.AddHour();
-        //            manager.TrackTime();
-        //        }
-        //    }
+            void OnDestroy()
+            {
+                isCreated = false;
+            }
 
-        //    void OnDestroy()
-        //    {
-        //        isCreated = false;
-        //    }
-        //}
+        }
+
     }
 
 

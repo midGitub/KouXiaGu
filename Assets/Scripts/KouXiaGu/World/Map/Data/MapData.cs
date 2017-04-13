@@ -14,6 +14,9 @@ namespace KouXiaGu.World.Map
 
         public MapData(PredefinedMap map)
         {
+            if (map == null)
+                throw new ArgumentNullException();
+
             Map = map;
             ArchiveMap = new ArchiveMap();
             ArchiveMap.Subscribe(Map);
@@ -26,6 +29,9 @@ namespace KouXiaGu.World.Map
         /// <param name="archive">变化内容,存档内容</param>
         public MapData(PredefinedMap map, ArchiveMap archive)
         {
+            if (map == null || archive == null)
+                throw new ArgumentNullException();
+
             Map = map;
             ArchiveMap = archive;
             Map.Update(ArchiveMap);

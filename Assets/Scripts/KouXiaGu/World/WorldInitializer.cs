@@ -92,11 +92,12 @@ namespace KouXiaGu.World
             }
             catch (Exception ex)
             {
-                Tracker.Track(ex);
+                Debug.LogError(ex);
+                Tracker.TrackError(ex);
             }
             finally
             {
-                Tracker.EndTrack();
+                Tracker.TrackCompleted();
             }
         }
 

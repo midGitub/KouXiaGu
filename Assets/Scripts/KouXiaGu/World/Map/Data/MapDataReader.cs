@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace KouXiaGu.World.Map
 {
@@ -18,20 +19,29 @@ namespace KouXiaGu.World.Map
 
         public virtual MapData Read()
         {
-            PredefinedMap map = PredefinedMapReader.Read();
+            var map = PredefinedMapReader.Read();
             return new MapData(map);
         }
     }
 
     /// <summary>
-    /// 创建空白的地图;
+    /// 读取预定义的地图文件,若不存在则创建空白的地图;
     /// </summary>
-    public class EmptyMapDataReader : IReader<MapData>
+    public class MapDataReaderOrEmpty : IReader<MapData>
     {
+        static readonly MapDataReader Reader = new MapDataReader();
+
         public MapData Read()
         {
-            PredefinedMap map = new PredefinedMap();
-            return new MapData(map);
+            try
+            {
+                return Reader.Read();
+            }
+            catch (FileNotFoundException)
+            {
+                var map = new PredefinedMap();
+                return new MapData(map);
+            }
         }
     }
 

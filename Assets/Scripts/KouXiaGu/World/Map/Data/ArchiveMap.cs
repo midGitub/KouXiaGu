@@ -25,6 +25,9 @@ namespace KouXiaGu.World.Map
 
         public ArchiveMap()
         {
+            Data = new ArchiveDictionary<CubicHexCoord, MapNode>();
+            Road = new MapRoad();
+            Town = new MapTown();
         }
 
         public ArchiveMap(PredefinedMap map)
