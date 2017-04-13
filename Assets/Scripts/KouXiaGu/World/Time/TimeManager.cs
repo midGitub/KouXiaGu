@@ -82,7 +82,8 @@ namespace KouXiaGu.World
         {
             try
             {
-                DateTime.CurrentCalendar = CalendarFormLuaScript.Read();
+                ICalendar Calendar = CalendarFormLuaScript.Read();
+                DateTime.CurrentCalendar = Calendar;
             }
             catch(Exception ex)
             {
