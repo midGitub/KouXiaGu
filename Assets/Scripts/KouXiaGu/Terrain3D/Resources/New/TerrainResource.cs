@@ -9,7 +9,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public class TerrainResource
+    public class TerrainResourceReader : MonoBehaviour
     {
         static readonly ISegmented DefaultSegmented = new SegmentedBlock();
         static readonly LandformReader LandformReader = new LandformReader();
@@ -24,84 +24,94 @@ namespace KouXiaGu.Terrain3D
             get { return ResourcePath.CombineAssetBundle(assetBundleName); }
         }
 
-        /// <summary>
-        /// 通过协程初始化;
-        /// </summary>
-        public CoroutineOperation<TerrainResource> CreateAsync(WorldElementManager elementInfos)
+
+    }
+
+
+    public class TerrainResource
+    {
+
+        public TerrainResource Read(WorldElementResource elementInfos)
         {
-            return new AsyncInitializer(elementInfos);
+            throw new NotImplementedException();
+        }
+
+        public IAsync<TerrainResource> ReadAsync(WorldElementResource elementInfos)
+        {
+            throw new NotImplementedException();
         }
 
 
+        /// <summary>
+        /// 初始化为空;
+        /// </summary>
         public TerrainResource()
         {
             LandformInfos = new Dictionary<int, TerrainLandform>();
         }
 
-        public TerrainResource(WorldElementManager elementInfos)
-        {
-            Initialize(elementInfos);
-        }
-
+        /// <summary>
+        /// 不进行任何方法的构造函数;
+        /// </summary>
         TerrainResource(bool none)
         {
         }
 
-
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
 
 
-        void Initialize(WorldElementManager elementInfos)
-        {
-            AssetBundle assetBundle = AssetBundle.LoadFromFile(AssetBundleFilePath);
 
-            LandformInfos = LandformReader.Read(assetBundle, elementInfos.LandformInfos.Values);
+        //void Initialize(WorldElementResource elementInfos)
+        //{
+        //    AssetBundle assetBundle = AssetBundle.LoadFromFile(AssetBundleFilePath);
 
-            assetBundle.Unload(false);
-            Log();
-        }
+        //    LandformInfos = LandformReader.Read(assetBundle, elementInfos.LandformInfos.Values);
 
-        void Log()
-        {
-            string str = LandformInfos.ToLog();
+        //    assetBundle.Unload(false);
+        //    Log();
+        //}
 
-            Debug.Log(str);
-        }
+        //void Log()
+        //{
+        //    string str = LandformInfos.ToLog();
 
-        class AsyncInitializer : CoroutineOperation<TerrainResource>
-        {
-            public AsyncInitializer(WorldElementManager elementInfos)
-            {
-                Current = new TerrainResource(false);
-                enumerator = InitializeAsync(elementInfos);
-            }
+        //    Debug.Log(str);
+        //}
 
-            IEnumerator enumerator;
+        //class AsyncInitializer : CoroutineOperation<TerrainResource>
+        //{
+        //    public AsyncInitializer(WorldElementResource elementInfos)
+        //    {
+        //        Current = new TerrainResource(false);
+        //        enumerator = InitializeAsync(elementInfos);
+        //    }
 
-            public override bool MoveNext()
-            {
-                return enumerator.MoveNext();
-            }
+        //    IEnumerator enumerator;
 
-            IEnumerator InitializeAsync(WorldElementManager elementInfos)
-            {
-                AssetBundleCreateRequest bundleLoadRequest = AssetBundle.LoadFromFileAsync(AssetBundleFilePath);
-                yield return bundleLoadRequest;
-                AssetBundle assetBundle = bundleLoadRequest.assetBundle;
-                if (assetBundle == null)
-                {
-                    Debug.LogError("目录不存在贴图资源包或者在编辑器中进行读取,地形资源初始化失败;");
-                    yield break;
-                }
+        //    public override bool MoveNext()
+        //    {
+        //        return enumerator.MoveNext();
+        //    }
 
-                var landformReader = LandformReader.ReadAsync(assetBundle, elementInfos.LandformInfos.Values, DefaultSegmented);
-                yield return landformReader;
-                Current.LandformInfos = landformReader.Current;
+        //    IEnumerator InitializeAsync(WorldElementResource elementInfos)
+        //    {
+        //        AssetBundleCreateRequest bundleLoadRequest = AssetBundle.LoadFromFileAsync(AssetBundleFilePath);
+        //        yield return bundleLoadRequest;
+        //        AssetBundle assetBundle = bundleLoadRequest.assetBundle;
+        //        if (assetBundle == null)
+        //        {
+        //            Debug.LogError("目录不存在贴图资源包或者在编辑器中进行读取,地形资源初始化失败;");
+        //            yield break;
+        //        }
 
-                assetBundle.Unload(false);
-                Current.Log();
-            }
-        }
+        //        var landformReader = LandformReader.ReadAsync(assetBundle, elementInfos.LandformInfos.Values, DefaultSegmented);
+        //        yield return landformReader;
+        //        Current.LandformInfos = landformReader.Current;
+
+        //        assetBundle.Unload(false);
+        //        Current.Log();
+        //    }
+        //}
 
     }
 

@@ -16,7 +16,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 基础信息;
         /// </summary>
-        public WorldElementManager ElementInfo { get; private set; }
+        public WorldElementResource ElementInfo { get; private set; }
 
         /// <summary>
         /// 地形资源读取;
@@ -25,7 +25,7 @@ namespace KouXiaGu.World
 
         void Initialize()
         {
-            ElementInfo = WorldElementManager.Read();
+            ElementInfo = WorldElementResource.Read();
             Terrain = new TerrainResource(ElementInfo);
         }
 

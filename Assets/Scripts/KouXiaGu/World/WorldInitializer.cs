@@ -135,7 +135,7 @@ namespace KouXiaGu.World
         [ContextMenu("检查")]
         void Test2()
         {
-            WorldElementManager item = WorldElementManager.Read();
+            WorldElementResource item = WorldElementResource.Read();
 
             RoadInfo info;
             if (item.RoadInfos.TryGetValue(2, out info))

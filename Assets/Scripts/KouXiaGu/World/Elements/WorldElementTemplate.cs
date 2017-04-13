@@ -11,7 +11,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 预定义模版;
     /// </summary>
-    class WorldElementTemplate : WorldElementManager
+    class WorldElementTemplate : WorldElementResource
     {
 
         const string StrNone = "None";

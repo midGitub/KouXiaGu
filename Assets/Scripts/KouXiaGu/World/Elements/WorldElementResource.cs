@@ -1,33 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 
 namespace KouXiaGu.World
 {
 
 
-    public class WorldElementManager
+    public class WorldElementResource
     {
-        static WorldElementManager()
-        {
-            RoadReader = new RoadInfoXmlSerializer();
-            LandformReader = new LandformInfoXmlSerializer();
-            BuildingReader = new BuildingInfosXmlSerializer();
-            ProductReader = new ProductInfosXmlSerializer();
-        }
 
-        internal static DataReader<Dictionary<int, RoadInfo>, IEnumerable<RoadInfo>> RoadReader { get; set; }
-        internal static DataReader<Dictionary<int, LandformInfo>, IEnumerable<LandformInfo>> LandformReader { get; set; }
-        internal static DataReader<Dictionary<int, BuildingInfo>, IEnumerable<BuildingInfo>> BuildingReader { get; set; }
-        internal static DataReader<Dictionary<int, ProductElementInfo>, IEnumerable<ProductElementInfo>> ProductReader { get; set; }
+        internal static DataReader<Dictionary<int, RoadInfo>, IEnumerable<RoadInfo>> RoadReader = new RoadInfoXmlSerializer();
+        internal static DataReader<Dictionary<int, LandformInfo>, IEnumerable<LandformInfo>> LandformReader = new LandformInfoXmlSerializer();
+        internal static DataReader<Dictionary<int, BuildingInfo>, IEnumerable<BuildingInfo>> BuildingReader = new BuildingInfosXmlSerializer();
+        internal static DataReader<Dictionary<int, ProductElementInfo>, IEnumerable<ProductElementInfo>> ProductReader = new ProductInfosXmlSerializer();
 
         /// <summary>
         /// 同步读取所有信息;
         /// </summary>
-        public static WorldElementManager Read()
+        public static WorldElementResource Read()
         {
-            var item = new WorldElementManager(false);
+            var item = new WorldElementResource(false);
             item.Initialize();
             return item;
         }
@@ -35,16 +27,16 @@ namespace KouXiaGu.World
         /// <summary>
         /// 异步读取所有信息;
         /// </summary>
-        public static void ReadAsync()
+        public static AsyncOperation<WorldElementResource> ReadAsync()
         {
-            throw new NotImplementedException();
+            return new AsyncReader();
         }
 
 
         /// <summary>
         /// 初始化为空;
         /// </summary>
-        public WorldElementManager()
+        public WorldElementResource()
         {
             RoadInfos = new Dictionary<int, RoadInfo>();
             LandformInfos = new Dictionary<int, LandformInfo>();
@@ -55,7 +47,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 不进行任何方法的构造函数;
         /// </summary>
-        internal WorldElementManager(bool none)
+        internal WorldElementResource(bool none)
         {
         }
 
@@ -99,6 +91,18 @@ namespace KouXiaGu.World
 
             IEnumerable<T> infos = dictionary.Values;
             reader.WriteToDirectory(infos, dirPath);
+        }
+
+
+        /// <summary>
+        /// 多线程读取到;
+        /// </summary>
+        class AsyncReader : AsyncOperation<WorldElementResource>
+        {
+            protected override WorldElementResource Operate()
+            {
+                return WorldElementResource.Read();
+            }
         }
 
     }

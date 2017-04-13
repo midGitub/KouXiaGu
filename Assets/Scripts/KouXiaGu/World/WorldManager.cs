@@ -34,7 +34,7 @@ namespace KouXiaGu.World
 
 
 
-        public WorldManager(WorldInfo info, WorldElementManager elementInfo)
+        public WorldManager(WorldInfo info, WorldElementResource elementInfo)
         {
             Time = new TimeManager(info.Time);
             Map = new MapManager();

@@ -12,6 +12,13 @@ namespace KouXiaGu.Terrain3D
     public abstract class TerrainAssetReader<T, TInfo>
         where TInfo : ElementInfo
     {
+
+        public TerrainAssetReader(ISegmented segmented)
+        {
+            Segmented = segmented;
+        }
+
+        public ISegmented Segmented { get; set; }
         public abstract bool TryRead(AssetBundle asset, TInfo info, out T item);
 
         protected Texture ReadTexture(AssetBundle asset, string name)
@@ -54,49 +61,23 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 异步读取到信息合集;
         /// </summary>
-        public CoroutineOperation<Dictionary<int, T>> ReadAsync(AssetBundle asset, IEnumerable<TInfo> infos, ISegmented segmented)
+        public IEnumerator Read(AssetBundle asset, Dictionary<int, T> dictionary, IDictionary<int, TInfo> infoDictionary)
         {
-            return new AsyncReader(this, asset, infos.GetEnumerator(), segmented);
-        }
+            IEnumerable<TInfo> infos = infoDictionary.Values;
 
-
-        /// <summary>
-        /// 异步读取;
-        /// </summary>
-        class AsyncReader : CoroutineOperation<Dictionary<int, T>>
-        {
-            public AsyncReader(TerrainAssetReader<T, TInfo> reader, AssetBundle asset, IEnumerator<TInfo> infos, ISegmented segmented)
+            foreach (var info in infos)
             {
-                this.reader = reader;
-                this.infos = infos;
-                this.segmented = segmented;
-                Current = new Dictionary<int, T>();
-            }
+                T item;
 
-            TerrainAssetReader<T, TInfo> reader;
-            IEnumerator<TInfo> infos;
-            ISegmented segmented;
-            AssetBundle asset;
-
-            public override bool MoveNext()
-            {
-                while (infos.MoveNext())
+                if (TryReadAndReport(asset, info, out item))
                 {
-                    TInfo info = infos.Current;
-                    T item;
-
-                    if (reader.TryReadAndReport(asset, info, out item))
-                    {
-                        Current.Add(info.ID, item);
-                    }
-
-                    if (segmented.Interrupt())
-                        return true;
+                    dictionary.Add(info.ID, item);
                 }
-                return false;
+
+                if (Segmented.Interrupt())
+                    yield return null;
             }
         }
-
     }
 
 }
