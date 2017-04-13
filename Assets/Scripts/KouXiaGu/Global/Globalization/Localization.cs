@@ -106,11 +106,11 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 使用默认的方式初始化;
+        /// 异步读取语言文件;
         /// </summary>
-        internal static IAsync Init()
+        internal static IAsync ReadAsync()
         {
-            return LanguagePackReader.Read(out languages, out languageIndex);
+            return LanguagePackReader.ReadAsync(out languages, out languageIndex);
         }
 
         /// <summary>

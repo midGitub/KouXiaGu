@@ -24,6 +24,9 @@ namespace KouXiaGu.Globalization
             get { return "*" + FileExtension; }
         }
 
+        /// <summary>
+        /// 同步读取字符;
+        /// </summary>
         public IEnumerable<KeyValuePair<string, string>> Read(LanguagePack pack)
         {
             return Read(pack.FilePath);

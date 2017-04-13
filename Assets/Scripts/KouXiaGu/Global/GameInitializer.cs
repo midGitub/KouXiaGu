@@ -5,6 +5,7 @@ using System.Text;
 using KouXiaGu.Globalization;
 using KouXiaGu.KeyInput;
 using UnityEngine;
+using System.Threading;
 
 namespace KouXiaGu
 {
@@ -13,9 +14,9 @@ namespace KouXiaGu
     /// 负责对游戏资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameManager : Initializer
+    public class GameInitializer : Initializer
     {
-        GameManager()
+        GameInitializer()
         {
         }
 
@@ -49,7 +50,7 @@ namespace KouXiaGu
         /// </summary>
         void InitLanguage()
         {
-            var operater = Localization.Init();
+            var operater = Localization.ReadAsync();
             AddOperater(operater);
         }
 

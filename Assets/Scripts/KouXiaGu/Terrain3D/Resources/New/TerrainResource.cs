@@ -11,7 +11,6 @@ namespace KouXiaGu.Terrain3D
 
     public class TerrainResource
     {
-
         static readonly ISegmented DefaultSegmented = new SegmentedBlock();
         static readonly LandformReader LandformReader = new LandformReader();
 

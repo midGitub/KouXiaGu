@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml.Serialization;
 using KouXiaGu.Collections;
 using UnityEngine;
+using System.Threading;
 
 namespace KouXiaGu.Globalization
 {
@@ -51,7 +52,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 根据预留的语言信息,读取到最适合的语言文件;
         /// </summary>
-        public static IAsync Read(out List<LanguagePack> packs, out int choice)
+        public static IAsync ReadAsync(out List<LanguagePack> packs, out int choice)
         {
             Config config;
             packs = GetMainLanguagePacks();
@@ -117,41 +118,58 @@ namespace KouXiaGu.Globalization
         {
         }
 
+        bool isReadCompleted;
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public Exception Ex { get; private set; }
 
         void Awake()
         {
+            isReadCompleted = false;
             IsCompleted = false;
             IsFaulted = false;
             Ex = null;
-            ReadLanguagePack();
+            ReadLanguagePackAsync();
+        }
+
+        void Update()
+        {
+            try
+            {
+                if (isReadCompleted)
+                {
+                    IsCompleted = true;
+                    Localization.TrackAll();
+                    Clear();
+                }
+            }
+            finally
+            {
+                IsCompleted = true;
+            }
         }
 
         void ReadLanguagePackAsync()
         {
-            throw new NotImplementedException();
+            ThreadPool.QueueUserWorkItem(ReadLanguagePack);
         }
 
-        void ReadLanguagePack()
+        void ReadLanguagePack(object state)
         {
             try
             {
                 var texts = Filer.Read(effective);
                 textDictionary.AddOrUpdate(texts);
-
                 Localization.SetTextDictionary(textDictionary);
-                Localization.TrackAll();
-                Clear();
-
-                IsCompleted = true;
             }
             catch (Exception ex)
             {
-                IsCompleted = true;
                 IsFaulted = true;
                 Ex = ex;
+            }
+            finally
+            {
+                isReadCompleted = true;
             }
         }
 
@@ -193,7 +211,6 @@ namespace KouXiaGu.Globalization
 
             [XmlElement("LocName")]
             public string LocName;
-
         }
 
     }
