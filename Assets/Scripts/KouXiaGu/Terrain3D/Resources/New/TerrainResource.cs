@@ -16,9 +16,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 需要在Unity线程内调用;
         /// </summary>
-        public IAsync<TerrainResource> ReadAsync(WorldElementResource elementInfos)
+        public static IAsyncOperation<TerrainResource> ReadAsync(WorldElementResource elementInfos)
         {
-            return TerrainResourceReader.ReadAsync(elementInfos);
+            return TerrainResourceReader.Create(elementInfos);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化方法;
         /// </summary>
-        class TerrainResourceReader : MonoBehaviour, IAsync<TerrainResource>
+        class TerrainResourceReader : CoroutineOperation<TerrainResource>
         {
             const string assetBundleName = "terrain";
             static readonly ISegmented DefaultSegmented = new SegmentedBlock();
@@ -49,7 +49,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 需要在Unity线程内调用;
             /// </summary>
-            public static TerrainResourceReader ReadAsync(WorldElementResource elementInfos)
+            public static TerrainResourceReader Create(WorldElementResource elementInfos)
             {
                 var gameObject = new GameObject("TerrainResourceReader", typeof(TerrainResourceReader));
                 var item = gameObject.GetComponent<TerrainResourceReader>();
@@ -64,20 +64,12 @@ namespace KouXiaGu.Terrain3D
 
             WorldElementResource elementInfos;
             TerrainResource resource;
-            public TerrainResource Result { get; private set; }
-            public bool IsCompleted { get; private set; }
-            public bool IsFaulted { get; private set; }
-            public Exception Ex { get; private set; }
 
-            void Awake()
+            protected override void Awake()
             {
+                base.Awake();
                 resource = new TerrainResource();
                 StartCoroutine(Read());
-
-                Result = null;
-                IsCompleted = false;
-                IsFaulted = false;
-                Ex = null;
             }
 
             IEnumerator Read()
@@ -87,19 +79,19 @@ namespace KouXiaGu.Terrain3D
                 AssetBundle assetBundle = bundleLoadRequest.assetBundle;
                 if (assetBundle == null)
                 {
-                    IsFaulted = true;
-                    IsCompleted = true;
-                    Debug.LogError("未找到地形资源包;");
-                    Ex = new FileNotFoundException("未找到地形资源包;");
+                    Exception ex = new FileNotFoundException("未找到地形资源包;");
+                    Debug.LogError(ex);
+                    OnError(ex);
                     yield break;
                 }
 
                 yield return LandformReader.Read(assetBundle, resource.LandformInfos, elementInfos.LandformInfos);
 
                 assetBundle.Unload(false);
-                IsCompleted = true;
-                Result = resource;
+                Destroy(gameObject);
+                OnCompleted(resource);
             }
+
         }
 
     }

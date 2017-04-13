@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,12 @@ namespace KouXiaGu.World
     public class GameData
     {
 
+        //public static IAsync<GameData> CreateAsync()
+        //{
+
+        //}
+ 
+
         /// <summary>
         /// 基础信息;
         /// </summary>
@@ -23,11 +30,20 @@ namespace KouXiaGu.World
         /// </summary>
         public TerrainResource Terrain { get; private set; }
 
-        void Initialize()
+        IEnumerator Initialize()
         {
-            ElementInfo = WorldElementResource.Read();
-            Terrain = new TerrainResource(ElementInfo);
+            var elementInfoReader = WorldElementResource.ReadAsync();
+            yield return elementInfoReader;
+            ElementInfo = elementInfoReader.Result;
+
+
         }
+
+        //void Initialize()
+        //{
+        //    IAsync<WorldElementResource> ElementInfo = WorldElementResource.ReadAsync();
+        //    IAsync<WorldElementResource> Terrain = TerrainResource.ReadAsync(ElementInfo);
+        //}
 
     }
 

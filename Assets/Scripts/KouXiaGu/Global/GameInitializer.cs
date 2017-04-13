@@ -5,7 +5,6 @@ using System.Text;
 using KouXiaGu.Globalization;
 using KouXiaGu.KeyInput;
 using UnityEngine;
-using System.Threading;
 
 namespace KouXiaGu
 {
@@ -19,6 +18,8 @@ namespace KouXiaGu
         GameInitializer()
         {
         }
+
+
 
         /// <summary>
         /// 对内容进行初始化;
