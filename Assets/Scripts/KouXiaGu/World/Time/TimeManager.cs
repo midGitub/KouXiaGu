@@ -25,7 +25,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 一个小时间隔多少次 FixedUpdate() ?
         /// </summary>
-        [Range(0, 50)]
+        [Range(0, 60)]
         public int HourInterval;
     }
 
@@ -37,7 +37,6 @@ namespace KouXiaGu.World
         {
             Info = info;
             timeTracker = new ListTracker<DateTime>();
-            updater = TimeUpdater.Create(this);
             InitCalendar();
         }
 
@@ -91,23 +90,47 @@ namespace KouXiaGu.World
             }
         }
 
+        public void StartTimeUpdating()
+        {
+            updater = TimeUpdater.Create(this, true);
+        }
+
+        public void StopTimeUpdating()
+        {
+            if (updater != null)
+            {
+                updater.IsRunning = false;
+            }
+        }
+
+        void TimeUpdaterDestroy()
+        {
+            updater = null;
+        }
+
         /// <summary>
         /// 时间更新器;
         /// </summary>
         [DisallowMultipleComponent]
         class TimeUpdater : MonoBehaviour
         {
-            static bool isCreated = false;
+            static TimeUpdater instance;
 
-            internal static TimeUpdater Create(TimeManager manager)
+            static bool isCreated
+            {
+                get { return instance != null; }
+            }
+
+            internal static TimeUpdater Create(TimeManager manager, bool isRunning)
             {
                 if (isCreated)
-                    throw new ArgumentException();
+                    return instance;
 
                 var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
-                var item = gameObject.GetComponent<TimeUpdater>();
-                item.manager = manager;
-                return item;
+                instance = gameObject.GetComponent<TimeUpdater>();
+                instance.manager = manager;
+                instance.IsRunning = isRunning;
+                return instance;
             }
 
             TimeUpdater()
@@ -120,7 +143,7 @@ namespace KouXiaGu.World
             public bool IsRunning
             {
                 get { return transform != null && enabled; }
-                private set { enabled = value; }
+                set { enabled = value; }
             }
 
             public DateTime CurrentTime
@@ -147,7 +170,8 @@ namespace KouXiaGu.World
 
             void OnDestroy()
             {
-                isCreated = false;
+                instance = null;
+                manager.TimeUpdaterDestroy();
             }
 
         }

@@ -17,16 +17,19 @@ namespace KouXiaGu.World
         /// <summary>
         /// 世界信息;
         /// </summary>
+        [Obsolete]
         public WorldInfo Info { get; private set; }
 
         /// <summary>
         /// 资源\产品;
         /// </summary>
+        [Obsolete]
         public ProductManager Product { get; private set; }
 
         /// <summary>
         /// 建筑物;
         /// </summary>
+        [Obsolete]
         public BuildingManager Building { get; private set; }
 
 
@@ -61,7 +64,7 @@ namespace KouXiaGu.World
 
         public void StartWorld()
         {
-            
+            Time.StartTimeUpdating();
         }
 
         void IObserver<IWorld>.OnNext(IWorld item)
@@ -76,7 +79,7 @@ namespace KouXiaGu.World
 
         void IObserver<IWorld>.OnCompleted()
         {
-            throw new NotImplementedException();
+            StartWorld();
         }
 
     }

@@ -104,6 +104,7 @@ namespace KouXiaGu.World
         void Initialize()
         {
             World = new WorldManager(Info);
+            Subscribe(World);
         }
 
 
