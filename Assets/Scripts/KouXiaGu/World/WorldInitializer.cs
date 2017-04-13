@@ -15,6 +15,7 @@ namespace KouXiaGu.World
     {
         WorldInfo Info { get; }
         WorldManager World { get; }
+        WorldElementManager ElementInfo { get; }
     }
 
     /// <summary>
@@ -52,9 +53,25 @@ namespace KouXiaGu.World
         internal ListTracker<IWorld> Tracker { get; private set; }
         public WorldManager World { get; private set; }
 
+        /// <summary>
+        /// 基础信息;
+        /// </summary>
+        public WorldElementManager ElementInfo { get; private set; }
+
+#if UNITY_EDITOR
+        public bool UseEditorialInfo
+        {
+            get { return useEditorialInfo; }
+            set { useEditorialInfo = value; }
+        }
+#endif
+
         public WorldInfo Info
         {
             get { return useEditorialInfo ? editorialInfo : staticWorldInfo; }
+#if UNITY_EDITOR
+            set { editorialInfo = value; }
+#endif
         }
 
         void Awake()
@@ -103,7 +120,9 @@ namespace KouXiaGu.World
 
         void Initialize()
         {
-            World = new WorldManager(Info);
+            ElementInfo = WorldElementManager.Read();
+
+            World = new WorldManager(Info, ElementInfo);
             Subscribe(World);
         }
 
