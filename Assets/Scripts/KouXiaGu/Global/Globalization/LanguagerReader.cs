@@ -24,6 +24,16 @@ namespace KouXiaGu.Globalization
             get { return "*" + FileExtension; }
         }
 
+        public Dictionary<string, string> ReadToDictionary(IEnumerable<KeyValuePair<string, string>> enumerateText)
+        {
+            Dictionary<string, string> texts = new Dictionary<string, string>();
+
+            foreach (var text in enumerateText)
+            {
+                texts.AddOrUpdate(enumerateText);
+            }
+        }
+
         /// <summary>
         /// 同步读取字符;
         /// </summary>

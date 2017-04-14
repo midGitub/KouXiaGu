@@ -131,7 +131,7 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 语言文件读取方法;
     /// </summary>
-    public abstract class LocalizationInfo
+    public class LocalizationInfo
     {
         static readonly LanguagerReader languagerReader = new XmlLanguagerReader();
         static readonly XmlLocalizationConfigReader configReader = new XmlLocalizationConfigReader();
@@ -139,14 +139,34 @@ namespace KouXiaGu.Globalization
         const string LocalizationConfigFileName = "Localization/Config.xml";
         const string LanguagePackDirectoryName = "Localization";
 
-        public static IAsyncOperation<Dictionary<string, string>> ReadAsync(
-            out ReadOnlyCollection<LanguagePack> languages,
-            out int languageIndex)
+        public static IAsyncOperation<LocalizationInfo> ReadAsync()
         {
             throw new NotImplementedException();
         }
 
+        public static Dictionary<string, string> Read(LanguagePack pack)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static IAsyncOperation<Dictionary<string, string>> ReadAsync(LanguagePack pack)
+        {
+            throw new NotImplementedException();
+        }
+
+        LocalizationInfo()
+        {
+        }
+
+        public Dictionary<string, string> Texts { get; private set; }
         public LocalizationConfig Config { get; private set; }
+        public ReadOnlyCollection<LanguagePack> Languages { get; private set; }
+        public int LanguageIndex { get; private set; }
+
+        public LanguagePack LanguagePack
+        {
+            get { return Languages[LanguageIndex]; }
+        }
 
         /// <summary>
         /// 获取到所有语言包文件;
