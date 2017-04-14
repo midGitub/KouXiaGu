@@ -17,7 +17,7 @@ namespace KouXiaGu.Globalization
         public Language(string name, string locName)
         {
             Name = name;
-            LocName = locName;
+            LocName = locName.ToLower();
         }
 
         public string Name { get; private set; }
