@@ -9,8 +9,23 @@ namespace KouXiaGu.Globalization
 {
 
     [XmlType("LocalizationConfig")]
-    public struct LocalizationConfig
+    public class LocalizationConfig
     {
+        public static LocalizationConfig Current
+        {
+            get
+            {
+                return new LocalizationConfig()
+                {
+                    LocName = Localization.CurrentLanguage != null ? Localization.CurrentLanguage.LocName : "unknown",
+                };
+            }
+        }
+
+        public LocalizationConfig()
+        {
+        }
+
         [XmlElement("LocName")]
         public string LocName;
     }

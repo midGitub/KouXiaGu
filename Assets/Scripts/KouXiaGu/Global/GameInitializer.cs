@@ -48,7 +48,7 @@ namespace KouXiaGu
         /// </summary>
         void LogEmptyKeys()
         {
-            const string prefix = "[按键/输入]";
+            const string prefix = "[输入映射]";
             var emptyKeys = CustomInput.GetEmptyKeys().ToList();
             if (emptyKeys.Count != 0)
             {
