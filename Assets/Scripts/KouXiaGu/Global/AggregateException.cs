@@ -126,7 +126,7 @@ namespace KouXiaGu
             {
                 text = String.Format(
                     CultureInfo.InvariantCulture,
-                    "AggregateException",
+                    //"AggregateException",
                     text, Environment.NewLine, i, InnerExceptions[i].ToString(), "<---", Environment.NewLine);
             }
 

@@ -28,7 +28,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 读取并返回所有文本的字典结构,若存在相同的 Key,则保留其后加入的内容;
         /// </summary>
-        public LanguagePack Read(LanguagePackFile file)
+        public LanguagePack Read(LanguageFile file)
         {
             var enumerateText = Read(file.FilePath);
             Dictionary<string, string> texts = ReadToDictionary(enumerateText);
@@ -67,20 +67,30 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 创建新的文件,并且写入所有文本条目;
         /// </summary>
-        public abstract void Create(LanguagePackFile pack, IEnumerable<KeyValuePair<string, string>> texts);
+        public LanguageFile CreateAndWrite(LanguagePack pack, string filePath)
+        {
+            var file = new LanguageFile(pack, filePath);
+            CreateAndWrite(file, pack.TextDictionary);
+            return file;
+        }
+
+        /// <summary>
+        /// 创建新的文件,并且写入所有文本条目;
+        /// </summary>
+        public abstract void CreateAndWrite(LanguageFile pack, IEnumerable<KeyValuePair<string, string>> texts);
 
         /// <summary>
         /// 添加到Texts到文件内;
         /// </summary>
         public virtual void Append(string filePath, IDictionary<string, string> texts)
         {
-            LanguagePackFile language;
+            LanguageFile language;
             if (TryLoadFile(filePath, out language))
             {
                 IEnumerable<KeyValuePair<string, string>> original = Read(filePath);
                 var newTests = new Dictionary<string, string>(texts);
                 newTests.AddOrUpdate(original);
-                Create(language, newTests);
+                CreateAndWrite(language, newTests);
             }
             else
             {
@@ -91,13 +101,13 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 获取到目录下的所有语言包文件;
         /// </summary>
-        public virtual IEnumerable<LanguagePackFile> SearchLanguagePacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public virtual IEnumerable<LanguageFile> SearchLanguagePacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             var paths = Directory.GetFiles(directoryPath, LanguagePackSearchPattern, searchOption);
 
             foreach (var path in paths)
             {
-                LanguagePackFile pack;
+                LanguageFile pack;
                 if (TryLoadFile(path, out pack))
                     yield return pack;
             }
@@ -106,7 +116,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 尝试获取到这个文件的语言信息,若无法获取到则返回false;
         /// </summary>
-        public abstract bool TryLoadFile(string filePath, out LanguagePackFile pack);
+        public abstract bool TryLoadFile(string filePath, out LanguageFile pack);
 
     }
 
@@ -204,7 +214,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 尝试获取到这个文件的语言信息,若无法获取到则返回false;
         /// </summary>
-        public override bool TryLoadFile(string filePath, out LanguagePackFile pack)
+        public override bool TryLoadFile(string filePath, out LanguageFile pack)
         {
             if (!File.Exists(filePath))
                 goto OnFail;
@@ -223,14 +233,14 @@ namespace KouXiaGu.Globalization
 
                     if (!string.IsNullOrEmpty(tag))
                     {
-                        pack = new LanguagePackFile(name, tag, filePath);
+                        pack = new LanguageFile(name, tag, filePath);
                         return true;
                     }
                 }
             }
 
             OnFail:
-            pack = default(LanguagePackFile);
+            pack = default(LanguageFile);
             return false;
         }
 
@@ -238,7 +248,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 创建新的文件,并且写入所有文本条目;
         /// </summary>
-        public override void Create(LanguagePackFile pack, IEnumerable<KeyValuePair<string, string>> texts)
+        public override void CreateAndWrite(LanguageFile pack, IEnumerable<KeyValuePair<string, string>> texts)
         {
             using (XmlWriter writer = XmlWriter.Create(pack.FilePath, xmlWriterSettings))
             {
@@ -248,7 +258,7 @@ namespace KouXiaGu.Globalization
             }
         }
 
-        void WriteStartRoot(XmlWriter writer, LanguagePackFile pack)
+        void WriteStartRoot(XmlWriter writer, LanguageFile pack)
         {
             writer.WriteStartDocument();
             writer.WriteStartElement(RootElementName);

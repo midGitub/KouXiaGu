@@ -27,14 +27,21 @@ namespace KouXiaGu.Globalization
 
     public class LanguagePack : Language
     {
+
         public LanguagePack(string name, string locName)
             : base(name, locName)
         {
             TextDictionary = new Dictionary<string, string>();
         }
 
-        public LanguagePack(LanguagePackFile file, Dictionary<string, string> texts)
+        public LanguagePack(Language file, Dictionary<string, string> texts)
             : base(file)
+        {
+            TextDictionary = texts;
+        }
+
+        public LanguagePack(string name, string locName, Dictionary<string, string> texts)
+             : base(name, locName)
         {
             TextDictionary = texts;
         }
@@ -43,9 +50,14 @@ namespace KouXiaGu.Globalization
     }
     
 
-    public class LanguagePackFile : Language
+    public class LanguageFile : Language
     {
-        public LanguagePackFile(string name, string locName, string path)
+        public LanguageFile(Language file, string path)
+            : this(file.Name, file.LocName, path)
+        {
+        }
+
+        public LanguageFile(string name, string locName, string path)
             : base(name, locName)
         {
             FilePath = path;

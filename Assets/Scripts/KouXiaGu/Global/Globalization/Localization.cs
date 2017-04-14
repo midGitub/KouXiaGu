@@ -17,6 +17,11 @@ namespace KouXiaGu.Globalization
     /// </summary>
     public static class Localization
     {
+        static Localization()
+        {
+            LanguageIndex = -1;
+        }
+
         static string ConfigFilePath
         {
             get { return ResourcePath.CombineConfiguration("Localization/Config.xml"); }
@@ -32,8 +37,7 @@ namespace KouXiaGu.Globalization
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
 
         static LanguagePack LanguagePack { get; set; }
-        public static LocalizationConfig Config { get; private set; }
-        public static ReadOnlyCollection<LanguagePackFile> Languages { get; private set; }
+        public static ReadOnlyCollection<LanguageFile> Languages { get; private set; }
         public static int LanguageIndex { get; private set; }
 
         public static IDictionary<string, string> textDictionary
@@ -80,6 +84,9 @@ namespace KouXiaGu.Globalization
 
         static void TrackObserver(ITextObserver observer)
         {
+            if (textDictionary == null)
+                throw new ArgumentNullException("textDictionary");
+
             observer.UpdateTexts(textDictionary);
         }
 
@@ -95,193 +102,185 @@ namespace KouXiaGu.Globalization
             }
         }
 
-
+        /// <summary>
+        /// 同步的初始化;
+        /// </summary>
+        public static void Initialize()
+        {
+            Initialize_Read();
+            TrackAll();
+        }
 
         /// <summary>
-        /// 设置新的 文本字典, 需要手动 TrackAll() 所有订阅者;
+        /// 异步的初始化;
         /// </summary>
-        public static void SetLanguagePack(LanguagePack pack)
+        public static IAsyncOperation InitializeAsync()
         {
-            if (pack == null)
-                throw new ArgumentNullException();
-
-            LanguagePack = pack;
+            return new AsyncInitializer();
         }
+
+        /// <summary>
+        /// 初始化方法的多线程部分;
+        /// </summary>
+        static void Initialize_Read()
+        {
+            var config = ReadConfig();
+            var originalLanguages = Languages;
+            var originalLanguageIndex = LanguageIndex;
+            var originalLanguagePack = LanguagePack;
+
+            try
+            {
+                Languages = SearchLanguagePacks();
+                LanguageIndex = FindIndex(Languages, config);
+                LanguagePack = ReadPack(Languages[LanguageIndex]);
+            }
+            catch(Exception ex)
+            {
+                Languages = originalLanguages;
+                LanguageIndex = originalLanguageIndex;
+                LanguagePack = originalLanguagePack;
+                throw ex;
+            }
+        }
+
+        class AsyncInitializer : ThreadOperation
+        {
+            public AsyncInitializer()
+            {
+                this.SubscribeCompleted(OnCompleted);
+                Start();
+            }
+
+            protected override void Operate()
+            {
+                Initialize_Read();
+            }
+
+            void OnCompleted(AsyncInitializer item)
+            {
+                TrackAll();
+            }
+        }
+
 
         /// <summary>
         /// 设置到语言;传入语言下标;
         /// </summary>
         public static void SetLanguage(int languageIndex)
         {
-
+            SetLanguage_Read(languageIndex);
+            TrackAll();
         }
 
-
-        public static IAsyncOperation InitializeAsync()
+        /// <summary>
+        /// 变更语言的多线程部分;
+        /// </summary>
+        static void SetLanguage_Read(int languageIndex)
         {
-            return new LanguageInitializer();
-        }
-
-        class LanguageInitializer : ThreadOperation
-        {
-            public LanguageInitializer()
+            var originalLanguagePack = LanguagePack;
+            var originalLanguageIndex = LanguageIndex;
+            try
             {
-                this.Subscribe(OnCompleted, OnFaulted);
+                LanguagePack = ReadPack(Languages[languageIndex]);
+                LanguageIndex = languageIndex;
+            }
+            catch(Exception ex)
+            {
+                LanguagePack = originalLanguagePack;
+                LanguageIndex = originalLanguageIndex;
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 异步设置到语言;
+        /// </summary>
+        public static IAsyncOperation SetLanguageAsync(int languageIndex)
+        {
+            return new AsyncLanguageChanger(languageIndex);
+        }
+
+        class AsyncLanguageChanger : ThreadOperation
+        {
+            public AsyncLanguageChanger(int index)
+            {
+                this.index = index;
+                this.SubscribeCompleted(OnCompleted);
                 Start();
             }
 
+            int index;
+
             protected override void Operate()
             {
-                Languages = SearchLanguagePacks();
-                Config = ReadConfig();
-                LanguageIndex = FindIndex(Languages, Config);
-                LanguagePack = ReadPack(Languages[LanguageIndex]);
+                SetLanguage_Read(index);
             }
 
-            void OnCompleted(LanguageInitializer item)
+            void OnCompleted(AsyncLanguageChanger item)
             {
                 TrackAll();
             }
-
-            void OnFaulted(LanguageInitializer item)
-            {
-                Debug.LogError("语言读取失败;Ex:" + item.Exception);
-            }
-
-            /// <summary>
-            /// 获取到所有语言包文件;
-            /// </summary>
-            public ReadOnlyCollection<LanguagePackFile> SearchLanguagePacks()
-            {
-                return SearchLanguagePacks(PackDirectoryPath);
-            }
-
-            /// <summary>
-            /// 获取到所有语言包文件;
-            /// </summary>
-            public ReadOnlyCollection<LanguagePackFile> SearchLanguagePacks(string dirPath)
-            {
-                var packs = packReader.SearchLanguagePacks(dirPath);
-                IList<LanguagePackFile> packList = packs as IList<LanguagePackFile> ?? packs.ToArray();
-                var collection = new ReadOnlyCollection<LanguagePackFile>(packList);
-                return collection;
-            }
-
-            public LocalizationConfig ReadConfig()
-            {
-                return configReader.Read(ConfigFilePath);
-            }
-
-            public int FindIndex(IList<LanguagePackFile> files, LocalizationConfig config)
-            {
-                for (int i = 0; i < files.Count; i++)
-                {
-                    LanguagePackFile file = files[i];
-
-                    if (file.LocName == config.LocName)
-                        return i;
-                }
-                throw new FileNotFoundException();
-            }
-
-            public LanguagePack ReadPack(LanguagePackFile file)
-            {
-                return packReader.Read(file);
-            }
-
         }
 
-    }
 
-    /// <summary>
-    /// 语言文件读取方法;
-    /// </summary>
-    public class LocalizationInfo
-    {
-        static readonly LanguagePackReader languagerReader = new XmlLanguagePackReader();
-        static readonly XmlLocalizationConfigReader configReader = new XmlLocalizationConfigReader();
-
-        const string LocalizationConfigFileName = "Localization/Config.xml";
-        const string LanguagePackDirectoryName = "Localization";
-
-        public static IAsyncOperation<LocalizationInfo> ReadAsync()
+        /// <summary>
+        /// 获取到所有语言包文件;
+        /// </summary>
+        public static ReadOnlyCollection<LanguageFile> SearchLanguagePacks()
         {
-            throw new NotImplementedException();
-        }
-
-        public static Dictionary<string, string> Read(LanguagePackFile pack)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static IAsyncOperation<Dictionary<string, string>> ReadAsync(LanguagePackFile pack)
-        {
-            throw new NotImplementedException();
-        }
-
-        LocalizationInfo()
-        {
-        }
-
-        public Dictionary<string, string> Texts { get; private set; }
-        public LocalizationConfig Config { get; private set; }
-        public ReadOnlyCollection<LanguagePackFile> Languages { get; private set; }
-        public int LanguageIndex { get; private set; }
-
-        public LanguagePackFile LanguagePack
-        {
-            get { return Languages[LanguageIndex]; }
+            return SearchLanguagePacks(PackDirectoryPath);
         }
 
         /// <summary>
         /// 获取到所有语言包文件;
         /// </summary>
-        public ReadOnlyCollection<LanguagePackFile> SearchLanguagePacks()
+        public static ReadOnlyCollection<LanguageFile> SearchLanguagePacks(string dirPath)
         {
-            return SearchLanguagePacks(LanguagePackDirectoryName);
-        }
-
-        /// <summary>
-        /// 获取到所有语言包文件;
-        /// </summary>
-        public ReadOnlyCollection<LanguagePackFile> SearchLanguagePacks(string dirPath)
-        {
-            var packs = languagerReader.SearchLanguagePacks(dirPath);
-            IList<LanguagePackFile> packList = packs as IList<LanguagePackFile> ?? packs.ToArray();
-            var collection = new ReadOnlyCollection<LanguagePackFile>(packList);
+            var packs = packReader.SearchLanguagePacks(dirPath);
+            IList<LanguageFile> packList = packs as IList<LanguageFile> ?? packs.ToArray();
+            var collection = new ReadOnlyCollection<LanguageFile>(packList);
             return collection;
         }
 
 
-
-    }
-
-    [XmlType("LocalizationConfig")]
-    public struct LocalizationConfig
-    {
-        [XmlElement("LocName")]
-        public string LocName;
-    }
-
-
-    public class XmlLocalizationConfigReader
-    {
-        static readonly XmlSerializer serializer = new XmlSerializer(typeof(LocalizationConfig));
-
-        public LocalizationConfig Read(string filePath)
+        public static LanguagePack ReadPack(LanguageFile file)
         {
-            return (LocalizationConfig)serializer.DeserializeXiaGu(filePath);
+            return packReader.Read(file);
         }
 
-        public void Write(LocalizationConfig item, string filePath)
+        public static LanguageFile CreateAndWrite(LanguagePack pack, string filePath)
         {
-            string directoryPath = Path.GetDirectoryName(filePath);
-
-            if (Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-
-            serializer.SerializeXiaGu(filePath, item);
+            return packReader.CreateAndWrite(pack, filePath);
         }
+
+        public static LocalizationConfig ReadConfig()
+        {
+            var config = configReader.Read(ConfigFilePath);
+            return config;
+        }
+
+        public static void WriteConfig(LocalizationConfig config, string filePath)
+        {
+            configReader.Write(config, filePath);
+        }
+
+
+        /// <summary>
+        /// 获取到对应的语言文件下标;
+        /// </summary>
+        static int FindIndex(IList<LanguageFile> files, LocalizationConfig config)
+        {
+            for (int i = 0; i < files.Count; i++)
+            {
+                LanguageFile file = files[i];
+
+                if (file.LocName == config.LocName)
+                    return i;
+            }
+            throw new FileNotFoundException();
+        }
+
     }
 
 }

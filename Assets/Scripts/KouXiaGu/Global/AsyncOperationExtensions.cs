@@ -116,6 +116,97 @@ namespace KouXiaGu
         }
 
 
+
+        /// <summary>
+        /// 当操作失败时,在unity线程内回调;
+        /// </summary>
+        /// <returns>返回传入参数 operation</returns>
+        public static T SubscribeFaulted<T>(this T operation, Action<T> onFaulted)
+            where T : IAsyncOperation
+        {
+            var item = new FaultedSubscriber<T>(operation, onFaulted);
+            AddOperationObserver(item);
+            return operation;
+        }
+
+        /// <summary>
+        /// 监视失败时调用;
+        /// </summary>
+        class FaultedSubscriber<T> : IOperation
+            where T : IAsyncOperation
+        {
+            public FaultedSubscriber(T operation, Action<T> onFaulted)
+            {
+                if (operation == null || onFaulted == null)
+                    throw new ArgumentNullException();
+
+                this.operation = operation;
+                this.onFaulted = onFaulted;
+            }
+
+            T operation;
+            Action<T> onFaulted;
+
+            bool IOperation.MoveNext()
+            {
+                if (operation.IsCompleted)
+                {
+                    if (operation.IsFaulted)
+                    {
+                        onFaulted(operation);
+                    }
+                    return false;
+                }
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// 完成时调用,若失败则不调用;在unity线程内回调;
+        /// </summary>
+        /// <returns>返回传入参数 operation</returns>
+        public static T SubscribeCompleted<T>(this T operation, Action<T> onCompleted)
+            where T : IAsyncOperation
+        {
+            var item = new CompletedSubscriber<T>(operation, onCompleted);
+            AddOperationObserver(item);
+            return operation;
+        }
+
+        /// <summary>
+        /// 监视完成时调用,若失败则不调用;
+        /// </summary>
+        class CompletedSubscriber<T> : IOperation
+            where T : IAsyncOperation
+        {
+            public CompletedSubscriber(T operation, Action<T> onCompleted)
+            {
+                if (operation == null || onCompleted == null)
+                    throw new ArgumentNullException();
+
+                this.operation = operation;
+                this.onCompleted = onCompleted;
+            }
+
+            T operation;
+            Action<T> onCompleted;
+
+            bool IOperation.MoveNext()
+            {
+                if (operation.IsCompleted)
+                {
+                    if (!operation.IsFaulted)
+                    {
+                        onCompleted(operation);
+                    }
+                    return false;
+                }
+                return true;
+            }
+        }
+
+
         /// <summary>
         /// 当操作完成时,在unity线程内回调;
         /// </summary>
