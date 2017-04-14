@@ -10,7 +10,6 @@ namespace KouXiaGu
 
     public static class GameFile
     {
-
         /// <summary>
         /// 游戏文件路径;
         /// </summary>
@@ -23,9 +22,25 @@ namespace KouXiaGu
         {
             get { return ResourcePath.ConfigDirectoryPath; }
         }
-
     }
 
+
+    /// <summary>
+    /// 游戏路径
+    /// </summary>
+    public abstract class GameDirectoryPath
+    {
+        public GameDirectoryPath()
+        {
+        }
+
+        public abstract string DirectoryName { get; }
+
+        public string MainDirectoryPath
+        {
+            get { return Path.Combine(GameFile.MainDirectory, DirectoryName); }
+        }
+    }
 
     public abstract class FilePath
     {
@@ -78,7 +93,7 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到文件路径;
         /// </summary>
-        public IEnumerable<string> GetFilePaths()
+        public virtual IEnumerable<string> GetFilePaths()
         {
             foreach (var dir in GameFile.GameDirectorys)
             {

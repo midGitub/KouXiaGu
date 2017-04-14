@@ -11,9 +11,9 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 语言包读写基类;
     /// </summary>
-    public abstract class LanguagePackFiler
+    public abstract class LanguagerReader
     {
-        public LanguagePackFiler()
+        public LanguagerReader()
         {
         }
 
@@ -74,11 +74,10 @@ namespace KouXiaGu.Globalization
             }
         }
 
-
         /// <summary>
         /// 获取到目录下的所有语言包文件;
         /// </summary>
-        public virtual IEnumerable<LanguagePack> GetPacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public virtual IEnumerable<LanguagePack> SearchLanguagePacks(string directoryPath, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             var paths = Directory.GetFiles(directoryPath, LanguagePackSearchPattern, searchOption);
 
@@ -100,16 +99,8 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 读取 Xml 格式的语言包;
     /// </summary>
-    public class XmlTextPackFiler : LanguagePackFiler
+    public class XmlLanguagerReader : LanguagerReader
     {
-
-        const string fileExtension = ".xml";
-
-        public override string FileExtension
-        {
-            get { return fileExtension; }
-        }
-
         static readonly XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
         {
             Indent = true,
@@ -132,6 +123,11 @@ namespace KouXiaGu.Globalization
         const string TextElementName = "Text";
         const string KeyAttributeName = "key";
         const string ValueAttributeName = "value";
+
+        public override string FileExtension
+        {
+            get { return ".xml"; }
+        }
 
         /// <summary>
         /// 读取并返回所有文本条目 延迟方法;

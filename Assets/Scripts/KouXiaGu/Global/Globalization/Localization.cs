@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 using KouXiaGu.Collections;
 using KouXiaGu.Rx;
+using UnityEngine;
 
 namespace KouXiaGu.Globalization
 {
@@ -13,10 +17,9 @@ namespace KouXiaGu.Globalization
     /// </summary>
     public static class Localization
     {
-
         public static IDictionary<string, string> textDictionary { get; private set; }
         static readonly HashSet<ITextObserver> observers = new HashSet<ITextObserver>();
-        static List<LanguagePack> languages;
+        static ReadOnlyCollection<LanguagePack> languages;
         static int languageIndex;
 
         /// <summary>
@@ -30,7 +33,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 只读的语言文件合集;
         /// </summary>
-        public static List<LanguagePack> Languages
+        public static ReadOnlyCollection<LanguagePack> Languages
         {
             get { return languages; }
         }
@@ -49,7 +52,7 @@ namespace KouXiaGu.Globalization
         public static IDisposable Subscribe(ITextObserver observer)
         {
             if (observer == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("observer");
             if (!observers.Add(observer))
                 throw new ArgumentException();
 
@@ -76,7 +79,7 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 需要在Unity线程内调用;
+        /// 需要在Unity线程内调用,通知到所有观察者,文本内容发生变化;
         /// </summary>
         public static void TrackAll()
         {
@@ -88,33 +91,15 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 需要在Unity线程内调用;
+        /// 确认是否存在这个观察者;
         /// </summary>
-        public static IEnumerator TrackAllAsync()
-        {
-            ITextObserver[] observerArray = observers.ToArray();
-            foreach (var observer in observerArray)
-            {
-                TrackObserver(observer);
-                yield return null;
-            }
-        }
-
         public static bool Contains(ITextObserver observer)
         {
             return observers.Contains(observer);
         }
 
         /// <summary>
-        /// 异步读取语言文件;
-        /// </summary>
-        internal static IAsyncOperation ReadAsync()
-        {
-            return LanguagePackReader.ReadAsync(out languages, out languageIndex);
-        }
-
-        /// <summary>
-        /// 设置到语言;
+        /// 设置到语言;传入语言下标;
         /// </summary>
         public static void SetLanguage(int languageIndex)
         {
@@ -132,6 +117,86 @@ namespace KouXiaGu.Globalization
             Localization.textDictionary = null;
         }
 
+
+        /// <summary>
+        /// 异步读取语言文件;
+        /// </summary>
+        internal static IAsyncOperation ReadAsync()
+        {
+            return LanguagePackReader.ReadAsync(out languages, out languageIndex);
+        }
+
+    }
+
+    /// <summary>
+    /// 语言文件读取方法;
+    /// </summary>
+    public abstract class LocalizationInfo
+    {
+        static readonly LanguagerReader languagerReader = new XmlLanguagerReader();
+        static readonly XmlLocalizationConfigReader configReader = new XmlLocalizationConfigReader();
+
+        const string LocalizationConfigFileName = "Localization/Config.xml";
+        const string LanguagePackDirectoryName = "Localization";
+
+        public static IAsyncOperation<Dictionary<string, string>> ReadAsync(
+            out ReadOnlyCollection<LanguagePack> languages,
+            out int languageIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public LocalizationConfig Config { get; private set; }
+
+        /// <summary>
+        /// 获取到所有语言包文件;
+        /// </summary>
+        public ReadOnlyCollection<LanguagePack> SearchLanguagePacks()
+        {
+            return SearchLanguagePacks(LanguagePackDirectoryName);
+        }
+
+        /// <summary>
+        /// 获取到所有语言包文件;
+        /// </summary>
+        public ReadOnlyCollection<LanguagePack> SearchLanguagePacks(string dirPath)
+        {
+            var packs = languagerReader.SearchLanguagePacks(dirPath);
+            IList<LanguagePack> packList = packs as IList<LanguagePack> ?? packs.ToArray();
+            var collection = new ReadOnlyCollection<LanguagePack>(packList);
+            return collection;
+        }
+
+
+
+    }
+
+    [XmlType("LocalizationConfig")]
+    public struct LocalizationConfig
+    {
+        [XmlElement("LocName")]
+        public string LocName;
+    }
+
+
+    public class XmlLocalizationConfigReader
+    {
+        static readonly XmlSerializer serializer = new XmlSerializer(typeof(LocalizationConfig));
+
+        public static LocalizationConfig Read(string filePath)
+        {
+            return (LocalizationConfig)serializer.DeserializeXiaGu(filePath);
+        }
+
+        public static void Write(LocalizationConfig item, string filePath)
+        {
+            string directoryPath = Path.GetDirectoryName(filePath);
+
+            if (Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+            serializer.SerializeXiaGu(filePath, item);
+        }
     }
 
 }

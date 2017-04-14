@@ -17,11 +17,11 @@ namespace KouXiaGu.Globalization
     {
         static LanguagePackReader()
         {
-            Filer = new XmlTextPackFiler();
+            Filer = new XmlLanguagerReader();
             IsInitialized = false;
         }
 
-        internal static LanguagePackFiler Filer { get; private set; }
+        internal static LanguagerReader Filer { get; private set; }
 
         public static string MainLanguagePackDirectory
         {
@@ -99,7 +99,7 @@ namespace KouXiaGu.Globalization
 
         public static List<LanguagePack> GetMainLanguagePacks()
         {
-            var packs = Filer.GetPacks(MainLanguagePackDirectory);
+            var packs = Filer.SearchLanguagePacks(MainLanguagePackDirectory);
             return new List<LanguagePack>(packs);
         }
 
