@@ -172,7 +172,6 @@ namespace KouXiaGu
             UpdateKey(key.function, key.keyCode);
         }
 
-
         /// <summary>
         /// 更新按键映射;
         /// </summary>

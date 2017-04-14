@@ -26,6 +26,7 @@ namespace KouXiaGu
         /// </summary>
         void Awake()
         {
+            ResourcePath.Initialize();
             Initialize();
         }
 
@@ -47,10 +48,15 @@ namespace KouXiaGu
         /// </summary>
         void LogEmptyKeys()
         {
+            const string prefix = "[按键/输入]";
             var emptyKeys = CustomInput.GetEmptyKeys().ToList();
             if (emptyKeys.Count != 0)
             {
-                Debug.LogWarning("未定义的按键:" + emptyKeys.ToLog());
+                Debug.LogWarning(prefix + "存在未定义的按键:" + emptyKeys.ToLog());
+            }
+            else
+            {
+                Debug.Log(prefix + "按键读取完毕;");
             }
         }
 
