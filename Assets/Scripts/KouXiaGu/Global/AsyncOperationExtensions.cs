@@ -254,6 +254,7 @@ namespace KouXiaGu
             }
         }
 
+
         /// <summary>
         /// 将错误操作转换为异常;
         /// </summary>
@@ -286,7 +287,7 @@ namespace KouXiaGu
             foreach (var operation in operations)
             {
                 if (!operation.IsCompleted)
-                    throw new ArgumentException();
+                    throw new ArgumentException("存在未完成;");
 
                 if (operation.IsFaulted)
                     errors.Add(operation.Exception);
