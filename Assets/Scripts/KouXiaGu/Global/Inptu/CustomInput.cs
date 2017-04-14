@@ -9,11 +9,14 @@ using KouXiaGu.Collections;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 按键读取;
+    /// </summary>
     public abstract class CustomKeyReader
     {
         const string CustomKeyFileName = "Input\\Keyboard.xml";
 
-        string CustomKeyFilePath
+        static string CustomKeyFilePath
         {
             get { return ResourcePath.CombineConfiguration(CustomKeyFileName); }
         }
@@ -21,14 +24,57 @@ namespace KouXiaGu
         public abstract IEnumerable<CustomKey> ReadKeys(string filePath);
         public abstract void WriteKeys(IEnumerable<CustomKey> keys, string filePath);
 
-        public IEnumerable<CustomKey> ReadKeys()
+        public virtual IEnumerable<CustomKey> ReadKeys()
         {
             return ReadKeys(CustomKeyFilePath);
         }
 
-        public void WriteKeys(IEnumerable<CustomKey> keys)
+        public virtual void WriteKeys(IEnumerable<CustomKey> keys)
         {
             WriteKeys(keys, CustomKeyFilePath);
+        }
+    }
+
+    /// <summary>
+    /// 读取默认按键;
+    /// </summary>
+    public class DefaultCustomKeyReader : CustomKeyReader
+    {
+        const string DefaultCustomKeyFileName = "Input\\Default_Keyboard.xml";
+
+        static string DefaultCustomKeyFilePath
+        {
+            get { return ResourcePath.CombineConfiguration(DefaultCustomKeyFileName); }
+        }
+
+        public DefaultCustomKeyReader(CustomKeyReader reader)
+        {
+            if (reader == null)
+                throw new ArgumentNullException("reader");
+
+            this.reader = reader;
+        }
+
+        CustomKeyReader reader;
+
+        public override IEnumerable<CustomKey> ReadKeys()
+        {
+            return ReadKeys(DefaultCustomKeyFilePath);
+        }
+
+        public override void WriteKeys(IEnumerable<CustomKey> keys)
+        {
+            WriteKeys(keys, DefaultCustomKeyFilePath);
+        }
+
+        public override IEnumerable<CustomKey> ReadKeys(string filePath)
+        {
+            return reader.ReadKeys(filePath);
+        }
+
+        public override void WriteKeys(IEnumerable<CustomKey> keys, string filePath)
+        {
+            reader.WriteKeys(keys, filePath);
         }
     }
 
@@ -270,7 +316,6 @@ namespace KouXiaGu
                 CustomInput.Read(KeyReader);
             }
         }
-
 
 
         /// <summary>
