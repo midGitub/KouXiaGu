@@ -73,6 +73,54 @@ namespace KouXiaGu
         }
     }
 
+
+    /// <summary>
+    /// 表示在多线程内进行的操作;
+    /// </summary>
+    public abstract class ThreadOperation : IAsyncOperation
+    {
+        public ThreadOperation()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            Exception = null;
+        }
+
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public AggregateException Exception { get; private set; }
+
+        /// <summary>
+        /// 开始在多线程内操作,手动开始;
+        /// </summary>
+        public void Start()
+        {
+            ThreadPool.QueueUserWorkItem(OperateAsync);
+        }
+
+        void OperateAsync(object state)
+        {
+            try
+            {
+                Operate();
+            }
+            catch (Exception ex)
+            {
+                Exception = ex as AggregateException ?? new AggregateException(ex);
+                IsFaulted = true;
+            }
+            finally
+            {
+                IsCompleted = true;
+            }
+        }
+
+        /// <summary>
+        /// 需要在线程内进行的操作;
+        /// </summary>
+        protected abstract void Operate();
+    }
+
     /// <summary>
     /// 表示在多线程内进行的操作;
     /// </summary>
@@ -107,7 +155,7 @@ namespace KouXiaGu
             }
             catch (Exception ex)
             {
-                Exception = new AggregateException(ex);
+                Exception = ex as AggregateException ?? new AggregateException(ex);
                 IsFaulted = true;
             }
             finally
@@ -122,6 +170,8 @@ namespace KouXiaGu
         protected abstract TResult Operate();
 
     }
+
+
 
     /// <summary>
     /// 表示在Unity线程内进行的异步操作;

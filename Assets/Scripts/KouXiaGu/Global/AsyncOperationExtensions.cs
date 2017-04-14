@@ -8,99 +8,111 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    internal interface IOperation
+    {
+        /// <summary>
+        /// 继续返回true,需要结束返回fasle;
+        /// </summary>
+        bool MoveNext();
+    }
+
+    public static class OperationExtensions
+    {
+        static OperationObserver operationObserver
+        {
+            get { return OperationObserver.Instance; }
+        }
+
+        internal static IDisposable AddOperationObserver(this IOperation operation)
+        {
+            return operationObserver.Subscribe(operation);
+        }
+    }
+
+    class OperationObserver : MonoBehaviour
+    {
+        static OperationObserver operationObserver;
+        static readonly object asyncLock = new object();
+
+        public static OperationObserver Instance
+        {
+            get { return operationObserver != null ? operationObserver : Create(); }
+        }
+
+        static OperationObserver Create()
+        {
+            lock (asyncLock)
+            {
+                if (operationObserver == null)
+                {
+                    var gameObject = new GameObject("OperationObserver", typeof(OperationObserver));
+                    operationObserver = gameObject.GetComponent<OperationObserver>();
+                }
+                return operationObserver;
+            }
+        }
+
+        OperationObserver()
+        {
+        }
+
+        List<IOperation> operationList;
+
+        public int Count
+        {
+            get { return operationList.Count; }
+        }
+
+        void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+            operationList = new List<IOperation>();
+        }
+
+        void Update()
+        {
+            for (int i = 0; i < operationList.Count;)
+            {
+                var operation = operationList[i];
+
+                if (operation.MoveNext())
+                {
+                    i++;
+                }
+                else
+                {
+                    operationList.RemoveAt(i);
+                }
+            }
+        }
+
+        public IDisposable Subscribe(IOperation operation)
+        {
+            operationList.Add(operation);
+            return new CollectionUnsubscriber<IOperation>(operationList, operation);
+        }
+
+        public bool Contains(IOperation operation)
+        {
+            return operationList.Contains(operation);
+        }
+
+    }
+
+
     /// <summary>
     /// 异步操作拓展,部分需要在 unity 线程内调用;
     /// </summary>
     public static class AsyncOperationExtensions
     {
-
-        interface IOperation
+        static OperationObserver operationObserver
         {
-            /// <summary>
-            /// 继续返回true,需要结束返回fasle;
-            /// </summary>
-            bool MoveNext();
+            get { return OperationObserver.Instance; }
         }
 
-        static IDisposable AddOperation(IOperation operation)
+        internal static IDisposable AddOperationObserver(this IOperation operation)
         {
             return operationObserver.Subscribe(operation);
-        }
-
-        static AsyncOperationObserver operationObserver
-        {
-            get { return AsyncOperationObserver.Instance; }
-        }
-
-
-        class AsyncOperationObserver : MonoBehaviour
-        {
-            static AsyncOperationObserver operationObserver;
-            static readonly object asyncLock = new object();
-
-            public static AsyncOperationObserver Instance
-            {
-                get { return operationObserver != null ? operationObserver : Create(); }
-            }
-
-            static AsyncOperationObserver Create()
-            {
-                lock (asyncLock)
-                {
-                    if (operationObserver == null)
-                    {
-                        var gameObject = new GameObject("AsyncOperationObserver", typeof(AsyncOperationObserver));
-                        operationObserver = gameObject.GetComponent<AsyncOperationObserver>();
-                    }
-                    return operationObserver;
-                }
-            }
-
-            AsyncOperationObserver()
-            {
-            }
-
-            List<IOperation> operationList;
-
-            public int Count
-            {
-                get { return operationList.Count; }
-            }
-
-            void Awake()
-            {
-                DontDestroyOnLoad(gameObject);
-                operationList = new List<IOperation>();
-            }
-
-            void Update()
-            {
-                for (int i = 0; i < operationList.Count;)
-                {
-                    var operation = operationList[i];
-
-                    if (operation.MoveNext())
-                    {
-                        i++;
-                    }
-                    else
-                    {
-                        operationList.RemoveAt(i);
-                    }
-                }
-            }
-
-            public IDisposable Subscribe(IOperation operation)
-            {
-                operationList.Add(operation);
-                return new CollectionUnsubscriber<IOperation>(operationList, operation);
-            }
-
-            public bool Contains(IOperation operation)
-            {
-                return operationList.Contains(operation);
-            }
-
         }
 
 
@@ -112,7 +124,7 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new Subscriber<T>(operation, onCompleted, onError);
-            AddOperation(item);
+            AddOperationObserver(item);
             return operation;
         }
 
@@ -124,7 +136,7 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new Subscriber<T>(operation, onCompleted, onError);
-            disposer = AddOperation(item);
+            disposer = AddOperationObserver(item);
             return operation;
         }
 
@@ -171,7 +183,7 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new EnumerateSubscriber<T>(operations, onCompleted, onError);
-            var disposer = AddOperation(item);
+            var disposer = AddOperationObserver(item);
             return disposer;
         }
 

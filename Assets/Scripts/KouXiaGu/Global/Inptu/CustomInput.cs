@@ -9,46 +9,52 @@ using KouXiaGu.Collections;
 namespace KouXiaGu
 {
 
-    public interface ICustomKeyFiler
+    public abstract class CustomKeyReader
     {
-        IEnumerable<CustomKey> ReadKeys();
-        void WriteKeys(CustomKey[] keys);
-    }
-
-    public class XmlCustomKeyFiler : ICustomKeyFiler
-    {
-        public XmlCustomKeyFiler()
-        {
-        }
-
         const string CustomKeyFileName = "Input\\Keyboard.xml";
 
-        static readonly XmlSerializer keyArraySerializer = new XmlSerializer(typeof(CustomKey[]));
+        string CustomKeyFilePath
+        {
+            get { return ResourcePath.CombineConfiguration(CustomKeyFileName); }
+        }
+
+        public abstract IEnumerable<CustomKey> ReadKeys(string filePath);
+        public abstract void WriteKeys(IEnumerable<CustomKey> keys, string filePath);
 
         public IEnumerable<CustomKey> ReadKeys()
         {
-            string filePath = GetFilePath();
+            return ReadKeys(CustomKeyFilePath);
+        }
+
+        public void WriteKeys(IEnumerable<CustomKey> keys)
+        {
+            WriteKeys(keys, CustomKeyFilePath);
+        }
+    }
+
+    public class XmlCustomKeyReader : CustomKeyReader
+    {
+        static readonly XmlSerializer keyArraySerializer = new XmlSerializer(typeof(CustomKey[]));
+
+        public XmlCustomKeyReader()
+        {
+        }
+
+        public override IEnumerable<CustomKey> ReadKeys(string filePath)
+        {
             var customKeys = (CustomKey[])keyArraySerializer.DeserializeXiaGu(filePath);
             return customKeys;
         }
 
-        public void WriteKeys(CustomKey[] keys)
+        public override void WriteKeys(IEnumerable<CustomKey> keys, string filePath)
         {
-            string filePath = GetFilePath();
+            var keyArray = keys as CustomKey[] ?? keys.ToArray();
             string directoryPath = Path.GetDirectoryName(filePath);
 
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
 
-            keyArraySerializer.SerializeXiaGu(filePath, keys, FileMode.Create);
-        }
-
-        /// <summary>
-        /// 获取到默认存放到的文件路径;
-        /// </summary>
-        public static string GetFilePath()
-        {
-            return ResourcePath.CombineConfiguration(CustomKeyFileName);
+            keyArraySerializer.SerializeXiaGu(filePath, keyArray, FileMode.Create);
         }
 
     }
@@ -98,7 +104,6 @@ namespace KouXiaGu
     /// </summary>
     public static class CustomInput
     {
-
         static readonly KeyFunction[] functionArray = Enum.GetValues(typeof(KeyFunction)).
             Cast<KeyFunction>().ToArray();
 
@@ -110,60 +115,73 @@ namespace KouXiaGu
         static readonly Dictionary<int, KeyCode> keyMap = 
             functionArray.ToDictionary(function => new KeyValuePair<int, KeyCode>((int)function, KeyCode.None));
 
-        internal static ICustomKeyFiler Filer { get; private set; }
 
-        static CustomInput()
+        /// <summary>
+        /// 获取到对应的 Unity.KeyCode;
+        /// </summary>
+        public static KeyCode GetKey(KeyFunction function)
         {
-            Filer = new XmlCustomKeyFiler();
+            KeyCode keycode = keyMap[(int)function];
+            return keycode;
         }
 
         /// <summary>
-        /// 从文件读取到所以按键信息;
+        /// 用户有按着 相关按键 时一直返回true;
         /// </summary>
-        public static void ReadFromFile()
+        public static bool GetKeyHoldDown(KeyFunction function)
         {
-            var keys = Filer.ReadKeys();
-            UpdateKeyMap(keys);
+            KeyCode keycode = GetKey(function);
+            return Input.GetKey(keycode);
         }
 
-        static void UpdateKeyMap(IEnumerable<CustomKey> customKeys)
+        /// <summary>
+        /// 用户开始按下 相关按键 关键帧时返回true。
+        /// </summary>
+        public static bool GetKeyDown(KeyFunction function)
+        {
+            KeyCode keycode = GetKey(function);
+            return Input.GetKeyDown(keycode);
+        }
+
+        /// <summary>
+        /// 用户释放 相关按键 的关键帧时返回true。
+        /// </summary>
+        public static bool GetKeyUp(KeyFunction function)
+        {
+            KeyCode keycode = GetKey(function);
+            return Input.GetKeyUp(keycode);
+        }
+
+
+        /// <summary>
+        /// 更新按键映射;
+        /// </summary>
+        static void UpdateKey(IEnumerable<CustomKey> customKeys)
         {
             foreach (var key in customKeys)
             {
-                SetKey(key);
+                UpdateKey(key);
             }
         }
 
-        public static void SetKey(CustomKey key)
+        /// <summary>
+        /// 更新按键映射;
+        /// </summary>
+        public static void UpdateKey(CustomKey key)
         {
-            SetKey(key.function, key.keyCode);
+            UpdateKey(key.function, key.keyCode);
         }
 
-        public static void SetKey(KeyFunction function, KeyCode key)
+
+        /// <summary>
+        /// 更新按键映射;
+        /// </summary>
+        public static void UpdateKey(KeyFunction function, KeyCode key)
         {
             keyMap[(int)function] = key;
         }
 
-        /// <summary>
-        /// 设置到按键,并且保存;
-        /// </summary>
-        public static void SetKeysAndWrite(IEnumerable<CustomKey> keys)
-        {
-            foreach (var key in keys)
-            {
-                SetKey(key);
-            }
-            WriteToFile();
-        }
 
-        /// <summary>
-        /// 将所以按键输出\保存到文件;
-        /// </summary>
-        public static void WriteToFile()
-        {
-            CustomKey[] keys = GetKeys().ToArray();
-            Filer.WriteKeys(keys);
-        }
 
         /// <summary>
         /// 获取到所有对应的按键信息;
@@ -204,40 +222,102 @@ namespace KouXiaGu
             return keyCode == KeyCode.None;
         }
 
+
+
+        internal static readonly CustomKeyReader defaultKeyReader = new XmlCustomKeyReader();
+
         /// <summary>
-        /// 获取到对应;
+        /// 从读取到所有按键信息,并且设置到按键;
         /// </summary>
-        public static KeyCode GetKey(KeyFunction function)
+        public static void Read()
         {
-            KeyCode keycode = keyMap[(int)function];
-            return keycode;
+            Read(defaultKeyReader);
         }
 
         /// <summary>
-        /// 用户有按着 相关按键 时一直返回true;
+        /// 从读取到所有按键信息,并且设置到按键;
         /// </summary>
-        public static bool GetKeyHoldDown(KeyFunction function)
+        public static void Read(CustomKeyReader keyReader)
         {
-            KeyCode keycode = GetKey(function);
-            return Input.GetKey(keycode);
+            var keys = keyReader.ReadKeys();
+            UpdateKey(keys);
+        }
+
+        public static IAsyncOperation ReadAsync()
+        {
+            var item = new CustomInputAsyncReader(defaultKeyReader);
+            item.Start();
+            return item;
+        }
+
+        public static IAsyncOperation ReadAsync(CustomKeyReader keyReader)
+        {
+            var item = new CustomInputAsyncReader(keyReader);
+            item.Start();
+            return item;
+        }
+
+        class CustomInputAsyncReader : ThreadOperation
+        {
+            public CustomInputAsyncReader(CustomKeyReader keyReader)
+            {
+                KeyReader = keyReader;
+            }
+
+            public CustomKeyReader KeyReader { get; private set; }
+
+            protected override void Operate()
+            {
+                CustomInput.Read(KeyReader);
+            }
+        }
+
+
+
+        /// <summary>
+        /// 将所有按键输出\保存;
+        /// </summary>
+        public static void Write()
+        {
+            Write(defaultKeyReader);
         }
 
         /// <summary>
-        /// 用户开始按下 相关按键 关键帧时返回true。
+        /// 将所有按键输出\保存;
         /// </summary>
-        public static bool GetKeyDown(KeyFunction function)
+        public static void Write(CustomKeyReader keyReader)
         {
-            KeyCode keycode = GetKey(function);
-            return Input.GetKeyDown(keycode);
+            CustomKey[] keys = GetKeys().ToArray();
+            keyReader.WriteKeys(keys);
         }
 
-        /// <summary>
-        /// 用户释放 相关按键 的关键帧时返回true。
-        /// </summary>
-        public static bool GetKeyUp(KeyFunction function)
+        public static IAsyncOperation WriteAsync()
         {
-            KeyCode keycode = GetKey(function);
-            return Input.GetKeyUp(keycode);
+            var item = new CustomInputAsyncWriter(defaultKeyReader);
+            item.Start();
+            return item;
+        }
+
+        public static IAsyncOperation WriteAsync(CustomKeyReader keyReader)
+        {
+            var item = new CustomInputAsyncWriter(keyReader);
+            item.Start();
+            return item;
+        }
+
+        class CustomInputAsyncWriter : ThreadOperation
+        {
+            public CustomInputAsyncWriter(CustomKeyReader keyReader)
+            {
+                KeyReader = keyReader;
+            }
+
+            public CustomKeyReader KeyReader { get; private set; }
+
+            protected override void Operate()
+            {
+                CustomInput.Write(KeyReader);
+            }
         }
 
     }

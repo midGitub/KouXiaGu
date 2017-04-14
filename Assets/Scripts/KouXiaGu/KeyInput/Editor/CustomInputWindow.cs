@@ -40,7 +40,7 @@ namespace KouXiaGu.XiaGuTools
                 EditorGUILayout.LabelField(functionKey.ToString());
                 KeyCode keycode2 = (KeyCode)EditorGUILayout.EnumPopup(keycode, GUILayout.MaxWidth(160f));
                 if (keycode != keycode2)
-                    CustomInput.SetKey(functionKey, keycode2);
+                    CustomInput.UpdateKey(functionKey, keycode2);
 
                 EditorGUILayout.EndHorizontal();
             }
@@ -70,12 +70,12 @@ namespace KouXiaGu.XiaGuTools
 
         static void ReadFromFile()
         {
-            CustomInput.ReadFromFile();
+            CustomInput.Read();
         }
 
         static void WirteToFile()
         {
-            CustomInput.WriteToFile();
+            CustomInput.Write();
         }
 
     }

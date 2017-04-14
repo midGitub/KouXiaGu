@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
 
         public string ToLog()
         {
-            string str = "Terrain:" +
+            string str = "[Terrain]" +
                 "\nLandform:" + LandformInfos.Count +
                 "\n";
 

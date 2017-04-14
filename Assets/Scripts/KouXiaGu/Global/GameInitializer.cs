@@ -13,33 +13,40 @@ namespace KouXiaGu
     /// 负责对游戏资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameInitializer : Initializer
+    public class GameInitializer : MonoBehaviour
     {
         GameInitializer()
         {
         }
 
-
+        public GameData Data { get; private set; }
 
         /// <summary>
         /// 对内容进行初始化;
         /// </summary>
-        protected override void Awake()
+        void Awake()
         {
-            base.Awake();
+            Initialize();
+        }
 
-            InitInput();
+        void Initialize()
+        {
+            CustomInput.ReadAsync().Subscribe(_ => LogEmptyKeys(), OnFaulted);
+
             InitLanguage();
             InitGameData();
         }
 
-        /// <summary>
-        /// 初始化自定义按键模块;
-        /// </summary>
-        void InitInput()
+        void OnFaulted(IAsyncOperation operation)
         {
-            CustomInput.ReadFromFile();
+            Debug.LogError(operation.Exception);
+        }
 
+        /// <summary>
+        /// 输出未定义的按键;
+        /// </summary>
+        void LogEmptyKeys()
+        {
             var emptyKeys = CustomInput.GetEmptyKeys().ToList();
             if (emptyKeys.Count != 0)
             {
@@ -47,19 +54,20 @@ namespace KouXiaGu
             }
         }
 
+
+
         /// <summary>
         /// 初始化语言模块;
         /// </summary>
         void InitLanguage()
         {
             var operater = Localization.ReadAsync();
-            AddOperater(operater);
         }
 
         void InitGameData()
         {
             var operater = GameData.Create();
-            AddOperater(operater);
+            operater.Subscribe(completed => Debug.Log(completed.Result.ToLog()), f => Debug.LogError(f.Exception));
         }
 
     }
