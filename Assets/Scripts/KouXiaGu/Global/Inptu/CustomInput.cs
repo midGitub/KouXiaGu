@@ -277,12 +277,17 @@ namespace KouXiaGu
 
         internal static readonly CustomKeyReader defaultKeyReader = new XmlCustomKeyReader();
 
+        static CustomKeyReader GetReader()
+        {
+            return defaultKeyReader;
+        }
+
         /// <summary>
         /// 从读取到所有按键信息,并且设置到按键;
         /// </summary>
         public static void Read()
         {
-            Read(defaultKeyReader);
+            Read(GetReader());
         }
 
         /// <summary>
@@ -296,7 +301,7 @@ namespace KouXiaGu
 
         public static IAsyncOperation ReadAsync()
         {
-            var item = new CustomInputAsyncReader(defaultKeyReader);
+            var item = new CustomInputAsyncReader(GetReader());
             item.Start();
             return item;
         }
@@ -329,7 +334,7 @@ namespace KouXiaGu
         /// </summary>
         public static void Write()
         {
-            Write(defaultKeyReader);
+            Write(GetReader());
         }
 
         /// <summary>
@@ -343,7 +348,7 @@ namespace KouXiaGu
 
         public static IAsyncOperation WriteAsync()
         {
-            var item = new CustomInputAsyncWriter(defaultKeyReader);
+            var item = new CustomInputAsyncWriter(GetReader());
             item.Start();
             return item;
         }
