@@ -33,8 +33,8 @@ namespace KouXiaGu
         void Initialize()
         {
             CustomInput.ReadAsync().Subscribe(_ => LogEmptyKeys(), OnFaulted);
+            Localization.InitializeAsync().Subscribe(_ => LogLocalization(), OnFaulted);
 
-            InitLanguage();
             InitGameData();
         }
 
@@ -60,15 +60,13 @@ namespace KouXiaGu
             }
         }
 
-
-
-        /// <summary>
-        /// 初始化语言模块;
-        /// </summary>
-        void InitLanguage()
+        void LogLocalization()
         {
-            var operater = Localization.ReadAsync();
+            const string prefix = "[本地化]";
+            string log = "条目总数:" + Localization.EntriesCount;
+            Debug.Log(prefix + log);
         }
+
 
         void InitGameData()
         {
