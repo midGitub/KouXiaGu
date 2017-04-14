@@ -36,6 +36,15 @@ namespace KouXiaGu
 
         }
 
+        public string ToLog()
+        {
+            string str = 
+                ElementInfo.ToLog() +
+                Terrain.ToLog();
+
+            return str;
+        }
+
         class GameDataCreater : AsyncOperation<GameData>
         {
             public GameDataCreater()

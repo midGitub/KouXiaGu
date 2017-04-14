@@ -70,6 +70,18 @@ namespace KouXiaGu.World
             ProductInfos = ProductReader.Read();
         }
 
+        public string ToLog()
+        {
+            string str = 
+                "Road:" + RoadInfos.Count +
+                "\nLandform:" + LandformInfos.Count +
+                "\nBuilding:" + BuildingInfos.Count + 
+                "\nProduct:" + ProductInfos.Count +
+                "\n";
+
+            return str;
+        }
+
         /// <summary>
         /// 输出所有信息到文件夹内;
         /// </summary>

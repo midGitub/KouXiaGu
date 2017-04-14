@@ -27,7 +27,7 @@ namespace KouXiaGu.Initialization
             StartWait(operates);
         }
 
-        protected override void OnComplete(IAsync operater)
+        protected override void OnComplete(IAsyncOperation operater)
         {
             return;
         }
@@ -38,7 +38,7 @@ namespace KouXiaGu.Initialization
             Destroy(this);
         }
 
-        protected override void OnFail(IAsync operater, Exception e)
+        protected override void OnFail(IAsyncOperation operater, Exception e)
         {
             Debug.LogError(e);
         }

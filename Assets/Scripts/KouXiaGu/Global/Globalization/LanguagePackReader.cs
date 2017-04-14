@@ -124,11 +124,6 @@ namespace KouXiaGu.Globalization
         public bool IsFaulted { get; private set; }
         public Exception Ex { get; private set; }
 
-        object IEnumerator.Current
-        {
-            get { return null; }
-        }
-
         void Awake()
         {
             isReadCompleted = false;
@@ -185,16 +180,6 @@ namespace KouXiaGu.Globalization
             effective = default(LanguagePack);
             textDictionary = null;
             Destroy(gameObject);
-        }
-
-        bool IEnumerator.MoveNext()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IEnumerator.Reset()
-        {
-            throw new NotImplementedException();
         }
 
         [XmlType("Config")]

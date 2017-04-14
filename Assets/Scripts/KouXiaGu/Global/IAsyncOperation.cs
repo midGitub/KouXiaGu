@@ -10,40 +10,10 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    [Obsolete]
-    public interface IAsync<TResult> : IAsync
-    {
-        /// <summary>
-        /// 返回的结果;
-        /// </summary>
-        TResult Result { get; }
-    }
-
-    [Obsolete]
-    public interface IAsync
-    {
-        /// <summary>
-        /// 是否完成?
-        /// </summary>
-        bool IsCompleted { get; }
-
-        /// <summary>
-        /// 是否由于未经处理异常的原因而完成;
-        /// </summary>
-        bool IsFaulted { get; }
-
-        /// <summary>
-        /// 导致提前结束的异常;
-        /// </summary>
-        Exception Ex { get; }
-
-    }
-
-
     /// <summary>
     /// 异步操作;
     /// </summary>
-    public interface IAsyncOperation : IEnumerator
+    public interface IAsyncOperation
     {
         /// <summary>
         /// 是否完成?
@@ -81,21 +51,6 @@ namespace KouXiaGu
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
         public Exception Ex { get; private set; }
-
-        object IEnumerator.Current
-        {
-            get { return Result; }
-        }
-
-        bool IEnumerator.MoveNext()
-        {
-            return !IsCompleted;
-        }
-
-        void IEnumerator.Reset()
-        {
-            return;
-        }
 
         protected void OnCompleted(TResult result)
         {
@@ -136,21 +91,6 @@ namespace KouXiaGu
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
         public Exception Ex { get; private set; }
-
-        object IEnumerator.Current
-        {
-            get { return Result; }
-        }
-
-        bool IEnumerator.MoveNext()
-        {
-            return !IsCompleted;
-        }
-
-        void IEnumerator.Reset()
-        {
-            return;
-        }
 
         /// <summary>
         /// 开始在多线程内操作,手动开始;
@@ -198,21 +138,6 @@ namespace KouXiaGu
         public TResult Result { get; private set; }
         public Exception Ex { get; private set; }
 
-        object IEnumerator.Current
-        {
-            get { return Result; }
-        }
-
-        bool IEnumerator.MoveNext()
-        {
-            return !IsCompleted;
-        }
-
-        void IEnumerator.Reset()
-        {
-            return;
-        }
-
         protected virtual void Awake()
         {
             IsCompleted = false;
@@ -232,183 +157,6 @@ namespace KouXiaGu
             Ex = ex;
             IsFaulted = true;
             IsCompleted = true;
-        }
-
-    }
-
-    /// <summary>
-    /// 异步操作拓展,都需要在 unity 线程内调用;
-    /// </summary>
-    public static class AsyncOperationExtensions
-    {
-
-        /// <summary>
-        /// 当操作完成时,在unity线程内回调;
-        /// </summary>
-        public static IDisposable Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onError)
-            where T : IAsyncOperation
-        {
-            if (onCompleted == null || onError == null)
-                throw new ArgumentNullException();
-
-            IDisposable disposer = new Operation(delegate ()
-            {
-                if (operation.IsCompleted)
-                {
-                    if (operation.IsFaulted)
-                    {
-                        onError(operation);
-                    }
-                    else
-                    {
-                        onCompleted(operation);
-                    }
-                    return false;
-                }
-                return true;
-            });
-
-            return disposer;
-        }
-
-        /// <summary>
-        /// 当所有完成时调用 onCompleted(), 若其中一个出现错误,则调用 onError();
-        /// </summary>
-        public static IDisposable OnCompleted<T>(this IEnumerable<T> operations, Action onCompleted, Action<T> onError)
-            where T : IAsyncOperation
-        {
-            if (onCompleted == null || onError == null)
-                throw new ArgumentNullException();
-
-            var operationArray = operations.ToArray();
-            int index = 0;
-
-            IDisposable disposer = new Operation(delegate ()
-            {
-                if (index < operationArray.Length)
-                {
-                    var operation = operationArray[index];
-                    if (operation.IsCompleted)
-                    {
-                        index++;
-                        if (operation.IsFaulted)
-                        {
-                            onError(operation);
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            });
-
-            return disposer;
-        }
-
-
-        static AsyncOperationObserver operationObserver
-        {
-            get { return AsyncOperationObserver.Instance; }
-        }
-
-        class Operation : IDisposable
-        {
-            public Operation(Func<bool> moveNext)
-            {
-                if (moveNext == null)
-                    throw new ArgumentNullException();
-
-                this.func = moveNext;
-                disposer = operationObserver.Subscribe(this);
-            }
-
-            IDisposable disposer;
-            Func<bool> func;
-
-            public bool OnNext()
-            {
-                return func();
-            }
-
-            public void OnCompleted()
-            {
-                disposer = null;
-            }
-
-            public void Dispose()
-            {
-                this.disposer.Dispose();
-            }
-        }
-
-        class AsyncOperationObserver : MonoBehaviour
-        {
-            static AsyncOperationObserver operationObserver;
-            static readonly object asyncLock = new object();
-
-            public static AsyncOperationObserver Instance
-            {
-                get { return operationObserver != null ? operationObserver : Create(); }
-            }
-
-            static AsyncOperationObserver Create()
-            {
-                lock (asyncLock)
-                {
-                    if (operationObserver == null)
-                    {
-                        var gameObject = new GameObject("AsyncOperationObserver", typeof(AsyncOperationObserver));
-                        operationObserver = gameObject.GetComponent<AsyncOperationObserver>();
-                    }
-                    return operationObserver;
-                }
-            }
-
-            AsyncOperationObserver()
-            {
-            }
-
-            List<Operation> operationList;
-
-            public int Count
-            {
-                get { return operationList.Count; }
-            }
-
-            void Awake()
-            {
-                DontDestroyOnLoad(gameObject);
-                operationList = new List<Operation>();
-            }
-
-            void Update()
-            {
-                for (int i = 0; i < operationList.Count;)
-                {
-                    Operation operation = operationList[i];
-
-                    if (operation.OnNext())
-                    {
-                        i++;
-                    }
-                    else
-                    {
-                        operationList.RemoveAt(i);
-                    }
-                }
-            }
-
-            public IDisposable Subscribe(Operation operation)
-            {
-                operationList.Add(operation);
-                return new CollectionUnsubscriber<Operation>(operationList, operation);
-            }
-
-            public bool Contains(Operation operation)
-            {
-                return operationList.Contains(operation);
-            }
-
         }
 
     }

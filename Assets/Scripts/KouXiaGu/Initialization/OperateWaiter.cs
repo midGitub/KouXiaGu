@@ -22,13 +22,13 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 所有操作者的数组;
         /// </summary>
-        IList<IAsync> operaters;
+        IList<IAsyncOperation> operaters;
 
 
         /// <summary>
         /// 正在等待的,若不存在则返回 null;
         /// </summary>
-        public IAsync current
+        public IAsyncOperation current
         {
             get { return operaters == null || currentPointer < 0 || currentPointer >= operaters.Count ? null : operaters[currentPointer]; }
         }
@@ -60,7 +60,7 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 开始进行等待;
         /// </summary>
-        protected void StartWait(IList<IAsync> operaters)
+        protected void StartWait(IList<IAsyncOperation> operaters)
         {
             if (IsWaiting)
                 throw new ArgumentException("正在等待;");
@@ -129,12 +129,12 @@ namespace KouXiaGu.Initialization
         /// <summary>
         /// 当存在完成时调用,提供剩余数目;
         /// </summary>
-        protected abstract void OnComplete(IAsync operater);
+        protected abstract void OnComplete(IAsyncOperation operater);
 
         /// <summary>
         /// 当存在一个任务失败时调用;
         /// </summary>
-        protected abstract void OnFail(IAsync operater, Exception e);
+        protected abstract void OnFail(IAsyncOperation operater, Exception e);
 
     }
 

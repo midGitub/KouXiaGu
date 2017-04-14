@@ -32,6 +32,15 @@ namespace KouXiaGu.Terrain3D
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
 
 
+        public string ToLog()
+        {
+            string str = "Terrain:" +
+                "\nLandform:" + LandformInfos.Count +
+                "\n";
+
+            return str;
+        }
+
         /// <summary>
         /// 初始化方法;
         /// </summary>

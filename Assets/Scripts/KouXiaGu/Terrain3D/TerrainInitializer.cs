@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
 
         }
 
-        class BuildWorld : MonoBehaviour, IAsync
+        class BuildWorld : MonoBehaviour, IAsyncOperation
         {
             BuildWorld()
             {
