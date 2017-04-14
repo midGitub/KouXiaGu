@@ -120,10 +120,10 @@ namespace KouXiaGu
         /// 当操作完成时,在unity线程内回调;
         /// </summary>
         /// <returns>返回传入参数 operation</returns>
-        public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onError)
+        public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onFaulted)
             where T : IAsyncOperation
         {
-            var item = new Subscriber<T>(operation, onCompleted, onError);
+            var item = new Subscriber<T>(operation, onCompleted, onFaulted);
             AddOperationObserver(item);
             return operation;
         }
@@ -132,10 +132,10 @@ namespace KouXiaGu
         /// 当操作完成时,在unity线程内回调;
         /// </summary>
         /// <returns>返回传入参数 operation</returns>
-        public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onError, out IDisposable disposer)
+        public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onFaulted, out IDisposable disposer)
             where T : IAsyncOperation
         {
-            var item = new Subscriber<T>(operation, onCompleted, onError);
+            var item = new Subscriber<T>(operation, onCompleted, onFaulted);
             disposer = AddOperationObserver(item);
             return operation;
         }
@@ -143,19 +143,19 @@ namespace KouXiaGu
         class Subscriber<T> : IOperation
              where T : IAsyncOperation
         {
-            public Subscriber(T operation, Action<T> onCompleted, Action<T> onError)
+            public Subscriber(T operation, Action<T> onCompleted, Action<T> onFaulted)
             {
-                if (operation == null || onCompleted == null || onError == null)
+                if (operation == null || onCompleted == null || onFaulted == null)
                     throw new ArgumentNullException();
 
                 this.operation = operation;
                 this.onCompleted = onCompleted;
-                this.onError = onError;
+                this.onFaulted = onFaulted;
             }
 
             T operation;
             Action<T> onCompleted;
-            Action<T> onError;
+            Action<T> onFaulted;
 
             bool IOperation.MoveNext()
             {
@@ -163,7 +163,7 @@ namespace KouXiaGu
                 {
                     if (operation.IsFaulted)
                     {
-                        onError(operation);
+                        onFaulted(operation);
                     }
                     else
                     {
@@ -177,12 +177,12 @@ namespace KouXiaGu
 
 
         /// <summary>
-        /// 当所有完成时调用 onCompleted(完成的操作), 除非出现异常,则调用 onError(出现异常的操作);
+        /// 当所有完成时调用 onCompleted(完成的操作), 除非出现异常,则调用 onFaulted(出现异常的操作);
         /// </summary>
-        public static IDisposable Subscribe<T>(this IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onError)
+        public static IDisposable Subscribe<T>(this IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)
             where T : IAsyncOperation
         {
-            var item = new EnumerateSubscriber<T>(operations, onCompleted, onError);
+            var item = new EnumerateSubscriber<T>(operations, onCompleted, onFaulted);
             var disposer = AddOperationObserver(item);
             return disposer;
         }
@@ -190,14 +190,14 @@ namespace KouXiaGu
         class EnumerateSubscriber<T> : IOperation
             where T : IAsyncOperation
         {
-            public EnumerateSubscriber(IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onError)
+            public EnumerateSubscriber(IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)
             {
-                if (operations == null || onCompleted == null || onError == null)
+                if (operations == null || onCompleted == null || onFaulted == null)
                     throw new ArgumentNullException();
 
                 this.operationArray = operations.ToArray();
                 this.onCompleted = onCompleted;
-                this.onError = onError;
+                this.onFaulted = onFaulted;
                 errors = new List<T>();
             }
 
@@ -205,7 +205,7 @@ namespace KouXiaGu
             T[] operationArray;
             List<T> errors;
             Action<IList<T>> onCompleted;
-            Action<IList<T>> onError;
+            Action<IList<T>> onFaulted;
 
             bool IOperation.MoveNext()
             {
@@ -224,7 +224,7 @@ namespace KouXiaGu
                 }
 
                 if (errors.Count > 0)
-                    onError(errors);
+                    onFaulted(errors);
                 else
                     onCompleted(operationArray);
 
@@ -272,7 +272,7 @@ namespace KouXiaGu
         /// </summary>
         public static AggregateException ToAggregateException(this IEnumerable<IAsyncOperation> operations)
         {
-            List<Exception> errors = new List<Exception>();
+            List<Exception> faults = new List<Exception>();
 
             foreach (var operation in operations)
             {
@@ -280,10 +280,10 @@ namespace KouXiaGu
                     throw new ArgumentException();
 
                 if (operation.IsFaulted)
-                    errors.Add(operation.Exception);
+                    faults.Add(operation.Exception);
             }
 
-            return new AggregateException(errors);
+            return new AggregateException(faults);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace KouXiaGu
             if (exception == null)
                 throw new ArgumentNullException("exception");
 
-            List<Exception> errors = new List<Exception>(exception.InnerExceptions);
+            List<Exception> faults = new List<Exception>(exception.InnerExceptions);
 
             foreach (var operation in operations)
             {
@@ -302,10 +302,10 @@ namespace KouXiaGu
                     throw new ArgumentException("存在未完成;");
 
                 if (operation.IsFaulted)
-                    errors.Add(operation.Exception);
+                    faults.Add(operation.Exception);
             }
 
-            return new AggregateException(errors);
+            return new AggregateException(faults);
         }
 
     }
