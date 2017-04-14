@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+using System.Globalization;
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace KouXiaGu
 {
 
     /// <summary>
-    /// 自建的 AggregateException 异常;
+    /// 复制粘贴源码的自建的 AggregateException 异常;
     /// </summary>
+    [Serializable]
     public class AggregateException : Exception
     {
 
@@ -79,7 +81,57 @@ namespace KouXiaGu
             InnerExceptions = new ReadOnlyCollection<Exception>(exceptionsCopy);
         }
 
+
         public ReadOnlyCollection<Exception> InnerExceptions { get; private set; }
+
+        public int InnerExceptionCount
+        {
+            get { return InnerExceptions.Count; }
+        }
+
+
+        [SecurityCritical]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+
+            base.GetObjectData(info, context);
+
+            Exception[] innerExceptions = new Exception[InnerExceptions.Count];
+            InnerExceptions.CopyTo(innerExceptions, 0);
+            info.AddValue("InnerExceptions", innerExceptions, typeof(Exception[]));
+        }
+
+
+        public override Exception GetBaseException()
+        {
+            Exception back = this;
+            AggregateException backAsAggregate = this;
+            while (backAsAggregate != null && backAsAggregate.InnerExceptions.Count == 1)
+            {
+                back = back.InnerException;
+                backAsAggregate = back as AggregateException;
+            }
+            return back;
+        }
+
+        public override string ToString()
+        {
+            string text = base.ToString();
+
+            for (int i = 0; i < InnerExceptions.Count; i++)
+            {
+                text = String.Format(
+                    CultureInfo.InvariantCulture,
+                    "AggregateException",
+                    text, Environment.NewLine, i, InnerExceptions[i].ToString(), "<---", Environment.NewLine);
+            }
+
+            return text;
+        }
 
     }
 

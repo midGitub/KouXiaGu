@@ -8,8 +8,6 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-
-
     /// <summary>
     /// 异步操作拓展,部分需要在 unity 线程内调用;
     /// </summary>
@@ -113,9 +111,6 @@ namespace KouXiaGu
         public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onError)
             where T : IAsyncOperation
         {
-            if (onCompleted == null || onError == null)
-                throw new ArgumentNullException();
-
             var item = new Subscriber<T>(operation, onCompleted, onError);
             AddOperation(item);
             return operation;
@@ -128,9 +123,6 @@ namespace KouXiaGu
         public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onError, out IDisposable disposer)
             where T : IAsyncOperation
         {
-            if (onCompleted == null || onError == null)
-                throw new ArgumentNullException();
-
             var item = new Subscriber<T>(operation, onCompleted, onError);
             disposer = AddOperation(item);
             return operation;
@@ -141,6 +133,9 @@ namespace KouXiaGu
         {
             public Subscriber(T operation, Action<T> onCompleted, Action<T> onError)
             {
+                if (operation == null || onCompleted == null || onError == null)
+                    throw new ArgumentNullException();
+
                 this.operation = operation;
                 this.onCompleted = onCompleted;
                 this.onError = onError;
@@ -169,16 +164,12 @@ namespace KouXiaGu
         }
 
 
-
         /// <summary>
-        /// 当所有完成时调用 onCompleted(), 对出现异常的操作,分别调用 onError();
+        /// 当所有完成时调用 onCompleted(完成的操作), 除非出现异常,则调用 onError(出现异常的操作);
         /// </summary>
-        public static IDisposable Subscribe<T>(this IEnumerable<T> operations, Action<IEnumerable<T>> onCompleted, Action<T> onError)
+        public static IDisposable Subscribe<T>(this IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onError)
             where T : IAsyncOperation
         {
-            if (onCompleted == null || onError == null)
-                throw new ArgumentNullException();
-
             var item = new EnumerateSubscriber<T>(operations, onCompleted, onError);
             var disposer = AddOperation(item);
             return disposer;
@@ -187,17 +178,22 @@ namespace KouXiaGu
         class EnumerateSubscriber<T> : IOperation
             where T : IAsyncOperation
         {
-            public EnumerateSubscriber(IEnumerable<T> operations, Action<IEnumerable<T>> onCompleted, Action<T> onError)
+            public EnumerateSubscriber(IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onError)
             {
+                if (operations == null || onCompleted == null || onError == null)
+                    throw new ArgumentNullException();
+
                 this.operationArray = operations.ToArray();
                 this.onCompleted = onCompleted;
                 this.onError = onError;
+                errors = new List<T>();
             }
 
             int index = 0;
             T[] operationArray;
-            Action<IEnumerable<T>> onCompleted;
-            Action<T> onError;
+            List<T> errors;
+            Action<IList<T>> onCompleted;
+            Action<IList<T>> onError;
 
             bool IOperation.MoveNext()
             {
@@ -209,12 +205,17 @@ namespace KouXiaGu
                         index++;
                         if (operation.IsFaulted)
                         {
-                            onError(operation);
+                            errors.Add(operation);
                         }
                     }
                     return true;
                 }
-                onCompleted(operationArray);
+
+                if (errors.Count > 0)
+                    onError(errors);
+                else
+                    onCompleted(operationArray);
+
                 return false;
             }
         }
@@ -251,6 +252,47 @@ namespace KouXiaGu
             {
                 return;
             }
+        }
+
+        /// <summary>
+        /// 将错误操作转换为异常;
+        /// </summary>
+        public static AggregateException ToAggregateException(this IEnumerable<IAsyncOperation> operations)
+        {
+            List<Exception> errors = new List<Exception>();
+
+            foreach (var operation in operations)
+            {
+                if (!operation.IsCompleted)
+                    throw new ArgumentException();
+
+                if (operation.IsFaulted)
+                    errors.Add(operation.Exception);
+            }
+
+            return new AggregateException(errors);
+        }
+
+        /// <summary>
+        /// 将错误操作转换为异常;
+        /// </summary>
+        public static AggregateException ToAggregateException(this IEnumerable<IAsyncOperation> operations, AggregateException exception)
+        {
+            if (exception == null)
+                throw new ArgumentNullException("exception");
+
+            List<Exception> errors = new List<Exception>(exception.InnerExceptions);
+
+            foreach (var operation in operations)
+            {
+                if (!operation.IsCompleted)
+                    throw new ArgumentException();
+
+                if (operation.IsFaulted)
+                    errors.Add(operation.Exception);
+            }
+
+            return new AggregateException(errors);
         }
 
     }
