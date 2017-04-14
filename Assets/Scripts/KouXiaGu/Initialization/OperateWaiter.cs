@@ -106,7 +106,7 @@ namespace KouXiaGu.Initialization
                 {
                     if (current.IsFaulted)
                     {
-                        OnFail(current, current.Ex);
+                        OnFail(current, current.Exception);
                     }
                     else
                     {

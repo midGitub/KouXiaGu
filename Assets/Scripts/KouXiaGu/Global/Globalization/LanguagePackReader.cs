@@ -122,14 +122,14 @@ namespace KouXiaGu.Globalization
         bool isReadCompleted;
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
-        public Exception Ex { get; private set; }
+        public AggregateException Exception { get; private set; }
 
         void Awake()
         {
             isReadCompleted = false;
             IsCompleted = false;
             IsFaulted = false;
-            Ex = null;
+            Exception = null;
             ReadLanguagePackAsync();
         }
 
@@ -166,7 +166,7 @@ namespace KouXiaGu.Globalization
             catch (Exception ex)
             {
                 IsFaulted = true;
-                Ex = ex;
+                Exception = new AggregateException(ex);
             }
             finally
             {

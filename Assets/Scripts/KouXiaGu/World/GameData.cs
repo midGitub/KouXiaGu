@@ -73,8 +73,8 @@ namespace KouXiaGu
 
             void OnError<T>(IAsyncOperation<T> operation)
             {
-                Debug.LogError(operation.Ex);
-                OnError(operation.Ex);
+                Debug.LogError(operation.Exception);
+                OnError(operation.Exception);
             }
 
         }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using KouXiaGu.Rx;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -28,7 +27,7 @@ namespace KouXiaGu
         /// <summary>
         /// 导致提前结束的异常;
         /// </summary>
-        Exception Ex { get; }
+        AggregateException Exception { get; }
     }
 
     /// <summary>
@@ -50,7 +49,7 @@ namespace KouXiaGu
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
-        public Exception Ex { get; private set; }
+        public AggregateException Exception { get; private set; }
 
         protected void OnCompleted(TResult result)
         {
@@ -60,7 +59,7 @@ namespace KouXiaGu
 
         protected void OnError(Exception ex)
         {
-            Ex = ex;
+            Exception = new AggregateException(ex);
             IsFaulted = true;
             IsCompleted = true;
         }
@@ -70,7 +69,7 @@ namespace KouXiaGu
             return base.ToString() +
                 "[IsCompleted:" + IsCompleted +
                 ",IsFaulted:" + IsFaulted +
-                ",Exception:" + Ex + "]";
+                ",Exception:" + Exception + "]";
         }
     }
 
@@ -84,13 +83,13 @@ namespace KouXiaGu
             IsCompleted = false;
             IsFaulted = false;
             Result = default(TResult);
-            Ex = null;
+            Exception = null;
         }
 
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
-        public Exception Ex { get; private set; }
+        public AggregateException Exception { get; private set; }
 
         /// <summary>
         /// 开始在多线程内操作,手动开始;
@@ -108,7 +107,7 @@ namespace KouXiaGu
             }
             catch (Exception ex)
             {
-                Ex = ex;
+                Exception = new AggregateException(ex);
                 IsFaulted = true;
             }
             finally
@@ -136,14 +135,14 @@ namespace KouXiaGu
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
-        public Exception Ex { get; private set; }
+        public AggregateException Exception { get; private set; }
 
         protected virtual void Awake()
         {
             IsCompleted = false;
             IsFaulted = false;
             Result = default(TResult);
-            Ex = null;
+            Exception = null;
         }
 
         protected void OnCompleted(TResult result)
@@ -154,7 +153,14 @@ namespace KouXiaGu
 
         protected void OnError(Exception ex)
         {
-            Ex = ex;
+            Exception = new AggregateException(ex);
+            IsFaulted = true;
+            IsCompleted = true;
+        }
+
+        protected void OnError(AggregateException ex)
+        {
+            Exception = ex;
             IsFaulted = true;
             IsCompleted = true;
         }

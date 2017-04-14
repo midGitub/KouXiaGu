@@ -8,37 +8,6 @@ using System;
 namespace KouXiaGu.Terrain3D
 {
 
-    /// <summary>
-    /// 地形资源初始化,负责初始化次序;
-    /// 控制整个地形初始化;
-    /// </summary>
-    public static class TerrainInitializer0
-    {
-
-        public static void Init()
-        {
-
-        }
-
-        class BuildWorld : MonoBehaviour, IAsyncOperation
-        {
-            BuildWorld()
-            {
-            }
-
-            public bool IsCompleted { get; private set; }
-            public bool IsFaulted { get; private set; }
-            public Exception Ex { get; private set; }
-
-            public static void StartBuildWorld()
-            {
-
-            }
-
-        }
-
-    }
-
 
     /// <summary>
     /// 地形资源初始化,负责初始化次序;
@@ -52,7 +21,7 @@ namespace KouXiaGu.Terrain3D
 
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
-        public Exception Ex { get; private set; }
+        public AggregateException Exception { get; private set; }
 
         /// <summary>
         /// 当前游戏使用的地图,若不在游戏中则为null;
@@ -66,7 +35,7 @@ namespace KouXiaGu.Terrain3D
         {
             IsCompleted = false;
             IsFaulted = false;
-            Ex = null;
+            Exception = null;
         }
 
         /// <summary>
