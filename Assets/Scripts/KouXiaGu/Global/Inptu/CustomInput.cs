@@ -78,6 +78,9 @@ namespace KouXiaGu
         }
     }
 
+    /// <summary>
+    /// 读取Xml文件按键信息;
+    /// </summary>
     public class XmlCustomKeyReader : CustomKeyReader
     {
         static readonly XmlSerializer keyArraySerializer = new XmlSerializer(typeof(CustomKey[]));
@@ -105,6 +108,9 @@ namespace KouXiaGu
 
     }
 
+    /// <summary>
+    /// 自定义按键 和 UnityEngine.KeyCode 的映射;
+    /// </summary>
     [XmlType("Key")]
     public struct CustomKey : IEquatable<CustomKey>
     {
@@ -146,7 +152,7 @@ namespace KouXiaGu
     }
 
     /// <summary>
-    /// 对 UnityEngine.Input 进行包装;
+    /// 对 UnityEngine.Input 进行包装,加入自定义按键;
     /// </summary>
     public static class CustomInput
     {
