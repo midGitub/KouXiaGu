@@ -15,23 +15,21 @@ namespace KouXiaGu
     /// 负责对游戏资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameInitializer : MonoBehaviour
+    public class GameInitializer : OperationMonoBehaviour
     {
         GameInitializer()
         {
         }
 
         IAsyncOperation[] missions;
-        public bool IsInitializationComplete { get; private set; }
         public GameData Data { get; private set; }
-
 
         /// <summary>
         /// 对内容进行初始化;
         /// </summary>
-        void Awake()
+        protected override void Awake()
         {
-            IsInitializationComplete = false;
+            base.Awake();
             ResourcePath.Initialize();
             Initialize();
         }
@@ -44,6 +42,19 @@ namespace KouXiaGu
                     Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
                     GameData.CreateAsync().Subscribe(OnGameDataCompleted, OnFaulted),
                 };
+            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
+        }
+
+        void OnCompleted(IList<IAsyncOperation> operations)
+        {
+            OnCompleted();
+            Debug.Log("游戏初始化完毕;");
+        }
+
+        void OnFaulted(IList<IAsyncOperation> operations)
+        {
+            AggregateException ex = operations.ToAggregateException();
+            OnFaulted(ex);
         }
 
         void OnFaulted(IAsyncOperation operation)
