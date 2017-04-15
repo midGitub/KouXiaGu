@@ -9,7 +9,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public abstract class TerrainAssetReader<T, TInfo>
+    public abstract class TerrainAssetReader<T, TInfo> 
         where TInfo : ElementInfo
     {
 
