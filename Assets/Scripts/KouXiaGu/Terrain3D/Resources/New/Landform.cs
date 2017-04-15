@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using KouXiaGu.World;
 using UnityEngine;
@@ -96,10 +94,10 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        void Destroy(Texture tex)
+        void Destroy(UnityEngine.Object item)
         {
 #if UNITY_EDITOR
-            GameObject.DestroyImmediate(tex);
+            GameObject.DestroyImmediate(item);
 #else
             GameObject.Destroy(tex);
 #endif
