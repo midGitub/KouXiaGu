@@ -100,7 +100,7 @@ namespace KouXiaGu.Terrain3D
 #if UNITY_EDITOR
             GameObject.DestroyImmediate(item);
 #else
-            GameObject.Destroy(tex);
+            GameObject.Destroy(item);
 #endif
         }
 

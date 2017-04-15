@@ -34,21 +34,13 @@ namespace KouXiaGu.Terrain3D
 
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
 
-        class Tt : ISegmented
-        {
-            bool ISegmented.KeepWait()
-            {
-                return true;
-            }
-        }
-
         /// <summary>
         /// 初始化方法;
         /// </summary>
         class TerrainResourceCreater : AsyncOperation<TerrainResource>
         {
             const string assetBundleName = "terrain";
-            static readonly ISegmented DefaultSegmented = new SegmentedBlock();
+            static readonly ISegmented DefaultSegmented = new SegmentedFalse();
 
             public static string AssetBundleFilePath
             {

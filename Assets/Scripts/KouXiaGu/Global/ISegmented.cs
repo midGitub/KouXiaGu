@@ -10,13 +10,18 @@ namespace KouXiaGu
     public interface ISegmented
     {
         /// <summary>
+        /// 重新开始计算;
+        /// </summary>
+        void Restart();
+
+        /// <summary>
         /// 若需要等待返回true,不需要等待返回false;
         /// </summary>
         bool KeepWait();
     }
 
     /// <summary>
-    /// 秒数过后一个停顿;
+    /// 秒数过后进行停顿;
     /// </summary>
     public class SegmentedTime : ISegmented
     {
@@ -29,24 +34,19 @@ namespace KouXiaGu
         float seconds;
         float before;
 
-        public void Start()
+        public void Restart()
         {
             before = Time.realtimeSinceStartup;
         }
 
         public bool KeepWait()
         {
-            return Time.realtimeSinceStartup - before < seconds;
-        }
-
-        public void Reset()
-        {
-            before = 0;
+            return Time.realtimeSinceStartup - before > seconds;
         }
     }
 
     /// <summary>
-    /// 当计数超过最大计数值时等待几秒;
+    /// 当计数超过最大计数值时停顿;
     /// </summary>
     public class SegmentedCounter : ISegmented
     {
@@ -59,24 +59,28 @@ namespace KouXiaGu
         public int Maximum { get; set; }
         public int Count { get; private set; }
 
+        public void Restart()
+        {
+            Count = 0;
+        }
+
         public bool KeepWait()
         {
-            if (Count > Maximum)
-            {
-                Count = 0;
-                return true;
-            }
-
             Count++;
-            return false;
+            return Maximum < Count;
         }
     }
 
     /// <summary>
     /// 永远返回 false,;
     /// </summary>
-    public class SegmentedBlock : ISegmented
+    public class SegmentedFalse : ISegmented
     {
+        public void Restart()
+        {
+            return;
+        }
+
         public bool KeepWait()
         {
             return false;

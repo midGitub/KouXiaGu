@@ -368,6 +368,7 @@ namespace KouXiaGu
         {
             try
             {
+                Segmented.Restart();
                 while (!Segmented.KeepWait())
                 {
                     if(!coroutine.MoveNext())
