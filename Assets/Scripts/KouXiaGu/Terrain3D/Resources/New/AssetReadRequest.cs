@@ -23,8 +23,6 @@ namespace KouXiaGu.Terrain3D
         {
             return assetBundle.LoadAsset<Texture>(name);
         }
-
-
     }
 
 }

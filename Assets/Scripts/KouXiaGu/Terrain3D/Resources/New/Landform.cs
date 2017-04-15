@@ -40,6 +40,7 @@ namespace KouXiaGu.Terrain3D
         public string DiffuseBlendTex { get; set; }
     }
 
+
     /// <summary>
     /// 地貌贴图信息;
     /// </summary>
@@ -139,7 +140,7 @@ namespace KouXiaGu.Terrain3D
             {
                 TerrainLandform item;
                 if (TryReadAndReport(info, out item))
-                    dictionary.Add(info.ID, item);
+                    dictionary.AddOrUpdate(info.ID, item);
                 yield return null;
             }
             OnCompleted(dictionary);

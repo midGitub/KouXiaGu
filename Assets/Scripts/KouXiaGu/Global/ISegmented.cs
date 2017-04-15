@@ -9,9 +9,9 @@ namespace KouXiaGu
     public interface ISegmented
     {
         /// <summary>
-        /// 若需要中断返回 true, 否则返回 false;
+        /// 若需要等待返回true,不需要等待返回false;
         /// </summary>
-        bool Interrupt();
+        bool KeepWait();
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace KouXiaGu
         public int Maximum { get; set; }
         public int Count { get; private set; }
 
-        public bool Interrupt()
+        public bool KeepWait()
         {
             if (Count > Maximum)
             {
@@ -46,7 +46,7 @@ namespace KouXiaGu
     /// </summary>
     public class SegmentedBlock : ISegmented
     {
-        public bool Interrupt()
+        public bool KeepWait()
         {
             return false;
         }

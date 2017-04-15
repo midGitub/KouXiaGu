@@ -340,11 +340,14 @@ namespace KouXiaGu
         public TResult Result { get; private set; }
         public AggregateException Exception { get; private set; }
 
-        public object Current
+        object IEnumerator.Current
         {
-            get { return coroutine.Current; }
+            get { return null; }
         }
 
+        /// <summary>
+        /// 仅支持返回 Null;
+        /// </summary>
         protected abstract IEnumerator Operate();
         void IEnumerator.Reset() { }
 
@@ -365,17 +368,28 @@ namespace KouXiaGu
         {
             try
             {
-                while (!IsCompleted && coroutine.MoveNext())
+                while (!Segmented.KeepWait())
                 {
-                    if (Segmented.Interrupt())
-                        return true;
+                    if(!coroutine.MoveNext())
+                    {
+                        CompletedCheck();
+                        return false;
+                    }
                 }
-                return false;
+                return true;
             }
             catch (Exception ex)
             {
                 OnFaulted(ex);
                 return false;
+            }
+        }
+
+        void CompletedCheck()
+        {
+            if (!IsCompleted)
+            {
+                Debug.LogWarning("在协程完毕时未调用 OnCompleted(TResult result);");
             }
         }
 
