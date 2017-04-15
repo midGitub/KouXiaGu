@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.World;
 using UnityEngine;
 using System.IO;
@@ -18,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IAsyncOperation<TerrainResource> ReadAsync(WorldElementResource elementInfos)
         {
-            return TerrainResourceCreater.Create(elementInfos);
+            return new TerrainResourceCreater(elementInfos);
         }
 
         /// <summary>
@@ -29,13 +28,17 @@ namespace KouXiaGu.Terrain3D
             LandformInfos = new Dictionary<int, TerrainLandform>();
         }
 
+        public TerrainResource(bool none)
+        {
+        }
+
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
 
 
         /// <summary>
         /// 初始化方法;
         /// </summary>
-        class TerrainResourceCreater : OperationMonoBehaviour<TerrainResource>
+        class TerrainResourceCreater : AsyncOperation<TerrainResource>
         {
             const string assetBundleName = "terrain";
             static readonly ISegmented DefaultSegmented = new SegmentedBlock();
@@ -46,31 +49,15 @@ namespace KouXiaGu.Terrain3D
                 get { return ResourcePath.CombineAssetBundle(assetBundleName); }
             }
 
-            /// <summary>
-            /// 需要在Unity线程内调用;
-            /// </summary>
-            public static IAsyncOperation<TerrainResource> Create(WorldElementResource elementInfos)
+            public TerrainResourceCreater(WorldElementResource elementInfos)
             {
-                var gameObject = new GameObject("TerrainResourceReader", typeof(TerrainResourceCreater));
-                var item = gameObject.GetComponent<TerrainResourceCreater>();
-                item.elementInfos = elementInfos;
-                return item;
-            }
-
-
-            TerrainResourceCreater()
-            {
+                this.elementInfos = elementInfos;
+                resource = new TerrainResource(false);
+                GameInitializer._StartCoroutine(Read());
             }
 
             WorldElementResource elementInfos;
             TerrainResource resource;
-
-            protected override void Awake()
-            {
-                base.Awake();
-                resource = new TerrainResource();
-                StartCoroutine(Read());
-            }
 
             IEnumerator Read()
             {
@@ -85,18 +72,19 @@ namespace KouXiaGu.Terrain3D
                     yield break;
                 }
 
-                var landformRequest = new LandformReader(assetBundle, DefaultSegmented, elementInfos);
+                var landformRequest = new LandformReadRequest(assetBundle, DefaultSegmented, elementInfos);
                 yield return landformRequest;
                 if (landformRequest.IsFaulted)
                 {
                     Debug.LogError(landformRequest.Exception);
+                    resource.LandformInfos = new Dictionary<int, TerrainLandform>();
                 }
-                resource.LandformInfos = landformRequest.Result;
-
-                //yield return LandformReader.Read(assetBundle, resource.LandformInfos, elementInfos.LandformInfos);
+                else
+                {
+                    resource.LandformInfos = landformRequest.Result;
+                }
 
                 assetBundle.Unload(false);
-                Destroy(gameObject);
                 OnCompleted(resource);
             }
 

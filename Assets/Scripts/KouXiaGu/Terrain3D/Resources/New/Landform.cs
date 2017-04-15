@@ -82,42 +82,66 @@ namespace KouXiaGu.Terrain3D
         {
             if (!IsEmpty)
             {
-                GameObject.Destroy(DiffuseTex);
+                Destroy(DiffuseTex);
                 DiffuseTex = null;
 
-                GameObject.Destroy(DiffuseBlendTex);
+                Destroy(DiffuseBlendTex);
                 DiffuseBlendTex = null;
 
-                GameObject.Destroy(HeightTex);
+                Destroy(HeightTex);
                 HeightTex = null;
 
-                GameObject.Destroy(HeightBlendTex);
+                Destroy(HeightBlendTex);
                 HeightBlendTex = null;
             }
         }
+
+        void Destroy(Texture tex)
+        {
+#if UNITY_EDITOR
+            GameObject.DestroyImmediate(tex);
+#else
+            GameObject.Destroy(tex);
+#endif
+        }
+
     }
 
-
-    public class LandformReader : AssetReadRequest<Dictionary<int, TerrainLandform>>
+    /// <summary>
+    /// 资源读取;
+    /// </summary>
+    public class LandformReadRequest : AssetReadRequest<Dictionary<int, TerrainLandform>>
     {
-        public LandformReader(AssetBundle assetBundle, ISegmented segmented, WorldElementResource elementInfo) 
+
+        public LandformReadRequest(AssetBundle assetBundle, ISegmented segmented, IEnumerable<LandformInfo> infos)
             : base(assetBundle, segmented)
         {
-            this.elementInfo = elementInfo;
+            this.infos = infos;
             dictionary = new Dictionary<int, TerrainLandform>();
         }
 
-        WorldElementResource elementInfo;
+        public LandformReadRequest(AssetBundle assetBundle, ISegmented segmented, WorldElementResource elementInfo) 
+            : this(assetBundle, segmented, elementInfo.LandformInfos.Values)
+        {
+        }
+
+        IEnumerable<LandformInfo> infos;
         Dictionary<int, TerrainLandform> dictionary;
+
+        protected override void OnFaulted(Exception ex)
+        {
+            base.OnFaulted(ex);
+            dictionary.Values.DisposeAll();
+            dictionary.Clear();
+        }
 
         protected override IEnumerator Operate()
         {
-            foreach (var info in elementInfo.LandformInfos)
+            foreach (var info in infos)
             {
                 TerrainLandform item;
-                if (TryReadAndReport(info.Value, out item))
-                    dictionary.Add(info.Key, item);
-                throw new Exception();
+                if (TryReadAndReport(info, out item))
+                    dictionary.Add(info.ID, item);
                 yield return null;
             }
             OnCompleted(dictionary);
@@ -132,7 +156,7 @@ namespace KouXiaGu.Terrain3D
             {
                 return true;
             }
-            Debug.LogWarning("无法读取[" + typeof(TerrainLandform).Name + "],Info:" + info.ToString());
+            Debug.LogWarning("无法读取[TerrainLandform],Info:" + info.ToString());
             return false;
         }
 
@@ -145,26 +169,6 @@ namespace KouXiaGu.Terrain3D
                 DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
                 HeightTex = ReadTexture(tInfo.HeightTex),
                 HeightBlendTex = ReadTexture(tInfo.HeightBlendTex),
-            };
-            return item.IsLoadComplete;
-        }
-    }
-
-    public class OLandformReader : TerrainAssetReader<TerrainLandform, LandformInfo>
-    {
-        public OLandformReader(ISegmented segmented) : base(segmented)
-        {
-        }
-
-        public override bool TryRead(AssetBundle asset, LandformInfo info, out TerrainLandform item)
-        {
-            TerrainLandformInfo tInfo = info.Terrain;
-            item = new TerrainLandform(info)
-            {
-                DiffuseTex = ReadTexture(asset, tInfo.DiffuseTex),
-                DiffuseBlendTex = ReadTexture(asset, tInfo.DiffuseBlendTex),
-                HeightTex = ReadTexture(asset, tInfo.HeightTex),
-                HeightBlendTex = ReadTexture(asset, tInfo.HeightBlendTex),
             };
             return item.IsLoadComplete;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Globalization;
@@ -15,6 +16,16 @@ namespace KouXiaGu
     [DisallowMultipleComponent]
     public class GameInitializer : OperationMonoBehaviour
     {
+        public static GameInitializer Instance { get; private set; }
+
+        /// <summary>
+        /// 提供初始化使用的协程方法;
+        /// </summary>
+        internal static Coroutine _StartCoroutine(IEnumerator routine)
+        {
+            return Instance.StartCoroutine(routine);
+        }
+
         GameInitializer()
         {
         }
@@ -27,6 +38,7 @@ namespace KouXiaGu
         /// </summary>
         protected override void Awake()
         {
+            Instance = this;
             base.Awake();
             ResourcePath.Initialize();
             Initialize();
