@@ -131,17 +131,22 @@ namespace KouXiaGu
         }
 
         [ContextMenu("输出异常")]
-        public void DebugError()
+        public string DebugError()
         {
             const string prefix = "[游戏初始程序]";
+            string log;
+
             if (IsFaulted)
             {
-                Debug.Log(prefix + Exception);
+                log = prefix + Exception;
             }
             else
             {
-                Debug.Log(prefix + "未出现异常;");
+                log = prefix + "未出现异常;";
             }
+
+            Debug.Log(log);
+            return log;
         }
 
     }
