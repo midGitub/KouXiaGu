@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace KouXiaGu
 {
@@ -15,7 +16,37 @@ namespace KouXiaGu
     }
 
     /// <summary>
-    /// 当计数超过最大计数值时重置计数;
+    /// 秒数过后一个停顿;
+    /// </summary>
+    public class SegmentedTime : ISegmented
+    {
+        public SegmentedTime(float seconds)
+        {
+            this.seconds = seconds;
+
+        }
+
+        float seconds;
+        float before;
+
+        public void Start()
+        {
+            before = Time.realtimeSinceStartup;
+        }
+
+        public bool KeepWait()
+        {
+            return Time.realtimeSinceStartup - before < seconds;
+        }
+
+        public void Reset()
+        {
+            before = 0;
+        }
+    }
+
+    /// <summary>
+    /// 当计数超过最大计数值时等待几秒;
     /// </summary>
     public class SegmentedCounter : ISegmented
     {
