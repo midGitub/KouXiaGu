@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Globalization;
-using KouXiaGu.KeyInput;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World;
 using UnityEngine;
@@ -48,7 +46,7 @@ namespace KouXiaGu
         void OnCompleted(IList<IAsyncOperation> operations)
         {
             OnCompleted();
-            Debug.Log("游戏初始化完毕;");
+            Debug.Log("游戏资源初始化完毕;");
         }
 
         void OnFaulted(IList<IAsyncOperation> operations)

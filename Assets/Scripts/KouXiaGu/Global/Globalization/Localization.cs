@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using KouXiaGu.Collections;
 using KouXiaGu.Rx;
-using UnityEngine;
 
 namespace KouXiaGu.Globalization
 {
