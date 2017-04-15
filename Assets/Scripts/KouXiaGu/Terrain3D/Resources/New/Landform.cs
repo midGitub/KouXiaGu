@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml.Serialization;
 using KouXiaGu.World;
 using UnityEngine;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -97,37 +98,28 @@ namespace KouXiaGu.Terrain3D
     }
 
 
-    public class LandformRead : CoroutineOperation<Dictionary<int, TerrainLandform>>
+    public class LandformReader : AssetReadRequest<Dictionary<int, TerrainLandform>>
     {
-        public LandformRead(AssetBundle assetBundle, WorldElementResource elementInfo, ISegmented segmented)
+        public LandformReader(AssetBundle assetBundle, ISegmented segmented, WorldElementResource elementInfo) 
+            : base(assetBundle, segmented)
         {
-
+            this.elementInfo = elementInfo;
+            dictionary = new Dictionary<int, TerrainLandform>();
         }
 
-        Dictionary<int, TerrainLandform> dictionary;
-        AssetBundle assetBundle;
         WorldElementResource elementInfo;
-        ISegmented Segmented;
-
-        Texture ReadTexture(string name)
-        {
-            return assetBundle.LoadAsset<Texture>(name);
-        }
+        Dictionary<int, TerrainLandform> dictionary;
 
         protected override IEnumerator Operate()
         {
-            dictionary = new Dictionary<int, TerrainLandform>();
-
             foreach (var info in elementInfo.LandformInfos)
             {
                 TerrainLandform item;
                 if (TryReadAndReport(info.Value, out item))
                     dictionary.Add(info.Key, item);
-
-                if (Segmented.Interrupt())
-                    yield return null;
+                throw new Exception();
+                yield return null;
             }
-
             OnCompleted(dictionary);
         }
 
@@ -155,11 +147,6 @@ namespace KouXiaGu.Terrain3D
                 HeightBlendTex = ReadTexture(tInfo.HeightBlendTex),
             };
             return item.IsLoadComplete;
-        }
-
-        public override void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 

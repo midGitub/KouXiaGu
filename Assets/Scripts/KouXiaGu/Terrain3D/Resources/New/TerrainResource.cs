@@ -10,7 +10,7 @@ using System.IO;
 namespace KouXiaGu.Terrain3D
 {
 
-    public class TerrainResource : IDisposable
+    public class TerrainResource
     {
 
         /// <summary>
@@ -31,10 +31,6 @@ namespace KouXiaGu.Terrain3D
 
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// 初始化方法;
@@ -89,7 +85,15 @@ namespace KouXiaGu.Terrain3D
                     yield break;
                 }
 
-                yield return LandformReader.Read(assetBundle, resource.LandformInfos, elementInfos.LandformInfos);
+                var landformRequest = new LandformReader(assetBundle, DefaultSegmented, elementInfos);
+                yield return landformRequest;
+                if (landformRequest.IsFaulted)
+                {
+                    Debug.LogError(landformRequest.Exception);
+                }
+                resource.LandformInfos = landformRequest.Result;
+
+                //yield return LandformReader.Read(assetBundle, resource.LandformInfos, elementInfos.LandformInfos);
 
                 assetBundle.Unload(false);
                 Destroy(gameObject);

@@ -321,18 +321,20 @@ namespace KouXiaGu
     /// <summary>
     /// 表示在协程内操作;
     /// </summary>
-    public abstract class CoroutineOperation<TResult> : IAsyncOperation<TResult>, IEnumerator<TResult>
+    public abstract class CoroutineOperation<TResult> : IAsyncOperation<TResult>, IEnumerator
     {
-        public CoroutineOperation()
+        public CoroutineOperation(ISegmented segmented)
         {
             IsCompleted = false;
             IsFaulted = false;
             Result = default(TResult);
             Exception = null;
             this.coroutine = Operate();
+            Segmented = segmented;
         }
 
-        IEnumerator<TResult> coroutine;
+        IEnumerator coroutine;
+        public ISegmented Segmented { get; private set; }
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
@@ -343,13 +345,7 @@ namespace KouXiaGu
             get { return coroutine.Current; }
         }
 
-        TResult IEnumerator<TResult>.Current
-        {
-            get { return coroutine.Current; }
-        }
-
         protected abstract IEnumerator Operate();
-        public abstract void Dispose();
         void IEnumerator.Reset() { }
 
         protected void OnCompleted(TResult result)
@@ -358,7 +354,7 @@ namespace KouXiaGu
             IsCompleted = true;
         }
 
-        void OnFaulted(Exception ex)
+        protected virtual void OnFaulted(Exception ex)
         {
             Exception = ex as AggregateException ?? new AggregateException(ex);
             IsFaulted = true;
@@ -369,7 +365,12 @@ namespace KouXiaGu
         {
             try
             {
-                return coroutine.MoveNext();
+                while (!IsCompleted && coroutine.MoveNext())
+                {
+                    if (Segmented.Interrupt())
+                        return true;
+                }
+                return false;
             }
             catch (Exception ex)
             {

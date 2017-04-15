@@ -69,7 +69,7 @@ namespace KouXiaGu.Collections
         public static bool TryGetFirst<T>(this IEnumerable<T> collection, out T item)
         {
             if (collection == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("collection");
 
             foreach (var value in collection)
             {
@@ -79,6 +79,22 @@ namespace KouXiaGu.Collections
 
             item = default(T);
             return false;
+        }
+
+
+        /// <summary>
+        /// 批量释放;
+        /// </summary>
+        public static void DisposeAll<T>(this IEnumerable<T> collection)
+            where T : IDisposable
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+
+            foreach (var item in collection)
+            {
+                item.Dispose();
+            }
         }
 
     }

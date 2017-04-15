@@ -9,18 +9,19 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public abstract class ResourceReadRequest<T, TResult> : CoroutineOperation<TResult>
+    public abstract class AssetReadRequest<TResult> : CoroutineOperation<TResult>
     {
-        public ResourceReadRequest(T item, AssetBundle assetBundle)
+        public AssetReadRequest(AssetBundle assetBundle, ISegmented segmented) 
+            : base(segmented)
         {
-            this.AssetBundle = assetBundle;
+            this.assetBundle = assetBundle;
         }
 
-        public AssetBundle AssetBundle { get; private set; }
+        protected AssetBundle assetBundle { get; private set; }
 
-        protected override IEnumerator<TResult> Operate()
+        protected Texture ReadTexture(string name)
         {
-            throw new NotImplementedException();
+            return assetBundle.LoadAsset<Texture>(name);
         }
 
 
