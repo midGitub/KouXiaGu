@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using UnityEngine;
 
@@ -307,6 +306,76 @@ namespace KouXiaGu
             Exception = ex as AggregateException ?? new AggregateException(ex);
             IsFaulted = true;
             IsCompleted = true;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() +
+                "[IsCompleted:" + IsCompleted +
+                ",IsFaulted:" + IsFaulted +
+                ",Exception:" + Exception + "]";
+        }
+    }
+
+
+    /// <summary>
+    /// 表示在协程内操作;
+    /// </summary>
+    public abstract class CoroutineOperation<TResult> : IAsyncOperation<TResult>, IEnumerator<TResult>
+    {
+        public CoroutineOperation()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            Result = default(TResult);
+            Exception = null;
+            this.coroutine = Operate();
+        }
+
+        IEnumerator<TResult> coroutine;
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public TResult Result { get; private set; }
+        public AggregateException Exception { get; private set; }
+
+        public object Current
+        {
+            get { return coroutine.Current; }
+        }
+
+        TResult IEnumerator<TResult>.Current
+        {
+            get { return coroutine.Current; }
+        }
+
+        protected abstract IEnumerator Operate();
+        public abstract void Dispose();
+        void IEnumerator.Reset() { }
+
+        protected void OnCompleted(TResult result)
+        {
+            Result = result;
+            IsCompleted = true;
+        }
+
+        void OnFaulted(Exception ex)
+        {
+            Exception = ex as AggregateException ?? new AggregateException(ex);
+            IsFaulted = true;
+            IsCompleted = true;
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            try
+            {
+                return coroutine.MoveNext();
+            }
+            catch (Exception ex)
+            {
+                OnFaulted(ex);
+                return false;
+            }
         }
 
         public override string ToString()

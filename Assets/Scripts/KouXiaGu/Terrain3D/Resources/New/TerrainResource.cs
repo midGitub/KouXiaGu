@@ -10,7 +10,7 @@ using System.IO;
 namespace KouXiaGu.Terrain3D
 {
 
-    public class TerrainResource
+    public class TerrainResource : IDisposable
     {
 
         /// <summary>
@@ -31,6 +31,11 @@ namespace KouXiaGu.Terrain3D
 
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
 
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 初始化方法;
         /// </summary>
@@ -38,7 +43,7 @@ namespace KouXiaGu.Terrain3D
         {
             const string assetBundleName = "terrain";
             static readonly ISegmented DefaultSegmented = new SegmentedBlock();
-            internal static readonly LandformReader LandformReader = new LandformReader(DefaultSegmented);
+            internal static readonly OLandformReader LandformReader = new OLandformReader(DefaultSegmented);
 
             public static string AssetBundleFilePath
             {
@@ -48,7 +53,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 需要在Unity线程内调用;
             /// </summary>
-            public static TerrainResourceCreater Create(WorldElementResource elementInfos)
+            public static IAsyncOperation<TerrainResource> Create(WorldElementResource elementInfos)
             {
                 var gameObject = new GameObject("TerrainResourceReader", typeof(TerrainResourceCreater));
                 var item = gameObject.GetComponent<TerrainResourceCreater>();

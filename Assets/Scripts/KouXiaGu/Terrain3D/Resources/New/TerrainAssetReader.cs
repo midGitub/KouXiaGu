@@ -9,6 +9,24 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    public abstract class ResourceReadRequest<T, TResult> : CoroutineOperation<TResult>
+    {
+        public ResourceReadRequest(T item, AssetBundle assetBundle)
+        {
+            this.AssetBundle = assetBundle;
+        }
+
+        public AssetBundle AssetBundle { get; private set; }
+
+        protected override IEnumerator<TResult> Operate()
+        {
+            throw new NotImplementedException();
+        }
+
+
+    }
+
+
     public abstract class TerrainAssetReader<T, TInfo> 
         where TInfo : ElementInfo
     {
@@ -82,4 +100,5 @@ namespace KouXiaGu.Terrain3D
             }
         }
     }
+
 }
