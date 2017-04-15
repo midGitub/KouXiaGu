@@ -56,14 +56,13 @@ namespace KouXiaGu
                     {
                         data.Terrain = terrainResult.Result;
                         OnCompleted(data);
-                    }, OnError);
+                    }, OnFaulted);
 
-                }, OnError);
+                }, OnFaulted);
             }
 
-            void OnError<T>(IAsyncOperation<T> operation)
+            void OnFaulted<T>(IAsyncOperation<T> operation)
             {
-                Debug.LogError(operation.Exception);
                 OnFaulted(operation.Exception);
             }
 

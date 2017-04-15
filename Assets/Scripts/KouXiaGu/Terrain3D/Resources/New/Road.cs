@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Serialization;
+using KouXiaGu.Collections;
 using KouXiaGu.World;
 using UnityEngine;
 
@@ -18,13 +18,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 高度调整贴图名;
         /// </summary>
-        [XmlElement("HeightTex")]
+        [XmlElement("HeightAdjustTex")]
         public string HeightAdjustTex;
 
         /// <summary>
         /// 高度调整的权重贴图;
         /// </summary>
-        [XmlElement("HeightBlendTex")]
+        [XmlElement("HeightAdjustBlendTex")]
         public string HeightAdjustBlendTex;
 
         /// <summary>
@@ -43,8 +43,12 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路 地形贴图资源;
     /// </summary>
-    public class TerrainRoad : IDisposable
+    public class TerrainRoad : TerrainElementInfo<RoadInfo>, IDisposable
     {
+        public TerrainRoad(RoadInfo info) : base(info)
+        {
+        }
+
         public Texture DiffuseTex { get; internal set; }
         public Texture DiffuseBlendTex { get; internal set; }
         public Texture HeightAdjustTex { get; internal set; }
@@ -103,39 +107,64 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路资源读取;
     /// </summary>
-    public class TerrainRoadReader : AssetReadRequest<Dictionary<int, TerrainRoad>>
+    public class RoadReadRequest : AssetReadRequest<Dictionary<int, TerrainRoad>>
     {
-        public TerrainRoadReader(AssetBundle assetBundle, ISegmented segmented, IEnumerable<RoadInfo> infos) 
+
+        public RoadReadRequest(AssetBundle assetBundle, ISegmented segmented, IEnumerable<RoadInfo> infos) 
             : base(assetBundle, segmented)
         {
             this.infos = infos;
             dictionary = new Dictionary<int, TerrainRoad>();
         }
 
+        public RoadReadRequest(AssetBundle assetBundle, ISegmented segmented, WorldElementResource elementInfo)
+            : this(assetBundle, segmented, elementInfo.RoadInfos.Values)
+        {
+        }
+
         IEnumerable<RoadInfo> infos;
         Dictionary<int, TerrainRoad> dictionary;
 
+        protected override void OnFaulted(Exception ex)
+        {
+            base.OnFaulted(ex);
+            dictionary.Values.DisposeAll();
+            dictionary.Clear();
+        }
+
         protected override IEnumerator Operate()
         {
-            OnCompleted(dictionary);
-            throw new NotImplementedException();
-        }
-
-        public TerrainRoad Read(TerrainRoadInfo info, AssetBundle terrain)
-        {
-            TerrainRoad item = new TerrainRoad()
+            foreach (var info in infos)
             {
-                DiffuseTex = LoadTexture(terrain, info.DiffuseTex),
-                DiffuseBlendTex = LoadTexture(terrain, info.DiffuseBlendTex),
-                HeightAdjustTex = LoadTexture(terrain, info.HeightAdjustTex),
-                HeightAdjustBlendTex = LoadTexture(terrain, info.HeightAdjustTex),
-            };
-            return item;
+                TerrainRoad item;
+                if (TryReadAndReport(info, out item))
+                    dictionary.AddOrUpdate(info.ID, item);
+                yield return null;
+            }
+            OnCompleted(dictionary);
         }
 
-        Texture LoadTexture(AssetBundle assetBundle, string name)
+        bool TryReadAndReport(RoadInfo info, out TerrainRoad item)
         {
-            return assetBundle.LoadAsset<Texture>(name);
+            if (TryRead(info, out item))
+            {
+                return true;
+            }
+            Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
+            return false;
+        }
+
+        bool TryRead(RoadInfo info, out TerrainRoad item)
+        {
+            TerrainRoadInfo tInfo = info.Terrain;
+            item = new TerrainRoad(info)
+            {
+                DiffuseTex = ReadTexture(tInfo.DiffuseTex),
+                DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
+                HeightAdjustTex = ReadTexture(tInfo.HeightAdjustTex),
+                HeightAdjustBlendTex = ReadTexture(tInfo.HeightAdjustTex),
+            };
+            return item.IsLoadComplete;
         }
 
     }

@@ -57,13 +57,18 @@ namespace KouXiaGu
         public bool IsFaulted { get; private set; }
         public AggregateException Exception { get; private set; }
 
-        protected void OnCompleted()
+        protected virtual void OnCompleted()
         {
             IsCompleted = true;
         }
 
-        protected void OnFaulted(Exception ex)
+        protected virtual void OnFaulted(Exception ex)
         {
+            if (IsFaulted && Exception != null)
+            {
+                Exception = new AggregateException(Exception, ex);
+            }
+
             Exception = ex as AggregateException ?? new AggregateException(ex);
             IsFaulted = true;
             IsCompleted = true;
@@ -96,14 +101,19 @@ namespace KouXiaGu
         public TResult Result { get; private set; }
         public AggregateException Exception { get; private set; }
 
-        protected void OnCompleted(TResult result)
+        protected virtual void OnCompleted(TResult result)
         {
             Result = result;
             IsCompleted = true;
         }
 
-        protected void OnFaulted(Exception ex)
+        protected virtual void OnFaulted(Exception ex)
         {
+            if (IsFaulted && Exception != null)
+            {
+                Exception = new AggregateException(Exception, ex);
+            }
+
             Exception = ex as AggregateException ?? new AggregateException(ex);
             IsFaulted = true;
             IsCompleted = true;
@@ -118,79 +128,49 @@ namespace KouXiaGu
         }
     }
 
+    
 
     /// <summary>
     /// 表示在多线程内进行的操作;
     /// </summary>
-    public abstract class ThreadOperation : IAsyncOperation
+    public abstract class ThreadOperation : AsyncOperation, IAsyncOperation
     {
-        public ThreadOperation()
-        {
-            IsCompleted = false;
-            IsFaulted = false;
-            Exception = null;
-        }
-
-        public bool IsCompleted { get; private set; }
-        public bool IsFaulted { get; private set; }
-        public AggregateException Exception { get; private set; }
-
-        /// <summary>
-        /// 开始在多线程内操作,手动开始;
-        /// </summary>
-        public void Start()
-        {
-            ThreadPool.QueueUserWorkItem(OperateAsync);
-        }
-
-        void OperateAsync(object state)
-        {
-            try
-            {
-                Operate();
-            }
-            catch (Exception ex)
-            {
-                Exception = ex as AggregateException ?? new AggregateException(ex);
-                IsFaulted = true;
-            }
-            finally
-            {
-                IsCompleted = true;
-            }
-        }
-
         /// <summary>
         /// 需要在线程内进行的操作;
         /// </summary>
         protected abstract void Operate();
 
-        public override string ToString()
+        /// <summary>
+        /// 开始在多线程内操作,手动开始;
+        /// </summary>
+        public void Start()
         {
-            return base.ToString() +
-                "[IsCompleted:" + IsCompleted +
-                ",IsFaulted:" + IsFaulted +
-                ",Exception:" + Exception + "]";
+            ThreadPool.QueueUserWorkItem(OperateAsync);
+        }
+
+        protected virtual void OperateAsync(object state)
+        {
+            try
+            {
+                Operate();
+                OnCompleted();
+            }
+            catch (Exception ex)
+            {
+                OnFaulted(ex);
+            }
         }
     }
 
     /// <summary>
     /// 表示在多线程内进行的操作;
     /// </summary>
-    public abstract class ThreadOperation<TResult> : IAsyncOperation<TResult>
+    public abstract class ThreadOperation<TResult> : AsyncOperation<TResult>, IAsyncOperation<TResult>
     {
-        public ThreadOperation()
-        {
-            IsCompleted = false;
-            IsFaulted = false;
-            Result = default(TResult);
-            Exception = null;
-        }
-
-        public bool IsCompleted { get; private set; }
-        public bool IsFaulted { get; private set; }
-        public TResult Result { get; private set; }
-        public AggregateException Exception { get; private set; }
+        /// <summary>
+        /// 需要在线程内进行的操作;
+        /// </summary>
+        protected abstract TResult Operate();
 
         /// <summary>
         /// 开始在多线程内操作,手动开始;
@@ -204,32 +184,16 @@ namespace KouXiaGu
         {
             try
             {
-                Result = Operate();
+                var result = Operate();
+                OnCompleted(result);
             }
             catch (Exception ex)
             {
-                Exception = ex as AggregateException ?? new AggregateException(ex);
-                IsFaulted = true;
+                OnFaulted(ex);
             }
-            finally
-            {
-                IsCompleted = true;
-            }
-        }
-
-        /// <summary>
-        /// 需要在线程内进行的操作;
-        /// </summary>
-        protected abstract TResult Operate();
-
-        public override string ToString()
-        {
-            return base.ToString() +
-                "[IsCompleted:" + IsCompleted +
-                ",IsFaulted:" + IsFaulted +
-                ",Exception:" + Exception + "]";
         }
     }
+
 
 
     /// <summary>
@@ -321,24 +285,16 @@ namespace KouXiaGu
     /// <summary>
     /// 表示在协程内操作;
     /// </summary>
-    public abstract class CoroutineOperation<TResult> : IAsyncOperation<TResult>, IEnumerator
+    public abstract class CoroutineOperation<TResult> : AsyncOperation<TResult>, IEnumerator
     {
-        public CoroutineOperation(ISegmented segmented)
+        public CoroutineOperation(ISegmented segmented) : base()
         {
-            IsCompleted = false;
-            IsFaulted = false;
-            Result = default(TResult);
-            Exception = null;
             this.coroutine = Operate();
             Segmented = segmented;
         }
 
         IEnumerator coroutine;
         public ISegmented Segmented { get; private set; }
-        public bool IsCompleted { get; private set; }
-        public bool IsFaulted { get; private set; }
-        public TResult Result { get; private set; }
-        public AggregateException Exception { get; private set; }
 
         object IEnumerator.Current
         {
@@ -350,19 +306,6 @@ namespace KouXiaGu
         /// </summary>
         protected abstract IEnumerator Operate();
         void IEnumerator.Reset() { }
-
-        protected void OnCompleted(TResult result)
-        {
-            Result = result;
-            IsCompleted = true;
-        }
-
-        protected virtual void OnFaulted(Exception ex)
-        {
-            Exception = ex as AggregateException ?? new AggregateException(ex);
-            IsFaulted = true;
-            IsCompleted = true;
-        }
 
         bool IEnumerator.MoveNext()
         {
@@ -394,13 +337,6 @@ namespace KouXiaGu
             }
         }
 
-        public override string ToString()
-        {
-            return base.ToString() +
-                "[IsCompleted:" + IsCompleted +
-                ",IsFaulted:" + IsFaulted +
-                ",Exception:" + Exception + "]";
-        }
     }
 
 }

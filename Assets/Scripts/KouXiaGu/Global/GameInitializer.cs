@@ -65,6 +65,7 @@ namespace KouXiaGu
         {
             AggregateException ex = operations.ToAggregateException();
             OnFaulted(ex);
+            Debug.LogError("游戏资源初始化失败;");
         }
 
         void OnFaulted(IAsyncOperation operation)
@@ -111,21 +112,36 @@ namespace KouXiaGu
 
         string GetWorldElementResourceLog(WorldElementResource item)
         {
-            string str = "[1.基础资源]" +
-               "\nRoad:" + item.RoadInfos.Count +
-               "\nLandform:" + item.LandformInfos.Count +
-               "\nBuilding:" + item.BuildingInfos.Count +
-               "\nProduct:" + item.ProductInfos.Count +
-               "\n";
+            string str = "[1.基础资源]"
+               + "\nLandform:" + item.LandformInfos.Count
+               + "\nRoad:" + item.RoadInfos.Count
+               + "\nBuilding:" + item.BuildingInfos.Count
+               + "\nProduct:" + item.ProductInfos.Count
+               + "\n";
             return str;
         }
 
         string GetTerrainResourceLog(TerrainResource item)
         {
-            string str = "[地形资源]" +
-               "\nLandform:" + item.LandformInfos.Count +
-               "\n";
+            string str = "[地形资源]"
+               + "\nLandform:" + item.LandformInfos.Count
+               + "\nRoad:" + item.RoadInfos.Count
+               + "\n";
             return str;
+        }
+
+        [ContextMenu("输出异常")]
+        public void DebugError()
+        {
+            const string prefix = "[游戏初始程序]";
+            if (IsFaulted)
+            {
+                Debug.Log(prefix + Exception);
+            }
+            else
+            {
+                Debug.Log(prefix + "未出现异常;");
+            }
         }
 
     }

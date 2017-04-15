@@ -26,6 +26,7 @@ namespace KouXiaGu.Terrain3D
         public TerrainResource()
         {
             LandformInfos = new Dictionary<int, TerrainLandform>();
+            RoadInfos = new Dictionary<int, TerrainRoad>();
         }
 
         public TerrainResource(bool none)
@@ -33,6 +34,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
+        public Dictionary<int, TerrainRoad> RoadInfos { get; private set; }
 
         /// <summary>
         /// 初始化方法;
@@ -50,42 +52,86 @@ namespace KouXiaGu.Terrain3D
             public TerrainResourceCreater(WorldElementResource elementInfos)
             {
                 this.elementInfos = elementInfos;
-                resource = new TerrainResource(false);
+                resource = new TerrainResource();
                 GameInitializer._StartCoroutine(Read());
             }
 
-            WorldElementResource elementInfos;
             TerrainResource resource;
+            WorldElementResource elementInfos;
+            AssetBundle assetBundle;
 
             IEnumerator Read()
             {
+                if (IsFaulted)
+                    goto _Last_;
+                yield return ReadAssetBundle();
+
+                if (IsFaulted)
+                    goto _Last_;
+                yield return ReadLandform(assetBundle);
+
+                if (IsFaulted)
+                    goto _Last_;
+                yield return ReadRoad(assetBundle);
+
+                _Last_:
+                LastOperation();
+            }
+
+            IEnumerator ReadAssetBundle()
+            {
                 AssetBundleCreateRequest bundleLoadRequest = AssetBundle.LoadFromFileAsync(AssetBundleFilePath);
                 yield return bundleLoadRequest;
-                AssetBundle assetBundle = bundleLoadRequest.assetBundle;
+                assetBundle = bundleLoadRequest.assetBundle;
+
                 if (assetBundle == null)
                 {
                     Exception ex = new FileNotFoundException("未找到地形资源包;");
                     Debug.LogError(ex);
                     OnFaulted(ex);
-                    yield break;
                 }
+            }
 
-                var landformRequest = new LandformReadRequest(assetBundle, DefaultSegmented, elementInfos);
-                yield return landformRequest;
-                if (landformRequest.IsFaulted)
+            void LastOperation()
+            {
+                if(assetBundle != null)
+                    assetBundle.Unload(false);
+
+                if(!IsCompleted)
+                    OnCompleted(resource);
+            }
+
+            IEnumerator ReadLandform(AssetBundle assetBundle)
+            {
+                var request = new LandformReadRequest(assetBundle, DefaultSegmented, elementInfos);
+                yield return request;
+
+                if (request.IsFaulted)
                 {
-                    Debug.LogError(landformRequest.Exception);
-                    resource.LandformInfos = new Dictionary<int, TerrainLandform>();
+                    Debug.LogError(request.Exception);
+                    OnFaulted(request.Exception);
                 }
                 else
                 {
-                    resource.LandformInfos = landformRequest.Result;
+                    resource.LandformInfos = request.Result;
                 }
-
-                assetBundle.Unload(false);
-                OnCompleted(resource);
             }
 
+            IEnumerator ReadRoad(AssetBundle assetBundle)
+            {
+                var request = new RoadReadRequest(assetBundle, DefaultSegmented, elementInfos);
+                yield return request;
+
+                if (request.IsFaulted)
+                {
+                    Debug.LogError(request.Exception);
+                    OnFaulted(request.Exception);
+                }
+                else
+                {
+                    resource.RoadInfos = request.Result;
+                }
+            }
 
         }
 
