@@ -16,7 +16,7 @@ namespace KouXiaGu
     public class GameData
     {
 
-        public static IAsyncOperation<GameData> Create()
+        public static IAsyncOperation<GameData> CreateAsync()
         {
             return new GameDataCreater();
         }
@@ -33,16 +33,6 @@ namespace KouXiaGu
 
         GameData()
         {
-
-        }
-
-        public string ToLog()
-        {
-            string str = 
-                ElementInfo.ToLog() +
-                Terrain.ToLog();
-
-            return str;
         }
 
         class GameDataCreater : AsyncOperation<GameData>
@@ -74,7 +64,7 @@ namespace KouXiaGu
             void OnError<T>(IAsyncOperation<T> operation)
             {
                 Debug.LogError(operation.Exception);
-                OnError(operation.Exception);
+                OnFaulted(operation.Exception);
             }
 
         }

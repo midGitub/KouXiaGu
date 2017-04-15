@@ -41,11 +41,57 @@ namespace KouXiaGu
         TResult Result { get; }
     }
 
+
+    /// <summary>
+    /// 表示异步的操作;
+    /// </summary>
+    public abstract class AsyncOperation : IAsyncOperation
+    {
+        public AsyncOperation()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            Exception = null;
+        }
+
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public AggregateException Exception { get; private set; }
+
+        protected void OnCompleted()
+        {
+            IsCompleted = true;
+        }
+
+        protected void OnFaulted(Exception ex)
+        {
+            Exception = ex as AggregateException ?? new AggregateException(ex);
+            IsFaulted = true;
+            IsCompleted = true;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() +
+                "[IsCompleted:" + IsCompleted +
+                ",IsFaulted:" + IsFaulted +
+                ",Exception:" + Exception + "]";
+        }
+    }
+
     /// <summary>
     /// 表示异步的操作;
     /// </summary>
     public abstract class AsyncOperation<TResult> : IAsyncOperation<TResult>
     {
+        public AsyncOperation()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            Result = default(TResult);
+            Exception = null;
+        }
+
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
@@ -57,9 +103,9 @@ namespace KouXiaGu
             IsCompleted = true;
         }
 
-        protected void OnError(Exception ex)
+        protected void OnFaulted(Exception ex)
         {
-            Exception = new AggregateException(ex);
+            Exception = ex as AggregateException ?? new AggregateException(ex);
             IsFaulted = true;
             IsCompleted = true;
         }
@@ -119,6 +165,14 @@ namespace KouXiaGu
         /// 需要在线程内进行的操作;
         /// </summary>
         protected abstract void Operate();
+
+        public override string ToString()
+        {
+            return base.ToString() +
+                "[IsCompleted:" + IsCompleted +
+                ",IsFaulted:" + IsFaulted +
+                ",Exception:" + Exception + "]";
+        }
     }
 
     /// <summary>
@@ -169,16 +223,63 @@ namespace KouXiaGu
         /// </summary>
         protected abstract TResult Operate();
 
+        public override string ToString()
+        {
+            return base.ToString() +
+                "[IsCompleted:" + IsCompleted +
+                ",IsFaulted:" + IsFaulted +
+                ",Exception:" + Exception + "]";
+        }
     }
 
 
+    /// <summary>
+    /// 继承 MonoBehaviour 的操作类;
+    /// </summary>
+    public abstract class OperationMonoBehaviour : MonoBehaviour, IAsyncOperation
+    {
+        protected OperationMonoBehaviour()
+        {
+        }
+
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public AggregateException Exception { get; private set; }
+
+        protected virtual void Awake()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            Exception = null;
+        }
+
+        protected void OnCompleted()
+        {
+            IsCompleted = true;
+        }
+
+        protected void OnFaulted(Exception ex)
+        {
+            Exception = ex as AggregateException ?? new AggregateException(ex);
+            IsFaulted = true;
+            IsCompleted = true;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() +
+                "[IsCompleted:" + IsCompleted +
+                ",IsFaulted:" + IsFaulted +
+                ",Exception:" + Exception + "]";
+        }
+    }
 
     /// <summary>
-    /// 表示在Unity线程内进行的异步操作;
+    /// 继承 MonoBehaviour 的操作类;
     /// </summary>
-    public abstract class CoroutineOperation<TResult> : MonoBehaviour, IAsyncOperation<TResult>
+    public abstract class OperationMonoBehaviour<TResult> : MonoBehaviour, IAsyncOperation<TResult>
     {
-        protected CoroutineOperation()
+        protected OperationMonoBehaviour()
         {
         }
 
@@ -201,20 +302,20 @@ namespace KouXiaGu
             IsCompleted = true;
         }
 
-        protected void OnError(Exception ex)
+        protected void OnFaulted(Exception ex)
         {
-            Exception = new AggregateException(ex);
+            Exception = ex as AggregateException ?? new AggregateException(ex);
             IsFaulted = true;
             IsCompleted = true;
         }
 
-        protected void OnError(AggregateException ex)
+        public override string ToString()
         {
-            Exception = ex;
-            IsFaulted = true;
-            IsCompleted = true;
+            return base.ToString() +
+                "[IsCompleted:" + IsCompleted +
+                ",IsFaulted:" + IsFaulted +
+                ",Exception:" + Exception + "]";
         }
-
     }
 
 }

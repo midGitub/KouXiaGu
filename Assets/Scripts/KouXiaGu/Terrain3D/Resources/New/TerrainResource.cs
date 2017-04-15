@@ -31,20 +31,10 @@ namespace KouXiaGu.Terrain3D
 
         public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
 
-
-        public string ToLog()
-        {
-            string str = "[Terrain]" +
-                "\nLandform:" + LandformInfos.Count +
-                "\n";
-
-            return str;
-        }
-
         /// <summary>
         /// 初始化方法;
         /// </summary>
-        class TerrainResourceCreater : CoroutineOperation<TerrainResource>
+        class TerrainResourceCreater : OperationMonoBehaviour<TerrainResource>
         {
             const string assetBundleName = "terrain";
             static readonly ISegmented DefaultSegmented = new SegmentedBlock();
@@ -90,7 +80,7 @@ namespace KouXiaGu.Terrain3D
                 {
                     Exception ex = new FileNotFoundException("未找到地形资源包;");
                     Debug.LogError(ex);
-                    OnError(ex);
+                    OnFaulted(ex);
                     yield break;
                 }
 
