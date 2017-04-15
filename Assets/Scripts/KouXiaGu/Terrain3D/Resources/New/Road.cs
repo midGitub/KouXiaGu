@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using KouXiaGu.World;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -43,48 +45,80 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class TerrainRoad : IDisposable
     {
-        public Texture HeightAdjustTex { get; internal set; }
-        public Texture HeightAdjustBlendTex { get; internal set; }
         public Texture DiffuseTex { get; internal set; }
         public Texture DiffuseBlendTex { get; internal set; }
+        public Texture HeightAdjustTex { get; internal set; }
+        public Texture HeightAdjustBlendTex { get; internal set; }
 
-        /// <summary>
-        /// 是否全部不为 null;
-        /// </summary>
-        public bool IsComplete
+        public bool IsEmpty
         {
-            get { return DiffuseTex != null && DiffuseBlendTex != null &&
-                    HeightAdjustTex != null && HeightAdjustBlendTex != null;
+            get
+            {
+                return
+                    DiffuseTex == null &&
+                    DiffuseBlendTex == null &&
+                    HeightAdjustTex == null &&
+                    HeightAdjustBlendTex == null;
+            }
+        }
+
+        public bool IsLoadComplete
+        {
+            get
+            {
+                return
+                    DiffuseTex != null &&
+                    DiffuseBlendTex != null &&
+                    HeightAdjustTex != null &&
+                    HeightAdjustBlendTex != null;
             }
         }
 
         public void Dispose()
         {
-            GameObject.Destroy(DiffuseTex);
+            Destroy(DiffuseTex);
             DiffuseTex = null;
 
-            GameObject.Destroy(DiffuseBlendTex);
+            Destroy(DiffuseBlendTex);
             DiffuseBlendTex = null;
 
-            GameObject.Destroy(HeightAdjustTex);
+            Destroy(HeightAdjustTex);
             HeightAdjustTex = null;
 
-            GameObject.Destroy(HeightAdjustBlendTex);
+            Destroy(HeightAdjustBlendTex);
             HeightAdjustBlendTex = null;
         }
 
+        void Destroy(UnityEngine.Object item)
+        {
+#if UNITY_EDITOR
+            GameObject.DestroyImmediate(item);
+#else
+            GameObject.Destroy(item);
+#endif
+        }
     }
+
 
     /// <summary>
     /// 道路资源读取;
     /// </summary>
-    public class TerrainRoadReader
+    public class TerrainRoadReader : AssetReadRequest<Dictionary<int, TerrainRoad>>
     {
-        internal static readonly TerrainRoadReader DefaultReader = new TerrainRoadReader();
-
-
-        public TerrainRoadReader()
+        public TerrainRoadReader(AssetBundle assetBundle, ISegmented segmented, IEnumerable<RoadInfo> infos) 
+            : base(assetBundle, segmented)
         {
+            this.infos = infos;
+            dictionary = new Dictionary<int, TerrainRoad>();
+        }
+
+        IEnumerable<RoadInfo> infos;
+        Dictionary<int, TerrainRoad> dictionary;
+
+        protected override IEnumerator Operate()
+        {
+            OnCompleted(dictionary);
+            throw new NotImplementedException();
         }
 
         public TerrainRoad Read(TerrainRoadInfo info, AssetBundle terrain)
@@ -96,12 +130,6 @@ namespace KouXiaGu.Terrain3D
                 HeightAdjustTex = LoadTexture(terrain, info.HeightAdjustTex),
                 HeightAdjustBlendTex = LoadTexture(terrain, info.HeightAdjustTex),
             };
-
-            if (!item.IsComplete)
-            {
-                item.Dispose();
-                throw new ArgumentNullException("缺少贴图;");
-            }
             return item;
         }
 

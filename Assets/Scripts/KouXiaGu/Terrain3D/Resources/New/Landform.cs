@@ -106,9 +106,7 @@ namespace KouXiaGu.Terrain3D
 
     }
 
-    /// <summary>
-    /// 资源读取;
-    /// </summary>
+
     public class LandformReadRequest : AssetReadRequest<Dictionary<int, TerrainLandform>>
     {
 
