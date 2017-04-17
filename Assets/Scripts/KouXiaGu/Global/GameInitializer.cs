@@ -79,18 +79,18 @@ namespace KouXiaGu
             var emptyKeys = CustomInput.GetEmptyKeys().ToList();
             if (emptyKeys.Count != 0)
             {
-                Debug.LogWarning(prefix + "存在未定义的按键:" + emptyKeys.ToLog());
+                Debug.LogWarning(prefix + "初始化成功;存在未定义的按键:" + emptyKeys.ToLog());
             }
             else
             {
-                Debug.Log(prefix + "按键读取完毕;");
+                Debug.Log(prefix + "初始化成功;");
             }
         }
 
         void OnLocalizationCompleted(IAsyncOperation operation)
         {
             const string prefix = "[本地化]";
-            string log = "条目总数:" + Localization.EntriesCount;
+            string log = "初始化成功;条目总数:" + Localization.EntriesCount;
             Debug.Log(prefix + log);
         }
 
