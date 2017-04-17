@@ -26,17 +26,20 @@ namespace KouXiaGu.Terrain3D.Tests
 
         void Update()
         {
-            textObject.text = TextUpdate();
+            if (MapDataManager.Data != null)
+            {
+                textObject.text = TextUpdate();
 
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                MapDataManager.Data.Road.Create(coord);
-            }
-            if (Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                MapDataManager.Data.Road.Destroy(coord);
+                if (Input.GetKeyDown(KeyCode.Mouse0))
+                {
+                    CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
+                    MapDataManager.Data.Road.Create(coord);
+                }
+                if (Input.GetKeyDown(KeyCode.Mouse1))
+                {
+                    CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
+                    MapDataManager.Data.Road.Destroy(coord);
+                }
             }
         }
 
