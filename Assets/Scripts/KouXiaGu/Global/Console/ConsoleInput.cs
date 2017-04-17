@@ -68,11 +68,14 @@ namespace KouXiaGu
             }
         }
 
+        static readonly char[] separator = new char[]
+            {
+                ' ',
+            };
+
         string GetKeywrod(string message, out object[] parameters)
         {
-            const char separator = ' ';
-
-            string[] wordArray = message.Split(separator);
+            string[] wordArray = message.Split(separator, StringSplitOptions.RemoveEmptyEntries);
             string keyWord = wordArray[0];
 
             int parameterCount = wordArray.Length - 1;
@@ -101,13 +104,6 @@ namespace KouXiaGu
         {
             Debug.Log(testPrefix + str0 + "," + str1);
         }
-
-        [ConsoleMethod("test")]
-        public static void Test(object str)
-        {
-            Debug.Log(testPrefix + str);
-        }
-
     }
 
 
