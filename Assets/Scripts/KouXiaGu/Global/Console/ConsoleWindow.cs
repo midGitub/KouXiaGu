@@ -14,18 +14,25 @@ namespace KouXiaGu
     [DisallowMultipleComponent]
     sealed class ConsoleWindow : MonoBehaviour, ILogHandler
     {
+        public static ConsoleWindow instance { get; private set; }
+
 
         [SerializeField]
-        ScrollRect scrollRect;
+        ScrollRect outputScrollRect;
 
         [SerializeField]
-        Text consoleText;
+        Text outputConsoleText;
+
+        [SerializeField]
+        InputField inputField;
 
         [SerializeField]
         ConsoleOutput output;
 
         ILogHandler defaultLogHandler;
         float scrollbarVertical_Size;
+
+        public ConsoleInput Input { get; private set; }
 
         public ConsoleOutput Output
         {
@@ -34,25 +41,43 @@ namespace KouXiaGu
 
         void Awake()
         {
+            instance = this;
+
             defaultLogHandler = Debug.logger.logHandler;
             Debug.logger.logHandler = this;
 
-            scrollbarVertical_Size = scrollRect.verticalScrollbar.size;
-            output.Text = consoleText.text;
+            scrollbarVertical_Size = outputScrollRect.verticalScrollbar.size;
+            output.Text = outputConsoleText.text;
+
+            Input = new ConsoleInput();
         }
 
         void Update()
         {
-            if (consoleText.text != output.Text)
+            if (outputConsoleText.text != output.Text)
             {
-                consoleText.text = output.Text;
+                outputConsoleText.text = output.Text;
             }
 
-            float currentSize = scrollRect.verticalScrollbar.size;
+            float currentSize = outputScrollRect.verticalScrollbar.size;
             if (scrollbarVertical_Size != currentSize)
             {
                 ScrollToBottom();
                 scrollbarVertical_Size = currentSize;
+            }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Return) && inputField.text != string.Empty)
+            {
+                try
+                {
+                    Input.Operate(inputField.text);
+                }
+                catch (Exception ex)
+                {
+                    GameConsole.LogError(ex);
+                }
+                inputField.text = string.Empty;
+                inputField.ActivateInputField();
             }
         }
 
@@ -64,11 +89,12 @@ namespace KouXiaGu
         void OnDestroy()
         {
             Debug.logger.logHandler = defaultLogHandler;
+            instance = null;
         }
 
         void OnScrollValueChanged(Vector2 v2)
         {
-            float currentSize = scrollRect.verticalScrollbar.size;
+            float currentSize = outputScrollRect.verticalScrollbar.size;
             if (scrollbarVertical_Size != currentSize)
             {
                 ScrollToBottom();
@@ -78,7 +104,7 @@ namespace KouXiaGu
 
         void ScrollToBottom()
         {
-            scrollRect.verticalNormalizedPosition = 0;
+            outputScrollRect.verticalNormalizedPosition = 0;
         }
 
         void ILogHandler.LogException(Exception exception, UnityEngine.Object context)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 
@@ -12,7 +13,10 @@ namespace KouXiaGu
     /// </summary>
     public sealed class GameConsole
     {
-        static ConsoleWindow logger;
+        static ConsoleWindow logger
+        {
+            get { return ConsoleWindow.instance; }
+        }
 
         /// <summary>
         /// 是否显示 Unity.Debug 的内容?
@@ -22,34 +26,49 @@ namespace KouXiaGu
 
         public static void Log(object message)
         {
-            logger.Output.Log(message.ToString());
+            Log(message.ToString());
         }
 
-        public static void LogFormat(string format, params object[] args)
+        public static void Log(string message)
         {
+            logger.Output.Log(message);
+        }
 
+        public static void Log(string format, params object[] args)
+        {
+            logger.Output.Log(format, args);
         }
 
 
         public static void LogWarning(object message)
         {
-            logger.Output.LogWarning(message.ToString());
+            LogWarning(message.ToString());
         }
 
-        public static void LogWarningFormat(string format, params object[] args)
+        public static void LogWarning(string message)
         {
+            logger.Output.LogWarning(message);
+        }
 
+        public static void LogWarning(string format, params object[] args)
+        {
+            logger.Output.LogWarning(format, args);
         }
 
 
         public static void LogError(object message)
         {
-            logger.Output.LogError(message.ToString());
+            LogError(message.ToString());
         }
 
-        public static void LogErrorFormat(string format, params object[] args)
+        public static void LogError(string message)
         {
+            logger.Output.LogError(message);
+        }
 
+        public static void LogError(string format, params object[] args)
+        {
+            logger.Output.LogError(format, args);
         }
 
     }
@@ -60,6 +79,11 @@ namespace KouXiaGu
     [Serializable]
     class ConsoleOutput : ILogHandler
     {
+        public ConsoleOutput()
+        {
+            Text = string.Empty;
+        }
+
         public Color NormalColor = Color.black;
         public Color WarningColor = Color.yellow;
         public Color ErrorColor = Color.red;
@@ -149,13 +173,6 @@ namespace KouXiaGu
                     break;
             }
         }
-    }
-
-    /// <summary>
-    /// 控制台输入;
-    /// </summary>
-    class ConsoleInput
-    {
     }
 
 }
