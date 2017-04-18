@@ -15,23 +15,38 @@ namespace KouXiaGu
 
         IDisposable disposer;
 
+        public bool IsSubscribed
+        {
+            get { return disposer != null; }
+        }
+
         public abstract void OnNext();
 
         public IDisposable SubscribeUpdate()
         {
+            if (IsSubscribed)
+                throw new ArgumentException();
+
             disposer = instance.SubscribeUpdate(this);
             return this;
         }
 
         public IDisposable SubscribeFixedUpdate()
         {
+            if (IsSubscribed)
+                throw new ArgumentException();
+
             disposer = instance.SubscribeFixedUpdate(this);
             return this;
         }
 
         public void Dispose()
         {
-            disposer.Dispose();
+            if (IsSubscribed)
+            {
+                disposer.Dispose();
+                disposer = null;
+            }
         }
     }
 

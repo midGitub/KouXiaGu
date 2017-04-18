@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.KeyInput;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace KouXiaGu
@@ -51,8 +53,12 @@ namespace KouXiaGu
         [SerializeField]
         bool isShowUnityLog = true;
 
+        [SerializeField]
+        bool isDisplay = false;
+
         float uiScrollSize;
         ILogHandler defaultLogHandler;
+        KeyDownObserver displayKeyObserver;
         public ConsoleInput Input { get; private set; }
         public ConsoleOutput Output { get; private set; }
 
@@ -68,6 +74,12 @@ namespace KouXiaGu
             set { Debug.logger.logEnabled = value; isShowUnityLog = value; }
         }
 
+        public bool IsDisplay
+        {
+            get { return isDisplay = gameObject.activeSelf; }
+            private set { isDisplay = value; }
+        }
+
         void Awake()
         {
             instance = this;
@@ -77,6 +89,9 @@ namespace KouXiaGu
             defaultLogHandler = Debug.logger.logHandler;
             Debug.logger.logHandler = this;
             Debug.logger.logEnabled = isShowUnityLog;
+
+            displayKeyObserver = new KeyDownObserver(KeyFunction.Console_DisplayOrHide, OnDisplayKeyDown);
+            displayKeyObserver.SubscribeUpdate();
         }
 
         void InitOutput()
@@ -140,17 +155,30 @@ namespace KouXiaGu
         void OnEnable()
         {
             ui.InputField.ActivateInputField();
+            ui.InputField.Select();
         }
 
         void OnValidate()
         {
             Debug.logger.logEnabled = isShowUnityLog;
+            SetDisplay(isDisplay);
         }
 
         void OnDestroy()
         {
             Debug.logger.logHandler = defaultLogHandler;
             instance = null;
+        }
+
+        void OnDisplayKeyDown()
+        {
+            SetDisplay(!IsDisplay);
+        }
+
+        void SetDisplay(bool isDisplay)
+        {
+            gameObject.SetActive(isDisplay);
+            IsDisplay = isDisplay;
         }
 
         void ILogHandler.LogException(Exception exception, UnityEngine.Object context)

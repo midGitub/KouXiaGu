@@ -16,7 +16,7 @@ namespace KouXiaGu.KeyInput
         Camera_Movement_Left,
         Camera_Movement_Right,
 
-        Console_DisplaysOrHides,
+        Console_DisplayOrHide,
     }
 
 

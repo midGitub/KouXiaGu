@@ -6,18 +6,26 @@ using System.Text;
 namespace KouXiaGu.KeyInput
 {
 
-
     public class KeyDownObserver : UnityThreadEvent
     {
-        public override void OnNext()
+        public KeyDownObserver(KeyFunction key, Action onKeyDown)
         {
-            throw new NotImplementedException();
+            Key = key;
+            this.onKeyDown = onKeyDown;
         }
 
-        public override void OnError(Exception ex)
+        Action onKeyDown;
+        public KeyFunction Key { get; private set; }
+
+        public override void OnNext()
         {
-            throw new NotImplementedException();
+            if (CustomInput.GetKeyDown(Key))
+            {
+                onKeyDown();
+            }
         }
     }
+
+
 
 }
