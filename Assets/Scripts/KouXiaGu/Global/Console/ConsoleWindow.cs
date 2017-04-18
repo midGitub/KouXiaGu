@@ -170,8 +170,8 @@ namespace KouXiaGu
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
-                    GameConsole.LogError("未知命令;");
+                    string errorStr = "命令出现异常:" + ex;
+                    GameConsole.LogError(errorStr);
                 }
                 finally
                 {

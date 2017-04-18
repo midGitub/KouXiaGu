@@ -60,11 +60,12 @@ namespace KouXiaGu
 
             if (methodMap.TryGetMethod(keyword, parameters,out method))
             {
+                GameConsole.Log(message);
                 method.Invoke(parameters);
             }
             else
             {
-                throw new ArgumentException("未知命令:" + message);
+                GameConsole.LogWarning("未知命令:" + message);
             }
         }
 
