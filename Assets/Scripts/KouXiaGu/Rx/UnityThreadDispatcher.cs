@@ -75,15 +75,35 @@ namespace KouXiaGu.Rx
     [DisallowMultipleComponent]
     public sealed class UnityThreadDispatcher : MonoBehaviour
     {
-        public static UnityThreadDispatcher Instance { get; private set; }
+        static UnityThreadDispatcher instance;
+
+        public static UnityThreadDispatcher Instance
+        {
+            get { return instance ?? Initialize(); }
+        }
 
         public static bool IsInitialized
         {
-            get { return Instance != null; }
+            get { return instance != null; }
         }
 
-        LinkedListTracker onUpdateTracker;
-        LinkedListTracker onFixedUpdateTracker;
+        static UnityThreadDispatcher Initialize()
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<UnityThreadDispatcher>();
+                if (instance == null)
+                {
+                    instance = new GameObject("UnityThreadDispatcher", typeof(UnityThreadDispatcher)).
+                        GetComponent<UnityThreadDispatcher>();
+                }
+            }
+            return instance;
+        }
+
+
+        Deliverer onUpdateTracker;
+        Deliverer onFixedUpdateTracker;
 
         public int UpdateObserverCount
         {
@@ -97,9 +117,8 @@ namespace KouXiaGu.Rx
 
         void Awake()
         {
-            Instance = this;
-            onUpdateTracker = new LinkedListTracker();
-            onFixedUpdateTracker = new LinkedListTracker();
+            onUpdateTracker = new Deliverer();
+            onFixedUpdateTracker = new Deliverer();
         }
 
         void Update()
@@ -122,42 +141,9 @@ namespace KouXiaGu.Rx
             return onFixedUpdateTracker.Subscribe(item);
         }
 
-
-        class LinkedListTracker
+        class Deliverer : Deliverer<IUnityThreadEvent>
         {
-            public LinkedListTracker()
-            {
-                currentNode = null;
-                observers = new LinkedList<IUnityThreadEvent>();
-            }
-
-            LinkedList<IUnityThreadEvent> observers;
-            LinkedListNode<IUnityThreadEvent> currentNode;
-
-            public int observerCount
-            {
-                get { return observers.Count; }
-            }
-
-            public IDisposable Subscribe(IUnityThreadEvent observer)
-            {
-                var node = observers.AddLast(observer);
-                return new Unsubscriber(this, node);
-            }
-
-            public void Track()
-            {
-                currentNode = observers.First;
-
-                while (currentNode != null)
-                {
-                    var observer = currentNode.Value;
-                    currentNode = currentNode.Next;
-                    Next(observer);
-                }
-            }
-
-            void Next(IUnityThreadEvent observer)
+            protected override void Operate(IUnityThreadEvent observer)
             {
                 try
                 {
@@ -166,45 +152,6 @@ namespace KouXiaGu.Rx
                 catch (Exception ex)
                 {
                     observer.OnError(ex);
-                }
-            }
-
-            class Unsubscriber : IDisposable
-            {
-                public Unsubscriber(LinkedListTracker tracker, LinkedListNode<IUnityThreadEvent> node)
-                {
-                    isUnsubscribed = false;
-                    this.tracker = tracker;
-                    this.node = node;
-                }
-
-                bool isUnsubscribed;
-                LinkedListTracker tracker;
-                LinkedListNode<IUnityThreadEvent> node;
-
-                LinkedList<IUnityThreadEvent> observers
-                {
-                    get { return tracker.observers; }
-                }
-
-                LinkedListNode<IUnityThreadEvent> currentNode
-                {
-                    get { return tracker.currentNode; }
-                    set { tracker.currentNode = value; }
-                }
-
-                public void Dispose()
-                {
-                    if (!isUnsubscribed)
-                    {
-                        if (node == currentNode)
-                        {
-                            currentNode = currentNode.Next;
-                        }
-
-                        observers.Remove(node);
-                        isUnsubscribed = true;
-                    }
                 }
             }
         }
