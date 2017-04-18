@@ -8,114 +8,11 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    internal interface IOperation
-    {
-        /// <summary>
-        /// 继续返回true,需要结束返回fasle;
-        /// </summary>
-        bool MoveNext();
-    }
-
-    public static class OperationExtensions
-    {
-        static OperationObserver operationObserver
-        {
-            get { return OperationObserver.Instance; }
-        }
-
-        internal static IDisposable AddOperationObserver(this IOperation operation)
-        {
-            return operationObserver.Subscribe(operation);
-        }
-    }
-
-    class OperationObserver : MonoBehaviour
-    {
-        static OperationObserver operationObserver;
-        static readonly object asyncLock = new object();
-
-        public static OperationObserver Instance
-        {
-            get { return operationObserver != null ? operationObserver : Create(); }
-        }
-
-        static OperationObserver Create()
-        {
-            lock (asyncLock)
-            {
-                if (operationObserver == null)
-                {
-                    var gameObject = new GameObject("OperationObserver", typeof(OperationObserver));
-                    operationObserver = gameObject.GetComponent<OperationObserver>();
-                }
-                return operationObserver;
-            }
-        }
-
-        OperationObserver()
-        {
-        }
-
-        List<IOperation> operationList;
-
-        public int Count
-        {
-            get { return operationList.Count; }
-        }
-
-        void Awake()
-        {
-            DontDestroyOnLoad(gameObject);
-            operationList = new List<IOperation>();
-        }
-
-        void Update()
-        {
-            for (int i = 0; i < operationList.Count;)
-            {
-                var operation = operationList[i];
-
-                if (operation.MoveNext())
-                {
-                    i++;
-                }
-                else
-                {
-                    operationList.RemoveAt(i);
-                }
-            }
-        }
-
-        public IDisposable Subscribe(IOperation operation)
-        {
-            operationList.Add(operation);
-            return new CollectionUnsubscriber<IOperation>(operationList, operation);
-        }
-
-        public bool Contains(IOperation operation)
-        {
-            return operationList.Contains(operation);
-        }
-
-    }
-
-
     /// <summary>
     /// 异步操作拓展,部分需要在 unity 线程内调用;
     /// </summary>
     public static class AsyncOperationExtensions
     {
-        static OperationObserver operationObserver
-        {
-            get { return OperationObserver.Instance; }
-        }
-
-        internal static IDisposable AddOperationObserver(this IOperation operation)
-        {
-            return operationObserver.Subscribe(operation);
-        }
-
-
 
         /// <summary>
         /// 当操作失败时,在unity线程内回调;
@@ -125,14 +22,14 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new FaultedSubscriber<T>(operation, onFaulted);
-            AddOperationObserver(item);
+            item.SubscribeUpdate();
             return operation;
         }
 
         /// <summary>
-        /// 监视失败时调用;
+        /// 失败时调用;
         /// </summary>
-        class FaultedSubscriber<T> : IOperation
+        class FaultedSubscriber<T> : UnityDispatcher
             where T : IAsyncOperation
         {
             public FaultedSubscriber(T operation, Action<T> onFaulted)
@@ -147,7 +44,7 @@ namespace KouXiaGu
             T operation;
             Action<T> onFaulted;
 
-            bool IOperation.MoveNext()
+            public override void OnNext()
             {
                 if (operation.IsCompleted)
                 {
@@ -155,9 +52,13 @@ namespace KouXiaGu
                     {
                         onFaulted(operation);
                     }
-                    return false;
+                    Dispose();
                 }
-                return false;
+            }
+
+            public override void OnError(Exception ex)
+            {
+                Debug.LogError(ex);
             }
         }
 
@@ -170,14 +71,14 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new CompletedSubscriber<T>(operation, onCompleted);
-            AddOperationObserver(item);
+            item.SubscribeUpdate();
             return operation;
         }
 
         /// <summary>
         /// 监视完成时调用,若失败则不调用;
         /// </summary>
-        class CompletedSubscriber<T> : IOperation
+        class CompletedSubscriber<T> : UnityDispatcher
             where T : IAsyncOperation
         {
             public CompletedSubscriber(T operation, Action<T> onCompleted)
@@ -192,7 +93,7 @@ namespace KouXiaGu
             T operation;
             Action<T> onCompleted;
 
-            bool IOperation.MoveNext()
+            public override void OnNext()
             {
                 if (operation.IsCompleted)
                 {
@@ -200,9 +101,13 @@ namespace KouXiaGu
                     {
                         onCompleted(operation);
                     }
-                    return false;
+                    Dispose();
                 }
-                return true;
+            }
+
+            public override void OnError(Exception ex)
+            {
+                Debug.LogError(ex);
             }
         }
 
@@ -215,7 +120,7 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new Subscriber<T>(operation, onCompleted, onFaulted);
-            AddOperationObserver(item);
+            item.SubscribeUpdate();
             return operation;
         }
 
@@ -227,11 +132,14 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new Subscriber<T>(operation, onCompleted, onFaulted);
-            disposer = AddOperationObserver(item);
+            disposer = item.SubscribeUpdate();
             return operation;
         }
 
-        class Subscriber<T> : IOperation
+        /// <summary>
+        /// 监视完成和失败;
+        /// </summary>
+        class Subscriber<T> : UnityDispatcher
              where T : IAsyncOperation
         {
             public Subscriber(T operation, Action<T> onCompleted, Action<T> onFaulted)
@@ -248,7 +156,7 @@ namespace KouXiaGu
             Action<T> onCompleted;
             Action<T> onFaulted;
 
-            bool IOperation.MoveNext()
+            public override void OnNext()
             {
                 if (operation.IsCompleted)
                 {
@@ -260,9 +168,13 @@ namespace KouXiaGu
                     {
                         onCompleted(operation);
                     }
-                    return false;
+                    Dispose();
                 }
-                return true;
+            }
+
+            public override void OnError(Exception ex)
+            {
+                Debug.LogError(ex);
             }
         }
 
@@ -274,11 +186,11 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new EnumerateSubscriber<T>(operations, onCompleted, onFaulted);
-            var disposer = AddOperationObserver(item);
+            var disposer = item.SubscribeUpdate();
             return disposer;
         }
 
-        class EnumerateSubscriber<T> : IOperation
+        class EnumerateSubscriber<T> : UnityDispatcher
             where T : IAsyncOperation
         {
             public EnumerateSubscriber(IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)
@@ -298,7 +210,7 @@ namespace KouXiaGu
             Action<IList<T>> onCompleted;
             Action<IList<T>> onFaulted;
 
-            bool IOperation.MoveNext()
+            public override void OnNext()
             {
                 if (index < operationArray.Length)
                 {
@@ -311,7 +223,7 @@ namespace KouXiaGu
                             errors.Add(operation);
                         }
                     }
-                    return true;
+                    return;
                 }
 
                 if (errors.Count > 0)
@@ -319,7 +231,12 @@ namespace KouXiaGu
                 else
                     onCompleted(operationArray);
 
-                return false;
+                Dispose();
+            }
+
+            public override void OnError(Exception ex)
+            {
+                Debug.LogError(ex);
             }
         }
 

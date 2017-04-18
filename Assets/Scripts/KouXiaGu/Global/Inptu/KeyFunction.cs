@@ -15,6 +15,8 @@ namespace KouXiaGu
         Camera_Movement_Down,
         Camera_Movement_Left,
         Camera_Movement_Right,
+
+        Console_DisplaysOrHides,
     }
 
 
