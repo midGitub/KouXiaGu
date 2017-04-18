@@ -10,7 +10,7 @@ namespace KouXiaGu
 {
 
     [Serializable]
-    class ConsoleUI : IObserver<string>
+    class ConsoleUI
     {
         public ScrollRect OutputScrollRect;
         public Text OutputConsoleText;
@@ -30,39 +30,11 @@ namespace KouXiaGu
             set { InputField.text = value; }
         }
 
-        public void Subscribe(IObservable<string> output)
-        {
-            outputDisposer = output.Subscribe(this);
-        }
-
-        public void Unsubscribe()
-        {
-            if (outputDisposer != null)
-            {
-                outputDisposer.Dispose();
-                outputDisposer = null;
-            }
-        }
-
         public void ScrollToBottom()
         {
             OutputScrollRect.verticalNormalizedPosition = 0;
         }
 
-        void IObserver<string>.OnNext(string item)
-        {
-            OutputConsoleText.text = item;
-        }
-
-        public void OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnCompleted()
-        {
-            Unsubscribe();
-        }
     }
 
     /// <summary>
@@ -104,7 +76,6 @@ namespace KouXiaGu
         {
             Output = new ConsoleOutput(outputStype);
             Output.Text = ui.OutputText;
-            ui.Subscribe(Output);
         }
 
         void InitInput()
@@ -114,8 +85,17 @@ namespace KouXiaGu
 
         void Update()
         {
+            UpdateOutputText();
             UpdateInput();
             UpdateScroll();
+        }
+
+        void UpdateOutputText()
+        {
+            if (ui.OutputText != Output.Text)
+            {
+                ui.OutputText = Output.Text;
+            }
         }
 
         void UpdateInput()
