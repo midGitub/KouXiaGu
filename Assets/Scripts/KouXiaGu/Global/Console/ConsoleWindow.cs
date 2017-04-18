@@ -51,6 +51,9 @@ namespace KouXiaGu
         [SerializeField]
         ConsoleOutputTextStyle outputStype;
 
+        [SerializeField]
+        bool isShowUnityLog = true;
+
         float uiScrollSize;
         ILogHandler defaultLogHandler;
         public ConsoleInput Input { get; private set; }
@@ -65,7 +68,7 @@ namespace KouXiaGu
         public bool IsShowUnityLog
         {
             get { return isShowUnityLog; }
-            set { isShowUnityLog = value; }
+            set { Debug.logger.logEnabled = value; isShowUnityLog = value; }
         }
 
         void Awake()
@@ -76,6 +79,7 @@ namespace KouXiaGu
 
             defaultLogHandler = Debug.logger.logHandler;
             Debug.logger.logHandler = this;
+            Debug.logger.logEnabled = isShowUnityLog;
         }
 
         void InitOutput()
@@ -113,13 +117,15 @@ namespace KouXiaGu
                 {
                     Input.Operate(ui.InputText);
                     ui.InputText = string.Empty;
-                    ui.InputField.ActivateInputField();
-                    ui.ScrollToBottom();
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError(ex);
                     GameConsole.LogError("未知命令;");
+                }
+                finally
+                {
+                    ui.InputField.ActivateInputField();
                 }
             }
         }
@@ -136,7 +142,12 @@ namespace KouXiaGu
 
         void OnEnable()
         {
-            ui.ScrollToBottom();
+            ui.InputField.ActivateInputField();
+        }
+
+        void OnValidate()
+        {
+            Debug.logger.logEnabled = isShowUnityLog;
         }
 
         void OnDestroy()

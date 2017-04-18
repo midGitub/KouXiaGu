@@ -20,7 +20,7 @@ namespace KouXiaGu
 
         static ConsoleOutput output
         {
-            get { return output; }
+            get { return logger.Output; }
         }
 
         static ConsoleInput input
