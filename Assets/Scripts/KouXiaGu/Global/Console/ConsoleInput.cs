@@ -14,12 +14,22 @@ namespace KouXiaGu
     [ConsoleClass]
     public class ConsoleInput
     {
+        const int DefaultMaxRecordNumber = 33;
+
         public ConsoleInput()
         {
             methodMap = new ConsoleMethodReflection();
+            inputContents = new LinkedList<string>();
+            MaxRecordNumber = DefaultMaxRecordNumber;
         }
 
         ConsoleMethodReflection methodMap;
+
+        /// <summary>
+        /// 记录输入内容;
+        /// </summary>
+        LinkedList<string> inputContents;
+        public int MaxRecordNumber { get; private set; }
 
         internal IDictionary<string, MethodGroup> MethodMap
         {
@@ -28,6 +38,7 @@ namespace KouXiaGu
 
         public void Operate(string message)
         {
+            RecordInputContent(message);
             object[] parameters;
             string keyword = GetKeywrod(message, out parameters);
             MethodItem method;
@@ -40,6 +51,15 @@ namespace KouXiaGu
             {
                 throw new ArgumentException("未知命令:" + message);
             }
+        }
+
+        void RecordInputContent(string message)
+        {
+            if (inputContents.Count >= MaxRecordNumber)
+            {
+                inputContents.RemoveFirst();
+            }
+            inputContents.AddLast(message);
         }
 
         static readonly char[] separator = new char[]
