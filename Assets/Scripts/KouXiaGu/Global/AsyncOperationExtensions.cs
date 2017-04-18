@@ -29,7 +29,7 @@ namespace KouXiaGu
         /// <summary>
         /// 失败时调用;
         /// </summary>
-        class FaultedSubscriber<T> : UnityDispatcher
+        class FaultedSubscriber<T> : UnityThreadEvent
             where T : IAsyncOperation
         {
             public FaultedSubscriber(T operation, Action<T> onFaulted)
@@ -78,7 +78,7 @@ namespace KouXiaGu
         /// <summary>
         /// 监视完成时调用,若失败则不调用;
         /// </summary>
-        class CompletedSubscriber<T> : UnityDispatcher
+        class CompletedSubscriber<T> : UnityThreadEvent
             where T : IAsyncOperation
         {
             public CompletedSubscriber(T operation, Action<T> onCompleted)
@@ -139,7 +139,7 @@ namespace KouXiaGu
         /// <summary>
         /// 监视完成和失败;
         /// </summary>
-        class Subscriber<T> : UnityDispatcher
+        class Subscriber<T> : UnityThreadEvent
              where T : IAsyncOperation
         {
             public Subscriber(T operation, Action<T> onCompleted, Action<T> onFaulted)
@@ -190,7 +190,7 @@ namespace KouXiaGu
             return disposer;
         }
 
-        class EnumerateSubscriber<T> : UnityDispatcher
+        class EnumerateSubscriber<T> : UnityThreadEvent
             where T : IAsyncOperation
         {
             public EnumerateSubscriber(IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)

@@ -6,13 +6,7 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    public interface IUnityThreadEvent
-    {
-        void OnNext();
-        void OnError(Exception ex);
-    }
-
-    public abstract class UnityDispatcher : IUnityThreadEvent, IDisposable
+    public abstract class UnityThreadEvent : IDisposable
     {
         static UnityThreadDispatcher instance
         {
@@ -43,7 +37,7 @@ namespace KouXiaGu
     }
 
 
-    public class UnityThreadDelegate : UnityDispatcher
+    public class UnityThreadDelegate : UnityThreadEvent
     {
         public UnityThreadDelegate(Action onNext, Action<Exception> onError)
         {

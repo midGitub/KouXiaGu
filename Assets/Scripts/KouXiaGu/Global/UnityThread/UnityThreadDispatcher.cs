@@ -71,19 +71,19 @@ namespace KouXiaGu
             onFixedUpdateTracker.Track();
         }
 
-        internal IDisposable SubscribeUpdate(IUnityThreadEvent item)
+        internal IDisposable SubscribeUpdate(UnityThreadEvent item)
         {
             return onUpdateTracker.Subscribe(item);
         }
 
-        internal IDisposable SubscribeFixedUpdate(IUnityThreadEvent item)
+        internal IDisposable SubscribeFixedUpdate(UnityThreadEvent item)
         {
             return onFixedUpdateTracker.Subscribe(item);
         }
 
-        class Deliverer : Deliverer<IUnityThreadEvent>
+        class Deliverer : Deliverer<UnityThreadEvent>
         {
-            protected override void Operate(IUnityThreadEvent observer)
+            protected override void Operate(UnityThreadEvent observer)
             {
                 try
                 {
