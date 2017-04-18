@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Globalization;
+using KouXiaGu.KeyInput;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World;
 using UnityEngine;

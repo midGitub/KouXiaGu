@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using System.IO;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu
+namespace KouXiaGu.KeyInput
 {
 
     /// <summary>
