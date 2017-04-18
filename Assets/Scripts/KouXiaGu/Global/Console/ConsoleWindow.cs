@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.KeyInput;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace KouXiaGu
@@ -40,9 +36,36 @@ namespace KouXiaGu
     /// 运行状态日志输出窗口;
     /// </summary>
     [DisallowMultipleComponent]
+    [ConsoleClass]
     sealed class ConsoleWindow : MonoBehaviour, ILogHandler
     {
         public static ConsoleWindow instance { get; private set; }
+
+
+        #region 控制台命令;
+        const string consoleDisplayUnityLog_KeyWord = "unityLog";
+
+        [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "输出 是否在控制台窗口显示Unity.Debug的日志;")]
+        public static void ConsoleDisplayUnityLog()
+        {
+            bool isDisplay = instance.IsDisplayUnityLog;
+            ConsoleDisplayUnityLog(isDisplay);
+        }
+
+        [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "设置 是否在控制台窗口显示Unity.Debug的日志;")]
+        public static void ConsoleDisplayUnityLog(string isDisplayStr)
+        {
+            bool isDisplay = Convert.ToBoolean(isDisplayStr);
+            ConsoleDisplayUnityLog(isDisplay);
+        }
+
+        static void ConsoleDisplayUnityLog(bool isDisplay)
+        {
+            instance.IsDisplayUnityLog = isDisplay;
+            GameConsole.Log(consoleDisplayUnityLog_KeyWord + " " + isDisplay);
+        }
+        #endregion
+
 
         [SerializeField]
         ConsoleUI ui;
@@ -68,7 +91,7 @@ namespace KouXiaGu
             set { outputStype = value; }
         }
 
-        public bool IsShowUnityLog
+        public bool IsDisplayUnityLog
         {
             get { return isShowUnityLog; }
             set { Debug.logger.logEnabled = value; isShowUnityLog = value; }

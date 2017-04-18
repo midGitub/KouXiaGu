@@ -25,9 +25,17 @@ namespace KouXiaGu
         public ConsoleMethodAttribute(string keyword)
         {
             Keyword = keyword;
+            Message = string.Empty;
+        }
+
+        public ConsoleMethodAttribute(string keyword, string message)
+        {
+            Keyword = keyword;
+            Message = message;
         }
 
         public string Keyword { get; private set; }
+        public string Message { get; private set; }
     }
 
     class ConsoleMethodReflection : Dictionary<string, MethodGroup>
