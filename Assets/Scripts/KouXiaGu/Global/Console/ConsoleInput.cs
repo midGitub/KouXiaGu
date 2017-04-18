@@ -2,19 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using KouXiaGu.Collections;
 using UnityEngine;
 
 namespace KouXiaGu
 {
-
-
-    public interface IConsoleInput
-    {
-        void Operate(string message);
-    }
-
 
     /// <summary>
     /// 标记;
@@ -43,7 +35,7 @@ namespace KouXiaGu
     /// 控制台输入控制,通过反射获得所有 关键词 和其 重载的方法;
     /// </summary>
     [ConsoleClass]
-    public class ConsoleInput : IConsoleInput
+    public class ConsoleInput
     {
         public ConsoleInput()
         {

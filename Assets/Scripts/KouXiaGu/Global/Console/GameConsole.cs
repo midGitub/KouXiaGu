@@ -18,10 +18,15 @@ namespace KouXiaGu
             get { return ConsoleWindow.instance; }
         }
 
-        /// <summary>
-        /// 是否显示 Unity.Debug 的内容?
-        /// </summary>
-        public static bool IsShowUnityDebug { get; private set; }
+        static ConsoleOutput output
+        {
+            get { return output; }
+        }
+
+        static ConsoleInput input
+        {
+            get { return logger.Input; }
+        }
 
 
         public static void Log(object message)
@@ -31,12 +36,12 @@ namespace KouXiaGu
 
         public static void Log(string message)
         {
-            logger.Output.Log(message);
+            output.Log(message);
         }
 
         public static void Log(string format, params object[] args)
         {
-            logger.Output.Log(format, args);
+            output.Log(format, args);
         }
 
 
@@ -47,12 +52,12 @@ namespace KouXiaGu
 
         public static void LogWarning(string message)
         {
-            logger.Output.LogWarning(message);
+            output.LogWarning(message);
         }
 
         public static void LogWarning(string format, params object[] args)
         {
-            logger.Output.LogWarning(format, args);
+            output.LogWarning(format, args);
         }
 
 
@@ -63,12 +68,21 @@ namespace KouXiaGu
 
         public static void LogError(string message)
         {
-            logger.Output.LogError(message);
+            output.LogError(message);
         }
 
         public static void LogError(string format, params object[] args)
         {
-            logger.Output.LogError(format, args);
+            output.LogError(format, args);
+        }
+
+
+        /// <summary>
+        /// 输入操作;
+        /// </summary>
+        public static void Operate(string message)
+        {
+            input.Operate(message);
         }
 
     }

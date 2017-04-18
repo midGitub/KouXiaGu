@@ -8,35 +8,6 @@ using KouXiaGu.Rx;
 namespace KouXiaGu
 {
 
-    public interface IConsoleOutput
-    {
-        string Text { get; set; }
-        void Log(string message);
-        void LogWarning(string message);
-        void LogError(string message);
-    }
-
-    public static class ConsoleOutputExtensions
-    {
-        public static void Log(this IConsoleOutput output, string format, params object[] args)
-        {
-            string message = string.Format(format, args);
-            output.Log(message);
-        }
-
-        public static void LogWarning(this IConsoleOutput output, string format, params object[] args)
-        {
-            string message = string.Format(format, args);
-            output.LogWarning(message);
-        }
-
-        public static void LogError(this IConsoleOutput output, string format, params object[] args)
-        {
-            string message = string.Format(format, args);
-            output.LogError(message);
-        }
-    }
-
     /// <summary>
     /// 使用"RichText(富文本)"控制输出格式;
     /// </summary>
@@ -73,27 +44,16 @@ namespace KouXiaGu
     /// <summary>
     /// 控制台输出;
     /// </summary>
-    class ConsoleOutput : IConsoleOutput, ILogHandler, IObservable<string>
+    class ConsoleOutput : ILogHandler
     {
         public ConsoleOutput(ConsoleOutputTextStyle style)
         {
             Text = string.Empty;
             Style = style;
-            textTracker = new ListTracker<string>();
         }
 
-        ListTracker<string> textTracker;
         public string Text { get; set; }
         public ConsoleOutputTextStyle Style { get; private set; }
-
-        /// <summary>
-        /// 当字符串发生变化时调用;
-        /// </summary>
-        public IDisposable Subscribe(IObserver<string> observer)
-        {
-            return textTracker.Subscribe(observer);
-        }
-
 
         public void Log(string message)
         {
@@ -139,7 +99,6 @@ namespace KouXiaGu
                 Clear();
 
             Text += message + Environment.NewLine;
-            textTracker.Track(Text);
         }
 
         public void Clear()

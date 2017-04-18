@@ -51,8 +51,8 @@ namespace KouXiaGu
         [SerializeField]
         ConsoleOutputTextStyle outputStype;
 
-        ILogHandler defaultLogHandler;
         float uiScrollSize;
+        ILogHandler defaultLogHandler;
         public ConsoleInput Input { get; private set; }
         public ConsoleOutput Output { get; private set; }
 
@@ -60,6 +60,12 @@ namespace KouXiaGu
         {
             get { return outputStype; }
             set { outputStype = value; }
+        }
+
+        public bool IsShowUnityLog
+        {
+            get { return isShowUnityLog; }
+            set { isShowUnityLog = value; }
         }
 
         void Awake()
