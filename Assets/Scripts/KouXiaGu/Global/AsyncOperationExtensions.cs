@@ -56,10 +56,6 @@ namespace KouXiaGu
                 }
             }
 
-            public override void OnError(Exception ex)
-            {
-                Debug.LogError(ex);
-            }
         }
 
 
@@ -103,11 +99,6 @@ namespace KouXiaGu
                     }
                     Dispose();
                 }
-            }
-
-            public override void OnError(Exception ex)
-            {
-                Debug.LogError(ex);
             }
         }
 
@@ -171,11 +162,6 @@ namespace KouXiaGu
                     Dispose();
                 }
             }
-
-            public override void OnError(Exception ex)
-            {
-                Debug.LogError(ex);
-            }
         }
 
 
@@ -232,11 +218,6 @@ namespace KouXiaGu
                     onCompleted(operationArray);
 
                 Dispose();
-            }
-
-            public override void OnError(Exception ex)
-            {
-                Debug.LogError(ex);
             }
         }
 

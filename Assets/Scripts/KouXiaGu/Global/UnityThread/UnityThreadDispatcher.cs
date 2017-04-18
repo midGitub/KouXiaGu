@@ -91,7 +91,7 @@ namespace KouXiaGu
                 }
                 catch (Exception ex)
                 {
-                    observer.OnError(ex);
+                    Debug.LogError("UnityThreadDispatcher:" + ex);
                 }
             }
         }

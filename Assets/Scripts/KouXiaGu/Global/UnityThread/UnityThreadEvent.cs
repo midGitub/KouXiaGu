@@ -16,7 +16,6 @@ namespace KouXiaGu
         IDisposable disposer;
 
         public abstract void OnNext();
-        public abstract void OnError(Exception ex);
 
         public IDisposable SubscribeUpdate()
         {
@@ -56,10 +55,6 @@ namespace KouXiaGu
             onNext();
         }
 
-        public override void OnError(Exception ex)
-        {
-            onError(ex);
-        }
     }
 
 }
