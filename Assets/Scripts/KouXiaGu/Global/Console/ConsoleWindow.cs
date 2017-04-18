@@ -79,6 +79,7 @@ namespace KouXiaGu
         [SerializeField]
         bool isDisplay = false;
 
+        int inputContentRecordIndex;
         float uiScrollSize;
         ILogHandler defaultLogHandler;
         KeyDownObserver displayKeyObserver;
@@ -103,11 +104,18 @@ namespace KouXiaGu
             private set { isDisplay = value; }
         }
 
+        public string FinalInputContent
+        {
+            get { return Input.FinalInputContent; }
+        }
+
         void Awake()
         {
             instance = this;
             InitOutput();
             InitInput();
+
+            ResetInputContent();
 
             defaultLogHandler = Debug.logger.logHandler;
             Debug.logger.logHandler = this;
@@ -128,10 +136,11 @@ namespace KouXiaGu
             Input = new ConsoleInput();
         }
 
-        void Update()
+        void LateUpdate()
         {
             UpdateOutputText();
             UpdateInput();
+            UpdateInputMovement();
             UpdateScroll();
         }
 
@@ -145,13 +154,19 @@ namespace KouXiaGu
 
         void UpdateInput()
         {
-            if (ui.InputText != string.Empty
-                && (UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.Input.GetKeyDown(KeyCode.KeypadEnter)))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 try
                 {
-                    Input.Operate(ui.InputText);
-                    ui.InputText = string.Empty;
+                    if (ui.InputText != string.Empty)
+                    {
+                        Input.Operate(ui.InputText);
+                        ResetInputContent();
+                    }
+                    else
+                    {
+                        ui.InputText = FinalInputContent;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -164,6 +179,37 @@ namespace KouXiaGu
                 }
             }
         }
+
+
+        void UpdateInputMovement()
+        {
+            if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                inputContentRecordIndex = Math.Max(--inputContentRecordIndex, 0);
+                InputContentUpdate();
+            }
+            else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                inputContentRecordIndex = Math.Min(++inputContentRecordIndex, Input.RecordCount);
+                InputContentUpdate();
+            }
+        }
+
+        void ResetInputContent()
+        {
+            inputContentRecordIndex = Input.RecordCount;
+            ui.InputText = string.Empty;
+        }
+
+        void InputContentUpdate()
+        {
+            if (inputContentRecordIndex < Input.RecordCount)
+            {
+                ui.InputText = Input[inputContentRecordIndex];
+            }
+            ui.InputField.MoveTextEnd(false);
+        }
+
 
         void UpdateScroll()
         {

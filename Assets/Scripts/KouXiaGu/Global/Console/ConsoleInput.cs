@@ -19,7 +19,7 @@ namespace KouXiaGu
         public ConsoleInput()
         {
             methodMap = new ConsoleMethodReflection();
-            InputContents = new List<string>();
+            inputContents = new List<string>();
             MaxRecordNumber = DefaultMaxRecordNumber;
         }
 
@@ -28,12 +28,27 @@ namespace KouXiaGu
         /// <summary>
         /// 记录输入内容;
         /// </summary>
-        public List<string> InputContents { get; private set; }
+        List<string> inputContents;
         public int MaxRecordNumber { get; private set; }
+
+        public string this[int index]
+        {
+            get { return inputContents[index]; }
+        }
+
+        public int RecordCount
+        {
+            get { return inputContents.Count; }
+        }
 
         internal IDictionary<string, MethodGroup> MethodMap
         {
             get { return methodMap; }
+        }
+
+        public string FinalInputContent
+        {
+            get { return inputContents.Count == 0 ? string.Empty : inputContents[inputContents.Count - 1]; }
         }
 
         public void Operate(string message)
@@ -55,11 +70,11 @@ namespace KouXiaGu
 
         void RecordInputContent(string message)
         {
-            if (InputContents.Count >= MaxRecordNumber)
+            if (inputContents.Count >= MaxRecordNumber)
             {
-                InputContents.RemoveAt(0);
+                inputContents.RemoveAt(0);
             }
-            InputContents.Add(message);
+            inputContents.Add(message);
         }
 
         static readonly char[] separator = new char[]
