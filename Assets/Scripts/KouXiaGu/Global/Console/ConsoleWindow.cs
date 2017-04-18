@@ -44,6 +44,11 @@ namespace KouXiaGu
             }
         }
 
+        public void ScrollToBottom()
+        {
+            OutputScrollRect.verticalNormalizedPosition = 0;
+        }
+
         void IObserver<string>.OnNext(string item)
         {
             OutputConsoleText.text = item;
@@ -75,6 +80,7 @@ namespace KouXiaGu
         ConsoleOutputTextStyle outputStype;
 
         ILogHandler defaultLogHandler;
+        float uiScrollSize;
         public ConsoleInput Input { get; private set; }
         public ConsoleOutput Output { get; private set; }
 
@@ -109,6 +115,7 @@ namespace KouXiaGu
         void Update()
         {
             UpdateInput();
+            UpdateScroll();
         }
 
         void UpdateInput()
@@ -121,7 +128,7 @@ namespace KouXiaGu
                     Input.Operate(ui.InputText);
                     ui.InputText = string.Empty;
                     ui.InputField.ActivateInputField();
-                    ScrollToBottom();
+                    ui.ScrollToBottom();
                 }
                 catch (Exception ex)
                 {
@@ -131,20 +138,25 @@ namespace KouXiaGu
             }
         }
 
+        void UpdateScroll()
+        {
+            float size = ui.OutputScrollRect.verticalScrollbar.size;
+            if (uiScrollSize != size)
+            {
+                ui.ScrollToBottom();
+                uiScrollSize = size;
+            }
+        }
+
         void OnEnable()
         {
-            ScrollToBottom();
+            ui.ScrollToBottom();
         }
 
         void OnDestroy()
         {
             Debug.logger.logHandler = defaultLogHandler;
             instance = null;
-        }
-
-        void ScrollToBottom()
-        {
-            ui.OutputScrollRect.verticalNormalizedPosition = 0;
         }
 
         void ILogHandler.LogException(Exception exception, UnityEngine.Object context)
