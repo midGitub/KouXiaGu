@@ -17,7 +17,7 @@ namespace KouXiaGu
 
 
     /// <summary>
-    /// 待搜索特定方法的类;
+    /// 标记;
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
     public sealed class ConsoleClassAttribute : Attribute
