@@ -10,6 +10,7 @@ namespace KouXiaGu
 
     public interface IConsoleOutput
     {
+        string Text { get; set; }
         void Log(string message);
         void LogWarning(string message);
         void LogError(string message);
@@ -82,7 +83,7 @@ namespace KouXiaGu
         }
 
         ListTracker<string> textTracker;
-        public string Text { get; internal set; }
+        public string Text { get; set; }
         public ConsoleOutputTextStyle Style { get; private set; }
 
         /// <summary>
@@ -92,6 +93,7 @@ namespace KouXiaGu
         {
             return textTracker.Subscribe(observer);
         }
+
 
         public void Log(string message)
         {
@@ -110,6 +112,26 @@ namespace KouXiaGu
             message = Style.GetErrorLog(message);
             AddLog(message);
         }
+
+
+        public void Log(string format, params object[] args)
+        {
+            string message = string.Format(format, args);
+            Log(message);
+        }
+
+        public void LogWarning(string format, params object[] args)
+        {
+            string message = string.Format(format, args);
+            LogWarning(message);
+        }
+
+        public void LogError(string format, params object[] args)
+        {
+            string message = string.Format(format, args);
+            LogError(message);
+        }
+
 
         void AddLog(string message)
         {

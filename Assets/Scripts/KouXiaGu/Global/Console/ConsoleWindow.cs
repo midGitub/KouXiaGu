@@ -4,9 +4,61 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using KouXiaGu.Rx;
 
 namespace KouXiaGu
 {
+
+    [Serializable]
+    class ConsoleUI : IObserver<string>
+    {
+        public ScrollRect OutputScrollRect;
+        public Text OutputConsoleText;
+        public InputField InputField;
+
+        IDisposable outputDisposer;
+
+        public string OutputText
+        {
+            get { return OutputConsoleText.text; }
+            set { OutputConsoleText.text = value; }
+        }
+
+        public string InputText
+        {
+            get { return InputField.text; }
+            set { InputField.text = value; }
+        }
+
+        public void Subscribe(IObservable<string> output)
+        {
+            outputDisposer = output.Subscribe(this);
+        }
+
+        public void Unsubscribe()
+        {
+            if (outputDisposer != null)
+            {
+                outputDisposer.Dispose();
+                outputDisposer = null;
+            }
+        }
+
+        void IObserver<string>.OnNext(string item)
+        {
+            OutputConsoleText.text = item;
+        }
+
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnCompleted()
+        {
+            Unsubscribe();
+        }
+    }
 
     /// <summary>
     /// 运行状态日志输出窗口;
@@ -16,68 +68,66 @@ namespace KouXiaGu
     {
         public static ConsoleWindow instance { get; private set; }
 
+        [SerializeField]
+        ConsoleUI ui;
 
         [SerializeField]
-        ScrollRect outputScrollRect;
-
-        [SerializeField]
-        Text outputConsoleText;
-
-        [SerializeField]
-        InputField inputField;
-
-        [SerializeField]
-        ConsoleOutput output;
+        ConsoleOutputTextStyle outputStype;
 
         ILogHandler defaultLogHandler;
-        float scrollbarVertical_Size;
-
         public ConsoleInput Input { get; private set; }
+        public ConsoleOutput Output { get; private set; }
 
-        public ConsoleOutput Output
+        public ConsoleOutputTextStyle OutputStype
         {
-            get { return output; }
+            get { return outputStype; }
+            set { outputStype = value; }
         }
 
         void Awake()
         {
             instance = this;
+            InitOutput();
+            InitInput();
 
             defaultLogHandler = Debug.logger.logHandler;
             Debug.logger.logHandler = this;
+        }
 
-            scrollbarVertical_Size = outputScrollRect.verticalScrollbar.size;
-            output.Text = outputConsoleText.text;
+        void InitOutput()
+        {
+            Output = new ConsoleOutput(outputStype);
+            Output.Text = ui.OutputText;
+            ui.Subscribe(Output);
+        }
 
+        void InitInput()
+        {
             Input = new ConsoleInput();
         }
 
         void Update()
         {
-            if (outputConsoleText.text != output.Text)
-            {
-                outputConsoleText.text = output.Text;
-            }
+            UpdateInput();
+        }
 
-            float currentSize = outputScrollRect.verticalScrollbar.size;
-            if (scrollbarVertical_Size != currentSize)
-            {
-                ScrollToBottom();
-                scrollbarVertical_Size = currentSize;
-            }
-
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Return) && inputField.text != string.Empty)
+        void UpdateInput()
+        {
+            if (ui.InputText != string.Empty
+                && (UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.Input.GetKeyDown(KeyCode.KeypadEnter)))
             {
                 try
                 {
-                    Input.Operate(inputField.text);
+                    Input.Operate(ui.InputText);
+                    ui.InputText = string.Empty;
+                    ui.InputField.ActivateInputField();
+                    ScrollToBottom();
                 }
                 catch (Exception ex)
                 {
-                    GameConsole.LogError(ex);
+                    Debug.LogError(ex);
+                    GameConsole.LogError("未知命令;");
                 }
-                inputField.text = string.Empty;
-                inputField.ActivateInputField();
             }
         }
 
@@ -92,30 +142,20 @@ namespace KouXiaGu
             instance = null;
         }
 
-        void OnScrollValueChanged(Vector2 v2)
-        {
-            float currentSize = outputScrollRect.verticalScrollbar.size;
-            if (scrollbarVertical_Size != currentSize)
-            {
-                ScrollToBottom();
-                scrollbarVertical_Size = currentSize;
-            }
-        }
-
         void ScrollToBottom()
         {
-            outputScrollRect.verticalNormalizedPosition = 0;
+            ui.OutputScrollRect.verticalNormalizedPosition = 0;
         }
 
         void ILogHandler.LogException(Exception exception, UnityEngine.Object context)
         {
-            (output as ILogHandler).LogException(exception, context);
+            (Output as ILogHandler).LogException(exception, context);
             defaultLogHandler.LogException(exception, context);
         }
 
         void ILogHandler.LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
         {
-            (output as ILogHandler).LogFormat(logType, context, format, args);
+            (Output as ILogHandler).LogFormat(logType, context, format, args);
             defaultLogHandler.LogFormat(logType, context, format, args);
         }
 
