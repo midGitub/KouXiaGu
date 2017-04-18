@@ -10,148 +10,6 @@ namespace KouXiaGu.KeyInput
 {
 
     /// <summary>
-    /// 按键读取;
-    /// </summary>
-    public abstract class CustomKeyReader
-    {
-        const string CustomKeyFileName = "Input\\Keyboard.xml";
-
-        static string CustomKeyFilePath
-        {
-            get { return ResourcePath.CombineConfiguration(CustomKeyFileName); }
-        }
-
-        public abstract IEnumerable<CustomKey> ReadKeys(string filePath);
-        public abstract void WriteKeys(IEnumerable<CustomKey> keys, string filePath);
-
-        public virtual IEnumerable<CustomKey> ReadKeys()
-        {
-            return ReadKeys(CustomKeyFilePath);
-        }
-
-        public virtual void WriteKeys(IEnumerable<CustomKey> keys)
-        {
-            WriteKeys(keys, CustomKeyFilePath);
-        }
-    }
-
-    /// <summary>
-    /// 读取默认按键;
-    /// </summary>
-    public class DefaultCustomKeyReader : CustomKeyReader
-    {
-        const string DefaultCustomKeyFileName = "Input\\Default_Keyboard.xml";
-
-        static string DefaultCustomKeyFilePath
-        {
-            get { return ResourcePath.CombineConfiguration(DefaultCustomKeyFileName); }
-        }
-
-        public DefaultCustomKeyReader(CustomKeyReader reader)
-        {
-            if (reader == null)
-                throw new ArgumentNullException("reader");
-
-            this.reader = reader;
-        }
-
-        CustomKeyReader reader;
-
-        public override IEnumerable<CustomKey> ReadKeys()
-        {
-            return ReadKeys(DefaultCustomKeyFilePath);
-        }
-
-        public override void WriteKeys(IEnumerable<CustomKey> keys)
-        {
-            WriteKeys(keys, DefaultCustomKeyFilePath);
-        }
-
-        public override IEnumerable<CustomKey> ReadKeys(string filePath)
-        {
-            return reader.ReadKeys(filePath);
-        }
-
-        public override void WriteKeys(IEnumerable<CustomKey> keys, string filePath)
-        {
-            reader.WriteKeys(keys, filePath);
-        }
-    }
-
-    /// <summary>
-    /// 读取Xml文件按键信息;
-    /// </summary>
-    public class XmlCustomKeyReader : CustomKeyReader
-    {
-        static readonly XmlSerializer keyArraySerializer = new XmlSerializer(typeof(CustomKey[]));
-
-        public XmlCustomKeyReader()
-        {
-        }
-
-        public override IEnumerable<CustomKey> ReadKeys(string filePath)
-        {
-            var customKeys = (CustomKey[])keyArraySerializer.DeserializeXiaGu(filePath);
-            return customKeys;
-        }
-
-        public override void WriteKeys(IEnumerable<CustomKey> keys, string filePath)
-        {
-            var keyArray = keys as CustomKey[] ?? keys.ToArray();
-            string directoryPath = Path.GetDirectoryName(filePath);
-
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-
-            keyArraySerializer.SerializeXiaGu(filePath, keyArray, FileMode.Create);
-        }
-
-    }
-
-    /// <summary>
-    /// 自定义按键 和 UnityEngine.KeyCode 的映射;
-    /// </summary>
-    [XmlType("Key")]
-    public struct CustomKey : IEquatable<CustomKey>
-    {
-        public CustomKey(KeyFunction function, KeyCode keyCode)
-        {
-            this.function = function;
-            this.keyCode = keyCode;
-        }
-
-        [XmlAttribute("function")]
-        public KeyFunction function { get; private set; }
-
-        [XmlAttribute("key")]
-        public KeyCode keyCode { get; private set; }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is CustomKey))
-                return false;
-            return Equals((CustomKey)obj);
-        }
-
-        public bool Equals(CustomKey other)
-        {
-            return  this.function == other.function &&
-                this.keyCode == other.keyCode;
-        }
-
-        public override int GetHashCode()
-        {
-            return ((int)function) ^ ((int)keyCode);
-        }
-
-        public override string ToString()
-        {
-            return "Function:" + function.ToString() + ";Key:" + keyCode.ToString();
-        }
-
-    }
-
-    /// <summary>
     /// 对 UnityEngine.Input 进行包装,加入自定义按键;
     /// </summary>
     public static class CustomInput
@@ -275,56 +133,97 @@ namespace KouXiaGu.KeyInput
 
 
 
-        internal static readonly CustomKeyReader defaultKeyReader = new XmlCustomKeyReader();
+        internal static readonly CustomKeyReader DefaultReader = new XmlCustomKeyReader();
 
-        static CustomKeyReader GetReader()
+
+        public static void ReadOrDefault()
         {
-            return defaultKeyReader;
+            ReadOrDefault(DefaultReader);
         }
+
+        public static void ReadOrDefault(CustomKeyReader reader)
+        {
+            IEnumerable<CustomKey> keys;
+            try
+            {
+                keys = reader.ReadKeys();
+            }
+            catch
+            {
+                Debug.LogWarning("读取定义按键失败,现在使用默认按键;");
+                keys = DefaultKey.DefaultKeys;
+            }
+            UpdateKey(keys);
+        }
+
+        public static IAsyncOperation ReadOrDefaultAsync()
+        {
+            return ReadOrDefaultAsync(DefaultReader);
+        }
+
+        public static IAsyncOperation ReadOrDefaultAsync(CustomKeyReader reader)
+        {
+            return new AsyncReadOrDefault(reader);
+        }
+
+        class AsyncReadOrDefault : ThreadOperation
+        {
+            public AsyncReadOrDefault(CustomKeyReader reader)
+            {
+                Reader = reader;
+                Start();
+            }
+
+            public CustomKeyReader Reader { get; private set; }
+
+            protected override void Operate()
+            {
+                ReadOrDefault(Reader);
+            }
+        }
+
 
         /// <summary>
         /// 从读取到所有按键信息,并且设置到按键;
         /// </summary>
         public static void Read()
         {
-            Read(GetReader());
+            Read(DefaultReader);
         }
 
         /// <summary>
-        /// 从读取到所有按键信息,并且设置到按键;
+        /// 从读取到所有按键信息,并且设置到按键,若读取失败则使用默认按键;
         /// </summary>
-        public static void Read(CustomKeyReader keyReader)
+        public static void Read(CustomKeyReader reader)
         {
-            var keys = keyReader.ReadKeys();
+            IEnumerable<CustomKey> keys;
+            keys = reader.ReadKeys();
             UpdateKey(keys);
         }
 
         public static IAsyncOperation ReadAsync()
         {
-            var item = new CustomInputAsyncReader(GetReader());
-            item.Start();
-            return item;
+            return ReadAsync(DefaultReader);
         }
 
-        public static IAsyncOperation ReadAsync(CustomKeyReader keyReader)
+        public static IAsyncOperation ReadAsync(CustomKeyReader reader)
         {
-            var item = new CustomInputAsyncReader(keyReader);
-            item.Start();
-            return item;
+            return new CustomInputAsyncReader(reader);
         }
 
         class CustomInputAsyncReader : ThreadOperation
         {
-            public CustomInputAsyncReader(CustomKeyReader keyReader)
+            public CustomInputAsyncReader(CustomKeyReader reader)
             {
-                KeyReader = keyReader;
+                Reader = reader;
+                Start();
             }
 
-            public CustomKeyReader KeyReader { get; private set; }
+            public CustomKeyReader Reader { get; private set; }
 
             protected override void Operate()
             {
-                CustomInput.Read(KeyReader);
+                Read(Reader);
             }
         }
 
@@ -334,44 +233,41 @@ namespace KouXiaGu.KeyInput
         /// </summary>
         public static void Write()
         {
-            Write(GetReader());
+            Write(DefaultReader);
         }
 
         /// <summary>
         /// 将所有按键输出\保存;
         /// </summary>
-        public static void Write(CustomKeyReader keyReader)
+        public static void Write(CustomKeyReader writer)
         {
             CustomKey[] keys = GetKeys().ToArray();
-            keyReader.WriteKeys(keys);
+            writer.WriteKeys(keys);
         }
 
         public static IAsyncOperation WriteAsync()
         {
-            var item = new CustomInputAsyncWriter(GetReader());
-            item.Start();
-            return item;
+            return WriteAsync(DefaultReader);
         }
 
-        public static IAsyncOperation WriteAsync(CustomKeyReader keyReader)
+        public static IAsyncOperation WriteAsync(CustomKeyReader writer)
         {
-            var item = new CustomInputAsyncWriter(keyReader);
-            item.Start();
-            return item;
+            return new CustomInputAsyncWriter(writer);
         }
 
         class CustomInputAsyncWriter : ThreadOperation
         {
-            public CustomInputAsyncWriter(CustomKeyReader keyReader)
+            public CustomInputAsyncWriter(CustomKeyReader writer)
             {
-                KeyReader = keyReader;
+                Writer = writer;
+                Start();
             }
 
-            public CustomKeyReader KeyReader { get; private set; }
+            public CustomKeyReader Writer { get; private set; }
 
             protected override void Operate()
             {
-                CustomInput.Write(KeyReader);
+                CustomInput.Write(Writer);
             }
         }
 

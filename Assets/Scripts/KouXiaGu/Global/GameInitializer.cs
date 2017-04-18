@@ -49,7 +49,7 @@ namespace KouXiaGu
         {
             missions = new IAsyncOperation[]
                 {
-                    CustomInput.ReadAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
+                    CustomInput.ReadOrDefaultAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
                     Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
                     GameData.CreateAsync().Subscribe(OnGameDataCompleted, OnFaulted),
                 };
@@ -71,7 +71,7 @@ namespace KouXiaGu
 
         void OnFaulted(IAsyncOperation operation)
         {
-            Debug.LogError("游戏初始化时遇到错误:" + operation.Exception);
+            Debug.LogError("游戏初始化时遇到错误:\n" + operation.Exception);
         }
 
         void OnCustomInputCompleted(IAsyncOperation operation)

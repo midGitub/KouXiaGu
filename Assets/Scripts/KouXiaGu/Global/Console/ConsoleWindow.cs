@@ -152,12 +152,6 @@ namespace KouXiaGu
             }
         }
 
-        void OnEnable()
-        {
-            ui.InputField.ActivateInputField();
-            ui.InputField.Select();
-        }
-
         void OnValidate()
         {
             Debug.logger.logEnabled = isShowUnityLog;
