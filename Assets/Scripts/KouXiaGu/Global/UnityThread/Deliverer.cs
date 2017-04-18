@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Rx
+namespace KouXiaGu
 {
-
     /// <summary>
     /// 对多个对象进行操作,可在操作过程中移除;
     /// </summary>

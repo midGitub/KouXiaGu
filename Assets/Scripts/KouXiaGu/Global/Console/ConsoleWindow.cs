@@ -16,8 +16,6 @@ namespace KouXiaGu
         public Text OutputConsoleText;
         public InputField InputField;
 
-        IDisposable outputDisposer;
-
         public string OutputText
         {
             get { return OutputConsoleText.text; }

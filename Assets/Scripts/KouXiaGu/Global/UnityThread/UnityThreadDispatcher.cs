@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Rx;
 using UnityEngine;
 
-namespace KouXiaGu.Rx
+namespace KouXiaGu
 {
 
     /// <summary>
@@ -34,6 +35,7 @@ namespace KouXiaGu.Rx
                 {
                     instance = new GameObject("UnityThreadDispatcher", typeof(UnityThreadDispatcher)).
                         GetComponent<UnityThreadDispatcher>();
+                    DontDestroyOnLoad(instance.gameObject);
                 }
             }
             return instance;
