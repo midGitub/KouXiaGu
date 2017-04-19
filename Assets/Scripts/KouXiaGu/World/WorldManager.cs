@@ -37,7 +37,6 @@ namespace KouXiaGu.World
         public WorldManager(WorldInfo info, WorldElementResource elementInfo)
         {
             Time = new TimeManager(info.Time);
-            Map = new MapManager();
             Navigation = new NavigationManager(this);
         }
 
@@ -45,11 +44,6 @@ namespace KouXiaGu.World
         /// 时间;
         /// </summary>
         public TimeManager Time { get; private set; }
-
-        /// <summary>
-        /// 地图信息;
-        /// </summary>
-        public MapManager Map { get; private set; }
 
         /// <summary>
         /// 路径导航;
