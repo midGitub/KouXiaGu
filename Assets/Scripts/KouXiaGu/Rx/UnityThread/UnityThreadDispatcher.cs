@@ -73,7 +73,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 订阅到 Update 更新,只会更新观察者的 OnNext(null);
         /// </summary>
-        internal IDisposable SubscribeUpdate(IObserver<object> item)
+        public IDisposable SubscribeUpdate(IObserver<object> item)
         {
             return onUpdateTracker.Subscribe(item);
         }
@@ -81,7 +81,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext(null);
         /// </summary>
-        internal IDisposable SubscribeFixedUpdate(IObserver<object> item)
+        public IDisposable SubscribeFixedUpdate(IObserver<object> item)
         {
             return onFixedUpdateTracker.Subscribe(item);
         }
