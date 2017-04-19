@@ -34,7 +34,7 @@ namespace KouXiaGu.World.Map
 
         public PredefinedMap()
         {
-            Data = new ObservableDictionary<CubicHexCoord, MapNode>(false);
+            Data = new ObservableDictionary<CubicHexCoord, MapNode>(true);
             Road = new MapRoad();
             Town = new MapTown();
             Enable();
@@ -54,9 +54,6 @@ namespace KouXiaGu.World.Map
             Enable();
         }
 
-        /// <summary>
-        /// 初始化地图,需要手动调用;
-        /// </summary>
         void Enable()
         {
             if (IsReadOnly)
@@ -67,7 +64,7 @@ namespace KouXiaGu.World.Map
                 }
                 finally
                 {
-                    IsReadOnly = true;
+                    IsReadOnly = false;
                 }
             }
         }
@@ -82,7 +79,7 @@ namespace KouXiaGu.World.Map
                 }
                 finally
                 {
-                    IsReadOnly = false;
+                    IsReadOnly = true;
                 }
             }
         }
