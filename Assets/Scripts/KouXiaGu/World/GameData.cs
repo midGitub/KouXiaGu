@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -30,6 +31,11 @@ namespace KouXiaGu
         /// 地形资源;
         /// </summary>
         public TerrainResource Terrain { get; private set; }
+
+        /// <summary>
+        /// 地图资源;
+        /// </summary>
+        public MapResource Map { get; private set; }
 
         GameData()
         {

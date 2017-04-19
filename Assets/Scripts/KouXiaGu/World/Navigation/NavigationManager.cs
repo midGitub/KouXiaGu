@@ -23,7 +23,7 @@ namespace KouXiaGu.World.Navigation
 
         public IDictionary<CubicHexCoord, MapNode> Map
         {
-            get { return World.Map.Map.Map.Data; }
+            get { return World.Map.Map.PredefinedMap.Data; }
         }
 
 

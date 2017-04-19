@@ -3,27 +3,46 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.World.Map
 {
 
     public class MapData
     {
-        public PredefinedMap Map { get; private set; }
-        public ArchiveMap ArchiveMap { get; private set; }
+        static readonly PredefinedMapReader predefinedMapReader = new PredefinedMapProtoReader();
+        static readonly ArchiveMapReader archiveMapReader = new ArchiveMapProtoReader();
 
+        public static MapData Read()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// 空白地图;
+        /// </summary>
+        public MapData()
+            : this(new PredefinedMap())
+        {
+        }
+
+        /// <summary>
+        /// 仅从预制地图初始化地图数据;
+        /// </summary>
+        /// <param name="map"></param>
         public MapData(PredefinedMap map)
         {
             if (map == null)
                 throw new ArgumentNullException();
 
-            Map = map;
+            PredefinedMap = map;
             ArchiveMap = new ArchiveMap();
-            ArchiveMap.Subscribe(Map);
+            ArchiveMap.Subscribe(PredefinedMap);
         }
 
         /// <summary>
-        /// 构造;
+        /// 初始化地图数据;
         /// </summary>
         /// <param name="map">不包含存档内容的地图数据;</param>
         /// <param name="archive">变化内容,存档内容</param>
@@ -32,10 +51,29 @@ namespace KouXiaGu.World.Map
             if (map == null || archive == null)
                 throw new ArgumentNullException();
 
-            Map = map;
+            PredefinedMap = map;
             ArchiveMap = archive;
-            Map.Update(ArchiveMap);
-            ArchiveMap.Subscribe(Map);
+            PredefinedMap.Update(ArchiveMap);
+            ArchiveMap.Subscribe(PredefinedMap);
+        }
+
+
+        /// <summary>
+        /// 地图数据,包括修改内容;
+        /// </summary>
+        internal PredefinedMap PredefinedMap { get; private set; }
+
+        /// <summary>
+        /// 存档地图数据;
+        /// </summary>
+        internal ArchiveMap ArchiveMap { get; private set; }
+
+        /// <summary>
+        /// 当前游戏地图数据;
+        /// </summary>
+        public IDictionary<CubicHexCoord, MapNode> Map
+        {
+            get { return PredefinedMap.Data; }
         }
 
         /// <summary>
@@ -43,7 +81,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public void WriteMap()
         {
-            PredefinedMapReader.instance.Write(Map);
+            predefinedMapReader.Write(PredefinedMap);
         }
 
         /// <summary>
@@ -51,8 +89,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public void WriteArchived(string archivedDir)
         {
-            ArchiveMapReader reader = ArchiveMapReader.Create(archivedDir);
-            reader.Write(ArchiveMap);
+            archiveMapReader.Write(ArchiveMap, archivedDir);
         }
 
         /// <summary>
@@ -61,9 +98,9 @@ namespace KouXiaGu.World.Map
         public void SetArchiveMap(ArchiveMap archive)
         {
             ArchiveMap.Unsubscribe();
-            Map.Update(archive);
+            PredefinedMap.Update(archive);
             ArchiveMap = archive;
-            archive.Subscribe(Map);
+            archive.Subscribe(PredefinedMap);
         }
     }
 

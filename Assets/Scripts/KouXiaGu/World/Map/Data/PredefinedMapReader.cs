@@ -20,50 +20,49 @@ namespace KouXiaGu.World.Map
     }
 
     /// <summary>
-    /// 读取游戏地图方法类;
+    /// 读取游戏预制地图;
     /// </summary>
-    public class PredefinedMapReader : IReader<PredefinedMap>
+    public abstract class PredefinedMapReader : IReader<PredefinedMap>
     {
-        internal static readonly PredefinedMapReader instance = new PredefinedMapReader();
-
-        public PredefinedMapReader()
+        public PredefinedMapReader(string fileExtension)
         {
-            File = new PredefinedMapFilePath(FileExtension);
+            File = new PredefinedMapFilePath(fileExtension);
         }
 
-        internal PredefinedMapFilePath File { get; private set; }
-
-        public string FileExtension
-        {
-            get { return ".map"; }
-        }
+        public FilePath File { get; private set; }
+        public abstract PredefinedMap ReadMap(string filePath);
+        public abstract void Write(PredefinedMap data, string filePath);
 
         public PredefinedMap Read()
         {
-            string filePath = GetFilePath();
-            return Read(filePath);
+            string filePath = File.MainFilePath;
+            return ReadMap(filePath);
         }
 
-        public string GetFilePath()
+        public void Write(PredefinedMap data)
         {
-            string filePath = Path.ChangeExtension(File.MainFilePath, FileExtension);
-            return filePath;
+            string filePath = File.MainFilePath;
+            Write(data, filePath);
+        }
+    }
+
+
+    public class PredefinedMapProtoReader : PredefinedMapReader
+    {
+        public const string fileExtension = ".map";
+
+        public PredefinedMapProtoReader() 
+            : base(fileExtension)
+        {
         }
 
-        public PredefinedMap Read(string filePath)
+        public override PredefinedMap ReadMap(string filePath)
         {
             PredefinedMap data = ProtoBufExtensions.Deserialize<PredefinedMap>(filePath);
             return data;
         }
 
-
-        public void Write(PredefinedMap data)
-        {
-            string filePath = GetFilePath();
-            Write(filePath, data);
-        }
-
-        public void Write(string filePath, PredefinedMap data)
+        public override void Write(PredefinedMap data, string filePath)
         {
             ProtoBufExtensions.Serialize(filePath, data);
         }

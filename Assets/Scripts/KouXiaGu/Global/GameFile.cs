@@ -42,6 +42,26 @@ namespace KouXiaGu
         }
     }
 
+
+    public abstract class ArchiveFilePath
+    {
+        public ArchiveFilePath(string fileExtension)
+        {
+            FileExtension = fileExtension;
+        }
+
+        public abstract string FileName { get; }
+        public string FileExtension { get; private set; }
+
+        public string GetFilePath(string archiveDir)
+        {
+            string path = Path.Combine(archiveDir, FileName);
+            path = Path.ChangeExtension(path, FileExtension);
+            return path;
+        }
+    }
+
+
     public abstract class FilePath
     {
         public FilePath(string fileExtension)

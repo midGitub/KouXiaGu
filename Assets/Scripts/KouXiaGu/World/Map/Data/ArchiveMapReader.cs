@@ -7,56 +7,49 @@ using System.IO;
 namespace KouXiaGu.World.Map
 {
 
-    public abstract class ArchiveMapReader : IReader<ArchiveMap>
+    class ArchiveMapFilePath : ArchiveFilePath
     {
-        internal const string MapFileName = "Map/Map";
-
-        public abstract string FileExtension { get; }
-        public string ArchiveDir { get; private set; }
-
-        public ArchiveMapReader(string archiveDir)
+        public ArchiveMapFilePath(string fileExtension) : base(fileExtension)
         {
-            ArchiveDir = archiveDir;
         }
 
-        public static ArchiveMapReader Create(string archiveDir)
+        public override string FileName
         {
-            return new ArchiveMapProtoReader(archiveDir);
+            get { return "World/Map"; }
+        }
+    }
+
+    public abstract class ArchiveMapReader
+    {
+        public ArchiveMapReader(string fileExtension)
+        {
+            File = new ArchiveMapFilePath(fileExtension);
         }
 
+        public ArchiveFilePath File { get; private set; }
         public abstract ArchiveMap ReadMap(string filePath);
         public abstract void Write(string filePath, ArchiveMap data);
 
-        public ArchiveMap Read()
+        public ArchiveMap Read(string archiveDir)
         {
-            string filePath = GetFilePath();
+            string filePath = File.GetFilePath(archiveDir);
             return ReadMap(filePath);
         }
 
-        public void Write(ArchiveMap data)
+        public void Write(ArchiveMap data, string archiveDir)
         {
-            string filePath = GetFilePath();
+            string filePath = File.GetFilePath(archiveDir);
             Write(filePath, data);
         }
-
-        string GetFilePath()
-        {
-            string filePath = Path.Combine(ArchiveDir, MapFileName);
-            filePath = Path.ChangeExtension(filePath, FileExtension);
-            return filePath;
-        }
-
     }
 
     public class ArchiveMapProtoReader : ArchiveMapReader
     {
-        public ArchiveMapProtoReader(string archiveDir) : base(archiveDir)
-        {
-        }
+        public const string fileExtension = ".save";
 
-        public override string FileExtension
+        public ArchiveMapProtoReader() 
+            : base(fileExtension)
         {
-            get { return ".save"; }
         }
 
         public override ArchiveMap ReadMap(string filePath)
