@@ -36,9 +36,25 @@ namespace KouXiaGu.Rx
         }
 
         /// <summary>
-        /// 订阅到事件;
+        /// 订阅到事件,不检查是否存在相同的订阅者;
         /// </summary>
-        public abstract IDisposable Subscribe(IObserver<T> observer);
+        public virtual IDisposable Subscribe(IObserver<T> observer)
+        {
+            observers.Add(observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observers, observer);
+        }
+
+        /// <summary>
+        /// 订阅到事件,若存在相同的订阅者则返回异常;
+        /// </summary>
+        public virtual IDisposable SubscribeOnly(IObserver<T> observer)
+        {
+            if (observers.Contains(observer))
+                throw new ArgumentException();
+
+            observers.Add(observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observers, observer);
+        }
 
         /// <summary>
         /// 迭代获取到观察者;
@@ -243,7 +259,7 @@ namespace KouXiaGu.Rx
 
     /// <summary>
     /// 使用 LinkedList 存储观察者的订阅器;
-    /// 加入 O(n), 移除 O(1), 推送 O(n);
+    /// 加入 O(1), 移除 O(1), 推送 O(n);
     /// </summary>
     public class LinkedListTracker<T> : TrackerBase<T>
     {
@@ -262,9 +278,18 @@ namespace KouXiaGu.Rx
         }
 
         /// <summary>
-        /// 订阅到,若已经存在此观察者,则返回异常;
+        /// 订阅到;
         /// </summary>
         public override IDisposable Subscribe(IObserver<T> observer)
+        {
+            var node = observersList.AddLast(observer);
+            return new Unsubscriber(this, node);
+        }
+
+        /// <summary>
+        /// 订阅到,若已经存在此观察者,则返回异常;
+        /// </summary>
+        public override IDisposable SubscribeOnly(IObserver<T> observer)
         {
             if (observersList.Contains(observer))
                 throw new ArgumentException();
