@@ -17,6 +17,7 @@ namespace KouXiaGu.World
         WorldManager World { get; }
     }
 
+
     /// <summary>
     /// 负责初始化游戏场景;
     /// </summary>
@@ -24,28 +25,17 @@ namespace KouXiaGu.World
     public class WorldInitializer : MonoBehaviour, IWorld, IObservable<IWorld>
     {
 
-        static bool initialized = false;
-        static WorldInfo staticWorldInfo;
-
-        /// <summary>
-        /// 提供初始化的世界信息;
-        /// </summary>
-        public static WorldInfo WorldInfo
+        public static WorldInitializer Instance { get; private set; }
+        public static bool IsInitialized
         {
-            get { return staticWorldInfo; }
-            set {
-                if (initialized)
-                    throw new ArgumentException();
-                staticWorldInfo = value;
-            }
+            get { return Instance != null; }
         }
+
 
 
         WorldInitializer()
         {
         }
-
-#if UNITY_EDITOR
 
         [SerializeField]
         bool useEditorialInfo = false;
@@ -57,17 +47,32 @@ namespace KouXiaGu.World
             get { return useEditorialInfo; }
             set { useEditorialInfo = value; }
         }
-#endif
 
         public WorldInfo Info
         {
-#if UNITY_EDITOR
-            get { return useEditorialInfo ? editorialInfo : staticWorldInfo; }
+            get { return editorialInfo; }
             set { editorialInfo = value; }
-#else
-             get { return staticWorldInfo; }
-#endif
         }
+
+        void Awake()
+        {
+            Instance = this;
+        }
+
+        void OnDestroy()
+        {
+            Instance = null;
+        }
+
+        /// <summary>
+        /// 初始化游戏世界场景;
+        /// </summary>
+        internal void Initialize(WorldInfo worldInfo)
+        {
+            if(!UseEditorialInfo)
+                editorialInfo = worldInfo;
+        }
+
 
 
         ListTracker<IWorld> tracker;
@@ -76,16 +81,6 @@ namespace KouXiaGu.World
         /// 世界信息;
         /// </summary>
         public WorldManager World { get; private set; }
-
-        void Awake()
-        {
-            initialized = true;
-        }
-
-        void OnDestroy()
-        {
-            initialized = false;
-        }
 
         public IDisposable Subscribe(IObserver<IWorld> observer)
         {
