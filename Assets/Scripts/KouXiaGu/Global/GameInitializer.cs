@@ -98,9 +98,9 @@ namespace KouXiaGu
         void OnGameDataCompleted(IAsyncOperation<GameData> operation)
         {
             Data = operation.Result;
-            const string prefix = "[游戏资源]\n";
+            const string prefix = "------游戏资源初始化------";
             string log = GetGameDateLog(Data);
-            Debug.Log(prefix + log);
+            Debug.Log(prefix + log + "\n------End------");
         }
 
         string GetGameDateLog(GameData data)
@@ -113,21 +113,21 @@ namespace KouXiaGu
 
         string GetWorldElementResourceLog(WorldElementResource item)
         {
-            string str = "[1.基础资源]"
+            string str = 
+                "\n[基础资源]"
                + "\nLandform:" + item.LandformInfos.Count
                + "\nRoad:" + item.RoadInfos.Count
                + "\nBuilding:" + item.BuildingInfos.Count
-               + "\nProduct:" + item.ProductInfos.Count
-               + "\n";
+               + "\nProduct:" + item.ProductInfos.Count;
             return str;
         }
 
         string GetTerrainResourceLog(TerrainResource item)
         {
-            string str = "[地形资源]"
+            string str =
+                "\n[地形资源]"
                + "\nLandform:" + item.LandformInfos.Count
-               + "\nRoad:" + item.RoadInfos.Count
-               + "\n";
+               + "\nRoad:" + item.RoadInfos.Count;
             return str;
         }
 
