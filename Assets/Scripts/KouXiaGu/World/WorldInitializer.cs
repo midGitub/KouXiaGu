@@ -16,7 +16,7 @@ namespace KouXiaGu.World
     public interface IWorld
     {
         WorldInfo Info { get; }
-        WorldManager World { get; }
+        TimeManager Time { get; }
         MapResource Map { get; }
     }
 
@@ -58,7 +58,7 @@ namespace KouXiaGu.World
             get { return useEditorialInfo ? editorialInfo : WorldInfo; }
         }
 
-        public WorldManager World { get; private set; }
+        public TimeManager Time { get; private set; }
         public MapResource Map { get; private set; }
 
         ListTracker<IWorld> worldTracker;
@@ -90,7 +90,8 @@ namespace KouXiaGu.World
 
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
-                  MapResource.ReadAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
+                  MapResource.ReadOrCreateAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
+                  TimeManager.Create(Info.Time, this).Subscribe(OnTimeCompleted, OnFaulted),
               };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
         }
@@ -98,6 +99,7 @@ namespace KouXiaGu.World
         void OnCompleted(IList<IAsyncOperation> operations)
         {
             OnCompleted();
+            worldTracker.Track(this);
             Debug.Log("场景初始化完毕;");
         }
 
@@ -110,44 +112,25 @@ namespace KouXiaGu.World
 
         void OnFaulted(IAsyncOperation operation)
         {
-            Debug.LogError("场景初始化时遇到错误:\n" + operation.Exception);
+            Debug.LogError("场景初始化时遇到异常:\n" + operation.Exception);
         }
 
 
         void OnMapResourceCompleted(IAsyncOperation<MapResource> operation)
         {
+            const string prefix = "[地图资源]";
+
             Map = operation.Result;
-            Debug.Log("地图读取完毕;");
+            Debug.Log(prefix + "初始化完毕;总共有 " + Map.Data.Count + " 个节点;");
         }
 
-
-        /// <summary>
-        /// 同步的初始化,手动调用;
-        /// </summary>
-        public void StartInit(GameData data)
+        void OnTimeCompleted(IAsyncOperation<TimeManager> operation)
         {
-            try
-            {
-                Initialize(data);
-                worldTracker.Track(this);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex);
-                worldTracker.TrackError(ex);
-            }
-            finally
-            {
-                worldTracker.TrackCompleted();
-            }
-        }
+            const string prefix = "[时间]";
 
-        void Initialize(GameData data)
-        {
-            World = new WorldManager(Info, data.ElementInfo);
-            Subscribe(World);
+            Time = operation.Result;
+            Debug.Log(prefix + "初始化完毕;");
         }
-
 
 
 

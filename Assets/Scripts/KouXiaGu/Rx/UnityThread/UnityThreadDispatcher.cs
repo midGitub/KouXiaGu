@@ -70,8 +70,14 @@ namespace KouXiaGu.Rx
             onFixedUpdateTracker.Track(this);
         }
 
+        void OnDestroy()
+        {
+            onUpdateTracker.TrackCompleted();
+            onFixedUpdateTracker.TrackCompleted();
+        }
+
         /// <summary>
-        /// 订阅到 Update 更新,只会更新观察者的 OnNext();
+        /// 订阅到 Update 更新,只会更新观察者的 OnNext() 和 OnCompleted();
         /// </summary>
         public IDisposable SubscribeUpdate(IXiaGuObserver<UnityThreadDispatcher> item)
         {
@@ -79,7 +85,7 @@ namespace KouXiaGu.Rx
         }
 
         /// <summary>
-        /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext();
+        /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext() 和 OnCompleted();
         /// </summary>
         public IDisposable SubscribeFixedUpdate(IXiaGuObserver<UnityThreadDispatcher> item)
         {

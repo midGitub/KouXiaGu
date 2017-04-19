@@ -33,9 +33,9 @@ namespace KouXiaGu.World
             unsubscribe = world.Subscribe(this);
         }
 
-        void IXiaGuObserver<IWorld>.OnNext(IWorld item)
+        void IXiaGuObserver<IWorld>.OnNext(IWorld world)
         {
-            item.World.Time.Subscribe(this);
+            world.Time.Subscribe(this);
         }
 
         void IXiaGuObserver<DateTime>.OnNext(DateTime item)

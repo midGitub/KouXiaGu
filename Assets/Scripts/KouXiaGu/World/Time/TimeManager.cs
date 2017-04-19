@@ -1,7 +1,6 @@
 ﻿using System;
 using KouXiaGu.Rx;
 using UnityEngine;
-using XLua;
 
 namespace KouXiaGu.World
 {
@@ -30,19 +29,27 @@ namespace KouXiaGu.World
     }
 
 
-    public class TimeManager : IXiaGuObservable<DateTime>
+    public class TimeManager : IXiaGuObservable<DateTime>, IXiaGuObserver<IWorld>
     {
 
-        public TimeManager(WorldTimeInfo info)
+        public static IAsyncOperation<TimeManager> Create(WorldTimeInfo info, IXiaGuObservable<IWorld> world)
         {
+            return new Operation<TimeManager>(() => new TimeManager(info, world));
+        }
+
+
+        public TimeManager(WorldTimeInfo info, IXiaGuObservable<IWorld> world)
+        {
+            InitCalendar();
             Info = info;
             timeTracker = new ListTracker<DateTime>();
-            InitCalendar();
+            timeUpdater = new TimeUpdater(this);
+            world.Subscribe(this);
         }
 
         public WorldTimeInfo Info { get; private set; }
         TrackerBase<DateTime> timeTracker;
-        TimeUpdater updater;
+        TimeUpdater timeUpdater;
 
         public DateTime CurrentTime
         {
@@ -52,7 +59,7 @@ namespace KouXiaGu.World
 
         public bool IsTimeUpdating
         {
-            get { return updater != null && updater.IsRunning; }
+            get { return timeUpdater.IsSubscribed; }
         }
 
         /// <summary>
@@ -69,9 +76,17 @@ namespace KouXiaGu.World
             return ((IXiaGuObservable<DateTime>)this.timeTracker).Subscribe(observer);
         }
 
-        /// <summary>
-        /// 立即推送当前时间到观察者;
-        /// </summary>
+        public void StartTimeUpdating()
+        {
+            if(!timeUpdater.IsSubscribed)
+                timeUpdater.SubscribeFixedUpdate();
+        }
+
+        public void StopTimeUpdating()
+        {
+            timeUpdater.Dispose();
+        }
+
         void TrackTime()
         {
             timeTracker.Track(CurrentTime);
@@ -90,61 +105,27 @@ namespace KouXiaGu.World
             }
         }
 
-        public void StartTimeUpdating()
+        public void OnNext(IWorld item)
         {
-            updater = TimeUpdater.Create(this, true);
+            StartTimeUpdating();
         }
 
-        public void StopTimeUpdating()
-        {
-            if (updater != null)
-            {
-                updater.IsRunning = false;
-            }
-        }
-
-        void TimeUpdaterDestroy()
-        {
-            updater = null;
-        }
+        public void OnError(Exception error) { }
+        public void OnCompleted() { }
 
         /// <summary>
         /// 时间更新器;
         /// </summary>
         [DisallowMultipleComponent]
-        class TimeUpdater : MonoBehaviour
+        class TimeUpdater : UnityThreadEvent
         {
-            static TimeUpdater instance;
-
-            static bool isCreated
+            public TimeUpdater(TimeManager manager)
             {
-                get { return instance != null; }
-            }
-
-            internal static TimeUpdater Create(TimeManager manager, bool isRunning)
-            {
-                if (isCreated)
-                    return instance;
-
-                var gameObject = new GameObject("TimeUpdater", typeof(TimeUpdater));
-                instance = gameObject.GetComponent<TimeUpdater>();
-                instance.manager = manager;
-                instance.IsRunning = isRunning;
-                return instance;
-            }
-
-            TimeUpdater()
-            {
+                this.manager = manager;
             }
 
             TimeManager manager;
             int currenMinute;
-
-            public bool IsRunning
-            {
-                get { return transform != null && enabled; }
-                set { enabled = value; }
-            }
 
             public DateTime CurrentTime
             {
@@ -157,7 +138,7 @@ namespace KouXiaGu.World
                 get { return manager.HourInterval; }
             }
 
-            void FixedUpdate()
+            public override void OnNext()
             {
                 currenMinute++;
                 if (currenMinute > HourInterval)
@@ -166,12 +147,6 @@ namespace KouXiaGu.World
                     CurrentTime = CurrentTime.AddHour();
                     manager.TrackTime();
                 }
-            }
-
-            void OnDestroy()
-            {
-                instance = null;
-                manager.TimeUpdaterDestroy();
             }
 
         }

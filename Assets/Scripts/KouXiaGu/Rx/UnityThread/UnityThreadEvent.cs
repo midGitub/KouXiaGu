@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace KouXiaGu.Rx
 {
@@ -13,6 +14,11 @@ namespace KouXiaGu.Rx
             get { return UnityThreadDispatcher.Instance; }
         }
 
+
+        public UnityThreadEvent()
+        {
+        }
+
         IDisposable disposer;
 
         public bool IsSubscribed
@@ -21,13 +27,22 @@ namespace KouXiaGu.Rx
         }
 
         public abstract void OnNext();
-        public void OnError(Exception error) { }
-        public void OnCompleted() { }
 
         public void OnNext(UnityThreadDispatcher none)
         {
             OnNext();
         }
+
+        public void OnCompleted()
+        {
+            Dispose();
+        }
+
+        public void OnError(Exception error)
+        {
+            Debug.LogError(new NotImplementedException());
+        }
+
 
         public IDisposable SubscribeUpdate()
         {
@@ -49,7 +64,7 @@ namespace KouXiaGu.Rx
 
         public void Dispose()
         {
-            if (IsSubscribed)
+            if (disposer != null)
             {
                 disposer.Dispose();
                 disposer = null;

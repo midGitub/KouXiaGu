@@ -10,7 +10,7 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
-
+    [Obsolete]
     public class WorldManager : IXiaGuObserver<IWorld>
     {
 
@@ -36,7 +36,7 @@ namespace KouXiaGu.World
 
         public WorldManager(WorldInfo info, WorldElementResource elementInfo)
         {
-            Time = new TimeManager(info.Time);
+            //Time = new TimeManager(info.Time);
             //Navigation = new NavigationManager(this);
         }
 

@@ -26,7 +26,7 @@ namespace KouXiaGu
         /// <summary>
         /// 导致提前结束的异常;
         /// </summary>
-        AggregateException Exception { get; }
+        Exception Exception { get; }
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ namespace KouXiaGu
 
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
-        public AggregateException Exception { get; private set; }
+        public Exception Exception { get; private set; }
 
         protected virtual void OnCompleted()
         {
@@ -66,12 +66,24 @@ namespace KouXiaGu
         {
             if (IsFaulted && Exception != null)
             {
-                Exception = new AggregateException(Exception, ex);
+                AggregateException aggregateEx = Exception as AggregateException;
+                if (aggregateEx == null)
+                {
+                    Exception = new AggregateException(Exception, ex);
+                }
+                else
+                {
+                    List<Exception> exceptions = new List<Exception>(aggregateEx.InnerExceptions);
+                    exceptions.Add(ex);
+                    Exception = new AggregateException(exceptions);
+                }
             }
-
-            Exception = ex as AggregateException ?? new AggregateException(ex);
-            IsFaulted = true;
-            IsCompleted = true;
+            else
+            {
+                Exception = ex;
+                IsFaulted = true;
+                IsCompleted = true;
+            }
         }
 
         public override string ToString()
@@ -99,7 +111,7 @@ namespace KouXiaGu
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
-        public AggregateException Exception { get; private set; }
+        public Exception Exception { get; private set; }
 
         protected virtual void OnCompleted(TResult result)
         {
@@ -111,12 +123,24 @@ namespace KouXiaGu
         {
             if (IsFaulted && Exception != null)
             {
-                Exception = new AggregateException(Exception, ex);
+                AggregateException aggregateEx = Exception as AggregateException;
+                if (aggregateEx == null)
+                {
+                    Exception = new AggregateException(Exception, ex);
+                }
+                else
+                {
+                    List<Exception> exceptions = new List<Exception>(aggregateEx.InnerExceptions);
+                    exceptions.Add(ex);
+                    Exception = new AggregateException(exceptions);
+                }
             }
-
-            Exception = ex as AggregateException ?? new AggregateException(ex);
-            IsFaulted = true;
-            IsCompleted = true;
+            else
+            {
+                Exception = ex;
+                IsFaulted = true;
+                IsCompleted = true;
+            }
         }
 
         public override string ToString()
@@ -128,7 +152,45 @@ namespace KouXiaGu
         }
     }
 
-    
+
+    /// <summary>
+    /// 表示同步操作,但是通过 IAsyncOperation 返回异常;
+    /// </summary>
+    public class Operation : AsyncOperation
+    {
+        public Operation(Action operation)
+        {
+            try
+            {
+                operation();
+                OnCompleted();
+            }
+            catch (Exception ex)
+            {
+                OnFaulted(ex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 表示同步操作,但是通过 IAsyncOperation 返回异常;
+    /// </summary>
+    public class Operation<TResult> : AsyncOperation<TResult>
+    {
+        public Operation(Func<TResult> operation)
+        {
+            try
+            {
+                TResult item = operation();
+                OnCompleted(item);
+            }
+            catch (Exception ex)
+            {
+                OnFaulted(ex);
+            }
+        }
+    }
+
 
     /// <summary>
     /// 表示在多线程内进行的操作;
@@ -228,7 +290,7 @@ namespace KouXiaGu
 
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
-        public AggregateException Exception { get; private set; }
+        public Exception Exception { get; private set; }
 
         protected virtual void Awake()
         {
@@ -244,9 +306,26 @@ namespace KouXiaGu
 
         protected void OnFaulted(Exception ex)
         {
-            Exception = ex as AggregateException ?? new AggregateException(ex);
-            IsFaulted = true;
-            IsCompleted = true;
+            if (IsFaulted && Exception != null)
+            {
+                AggregateException aggregateEx = Exception as AggregateException;
+                if (aggregateEx == null)
+                {
+                    Exception = new AggregateException(Exception, ex);
+                }
+                else
+                {
+                    List<Exception> exceptions = new List<Exception>(aggregateEx.InnerExceptions);
+                    exceptions.Add(ex);
+                    Exception = new AggregateException(exceptions);
+                }
+            }
+            else
+            {
+                Exception = ex;
+                IsFaulted = true;
+                IsCompleted = true;
+            }
         }
 
         public override string ToString()
@@ -270,7 +349,7 @@ namespace KouXiaGu
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
         public TResult Result { get; private set; }
-        public AggregateException Exception { get; private set; }
+        public Exception Exception { get; private set; }
 
         protected virtual void Awake()
         {
@@ -288,9 +367,26 @@ namespace KouXiaGu
 
         protected void OnFaulted(Exception ex)
         {
-            Exception = ex as AggregateException ?? new AggregateException(ex);
-            IsFaulted = true;
-            IsCompleted = true;
+            if (IsFaulted && Exception != null)
+            {
+                AggregateException aggregateEx = Exception as AggregateException;
+                if (aggregateEx == null)
+                {
+                    Exception = new AggregateException(Exception, ex);
+                }
+                else
+                {
+                    List<Exception> exceptions = new List<Exception>(aggregateEx.InnerExceptions);
+                    exceptions.Add(ex);
+                    Exception = new AggregateException(exceptions);
+                }
+            }
+            else
+            {
+                Exception = ex;
+                IsFaulted = true;
+                IsCompleted = true;
+            }
         }
 
         public override string ToString()

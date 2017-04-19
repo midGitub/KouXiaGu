@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
 
         public bool IsCompleted { get; private set; }
         public bool IsFaulted { get; private set; }
-        public AggregateException Exception { get; private set; }
+        public Exception Exception { get; private set; }
 
         /// <summary>
         /// 当前游戏使用的地图,若不在游戏中则为null;

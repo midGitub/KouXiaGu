@@ -54,6 +54,27 @@ namespace KouXiaGu.World.Map
         }
 
 
+        public static MapResource ReadOrCreate()
+        {
+            MapResource data;
+            try
+            {
+                data = Read();
+            }
+            catch
+            {
+                data = new MapResource();
+            }
+            return data;
+        }
+
+        public static IAsyncOperation<MapResource> ReadOrCreateAsync()
+        {
+            return new ThreadDelegateOperation<MapResource>(ReadOrCreate);
+        }
+
+
+
         /// <summary>
         /// 空白地图;
         /// </summary>
@@ -106,7 +127,7 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 当前游戏地图数据;
         /// </summary>
-        public IDictionary<CubicHexCoord, MapNode> Map
+        public IDictionary<CubicHexCoord, MapNode> Data
         {
             get { return PredefinedMap.Data; }
         }
