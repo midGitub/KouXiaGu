@@ -31,7 +31,6 @@ namespace KouXiaGu
         {
         }
 
-        IAsyncOperation[] missions;
         public GameData Data { get; private set; }
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace KouXiaGu
 
         void Initialize()
         {
-            missions = new IAsyncOperation[]
+            IAsyncOperation[] missions = new IAsyncOperation[]
                 {
                     CustomInput.ReadOrDefaultAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
                     Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
