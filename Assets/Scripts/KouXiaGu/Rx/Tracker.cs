@@ -8,9 +8,9 @@ namespace KouXiaGu.Rx
     /// <summary>
     /// 订阅器基类;
     /// </summary>
-    public abstract class Tracker<T> : IObservable<T>
+    public abstract class TrackerBase<T> : IObservable<T>
     {
-        public Tracker()
+        public TrackerBase()
         {
         }
 
@@ -22,7 +22,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 观察者数量;
         /// </summary>
-        public int Count
+        public int ObserverCount
         {
             get { return observers.Count; }
         }
@@ -41,12 +41,20 @@ namespace KouXiaGu.Rx
         public abstract IDisposable Subscribe(IObserver<T> observer);
 
         /// <summary>
+        /// 迭代获取到观察者;
+        /// </summary>
+        protected virtual IEnumerable<IObserver<T>> EnumerateObserver()
+        {
+            IObserver<T>[] observerArray = observers.ToArray();
+            return observerArray;
+        }
+
+        /// <summary>
         /// 推送消息到所有订阅者 OnNext() 方法;
         /// </summary>
         public virtual void Track(T item)
         {
-            IObserver<T>[] observerArray = observers.ToArray();
-            foreach (var observer in observerArray)
+            foreach (var observer in EnumerateObserver())
             {
                 observer.OnNext(item);
             }
@@ -57,8 +65,7 @@ namespace KouXiaGu.Rx
         /// </summary>
         public virtual void TrackError(Exception ex)
         {
-            IObserver<T>[] observerArray = observers.ToArray();
-            foreach (var observer in observerArray)
+            foreach (var observer in EnumerateObserver())
             {
                 observer.OnError(ex);
             }
@@ -69,15 +76,14 @@ namespace KouXiaGu.Rx
         /// </summary>
         public virtual void TrackCompleted()
         {
-            IObserver<T>[] observerArray = observers.ToArray();
-            observers.Clear();
-            foreach (var observer in observerArray)
+            foreach (var observer in EnumerateObserver())
             {
                 observer.OnCompleted();
             }
         }
 
     }
+
 
     /// <summary>
     /// 取消订阅器,不进行 Add() 操作;;
@@ -110,11 +116,12 @@ namespace KouXiaGu.Rx
 
     }
 
+
     /// <summary>
     /// 使用 HashSet 存储观察者的订阅器;
-    /// 加入 O(1), 移除 O(1);
+    /// 加入 O(1), 移除 O(1), 推送 O(2n);
     /// </summary>
-    public class HashSetTracker<T> : Tracker<T>
+    public class HashSetTracker<T> : TrackerBase<T>
     {
         public HashSetTracker()
         {
@@ -140,9 +147,9 @@ namespace KouXiaGu.Rx
 
     /// <summary>
     /// 使用 List 存储观察者的订阅器;
-    /// 加入 O(n), 移除 O(n);
+    /// 加入 O(n), 移除 O(n), 推送 O(2n);
     /// </summary>
-    public class ListTracker<T> : Tracker<T>
+    public class ListTracker<T> : TrackerBase<T>
     {
         public ListTracker()
         {
@@ -166,6 +173,7 @@ namespace KouXiaGu.Rx
         }
 
     }
+
 
     /// <summary>
     /// 取消订阅器,不进行 Add() 操作;;
@@ -203,18 +211,21 @@ namespace KouXiaGu.Rx
         }
     }
 
+
     /// <summary>
     /// 使用 LinkedList 存储观察者的订阅器;
-    /// 加入 O(n), 移除 O(1);
+    /// 加入 O(n), 移除 O(1), 推送 O(n);
     /// </summary>
-    public class LinkedListTracker<T> : Tracker<T>
+    public class LinkedListTracker<T> : TrackerBase<T>
     {
         public LinkedListTracker()
         {
             observersList = new LinkedList<IObserver<T>>();
+            currentNode = null;
         }
 
         LinkedList<IObserver<T>> observersList;
+        LinkedListNode<IObserver<T>> currentNode;
 
         protected override ICollection<IObserver<T>> observers
         {
@@ -230,9 +241,62 @@ namespace KouXiaGu.Rx
                 throw new ArgumentException();
 
             var node = observersList.AddLast(observer);
-            return new LinkedListUnsubscriber<IObserver<T>>(observersList, node);
+            return new Unsubscriber(this, node);
         }
-       
+
+        /// <summary>
+        /// 迭代获取到观察者;
+        /// </summary>
+        protected override IEnumerable<IObserver<T>> EnumerateObserver()
+        {
+            currentNode = observersList.First;
+
+            while (currentNode != null)
+            {
+                var observer = currentNode.Value;
+                currentNode = currentNode.Next;
+                yield return observer;
+            }
+        }
+
+        class Unsubscriber : IDisposable
+        {
+            public Unsubscriber(LinkedListTracker<T> tracker, LinkedListNode<IObserver<T>> node)
+            {
+                isUnsubscribed = false;
+                this.tracker = tracker;
+                this.node = node;
+            }
+
+            bool isUnsubscribed;
+            LinkedListTracker<T> tracker;
+            LinkedListNode<IObserver<T>> node;
+
+            LinkedList<IObserver<T>> observers
+            {
+                get { return tracker.observersList; }
+            }
+
+            LinkedListNode<IObserver<T>> currentNode
+            {
+                get { return tracker.currentNode; }
+                set { tracker.currentNode = value; }
+            }
+
+            public void Dispose()
+            {
+                if (!isUnsubscribed)
+                {
+                    if (node == currentNode)
+                    {
+                        currentNode = currentNode.Next;
+                    }
+
+                    observers.Remove(node);
+                    isUnsubscribed = true;
+                }
+            }
+        }
     }
 
 }

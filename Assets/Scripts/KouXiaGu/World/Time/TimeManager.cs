@@ -41,7 +41,7 @@ namespace KouXiaGu.World
         }
 
         public WorldTimeInfo Info { get; private set; }
-        Tracker<DateTime> timeTracker;
+        TrackerBase<DateTime> timeTracker;
         TimeUpdater updater;
 
         public DateTime CurrentTime
