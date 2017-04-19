@@ -11,7 +11,7 @@ namespace KouXiaGu.World.Map
 {
 
     [ProtoContract]
-    public class ArchiveMap
+    public sealed class ArchiveMap
     {
 
         [ProtoMember(1)]

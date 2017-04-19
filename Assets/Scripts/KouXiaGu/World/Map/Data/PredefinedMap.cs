@@ -14,7 +14,7 @@ namespace KouXiaGu.World.Map
     /// 游戏地图数据;
     /// </summary>
     [ProtoContract]
-    public class PredefinedMap
+    public sealed class PredefinedMap
     {
 
         [ProtoMember(1)]

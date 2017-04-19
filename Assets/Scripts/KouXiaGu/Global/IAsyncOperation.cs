@@ -194,6 +194,27 @@ namespace KouXiaGu
         }
     }
 
+    /// <summary>
+    /// 表示在多线程内进行的操作;
+    /// </summary>
+    public class ThreadDelegateOperation<TResult> : ThreadOperation<TResult>
+    {
+        public ThreadDelegateOperation(Func<TResult> reader)
+        {
+            if (reader == null)
+                throw new ArgumentNullException("reader");
+
+            this.reader = reader;
+            Start();
+        }
+
+        Func<TResult> reader;
+
+        protected override TResult Operate()
+        {
+            return reader();
+        }
+    }
 
 
     /// <summary>
