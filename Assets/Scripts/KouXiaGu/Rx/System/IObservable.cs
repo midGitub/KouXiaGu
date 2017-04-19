@@ -6,9 +6,9 @@ using System.Text;
 namespace KouXiaGu.Rx
 {
 
-    public interface IObservable<T>
+    public interface IXiaGuObservable<T>
     {
-        IDisposable Subscribe(IObserver<T> observer);
+        IDisposable Subscribe(IXiaGuObserver<T> observer);
     }
 
 }

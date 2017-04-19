@@ -6,7 +6,7 @@ using System.Text;
 namespace KouXiaGu.Rx
 {
 
-    public abstract class UnityThreadEvent : IDisposable, IObserver<object>
+    public abstract class UnityThreadEvent : IXiaGuObserver<UnityThreadDispatcher>, IDisposable
     {
         static UnityThreadDispatcher instance
         {
@@ -24,7 +24,7 @@ namespace KouXiaGu.Rx
         public void OnError(Exception error) { }
         public void OnCompleted() { }
 
-        public void OnNext(object none)
+        public void OnNext(UnityThreadDispatcher none)
         {
             OnNext();
         }

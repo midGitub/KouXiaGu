@@ -9,7 +9,7 @@ namespace KouXiaGu.Rx
     /// <summary>
     /// 简化的观察者结构;
     /// </summary>
-    public abstract class Observer<T> : IObserver<T>
+    public abstract class Observer<T> : IXiaGuObserver<T>
     {
 
         public Observer()
@@ -20,7 +20,7 @@ namespace KouXiaGu.Rx
         IDisposable unsubscriber;
 
 
-        public void Subscribe(IObservable<T> observable)
+        public void Subscribe(IXiaGuObservable<T> observable)
         {
             if (unsubscriber != null)
                 throw new ArgumentException("已订阅");

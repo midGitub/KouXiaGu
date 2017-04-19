@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using KouXiaGu.Rx;
 using KouXiaGu.World.Map;
+using UniRx;
 
 namespace KouXiaGu.World
 {
@@ -24,7 +25,7 @@ namespace KouXiaGu.World
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : OperationMonoBehaviour, IWorld, IObservable<IWorld>
+    public class WorldInitializer : OperationMonoBehaviour, IWorld, IXiaGuObservable<IWorld>
     {
 
         public static WorldInitializer Instance { get; private set; }
@@ -32,6 +33,8 @@ namespace KouXiaGu.World
         {
             get { return Instance != null; }
         }
+
+        public static WorldInfo WorldInfo { get; private set; }
 
 
         WorldInitializer()
@@ -52,8 +55,7 @@ namespace KouXiaGu.World
 
         public WorldInfo Info
         {
-            get { return editorialInfo; }
-            set { editorialInfo = value; }
+            get { return useEditorialInfo ? editorialInfo : WorldInfo; }
         }
 
         public WorldManager World { get; private set; }
@@ -66,11 +68,7 @@ namespace KouXiaGu.World
             Instance = this;
             base.Awake();
             worldTracker = new ListTracker<IWorld>();
-        }
-
-        void Start()
-        {
-            
+            GameInitializer.Instance.SubscribeCompleted(_ => InitializeAsync());
         }
 
         void OnDestroy()
@@ -78,7 +76,7 @@ namespace KouXiaGu.World
             Instance = null;
         }
 
-        public IDisposable Subscribe(IObserver<IWorld> observer)
+        public IDisposable Subscribe(IXiaGuObserver<IWorld> observer)
         {
             return worldTracker.Subscribe(observer);
         }
@@ -86,11 +84,8 @@ namespace KouXiaGu.World
         /// <summary>
         /// 初始化游戏世界场景,手动调用;
         /// </summary>
-        internal void InitializeAsync(WorldInfo worldInfo)
+        internal void InitializeAsync()
         {
-            if(!UseEditorialInfo)
-                editorialInfo = worldInfo;
-
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
                   MapResource.ReadAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
@@ -108,13 +103,14 @@ namespace KouXiaGu.World
         {
             AggregateException ex = operations.ToAggregateException();
             OnFaulted(ex);
-            Debug.LogError("场景初始化失败;");
+            Debug.LogError("场景初始化失败;" + operations.ToLog(item => item.Exception.InnerExceptions.ToLog()));
         }
 
         void OnFaulted(IAsyncOperation operation)
         {
             Debug.LogError("场景初始化时遇到错误:\n" + operation.Exception);
         }
+
 
         void OnMapResourceCompleted(IAsyncOperation<MapResource> operation)
         {

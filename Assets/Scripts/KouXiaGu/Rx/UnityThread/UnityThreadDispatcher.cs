@@ -41,8 +41,8 @@ namespace KouXiaGu.Rx
         }
 
 
-        LinkedListTracker<object> onUpdateTracker;
-        LinkedListTracker<object> onFixedUpdateTracker;
+        LinkedListTracker<UnityThreadDispatcher> onUpdateTracker;
+        LinkedListTracker<UnityThreadDispatcher> onFixedUpdateTracker;
 
         public int UpdateObserverCount
         {
@@ -56,32 +56,32 @@ namespace KouXiaGu.Rx
 
         void Awake()
         {
-            onUpdateTracker = new LinkedListTracker<object>();
-            onFixedUpdateTracker = new LinkedListTracker<object>();
+            onUpdateTracker = new LinkedListTracker<UnityThreadDispatcher>();
+            onFixedUpdateTracker = new LinkedListTracker<UnityThreadDispatcher>();
         }
 
         void Update()
         {
-            onUpdateTracker.Track(null);
+            onUpdateTracker.Track(this);
         }
 
         void FixedUpdate()
         {
-            onFixedUpdateTracker.Track(null);
+            onFixedUpdateTracker.Track(this);
         }
 
         /// <summary>
-        /// 订阅到 Update 更新,只会更新观察者的 OnNext(null);
+        /// 订阅到 Update 更新,只会更新观察者的 OnNext();
         /// </summary>
-        public IDisposable SubscribeUpdate(IObserver<object> item)
+        public IDisposable SubscribeUpdate(IXiaGuObserver<UnityThreadDispatcher> item)
         {
             return onUpdateTracker.Subscribe(item);
         }
 
         /// <summary>
-        /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext(null);
+        /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext();
         /// </summary>
-        public IDisposable SubscribeFixedUpdate(IObserver<object> item)
+        public IDisposable SubscribeFixedUpdate(IXiaGuObserver<UnityThreadDispatcher> item)
         {
             return onFixedUpdateTracker.Subscribe(item);
         }

@@ -13,7 +13,7 @@ namespace KouXiaGu.World
     /// 在控制台输出时间信息;
     /// </summary>
     [DisallowMultipleComponent]
-    class OutputTimeSprite : MonoBehaviour, IObserver<IWorld>, IObserver<DateTime>
+    class OutputTimeSprite : MonoBehaviour, IXiaGuObserver<IWorld>, IXiaGuObserver<DateTime>
     {
 
         OutputTimeSprite()
@@ -33,12 +33,12 @@ namespace KouXiaGu.World
             unsubscribe = world.Subscribe(this);
         }
 
-        void IObserver<IWorld>.OnNext(IWorld item)
+        void IXiaGuObserver<IWorld>.OnNext(IWorld item)
         {
             item.World.Time.Subscribe(this);
         }
 
-        void IObserver<DateTime>.OnNext(DateTime item)
+        void IXiaGuObserver<DateTime>.OnNext(DateTime item)
         {
             string str = item.ToString();
             str += "\n" + item.GetMonthType();

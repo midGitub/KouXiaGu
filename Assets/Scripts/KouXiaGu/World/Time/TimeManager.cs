@@ -30,7 +30,7 @@ namespace KouXiaGu.World
     }
 
 
-    public class TimeManager : IObservable<DateTime>
+    public class TimeManager : IXiaGuObservable<DateTime>
     {
 
         public TimeManager(WorldTimeInfo info)
@@ -64,9 +64,9 @@ namespace KouXiaGu.World
             set { Info.HourInterval = value; }
         }
 
-        public IDisposable Subscribe(IObserver<DateTime> observer)
+        public IDisposable Subscribe(IXiaGuObserver<DateTime> observer)
         {
-            return ((IObservable<DateTime>)this.timeTracker).Subscribe(observer);
+            return ((IXiaGuObservable<DateTime>)this.timeTracker).Subscribe(observer);
         }
 
         /// <summary>
