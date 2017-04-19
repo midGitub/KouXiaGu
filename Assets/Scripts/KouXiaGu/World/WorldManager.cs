@@ -37,7 +37,7 @@ namespace KouXiaGu.World
         public WorldManager(WorldInfo info, WorldElementResource elementInfo)
         {
             Time = new TimeManager(info.Time);
-            Navigation = new NavigationManager(this);
+            //Navigation = new NavigationManager(this);
         }
 
         /// <summary>

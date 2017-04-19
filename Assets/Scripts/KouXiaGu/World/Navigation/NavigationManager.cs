@@ -14,17 +14,17 @@ namespace KouXiaGu.World.Navigation
     public class NavigationManager
     {
 
-        public NavigationManager(WorldManager world)
-        {
-            World = world;
-        }
+        //public NavigationManager(WorldManager world)
+        //{
+        //    World = world;
+        //}
 
-        public WorldManager World { get; private set; }
+        //public WorldManager World { get; private set; }
 
-        public IDictionary<CubicHexCoord, MapNode> Map
-        {
-            get { return World.Map.Map.PredefinedMap.Data; }
-        }
+        //public IDictionary<CubicHexCoord, MapNode> Map
+        //{
+        //    get { return World.Map.Map.PredefinedMap.Data; }
+        //}
 
 
 
