@@ -56,7 +56,14 @@ namespace KouXiaGu.Rx
         {
             foreach (var observer in EnumerateObserver())
             {
-                observer.OnNext(item);
+                try
+                {
+                    observer.OnNext(item);
+                }
+                catch (Exception observerException)
+                {
+                    OnError(observer, observerException);
+                }
             }
         }
 
@@ -67,7 +74,14 @@ namespace KouXiaGu.Rx
         {
             foreach (var observer in EnumerateObserver())
             {
-                observer.OnError(ex);
+                try
+                {
+                    observer.OnError(ex);
+                }
+                catch (Exception observerException)
+                {
+                    OnError(observer, observerException);
+                }
             }
         }
 
@@ -78,8 +92,23 @@ namespace KouXiaGu.Rx
         {
             foreach (var observer in EnumerateObserver())
             {
-                observer.OnCompleted();
+                try
+                {
+                    observer.OnCompleted();
+                }
+                catch (Exception observerException)
+                {
+                    OnError(observer, observerException);
+                }
             }
+        }
+
+        /// <summary>
+        /// 当观察者发生异常时调用;
+        /// </summary>
+        protected virtual void OnError(IObserver<T> observer, Exception ex)
+        {
+            UnityEngine.Debug.LogError(ex);
         }
 
     }

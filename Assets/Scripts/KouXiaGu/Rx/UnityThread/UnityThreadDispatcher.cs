@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using KouXiaGu.Rx;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.Rx
 {
 
     /// <summary>
@@ -33,7 +32,7 @@ namespace KouXiaGu
                 instance = FindObjectOfType<UnityThreadDispatcher>();
                 if (instance == null)
                 {
-                    instance = new GameObject("UnityThreadDispatcher", typeof(UnityThreadDispatcher)).
+                    instance = new GameObject(typeof(UnityThreadDispatcher).Name, typeof(UnityThreadDispatcher)).
                         GetComponent<UnityThreadDispatcher>();
                     DontDestroyOnLoad(instance.gameObject);
                 }
@@ -42,58 +41,49 @@ namespace KouXiaGu
         }
 
 
-        Deliverer onUpdateTracker;
-        Deliverer onFixedUpdateTracker;
+        LinkedListTracker<object> onUpdateTracker;
+        LinkedListTracker<object> onFixedUpdateTracker;
 
         public int UpdateObserverCount
         {
-            get { return onUpdateTracker.observerCount; }
+            get { return onUpdateTracker.ObserverCount; }
         }
 
         public int FixedUpdateObserverCount
         {
-            get { return onFixedUpdateTracker.observerCount; }
+            get { return onFixedUpdateTracker.ObserverCount; }
         }
 
         void Awake()
         {
-            onUpdateTracker = new Deliverer();
-            onFixedUpdateTracker = new Deliverer();
+            onUpdateTracker = new LinkedListTracker<object>();
+            onFixedUpdateTracker = new LinkedListTracker<object>();
         }
 
         void Update()
         {
-            onUpdateTracker.Track();
+            onUpdateTracker.Track(null);
         }
 
         void FixedUpdate()
         {
-            onFixedUpdateTracker.Track();
+            onFixedUpdateTracker.Track(null);
         }
 
-        internal IDisposable SubscribeUpdate(UnityThreadEvent item)
+        /// <summary>
+        /// 订阅到 Update 更新,只会更新观察者的 OnNext(null);
+        /// </summary>
+        internal IDisposable SubscribeUpdate(IObserver<object> item)
         {
             return onUpdateTracker.Subscribe(item);
         }
 
-        internal IDisposable SubscribeFixedUpdate(UnityThreadEvent item)
+        /// <summary>
+        /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext(null);
+        /// </summary>
+        internal IDisposable SubscribeFixedUpdate(IObserver<object> item)
         {
             return onFixedUpdateTracker.Subscribe(item);
-        }
-
-        class Deliverer : Deliverer<UnityThreadEvent>
-        {
-            protected override void Operate(UnityThreadEvent observer)
-            {
-                try
-                {
-                    observer.OnNext();
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError("UnityThreadDispatcher:" + ex);
-                }
-            }
         }
 
     }

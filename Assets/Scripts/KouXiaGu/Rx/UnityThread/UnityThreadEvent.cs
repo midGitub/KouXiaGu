@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu
+namespace KouXiaGu.Rx
 {
 
-    public abstract class UnityThreadEvent : IDisposable
+    public abstract class UnityThreadEvent : IDisposable, IObserver<object>
     {
         static UnityThreadDispatcher instance
         {
@@ -21,6 +21,13 @@ namespace KouXiaGu
         }
 
         public abstract void OnNext();
+        public void OnError(Exception error) { }
+        public void OnCompleted() { }
+
+        public void OnNext(object none)
+        {
+            OnNext();
+        }
 
         public IDisposable SubscribeUpdate()
         {
@@ -48,6 +55,7 @@ namespace KouXiaGu
                 disposer = null;
             }
         }
+
     }
 
 
