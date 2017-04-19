@@ -32,7 +32,6 @@ namespace KouXiaGu.World
         }
 
 
-
         WorldInitializer()
         {
         }
@@ -41,6 +40,7 @@ namespace KouXiaGu.World
         bool useEditorialInfo = false;
         [SerializeField]
         WorldInfo editorialInfo;
+        ListTracker<IWorld> worldTracker;
 
         public bool UseEditorialInfo
         {
@@ -57,6 +57,7 @@ namespace KouXiaGu.World
         void Awake()
         {
             Instance = this;
+            worldTracker = new ListTracker<IWorld>();
         }
 
         void OnDestroy()
@@ -73,22 +74,17 @@ namespace KouXiaGu.World
                 editorialInfo = worldInfo;
         }
 
+        public IDisposable Subscribe(IObserver<IWorld> observer)
+        {
+            return worldTracker.Subscribe(observer);
+        }
 
 
-        ListTracker<IWorld> tracker;
 
         /// <summary>
         /// 世界信息;
         /// </summary>
         public WorldManager World { get; private set; }
-
-        public IDisposable Subscribe(IObserver<IWorld> observer)
-        {
-            if(tracker == null)
-                tracker = new ListTracker<IWorld>();
-
-            return tracker.Subscribe(observer);
-        }
 
         /// <summary>
         /// 同步的初始化,手动调用;
@@ -98,16 +94,16 @@ namespace KouXiaGu.World
             try
             {
                 Initialize(data);
-                tracker.Track(this);
+                worldTracker.Track(this);
             }
             catch (Exception ex)
             {
                 Debug.LogError(ex);
-                tracker.TrackError(ex);
+                worldTracker.TrackError(ex);
             }
             finally
             {
-                tracker.TrackCompleted();
+                worldTracker.TrackCompleted();
             }
         }
 
