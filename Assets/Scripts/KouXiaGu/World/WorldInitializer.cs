@@ -86,6 +86,8 @@ namespace KouXiaGu.World
         /// </summary>
         internal void InitializeAsync()
         {
+            Debug.Log("开始场景初始化;");
+
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
                   MapResource.ReadAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
@@ -103,7 +105,7 @@ namespace KouXiaGu.World
         {
             AggregateException ex = operations.ToAggregateException();
             OnFaulted(ex);
-            Debug.LogError("场景初始化失败;" + operations.ToLog(item => item.Exception.InnerExceptions.ToLog()));
+            Debug.LogWarning("场景初始化失败;");
         }
 
         void OnFaulted(IAsyncOperation operation)
