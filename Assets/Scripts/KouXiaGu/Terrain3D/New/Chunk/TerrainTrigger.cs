@@ -19,8 +19,8 @@ namespace KouXiaGu.Terrain3D
         const int SUB_X = 5;
         const int SUB_Z = 5;
 
-        static readonly List<KeyValuePair<Vector3, Vector2>> VERTICES = GetVerticesAndUV();
-        static readonly int[] TRIANGLES = GetTriangles();
+        static readonly List<KeyValuePair<Vector3, Vector2>> vertices = GetVerticesAndUV();
+        static readonly int[] triangles = GetTriangles();
 
         /// <summary>
         /// 获取到细分到的定点坐标 和 对应的UV坐标;
@@ -78,49 +78,59 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        public TerrainTrigger(MeshCollider collider)
+        public TerrainTrigger(MeshCollider collider, TerrainRenderer renderer)
         {
-
+            collider = this.collider;
+            renderer = this.renderer;
+            BuildCollisionMesh();
         }
 
-        //[ContextMenu("重置碰撞网格")]
-        //public void ResetCollisionMesh()
-        //{
-        //    LandformRenderer terrainChunk = GetComponent<LandformRenderer>();
-        //    ResetCollisionMesh(terrainChunk);
-        //}
+        MeshCollider collider;
+        TerrainRenderer renderer;
 
-        //public void ResetCollisionMesh(LandformRenderer terrainChunk)
-        //{
-        //    MeshCollider meshCollider = GetComponent<MeshCollider>();
-        //    Mesh mesh = meshCollider.sharedMesh;
+        /// <summary>
+        /// 构建碰撞网格;
+        /// </summary>
+        void BuildCollisionMesh()
+        {
+            Mesh mesh = new Mesh();
+            mesh.name = MESH_NAME;
+            collider.sharedMesh = BuildCollisionMesh(mesh, renderer);
+        }
 
-        //    if (mesh == null || mesh.name != MESH_NAME)
-        //    {
-        //        mesh = new Mesh();
-        //    }
+        /// <summary>
+        /// 重新构建碰撞网格;
+        /// </summary>
+        public void RebuildCollisionMesh()
+        {
+            Mesh mesh = collider.sharedMesh;
+            collider.sharedMesh = BuildCollisionMesh(mesh, renderer);
+        }
 
-        //    mesh.name = MESH_NAME;
-        //    mesh.vertices = GetVertices(terrainChunk);
-        //    mesh.triangles = TRIANGLES;
+        /// <summary>
+        /// 构建碰撞网格;
+        /// </summary>
+        Mesh BuildCollisionMesh(Mesh mesh, TerrainRenderer renderer)
+        {
+            mesh.vertices = GetVertices(renderer);
+            mesh.triangles = triangles;
+            return mesh;
+        }
 
-        //    meshCollider.sharedMesh = mesh;
-        //}
-
-        ///// <summary>
-        ///// 获取到高度对应的顶点坐标;
-        ///// </summary>
-        //Vector3[] GetVertices(LandformRenderer chunk)
-        //{
-        //    List<Vector3> vertices = new List<Vector3>();
-        //    foreach (var pair in VERTICES)
-        //    {
-        //        Vector3 vertice = pair.Key;
-        //        vertice.y = TerrainData.GetHeight(chunk, pair.Value);
-        //        vertices.Add(vertice);
-        //    }
-        //    return vertices.ToArray();
-        //}
+        /// <summary>
+        /// 获取到高度对应的顶点坐标;
+        /// </summary>
+        Vector3[] GetVertices(TerrainRenderer renderer)
+        {
+            List<Vector3> vertices = new List<Vector3>();
+            foreach (var pair in TerrainTrigger.vertices)
+            {
+                Vector3 vertice = pair.Key;
+                vertice.y = renderer.GetHeight(pair.Value);
+                vertices.Add(vertice);
+            }
+            return vertices.ToArray();
+        }
 
     }
 

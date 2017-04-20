@@ -89,7 +89,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 重设所有贴图;
         /// </summary>
-        public void SetTextures()
+        public virtual void SetTextures()
         {
             SetDiffuseMap(DiffuseMap);
             SetHeightMap(HeightMap);
@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 设置所有贴图;
         /// </summary>
-        public void SetTextures(TerrainChunkTexture textures)
+        public virtual void SetTextures(TerrainChunkTexture textures)
         {
             SetDiffuseMap(textures.diffuseMap);
             SetHeightMap(textures.heightMap);

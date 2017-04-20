@@ -85,6 +85,7 @@ namespace KouXiaGu.Terrain3D
         TerrainMesh terrainMesh;
         [SerializeField]
         TerrainRenderer terrainRenderer;
+        TerrainTrigger trigger;
 
         public TerrainMesh Mesh
         {
@@ -100,18 +101,22 @@ namespace KouXiaGu.Terrain3D
         {
             var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
+            var meshCollider = GetComponent<MeshCollider>();
 
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer);
+            trigger = new TerrainTrigger(meshCollider, terrainRenderer);
         }
 
         void Init(TerrainChunkTexture textures)
         {
             var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
+            var meshCollider = GetComponent<MeshCollider>();
 
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer, textures);
+            trigger = new TerrainTrigger(meshCollider, terrainRenderer);
         }
 
         void OnValidate()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -11,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形渲染;
     /// </summary>
     [Serializable]
-    public class TerrainRenderer : TerrainChunkTexture
+    public class TerrainRenderer : TerrainChunkTexture, IObservable<TerrainRenderer>
     {
 
         static TerrainParameter Parameter
@@ -43,35 +44,63 @@ namespace KouXiaGu.Terrain3D
 
 
         Material material;
+        LinkedListTracker<TerrainRenderer> tracker;
 
         void Init(MeshRenderer renderer)
         {
             renderer.sharedMaterial = material = new Material(TerrainShader);
+            tracker = new LinkedListTracker<TerrainRenderer>();
+        }
+
+        public override void SetTextures()
+        {
+            base.SetTextures();
+            Track();
+        }
+
+        public override void SetTextures(TerrainChunkTexture textures)
+        {
+            base.SetTextures(textures);
+            Track();
+        }
+
+        /// <summary>
+        /// 当数据发生变化时调用;
+        /// </summary>
+        public IDisposable Subscribe(IObserver<TerrainRenderer> observer)
+        {
+            return tracker.Subscribe(observer);
+        }
+
+        void Track()
+        {
+            tracker.Track(this);
         }
 
         public void OnValidate()
         {
-            SetDiffuseMap(DiffuseMap);
-            SetHeightMap(HeightMap);
-            SetNormalMap(NormalMap);
+            SetTextures();
         }
 
         public override void SetDiffuseMap(Texture2D diffuseMap)
         {
             material.SetTexture("_MainTex", diffuseMap);
             base.SetDiffuseMap(diffuseMap);
+            Track();
         }
 
         public override void SetHeightMap(Texture2D heightMap)
         {
             material.SetTexture("_HeightTex", heightMap);
             base.SetHeightMap(heightMap);
+            Track();
         }
 
         public override void SetNormalMap(Texture2D normalMap)
         {
             material.SetTexture("_NormalMap", normalMap);
             base.SetNormalMap(normalMap);
+            Track();
         }
 
         /// <summary>
@@ -82,6 +111,13 @@ namespace KouXiaGu.Terrain3D
             GameObject.Destroy(DiffuseMap);
             GameObject.Destroy(HeightMap);
             GameObject.Destroy(NormalMap);
+            Track();
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+            Track();
         }
 
         /// <summary>
