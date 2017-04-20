@@ -7,7 +7,6 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    [Serializable]
     public class TerrainChunkTexture
     {
         public TerrainChunkTexture()
@@ -26,41 +25,20 @@ namespace KouXiaGu.Terrain3D
             SetNormalMap(normalMap);
         }
 
-        [SerializeField]
-        Texture2D diffuseMap;
-
-        [SerializeField]
-        Texture2D heightMap;
-
-        [SerializeField]
-        Texture2D normalMap;
-
         /// <summary>
         /// 漫反射贴图;
         /// </summary>
-        public Texture2D DiffuseMap
-        {
-            get { return diffuseMap; }
-            protected set { diffuseMap = value; }
-        }
+        public Texture2D DiffuseMap { get; protected set; }
 
         /// <summary>
         /// 高度贴图;
         /// </summary>
-        public Texture2D HeightMap
-        {
-            get { return heightMap; }
-            protected set { heightMap = value; }
-        }
+        public Texture2D HeightMap { get; protected set; }
 
         /// <summary>
         /// 法线贴图;
         /// </summary>
-        public Texture2D NormalMap
-        {
-            get { return normalMap; }
-            protected set { normalMap = value; }
-        }
+        public Texture2D NormalMap { get; protected set; }
 
         /// <summary>
         /// 设置漫反射贴图;
@@ -101,9 +79,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public virtual void SetTextures(TerrainChunkTexture textures)
         {
-            SetDiffuseMap(textures.diffuseMap);
-            SetHeightMap(textures.heightMap);
-            SetNormalMap(textures.normalMap);
+            SetDiffuseMap(textures.DiffuseMap);
+            SetHeightMap(textures.HeightMap);
+            SetNormalMap(textures.NormalMap);
         }
 
         /// <summary>

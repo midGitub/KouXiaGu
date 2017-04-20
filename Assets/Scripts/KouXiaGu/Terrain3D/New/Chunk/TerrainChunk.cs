@@ -108,23 +108,6 @@ namespace KouXiaGu.Terrain3D
             trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
         }
 
-        //[ContextMenu("重新初始化;")]
-        //void Awake()
-        //{
-
-        //}
-
-        void OnValidate()
-        {
-            terrainRenderer.SetTextures();
-        }
-
-        //void Reset()
-        //{
-        //    Mesh.Reset();
-        //    Texture.Clear();
-        //}
-
     }
 
 }
