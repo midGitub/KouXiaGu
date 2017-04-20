@@ -117,7 +117,7 @@ namespace KouXiaGu.Terrain3D
 
 
 #if UNITY_EDITOR
-        [MenuItem("GameObject/Create Other/TerrainChunk")]
+        [MenuItem("GameObject/Create Other/LandformChunk")]
 #endif
         static void _CraeteTerrainChunk()
         {
@@ -143,7 +143,7 @@ namespace KouXiaGu.Terrain3D
         static Transform chunkParent;
         static Transform ChunkParent
         {
-            get { return chunkParent ?? (chunkParent = new GameObject("TerrainChunks").transform); }
+            get { return chunkParent ?? (chunkParent = new GameObject("LandformChunks").transform); }
         }
 #endif
 
