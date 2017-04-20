@@ -50,13 +50,13 @@ namespace KouXiaGu.Terrain3D
             return gameObject.GetComponent<TerrainChunk>();
         }
 
-        static TerrainChunk Create()
+        public static TerrainChunk Create()
         {
             var item = CraeteTerrainChunk();
             return item;
         }
 
-        static TerrainChunk Create(TerrainChunkTexture textures)
+        public static TerrainChunk Create(TerrainChunkTexture textures)
         {
             var item = CraeteTerrainChunk();
             item.terrainRenderer.SetTextures(textures);
@@ -95,6 +95,10 @@ namespace KouXiaGu.Terrain3D
             trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
         }
 
+        public void Clear()
+        {
+            terrainRenderer.Clear();
+        }
     }
 
 }
