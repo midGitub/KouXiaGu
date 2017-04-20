@@ -56,13 +56,6 @@ namespace KouXiaGu.Terrain3D
             return item;
         }
 
-        public static TerrainChunk Create(TerrainChunkTexture textures)
-        {
-            var item = CraeteTerrainChunk();
-            item.terrainRenderer.SetTextures(textures);
-            return item;
-        }
-
         #endregion
 
 
@@ -99,6 +92,12 @@ namespace KouXiaGu.Terrain3D
         {
             terrainRenderer.Clear();
         }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
+
     }
 
 }

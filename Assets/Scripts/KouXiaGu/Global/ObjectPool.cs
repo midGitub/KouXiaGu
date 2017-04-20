@@ -48,17 +48,17 @@ namespace KouXiaGu
         /// <summary>
         /// 实例化对象;
         /// </summary>
-        protected abstract T Instantiate();
+        public abstract T Instantiate();
 
         /// <summary>
         /// 重置对象;
         /// </summary>
-        protected abstract void Reset(T item);
+        public abstract void Reset(T item);
 
         /// <summary>
         /// 销毁对象;
         /// </summary>
-        protected abstract void Destroy(T item);
+        public abstract void Destroy(T item);
 
 
         /// <summary>

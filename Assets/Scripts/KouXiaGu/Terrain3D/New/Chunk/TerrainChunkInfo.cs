@@ -39,11 +39,11 @@ namespace KouXiaGu.Terrain3D
         public static readonly float ChunkHeight = (float)MapHexagon.InnerDiameters * ChunkSize;
         public static readonly float ChunkHalfHeight = ChunkHeight / 2;
 
+
         /// <summary>
         /// 矩形网格结构,用于地形块的排列;
         /// </summary>
         public static readonly RectGrid ChunkGrid = new RectGrid(ChunkWidth, ChunkHeight);
-
 
         /// <summary>
         /// 地形块坐标 获取到其中心的六边形坐标;
