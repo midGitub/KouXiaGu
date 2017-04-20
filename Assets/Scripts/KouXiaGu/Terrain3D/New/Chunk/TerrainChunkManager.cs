@@ -37,6 +37,11 @@ namespace KouXiaGu.Terrain3D
             get { return activatedChunks.Count; }
         }
 
+        public TerrainChunk this[RectCoord coord]
+        {
+            get { return activatedChunks[coord]; }
+        }
+
         /// <summary>
         /// 创建到,若已经存在则返回异常;
         /// </summary>
@@ -72,12 +77,29 @@ namespace KouXiaGu.Terrain3D
             return chunk;
         }
 
-        /// <summary>
-        /// 确认是否存在这个地形块;
-        /// </summary>
         public bool Contains(RectCoord rectCoord)
         {
             return activatedChunks.ContainsKey(rectCoord);
+        }
+
+        public bool TryGetChunk(RectCoord rectCoord, out TerrainChunk chunk)
+        {
+            return activatedChunks.TryGetValue(rectCoord, out chunk);
+        }
+
+        /// <summary>
+        /// 获取到高度,若不存在高度信息,则返回0;
+        /// </summary>
+        public float GetHeight(Vector3 position)
+        {
+            RectCoord rectCoord = chunkGrid.GetCoord(position);
+            TerrainChunk chunk;
+            if (TryGetChunk(rectCoord, out chunk))
+            {
+                Vector2 uv = chunkGrid.GetUV(rectCoord, position);
+                return chunk.Texture.GetHeight(uv);
+            }
+            return 0;
         }
 
         /// <summary>
