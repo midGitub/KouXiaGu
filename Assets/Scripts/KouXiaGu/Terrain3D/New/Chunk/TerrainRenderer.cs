@@ -7,117 +7,6 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    [Serializable]
-    public class TerrainChunkTexture
-    {
-        public TerrainChunkTexture()
-        {
-        }
-
-        public TerrainChunkTexture(TerrainChunkTexture textures)
-        {
-            SetTextures(textures);
-        }
-
-        public TerrainChunkTexture(Texture2D diffuseMap, Texture2D heightMap, Texture2D normalMap)
-        {
-            SetDiffuseMap(diffuseMap);
-            SetHeightMap(heightMap);
-            SetNormalMap(normalMap);
-        }
-
-        [SerializeField]
-        Texture2D diffuseMap;
-
-        [SerializeField]
-        Texture2D heightMap;
-
-        [SerializeField]
-        Texture2D normalMap;
-
-        /// <summary>
-        /// 漫反射贴图;
-        /// </summary>
-        public Texture2D DiffuseMap
-        {
-            get { return diffuseMap; }
-            protected set { diffuseMap = value; }
-        }
-
-        /// <summary>
-        /// 高度贴图;
-        /// </summary>
-        public Texture2D HeightMap
-        {
-            get { return heightMap; }
-            protected set { heightMap = value; }
-        }
-
-        /// <summary>
-        /// 法线贴图;
-        /// </summary>
-        public Texture2D NormalMap
-        {
-            get { return normalMap; }
-            protected set { normalMap = value; }
-        }
-
-        /// <summary>
-        /// 设置漫反射贴图;
-        /// </summary>
-        public virtual void SetDiffuseMap(Texture2D diffuseMap)
-        {
-            DiffuseMap = diffuseMap;
-        }
-
-        /// <summary>
-        /// 设置高度贴图;
-        /// </summary>
-        public virtual void SetHeightMap(Texture2D heightMap)
-        {
-            HeightMap = heightMap;
-        }
-
-        /// <summary>
-        /// 设置法线贴图;
-        /// </summary>
-        public virtual void SetNormalMap(Texture2D normalMap)
-        {
-            NormalMap = normalMap;
-        }
-
-        /// <summary>
-        /// 重设所有贴图;
-        /// </summary>
-        public void SetTextures()
-        {
-            SetDiffuseMap(DiffuseMap);
-            SetHeightMap(HeightMap);
-            SetNormalMap(NormalMap);
-        }
-
-        /// <summary>
-        /// 设置所有贴图;
-        /// </summary>
-        public void SetTextures(TerrainChunkTexture textures)
-        {
-            SetDiffuseMap(textures.diffuseMap);
-            SetHeightMap(textures.heightMap);
-            SetNormalMap(textures.normalMap);
-        }
-
-        /// <summary>
-        /// 清空贴图引用;
-        /// </summary>
-        public virtual void Clear()
-        {
-            SetDiffuseMap(null);
-            SetHeightMap(null);
-            SetNormalMap(null);
-        }
-    }
-
-
     /// <summary>
     /// 地形渲染;
     /// </summary>
@@ -125,9 +14,19 @@ namespace KouXiaGu.Terrain3D
     public class TerrainRenderer : TerrainChunkTexture
     {
 
+        static TerrainParameter Parameter
+        {
+            get { return TerrainParameter.Instance; }
+        }
+
         static Shader TerrainShader
         {
-            get { return TerrainParameter.Instance.TerrainShader; }
+            get { return Parameter.TerrainShader; }
+        }
+
+        static float Displacement
+        {
+            get { return Parameter.Displacement; }
         }
 
 
@@ -183,6 +82,18 @@ namespace KouXiaGu.Terrain3D
             GameObject.Destroy(DiffuseMap);
             GameObject.Destroy(HeightMap);
             GameObject.Destroy(NormalMap);
+        }
+
+        /// <summary>
+        /// 获取到高度,若不存在高度信息,则返回0;
+        /// </summary>
+        public float GetHeight(Vector2 uv)
+        {
+            if (HeightMap == null)
+                return 0;
+
+            Color pixelColor = HeightMap.GetPixel(uv);
+            return pixelColor.r * Displacement;
         }
 
     }
