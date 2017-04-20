@@ -25,4 +25,23 @@ namespace KouXiaGu.Terrain3D
 
     }
 
+
+    public class TerrainChunkPool : ObjectPool<TerrainChunk>
+    {
+        protected override void Destroy(TerrainChunk item)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override TerrainChunk Instantiate()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void Reset(TerrainChunk item)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }
