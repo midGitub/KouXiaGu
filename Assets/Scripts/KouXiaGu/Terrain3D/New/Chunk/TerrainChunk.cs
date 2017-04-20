@@ -82,56 +82,48 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-
-        public RectCoord ChunkCoord { get; private set; }
-
-        TerrainMesh mesh;
-
+        TerrainMesh terrainMesh;
         [SerializeField]
         TerrainRenderer terrainRenderer;
 
         public TerrainMesh Mesh
         {
-            get { return mesh; }
-            private set { mesh = value; }
+            get { return terrainMesh; }
+            private set { terrainMesh = value; }
         }
 
-        public TerrainRenderer Renderer
+        public TerrainChunkTexture texture
         {
             get { return terrainRenderer; }
-            private set { terrainRenderer = value; }
-        }
-
-        void InitMesh()
-        {
-            var meshFilter = GetComponent<MeshFilter>();
-            Mesh = new TerrainMesh(meshFilter);
         }
 
         void Init()
         {
-            InitMesh();
-
+            var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
-            Renderer = new TerrainRenderer(meshRenderer);
+
+            terrainMesh = new TerrainMesh(meshFilter);
+            terrainRenderer = new TerrainRenderer(meshRenderer);
         }
 
         void Init(TerrainChunkTexture textures)
         {
-            InitMesh();
-
+            var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
-            Renderer = new TerrainRenderer(meshRenderer, textures);
+
+            terrainMesh = new TerrainMesh(meshFilter);
+            terrainRenderer = new TerrainRenderer(meshRenderer, textures);
         }
 
         void OnValidate()
         {
-            Renderer.OnValidate();
+            terrainRenderer.OnValidate();
         }
 
         void Reset()
         {
             Mesh.Reset();
+            texture.Clear();
         }
 
     }
