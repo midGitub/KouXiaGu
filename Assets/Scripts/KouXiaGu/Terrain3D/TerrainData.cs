@@ -24,8 +24,6 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-
-
         public static bool IsInitialized { get; private set; }
         public static SceneCreater Creater { get; private set; }
 

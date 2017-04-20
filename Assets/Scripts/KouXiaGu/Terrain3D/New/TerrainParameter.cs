@@ -7,37 +7,31 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 地形参数设置;
+    /// </summary>
     [DisallowMultipleComponent]
     class TerrainParameter : UnitySington<TerrainParameter>
     {
-
         TerrainParameter()
         {
         }
 
+
+        [SerializeField]
+        Shader terrainShader;
+
         /// <summary>
         /// 地形Shader;
         /// </summary>
-        public Shader TerrainShader;
+        public Shader TerrainShader
+        {
+            get { return terrainShader; }
+        }
 
-        /// <summary>
-        /// 地形细分程度;
-        /// </summary>
+
         [SerializeField, Range(0, 32)]
         float tessellation = 16f;
-
-        /// <summary>
-        /// 地形高度缩放;
-        /// </summary>
-        [SerializeField, Range(0, 5)]
-        float displacement = 1.3f;
-
-        /// <summary>
-        /// 降雪程度;
-        /// </summary>
-        [SerializeField, Range(0, 20)]
-        float snowLevel = 0f;
-
 
         /// <summary>
         /// 地形细分程度;
@@ -57,6 +51,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形高度缩放;
         /// </summary>
+        [SerializeField, Range(0, 5)]
+        float displacement = 1.3f;
+
         public float Displacement
         {
             get { return displacement; }
@@ -72,6 +69,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 降雪程度;
         /// </summary>
+        [SerializeField, Range(0, 20)]
+        float snowLevel = 0f;
+
         public float SnowLevel
         {
             get { return snowLevel; }
@@ -81,6 +81,19 @@ namespace KouXiaGu.Terrain3D
         {
             Shader.SetGlobalFloat("_TerrainSnow", value);
             snowLevel = value;
+        }
+
+
+        void Start()
+        {
+            SetTessellation(tessellation);
+            SetDisplacement(displacement);
+            SetSnowLevel(snowLevel);
+        }
+
+        void OnValidate()
+        {
+            Start();
         }
 
     }

@@ -20,6 +20,14 @@ namespace KouXiaGu.Terrain3D
             return new AsyncInitializer();
         }
 
+        class AsyncInitializer : AsyncOperation<Terrain>
+        {
+            public AsyncInitializer()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
 
         Terrain()
         {
@@ -28,14 +36,6 @@ namespace KouXiaGu.Terrain3D
         public IDictionary<CubicHexCoord, MapNode> Map { get; private set; }
 
 
-
-        class AsyncInitializer : AsyncOperation<Terrain>
-        {
-            public AsyncInitializer()
-            {
-                throw new NotImplementedException();
-            }
-        }
 
     }
 
