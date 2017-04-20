@@ -20,10 +20,10 @@ namespace KouXiaGu.Terrain3D
             Landform = new LandformCreater(data);
         }
 
-        /// <summary>
-        /// 建筑物创建模块;
-        /// </summary>
-        public BuildingCreater Building { get; private set; }
+        ///// <summary>
+        ///// 建筑物创建模块;
+        ///// </summary>
+        //public BuildingCreater Building { get; private set; }
 
         /// <summary>
         /// 地形创建模块;

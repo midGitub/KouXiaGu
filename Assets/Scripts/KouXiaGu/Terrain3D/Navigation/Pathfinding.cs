@@ -5,6 +5,7 @@ using KouXiaGu.Grids;
 using KouXiaGu.Navigation;
 using KouXiaGu.Collections;
 using UnityEngine;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D.Navigation
 {
@@ -15,26 +16,26 @@ namespace KouXiaGu.Terrain3D.Navigation
     public static class Pathfinding
     {
 
-        static IDictionary<CubicHexCoord, TerrainNode> Map
+        static IDictionary<CubicHexCoord, MapNode> Map
         {
-            get { return OTerrainInitializer.Map; }
+            get { throw new NotImplementedException(); }
         }
 
         #region 同步;
 
-        static readonly AStarPathFinding<CubicHexCoord, TerrainNode> astar = new AStarPathFinding<CubicHexCoord, TerrainNode>();
+        static readonly AStarPathFinding<CubicHexCoord, MapNode> astar = new AStarPathFinding<CubicHexCoord, MapNode>();
 
         /// <summary>
         /// 获取到导航路径(同步);
         /// </summary>
-        public static Path<CubicHexCoord, TerrainNode> FindPath(
+        public static Path<CubicHexCoord, MapNode> FindPath(
             CubicHexCoord starting,
             CubicHexCoord destination,
-            IPathFindingCost<CubicHexCoord, TerrainNode> obstruction,
+            IPathFindingCost<CubicHexCoord, MapNode> obstruction,
             IRange<CubicHexCoord> searchRange)
         {
             var path = astar.Search(Map, obstruction, searchRange, starting, destination);
-            return new Path<CubicHexCoord, TerrainNode>(path, Map);
+            return new Path<CubicHexCoord, MapNode>(path, Map);
         }
 
         #endregion
@@ -47,7 +48,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         public static void FindPathAsync(
             CubicHexCoord starting,
             CubicHexCoord destination,
-            IPathFindingCost<CubicHexCoord, TerrainNode> obstruction,
+            IPathFindingCost<CubicHexCoord, MapNode> obstruction,
             IRange<CubicHexCoord> range)
         {
             throw new NotImplementedException();

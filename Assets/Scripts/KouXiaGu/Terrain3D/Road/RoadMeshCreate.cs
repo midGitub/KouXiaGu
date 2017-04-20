@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Grids;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -17,9 +18,9 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        public RoadMeshCreate(RoadData road)
+        public RoadMeshCreate(IDictionary<CubicHexCoord, MapNode> road)
         {
-            this.RoadInfo = road;
+            this.Map = road;
         }
 
         [SerializeField, Range(4, 60)]
@@ -28,7 +29,7 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         float roadWidth = 0.07f;
 
-        public RoadData RoadInfo { get; set; }
+        public IDictionary<CubicHexCoord, MapNode> Map { get; set; }
 
 
         /// <summary>
@@ -69,11 +70,34 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<RoadMesh> Create(CubicHexCoord coord)
         {
-            foreach (var path in RoadInfo.FindPixelPaths(coord))
+            foreach (var path in FindPixelPaths(coord))
             {
                 yield return Create(path);
             }
         }
+
+
+        /// <summary>
+        /// 获取到这个点通向周围的像素路径;
+        /// </summary>
+        public IEnumerable<Vector3[]> FindPixelPaths(CubicHexCoord target)
+        {
+            IEnumerable<CubicHexCoord[]> paths = Map.FindPaths(target);
+            return Convert(paths);
+        }
+
+        /// <summary>
+        /// 转换 地图坐标 到 像素坐标;
+        /// </summary>
+        public IEnumerable<Vector3[]> Convert(IEnumerable<CubicHexCoord[]> paths)
+        {
+            return paths.Select(delegate (CubicHexCoord[] path)
+            {
+                Vector3[] newPath = path.Select(coord => coord.GetTerrainPixel()).ToArray();
+                return newPath;
+            });
+        }
+
 
         RoadMesh Create(IList<Vector3> paths)
         {

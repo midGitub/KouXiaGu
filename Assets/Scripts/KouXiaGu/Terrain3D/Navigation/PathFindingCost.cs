@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.Navigation;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D.Navigation
@@ -13,7 +14,7 @@ namespace KouXiaGu.Terrain3D.Navigation
     /// 寻路权重;
     /// </summary>
     [Serializable]
-    public class PathFindingCost : IPathFindingCost<CubicHexCoord, TerrainNode>
+    public class PathFindingCost : IPathFindingCost<CubicHexCoord, MapNode>
     {
 
         public PathFindingCost(float distancesFactor, float landformFactor)
@@ -37,22 +38,17 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 是否可行走;
         /// </summary>
-        public bool CanWalk(TerrainNode item)
+        public bool CanWalk(MapNode item)
         {
-            if (item.Landform.Exist())
-            {
-                int landform = item.Landform.ID;
-                NavigationDescr descr = NavigationRes.GetNavigationDescr(landform);
-                return descr.Walkable;
-            }
-            Debug.LogWarning("查询点不存在地貌信息;");
-            return false;
+            int landform = item.Landform.LandformID;
+            NavigationDescr descr = NavigationRes.GetNavigationDescr(landform);
+            return descr.Walkable;
         }
 
         /// <summary>
         /// 获取到代价值;
         /// </summary>
-        public float GetCost(CubicHexCoord targetPoint, TerrainNode targetNode, CubicHexCoord destination)
+        public float GetCost(CubicHexCoord targetPoint, MapNode targetNode, CubicHexCoord destination)
         {
             float cost = ManhattanDistances(targetPoint, destination) * distancesFactor;
             cost += GetCost(targetNode) * landformFactor;
@@ -70,9 +66,9 @@ namespace KouXiaGu.Terrain3D.Navigation
         /// <summary>
         /// 获取到这个节点的代价值;
         /// </summary>
-        float GetCost(TerrainNode node)
+        float GetCost(MapNode node)
         {
-            int landform = node.Landform.ID;
+            int landform = node.Landform.LandformID;
             return NavigationRes.TerrainInfos[landform].NavigationCost;
         }
 

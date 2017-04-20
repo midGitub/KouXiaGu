@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Grids;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -105,7 +106,7 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var display in displays)
             {
-                var meshs = Create(request.Data.Road, display);
+                var meshs = Create(request.Data, display);
                 inSceneMeshs.AddRange(meshs);
             }
         }
@@ -127,9 +128,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建目标点之上的道路;
         /// </summary>
-        IEnumerable<RoadMesh> Create(RoadData road, CubicHexCoord target)
+        IEnumerable<RoadMesh> Create(IDictionary<CubicHexCoord, MapNode> map, CubicHexCoord target)
         {
-            var paths = road.FindPaths(target);
+            var paths = map.FindPaths(target);
 
             foreach (var path in paths)
             {

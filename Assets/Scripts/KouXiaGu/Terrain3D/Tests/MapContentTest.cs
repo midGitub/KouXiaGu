@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D.Tests
         [SerializeField]
         Text textObject;
 
-        //IDictionary<CubicHexCoord, TerrainNode> Data
+        //IDictionary<CubicHexCoord, MapNode> Data
         //{
         //    get { return MapDataManager.Data.Data; }
         //}
@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D.Tests
         //    if (LandformTrigger.TryGetMouseRayPoint(out mousePoint))
         //    {
         //        CubicHexCoord coord = mousePoint.GetTerrainCubic();
-        //        TerrainNode node;
+        //        MapNode node;
 
         //        if (Data.TryGetValue(coord, out node))
         //        {

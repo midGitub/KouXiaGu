@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using KouXiaGu.Grids;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 地形烘焙;
+    /// </summary>
     [Serializable]
     public class LandformBaker : GameObjectPool<MeshRenderer>, IDisposable
     {
@@ -73,13 +77,12 @@ namespace KouXiaGu.Terrain3D
 
             foreach (var display in displays)
             {
-                LandformNode info;
-                if (request.
-                    Data.
-                    Landform.TryGetValue(display, out info))
+                MapNode info;
+                if (request.Data.TryGetValue(display, out info))
                 {
-                    var renderer = Get(display, info.Angle);
-                    LandformRes res = GetLandform(info.ID);
+                    LandformNode landformNode = info.Landform;
+                    var renderer = Get(display, landformNode.Angle);
+                    LandformRes res = GetLandform(landformNode.LandformID);
                     inSceneMeshs.Add(new Pack(res, renderer));
                 }
             }

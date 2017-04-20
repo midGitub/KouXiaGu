@@ -77,7 +77,7 @@
 //        /// 地图数据;
 //        /// </summary>
 //        [ProtoMember(1)]
-//        public OObservableDictionary<CubicHexCoord, TerrainNode> Data { get; private set; }
+//        public OObservableDictionary<CubicHexCoord, MapNode> Data { get; private set; }
 
 //        [ProtoMember(2)]
 //        public RoadData Road { get; private set; }
@@ -87,7 +87,7 @@
 //        /// <summary>
 //        /// 用于监视地图变化;
 //        /// </summary>
-//        public DictionaryArchiver<CubicHexCoord, TerrainNode> ArchiveData { get; private set; }
+//        public DictionaryArchiver<CubicHexCoord, MapNode> ArchiveData { get; private set; }
 
 
 //        MapData()
@@ -96,14 +96,14 @@
 
 //        public MapData(bool isArchive)
 //        {
-//            Data = new OObservableDictionary<CubicHexCoord, TerrainNode>();
+//            Data = new OObservableDictionary<CubicHexCoord, MapNode>();
 //            Road = new RoadData(Data);
 //            Landform = new LandformData(Data);
 //            Building = new BuildingData(Data);
 
 //            if (isArchive)
 //            {
-//                ArchiveData = new DictionaryArchiver<CubicHexCoord, TerrainNode>();
+//                ArchiveData = new DictionaryArchiver<CubicHexCoord, MapNode>();
 //                ArchiveData.Subscribe(Data);
 //            }
 //        }
@@ -114,7 +114,7 @@
 //            Landform = new LandformData(Data);
 //            Building = new BuildingData(Data);
 
-//            ArchiveData = new DictionaryArchiver<CubicHexCoord, TerrainNode>();
+//            ArchiveData = new DictionaryArchiver<CubicHexCoord, MapNode>();
 //            ArchiveData.Subscribe(Data);
 //        }
 
@@ -162,7 +162,7 @@
 //            file.Clear();
 //        }
 
-//        void AddArchiveData(DictionaryArchiver<CubicHexCoord, TerrainNode> archiveData)
+//        void AddArchiveData(DictionaryArchiver<CubicHexCoord, MapNode> archiveData)
 //        {
 //            if (ArchiveData.Count == 0)
 //            {
@@ -202,7 +202,7 @@
 //        /// 地图变化信息;
 //        /// </summary>
 //        [ProtoMember(1)]
-//        public DictionaryArchiver<CubicHexCoord, TerrainNode> Data { get; set; }
+//        public DictionaryArchiver<CubicHexCoord, MapNode> Data { get; set; }
 
 //        /// <summary>
 //        /// 地形道路信息;

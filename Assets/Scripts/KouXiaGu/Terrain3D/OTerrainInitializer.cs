@@ -26,7 +26,7 @@
 //        /// <summary>
 //        /// 当前游戏使用的地图,若不在游戏中则为null;
 //        /// </summary>
-//        public static ObservableDictionary<CubicHexCoord, TerrainNode> Map
+//        public static ObservableDictionary<CubicHexCoord, MapNode> Map
 //        {
 //            get { return MapDataManager.Data.Data; }
 //        }

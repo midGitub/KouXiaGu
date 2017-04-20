@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KouXiaGu.Grids;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D.Navigation
 {
@@ -14,7 +15,7 @@ namespace KouXiaGu.Terrain3D.Navigation
     public class NavigationPath : INavigationPath
     {
 
-        public NavigationPath(IMovable character, Path<CubicHexCoord, TerrainNode> path)
+        public NavigationPath(IMovable character, Path<CubicHexCoord, MapNode> path)
         {
             this.Character = character;
             this.path = path;
@@ -22,7 +23,7 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         public IMovable Character { get; private set; }
 
-        Path<CubicHexCoord, TerrainNode> path;
+        Path<CubicHexCoord, MapNode> path;
 
         float maxSpeed;
 
@@ -65,10 +66,10 @@ namespace KouXiaGu.Terrain3D.Navigation
 
         float GetSpeed()
         {
-            TerrainNode node;
+            MapNode node;
             if (path.WorldMap.TryGetValue(path.Current, out node))
             {
-                var descr = NavigationRes.GetNavigationDescr(node.Landform.ID);
+                var descr = NavigationRes.GetNavigationDescr(node.Landform.LandformID);
                 return descr.SpeedOfTravel * Character.MovingSpeed;
             }
             Debug.LogError("路径点超出地图范围;");

@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.Navigation;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D.Navigation
 {
@@ -18,7 +19,7 @@ namespace KouXiaGu.Terrain3D.Navigation
         public static void NavigateTo(
             this INavigator navigator,
             CubicHexCoord destination,
-            IPathFindingCost<CubicHexCoord, TerrainNode> cost,
+            IPathFindingCost<CubicHexCoord, MapNode> cost,
             IRange<CubicHexCoord> searchRange,
             IMovable character)
         {
@@ -30,7 +31,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             this INavigator navigator,
             CubicHexCoord starting,
             CubicHexCoord destination,
-            IPathFindingCost<CubicHexCoord, TerrainNode> cost,
+            IPathFindingCost<CubicHexCoord, MapNode> cost,
             IRange<CubicHexCoord> searchRange,
             IMovable character)
         {
@@ -38,7 +39,7 @@ namespace KouXiaGu.Terrain3D.Navigation
             navigator.NavigateTo(character, path);
         }
 
-        public static void NavigateTo(this INavigator navigator, IMovable character, Path<CubicHexCoord, TerrainNode> path)
+        public static void NavigateTo(this INavigator navigator, IMovable character, Path<CubicHexCoord, MapNode> path)
         {
             var navPath = new NavigationPath(character, path);
             navigator.Follow(navPath);

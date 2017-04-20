@@ -16,22 +16,22 @@
 //        static readonly TerrainChangedCreater instance = new TerrainChangedCreater();
 
 
-//        public static void Initialize(ObservableDictionary<CubicHexCoord, TerrainNode> map)
+//        public static void Initialize(ObservableDictionary<CubicHexCoord, MapNode> map)
 //        {
 //            map.Subscribe(instance);
 //        }
 
-//        void IObserver<DictionaryChange<CubicHexCoord, TerrainNode>>.OnCompleted()
+//        void IObserver<DictionaryChange<CubicHexCoord, MapNode>>.OnCompleted()
 //        {
 //            return;
 //        }
 
-//        void IObserver<DictionaryChange<CubicHexCoord, TerrainNode>>.OnError(Exception error)
+//        void IObserver<DictionaryChange<CubicHexCoord, MapNode>>.OnError(Exception error)
 //        {
 //            return;
 //        }
 
-//        void IObserver<DictionaryChange<CubicHexCoord, TerrainNode>>.OnNext(DictionaryChange<CubicHexCoord, TerrainNode> value)
+//        void IObserver<DictionaryChange<CubicHexCoord, MapNode>>.OnNext(DictionaryChange<CubicHexCoord, MapNode> value)
 //        {
 //            UpdateChunk(value.Key);
 //        }

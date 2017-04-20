@@ -54,9 +54,9 @@
 //        /// <summary>
 //        /// 随机的节点;
 //        /// </summary>
-//        public static TerrainNode RamdomNode()
+//        public static MapNode RamdomNode()
 //        {
-//            TerrainNode node = new TerrainNode()
+//            MapNode node = new MapNode()
 //            {
 //                Landform = new LandformNode()
 //                {
@@ -88,7 +88,7 @@
 //        /// <summary>
 //        /// 使用节点填满地图;
 //        /// </summary>
-//        public static void Fill(OObservableDictionary<CubicHexCoord, TerrainNode> map, TerrainNode node)
+//        public static void Fill(OObservableDictionary<CubicHexCoord, MapNode> map, MapNode node)
 //        {
 //            foreach (var coord in Range())
 //            {
@@ -102,13 +102,13 @@
 //        /// <summary>
 //        /// 使用随机节点填满地图;
 //        /// </summary>
-//        public static void Fill(OObservableDictionary<CubicHexCoord, TerrainNode> map)
+//        public static void Fill(OObservableDictionary<CubicHexCoord, MapNode> map)
 //        {
 //            foreach (var coord in Range())
 //            {
 //                if (!map.ContainsKey(coord))
 //                {
-//                    TerrainNode node = RamdomNode();
+//                    MapNode node = RamdomNode();
 //                    map.Add(coord, node);
 //                }
 //            }
@@ -117,7 +117,7 @@
 //        /// <summary>
 //        /// 替换整个地图;
 //        /// </summary>
-//        public static void Replace(OObservableDictionary<CubicHexCoord, TerrainNode> map, TerrainNode node)
+//        public static void Replace(OObservableDictionary<CubicHexCoord, MapNode> map, MapNode node)
 //        {
 //            foreach (var coord in Range())
 //            {
@@ -128,11 +128,11 @@
 //        /// <summary>
 //        /// 随机节点替换整个地图;
 //        /// </summary>
-//        public static void Replace(OObservableDictionary<CubicHexCoord, TerrainNode> map)
+//        public static void Replace(OObservableDictionary<CubicHexCoord, MapNode> map)
 //        {
 //            foreach (var coord in Range())
 //            {
-//                TerrainNode node = RamdomNode();
+//                MapNode node = RamdomNode();
 //                map.AddOrUpdate(coord, node);
 //            }
 //        }
