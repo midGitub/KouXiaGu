@@ -73,7 +73,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         TerrainMesh terrainMesh;
-        [SerializeField]
         TerrainRenderer terrainRenderer;
         TerrainTrigger trigger;
 
@@ -87,7 +86,6 @@ namespace KouXiaGu.Terrain3D
             get { return terrainRenderer; }
         }
 
-        [ContextMenu("重新初始化;")]
         void Init()
         {
             var meshFilter = GetComponent<MeshFilter>();
@@ -110,9 +108,15 @@ namespace KouXiaGu.Terrain3D
             trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
         }
 
+        //[ContextMenu("重新初始化;")]
+        //void Awake()
+        //{
+
+        //}
+
         void OnValidate()
         {
-            terrainRenderer.OnValidate();
+            terrainRenderer.SetTextures();
         }
 
         //void Reset()
