@@ -29,6 +29,9 @@ namespace KouXiaGu.Terrain3D
             get { return Parameter.Displacement; }
         }
 
+        public TerrainRenderer()
+        {
+        }
 
         public TerrainRenderer(MeshRenderer renderer)
         {
@@ -60,21 +63,30 @@ namespace KouXiaGu.Terrain3D
 
         public override void SetDiffuseMap(Texture2D diffuseMap)
         {
-            material.SetTexture("_MainTex", diffuseMap);
-            base.SetDiffuseMap(diffuseMap);
+            if (DiffuseMap != diffuseMap)
+            {
+                material.SetTexture("_MainTex", diffuseMap);
+                base.SetDiffuseMap(diffuseMap);
+            }
         }
 
         public override void SetHeightMap(Texture2D heightMap)
         {
-            material.SetTexture("_HeightTex", heightMap);
-            base.SetHeightMap(heightMap);
-            onHeightMapUpdate.Track(this);
+            if (HeightMap != heightMap)
+            {
+                material.SetTexture("_HeightTex", heightMap);
+                base.SetHeightMap(heightMap);
+                onHeightMapUpdate.Track(this);
+            }
         }
 
         public override void SetNormalMap(Texture2D normalMap)
         {
-            material.SetTexture("_NormalMap", normalMap);
-            base.SetNormalMap(normalMap);
+            if (NormalMap != normalMap)
+            {
+                material.SetTexture("_NormalMap", normalMap);
+                base.SetNormalMap(normalMap);
+            }
         }
 
         /// <summary>

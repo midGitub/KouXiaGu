@@ -9,14 +9,13 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-
 namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形块脚本;
+    /// 地形块;需要通过静态变量创建;
     /// </summary>
-    [DisallowMultipleComponent, ExecuteInEditMode]
+    [DisallowMultipleComponent]
     public sealed class TerrainChunk : MonoBehaviour
     {
 
@@ -54,14 +53,13 @@ namespace KouXiaGu.Terrain3D
         static TerrainChunk Create()
         {
             var item = CraeteTerrainChunk();
-            item.Init();
             return item;
         }
 
         static TerrainChunk Create(TerrainChunkTexture textures)
         {
             var item = CraeteTerrainChunk();
-            item.Init(textures);
+            item.terrainRenderer.SetTextures(textures);
             return item;
         }
 
@@ -86,7 +84,7 @@ namespace KouXiaGu.Terrain3D
             get { return terrainRenderer; }
         }
 
-        void Init()
+        void Awake()
         {
             var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
@@ -94,17 +92,6 @@ namespace KouXiaGu.Terrain3D
 
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer);
-            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
-        }
-
-        void Init(TerrainChunkTexture textures)
-        {
-            var meshFilter = GetComponent<MeshFilter>();
-            var meshRenderer = GetComponent<MeshRenderer>();
-            var meshCollider = GetComponent<MeshCollider>();
-
-            terrainMesh = new TerrainMesh(meshFilter);
-            terrainRenderer = new TerrainRenderer(meshRenderer, textures);
             trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
         }
 
