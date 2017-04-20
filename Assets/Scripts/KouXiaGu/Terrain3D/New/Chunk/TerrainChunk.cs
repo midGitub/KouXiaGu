@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形块脚本;
     /// </summary>
     [DisallowMultipleComponent, ExecuteInEditMode]
-    public class TerrainChunk : MonoBehaviour
+    public sealed class TerrainChunk : MonoBehaviour
     {
 
         #region Static;
