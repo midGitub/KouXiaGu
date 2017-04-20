@@ -24,7 +24,7 @@ namespace KouXiaGu.Terrain3D
         static readonly int[] triangles = GetTriangles();
 
         /// <summary>
-        /// 获取到细分到的定点坐标 和 对应的UV坐标;
+        /// 获取到细分到的顶点坐标 和 对应的UV坐标;
         /// </summary>
         static List<KeyValuePair<Vector3, Vector2>> GetVerticesAndUV()
         {

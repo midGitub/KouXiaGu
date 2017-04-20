@@ -16,6 +16,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形块;需要通过静态变量创建;
     /// </summary>
     [DisallowMultipleComponent]
+    [ExecuteInEditMode]
     public sealed class TerrainChunk : MonoBehaviour
     {
 
@@ -86,6 +87,11 @@ namespace KouXiaGu.Terrain3D
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer);
             trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
+        }
+
+        void Reset()
+        {
+            Awake();
         }
 
         public void Clear()

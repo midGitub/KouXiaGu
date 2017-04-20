@@ -15,17 +15,19 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class Terrain
     {
-
         public static IAsyncOperation<Terrain> Initialize(IWorld world)
         {
-            return new AsyncInitializer();
+            return new AsyncInitializer(world);
         }
 
         class AsyncInitializer : AsyncOperation<Terrain>
         {
-            public AsyncInitializer()
+            public AsyncInitializer(IWorld world)
             {
-                throw new NotImplementedException();
+                var instance = new Terrain();
+                instance.World = world;
+                instance.TerrainChunk = new TerrainChunkManager();
+                OnCompleted(instance);
             }
         }
 
@@ -34,12 +36,12 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        public IDictionary<CubicHexCoord, MapNode> Map { get; private set; }
+        public IWorld World { get; private set; }
         public TerrainChunkManager TerrainChunk { get; private set; }
 
-        public static float GetHeight(Vector3 pos)
+        public IDictionary<CubicHexCoord, MapNode> Map
         {
-            throw new NotImplementedException();
+            get { return World.Map.Data; }
         }
 
     }
