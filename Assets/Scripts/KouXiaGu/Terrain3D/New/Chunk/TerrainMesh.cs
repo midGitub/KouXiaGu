@@ -16,31 +16,31 @@ namespace KouXiaGu.Terrain3D
 
         #region Static
 
-        const string MESH_NAME = "Terrain Mesh";
+        const string meshName = "Terrain Mesh";
 
-        static readonly float MESH_HALF_WIDTH = LandformChunk.CHUNK_WIDTH_HALF;
-        static readonly float MESH_HALF_HEIGHT = LandformChunk.CHUNK_HEIGHT_HALF;
+        static readonly float chunkHalfWidth = TerrainChunkInfo.ChunkHalfWidth;
+        static readonly float chunkHalfHeight = TerrainChunkInfo.ChunkHalfHeight;
 
         /// <summary>
         /// 网格生成的高度;
         /// </summary>
-        const float ALTITUDE = 0;
+        const float altitude = 0;
 
         /// <summary>
         /// 网格顶点数据;
         /// </summary>
-        static readonly Vector3[] VERTICES = new Vector3[]
+        static readonly Vector3[] vertices = new Vector3[]
             {
-                new Vector3(-MESH_HALF_WIDTH , ALTITUDE, MESH_HALF_HEIGHT),
-                new Vector3(MESH_HALF_WIDTH, ALTITUDE, MESH_HALF_HEIGHT),
-                new Vector3(MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
-                new Vector3(-MESH_HALF_WIDTH, ALTITUDE, -MESH_HALF_HEIGHT),
+                new Vector3(-chunkHalfWidth , altitude, chunkHalfHeight),
+                new Vector3(chunkHalfWidth, altitude, chunkHalfHeight),
+                new Vector3(chunkHalfWidth, altitude, -chunkHalfHeight),
+                new Vector3(-chunkHalfWidth, altitude, -chunkHalfHeight),
             };
 
         /// <summary>
         /// 网格三角形数据;
         /// </summary>
-        static readonly int[] TRIANGLES = new int[]
+        static readonly int[] triangles = new int[]
            {
                 0,1,2,
                 0,2,3,
@@ -49,7 +49,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 网格UV坐标数据;
         /// </summary>
-        static readonly Vector2[] UV = new Vector2[]
+        static readonly Vector2[] UV_Coordinates = new Vector2[]
            {
                 new Vector2(0f, 1f),
                 new Vector2(1f, 1f),
@@ -64,10 +64,10 @@ namespace KouXiaGu.Terrain3D
         {
             Mesh mesh = new Mesh();
 
-            mesh.name = MESH_NAME;
-            mesh.vertices = VERTICES;
-            mesh.triangles = TRIANGLES;
-            mesh.uv = UV;
+            mesh.name = meshName;
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.uv = UV_Coordinates;
             mesh.RecalculateNormals();
 
             return mesh;
