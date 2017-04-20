@@ -108,17 +108,17 @@ namespace KouXiaGu.Terrain3D
 
         class Pool : ObjectPool<LandformChunk>
         {
-            protected override LandformChunk Instantiate()
+            public override LandformChunk Instantiate()
             {
                 return new LandformChunk();
             }
 
-            protected override void Reset(LandformChunk item)
+            public override void Reset(LandformChunk item)
             {
                 item.Reset();
             }
 
-            protected override void Destroy(LandformChunk item)
+            public override void Destroy(LandformChunk item)
             {
                 item.Destroy();
             }
