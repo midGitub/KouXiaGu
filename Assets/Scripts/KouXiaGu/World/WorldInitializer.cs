@@ -104,7 +104,7 @@ namespace KouXiaGu.World
         /// </summary>
         void BuildingData()
         {
-            Debug.Log("------开始初始化游戏世界数据------");
+            Debug.Log("------开始初始化游戏世界数据;");
 
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
@@ -116,9 +116,9 @@ namespace KouXiaGu.World
 
         void OnMapResourceCompleted(IAsyncOperation<MapResource> operation)
         {
-            const string prefix = "[地图资源]";
+            const string prefix = "[地图]";
             Map = operation.Result;
-            Debug.Log(prefix + "初始化完毕;总共有 " + Map.Data.Count + " 个节点;");
+            Debug.Log(prefix + "初始化完毕; 总共有 " + Map.Data.Count + " 个节点;");
         }
 
         void OnTimeCompleted(IAsyncOperation<TimeManager> operation)
@@ -130,7 +130,7 @@ namespace KouXiaGu.World
 
         void OnBuildingDataCompleted(IList<IAsyncOperation> operations)
         {
-            Debug.Log("------游戏世界数据初始化完毕------");
+            Debug.Log("------游戏世界数据初始化完毕;");
             BuildingScene(this);
         }
 
@@ -141,7 +141,7 @@ namespace KouXiaGu.World
         /// </summary>
         void BuildingScene(IWorld world)
         {
-            Debug.Log("------开始初始化游戏场景------");
+            Debug.Log("------开始初始化游戏场景;");
 
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
@@ -160,10 +160,10 @@ namespace KouXiaGu.World
         void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)
         {
             OnCompleted();
-            Debug.Log("------游戏场景初始化完毕------");
+            Debug.Log("------游戏场景初始化完毕;");
 
             worldTracker.Track(this);
-            Debug.Log("------开始游戏状态------");
+            Debug.Log("------开始游戏状态;");
         }
 
 
