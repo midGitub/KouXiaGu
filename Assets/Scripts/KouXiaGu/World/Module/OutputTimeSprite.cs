@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using KouXiaGu.Rx;
+
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ namespace KouXiaGu.World
     /// 在控制台输出时间信息;
     /// </summary>
     [DisallowMultipleComponent]
-    class OutputTimeSprite : MonoBehaviour, IXiaGuObserver<IWorld>, IXiaGuObserver<DateTime>
+    class OutputTimeSprite : MonoBehaviour, IObserver<IWorld>, IObserver<DateTime>
     {
 
         OutputTimeSprite()
@@ -33,12 +34,12 @@ namespace KouXiaGu.World
             unsubscribe = world.Subscribe(this);
         }
 
-        void IXiaGuObserver<IWorld>.OnNext(IWorld world)
+        void IObserver<IWorld>.OnNext(IWorld world)
         {
             world.Time.Subscribe(this);
         }
 
-        void IXiaGuObserver<DateTime>.OnNext(DateTime item)
+        void IObserver<DateTime>.OnNext(DateTime item)
         {
             string str = item.ToString();
             str += "\n" + item.GetMonthType();

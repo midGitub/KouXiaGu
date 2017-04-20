@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
-using KouXiaGu.Rx;
+
 using ProtoBuf;
 
 namespace KouXiaGu.World.Map

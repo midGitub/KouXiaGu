@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 
-namespace KouXiaGu.Rx
+namespace KouXiaGu
 {
 
     /// <summary>
     /// 订阅器基类;
     /// </summary>
-    public abstract class TrackerBase<T> : IXiaGuObservable<T>
+    public abstract class TrackerBase<T> : IObservable<T>
     {
         public TrackerBase()
         {
@@ -17,7 +18,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 观察者;
         /// </summary>
-        protected abstract ICollection<IXiaGuObserver<T>> observers { get; }
+        protected abstract ICollection<IObserver<T>> observers { get; }
 
         /// <summary>
         /// 观察者数量;
@@ -30,7 +31,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 所有观察者;
         /// </summary>
-        public IEnumerable<IXiaGuObserver<T>> Observers
+        public IEnumerable<IObserver<T>> Observers
         {
             get { return observers; }
         }
@@ -38,30 +39,30 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 订阅到事件,不检查是否存在相同的订阅者;
         /// </summary>
-        public virtual IDisposable Subscribe(IXiaGuObserver<T> observer)
+        public virtual IDisposable Subscribe(IObserver<T> observer)
         {
             observers.Add(observer);
-            return new CollectionUnsubscriber<IXiaGuObserver<T>>(observers, observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observers, observer);
         }
 
         /// <summary>
         /// 订阅到事件,若存在相同的订阅者则返回异常;
         /// </summary>
-        public virtual IDisposable SubscribeOnly(IXiaGuObserver<T> observer)
+        public virtual IDisposable SubscribeOnly(IObserver<T> observer)
         {
             if (observers.Contains(observer))
                 throw new ArgumentException();
 
             observers.Add(observer);
-            return new CollectionUnsubscriber<IXiaGuObserver<T>>(observers, observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observers, observer);
         }
 
         /// <summary>
         /// 迭代获取到观察者;
         /// </summary>
-        protected virtual IEnumerable<IXiaGuObserver<T>> EnumerateObserver()
+        protected virtual IEnumerable<IObserver<T>> EnumerateObserver()
         {
-            IXiaGuObserver<T>[] observerArray = observers.ToArray();
+            IObserver<T>[] observerArray = observers.ToArray();
             return observerArray;
         }
 
@@ -122,7 +123,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 当观察者发生异常时调用;
         /// </summary>
-        protected virtual void OnError(IXiaGuObserver<T> observer, Exception ex)
+        protected virtual void OnError(IObserver<T> observer, Exception ex)
         {
             UnityEngine.Debug.LogError(ex);
         }
@@ -170,22 +171,22 @@ namespace KouXiaGu.Rx
     {
         public HashSetTracker()
         {
-            observersSet = new HashSet<IXiaGuObserver<T>>();
+            observersSet = new HashSet<IObserver<T>>();
         }
 
-        HashSet<IXiaGuObserver<T>> observersSet;
+        HashSet<IObserver<T>> observersSet;
 
-        protected override ICollection<IXiaGuObserver<T>> observers
+        protected override ICollection<IObserver<T>> observers
         {
             get { return observersSet; }
         }
 
-        public override IDisposable Subscribe(IXiaGuObserver<T> observer)
+        public override IDisposable Subscribe(IObserver<T> observer)
         {
             if (!observersSet.Add(observer))
                 throw new ArgumentException();
 
-            return new CollectionUnsubscriber<IXiaGuObserver<T>>(observersSet, observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observersSet, observer);
         }
 
     }
@@ -198,23 +199,23 @@ namespace KouXiaGu.Rx
     {
         public ListTracker()
         {
-            observersList = new List<IXiaGuObserver<T>>();
+            observersList = new List<IObserver<T>>();
         }
 
-        List<IXiaGuObserver<T>> observersList;
+        List<IObserver<T>> observersList;
 
-        protected override ICollection<IXiaGuObserver<T>> observers
+        protected override ICollection<IObserver<T>> observers
         {
             get { return observersList; }
         }
 
-        public override IDisposable Subscribe(IXiaGuObserver<T> observer)
+        public override IDisposable Subscribe(IObserver<T> observer)
         {
             if(observersList.Contains(observer))
                 throw new ArgumentException();
 
             observersList.Add(observer);
-            return new CollectionUnsubscriber<IXiaGuObserver<T>>(observersList, observer);
+            return new CollectionUnsubscriber<IObserver<T>>(observersList, observer);
         }
 
     }
@@ -265,14 +266,14 @@ namespace KouXiaGu.Rx
     {
         public LinkedListTracker()
         {
-            observersList = new LinkedList<IXiaGuObserver<T>>();
+            observersList = new LinkedList<IObserver<T>>();
             currentNode = null;
         }
 
-        LinkedList<IXiaGuObserver<T>> observersList;
-        LinkedListNode<IXiaGuObserver<T>> currentNode;
+        LinkedList<IObserver<T>> observersList;
+        LinkedListNode<IObserver<T>> currentNode;
 
-        protected override ICollection<IXiaGuObserver<T>> observers
+        protected override ICollection<IObserver<T>> observers
         {
             get { return observersList; }
         }
@@ -280,7 +281,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 订阅到;
         /// </summary>
-        public override IDisposable Subscribe(IXiaGuObserver<T> observer)
+        public override IDisposable Subscribe(IObserver<T> observer)
         {
             var node = observersList.AddLast(observer);
             return new Unsubscriber(this, node);
@@ -289,7 +290,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 订阅到,若已经存在此观察者,则返回异常;
         /// </summary>
-        public override IDisposable SubscribeOnly(IXiaGuObserver<T> observer)
+        public override IDisposable SubscribeOnly(IObserver<T> observer)
         {
             if (observersList.Contains(observer))
                 throw new ArgumentException();
@@ -301,7 +302,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 迭代获取到观察者;
         /// </summary>
-        protected override IEnumerable<IXiaGuObserver<T>> EnumerateObserver()
+        protected override IEnumerable<IObserver<T>> EnumerateObserver()
         {
             currentNode = observersList.First;
 
@@ -315,7 +316,7 @@ namespace KouXiaGu.Rx
 
         class Unsubscriber : IDisposable
         {
-            public Unsubscriber(LinkedListTracker<T> tracker, LinkedListNode<IXiaGuObserver<T>> node)
+            public Unsubscriber(LinkedListTracker<T> tracker, LinkedListNode<IObserver<T>> node)
             {
                 isUnsubscribed = false;
                 this.tracker = tracker;
@@ -324,14 +325,14 @@ namespace KouXiaGu.Rx
 
             bool isUnsubscribed;
             LinkedListTracker<T> tracker;
-            LinkedListNode<IXiaGuObserver<T>> node;
+            LinkedListNode<IObserver<T>> node;
 
-            LinkedList<IXiaGuObserver<T>> observers
+            LinkedList<IObserver<T>> observers
             {
                 get { return tracker.observersList; }
             }
 
-            LinkedListNode<IXiaGuObserver<T>> currentNode
+            LinkedListNode<IObserver<T>> currentNode
             {
                 get { return tracker.currentNode; }
                 set { tracker.currentNode = value; }

@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.World.Map;
 using KouXiaGu.World.Navigation;
-using KouXiaGu.Rx;
+
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.World
 {
 
     [Obsolete]
-    public class WorldManager : IXiaGuObserver<IWorld>
+    public class WorldManager : IObserver<IWorld>
     {
 
         /// <summary>
@@ -55,17 +56,17 @@ namespace KouXiaGu.World
             Time.StartTimeUpdating();
         }
 
-        void IXiaGuObserver<IWorld>.OnNext(IWorld item)
+        void IObserver<IWorld>.OnNext(IWorld item)
         {
             return;
         }
 
-        void IXiaGuObserver<IWorld>.OnError(Exception error)
+        void IObserver<IWorld>.OnError(Exception error)
         {
             return;
         }
 
-        void IXiaGuObserver<IWorld>.OnCompleted()
+        void IObserver<IWorld>.OnCompleted()
         {
             StartWorld();
         }

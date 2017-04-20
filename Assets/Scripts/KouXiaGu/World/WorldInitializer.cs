@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using KouXiaGu.Rx;
+
 using KouXiaGu.World.Map;
 using UniRx;
 
@@ -25,7 +25,7 @@ namespace KouXiaGu.World
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : OperationMonoBehaviour, IWorld, IXiaGuObservable<IWorld>
+    public class WorldInitializer : OperationMonoBehaviour, IWorld, IObservable<IWorld>
     {
 
         public static WorldInitializer Instance { get; private set; }
@@ -76,7 +76,7 @@ namespace KouXiaGu.World
             Instance = null;
         }
 
-        public IDisposable Subscribe(IXiaGuObserver<IWorld> observer)
+        public IDisposable Subscribe(IObserver<IWorld> observer)
         {
             return worldTracker.Subscribe(observer);
         }

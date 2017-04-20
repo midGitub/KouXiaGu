@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ProtoBuf;
 
-namespace KouXiaGu.Rx
+namespace KouXiaGu.World.Map
 {
 
     public interface IObservableDictionary<TKey, TValue>

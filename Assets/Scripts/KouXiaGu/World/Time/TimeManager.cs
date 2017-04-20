@@ -1,5 +1,6 @@
 ﻿using System;
-using KouXiaGu.Rx;
+
+using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu.World
@@ -29,16 +30,16 @@ namespace KouXiaGu.World
     }
 
 
-    public class TimeManager : IXiaGuObservable<DateTime>, IXiaGuObserver<IWorld>
+    public class TimeManager : IObservable<DateTime>, IObserver<IWorld>
     {
 
-        public static IAsyncOperation<TimeManager> Create(WorldTimeInfo info, IXiaGuObservable<IWorld> world)
+        public static IAsyncOperation<TimeManager> Create(WorldTimeInfo info, IObservable<IWorld> world)
         {
             return new Operation<TimeManager>(() => new TimeManager(info, world));
         }
 
 
-        public TimeManager(WorldTimeInfo info, IXiaGuObservable<IWorld> world)
+        public TimeManager(WorldTimeInfo info, IObservable<IWorld> world)
         {
             InitCalendar();
             Info = info;
@@ -71,9 +72,9 @@ namespace KouXiaGu.World
             set { Info.HourInterval = value; }
         }
 
-        public IDisposable Subscribe(IXiaGuObserver<DateTime> observer)
+        public IDisposable Subscribe(IObserver<DateTime> observer)
         {
-            return ((IXiaGuObservable<DateTime>)this.timeTracker).Subscribe(observer);
+            return ((IObservable<DateTime>)this.timeTracker).Subscribe(observer);
         }
 
         public void StartTimeUpdating()

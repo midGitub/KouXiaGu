@@ -4,8 +4,21 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KouXiaGu.Rx
+using UniRx;
+
+namespace KouXiaGu
 {
+
+    public static class UnityThread
+    {
+        static UnityThreadDispatcher dispatcher
+        {
+            get { return UnityThreadDispatcher.Instance; }
+        }
+
+        //public static IObservable<object> 
+
+    }
 
     /// <summary>
     /// 在Unity线程进行的操作;
@@ -41,8 +54,8 @@ namespace KouXiaGu.Rx
         }
 
 
-        LinkedListTracker<UnityThreadDispatcher> onUpdateTracker;
-        LinkedListTracker<UnityThreadDispatcher> onFixedUpdateTracker;
+        LinkedListTracker<object> onUpdateTracker;
+        LinkedListTracker<object> onFixedUpdateTracker;
 
         public int UpdateObserverCount
         {
@@ -56,8 +69,8 @@ namespace KouXiaGu.Rx
 
         void Awake()
         {
-            onUpdateTracker = new LinkedListTracker<UnityThreadDispatcher>();
-            onFixedUpdateTracker = new LinkedListTracker<UnityThreadDispatcher>();
+            onUpdateTracker = new LinkedListTracker<object>();
+            onFixedUpdateTracker = new LinkedListTracker<object>();
         }
 
         void Update()
@@ -79,7 +92,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 订阅到 Update 更新,只会更新观察者的 OnNext() 和 OnCompleted();
         /// </summary>
-        public IDisposable SubscribeUpdate(IXiaGuObserver<UnityThreadDispatcher> item)
+        public IDisposable SubscribeUpdate(IObserver<object> item)
         {
             return onUpdateTracker.Subscribe(item);
         }
@@ -87,7 +100,7 @@ namespace KouXiaGu.Rx
         /// <summary>
         /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext() 和 OnCompleted();
         /// </summary>
-        public IDisposable SubscribeFixedUpdate(IXiaGuObserver<UnityThreadDispatcher> item)
+        public IDisposable SubscribeFixedUpdate(IObserver<object> item)
         {
             return onFixedUpdateTracker.Subscribe(item);
         }

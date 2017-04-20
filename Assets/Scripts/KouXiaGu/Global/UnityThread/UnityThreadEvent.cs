@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UniRx;
 using UnityEngine;
 
-namespace KouXiaGu.Rx
+namespace KouXiaGu
 {
 
-    public abstract class UnityThreadEvent : IXiaGuObserver<UnityThreadDispatcher>, IDisposable
+    public abstract class UnityThreadEvent : IObserver<object>, IDisposable
     {
         static UnityThreadDispatcher instance
         {
@@ -28,7 +29,7 @@ namespace KouXiaGu.Rx
 
         public abstract void OnNext();
 
-        public void OnNext(UnityThreadDispatcher none)
+        public void OnNext(object none)
         {
             OnNext();
         }

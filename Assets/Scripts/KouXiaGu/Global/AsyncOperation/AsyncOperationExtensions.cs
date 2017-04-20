@@ -2,11 +2,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using KouXiaGu.Rx;
+using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu
 {
+
+
+    class AsyncOperationObserver : IObserver<UnityThreadDispatcher>, IDisposable
+    {
+        public AsyncOperationObserver()
+        {
+
+        }
+
+        void IObserver<UnityThreadDispatcher>.OnCompleted()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IObserver<UnityThreadDispatcher>.OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IObserver<UnityThreadDispatcher>.OnNext(UnityThreadDispatcher item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 
     /// <summary>
     /// 异步操作拓展,部分需要在 unity 线程内调用;
