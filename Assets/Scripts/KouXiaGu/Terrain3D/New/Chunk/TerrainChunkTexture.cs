@@ -107,6 +107,17 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 销毁所有贴图;
+        /// </summary>
+        public virtual void Destroy()
+        {
+            GameObject.Destroy(DiffuseMap);
+            GameObject.Destroy(HeightMap);
+            GameObject.Destroy(NormalMap);
+            Clear();
+        }
+
+        /// <summary>
         /// 清空贴图引用;
         /// </summary>
         public virtual void Clear()

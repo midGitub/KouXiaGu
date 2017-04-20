@@ -96,7 +96,7 @@ namespace KouXiaGu.Terrain3D
 
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer);
-            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer);
+            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
         }
 
         void Init(TerrainChunkTexture textures)
@@ -107,7 +107,7 @@ namespace KouXiaGu.Terrain3D
 
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer, textures);
-            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer);
+            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
         }
 
         void OnValidate()

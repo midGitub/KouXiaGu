@@ -78,12 +78,12 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        public TerrainTrigger(MeshCollider collider, TerrainRenderer renderer, IObservable<TerrainRenderer> observable)
+        public TerrainTrigger(MeshCollider collider, TerrainRenderer renderer, IObservable<TerrainRenderer> onHeightMapUpdate)
         {
             this.collider = collider;
             this.renderer = renderer;
             BuildCollisionMesh();
-            observable.Subscribe(this);
+            onHeightMapUpdate.Subscribe(this);
         }
 
         MeshCollider collider;

@@ -12,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形渲染;
     /// </summary>
     [Serializable]
-    public class TerrainRenderer : TerrainChunkTexture, IObservable<TerrainRenderer>
+    public class TerrainRenderer : TerrainChunkTexture
     {
 
         static TerrainParameter Parameter
@@ -42,39 +42,21 @@ namespace KouXiaGu.Terrain3D
             SetTextures(textures);
         }
 
-
         Material material;
-        LinkedListTracker<TerrainRenderer> tracker;
+        LinkedListTracker<TerrainRenderer> onHeightMapUpdate;
+
+        /// <summary>
+        /// 当高度贴图发生变化时调用;
+        /// </summary>
+        public IObservable<TerrainRenderer> OnHeightMapUpdate
+        {
+            get { return onHeightMapUpdate; }
+        }
 
         void Init(MeshRenderer renderer)
         {
             renderer.sharedMaterial = material = new Material(TerrainShader);
-            tracker = new LinkedListTracker<TerrainRenderer>();
-        }
-
-        public override void SetTextures()
-        {
-            base.SetTextures();
-            Track();
-        }
-
-        public override void SetTextures(TerrainChunkTexture textures)
-        {
-            base.SetTextures(textures);
-            Track();
-        }
-
-        /// <summary>
-        /// 当数据发生变化时调用;
-        /// </summary>
-        public IDisposable Subscribe(IObserver<TerrainRenderer> observer)
-        {
-            return tracker.Subscribe(observer);
-        }
-
-        void Track()
-        {
-            tracker.Track(this);
+            onHeightMapUpdate = new LinkedListTracker<TerrainRenderer>();
         }
 
         public void OnValidate()
@@ -84,40 +66,30 @@ namespace KouXiaGu.Terrain3D
 
         public override void SetDiffuseMap(Texture2D diffuseMap)
         {
-            material.SetTexture("_MainTex", diffuseMap);
-            base.SetDiffuseMap(diffuseMap);
-            Track();
+            if (DiffuseMap != diffuseMap)
+            {
+                material.SetTexture("_MainTex", diffuseMap);
+                base.SetDiffuseMap(diffuseMap);
+            }
         }
 
         public override void SetHeightMap(Texture2D heightMap)
         {
-            material.SetTexture("_HeightTex", heightMap);
-            base.SetHeightMap(heightMap);
-            Track();
+            if (HeightMap != heightMap)
+            {
+                material.SetTexture("_HeightTex", heightMap);
+                base.SetHeightMap(heightMap);
+                onHeightMapUpdate.Track(this);
+            }
         }
 
         public override void SetNormalMap(Texture2D normalMap)
         {
-            material.SetTexture("_NormalMap", normalMap);
-            base.SetNormalMap(normalMap);
-            Track();
-        }
-
-        /// <summary>
-        /// 销毁所有贴图;
-        /// </summary>
-        public void Destroy()
-        {
-            GameObject.Destroy(DiffuseMap);
-            GameObject.Destroy(HeightMap);
-            GameObject.Destroy(NormalMap);
-            Track();
-        }
-
-        public override void Clear()
-        {
-            base.Clear();
-            Track();
+            if (NormalMap != normalMap)
+            {
+                material.SetTexture("_NormalMap", normalMap);
+                base.SetNormalMap(normalMap);
+            }
         }
 
         /// <summary>
