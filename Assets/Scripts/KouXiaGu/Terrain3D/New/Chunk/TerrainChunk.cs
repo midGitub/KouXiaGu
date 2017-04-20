@@ -39,16 +39,7 @@ namespace KouXiaGu.Terrain3D
 #endif
         static void _CraeteTerrainChunk()
         {
-            new GameObject("TerrainChunk", ChunkScripts);
-        }
-
-        /// <summary>
-        /// 放置地形块的父节点;
-        /// </summary>
-        static Transform chunkParent;
-        static Transform GetChunkParent()
-        {
-            return chunkParent ?? (chunkParent = new GameObject("TerrainChunks").transform);
+            Create();
         }
 
         /// <summary>
@@ -57,11 +48,8 @@ namespace KouXiaGu.Terrain3D
         static TerrainChunk CraeteTerrainChunk()
         {
             GameObject gameObject = new GameObject("TerrainChunk", ChunkScripts);
-            gameObject.transform.SetParent(GetChunkParent(), false);
             return gameObject.GetComponent<TerrainChunk>();
         }
-
-        #endregion
 
         static TerrainChunk Create()
         {
@@ -76,6 +64,8 @@ namespace KouXiaGu.Terrain3D
             item.Init(textures);
             return item;
         }
+
+        #endregion
 
 
         TerrainChunk()
@@ -97,6 +87,7 @@ namespace KouXiaGu.Terrain3D
             get { return terrainRenderer; }
         }
 
+        [ContextMenu("重新初始化;")]
         void Init()
         {
             var meshFilter = GetComponent<MeshFilter>();
@@ -105,7 +96,7 @@ namespace KouXiaGu.Terrain3D
 
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer);
-            trigger = new TerrainTrigger(meshCollider, terrainRenderer);
+            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer);
         }
 
         void Init(TerrainChunkTexture textures)
@@ -116,7 +107,7 @@ namespace KouXiaGu.Terrain3D
 
             terrainMesh = new TerrainMesh(meshFilter);
             terrainRenderer = new TerrainRenderer(meshRenderer, textures);
-            trigger = new TerrainTrigger(meshCollider, terrainRenderer);
+            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer);
         }
 
         void OnValidate()
@@ -124,11 +115,11 @@ namespace KouXiaGu.Terrain3D
             terrainRenderer.OnValidate();
         }
 
-        void Reset()
-        {
-            Mesh.Reset();
-            Texture.Clear();
-        }
+        //void Reset()
+        //{
+        //    Mesh.Reset();
+        //    Texture.Clear();
+        //}
 
     }
 

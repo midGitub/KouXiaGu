@@ -81,8 +81,8 @@ namespace KouXiaGu.Terrain3D
 
         public TerrainTrigger(MeshCollider collider, TerrainRenderer renderer, IObservable<TerrainRenderer> observable)
         {
-            collider = this.collider;
-            renderer = this.renderer;
+            this.collider = collider;
+            this.renderer = renderer;
             BuildCollisionMesh();
             observable.Subscribe(this);
         }
@@ -97,7 +97,7 @@ namespace KouXiaGu.Terrain3D
         {
             Mesh mesh = new Mesh();
             mesh.name = MESH_NAME;
-            collider.sharedMesh = BuildCollisionMesh(mesh, renderer);
+            collider.sharedMesh = BuildCollisionMesh(mesh);
         }
 
         /// <summary>
@@ -106,15 +106,15 @@ namespace KouXiaGu.Terrain3D
         public void RebuildCollisionMesh()
         {
             Mesh mesh = collider.sharedMesh;
-            collider.sharedMesh = BuildCollisionMesh(mesh, renderer);
+            collider.sharedMesh = BuildCollisionMesh(mesh);
         }
 
         /// <summary>
         /// 构建碰撞网格;
         /// </summary>
-        Mesh BuildCollisionMesh(Mesh mesh, TerrainRenderer renderer)
+        Mesh BuildCollisionMesh(Mesh mesh)
         {
-            mesh.vertices = GetVertices(renderer);
+            mesh.vertices = GetVertices();
             mesh.triangles = triangles;
             return mesh;
         }
@@ -122,7 +122,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到高度对应的顶点坐标;
         /// </summary>
-        Vector3[] GetVertices(TerrainRenderer renderer)
+        Vector3[] GetVertices()
         {
             List<Vector3> vertices = new List<Vector3>();
             foreach (var pair in TerrainTrigger.vertices)
