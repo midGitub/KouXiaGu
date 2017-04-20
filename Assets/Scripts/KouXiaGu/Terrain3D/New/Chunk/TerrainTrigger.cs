@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.Terrain3D
 {
 
 
-    public class TerrainTrigger
+    public class TerrainTrigger : IObserver<TerrainRenderer>
     {
 
         #region 网格定义;
@@ -78,11 +79,12 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        public TerrainTrigger(MeshCollider collider, TerrainRenderer renderer)
+        public TerrainTrigger(MeshCollider collider, TerrainRenderer renderer, IObservable<TerrainRenderer> observable)
         {
             collider = this.collider;
             renderer = this.renderer;
             BuildCollisionMesh();
+            observable.Subscribe(this);
         }
 
         MeshCollider collider;
@@ -131,6 +133,14 @@ namespace KouXiaGu.Terrain3D
             }
             return vertices.ToArray();
         }
+
+        void IObserver<TerrainRenderer>.OnNext(TerrainRenderer value)
+        {
+            RebuildCollisionMesh();
+        }
+
+        void IObserver<TerrainRenderer>.OnError(Exception error) { }
+        void IObserver<TerrainRenderer>.OnCompleted() { }
 
     }
 
