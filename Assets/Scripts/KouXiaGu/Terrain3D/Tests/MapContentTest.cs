@@ -19,48 +19,48 @@ namespace KouXiaGu.Terrain3D.Tests
         [SerializeField]
         Text textObject;
 
-        IDictionary<CubicHexCoord, TerrainNode> Data
-        {
-            get { return MapDataManager.Data.Data; }
-        }
+        //IDictionary<CubicHexCoord, TerrainNode> Data
+        //{
+        //    get { return MapDataManager.Data.Data; }
+        //}
 
-        void Update()
-        {
-            if (MapDataManager.Data != null)
-            {
-                textObject.text = TextUpdate();
+        //void Update()
+        //{
+        //    if (MapDataManager.Data != null)
+        //    {
+        //        textObject.text = TextUpdate();
 
-                if (Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                    MapDataManager.Data.Road.Create(coord);
-                }
-                if (Input.GetKeyDown(KeyCode.Mouse1))
-                {
-                    CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
-                    MapDataManager.Data.Road.Destroy(coord);
-                }
-            }
-        }
+        //        if (Input.GetKeyDown(KeyCode.Mouse0))
+        //        {
+        //            CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
+        //            MapDataManager.Data.Road.Create(coord);
+        //        }
+        //        if (Input.GetKeyDown(KeyCode.Mouse1))
+        //        {
+        //            CubicHexCoord coord = LandformTrigger.MouseRayPointOrDefault().GetTerrainCubic();
+        //            MapDataManager.Data.Road.Destroy(coord);
+        //        }
+        //    }
+        //}
 
 
-        string TextUpdate()
-        {
-            Vector3 mousePoint;
-            if (LandformTrigger.TryGetMouseRayPoint(out mousePoint))
-            {
-                CubicHexCoord coord = mousePoint.GetTerrainCubic();
-                TerrainNode node;
+        //string TextUpdate()
+        //{
+        //    Vector3 mousePoint;
+        //    if (LandformTrigger.TryGetMouseRayPoint(out mousePoint))
+        //    {
+        //        CubicHexCoord coord = mousePoint.GetTerrainCubic();
+        //        TerrainNode node;
 
-                if (Data.TryGetValue(coord, out node))
-                {
-                    return
-                        "坐标:" + coord.ToString() +
-                        "\n" + node.ToString();
-                }
-            }
-            return "Empty Content";
-        }
+        //        if (Data.TryGetValue(coord, out node))
+        //        {
+        //            return
+        //                "坐标:" + coord.ToString() +
+        //                "\n" + node.ToString();
+        //        }
+        //    }
+        //    return "Empty Content";
+        //}
 
     }
 

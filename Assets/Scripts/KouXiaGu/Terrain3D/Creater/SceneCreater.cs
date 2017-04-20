@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Grids;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -12,9 +14,9 @@ namespace KouXiaGu.Terrain3D
     public class SceneCreater
     {
 
-        public SceneCreater(MapData data)
+        public SceneCreater(IDictionary<CubicHexCoord, MapNode> data)
         {
-            Building = new BuildingCreater(data.Building);
+            //Building = new BuildingCreater(data.Building);
             Landform = new LandformCreater(data);
         }
 

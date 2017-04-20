@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -19,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形使用的地图;
         /// </summary>
-        MapData Data { get; }
+        IDictionary<CubicHexCoord, MapNode> Data { get; }
 
     }
 

@@ -43,7 +43,7 @@ namespace KouXiaGu.XiaGuTools
         [MenuItem(XiaGuTool.MenuName + "/DefineSymblos")]
         static void Init()
         {
-            GlobalDefineSymblosEditorWindow window = (GlobalDefineSymblosEditorWindow)GetWindow(typeof(GlobalDefineSymblosEditorWindow));
+            var window = (GlobalDefineSymblosEditorWindow)GetWindow(typeof(GlobalDefineSymblosEditorWindow));
             window.Show();
         }
 

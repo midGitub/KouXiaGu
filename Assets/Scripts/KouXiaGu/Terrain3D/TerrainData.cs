@@ -1,4 +1,6 @@
-﻿using KouXiaGu.Grids;
+﻿using System.Collections.Generic;
+using KouXiaGu.Grids;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -55,7 +57,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public static void Initialize(MapData data)
+        public static void Initialize(IDictionary<CubicHexCoord, MapNode> data)
         {
             if (!IsInitialized)
             {

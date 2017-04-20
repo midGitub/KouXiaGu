@@ -1,7 +1,9 @@
 ﻿using System;
 using KouXiaGu.Collections;
+using System.Collections.Generic;
 using KouXiaGu.Grids;
 using UnityEngine;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -12,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     public class LandformCreater
     {
 
-        public LandformCreater(MapData data)
+        public LandformCreater(IDictionary<CubicHexCoord, MapNode> data)
         {
             this.Data = data;
             restingChunks = new Pool();
@@ -24,7 +26,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形资源;
         /// </summary>
-        public MapData Data { get; private set; }
+        public IDictionary<CubicHexCoord, MapNode> Data { get; private set; }
 
         /// <summary>
         /// 地形块对象池;
@@ -147,7 +149,7 @@ namespace KouXiaGu.Terrain3D
             /// 创建这个地形块,若已经在队列则返回false;
             /// </summary>
             /// <param name="callback">当完成所有进度时回调;</param>
-            public static bool Create(RectCoord chunkCoord, MapData data, Action<Request> callback)
+            public static bool Create(RectCoord chunkCoord, IDictionary<CubicHexCoord, MapNode> data, Action<Request> callback)
             {
                 if (callback == null)
                     throw new ArgumentNullException();
@@ -187,7 +189,7 @@ namespace KouXiaGu.Terrain3D
 
 
 
-            Request(RectCoord chunkCoord, MapData data, Action<Request> callback)
+            Request(RectCoord chunkCoord, IDictionary<CubicHexCoord, MapNode> data, Action<Request> callback)
             {
                 this.ChunkCoord = chunkCoord;
                 this.Data = data;
@@ -198,7 +200,7 @@ namespace KouXiaGu.Terrain3D
             Action<Request> callback;
             public RectCoord ChunkCoord { get; private set; }
             public TerrainTexPack Textures { get; private set; }
-            public MapData Data { get; private set; }
+            public IDictionary<CubicHexCoord, MapNode> Data { get; private set; }
 
 
             void RequesteAdd()
