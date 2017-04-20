@@ -83,13 +83,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 清空所有;
         /// </summary>
-        public void Clear()
+        public void DestroyAll()
         {
-            chunkPool.Clear();
-            Clear(activatedChunks);
+            chunkPool.DestroyAll();
+            Destroy(activatedChunks);
         }
 
-        void Clear(Dictionary<RectCoord, TerrainChunk> activatedChunks)
+        void Destroy(Dictionary<RectCoord, TerrainChunk> activatedChunks)
         {
             foreach (var chunk in activatedChunks.Values)
             {

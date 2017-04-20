@@ -113,7 +113,7 @@ namespace KouXiaGu
         /// <summary>
         /// 销毁所有池内对象;
         /// </summary>
-        public void Clear()
+        public void DestroyAll()
         {
             foreach (var item in objectQueue)
             {

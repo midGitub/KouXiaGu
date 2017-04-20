@@ -35,6 +35,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         public IDictionary<CubicHexCoord, MapNode> Map { get; private set; }
+        public TerrainChunkManager TerrainChunk { get; private set; }
 
         public static float GetHeight(Vector3 pos)
         {
