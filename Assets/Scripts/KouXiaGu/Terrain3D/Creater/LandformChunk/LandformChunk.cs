@@ -12,6 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形块实例;
     /// </summary>
+    [Obsolete]
     public sealed class LandformChunk
     {
 

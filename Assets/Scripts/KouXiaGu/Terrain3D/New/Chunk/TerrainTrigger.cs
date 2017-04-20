@@ -14,11 +14,11 @@ namespace KouXiaGu.Terrain3D
 
         #region 网格定义;
 
-        const string MESH_NAME = "Terrain Collision Mesh";
+        const string MeshName = "Terrain Collision Mesh";
 
         //网格细分程度;
-        const int SUB_X = 5;
-        const int SUB_Z = 5;
+        const int sub_x = 5;
+        const int sub_z = 5;
 
         static readonly List<KeyValuePair<Vector3, Vector2>> vertices = GetVerticesAndUV();
         static readonly int[] triangles = GetTriangles();
@@ -30,19 +30,18 @@ namespace KouXiaGu.Terrain3D
         {
             List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
-            float lengthX = LandformChunk.CHUNK_WIDTH / SUB_X;
-            float lengthZ = LandformChunk.CHUNK_HEIGHT / SUB_Z;
+            float lengthX = TerrainChunkInfo.ChunkWidth / sub_x;
+            float lengthZ = TerrainChunkInfo.ChunkHeight / sub_z;
 
-            for (int z = 0; z <= SUB_Z; z++)
+            for (int z = 0; z <= sub_z; z++)
             {
-                for (int x = 0; x <= SUB_X; x++)
+                for (int x = 0; x <= sub_x; x++)
                 {
                     Vector3 vertice = new Vector3(x * lengthX, 0, z * lengthZ);
-                    vertice.x -= LandformChunk.CHUNK_WIDTH_HALF;
-                    vertice.z -= LandformChunk.CHUNK_HEIGHT_HALF;
+                    vertice.x -= TerrainChunkInfo.ChunkHalfWidth;
+                    vertice.z -= TerrainChunkInfo.ChunkHalfHeight;
 
-                    Vector2 uv = new Vector2(x / (float)SUB_X, z / (float)SUB_Z);
-
+                    Vector2 uv = new Vector2(x / (float)sub_x, z / (float)sub_z);
                     KeyValuePair<Vector3, Vector2> pair = new KeyValuePair<Vector3, Vector2>(vertice, uv);
                     list.Add(pair);
                 }
@@ -54,12 +53,12 @@ namespace KouXiaGu.Terrain3D
         static int[] GetTriangles()
         {
             List<int> triangles = new List<int>();
-            int SUB_X1 = SUB_X + 1;
-            int SUB_X2 = SUB_X + 2;
+            int SUB_X1 = sub_x + 1;
+            int SUB_X2 = sub_x + 2;
 
-            for (int y = 0; y < SUB_Z; y++)
+            for (int y = 0; y < sub_z; y++)
             {
-                for (int x = 0; x < SUB_X; x++)
+                for (int x = 0; x < sub_x; x++)
                 {
                     int pos = y * SUB_X1 + x;
 
@@ -96,7 +95,7 @@ namespace KouXiaGu.Terrain3D
         void BuildCollisionMesh()
         {
             Mesh mesh = new Mesh();
-            mesh.name = MESH_NAME;
+            mesh.name = MeshName;
             collider.sharedMesh = BuildCollisionMesh(mesh);
         }
 
