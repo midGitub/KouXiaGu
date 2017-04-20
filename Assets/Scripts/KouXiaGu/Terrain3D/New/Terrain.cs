@@ -5,6 +5,7 @@ using System.Text;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
 using KouXiaGu.Grids;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -35,7 +36,10 @@ namespace KouXiaGu.Terrain3D
 
         public IDictionary<CubicHexCoord, MapNode> Map { get; private set; }
 
-
+        public static float GetHeight(Vector3 pos)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 

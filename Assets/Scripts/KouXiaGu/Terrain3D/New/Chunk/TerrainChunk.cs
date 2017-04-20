@@ -27,9 +27,10 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Type[] ChunkScripts = new Type[]
             {
-                typeof(MeshFilter)
-                ,typeof(MeshRenderer)
-                ,typeof(TerrainChunk)
+                typeof(MeshFilter),
+                typeof(MeshRenderer),
+                typeof(MeshCollider),
+                typeof(TerrainChunk)
             };
 
 
@@ -53,14 +54,28 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 实例一个地形块,并指定名称;
         /// </summary>
-        static GameObject CraeteTerrainChunk()
+        static TerrainChunk CraeteTerrainChunk()
         {
             GameObject gameObject = new GameObject("TerrainChunk", ChunkScripts);
             gameObject.transform.SetParent(GetChunkParent(), false);
-            return gameObject;
+            return gameObject.GetComponent<TerrainChunk>();
         }
 
         #endregion
+
+        static TerrainChunk Create()
+        {
+            var item = CraeteTerrainChunk();
+            item.Init();
+            return item;
+        }
+
+        static TerrainChunk Create(TerrainChunkTexture textures)
+        {
+            var item = CraeteTerrainChunk();
+            item.Init(textures);
+            return item;
+        }
 
 
         TerrainChunk()
@@ -87,13 +102,26 @@ namespace KouXiaGu.Terrain3D
             private set { terrainRenderer = value; }
         }
 
-        void Awake()
+        void InitMesh()
         {
             var meshFilter = GetComponent<MeshFilter>();
             Mesh = new TerrainMesh(meshFilter);
+        }
+
+        void Init()
+        {
+            InitMesh();
 
             var meshRenderer = GetComponent<MeshRenderer>();
             Renderer = new TerrainRenderer(meshRenderer);
+        }
+
+        void Init(TerrainChunkTexture textures)
+        {
+            InitMesh();
+
+            var meshRenderer = GetComponent<MeshRenderer>();
+            Renderer = new TerrainRenderer(meshRenderer, textures);
         }
 
         void OnValidate()
