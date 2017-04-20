@@ -20,12 +20,22 @@ namespace KouXiaGu.Terrain3D
 
         public TerrainChunkManager()
         {
-            ChunkPool = new TerrainChunkPool();
+            chunkPool = new TerrainChunkPool();
             activatedChunks = new Dictionary<RectCoord, TerrainChunk>();
         }
 
-        public TerrainChunkPool ChunkPool { get; private set; }
+        TerrainChunkPool chunkPool;
         Dictionary<RectCoord, TerrainChunk> activatedChunks;
+
+        public TerrainChunkPool ChunkPool
+        {
+            get { return chunkPool; }
+        }
+
+        public int ActivatedChunkCount
+        {
+            get { return activatedChunks.Count; }
+        }
 
         /// <summary>
         /// 创建到,若已经存在则返回异常;
@@ -36,7 +46,7 @@ namespace KouXiaGu.Terrain3D
                 throw new ArgumentException();
 
             Vector3 position = chunkGrid.GetCenter(rectCoord);
-            TerrainChunk chunk = ChunkPool.Get();
+            TerrainChunk chunk = chunkPool.Get();
             Set(chunk, position, textures);
             activatedChunks.Add(rectCoord, chunk);
             return chunk;
@@ -75,7 +85,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Clear()
         {
-            ChunkPool.Clear();
+            chunkPool.Clear();
             Clear(activatedChunks);
         }
 
