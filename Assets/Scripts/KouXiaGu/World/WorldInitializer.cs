@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using KouXiaGu.World.Map;
 using UniRx;
+using KouXiaGu.Terrain3D;
 
 namespace KouXiaGu.World
 {
@@ -57,17 +58,21 @@ namespace KouXiaGu.World
             get { return useEditorialInfo ? editorialInfo : WorldInfo; }
         }
 
+        ListTracker<IWorld> worldTracker;
+
+
         public TimeManager Time { get; private set; }
         public MapResource Map { get; private set; }
 
-        ListTracker<IWorld> worldTracker;
+        public Landform Landform { get; private set; }
+
 
         protected override void Awake()
         {
             Instance = this;
             base.Awake();
             worldTracker = new ListTracker<IWorld>();
-            GameInitializer.Instance.SubscribeCompleted(_ => InitializeAsync());
+            GameInitializer.Instance.SubscribeCompleted(_ => BuildingData());
         }
 
         void OnDestroy()
@@ -80,33 +85,12 @@ namespace KouXiaGu.World
             return worldTracker.Subscribe(observer);
         }
 
-        /// <summary>
-        /// 初始化游戏世界场景,手动调用;
-        /// </summary>
-        internal void InitializeAsync()
-        {
-            Debug.Log("开始场景初始化;");
-
-            IAsyncOperation[] missions = new IAsyncOperation[]
-              {
-                  MapResource.ReadOrCreateAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
-                  TimeManager.Create(Info.Time, this).Subscribe(OnTimeCompleted, OnFaulted),
-              };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
-        }
-
-        void OnCompleted(IList<IAsyncOperation> operations)
-        {
-            OnCompleted();
-            worldTracker.Track(this);
-            Debug.Log("场景初始化完毕;");
-        }
 
         void OnFaulted(IList<IAsyncOperation> operations)
         {
             AggregateException ex = operations.ToAggregateException();
             OnFaulted(ex);
-            Debug.LogWarning("场景初始化失败;");
+            Debug.LogWarning("世界初始化失败;");
         }
 
         void OnFaulted(IAsyncOperation operation)
@@ -115,10 +99,24 @@ namespace KouXiaGu.World
         }
 
 
+        /// <summary>
+        /// 初始化游戏世界数据;
+        /// </summary>
+        void BuildingData()
+        {
+            Debug.Log("------开始初始化游戏世界数据------");
+
+            IAsyncOperation[] missions = new IAsyncOperation[]
+              {
+                  MapResource.ReadOrCreateAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
+                  TimeManager.Create(Info.Time, this).Subscribe(OnTimeCompleted, OnFaulted),
+              };
+            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnBuildingDataCompleted, OnFaulted);
+        }
+
         void OnMapResourceCompleted(IAsyncOperation<MapResource> operation)
         {
             const string prefix = "[地图资源]";
-
             Map = operation.Result;
             Debug.Log(prefix + "初始化完毕;总共有 " + Map.Data.Count + " 个节点;");
         }
@@ -126,9 +124,46 @@ namespace KouXiaGu.World
         void OnTimeCompleted(IAsyncOperation<TimeManager> operation)
         {
             const string prefix = "[时间]";
-
             Time = operation.Result;
             Debug.Log(prefix + "初始化完毕;");
+        }
+
+        void OnBuildingDataCompleted(IList<IAsyncOperation> operations)
+        {
+            Debug.Log("------游戏世界数据初始化完毕------");
+            BuildingScene(this);
+        }
+
+
+
+        /// <summary>
+        /// 初始化游戏场景;
+        /// </summary>
+        void BuildingScene(IWorld world)
+        {
+            Debug.Log("------开始初始化游戏场景------");
+
+            IAsyncOperation[] missions = new IAsyncOperation[]
+              {
+                  Landform.Initialize(world).Subscribe(OnLandformCompleted, OnFaulted),
+              };
+            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnBuildingSceneCompleted, OnFaulted);
+        }
+
+        void OnLandformCompleted(IAsyncOperation<Landform> operation)
+        {
+            const string prefix = "[地形]";
+            Landform = operation.Result;
+            Debug.Log(prefix + "初始化完毕;");
+        }
+
+        void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)
+        {
+            OnCompleted();
+            Debug.Log("------游戏场景初始化完毕------");
+
+            worldTracker.Track(this);
+            Debug.Log("------开始游戏状态------");
         }
 
 

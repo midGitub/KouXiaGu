@@ -13,18 +13,18 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形控制;
     /// </summary>
-    public class Terrain
+    public class Landform
     {
-        public static IAsyncOperation<Terrain> Initialize(IWorld world)
+        public static IAsyncOperation<Landform> Initialize(IWorld world)
         {
             return new AsyncInitializer(world);
         }
 
-        class AsyncInitializer : AsyncOperation<Terrain>
+        class AsyncInitializer : AsyncOperation<Landform>
         {
             public AsyncInitializer(IWorld world)
             {
-                var instance = new Terrain();
+                var instance = new Landform();
                 instance.World = world;
                 instance.TerrainChunk = new TerrainChunkManager();
                 OnCompleted(instance);
@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        Terrain()
+        Landform()
         {
         }
 
