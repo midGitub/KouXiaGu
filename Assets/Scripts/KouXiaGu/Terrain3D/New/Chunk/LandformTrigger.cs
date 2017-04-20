@@ -138,19 +138,11 @@ namespace KouXiaGu.Terrain3D
 
         #endregion
 
-        /// <summary>
-        /// 设置到射线碰撞层;
-        /// </summary>
-        [SerializeField]
-        bool resetLayer = true;
-
 
         void Awake()
         {
-            if(resetLayer)
-                gameObject.layer = RayLayer;
+            gameObject.layer = RayLayer;
         }
-
 
         [ContextMenu("重置碰撞网格")]
         public void ResetCollisionMesh()

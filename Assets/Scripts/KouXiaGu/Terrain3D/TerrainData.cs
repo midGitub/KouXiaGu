@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using KouXiaGu.Grids;
 using KouXiaGu.World.Map;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形数据管理;
     /// </summary>
     [DisallowMultipleComponent]
+    [Obsolete]
     public sealed class TerrainData : SceneSington<TerrainData>
     {
         [SerializeField]
