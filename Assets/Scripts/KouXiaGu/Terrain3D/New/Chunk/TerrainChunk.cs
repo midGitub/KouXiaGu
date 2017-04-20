@@ -89,10 +89,9 @@ namespace KouXiaGu.Terrain3D
         public TerrainMesh Mesh
         {
             get { return terrainMesh; }
-            private set { terrainMesh = value; }
         }
 
-        public TerrainChunkTexture texture
+        public TerrainRenderer Texture
         {
             get { return terrainRenderer; }
         }
@@ -123,7 +122,7 @@ namespace KouXiaGu.Terrain3D
         void Reset()
         {
             Mesh.Reset();
-            texture.Clear();
+            Texture.Clear();
         }
 
     }
