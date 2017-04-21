@@ -47,19 +47,17 @@ namespace KouXiaGu.Rx
             const float width = 120f;
             const float interval = 8f;
 
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField("Update:" + target.UpdateObserverCount, GUILayout.Width(width));
-            isShowUpdateInfo = EditorGUILayout.Toggle("showInfo?", isShowUpdateInfo);
-            EditorGUILayout.EndHorizontal();
             Display(target.UpdateObservers, "ShowMore", ref isShowUpdateInfo);
+            EditorGUILayout.EndVertical();
 
             GUILayout.Space(interval);
 
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField("FixedUpdate:" + target.FixedUpdateObserverCount, GUILayout.Width(width));
-            isShowFixedUpdateInfo = EditorGUILayout.Toggle("showInfo?", isShowFixedUpdateInfo);
-            EditorGUILayout.EndHorizontal();
             Display(target.FixedUpdateObservers, "ShowMore", ref isShowFixedUpdateInfo);
+            EditorGUILayout.EndVertical();
         }
 
         void Display<T>(IEnumerable<T> items, string label, ref bool toggle)
