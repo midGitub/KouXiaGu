@@ -78,6 +78,12 @@ namespace KouXiaGu.Terrain3D
             get { return terrainRenderer; }
         }
 
+        public Vector3 Position
+        {
+            get { return transform.position; }
+            set { transform.position = value; }
+        }
+
         void Awake()
         {
             var meshFilter = GetComponent<MeshFilter>();
@@ -94,11 +100,16 @@ namespace KouXiaGu.Terrain3D
             Awake();
         }
 
-        public void Set(Vector3 position, ChunkTexture textures)
+        public void SetTextures(ChunkTexture textures)
         {
-            transform.position = position;
             Texture.SetTextures(textures);
         }
+
+        //public void Set(Vector3 position, ChunkTexture textures)
+        //{
+        //    Position = position;
+        //    Texture.SetTextures(textures);
+        //}
 
         public void Clear()
         {
