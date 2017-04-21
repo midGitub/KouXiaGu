@@ -41,7 +41,7 @@ namespace KouXiaGu
     {
 
         #region 控制台命令;
-        const string consoleDisplayUnityLog_KeyWord = "unityLog";
+        const string consoleDisplayUnityLog_KeyWord = "UnityLog";
 
         [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "输出 是否在控制台窗口显示Unity.Debug的日志;")]
         public static void ConsoleDisplayUnityLog()
@@ -59,9 +59,23 @@ namespace KouXiaGu
 
         static void ConsoleDisplayUnityLog(bool isDisplay)
         {
-            Instance.IsDisplayUnityLog = isDisplay;
-            GameConsole.Log(consoleDisplayUnityLog_KeyWord + " " + isDisplay);
+            Instance.SetDisplayUnityLog(isDisplay);
+            if (isDisplay)
+                GameConsole.LogSuccessful("Display unity log;");
+            else
+                GameConsole.LogSuccessful("Hide unity log;");
         }
+        #endregion
+
+        #region 
+
+        public static readonly ILogHandler defaultLogHandler = Debug.logger.logHandler;
+
+        static void RecoveryDefaultLogHandler()
+        {
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
         #endregion
 
 
@@ -79,7 +93,6 @@ namespace KouXiaGu
 
         int inputContentRecordIndex;
         float uiScrollSize;
-        ILogHandler defaultLogHandler;
         KeyDownObserver displayKeyObserver;
         public ConsoleInput Input { get; private set; }
         public ConsoleOutput Output { get; private set; }
@@ -87,13 +100,13 @@ namespace KouXiaGu
         public ConsoleOutputTextStyle OutputStype
         {
             get { return outputStype; }
-            set { outputStype = value; }
+            private set { outputStype = value; }
         }
 
         public bool IsDisplayUnityLog
         {
             get { return isShowUnityLog; }
-            set { Debug.logger.logEnabled = value; isShowUnityLog = value; }
+            private set { isShowUnityLog = value; }
         }
 
         public bool IsDisplay
@@ -113,22 +126,38 @@ namespace KouXiaGu
 
             Output = new ConsoleOutput(outputStype);
             Output.Text = ui.OutputText;
-
             Input = new ConsoleInput();
-
             ResetInputContent();
-
-            defaultLogHandler = Debug.logger.logHandler;
-            Debug.logger.logHandler = this;
-            Debug.logger.logEnabled = isShowUnityLog;
+            SetDisplayUnityLog(isShowUnityLog);
 
             displayKeyObserver = new KeyDownObserver(KeyFunction.Console_DisplayOrHide, OnDisplayKeyDown);
             displayKeyObserver.SubscribeUpdate();
         }
 
+        void SetDisplayUnityLog(bool isDisplay)
+        {
+            if (isDisplay)
+            {
+                Debug.logger.logHandler = this;
+            }
+            else
+            {
+                RecoveryDefaultLogHandler();
+            }
+            IsDisplayUnityLog = isDisplay;
+        }
+
+        void OnDestroy()
+        {
+            RecoveryDefaultLogHandler();
+        }
+
         void OnValidate()
         {
-            Debug.logger.logEnabled = isShowUnityLog;
+            //if (Application.isPlaying)
+            //{
+            //    SetDisplayUnityLog(isShowUnityLog);
+            //}
             SetDisplay(isDisplay);
         }
 

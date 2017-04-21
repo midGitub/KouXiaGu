@@ -16,6 +16,7 @@ namespace KouXiaGu
         public Color NormalColor = Color.black;
         public Color WarningColor = Color.yellow;
         public Color ErrorColor = Color.red;
+        public Color SuccessfulColor = Color.green;
 
         public string GetNormalLog(string message)
         {
@@ -30,6 +31,11 @@ namespace KouXiaGu
         public string GetErrorLog(string message)
         {
             return SetColor(message, ErrorColor);
+        }
+
+        public string GetSuccessfulLog(string message)
+        {
+            return SetColor(message, SuccessfulColor);
         }
 
         string SetColor(string message, Color color)
@@ -69,6 +75,12 @@ namespace KouXiaGu
         public void LogError(string message)
         {
             message = Style.GetErrorLog(message);
+            AddLog(message);
+        }
+
+        public void LogSuccessful(string message)
+        {
+            message = Style.GetSuccessfulLog(message);
             AddLog(message);
         }
 

@@ -29,51 +29,71 @@ namespace KouXiaGu
         }
 
 
-        public static void Log(object message)
-        {
-            Log(message.ToString());
-        }
-
         public static void Log(string message)
         {
             output.Log(message);
         }
 
+        public static void Log(object message)
+        {
+            Log(message.ToString());
+        }
+
         public static void Log(string format, params object[] args)
         {
-            output.Log(format, args);
+            string message = string.Format(format, args);
+            Log(format, args);
         }
 
-
-        public static void LogWarning(object message)
-        {
-            LogWarning(message.ToString());
-        }
 
         public static void LogWarning(string message)
         {
             output.LogWarning(message);
         }
 
+        public static void LogWarning(object message)
+        {
+            LogWarning(message.ToString());
+        }
+
         public static void LogWarning(string format, params object[] args)
         {
-            output.LogWarning(format, args);
+            string message = string.Format(format, args);
+            LogWarning(format, args);
         }
 
-
-        public static void LogError(object message)
-        {
-            LogError(message.ToString());
-        }
 
         public static void LogError(string message)
         {
             output.LogError(message);
         }
 
+        public static void LogError(object message)
+        {
+            LogError(message.ToString());
+        }
+
         public static void LogError(string format, params object[] args)
         {
-            output.LogError(format, args);
+            string message = string.Format(format, args);
+            LogError(message);
+        }
+
+
+        public static void LogSuccessful(string message)
+        {
+            output.LogSuccessful(message);
+        }
+
+        public static void LogSuccessful(object message)
+        {
+            LogSuccessful(message.ToString());
+        }
+
+        public static void LogSuccessful(string format, params object[] args)
+        {
+            string message = string.Format(format, args);
+            LogSuccessful(message);
         }
 
 
