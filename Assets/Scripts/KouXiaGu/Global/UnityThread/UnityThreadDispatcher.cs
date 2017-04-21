@@ -15,9 +15,6 @@ namespace KouXiaGu
         {
             get { return UnityThreadDispatcher.Instance; }
         }
-
-        //public static IObservable<object> 
-
     }
 
     /// <summary>
@@ -57,9 +54,19 @@ namespace KouXiaGu
         LinkedListTracker<object> onUpdateTracker;
         LinkedListTracker<object> onFixedUpdateTracker;
 
+        public IEnumerable<IObserver<object>> UpdateObservers
+        {
+            get { return onUpdateTracker.Observers; }
+        }
+
         public int UpdateObserverCount
         {
             get { return onUpdateTracker.ObserverCount; }
+        }
+
+        public IEnumerable<IObserver<object>> FixedUpdateObservers
+        {
+            get { return onFixedUpdateTracker.Observers; }
         }
 
         public int FixedUpdateObserverCount
