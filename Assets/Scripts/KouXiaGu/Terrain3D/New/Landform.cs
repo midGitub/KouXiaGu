@@ -15,17 +15,17 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class Landform
     {
-        public static IAsyncOperation<Landform> Initialize(IWorld world)
+        public static IAsyncOperation<Landform> Initialize(IWorldScene world)
         {
             return new AsyncInitializer(world);
         }
 
         class AsyncInitializer : AsyncOperation<Landform>
         {
-            public AsyncInitializer(IWorld world)
+            public AsyncInitializer(IWorldData worldData)
             {
                 var instance = new Landform();
-                instance.World = world;
+                instance.WorldData = worldData;
                 instance.TerrainChunk = new TerrainChunkManager();
                 OnCompleted(instance);
             }
@@ -36,12 +36,12 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        public IWorld World { get; private set; }
+        public IWorldData WorldData { get; private set; }
         public TerrainChunkManager TerrainChunk { get; private set; }
 
         public IDictionary<CubicHexCoord, MapNode> Map
         {
-            get { return World.Map.Data; }
+            get { return WorldData.Map.Data; }
         }
 
     }

@@ -12,7 +12,7 @@ namespace KouXiaGu.World
 {
 
     [Obsolete]
-    public class WorldManager : IObserver<IWorld>
+    public class WorldManager : IObserver<IWorldScene>
     {
 
         /// <summary>
@@ -56,17 +56,17 @@ namespace KouXiaGu.World
             Time.StartTimeUpdating();
         }
 
-        void IObserver<IWorld>.OnNext(IWorld item)
+        void IObserver<IWorldScene>.OnNext(IWorldScene item)
         {
             return;
         }
 
-        void IObserver<IWorld>.OnError(Exception error)
+        void IObserver<IWorldScene>.OnError(Exception error)
         {
             return;
         }
 
-        void IObserver<IWorld>.OnCompleted()
+        void IObserver<IWorldScene>.OnCompleted()
         {
             StartWorld();
         }

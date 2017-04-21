@@ -30,16 +30,16 @@ namespace KouXiaGu.World
     }
 
 
-    public class TimeManager : IObservable<DateTime>, IObserver<IWorld>
+    public class TimeManager : IObservable<DateTime>, IObserver<IWorldScene>
     {
 
-        public static IAsyncOperation<TimeManager> Create(WorldTimeInfo info, IObservable<IWorld> world)
+        public static IAsyncOperation<TimeManager> Create(WorldTimeInfo info, IObservable<IWorldScene> world)
         {
             return new Operation<TimeManager>(() => new TimeManager(info, world));
         }
 
 
-        public TimeManager(WorldTimeInfo info, IObservable<IWorld> world)
+        public TimeManager(WorldTimeInfo info, IObservable<IWorldScene> world)
         {
             InitCalendar();
             Info = info;
@@ -106,7 +106,7 @@ namespace KouXiaGu.World
             }
         }
 
-        public void OnNext(IWorld item)
+        public void OnNext(IWorldScene item)
         {
             StartTimeUpdating();
         }

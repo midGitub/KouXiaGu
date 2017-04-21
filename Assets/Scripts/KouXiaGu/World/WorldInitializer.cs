@@ -11,13 +11,21 @@ namespace KouXiaGu.World
 {
 
     /// <summary>
-    /// 场景实例;
+    /// 世界数据;
     /// </summary>
-    public interface IWorld
+    public interface IWorldData
     {
         WorldInfo Info { get; }
         TimeManager Time { get; }
         MapResource Map { get; }
+    }
+
+    /// <summary>
+    /// 世界场景;
+    /// </summary>
+    public interface IWorldScene : IWorldData
+    {
+        Landform Landform { get; }
     }
 
 
@@ -25,9 +33,10 @@ namespace KouXiaGu.World
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : OperationMonoBehaviour, IWorld, IObservable<IWorld>
+    public class WorldInitializer : OperationMonoBehaviour, IWorldScene, IObservable<IWorldScene>
     {
 
+        const string InitializationCompletedStr = "初始化完毕;";
         public static WorldInitializer Instance { get; private set; }
         public static bool IsInitialized
         {
@@ -40,6 +49,8 @@ namespace KouXiaGu.World
         WorldInitializer()
         {
         }
+
+        ListTracker<IWorldScene> worldTracker;
 
         [SerializeField]
         bool useEditorialInfo = false;
@@ -58,8 +69,6 @@ namespace KouXiaGu.World
             get { return useEditorialInfo ? editorialInfo : WorldInfo; }
         }
 
-        ListTracker<IWorld> worldTracker;
-
 
         public TimeManager Time { get; private set; }
         public MapResource Map { get; private set; }
@@ -71,7 +80,7 @@ namespace KouXiaGu.World
         {
             Instance = this;
             base.Awake();
-            worldTracker = new ListTracker<IWorld>();
+            worldTracker = new ListTracker<IWorldScene>();
             GameInitializer.Instance.SubscribeCompleted(_ => BuildingData());
         }
 
@@ -80,7 +89,7 @@ namespace KouXiaGu.World
             Instance = null;
         }
 
-        public IDisposable Subscribe(IObserver<IWorld> observer)
+        public IDisposable Subscribe(IObserver<IWorldScene> observer)
         {
             return worldTracker.Subscribe(observer);
         }
@@ -118,14 +127,14 @@ namespace KouXiaGu.World
         {
             const string prefix = "[地图]";
             Map = operation.Result;
-            Debug.Log(prefix + "初始化完毕; 总共有 " + Map.Data.Count + " 个节点;");
+            Debug.Log(prefix + InitializationCompletedStr + " 总共有 " + Map.Data.Count + " 个节点;");
         }
 
         void OnTimeCompleted(IAsyncOperation<TimeManager> operation)
         {
             const string prefix = "[时间]";
             Time = operation.Result;
-            Debug.Log(prefix + "初始化完毕;");
+            Debug.Log(prefix + InitializationCompletedStr);
         }
 
         void OnBuildingDataCompleted(IList<IAsyncOperation> operations)
@@ -139,7 +148,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 初始化游戏场景;
         /// </summary>
-        void BuildingScene(IWorld world)
+        void BuildingScene(IWorldScene world)
         {
             Debug.Log("------开始初始化游戏场景;");
 
@@ -154,7 +163,7 @@ namespace KouXiaGu.World
         {
             const string prefix = "[地形]";
             Landform = operation.Result;
-            Debug.Log(prefix + "初始化完毕;");
+            Debug.Log(prefix + InitializationCompletedStr);
         }
 
         void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)
