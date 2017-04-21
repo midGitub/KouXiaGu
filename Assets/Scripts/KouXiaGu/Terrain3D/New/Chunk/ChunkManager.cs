@@ -90,21 +90,6 @@ namespace KouXiaGu.Terrain3D
             activatedChunks.Clear();
         }
 
-        /// <summary>
-        /// 获取到高度,若不存在高度信息,则返回0;
-        /// </summary>
-        public float GetHeight(Vector3 position)
-        {
-            RectCoord rectCoord = ChunkGrid.GetCoord(position);
-            Chunk chunk;
-            if (activatedChunks.TryGetValue(rectCoord, out chunk))
-            {
-                Vector2 uv = ChunkGrid.GetUV(rectCoord, position);
-                return chunk.Texture.GetHeight(uv);
-            }
-            return 0;
-        }
-
     }
 
 }
