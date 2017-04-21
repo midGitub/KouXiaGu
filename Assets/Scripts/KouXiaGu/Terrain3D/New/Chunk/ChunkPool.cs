@@ -15,19 +15,6 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        public Chunk Get(Vector3 position, ChunkTexture textures)
-        {
-            Chunk chunk = Get();
-            Set(chunk, position, textures);
-            return chunk;
-        }        
-
-        void Set(Chunk chunk, Vector3 position, ChunkTexture textures)
-        {
-            chunk.transform.position = position;
-            chunk.Texture.SetTextures(textures);
-        }
-
         public override Chunk Instantiate()
         {
             Chunk chunk = Chunk.Create();
