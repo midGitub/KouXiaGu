@@ -105,12 +105,6 @@ namespace KouXiaGu.Terrain3D
             Texture.SetTextures(textures);
         }
 
-        //public void Set(Vector3 position, ChunkTexture textures)
-        //{
-        //    Position = position;
-        //    Texture.SetTextures(textures);
-        //}
-
         public void Clear()
         {
             terrainRenderer.Clear();
