@@ -8,11 +8,11 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形烘培;
+    /// 地形烘培队列;
     /// </summary>
-    public class ChunkBaker
+    public class BakeQueue
     {
-        public ChunkBaker()
+        public BakeQueue()
         {
             requestQueue = new LinkedList<Baker>();
             readOnleyRequestQueue = requestQueue.AsReadOnlyCollection(item => item.ChunkCoord);
@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
             get { return readOnleyRequestQueue; }
         }
 
-        IBakingRequest Current
+        public IBakingRequest Current
         {
             get { return requestQueue.First.Value; }
         }
@@ -62,7 +62,7 @@ namespace KouXiaGu.Terrain3D
             return false;
         }
 
-        class Baker : AsyncOperation<ChunkTexture>, IBakingRequest
+        public class Baker : AsyncOperation<ChunkTexture>, IBakingRequest
         {
             public Baker(RectCoord chunkCoord)
             {
@@ -70,13 +70,21 @@ namespace KouXiaGu.Terrain3D
             }
 
             public RectCoord ChunkCoord { get; private set; }
-            public bool IsCanceled { get; private set; }
 
+            /// <summary>
+            /// 标记为完成;
+            /// </summary>
+            public void Completed(ChunkTexture texture)
+            {
+                OnCompleted(texture);
+            }
+
+            /// <summary>
+            /// 标记为被取消;
+            /// </summary>
             public void Cancel()
             {
-                var ex = new OperationCanceledException("在烘焙之前被取消了;");
-                OnFaulted(ex);
-                IsCanceled = true;
+                OnCanceled();
             }
 
             public override bool Equals(object obj)
