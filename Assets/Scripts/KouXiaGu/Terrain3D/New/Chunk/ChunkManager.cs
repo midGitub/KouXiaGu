@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
                 throw new ArgumentException();
 
             Vector3 position = chunkGrid.GetCenter(rectCoord);
-            Chunk chunk = chunkPool.Get();
+            Chunk chunk = chunkPool.Get(position, textures);
             Set(chunk, position, textures);
             activatedChunks.Add(rectCoord, chunk);
             return chunk;

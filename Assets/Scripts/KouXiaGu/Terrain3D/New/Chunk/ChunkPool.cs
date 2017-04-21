@@ -11,15 +11,13 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class ChunkPool : ObjectPool<Chunk>
     {
-        static RectGrid chunkGrid
+        public ChunkPool()
         {
-            get { return ChunkInfo.ChunkGrid; }
         }
 
-        public Chunk Get(RectCoord rectCoord, ChunkTexture textures)
+        public Chunk Get(Vector3 position, ChunkTexture textures)
         {
             Chunk chunk = Get();
-            Vector3 position = chunkGrid.GetCenter(rectCoord);
             Set(chunk, position, textures);
             return chunk;
         }        
