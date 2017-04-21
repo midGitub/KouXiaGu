@@ -14,14 +14,14 @@ namespace KouXiaGu.Terrain3D
     public class LandformRenderer : LandformChunkTexture
     {
 
-        static TerrainParameter Parameter
+        static LandformParameter Parameter
         {
-            get { return TerrainParameter.Instance; }
+            get { return LandformParameter.Instance; }
         }
 
-        static Shader TerrainShader
+        static Shader LandformShader
         {
-            get { return Parameter.TerrainShader; }
+            get { return Parameter.LandformShader; }
         }
 
         static float Displacement
@@ -57,7 +57,7 @@ namespace KouXiaGu.Terrain3D
 
         void Init(MeshRenderer renderer)
         {
-            renderer.sharedMaterial = material = new Material(TerrainShader);
+            renderer.sharedMaterial = material = new Material(LandformShader);
             onHeightMapUpdate = new LinkedListTracker<LandformRenderer>();
         }
 
