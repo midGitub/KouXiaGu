@@ -90,7 +90,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 获取到高度,若不存在高度信息,则返回0;
+        /// 获取到高度,若不存在高度信息,或超出范围,则返回0;
         /// </summary>
         public float GetHeight(Vector2 uv)
         {
