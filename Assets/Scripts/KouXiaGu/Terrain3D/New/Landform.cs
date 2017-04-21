@@ -38,6 +38,7 @@ namespace KouXiaGu.Terrain3D
 
         public IWorldData WorldData { get; private set; }
         public ChunkManager LandformChunk { get; private set; }
+        public ChunkBuilder Builder { get; private set; }
 
         public IDictionary<CubicHexCoord, MapNode> Map
         {

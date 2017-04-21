@@ -193,7 +193,7 @@ namespace KouXiaGu
 
     /// <summary>
     /// 使用 List 存储观察者的订阅器;
-    /// 加入 O(n), 移除 O(n), 推送 O(2n);
+    /// 加入 O(n)或 O(1), 移除 O(n), 推送 O(2n);
     /// </summary>
     public class ListTracker<T> : TrackerBase<T>
     {

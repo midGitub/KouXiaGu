@@ -15,9 +15,10 @@ namespace KouXiaGu.Terrain3D
     /// 烘培地形
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed partial class Baker : SceneSington<Baker>
+    [Obsolete]
+    public sealed partial class OBaker : SceneSington<OBaker>
     {
-        static Baker()
+        static OBaker()
         {
             IsInitialised = false;
         }
@@ -45,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         {
             if (!IsInitialised)
             {
-                Baker instance = GetInstance;
+                OBaker instance = GetInstance;
 
                 instance.road.Initialise();
                 instance.landform.Initialise();
@@ -57,7 +58,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        Baker()
+        OBaker()
         {
         }
 
@@ -65,7 +66,7 @@ namespace KouXiaGu.Terrain3D
         NormalMapper normalMapper;
 
         [SerializeField]
-        LandformBaker landform;
+        OLandformBaker landform;
 
         [SerializeField]
         RoadBaker road;

@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
             this.Data = data;
             restingChunks = new Pool();
             activatedChunks = new CustomDictionary<RectCoord, OLandformChunk>();
-            Baker.Initialize();
+            OBaker.Initialize();
         }
 
 
@@ -205,12 +205,12 @@ namespace KouXiaGu.Terrain3D
 
             void RequesteAdd()
             {
-                Baker.Requested.AddLast(this);
+                OBaker.Requested.AddLast(this);
             }
 
             void RequesteRemove()
             {
-                Baker.Requested.Remove(this);
+                OBaker.Requested.Remove(this);
             }
 
             void IBakeRequest.OnComplete(TerrainTexPack textures)
