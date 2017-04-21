@@ -10,6 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形资源初始化控制;
     /// </summary>
     [DisallowMultipleComponent]
+    [Obsolete]
     public sealed class ResInitializer : SceneSington<ResInitializer>
     {
         static ResInitializer()

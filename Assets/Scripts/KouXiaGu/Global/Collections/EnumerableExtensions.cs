@@ -3,11 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.Collections
+namespace KouXiaGu
 {
 
     public static class EnumerableExtensions
     {
+
+        /// <summary>
+        /// 若存在符合条件的元素则返回true;
+        /// </summary>
+        public static bool Contains<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+        {
+            foreach (var item in collection)
+            {
+                if (predicate(item))
+                    return true;
+            }
+            return false;
+        }
+
+
+
+
+
+
+
+
+
 
         public static T[] ToArray<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> func)
         {
@@ -48,20 +70,6 @@ namespace KouXiaGu.Collections
                 yield return value;
             }
         }
-
-        /// <summary>
-        /// 若有任何返回true则算找到;
-        /// </summary>
-        public static bool Contains<T>(this IEnumerable<T> collection, Func<T, bool> func)
-        {
-            foreach (var item in collection)
-            {
-                if (func(item))
-                    return true;
-            }
-            return false;
-        }
-
 
         /// <summary>
         /// 尝试获取到第一个元素,若不存在则返回false,否则返回true;

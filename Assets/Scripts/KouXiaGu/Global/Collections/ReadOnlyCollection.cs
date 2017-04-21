@@ -55,10 +55,44 @@ namespace KouXiaGu
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return collection.GetEnumerator();
+                return GetEnumerator();
             }
         }
 
+
+        public static IReadOnlyCollection<TResult> AsReadOnlyCollection<TSource, TResult>(
+            this ICollection<TSource> collection,
+            Func<TSource, TResult> selector)
+        {
+            return new _ReadOnlyCollection<TSource, TResult>(collection, selector);
+        }
+
+        class _ReadOnlyCollection<TSource, TResult> : IReadOnlyCollection<TResult>
+        {
+            public _ReadOnlyCollection(ICollection<TSource> collection, Func<TSource, TResult> selector)
+            {
+                this.collection = collection;
+                this.selector = selector;
+            }
+
+            readonly ICollection<TSource> collection;
+            readonly Func<TSource, TResult> selector;
+
+            public int Count
+            {
+                get { return collection.Count; }
+            }
+
+            public IEnumerator<TResult> GetEnumerator()
+            {
+                return collection.Cast<TResult>().GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
 
         /// <summary>
         /// 转换到只读接口;
