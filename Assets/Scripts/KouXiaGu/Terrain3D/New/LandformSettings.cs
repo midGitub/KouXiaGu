@@ -11,12 +11,11 @@ namespace KouXiaGu.Terrain3D
     /// 地形参数设置;
     /// </summary>
     [DisallowMultipleComponent]
-    class LandformParameter : UnitySington<LandformParameter>
+    class LandformSettings : UnitySington<LandformSettings>
     {
-        LandformParameter()
+        LandformSettings()
         {
         }
-
 
         [SerializeField]
         Shader landformShader;

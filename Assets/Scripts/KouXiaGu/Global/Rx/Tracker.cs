@@ -58,7 +58,7 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 迭代获取到观察者;
+        /// 迭代获取到观察者,在迭代时允许对观察者合集进行操作;
         /// </summary>
         protected virtual IEnumerable<IObserver<T>> EnumerateObserver()
         {

@@ -14,9 +14,9 @@ namespace KouXiaGu.Terrain3D
     public class LandformRenderer : ChunkTexture
     {
 
-        static LandformParameter Parameter
+        static LandformSettings Parameter
         {
-            get { return LandformParameter.Instance; }
+            get { return LandformSettings.Instance; }
         }
 
         static Shader LandformShader

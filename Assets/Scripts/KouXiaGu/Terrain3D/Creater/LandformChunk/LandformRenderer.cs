@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
 
         static Shader TerrainShader
         {
-            get { return LandformParameter.Instance.LandformShader; }
+            get { return LandformSettings.Instance.LandformShader; }
         }
 
         Material material;
