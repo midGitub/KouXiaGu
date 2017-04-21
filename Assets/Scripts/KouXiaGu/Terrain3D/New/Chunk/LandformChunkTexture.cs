@@ -7,18 +7,18 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public class TerrainChunkTexture
+    public class LandformChunkTexture
     {
-        public TerrainChunkTexture()
+        public LandformChunkTexture()
         {
         }
 
-        public TerrainChunkTexture(TerrainChunkTexture textures)
+        public LandformChunkTexture(LandformChunkTexture textures)
         {
             SetTextures(textures);
         }
 
-        public TerrainChunkTexture(Texture2D diffuseMap, Texture2D heightMap, Texture2D normalMap)
+        public LandformChunkTexture(Texture2D diffuseMap, Texture2D heightMap, Texture2D normalMap)
         {
             SetDiffuseMap(diffuseMap);
             SetHeightMap(heightMap);
@@ -77,7 +77,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 设置所有贴图;
         /// </summary>
-        public virtual void SetTextures(TerrainChunkTexture textures)
+        public virtual void SetTextures(LandformChunkTexture textures)
         {
             SetDiffuseMap(textures.DiffuseMap);
             SetHeightMap(textures.HeightMap);

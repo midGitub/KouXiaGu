@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形块信息;
     /// </summary>
-    public static class TerrainChunkInfo
+    public static class LandformChunkInfo
     {
 
         /// <summary>

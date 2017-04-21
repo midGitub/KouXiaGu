@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         {
             this.Data = data;
             restingChunks = new Pool();
-            activatedChunks = new CustomDictionary<RectCoord, LandformChunk>();
+            activatedChunks = new CustomDictionary<RectCoord, OLandformChunk>();
             Baker.Initialize();
         }
 
@@ -37,13 +37,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 在场景中激活的地形块;
         /// </summary>
-        CustomDictionary<RectCoord, LandformChunk> activatedChunks;
+        CustomDictionary<RectCoord, OLandformChunk> activatedChunks;
 
 
         /// <summary>
         /// 在场景中激活的地形块;
         /// </summary>
-        public IReadOnlyDictionary<RectCoord, LandformChunk> ActivatedChunks
+        public IReadOnlyDictionary<RectCoord, OLandformChunk> ActivatedChunks
         {
             get { return activatedChunks; }
         }
@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D
         {
             RectCoord coord = request.ChunkCoord;
             TerrainTexPack textures = request.Textures;
-            LandformChunk chunk;
+            OLandformChunk chunk;
 
             if (!activatedChunks.TryGetValue(request.ChunkCoord, out chunk))
             {
@@ -90,7 +90,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool Destroy(RectCoord coord)
         {
-            LandformChunk chunk;
+            OLandformChunk chunk;
 
             if (activatedChunks.TryGetValue(coord, out chunk))
             {
@@ -106,19 +106,19 @@ namespace KouXiaGu.Terrain3D
 
 
 
-        class Pool : ObjectPool<LandformChunk>
+        class Pool : ObjectPool<OLandformChunk>
         {
-            public override LandformChunk Instantiate()
+            public override OLandformChunk Instantiate()
             {
-                return new LandformChunk();
+                return new OLandformChunk();
             }
 
-            public override void Reset(LandformChunk item)
+            public override void Reset(OLandformChunk item)
             {
                 item.Reset();
             }
 
-            public override void Destroy(LandformChunk item)
+            public override void Destroy(OLandformChunk item)
             {
                 item.Destroy();
             }

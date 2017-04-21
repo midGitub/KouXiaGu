@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形渲染;
     /// </summary>
-    public class TerrainRenderer : TerrainChunkTexture
+    public class LandformRenderer : LandformChunkTexture
     {
 
         static TerrainParameter Parameter
@@ -29,28 +29,28 @@ namespace KouXiaGu.Terrain3D
             get { return Parameter.Displacement; }
         }
 
-        public TerrainRenderer()
+        public LandformRenderer()
         {
         }
 
-        public TerrainRenderer(MeshRenderer renderer)
+        public LandformRenderer(MeshRenderer renderer)
         {
             Init(renderer);
         }
 
-        public TerrainRenderer(MeshRenderer renderer, TerrainChunkTexture textures)
+        public LandformRenderer(MeshRenderer renderer, LandformChunkTexture textures)
         {
             Init(renderer);
             SetTextures(textures);
         }
 
         Material material;
-        LinkedListTracker<TerrainRenderer> onHeightMapUpdate;
+        LinkedListTracker<LandformRenderer> onHeightMapUpdate;
 
         /// <summary>
         /// 当高度贴图发生变化时调用;
         /// </summary>
-        public IObservable<TerrainRenderer> OnHeightMapUpdate
+        public IObservable<LandformRenderer> OnHeightMapUpdate
         {
             get { return onHeightMapUpdate; }
         }
@@ -58,7 +58,7 @@ namespace KouXiaGu.Terrain3D
         void Init(MeshRenderer renderer)
         {
             renderer.sharedMaterial = material = new Material(TerrainShader);
-            onHeightMapUpdate = new LinkedListTracker<TerrainRenderer>();
+            onHeightMapUpdate = new LinkedListTracker<LandformRenderer>();
         }
 
         public override void SetDiffuseMap(Texture2D diffuseMap)

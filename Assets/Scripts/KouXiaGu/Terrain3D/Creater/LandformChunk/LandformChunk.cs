@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形块实例;
     /// </summary>
     [Obsolete]
-    public sealed class LandformChunk
+    public sealed class OLandformChunk
     {
 
         #region 地形块大小(静态)
@@ -111,9 +111,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static readonly Type[] TERRAIN_CHUNK_SCRIPTS = new Type[]
             {
-                typeof(LandformRenderer),    //渲染;
-                typeof(LandformMesh),        //地形网格;
-                typeof(LandformTrigger),     //地形碰撞器;
+                typeof(OLandformRenderer),    //渲染;
+                typeof(OLandformMesh),        //地形网格;
+                typeof(OLandformTrigger),     //地形碰撞器;
             };
 
 
@@ -151,18 +151,18 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建一个空的地图块到;
         /// </summary>
-        public LandformChunk()
+        public OLandformChunk()
         {
             ChunkObject = CraeteTerrainChunk();
-            Renderer = ChunkObject.GetComponent<LandformRenderer>();
-            Trigger = ChunkObject.GetComponent<LandformTrigger>();
+            Renderer = ChunkObject.GetComponent<OLandformRenderer>();
+            Trigger = ChunkObject.GetComponent<OLandformTrigger>();
         }
 
 
         public RectCoord ChunkCoord { get; private set; }
         public GameObject ChunkObject { get; private set; }
-        public LandformRenderer Renderer { get; private set; }
-        public LandformTrigger Trigger { get; private set; }
+        public OLandformRenderer Renderer { get; private set; }
+        public OLandformTrigger Trigger { get; private set; }
 
         /// <summary>
         /// 是否有效的?

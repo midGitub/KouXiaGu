@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
-    public sealed class TerrainChunk : MonoBehaviour
+    public sealed class LandformChunk : MonoBehaviour
     {
 
         #region Static;
@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
                 typeof(MeshFilter),
                 typeof(MeshRenderer),
                 typeof(MeshCollider),
-                typeof(TerrainChunk)
+                typeof(LandformChunk)
             };
 
 
@@ -45,13 +45,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 实例一个地形块,并指定名称;
         /// </summary>
-        static TerrainChunk CraeteTerrainChunk()
+        static LandformChunk CraeteTerrainChunk()
         {
             GameObject gameObject = new GameObject("TerrainChunk", ChunkScripts);
-            return gameObject.GetComponent<TerrainChunk>();
+            return gameObject.GetComponent<LandformChunk>();
         }
 
-        public static TerrainChunk Create()
+        public static LandformChunk Create()
         {
             var item = CraeteTerrainChunk();
             return item;
@@ -60,20 +60,20 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        TerrainChunk()
+        LandformChunk()
         {
         }
 
-        TerrainMesh terrainMesh;
-        TerrainRenderer terrainRenderer;
-        TerrainTrigger trigger;
+        LandformMesh terrainMesh;
+        LandformRenderer terrainRenderer;
+        LandformTrigger trigger;
 
-        public TerrainMesh Mesh
+        public LandformMesh Mesh
         {
             get { return terrainMesh; }
         }
 
-        public TerrainRenderer Texture
+        public LandformRenderer Texture
         {
             get { return terrainRenderer; }
         }
@@ -84,9 +84,9 @@ namespace KouXiaGu.Terrain3D
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshCollider = GetComponent<MeshCollider>();
 
-            terrainMesh = new TerrainMesh(meshFilter);
-            terrainRenderer = new TerrainRenderer(meshRenderer);
-            trigger = new TerrainTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
+            terrainMesh = new LandformMesh(meshFilter);
+            terrainRenderer = new LandformRenderer(meshRenderer);
+            trigger = new LandformTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
         }
 
         void Reset()

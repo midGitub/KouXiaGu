@@ -90,7 +90,7 @@ namespace KouXiaGu.Terrain3D
 
         void SetTargetCenter(IBakeRequest request)
         {
-            this.targetCenter = LandformChunk.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
+            this.targetCenter = OLandformChunk.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
         }
 
         void ClearInSceneMeshs()

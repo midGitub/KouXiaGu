@@ -11,13 +11,14 @@ namespace KouXiaGu.Terrain3D
     /// 地形网格;
     /// </summary>
     [RequireComponent(typeof(MeshFilter)), DisallowMultipleComponent]
-    public class LandformMesh : MonoBehaviour
+    [Obsolete]
+    public class OLandformMesh : MonoBehaviour
     {
 
         const string MESH_NAME = "Terrain Mesh";
 
-        static readonly float MESH_HALF_WIDTH = LandformChunk.CHUNK_WIDTH_HALF;
-        static readonly float MESH_HALF_HEIGHT = LandformChunk.CHUNK_HEIGHT_HALF;
+        static readonly float MESH_HALF_WIDTH = OLandformChunk.CHUNK_WIDTH_HALF;
+        static readonly float MESH_HALF_HEIGHT = OLandformChunk.CHUNK_HEIGHT_HALF;
 
         /// <summary>
         /// 网格生成的高度;

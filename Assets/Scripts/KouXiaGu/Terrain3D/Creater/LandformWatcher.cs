@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
 
         void Start()
         {
-            landform.Initialize(LandformChunk.ChunkGrid);
+            landform.Initialize(OLandformChunk.ChunkGrid);
         }
 
         void Update()

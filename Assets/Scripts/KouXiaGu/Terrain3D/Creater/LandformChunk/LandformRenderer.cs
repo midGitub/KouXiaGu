@@ -1,12 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
+    [Obsolete]
     [RequireComponent(typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
-    public class LandformRenderer : MonoBehaviour
+    public class OLandformRenderer : MonoBehaviour
     {
-        LandformRenderer()
+        OLandformRenderer()
         {
         }
 

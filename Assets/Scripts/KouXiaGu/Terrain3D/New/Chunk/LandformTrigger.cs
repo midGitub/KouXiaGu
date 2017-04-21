@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public class TerrainTrigger : IObserver<TerrainRenderer>
+    public class LandformTrigger : IObserver<LandformRenderer>
     {
 
         #region 网格定义;
@@ -30,16 +30,16 @@ namespace KouXiaGu.Terrain3D
         {
             List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
-            float lengthX = TerrainChunkInfo.ChunkWidth / sub_x;
-            float lengthZ = TerrainChunkInfo.ChunkHeight / sub_z;
+            float lengthX = LandformChunkInfo.ChunkWidth / sub_x;
+            float lengthZ = LandformChunkInfo.ChunkHeight / sub_z;
 
             for (int z = 0; z <= sub_z; z++)
             {
                 for (int x = 0; x <= sub_x; x++)
                 {
                     Vector3 vertice = new Vector3(x * lengthX, 0, z * lengthZ);
-                    vertice.x -= TerrainChunkInfo.ChunkHalfWidth;
-                    vertice.z -= TerrainChunkInfo.ChunkHalfHeight;
+                    vertice.x -= LandformChunkInfo.ChunkHalfWidth;
+                    vertice.z -= LandformChunkInfo.ChunkHalfHeight;
 
                     Vector2 uv = new Vector2(x / (float)sub_x, z / (float)sub_z);
                     KeyValuePair<Vector3, Vector2> pair = new KeyValuePair<Vector3, Vector2>(vertice, uv);
@@ -78,7 +78,7 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        public TerrainTrigger(MeshCollider collider, TerrainRenderer renderer, IObservable<TerrainRenderer> onHeightMapUpdate)
+        public LandformTrigger(MeshCollider collider, LandformRenderer renderer, IObservable<LandformRenderer> onHeightMapUpdate)
         {
             this.collider = collider;
             this.renderer = renderer;
@@ -87,7 +87,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         MeshCollider collider;
-        TerrainRenderer renderer;
+        LandformRenderer renderer;
 
         /// <summary>
         /// 构建碰撞网格;
@@ -124,7 +124,7 @@ namespace KouXiaGu.Terrain3D
         Vector3[] GetVertices()
         {
             List<Vector3> vertices = new List<Vector3>();
-            foreach (var pair in TerrainTrigger.vertices)
+            foreach (var pair in LandformTrigger.vertices)
             {
                 Vector3 vertice = pair.Key;
                 vertice.y = renderer.GetHeight(pair.Value);
@@ -133,13 +133,13 @@ namespace KouXiaGu.Terrain3D
             return vertices.ToArray();
         }
 
-        void IObserver<TerrainRenderer>.OnNext(TerrainRenderer value)
+        void IObserver<LandformRenderer>.OnNext(LandformRenderer value)
         {
             RebuildCollisionMesh();
         }
 
-        void IObserver<TerrainRenderer>.OnError(Exception error) { }
-        void IObserver<TerrainRenderer>.OnCompleted() { }
+        void IObserver<LandformRenderer>.OnError(Exception error) { }
+        void IObserver<LandformRenderer>.OnCompleted() { }
 
     }
 
