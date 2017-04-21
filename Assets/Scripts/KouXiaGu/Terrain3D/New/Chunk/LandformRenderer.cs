@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形渲染;
     /// </summary>
-    public class LandformRenderer : LandformChunkTexture
+    public class LandformRenderer : ChunkTexture
     {
 
         static LandformParameter Parameter
@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
             Init(renderer);
         }
 
-        public LandformRenderer(MeshRenderer renderer, LandformChunkTexture textures)
+        public LandformRenderer(MeshRenderer renderer, ChunkTexture textures)
         {
             Init(renderer);
             SetTextures(textures);

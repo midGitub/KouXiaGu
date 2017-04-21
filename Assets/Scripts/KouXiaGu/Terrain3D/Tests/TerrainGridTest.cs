@@ -51,14 +51,14 @@ namespace KouXiaGu.Terrain3D.Tests
 
             Vector3 cubePixel = TerrainConvert.Grid.GetPixel(cube);
 
-            RectCoord terrainBlockCoord = LandformChunkInfo.ChunkGrid.GetCoord(terrainPixel);
-            Vector3 terrainBlockCenter = LandformChunkInfo.ChunkGrid.GetCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = LandformChunkInfo.GetHexCenter(terrainBlockCoord);
+            RectCoord terrainBlockCoord = ChunkInfo.ChunkGrid.GetCoord(terrainPixel);
+            Vector3 terrainBlockCenter = ChunkInfo.ChunkGrid.GetCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = ChunkInfo.GetHexCenter(terrainBlockCoord);
 
-            Vector2 terrainBlockLocal = LandformChunkInfo.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
-            Vector2 terrainBlockUV = LandformChunkInfo.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
+            Vector2 terrainBlockLocal = ChunkInfo.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
+            Vector2 terrainBlockUV = ChunkInfo.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
             float terrainHeight = TerrainData.GetHeight(terrainPixel);
-            RectCoord[] terrainBlocks = LandformChunkInfo.GetBelongChunks(cube);
+            RectCoord[] terrainBlocks = ChunkInfo.GetBelongChunks(cube);
 
             string str = "";
 

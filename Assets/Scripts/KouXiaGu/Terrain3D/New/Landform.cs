@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
             {
                 var instance = new Landform();
                 instance.WorldData = worldData;
-                instance.TerrainChunk = new LandformChunkManager();
+                instance.TerrainChunk = new ChunkManager();
                 OnCompleted(instance);
             }
         }
@@ -37,7 +37,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         public IWorldData WorldData { get; private set; }
-        public LandformChunkManager TerrainChunk { get; private set; }
+        public ChunkManager TerrainChunk { get; private set; }
 
         public IDictionary<CubicHexCoord, MapNode> Map
         {

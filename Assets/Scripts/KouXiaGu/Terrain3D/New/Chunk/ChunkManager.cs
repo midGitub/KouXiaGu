@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
 
@@ -9,33 +11,28 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形块管理;
     /// </summary>
-    public class LandformChunkManager
+    public class ChunkManager
     {
         static RectGrid chunkGrid
         {
-            get { return LandformChunkInfo.ChunkGrid; }
+            get { return ChunkInfo.ChunkGrid; }
         }
 
-        public LandformChunkManager()
+        public ChunkManager()
         {
-            chunkPool = new TerrainChunkPool();
-            activatedChunks = new Dictionary<RectCoord, LandformChunk>();
+            chunkPool = new ChunkPool();
+            activatedChunks = new Dictionary<RectCoord, Chunk>();
         }
 
-        TerrainChunkPool chunkPool;
-        Dictionary<RectCoord, LandformChunk> activatedChunks;
-
-        public TerrainChunkPool ChunkPool
-        {
-            get { return chunkPool; }
-        }
+        ChunkPool chunkPool;
+        Dictionary<RectCoord, Chunk> activatedChunks;
 
         public int ActivatedChunkCount
         {
             get { return activatedChunks.Count; }
         }
 
-        public LandformChunk this[RectCoord coord]
+        public Chunk this[RectCoord coord]
         {
             get { return activatedChunks[coord]; }
         }
@@ -43,19 +40,19 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建到,若已经存在则返回异常;
         /// </summary>
-        public LandformChunk Create(RectCoord rectCoord, LandformChunkTexture textures)
+        public Chunk Create(RectCoord rectCoord, ChunkTexture textures)
         {
             if (activatedChunks.ContainsKey(rectCoord))
                 throw new ArgumentException();
 
             Vector3 position = chunkGrid.GetCenter(rectCoord);
-            LandformChunk chunk = chunkPool.Get();
+            Chunk chunk = chunkPool.Get();
             Set(chunk, position, textures);
             activatedChunks.Add(rectCoord, chunk);
             return chunk;
         }
 
-        void Set(LandformChunk chunk, Vector3 position, LandformChunkTexture textures)
+        void Set(Chunk chunk, Vector3 position, ChunkTexture textures)
         {
             chunk.transform.position = position;
             chunk.Texture.SetTextures(textures);
@@ -64,9 +61,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 更新已有内容,若坐标地图块已经不存在,返回null;
         /// </summary>
-        public LandformChunk Update(RectCoord rectCoord, LandformChunkTexture textures)
+        public Chunk Update(RectCoord rectCoord, ChunkTexture textures)
         {
-            LandformChunk chunk;
+            Chunk chunk;
             if (activatedChunks.TryGetValue(rectCoord, out chunk))
             {
                 Vector3 position = chunkGrid.GetCenter(rectCoord);
@@ -80,7 +77,7 @@ namespace KouXiaGu.Terrain3D
             return activatedChunks.ContainsKey(rectCoord);
         }
 
-        public bool TryGetChunk(RectCoord rectCoord, out LandformChunk chunk)
+        public bool TryGetChunk(RectCoord rectCoord, out Chunk chunk)
         {
             return activatedChunks.TryGetValue(rectCoord, out chunk);
         }
@@ -91,7 +88,7 @@ namespace KouXiaGu.Terrain3D
         public float GetHeight(Vector3 position)
         {
             RectCoord rectCoord = chunkGrid.GetCoord(position);
-            LandformChunk chunk;
+            Chunk chunk;
             if (TryGetChunk(rectCoord, out chunk))
             {
                 Vector2 uv = chunkGrid.GetUV(rectCoord, position);
@@ -109,33 +106,13 @@ namespace KouXiaGu.Terrain3D
             Destroy(activatedChunks);
         }
 
-        void Destroy(Dictionary<RectCoord, LandformChunk> activatedChunks)
+        void Destroy(Dictionary<RectCoord, Chunk> activatedChunks)
         {
             foreach (var chunk in activatedChunks.Values)
             {
                 chunk.Destroy();
             }
             activatedChunks.Clear();
-        }
-    }
-
-
-    public class TerrainChunkPool : ObjectPool<LandformChunk>
-    {
-        public override LandformChunk Instantiate()
-        {
-            LandformChunk chunk = LandformChunk.Create();
-            return chunk;
-        }
-
-        public override void Reset(LandformChunk chunk)
-        {
-            chunk.Clear();
-        }
-
-        public override void Destroy(LandformChunk chunk)
-        {
-            chunk.Destroy();
         }
     }
 

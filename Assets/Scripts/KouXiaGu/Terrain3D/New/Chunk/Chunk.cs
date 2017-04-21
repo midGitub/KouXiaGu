@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
-    public sealed class LandformChunk : MonoBehaviour
+    public sealed class Chunk : MonoBehaviour
     {
 
         #region Static;
@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
                 typeof(MeshFilter),
                 typeof(MeshRenderer),
                 typeof(MeshCollider),
-                typeof(LandformChunk)
+                typeof(Chunk)
             };
 
 
@@ -45,13 +45,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 实例一个地形块,并指定名称;
         /// </summary>
-        static LandformChunk CraeteTerrainChunk()
+        static Chunk CraeteTerrainChunk()
         {
             GameObject gameObject = new GameObject("TerrainChunk", ChunkScripts);
-            return gameObject.GetComponent<LandformChunk>();
+            return gameObject.GetComponent<Chunk>();
         }
 
-        public static LandformChunk Create()
+        public static Chunk Create()
         {
             var item = CraeteTerrainChunk();
             return item;
@@ -60,7 +60,7 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        LandformChunk()
+        Chunk()
         {
         }
 
