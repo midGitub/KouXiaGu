@@ -26,9 +26,14 @@ namespace KouXiaGu.Terrain3D
             get { return readOnleyRequestQueue; }
         }
 
+        public bool IsEmpty
+        {
+            get { return requestQueue.Count == 0; }
+        }
+
         public IBakingRequest Current
         {
-            get { return requestQueue.First.Value; }
+            get { return requestQueue.First == null ? null : requestQueue.First.Value; }
         }
 
         /// <summary>

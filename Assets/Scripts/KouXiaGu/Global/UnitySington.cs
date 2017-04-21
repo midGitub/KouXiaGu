@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -21,6 +18,7 @@ namespace KouXiaGu
         public static T Instance
         {
             get { return instance ?? Initialize(); }
+            private set { instance = value; }
         }
 
         /// <summary>
@@ -51,18 +49,43 @@ namespace KouXiaGu
                 else
                 {
                     instance = instances[0];
-                    Debug.LogError(instances.ToLog("存在多个单例在场景!将销毁其它;"));
+                    string errorStr = "存在多个单例在场景!将销毁其它;";
 
                     for (int i = 1; i < instances.Length; i++)
                     {
                         var other = instances[i];
-                        Debug.LogWarning("销毁多余单例:" + other.name);
+                        errorStr += string.Format("\n[{0}]{1}", i, "销毁多余单例:" + other.name);
                         GameObject.Destroy(other);
                     }
+
+                    Debug.LogError(errorStr);
                 }
             }
             return instance;
         }
+
+
+        /// <summary>
+        /// 手动设置到单例,若出现错误则弹出异常;
+        /// </summary>
+        protected static void SetInstance(T instance)
+        {
+            if (Instance != instance && Instance != null)
+            {
+                throw new ArgumentException("实例化多个Unity单例;");
+            }
+
+            Instance = instance;
+        }
+
+
+        [ContextMenu("输出场景实例数目;")]
+        protected void LogSingtonCount()
+        {
+            var instances = GameObject.FindObjectsOfType<T>();
+            Debug.Log(instances.ToLog("场景存在单例"));
+        }
+
 
     }
 

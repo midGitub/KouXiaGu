@@ -15,23 +15,28 @@ namespace KouXiaGu
         void Restart();
 
         /// <summary>
-        /// 若需要等待返回true,不需要等待返回false;
+        /// 需要等待返回true,不需要等待返回false;
         /// </summary>
-        bool KeepWait();
+        bool Await();
     }
 
     /// <summary>
-    /// 秒数过后进行停顿;
+    /// 在闲置秒数过后进行等待;
     /// </summary>
-    public class SegmentedTime : ISegmented
+    [Serializable]
+    public class Stopwatch : ISegmented
     {
-        public SegmentedTime(float seconds)
+        Stopwatch()
         {
-            this.seconds = seconds;
-
         }
 
-        float seconds;
+        public Stopwatch(float seconds)
+        {
+            this.idleSeconds = seconds;
+        }
+
+        [SerializeField]
+        float idleSeconds;
         float before;
 
         public void Restart()
@@ -39,9 +44,9 @@ namespace KouXiaGu
             before = Time.realtimeSinceStartup;
         }
 
-        public bool KeepWait()
+        public bool Await()
         {
-            return Time.realtimeSinceStartup - before > seconds;
+            return Time.realtimeSinceStartup - before > idleSeconds;
         }
     }
 
@@ -64,7 +69,7 @@ namespace KouXiaGu
             Count = 0;
         }
 
-        public bool KeepWait()
+        public bool Await()
         {
             Count++;
             return Maximum < Count;
@@ -81,7 +86,7 @@ namespace KouXiaGu
             return;
         }
 
-        public bool KeepWait()
+        public bool Await()
         {
             return false;
         }

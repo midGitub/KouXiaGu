@@ -37,10 +37,8 @@ namespace KouXiaGu
     /// </summary>
     [DisallowMultipleComponent]
     [ConsoleClass]
-    sealed class ConsoleWindow : MonoBehaviour, ILogHandler
+    sealed class ConsoleWindow : UnitySington<ConsoleWindow>, ILogHandler
     {
-        public static ConsoleWindow instance { get; private set; }
-
 
         #region 控制台命令;
         const string consoleDisplayUnityLog_KeyWord = "unityLog";
@@ -48,7 +46,7 @@ namespace KouXiaGu
         [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "输出 是否在控制台窗口显示Unity.Debug的日志;")]
         public static void ConsoleDisplayUnityLog()
         {
-            bool isDisplay = instance.IsDisplayUnityLog;
+            bool isDisplay = Instance.IsDisplayUnityLog;
             ConsoleDisplayUnityLog(isDisplay);
         }
 
@@ -61,7 +59,7 @@ namespace KouXiaGu
 
         static void ConsoleDisplayUnityLog(bool isDisplay)
         {
-            instance.IsDisplayUnityLog = isDisplay;
+            Instance.IsDisplayUnityLog = isDisplay;
             GameConsole.Log(consoleDisplayUnityLog_KeyWord + " " + isDisplay);
         }
         #endregion
@@ -111,9 +109,12 @@ namespace KouXiaGu
 
         void Awake()
         {
-            instance = this;
-            InitOutput();
-            InitInput();
+            SetInstance(this);
+
+            Output = new ConsoleOutput(outputStype);
+            Output.Text = ui.OutputText;
+
+            Input = new ConsoleInput();
 
             ResetInputContent();
 
@@ -125,15 +126,10 @@ namespace KouXiaGu
             displayKeyObserver.SubscribeUpdate();
         }
 
-        void InitOutput()
+        void OnValidate()
         {
-            Output = new ConsoleOutput(outputStype);
-            Output.Text = ui.OutputText;
-        }
-
-        void InitInput()
-        {
-            Input = new ConsoleInput();
+            Debug.logger.logEnabled = isShowUnityLog;
+            SetDisplay(isDisplay);
         }
 
         void LateUpdate()
@@ -219,18 +215,6 @@ namespace KouXiaGu
                 ui.ScrollToBottom();
                 uiScrollSize = size;
             }
-        }
-
-        void OnValidate()
-        {
-            Debug.logger.logEnabled = isShowUnityLog;
-            SetDisplay(isDisplay);
-        }
-
-        void OnDestroy()
-        {
-            Debug.logger.logHandler = defaultLogHandler;
-            instance = null;
         }
 
         void OnDisplayKeyDown()

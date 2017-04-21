@@ -349,7 +349,7 @@ namespace KouXiaGu
             try
             {
                 Segmented.Restart();
-                while (!Segmented.KeepWait())
+                while (!Segmented.Await())
                 {
                     if(!coroutine.MoveNext())
                     {

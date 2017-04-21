@@ -15,7 +15,7 @@ namespace KouXiaGu
     {
         static ConsoleWindow logger
         {
-            get { return ConsoleWindow.instance; }
+            get { return ConsoleWindow.Instance; }
         }
 
         static ConsoleOutput output
