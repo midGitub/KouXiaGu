@@ -20,23 +20,28 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        public MeshRenderer _prefab;
+        public int _maxCapacity = 100;
+        GameObjectPool<MeshRenderer> objectPool;
+
         public Shader _diffuseShader;
         public Shader _heightShader;
         Material diffuseMaterial;
         Material heightMaterial;
 
         List<Pack> sceneObjects;
-        public _BakeMeshPool bakeMeshPool;
 
+        public IWorldData WorldData { get; private set; }
+        public RectCoord ChunkCoord { get; private set; }
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
 
         public void Initialise()
         {
+            objectPool = new GameObjectPool<MeshRenderer>(_prefab, _maxCapacity);
             diffuseMaterial = new Material(_diffuseShader);
             heightMaterial = new Material(_heightShader);
             sceneObjects = new List<Pack>();
-            bakeMeshPool.Initialise();
         }
 
         /// <summary>
@@ -44,30 +49,65 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerator Bake(IWorldData worldData, RectCoord chunkCoord, IEnumerable<CubicHexCoord> displays)
         {
-            throw new NotImplementedException();
+            WorldData = worldData;
+            ChunkCoord = chunkCoord;
+
+            PrepareScene(displays);
+            yield return null;
+
+
+            ClearScene();
         }
 
         /// <summary>
-        /// 在场景内创建
+        /// 清空场景
         /// </summary>
-        void PrepareScene(IWorldData worldData, RectCoord chunkCoord, IEnumerable<CubicHexCoord> displays)
-        {
-            bakeMeshPool.SetTarget(chunkCoord);
-            ClearScene();
-
-            foreach (var display in displays)
-            {
-
-            }
-        }
-
         void ClearScene()
         {
             foreach (var roadMesh in sceneObjects)
             {
-                bakeMeshPool.Release(roadMesh.Rednerer);
+                Release(roadMesh.Rednerer);
             }
             sceneObjects.Clear();
+        }
+
+        /// <summary>
+        /// 在场景内创建烘培使用的网格;
+        /// </summary>
+        void PrepareScene(IEnumerable<CubicHexCoord> displays)
+        {
+            foreach (var display in displays)
+            {
+                float angle;
+                TerrainLandform info = GetLandformInfo(display, out angle);
+
+                if (info != null)
+                {
+                    var mesh = Get(display, angle, -sceneObjects.Count);
+                    sceneObjects.Add(new Pack(info, mesh));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到该点的地形贴图信息;
+        /// </summary>
+        TerrainLandform GetLandformInfo(CubicHexCoord pos, out float angle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeshRenderer Get(CubicHexCoord coord, float angle, float y)
+        {
+            MeshRenderer item = objectPool.Get();
+            item.transform.position = coord.GetTerrainPixel(y);
+            item.transform.rotation = Quaternion.Euler(0, angle, 0);
+            return item;
+        }
+
+        public void Release(MeshRenderer mesh)
+        {
+            objectPool.Release(mesh);
         }
 
         /// <summary>
@@ -80,47 +120,6 @@ namespace KouXiaGu.Terrain3D
 
             BakeCamera.ReleaseTemporary(HeightRT);
             HeightRT = null;
-        }
-
-        [Serializable]
-        public class _BakeMeshPool : BakeCoordTransform , IObjectPool<MeshRenderer>
-        {
-            _BakeMeshPool()
-            {
-            }
-
-            public MeshRenderer _prefab;
-            public int _maxCapacity = 100;
-            GameObjectPool<MeshRenderer> objectPool;
-
-            public int Count
-            {
-                get { return objectPool.Count; }
-            }
-
-            public void Initialise()
-            {
-                objectPool = new GameObjectPool<MeshRenderer>(_prefab, _maxCapacity);
-            }
-
-            public MeshRenderer Get()
-            {
-                return objectPool.Get();
-            }
-
-            public MeshRenderer Get(CubicHexCoord coord, float angle, float y)
-            {
-                MeshRenderer item = objectPool.Get();
-                item.transform.position = PositionConvert(coord, y);
-                item.transform.rotation = Quaternion.Euler(0, angle, 0);
-                return item;
-            }
-
-            public void Release(MeshRenderer mesh)
-            {
-                objectPool.Release(mesh);
-            }
-
         }
 
         struct Pack
