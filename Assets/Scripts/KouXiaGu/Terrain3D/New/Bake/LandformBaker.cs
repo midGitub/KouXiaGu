@@ -73,6 +73,8 @@ namespace KouXiaGu.Terrain3D
         {
             while (true)
             {
+
+                Current.Completed(null);
                 yield return null;
             }
         }
