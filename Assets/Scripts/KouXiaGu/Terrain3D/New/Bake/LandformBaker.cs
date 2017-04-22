@@ -30,9 +30,9 @@ namespace KouXiaGu.Terrain3D
             set { runtimeStopwatch = value; }
         }
 
-        IBakingRequest Current
+        BakingRequest Current
         {
-            get { return bakeQueue.Current; }
+            get { return bakeQueue.First; }
         }
 
         void Awake()

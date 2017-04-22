@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
 
         readonly LinkedList<BakingRequest> requestQueue;
         readonly IReadOnlyCollection<RectCoord> readOnleyRequestQueue;
-        public BakingRequest Current { get; private set; }
+        public BakingRequest First { get; private set; }
 
         public IReadOnlyCollection<RectCoord> RequestQueue
         {
@@ -29,41 +29,60 @@ namespace KouXiaGu.Terrain3D
 
         public bool IsEmpty
         {
-            get { return requestQueue.Count == 0; }
+            get { return First == null; }
         }
 
         /// <summary>
         /// 创建到队尾,若该坐标已经存在队列中,则返回队列中的实例;
         /// </summary>
-        public BakingRequest Enqueue(RectCoord chunkCoord)
+        public IBakingRequest Enqueue(RectCoord chunkCoord)
         {
             var request = FirstOrDefault(chunkCoord);
 
             if (request == null)
             {
                 request = new BakingRequest(chunkCoord);
-                requestQueue.AddLast(request);
+
+                if (First == null)
+                    First = request;
+                else
+                    requestQueue.AddLast(request);
             }
 
             return request;
         }
 
-        public BakingRequest FirstOrDefault(RectCoord chunkCoord)
+        BakingRequest FirstOrDefault(RectCoord chunkCoord)
         {
-            if (Current.ChunkCoord == chunkCoord)
-                return Current;
+            if (IsFirst(chunkCoord) && !First.IsFaulted && !First.IsCanceled)
+                return First;
 
             return requestQueue.FirstOrDefault(request => request.ChunkCoord == chunkCoord);
         }
 
         /// <summary>
-        /// 设置新的请求到 BakeQueue.Current;
+        /// 坐标是否和 First 相符;
+        /// </summary>
+        bool IsFirst(RectCoord chunkCoord)
+        {
+            return First != null && First.ChunkCoord == chunkCoord;
+        }
+
+        /// <summary>
+        /// 设置新的请求到 BakeQueue.First;
         /// </summary>
         public BakingRequest Dequeue()
         {
-            Current = requestQueue.First.Value;
-            requestQueue.RemoveFirst();
-            return Current;
+            if (requestQueue.First == null)
+            {
+                First = null;
+            }
+            else
+            {
+                First = requestQueue.First.Value;
+                requestQueue.RemoveFirst();
+            }
+            return First;
         }
 
         /// <summary>
@@ -71,9 +90,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool Cancel(RectCoord chunkCoord)
         {
-            if (Current.ChunkCoord == chunkCoord)
+            if (IsFirst(chunkCoord))
             {
-                Current.Cancel();
+                First.Cancel();
                 return true;
             }
             else
@@ -88,6 +107,7 @@ namespace KouXiaGu.Terrain3D
                 return false;
             }
         }
+
     }
 
 }
