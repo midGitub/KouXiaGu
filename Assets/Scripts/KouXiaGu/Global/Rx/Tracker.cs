@@ -202,6 +202,11 @@ namespace KouXiaGu
             observersList = new List<IObserver<T>>();
         }
 
+        public ListTracker(int capacity)
+        {
+            observersList = new List<IObserver<T>>(capacity);
+        }
+
         List<IObserver<T>> observersList;
 
         protected override ICollection<IObserver<T>> observers

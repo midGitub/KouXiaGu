@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -75,27 +76,45 @@ namespace KouXiaGu.Terrain3D
             {
                 this.chunkCoord = chunkCoord;
                 bakeCoroutine = BakeCoroutine();
+                tracker = new ListTracker<ChunkTexture>(1);
             }
 
             readonly RectCoord chunkCoord;
             readonly IEnumerator bakeCoroutine;
+            readonly ListTracker<ChunkTexture> tracker;
 
             public RectCoord ChunkCoord
             {
                 get { return chunkCoord; }
             }
 
+            protected override void OnCompleted(ChunkTexture result)
+            {
+                base.OnCompleted(result);
+                tracker.Track(result);
+            }
+
+            protected override void OnCanceled()
+            {
+                base.OnCanceled();
+                var error = new OperationCanceledException();
+                tracker.TrackError(error);
+            }
+
+            protected override void OnFaulted(Exception ex)
+            {
+                base.OnFaulted(ex);
+                tracker.TrackError(ex);
+            }
+
+            public IDisposable Subscribe(IObserver<ChunkTexture> observer)
+            {
+                return tracker.Subscribe(observer);
+            }
+
             public bool MoveNext()
             {
                 return bakeCoroutine.MoveNext();
-            }
-
-            /// <summary>
-            /// 标记为被取消;
-            /// </summary>
-            public void Cancel()
-            {
-                OnCanceled();
             }
 
             /// <summary>
@@ -110,7 +129,6 @@ namespace KouXiaGu.Terrain3D
             {
                 throw new NotImplementedException();
             }
-
         }
 
     }
