@@ -8,21 +8,35 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
-    class BakingRequest : AsyncOperation<ChunkTexture>, IBakingRequest
+    class BakingRequest : AsyncOperation<ChunkTexture>, IBakingRequest, IEnumerator
     {
         public BakingRequest(RectCoord chunkCoord)
         {
-            ChunkCoord = chunkCoord;
+            this.chunkCoord = chunkCoord;
+            bakeCoroutine = BakeCoroutine();
         }
 
-        public RectCoord ChunkCoord { get; private set; }
+        readonly RectCoord chunkCoord;
+        readonly IEnumerator bakeCoroutine;
 
-        /// <summary>
-        /// 标记为完成;
-        /// </summary>
-        public void Completed(ChunkTexture texture)
+        public RectCoord ChunkCoord
         {
-            OnCompleted(texture);
+            get { return chunkCoord; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return null; }
+        }
+
+        void IEnumerator.Reset()
+        {
+            return;
+        }
+
+        public bool MoveNext()
+        {
+            return bakeCoroutine.MoveNext();
         }
 
         /// <summary>
@@ -31,6 +45,11 @@ namespace KouXiaGu.Terrain3D
         public void Cancel()
         {
             OnCanceled();
+        }
+
+        IEnumerator BakeCoroutine()
+        {
+            throw new NotImplementedException();
         }
 
         public override bool Equals(object obj)
@@ -47,6 +66,7 @@ namespace KouXiaGu.Terrain3D
         {
             return ChunkCoord.GetHashCode();
         }
+
     }
 
 }

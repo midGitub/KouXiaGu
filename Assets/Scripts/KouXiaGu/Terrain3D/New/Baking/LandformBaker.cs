@@ -22,7 +22,6 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         Stopwatch runtimeStopwatch;
         BakeQueue bakeQueue;
-        IEnumerator bakeCoroutine;
 
         public Stopwatch RuntimeStopwatch
         {
@@ -39,7 +38,6 @@ namespace KouXiaGu.Terrain3D
         {
             SetInstance(this);
             bakeQueue = new BakeQueue();
-            bakeCoroutine = BakeCoroutine();
         }
 
         /// <summary>
@@ -60,24 +58,22 @@ namespace KouXiaGu.Terrain3D
 
         void Update()
         {
-            if (!bakeQueue.IsEmpty)
+            if (Current != null)
             {
                 runtimeStopwatch.Restart();
 
-                while(!runtimeStopwatch.Await())
-                    bakeCoroutine.MoveNext();
+                while (!runtimeStopwatch.Await())
+                {
+                    Current.MoveNext();
+                    if (Current.IsCompleted)
+                    {
+                        bakeQueue.Dequeue();
+                        break;
+                    }
+                }
             }
         }
 
-        IEnumerator BakeCoroutine()
-        {
-            while (true)
-            {
-
-                Current.Completed(null);
-                yield return null;
-            }
-        }
     }
 
 }
