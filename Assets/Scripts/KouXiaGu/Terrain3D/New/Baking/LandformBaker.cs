@@ -29,14 +29,9 @@ namespace KouXiaGu.Terrain3D
             set { runtimeStopwatch = value; }
         }
 
-        BakingRequest Current
+        public IBakingRequest Current
         {
             get { return requestQueue.First.Value; }
-        }
-
-        public bool IsEmpty
-        {
-            get { return requestQueue.Count == 0; }
         }
 
         void Awake()
@@ -45,37 +40,32 @@ namespace KouXiaGu.Terrain3D
             requestQueue = new LinkedList<BakingRequest>();
         }
 
-        /// <summary>
-        /// 请求烘培地图块,若已经存在请求,则返回存在的请求;
-        /// </summary>
-        public IBakingRequest Bake(RectCoord chunkCoord)
-        {
-            var request = new BakingRequest(chunkCoord);
-            requestQueue.AddLast(request);
-            return request;
-        }
-
-        void Dequeue()
-        {
-            requestQueue.RemoveFirst();
-        }
-
         void Update()
         {
-            if (!IsEmpty)
+            if (requestQueue.Count != 0)
             {
                 runtimeStopwatch.Restart();
-
                 while (!runtimeStopwatch.Await())
                 {
-                    Current.MoveNext();
-                    if (Current.IsCompleted)
+                    var current = requestQueue.First.Value;
+                    current.MoveNext();
+                    if (current.IsCompleted)
                     {
-                        Dequeue();
+                        requestQueue.RemoveFirst();
                         break;
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 添加烘焙请求;
+        /// </summary>
+        public IBakingRequest AddRequest(RectCoord chunkCoord)
+        {
+            var request = new BakingRequest(chunkCoord);
+            requestQueue.AddLast(request);
+            return request;
         }
 
     }
