@@ -152,13 +152,13 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        [SerializeField]
-        BakeSettings settings;
-
         /// <summary>
         /// 烘培摄像机;
         /// </summary>
         Camera _camera;
+
+        [SerializeField]
+        BakeSettings settings;
 
         void Awake()
         {
