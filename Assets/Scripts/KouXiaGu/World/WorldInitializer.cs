@@ -70,7 +70,7 @@ namespace KouXiaGu.World
             get { return useEditorialInfo ? editorialInfo : WorldInfo; }
         }
 
-        public IGameData GameData
+        IGameData IWorldData.GameData
         {
             get { return GameInitializer.Instance.Data; }
         }
