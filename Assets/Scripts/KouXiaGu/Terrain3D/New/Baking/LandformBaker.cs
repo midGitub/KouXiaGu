@@ -68,6 +68,51 @@ namespace KouXiaGu.Terrain3D
             return request;
         }
 
+
+        class BakingRequest : AsyncOperation<ChunkTexture>, IBakingRequest
+        {
+            public BakingRequest(RectCoord chunkCoord)
+            {
+                this.chunkCoord = chunkCoord;
+                bakeCoroutine = BakeCoroutine();
+            }
+
+            readonly RectCoord chunkCoord;
+            readonly IEnumerator bakeCoroutine;
+
+            public RectCoord ChunkCoord
+            {
+                get { return chunkCoord; }
+            }
+
+            public bool MoveNext()
+            {
+                return bakeCoroutine.MoveNext();
+            }
+
+            /// <summary>
+            /// 标记为被取消;
+            /// </summary>
+            public void Cancel()
+            {
+                OnCanceled();
+            }
+
+            /// <summary>
+            /// 取消,结束烘培请求;
+            /// </summary>
+            public void Dispose()
+            {
+                OnCanceled();
+            }
+
+            IEnumerator BakeCoroutine()
+            {
+                throw new NotImplementedException();
+            }
+
+        }
+
     }
 
 }
