@@ -34,16 +34,16 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形块宽度;
         /// </summary>
-        public static readonly float CHUNK_WIDTH = (float)(MAP_HEXAGON.OuterDiameters * 1.5f * (CHUNK_SIZE - 1));
-        public static readonly float CHUNK_WIDTH_HALF = CHUNK_WIDTH / 2;
+        public static readonly float ChunkWidth = (float)(MAP_HEXAGON.OuterDiameters * 1.5f * (CHUNK_SIZE - 1));
+        public static readonly float CHUNK_WIDTH_HALF = ChunkWidth / 2;
 
         /// <summary>
         /// 地形块高度;
         /// </summary>
-        public static readonly float CHUNK_HEIGHT = (float)MAP_HEXAGON.InnerDiameters * CHUNK_SIZE;
-        public static readonly float CHUNK_HEIGHT_HALF = CHUNK_HEIGHT / 2;
+        public static readonly float ChunkHeight = (float)MAP_HEXAGON.InnerDiameters * CHUNK_SIZE;
+        public static readonly float CHUNK_HEIGHT_HALF = ChunkHeight / 2;
 
-        static readonly RectGrid CHUNK_GRID = new RectGrid(CHUNK_WIDTH, CHUNK_HEIGHT);
+        static readonly RectGrid CHUNK_GRID = new RectGrid(ChunkWidth, ChunkHeight);
         /// <summary>
         /// 矩形网格结构,用于地形块的排列;
         /// </summary>

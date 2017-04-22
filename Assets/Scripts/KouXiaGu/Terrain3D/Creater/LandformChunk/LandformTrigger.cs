@@ -31,8 +31,8 @@ namespace KouXiaGu.Terrain3D
         {
             List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
-            float lengthX = OLandformChunk.CHUNK_WIDTH / SUB_X;
-            float lengthZ = OLandformChunk.CHUNK_HEIGHT / SUB_Z;
+            float lengthX = OLandformChunk.ChunkWidth / SUB_X;
+            float lengthZ = OLandformChunk.ChunkHeight / SUB_Z;
 
             for (int z = 0; z <= SUB_Z; z++)
             {

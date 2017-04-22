@@ -26,14 +26,14 @@ namespace KouXiaGu.Terrain3D
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
         public static readonly float CameraSize =
-            ((OLandformChunk.CHUNK_HEIGHT + (OLandformChunk.CHUNK_HEIGHT * OutlineScale)) / 2);
+            ((ChunkInfo.ChunkHeight + (ChunkInfo.ChunkHeight * OutlineScale)) / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
         public static readonly float CameraAspect =
-            (OLandformChunk.CHUNK_WIDTH + OLandformChunk.CHUNK_WIDTH * OutlineScale) /
-            (OLandformChunk.CHUNK_HEIGHT + OLandformChunk.CHUNK_HEIGHT * OutlineScale);
+            (ChunkInfo.ChunkWidth + ChunkInfo.ChunkWidth * OutlineScale) /
+            (ChunkInfo.ChunkHeight + ChunkInfo.ChunkHeight * OutlineScale);
 
 
         BakeSettings()
@@ -124,8 +124,8 @@ namespace KouXiaGu.Terrain3D
 
         public void UpdataTextureSize()
         {
-            int chunkWidth = (int)Math.Round(OLandformChunk.CHUNK_WIDTH * textureSize);
-            int chunkHeight = (int)Math.Round(OLandformChunk.CHUNK_HEIGHT * textureSize);
+            int chunkWidth = (int)Math.Round(ChunkInfo.ChunkWidth * textureSize);
+            int chunkHeight = (int)Math.Round(ChunkInfo.ChunkHeight * textureSize);
 
             DiffuseTexWidth = (int)Math.Round(chunkWidth * diffuseMapRatios);
             DiffuseTexHeight = (int)Math.Round(chunkHeight * diffuseMapRatios);
