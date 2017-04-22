@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using UniRx;
 using UnityEngine;
@@ -11,10 +9,10 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形烘焙;
+    /// 地形烘焙管理;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformBakeManager : UnitySington<LandformBakeManager>
+    public class LandformBakeManager : MonoBehaviour
     {
         LandformBakeManager()
         {
@@ -25,6 +23,7 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         LandformBaker baker;
         LinkedList<BakingRequest> requestQueue;
+        IReadOnlyCollection<IBakingRequest> readOnlyRequestQueue;
 
         public Stopwatch RuntimeStopwatch
         {
@@ -39,8 +38,8 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
-            SetInstance(this);
             requestQueue = new LinkedList<BakingRequest>();
+            readOnlyRequestQueue = requestQueue.AsReadOnlyCollection(item => item as IBakingRequest);
         }
 
         void Update()
@@ -51,12 +50,12 @@ namespace KouXiaGu.Terrain3D
                 while (!runtimeStopwatch.Await())
                 {
                     var current = requestQueue.First.Value;
-                    current.MoveNext();
                     if (current.IsCompleted)
                     {
                         requestQueue.RemoveFirst();
                         break;
                     }
+                    current.MoveNext();
                 }
             }
         }
@@ -69,6 +68,17 @@ namespace KouXiaGu.Terrain3D
             var request = new BakingRequest(chunkCoord, baker);
             requestQueue.AddLast(request);
             return request;
+        }
+
+        /// <summary>
+        /// 取消所有请求;
+        /// </summary>
+        public void CanceleAll()
+        {
+            foreach (var request in requestQueue)
+            {
+                request.Dispose();
+            }
         }
 
         class BakingRequest : AsyncOperation<ChunkTexture>, IBakingRequest
