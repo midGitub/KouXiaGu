@@ -12,16 +12,11 @@ namespace KouXiaGu.Terrain3D
     /// 用于烘焙场景和品质控制;
     /// </summary>
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
-    public class BakeCamera : SceneSington<BakeCamera>
+    public class BakeCamera : UnitySington<BakeCamera>
     {
-
-        BakeCamera()
-        {
-        }
-
         static BakeSettings Settings
         {
-            get { return GetInstance.settings; }
+            get { return Instance.settings; }
         }
 
         /// <summary>
@@ -29,7 +24,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static Camera Camera
         {
-            get { return GetInstance._camera; }
+            get { return Instance._camera; }
         }
 
 
@@ -98,7 +93,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void CameraRender(RenderTexture rt, Vector3 cameraPoint)
         {
-            GetInstance.transform.position = cameraPoint;
+            Instance.transform.position = cameraPoint;
             CameraRender(rt);
         }
 
@@ -153,6 +148,10 @@ namespace KouXiaGu.Terrain3D
         }
 
 
+        BakeCamera()
+        {
+        }
+
         [SerializeField]
         BakeSettings settings;
 
@@ -161,9 +160,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         Camera _camera;
 
-        protected override void Awake()
+        void Awake()
         {
-            base.Awake();
             _camera = GetComponent<Camera>();
             InitBakingCamera();
         }
