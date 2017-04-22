@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
     {
 
         [SerializeField]
-        OLandformBaker landform;
+        BakeLandform landform;
 
         [SerializeField]
         RoadBaker road;

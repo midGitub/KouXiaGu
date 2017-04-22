@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形烘焙;
     /// </summary>
     [Serializable]
-    public class OLandformBaker : GameObjectPool<MeshRenderer>, IDisposable
+    public class OLandformBaker : OGameObjectPool<MeshRenderer>, IDisposable
     {
 
         [SerializeField]

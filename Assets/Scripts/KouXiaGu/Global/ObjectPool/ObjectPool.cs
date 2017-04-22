@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace KouXiaGu
 {
 
     public abstract class ObjectPool<T>
     {
-        const int defaultMaxCapacity = 120;
+        const int defaultMaxCapacity = 20;
 
         public ObjectPool()
             : this(defaultMaxCapacity)
@@ -19,7 +20,7 @@ namespace KouXiaGu
             objectQueue = new Queue<T>(maxCapacity);
         }
 
-        Queue<T> objectQueue;
+        readonly Queue<T> objectQueue;
         public int MaxCapacity { get; private set; }
 
         /// <summary>
@@ -51,9 +52,14 @@ namespace KouXiaGu
         public abstract T Instantiate();
 
         /// <summary>
-        /// 重置对象;
+        /// 在对象出池时进行重置;
         /// </summary>
-        public abstract void Reset(T item);
+        public abstract void ResetWhenOutPool(T item);
+
+        /// <summary>
+        /// 在进入对象池时进行重置;
+        /// </summary>
+        public abstract void ResetWhenEnterPool(T item);
 
         /// <summary>
         /// 销毁对象;
@@ -74,6 +80,7 @@ namespace KouXiaGu
             else
             {
                 T item = objectQueue.Dequeue();
+                ResetWhenOutPool(item);
                 return item;
             }
         }
@@ -92,7 +99,7 @@ namespace KouXiaGu
             }
             else
             {
-                Reset(item);
+                ResetWhenEnterPool(item);
                 objectQueue.Enqueue(item);
             }
         }

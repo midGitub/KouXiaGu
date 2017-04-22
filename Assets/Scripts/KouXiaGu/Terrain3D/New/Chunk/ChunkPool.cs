@@ -21,15 +21,22 @@ namespace KouXiaGu.Terrain3D
             return chunk;
         }
 
-        public override void Reset(Chunk chunk)
+        public override void ResetWhenOutPool(Chunk chunk)
+        {
+            chunk.gameObject.SetActive(true);
+        }
+
+        public override void ResetWhenEnterPool(Chunk chunk)
         {
             chunk.Clear();
+            chunk.gameObject.SetActive(false);
         }
 
         public override void Destroy(Chunk chunk)
         {
             chunk.Destroy();
         }
+
     }
 
 }

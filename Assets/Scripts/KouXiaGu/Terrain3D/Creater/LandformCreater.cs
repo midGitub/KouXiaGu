@@ -113,7 +113,7 @@ namespace KouXiaGu.Terrain3D
                 return new OLandformChunk();
             }
 
-            public override void Reset(OLandformChunk item)
+            public override void ResetWhenEnterPool(OLandformChunk item)
             {
                 item.Reset();
             }
@@ -121,6 +121,11 @@ namespace KouXiaGu.Terrain3D
             public override void Destroy(OLandformChunk item)
             {
                 item.Destroy();
+            }
+
+            public override void ResetWhenOutPool(OLandformChunk item)
+            {
+                throw new NotImplementedException();
             }
         }
 

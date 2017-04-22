@@ -9,7 +9,7 @@ namespace KouXiaGu
     /// 对象池;
     /// </summary>
     [Serializable]
-    public class ReusableObjectPool<T> : GameObjectPool<T>
+    public class ReusableObjectPool<T> : OGameObjectPool<T>
         where T : MonoBehaviour, IReusable
     {
 

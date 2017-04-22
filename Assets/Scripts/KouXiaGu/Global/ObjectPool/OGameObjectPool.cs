@@ -8,7 +8,7 @@ namespace KouXiaGu
 {
 
 
-    public class GameObjectPool<T>
+    public class OGameObjectPool<T>
         where T : Component
     {
 

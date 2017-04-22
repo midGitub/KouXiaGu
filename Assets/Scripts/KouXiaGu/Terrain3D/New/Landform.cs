@@ -24,10 +24,17 @@ namespace KouXiaGu.Terrain3D
         {
             public AsyncInitializer(IWorldData worldData)
             {
-                var instance = new Landform();
-                instance.WorldData = worldData;
-                instance.LandformChunk = new ChunkManager();
-                OnCompleted(instance);
+                try
+                {
+                    var instance = new Landform();
+                    instance.WorldData = worldData;
+                    instance.LandformChunk = new ChunkManager();
+                    OnCompleted(instance);
+                }
+                catch (Exception ex)
+                {
+                    OnFaulted(ex);
+                }
             }
         }
 
