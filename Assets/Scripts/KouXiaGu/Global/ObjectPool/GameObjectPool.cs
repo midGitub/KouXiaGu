@@ -7,15 +7,30 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// UnityEngine.Component 泛型对象池;
+    /// </summary>
     public class GameObjectPool<T> : ObjectPool<T>
         where T : Component
     {
 
+        public GameObjectPool(T prefab)
+            : base()
+        {
+            this.prefab = prefab;
+        }
+
+        public GameObjectPool(T prefab, int maxCapacity)
+            : base(maxCapacity)
+        {
+            this.prefab = prefab;
+        }
+
         readonly T prefab;
 
-        public override void Destroy(T item)
+        public T Prefab
         {
-            throw new NotImplementedException();
+            get { return prefab; }
         }
 
         public override T Instantiate()
@@ -25,12 +40,17 @@ namespace KouXiaGu
 
         public override void ResetWhenEnterPool(T item)
         {
-            throw new NotImplementedException();
+            item.gameObject.SetActive(false);
         }
 
         public override void ResetWhenOutPool(T item)
         {
-            throw new NotImplementedException();
+            item.gameObject.SetActive(true);
+        }
+
+        public override void Destroy(T item)
+        {
+            GameObject.DestroyObject(item.gameObject);
         }
     }
 

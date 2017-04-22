@@ -29,6 +29,7 @@ namespace KouXiaGu.Terrain3D
 
         public void Initialise()
         {
+            meshPool.Initialise();
             diffuseMaterial = new Material(diffuseShader);
             heightMaterial = new Material(heightShader);
         }
@@ -36,21 +37,24 @@ namespace KouXiaGu.Terrain3D
         [Serializable]
         class BakeMeshPool
         {
+            BakeMeshPool()
+            {
+            }
+
             [SerializeField]
             MeshRenderer prefab;
             [SerializeField]
             int maxCapacity = 100;
-
-            /// <summary>
-            /// 中心点,根据传入坐标转换到此中心点;
-            /// </summary>
             [SerializeField]
             CubicHexCoord createdCenter;
 
+            GameObjectPool<MeshRenderer> objectPool;
+
             public void Initialise()
             {
-
+                objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);
             }
+
         }
 
     }

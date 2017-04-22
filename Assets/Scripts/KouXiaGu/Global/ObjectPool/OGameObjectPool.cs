@@ -7,7 +7,7 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-
+    [Obsolete]
     public class OGameObjectPool<T>
         where T : Component
     {
