@@ -78,14 +78,12 @@ namespace KouXiaGu
             Instance = instance;
         }
 
-
         [ContextMenu("输出场景实例数目;")]
         protected void LogSingtonCount()
         {
             var instances = GameObject.FindObjectsOfType<T>();
             Debug.Log(instances.ToLog("场景存在单例"));
         }
-
 
     }
 
