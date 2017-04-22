@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Stopwatch runtimeStopwatch;
-        BakeQueue bakeQueue;
+        BakingRequestQueue bakeQueue;
 
         public Stopwatch RuntimeStopwatch
         {
@@ -34,10 +34,15 @@ namespace KouXiaGu.Terrain3D
             get { return bakeQueue.First; }
         }
 
+        public IReadOnlyCollection<RectCoord> Requests
+        {
+            get { return bakeQueue.Requests; ; }
+        }
+
         void Awake()
         {
             SetInstance(this);
-            bakeQueue = new BakeQueue();
+            bakeQueue = new BakingRequestQueue();
         }
 
         /// <summary>

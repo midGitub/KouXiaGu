@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
@@ -10,9 +9,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形烘培队列;
     /// </summary>
-    class BakeQueue
+    class BakingRequestQueue
     {
-        public BakeQueue()
+        public BakingRequestQueue()
         {
             requestQueue = new LinkedList<BakingRequest>();
             readOnleyRequestQueue = requestQueue.AsReadOnlyCollection(item => item.ChunkCoord);
@@ -22,7 +21,7 @@ namespace KouXiaGu.Terrain3D
         readonly IReadOnlyCollection<RectCoord> readOnleyRequestQueue;
         public BakingRequest First { get; private set; }
 
-        public IReadOnlyCollection<RectCoord> RequestQueue
+        public IReadOnlyCollection<RectCoord> Requests
         {
             get { return readOnleyRequestQueue; }
         }
