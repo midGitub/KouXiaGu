@@ -14,7 +14,7 @@ namespace KouXiaGu
     /// <summary>
     /// 游戏数据,开始游戏前需要读取的资源;
     /// </summary>
-    public class GameData
+    public class GameData : IGameData
     {
 
         public static IAsyncOperation<GameData> CreateAsync()

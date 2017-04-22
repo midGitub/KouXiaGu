@@ -6,10 +6,29 @@ using KouXiaGu.Globalization;
 using KouXiaGu.KeyInput;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu
 {
+
+    public interface IGameData
+    {
+        /// <summary>
+        /// 基础信息;
+        /// </summary>
+        WorldElementResource ElementInfo { get; }
+
+        /// <summary>
+        /// 地形资源;
+        /// </summary>
+        TerrainResource Terrain { get; }
+
+        /// <summary>
+        /// 地图资源;
+        /// </summary>
+        MapResource Map { get; }
+    }
 
     /// <summary>
     /// 负责对游戏资源初始化;
