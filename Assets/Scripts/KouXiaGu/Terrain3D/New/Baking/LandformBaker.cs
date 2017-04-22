@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Stopwatch runtimeStopwatch;
-        BakingRequestQueue bakeQueue;
+        LinkedList<BakingRequest> requestQueue;
 
         public Stopwatch RuntimeStopwatch
         {
@@ -31,18 +31,18 @@ namespace KouXiaGu.Terrain3D
 
         BakingRequest Current
         {
-            get { return bakeQueue.First; }
+            get { return requestQueue.First.Value; }
         }
 
-        public IReadOnlyCollection<RectCoord> Requests
+        public bool IsEmpty
         {
-            get { return bakeQueue.Requests; ; }
+            get { return requestQueue.Count == 0; }
         }
 
         void Awake()
         {
             SetInstance(this);
-            bakeQueue = new BakingRequestQueue();
+            requestQueue = new LinkedList<BakingRequest>();
         }
 
         /// <summary>
@@ -50,20 +50,19 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IBakingRequest Bake(RectCoord chunkCoord)
         {
-            return bakeQueue.Enqueue(chunkCoord);
+            var request = new BakingRequest(chunkCoord);
+            requestQueue.AddLast(request);
+            return request;
         }
 
-        /// <summary>
-        /// 请求取消地图块的烘培请求;
-        /// </summary>
-        public bool Cancel(RectCoord chunkCoord)
+        void Dequeue()
         {
-            return bakeQueue.Cancel(chunkCoord);
+            requestQueue.RemoveFirst();
         }
 
         void Update()
         {
-            if (Current != null)
+            if (!IsEmpty)
             {
                 runtimeStopwatch.Restart();
 
@@ -72,7 +71,7 @@ namespace KouXiaGu.Terrain3D
                     Current.MoveNext();
                     if (Current.IsCompleted)
                     {
-                        bakeQueue.Dequeue();
+                        Dequeue();
                         break;
                     }
                 }

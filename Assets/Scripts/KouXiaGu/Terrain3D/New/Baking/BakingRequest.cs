@@ -47,6 +47,14 @@ namespace KouXiaGu.Terrain3D
             OnCanceled();
         }
 
+        /// <summary>
+        /// 取消,结束烘培请求;
+        /// </summary>
+        public void Dispose()
+        {
+            OnCanceled();
+        }
+
         IEnumerator BakeCoroutine()
         {
             throw new NotImplementedException();

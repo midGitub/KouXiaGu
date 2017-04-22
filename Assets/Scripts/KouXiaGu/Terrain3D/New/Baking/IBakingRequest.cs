@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 烘培请求;
     /// </summary>
-    public interface IBakingRequest : IAsyncOperation<ChunkTexture>
+    public interface IBakingRequest : IAsyncOperation<ChunkTexture>, IDisposable
     {
         RectCoord ChunkCoord { get; }
     }
