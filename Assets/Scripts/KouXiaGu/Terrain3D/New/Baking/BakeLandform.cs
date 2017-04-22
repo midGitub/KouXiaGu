@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
+using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -94,6 +95,13 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         TerrainLandform GetLandformInfo(CubicHexCoord pos, out float angle)
         {
+            IDictionary<CubicHexCoord, MapNode> map = WorldData.Map.Data;
+            MapNode node;
+            if (map.TryGetValue(pos, out node))
+            {
+                angle = node.Landform.Angle;
+                //TerrainLandform info = WorldData
+            }
             throw new NotImplementedException();
         }
 
