@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形块信息;
     /// </summary>
-    public class ChunkInfo
+    public static class ChunkInfo
     {
         /// <summary>
         /// 地图节点所使用的六边形参数;
@@ -47,11 +47,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 地形块坐标 获取到其中心的六边形坐标;
         /// </summary>
-        public static CubicHexCoord GetHexCenter(RectCoord coord)
+        public static CubicHexCoord GetChunkHexCenter(this RectCoord coord)
         {
             Vector3 pixelCenter = ChunkGrid.GetCenter(coord);
             return TerrainConvert.Grid.GetCubic(pixelCenter);
         }
+
 
         /// <summary>
         /// 获取到地图节点所属的地形块;

@@ -53,7 +53,7 @@ namespace KouXiaGu.Terrain3D.Tests
 
             RectCoord terrainBlockCoord = ChunkInfo.ChunkGrid.GetCoord(terrainPixel);
             Vector3 terrainBlockCenter = ChunkInfo.ChunkGrid.GetCenter(terrainBlockCoord);
-            CubicHexCoord terrainBlockHexCenter = ChunkInfo.GetHexCenter(terrainBlockCoord);
+            CubicHexCoord terrainBlockHexCenter = ChunkInfo.GetChunkHexCenter(terrainBlockCoord);
 
             Vector2 terrainBlockLocal = ChunkInfo.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
             Vector2 terrainBlockUV = ChunkInfo.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
