@@ -10,16 +10,17 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形烘培队列;
     /// </summary>
-    public class BakeQueue
+    class BakeQueue
     {
         public BakeQueue()
         {
-            requestQueue = new LinkedList<Baker>();
+            requestQueue = new LinkedList<BakingRequest>();
             readOnleyRequestQueue = requestQueue.AsReadOnlyCollection(item => item.ChunkCoord);
         }
 
-        readonly LinkedList<Baker> requestQueue;
+        readonly LinkedList<BakingRequest> requestQueue;
         readonly IReadOnlyCollection<RectCoord> readOnleyRequestQueue;
+        public BakingRequest Current { get; private set; }
 
         public IReadOnlyCollection<RectCoord> RequestQueue
         {
@@ -31,83 +32,62 @@ namespace KouXiaGu.Terrain3D
             get { return requestQueue.Count == 0; }
         }
 
-        public IBakingRequest Current
-        {
-            get { return requestQueue.First == null ? null : requestQueue.First.Value; }
-        }
-
         /// <summary>
-        /// 请求烘培这个地图块,若已经存在请求,则返回存在的请求;
+        /// 创建到队尾,若该坐标已经存在队列中,则返回队列中的实例;
         /// </summary>
-        public IBakingRequest Bake(RectCoord chunkCoord)
+        public BakingRequest Enqueue(RectCoord chunkCoord)
         {
-            Baker request = requestQueue.FirstOrDefault(item => item.ChunkCoord == chunkCoord);
+            var request = FirstOrDefault(chunkCoord);
 
             if (request == null)
             {
-                request = new Baker(chunkCoord);
+                request = new BakingRequest(chunkCoord);
                 requestQueue.AddLast(request);
             }
 
             return request;
         }
 
+        public BakingRequest FirstOrDefault(RectCoord chunkCoord)
+        {
+            if (Current.ChunkCoord == chunkCoord)
+                return Current;
+
+            return requestQueue.FirstOrDefault(request => request.ChunkCoord == chunkCoord);
+        }
+
         /// <summary>
-        /// 请求取消这个地图块的烘培请求;
+        /// 设置新的请求到 BakeQueue.Current;
+        /// </summary>
+        public BakingRequest Dequeue()
+        {
+            Current = requestQueue.First.Value;
+            requestQueue.RemoveFirst();
+            return Current;
+        }
+
+        /// <summary>
+        /// 请求取消这个请求;
         /// </summary>
         public bool Cancel(RectCoord chunkCoord)
         {
-            var node = requestQueue.FindNode(request => request.ChunkCoord == chunkCoord);
-            if (node != null)
+            if (Current.ChunkCoord == chunkCoord)
             {
-                node.Value.Cancel();
-                requestQueue.Remove(node);
+                Current.Cancel();
                 return true;
             }
-            return false;
-        }
-
-        public class Baker : AsyncOperation<ChunkTexture>, IBakingRequest
-        {
-            public Baker(RectCoord chunkCoord)
+            else
             {
-                ChunkCoord = chunkCoord;
-            }
-
-            public RectCoord ChunkCoord { get; private set; }
-
-            /// <summary>
-            /// 标记为完成;
-            /// </summary>
-            public void Completed(ChunkTexture texture)
-            {
-                OnCompleted(texture);
-            }
-
-            /// <summary>
-            /// 标记为被取消;
-            /// </summary>
-            public void Cancel()
-            {
-                OnCanceled();
-            }
-
-            public override bool Equals(object obj)
-            {
-                var item = obj as Baker;
-
-                if (item == null)
-                    return false;
-
-                return ChunkCoord == item.ChunkCoord;
-            }
-
-            public override int GetHashCode()
-            {
-                return ChunkCoord.GetHashCode();
+                var node = requestQueue.FirstOrDefaultNode(request => request.ChunkCoord == chunkCoord);
+                if (node != null)
+                {
+                    node.Value.Cancel();
+                    requestQueue.Remove(node);
+                    return true;
+                }
+                return false;
             }
         }
-
     }
 
 }

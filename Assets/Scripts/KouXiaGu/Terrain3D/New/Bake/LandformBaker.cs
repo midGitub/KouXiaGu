@@ -30,6 +30,11 @@ namespace KouXiaGu.Terrain3D
             set { runtimeStopwatch = value; }
         }
 
+        IBakingRequest Current
+        {
+            get { return bakeQueue.Current; }
+        }
+
         void Awake()
         {
             SetInstance(this);
@@ -42,7 +47,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IBakingRequest Bake(RectCoord chunkCoord)
         {
-            return bakeQueue.Bake(chunkCoord);
+            return bakeQueue.Enqueue(chunkCoord);
         }
 
         /// <summary>
@@ -71,7 +76,6 @@ namespace KouXiaGu.Terrain3D
                 yield return null;
             }
         }
-
     }
 
 }

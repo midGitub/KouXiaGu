@@ -31,7 +31,7 @@ namespace KouXiaGu
         /// <summary>
         /// 若为寻找到则返回Null;
         /// </summary>
-        public static LinkedListNode<T> FindNode<T>(this LinkedList<T> collection, Func<T, bool> predicate)
+        public static LinkedListNode<T> FirstOrDefaultNode<T>(this LinkedList<T> collection, Func<T, bool> predicate)
         {
             if (predicate == null)
                 throw new ArgumentNullException("predicate");
@@ -55,7 +55,7 @@ namespace KouXiaGu
             if (predicate == null)
                 throw new ArgumentNullException("predicate");
 
-            var node = FindNode(collection, predicate);
+            var node = FirstOrDefaultNode(collection, predicate);
 
             if (node == null)
                 return false;
