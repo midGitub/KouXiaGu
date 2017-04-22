@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     [Serializable]
     class BakeCoordTransform
     {
-        BakeCoordTransform()
+        protected BakeCoordTransform()
         {
         }
 
@@ -51,6 +51,15 @@ namespace KouXiaGu.Terrain3D
         {
             CubicHexCoord coord = terget - TargetCenter;
             return coord;
+        }
+
+        /// <summary>
+        /// 获取到转换后的坐标;
+        /// </summary>
+        public Vector3 PositionConvert(CubicHexCoord terget, float y)
+        {
+            CubicHexCoord coord = terget - TargetCenter;
+            return (coord + this.center).GetTerrainPixel(y);
         }
 
     }

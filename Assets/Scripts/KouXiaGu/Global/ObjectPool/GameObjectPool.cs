@@ -17,12 +17,16 @@ namespace KouXiaGu
         public GameObjectPool(T prefab)
             : base()
         {
+            if (prefab == null)
+                throw new ArgumentNullException();
             this.prefab = prefab;
         }
 
         public GameObjectPool(T prefab, int maxCapacity)
             : base(maxCapacity)
         {
+            if (prefab == null)
+                throw new ArgumentNullException();
             this.prefab = prefab;
         }
 

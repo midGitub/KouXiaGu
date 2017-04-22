@@ -5,7 +5,7 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    public abstract class ObjectPool<T>
+    public abstract class ObjectPool<T> : IObjectPool<T>
     {
         const int defaultMaxCapacity = 20;
 

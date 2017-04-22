@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
+using KouXiaGu.World;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -13,17 +15,19 @@ namespace KouXiaGu.Terrain3D
     /// 地形烘培;
     /// </summary>
     [Serializable]
-    public class LandformBaker
+    class LandformBaker
     {
+        LandformBaker()
+        {
+        }
 
-        [SerializeField]
-        BakeLandform landform;
+        public BakeLandform _landform;
+        public IWorldData WorldData { get; private set; }
 
-        [SerializeField]
-        RoadBaker road;
-
-        [SerializeField]
-        DecorateBlend decorateBlend;
+        public void Initialise(IWorldData worldData)
+        {
+            WorldData = worldData;
+        }
 
         public IEnumerator GetBakeCoroutine(RectCoord chunkCoord)
         {
