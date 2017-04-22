@@ -71,7 +71,6 @@ namespace KouXiaGu.Terrain3D
             return request;
         }
 
-
         class BakingRequest : AsyncOperation<ChunkTexture>, IBakingRequest
         {
             public BakingRequest(RectCoord chunkCoord, LandformBaker baker)
