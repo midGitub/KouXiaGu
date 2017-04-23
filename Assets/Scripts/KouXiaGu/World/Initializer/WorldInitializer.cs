@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using KouXiaGu.World.Map;
 using UniRx;
-using KouXiaGu.Terrain3D;
 
 namespace KouXiaGu.World
 {
@@ -19,7 +17,6 @@ namespace KouXiaGu.World
         IWorldScene Scene { get; }
     }
 
-
     /// <summary>
     /// 负责初始化游戏场景;
     /// </summary>
@@ -29,7 +26,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 初始化时使用的世界信息;
         /// </summary>
-        public static WorldInfo staticWorldInfo { get; set; }
+        public static IAsyncOperation<WorldInfo> WorldInfoReader { get; set; }
 
 
         WorldInitializer()
@@ -45,13 +42,10 @@ namespace KouXiaGu.World
         ListTracker<IWorld> worldTracker;
         WorldDataInitializer worldDataInitialize;
         SceneInitializer sceneInitialize;
+        public IGameData GameData { get; private set; }
+        public WorldInfo Info { get; private set; }
         public IWorldData Data { get; private set; }
         public IWorldScene Scene { get; private set; }
-
-        public WorldInfo WorldInfo
-        {
-            get { return useEditorialInfo ? editorialInfo : staticWorldInfo; }
-        }
 
         void Awake()
         {
@@ -59,7 +53,10 @@ namespace KouXiaGu.World
             worldDataInitialize = new WorldDataInitializer();
             sceneInitialize = new SceneInitializer();
 
-            GameInitializer.GameDataInitialize.SubscribeCompleted(OnGameDataCompleted);
+            if (useEditorialInfo)
+                WorldInfoReader = new WorldInfoReader(editorialInfo);
+
+            GameInitializer.GameDataInitialize.SubscribeCompleted(Initialize);
         }
 
         public IDisposable Subscribe(IObserver<IWorld> observer)
@@ -67,10 +64,16 @@ namespace KouXiaGu.World
             return worldTracker.Subscribe(observer);
         }
 
-        void OnGameDataCompleted(IAsyncOperation<IGameData> operation)
+        void Initialize(IAsyncOperation<IGameData> operation)
         {
-            IGameData gameDate = operation.Result;
-            worldDataInitialize.Start(gameDate, WorldInfo, this).SubscribeCompleted(OnWorldDataCompleted);
+            GameData = operation.Result;
+            WorldInfoReader.SubscribeCompleted(OnWorldInfoReadCompleted);
+        }
+
+        void OnWorldInfoReadCompleted(IAsyncOperation<WorldInfo> operation)
+        {
+            Info = operation.Result;
+            worldDataInitialize.Start(GameData, Info, this).SubscribeCompleted(OnWorldDataCompleted);
         }
 
         void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
