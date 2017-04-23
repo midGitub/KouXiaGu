@@ -44,6 +44,38 @@ namespace KouXiaGu
     public static partial class AsyncOperationExtensions
     {
 
+        abstract class SubscriberBase<T> : UnityThreadEvent
+            where T : IAsyncOperation
+        {
+            public SubscriberBase(T operation)
+            {
+                this.operation = operation;
+            }
+
+            protected T operation { get; private set; }
+
+            protected abstract void OnCompleted(T operation);
+            protected abstract void OnFaulted(T operation);
+
+            public override void OnNext()
+            {
+                if (operation.IsCompleted)
+                {
+                    if (operation.IsFaulted)
+                    {
+                        OnFaulted(operation);
+                    }
+                    else
+                    {
+                        OnCompleted(operation);
+                    }
+                    Dispose();
+                }
+            }
+        }
+
+
+
         /// <summary>
         /// 当操作失败时,在unity线程内回调;
         /// </summary>
@@ -59,33 +91,29 @@ namespace KouXiaGu
         /// <summary>
         /// 失败时调用;
         /// </summary>
-        class FaultedSubscriber<T> : UnityThreadEvent
+        class FaultedSubscriber<T> : SubscriberBase<T>
             where T : IAsyncOperation
         {
             public FaultedSubscriber(T operation, Action<T> onFaulted)
+                : base(operation)
             {
                 if (operation == null || onFaulted == null)
                     throw new ArgumentNullException();
 
-                this.operation = operation;
                 this.onFaulted = onFaulted;
             }
 
-            T operation;
             Action<T> onFaulted;
 
-            public override void OnNext()
+            protected override void OnCompleted(T operation)
             {
-                if (operation.IsCompleted)
-                {
-                    if (operation.IsFaulted)
-                    {
-                        onFaulted(operation);
-                    }
-                    Dispose();
-                }
+                return;
             }
 
+            protected override void OnFaulted(T operation)
+            {
+                onFaulted(operation);
+            }
         }
 
 

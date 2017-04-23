@@ -31,7 +31,15 @@ namespace KouXiaGu
 
         public void OnNext(object none)
         {
-            OnNext();
+            try
+            {
+                OnNext();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("将取消委托执行,因为在委托Unity线程执行时出现异常:\n" + ex);
+                Dispose();
+            }
         }
 
         public void OnCompleted()
@@ -44,6 +52,14 @@ namespace KouXiaGu
             Debug.LogError(new NotImplementedException());
         }
 
+        public void Dispose()
+        {
+            if (disposer != null)
+            {
+                disposer.Dispose();
+                disposer = null;
+            }
+        }
 
         public IDisposable SubscribeUpdate()
         {
@@ -61,15 +77,6 @@ namespace KouXiaGu
 
             disposer = instance.SubscribeFixedUpdate(this);
             return this;
-        }
-
-        public void Dispose()
-        {
-            if (disposer != null)
-            {
-                disposer.Dispose();
-                disposer = null;
-            }
         }
 
     }

@@ -83,6 +83,7 @@ namespace KouXiaGu.World
         {
             Scene = operation.Result;
             worldTracker.Track(this);
+            Debug.Log("游戏开始!");
         }
 
 
