@@ -15,6 +15,7 @@ namespace KouXiaGu.World
     {
 
         public WorldTimeInfo Time;
+        public ArchiveFile Archive;
 
         /// <summary>
         /// 人口每日增长比例;

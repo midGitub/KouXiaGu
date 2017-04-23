@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class Landform
     {
-        public static IAsyncOperation<Landform> Initialize(IWorldScene world)
+        public static IAsyncOperation<Landform> Initialize(IWorldData world)
         {
             return new AsyncInitializer(world);
         }

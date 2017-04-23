@@ -11,22 +11,12 @@ namespace KouXiaGu.World
 {
 
     /// <summary>
-    /// 世界数据;
-    /// </summary>
-    public interface IWorldData
-    {
-        IGameData GameData { get; }
-        WorldInfo Info { get; }
-        TimeManager Time { get; }
-        MapResource Map { get; }
-    }
-
-    /// <summary>
     /// 世界场景;
     /// </summary>
-    public interface IWorldScene : IWorldData
+    public interface IWorld
     {
-        Landform Landform { get; }
+        IWorldData Data { get; }
+        IWorldScene Scene { get; }
     }
 
 
@@ -34,151 +24,63 @@ namespace KouXiaGu.World
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : OperationMonoBehaviour, IWorldScene, IObservable<IWorldScene>
+    public class WorldInitializer : MonoBehaviour, IWorld, IObservable<IWorld>
     {
-
-        const string InitializationCompletedStr = "初始化完毕;";
-        public static WorldInitializer Instance { get; private set; }
-        public static bool IsInitialized
-        {
-            get { return Instance != null; }
-        }
-
-        public static WorldInfo WorldInfo { get; private set; }
+        /// <summary>
+        /// 初始化时使用的世界信息;
+        /// </summary>
+        public static WorldInfo staticWorldInfo { get; set; }
 
 
         WorldInitializer()
         {
         }
 
-        ListTracker<IWorldScene> worldTracker;
-
         [SerializeField]
         bool useEditorialInfo = false;
-
-        public bool UseEditorialInfo
-        {
-            get { return useEditorialInfo; }
-            set { useEditorialInfo = value; }
-        }
 
         [SerializeField]
         WorldInfo editorialInfo;
 
-        public WorldInfo Info
+        ListTracker<IWorld> worldTracker;
+        WorldDataInitializer worldDataInitialize;
+        SceneInitializer sceneInitialize;
+
+        public IWorldData Data
         {
-            get { return useEditorialInfo ? editorialInfo : WorldInfo; }
+            get { return worldDataInitialize.Result; }
         }
 
-        IGameData IWorldData.GameData
+        public IWorldScene Scene
         {
-            get { return GameInitializer.GameData; }
+            get { return sceneInitialize.Result; }
         }
 
-        public TimeManager Time { get; private set; }
-        public MapResource Map { get; private set; }
-
-        public Landform Landform { get; private set; }
-
-
-        protected override void Awake()
+        public WorldInfo WorldInfo
         {
-            Instance = this;
-            base.Awake();
-            worldTracker = new ListTracker<IWorldScene>();
-            GameInitializer.GameDataInitialize.SubscribeCompleted(_ => BuildingData());
+            get { return useEditorialInfo ? editorialInfo : staticWorldInfo; }
         }
 
-        void OnDestroy()
+        void Awake()
         {
-            Instance = null;
+            worldTracker = new ListTracker<IWorld>();
+            worldDataInitialize = new WorldDataInitializer();
+            sceneInitialize = new SceneInitializer();
+
+            GameInitializer.GameDataInitialize.SubscribeCompleted(OnGameDataCompleted);
         }
 
-        public IDisposable Subscribe(IObserver<IWorldScene> observer)
+        public IDisposable Subscribe(IObserver<IWorld> observer)
         {
             return worldTracker.Subscribe(observer);
         }
 
-
-        void OnFaulted(IList<IAsyncOperation> operations)
+        void OnGameDataCompleted(IAsyncOperation<IGameData> operation)
         {
-            AggregateException ex = operations.ToAggregateException();
-            OnFaulted(ex);
-            Debug.LogWarning("世界初始化失败;");
+            IGameData gameDate = operation.Result;
+            worldDataInitialize.Start(gameDate, WorldInfo, this);
         }
 
-        void OnFaulted(IAsyncOperation operation)
-        {
-            Debug.LogError("场景初始化时遇到异常:\n" + operation.Exception);
-        }
-
-
-        /// <summary>
-        /// 初始化游戏世界数据;
-        /// </summary>
-        void BuildingData()
-        {
-            Debug.Log("------开始初始化游戏世界数据;");
-
-            IAsyncOperation[] missions = new IAsyncOperation[]
-              {
-                  MapResource.ReadOrCreateAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
-                  TimeManager.Create(Info.Time, this).Subscribe(OnTimeCompleted, OnFaulted),
-              };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnBuildingDataCompleted, OnFaulted);
-        }
-
-        void OnMapResourceCompleted(IAsyncOperation<MapResource> operation)
-        {
-            const string prefix = "[地图]";
-            Map = operation.Result;
-            Debug.Log(prefix + InitializationCompletedStr + " 总共有 " + Map.Data.Count + " 个节点;");
-        }
-
-        void OnTimeCompleted(IAsyncOperation<TimeManager> operation)
-        {
-            const string prefix = "[时间]";
-            Time = operation.Result;
-            Debug.Log(prefix + InitializationCompletedStr);
-        }
-
-        void OnBuildingDataCompleted(IList<IAsyncOperation> operations)
-        {
-            Debug.Log("------游戏世界数据初始化完毕;");
-            BuildingScene(this);
-        }
-
-
-
-        /// <summary>
-        /// 初始化游戏场景;
-        /// </summary>
-        void BuildingScene(IWorldScene world)
-        {
-            Debug.Log("------开始初始化游戏场景;");
-
-            IAsyncOperation[] missions = new IAsyncOperation[]
-              {
-                  Landform.Initialize(world).Subscribe(OnLandformCompleted, OnFaulted),
-              };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnBuildingSceneCompleted, OnFaulted);
-        }
-
-        void OnLandformCompleted(IAsyncOperation<Landform> operation)
-        {
-            const string prefix = "[地形]";
-            Landform = operation.Result;
-            Debug.Log(prefix + InitializationCompletedStr);
-        }
-
-        void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)
-        {
-            OnCompleted();
-            Debug.Log("------游戏场景初始化完毕;");
-
-            worldTracker.Track(this);
-            Debug.Log("------开始游戏状态;");
-        }
 
 
 

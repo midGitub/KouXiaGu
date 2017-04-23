@@ -14,7 +14,7 @@ namespace KouXiaGu.World
     /// 在控制台输出时间信息;
     /// </summary>
     [DisallowMultipleComponent]
-    class OutputTimeSprite : MonoBehaviour, IObserver<IWorldScene>, IObserver<DateTime>
+    class OutputTimeSprite : MonoBehaviour, IObserver<IWorld>, IObserver<DateTime>
     {
 
         OutputTimeSprite()
@@ -34,9 +34,9 @@ namespace KouXiaGu.World
             unsubscribe = world.Subscribe(this);
         }
 
-        void IObserver<IWorldScene>.OnNext(IWorldScene world)
+        void IObserver<IWorld>.OnNext(IWorld world)
         {
-            world.Time.Subscribe(this);
+            world.Data.Time.Subscribe(this);
         }
 
         void IObserver<DateTime>.OnNext(DateTime item)
