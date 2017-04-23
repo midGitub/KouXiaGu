@@ -11,18 +11,23 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    public interface IGameData
+    {
+        TerrainResource Terrain { get; }
+    }
+
     /// <summary>
     /// 游戏数据,开始游戏前需要读取的资源;
     /// </summary>
-    public class GameData
+    public class DataInitializer : IGameData
     {
 
-        public static IAsyncOperation<GameData> CreateAsync()
+        public static IAsyncOperation<DataInitializer> CreateAsync()
         {
             return new GameDataInitializer();
         }
 
-        GameData()
+        DataInitializer()
         {
         }
 
@@ -40,15 +45,15 @@ namespace KouXiaGu
         /// <summary>
         /// 游戏文件资源初始化;
         /// </summary>
-        class GameDataInitializer : AsyncOperation<GameData>
+        class GameDataInitializer : AsyncOperation<DataInitializer>
         {
             public GameDataInitializer()
             {
-                data = new GameData();
+                data = new DataInitializer();
                 Initialize0();
             }
 
-            GameData data;
+            DataInitializer data;
 
             void InitializeCompleted(IList<IAsyncOperation> operations)
             {

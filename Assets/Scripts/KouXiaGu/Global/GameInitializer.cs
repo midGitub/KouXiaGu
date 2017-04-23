@@ -32,7 +32,7 @@ namespace KouXiaGu
         {
         }
 
-        public GameData Data { get; private set; }
+        public DataInitializer Data { get; private set; }
 
         /// <summary>
         /// 对内容进行初始化;
@@ -51,7 +51,7 @@ namespace KouXiaGu
                 {
                     CustomInput.ReadOrDefaultAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
                     Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
-                    GameData.CreateAsync().Subscribe(OnGameDataCompleted, OnFaulted),
+                    DataInitializer.CreateAsync().Subscribe(OnGameDataCompleted, OnFaulted),
                 };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
         }
@@ -95,15 +95,12 @@ namespace KouXiaGu
             Debug.Log(prefix + log);
         }
 
-        void OnGameDataCompleted(IAsyncOperation<GameData> operation)
+        void OnGameDataCompleted(IAsyncOperation<DataInitializer> operation)
         {
             Data = operation.Result;
-            //const string prefix = "------游戏资源初始化------";
-            //string log = GetGameDateLog(Data);
-            //Debug.Log(prefix + log + "\n------End------");
         }
 
-        string GetGameDateLog(GameData data)
+        string GetGameDateLog(DataInitializer data)
         {
             string log =
                 GetWorldElementResourceLog(Data.ElementInfo) +
