@@ -12,24 +12,6 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    public interface IGameData
-    {
-        /// <summary>
-        /// 基础信息;
-        /// </summary>
-        WorldElementResource ElementInfo { get; }
-
-        /// <summary>
-        /// 地形资源;
-        /// </summary>
-        TerrainResource Terrain { get; }
-
-        /// <summary>
-        /// 地图资源;
-        /// </summary>
-        MapResource Map { get; }
-    }
-
     /// <summary>
     /// 负责对游戏资源初始化;
     /// </summary>
@@ -116,9 +98,9 @@ namespace KouXiaGu
         void OnGameDataCompleted(IAsyncOperation<GameData> operation)
         {
             Data = operation.Result;
-            const string prefix = "------游戏资源初始化------";
-            string log = GetGameDateLog(Data);
-            Debug.Log(prefix + log + "\n------End------");
+            //const string prefix = "------游戏资源初始化------";
+            //string log = GetGameDateLog(Data);
+            //Debug.Log(prefix + log + "\n------End------");
         }
 
         string GetGameDateLog(GameData data)

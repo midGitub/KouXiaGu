@@ -14,12 +14,16 @@ namespace KouXiaGu
     /// <summary>
     /// 游戏数据,开始游戏前需要读取的资源;
     /// </summary>
-    public class GameData : IGameData
+    public class GameData
     {
 
         public static IAsyncOperation<GameData> CreateAsync()
         {
-            return new GameDataCreater();
+            return new GameDataInitializer();
+        }
+
+        GameData()
+        {
         }
 
         /// <summary>
@@ -32,44 +36,88 @@ namespace KouXiaGu
         /// </summary>
         public TerrainResource Terrain { get; private set; }
 
+
         /// <summary>
-        /// 地图资源;
+        /// 游戏文件资源初始化;
         /// </summary>
-        public MapResource Map { get; private set; }
-
-        GameData()
+        class GameDataInitializer : AsyncOperation<GameData>
         {
-        }
-
-        class GameDataCreater : AsyncOperation<GameData>
-        {
-            public GameDataCreater()
+            public GameDataInitializer()
             {
                 data = new GameData();
-                Initialize();
+                Initialize0();
             }
 
             GameData data;
 
-            void Initialize()
+            void InitializeCompleted(IList<IAsyncOperation> operations)
             {
-                WorldElementResource.ReadAsync().Subscribe(delegate (IAsyncOperation<WorldElementResource> result)
-                {
-                    data.ElementInfo = result.Result;
+                OnCompleted(data);
+                Debug.Log("文件资源初始化完毕;");
+            }
 
-                    var terrainReader = TerrainResource.ReadAsync(data.ElementInfo);
-                    terrainReader.Subscribe(delegate (IAsyncOperation<TerrainResource> terrainResult)
-                    {
-                        data.Terrain = terrainResult.Result;
-                        OnCompleted(data);
-                    }, OnFaulted);
-
-                }, OnFaulted);
+            void InitializeFaulted(IList<IAsyncOperation> operations)
+            {
+                AggregateException ex = operations.ToAggregateException();
+                OnFaulted(ex);
+                Debug.LogError("文件资源初始化失败;");
             }
 
             void OnFaulted<T>(IAsyncOperation<T> operation)
             {
                 OnFaulted(operation.Exception);
+                Debug.LogError("文件资源读取时遇到异常" + operation.Exception);
+            }
+
+            void Initialize0()
+            {
+                WorldElementResource.ReadAsync().Subscribe(OnWorldResourceCompleted, OnFaulted);
+            }
+
+            void OnWorldResourceCompleted(IAsyncOperation<WorldElementResource> operation)
+            {
+                data.ElementInfo = operation.Result;
+                string log = GetWorldResourceLog(data.ElementInfo);
+                Debug.Log(log);
+                Initialize1();
+            }
+
+            string GetWorldResourceLog(WorldElementResource item)
+            {
+                string str =
+                    "[基础资源]"
+                   + "\nLandform:" + item.LandformInfos.Count
+                   + "\nRoad:" + item.RoadInfos.Count
+                   + "\nBuilding:" + item.BuildingInfos.Count
+                   + "\nProduct:" + item.ProductInfos.Count;
+                return str;
+            }
+
+
+            void Initialize1()
+            {
+                IAsyncOperation[] missions = new IAsyncOperation[]
+                {
+                    TerrainResource.ReadAsync(data.ElementInfo).Subscribe(OnTerrainCompleted, OnFaulted),
+                };
+                (missions as IEnumerable<IAsyncOperation>).Subscribe(InitializeCompleted, InitializeFaulted);
+            }
+
+
+            void OnTerrainCompleted(IAsyncOperation<TerrainResource> operation)
+            {
+                data.Terrain = operation.Result;
+                string log = GetTerrainResourceLog(operation.Result);
+                Debug.Log(log);
+            }
+
+            string GetTerrainResourceLog(TerrainResource item)
+            {
+                string str =
+                    "[地形资源]"
+                   + "\nLandform:" + item.LandformInfos.Count
+                   + "\nRoad:" + item.RoadInfos.Count;
+                return str;
             }
 
         }

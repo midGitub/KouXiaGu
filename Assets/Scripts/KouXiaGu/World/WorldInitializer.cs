@@ -15,7 +15,7 @@ namespace KouXiaGu.World
     /// </summary>
     public interface IWorldData
     {
-        IGameData GameData { get; }
+        GameData GameData { get; }
         WorldInfo Info { get; }
         TimeManager Time { get; }
         MapResource Map { get; }
@@ -70,7 +70,7 @@ namespace KouXiaGu.World
             get { return useEditorialInfo ? editorialInfo : WorldInfo; }
         }
 
-        IGameData IWorldData.GameData
+        GameData IWorldData.GameData
         {
             get { return GameInitializer.Instance.Data; }
         }
