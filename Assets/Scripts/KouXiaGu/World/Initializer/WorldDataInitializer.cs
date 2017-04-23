@@ -7,10 +7,26 @@ namespace KouXiaGu.World
 {
 
     /// <summary>
-    /// 游戏场景数据初始化;
+    /// 游戏世界数据初始化;
     /// </summary>
-    public class WorldDataInitializer
+    [Serializable]
+    public class WorldDataInitializer : AsyncInitializer<IWorldData>
     {
+        WorldDataInitializer()
+        {
+        }
+
+        public override string Prefix
+        {
+            get { return "场景数据"; }
+        }
+
+        public void Start(string archiveDir)
+        {
+            base.Start();
+        }
+
+
 
     }
 
