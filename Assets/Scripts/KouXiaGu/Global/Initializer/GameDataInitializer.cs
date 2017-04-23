@@ -19,9 +19,9 @@ namespace KouXiaGu
     /// <summary>
     /// 游戏数据,开始游戏前需要读取的资源;
     /// </summary>
-    public class DataInitializer : AsyncInitializer<IGameData>, IGameData
+    public class GameDataInitializer : AsyncInitializer<IGameData>, IGameData
     {
-        public DataInitializer()
+        public GameDataInitializer()
         {
         }
 

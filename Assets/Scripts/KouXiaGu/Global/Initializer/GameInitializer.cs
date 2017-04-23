@@ -32,7 +32,7 @@ namespace KouXiaGu
         }
 
         static readonly ComponentInitializer componentInitialize = new ComponentInitializer();
-        static readonly DataInitializer gameDataInitialize = new DataInitializer();
+        static readonly GameDataInitializer gameDataInitialize = new GameDataInitializer();
 
         public static IAsyncOperation ComponentInitialize
         {
