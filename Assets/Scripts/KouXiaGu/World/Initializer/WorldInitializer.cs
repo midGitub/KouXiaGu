@@ -45,16 +45,8 @@ namespace KouXiaGu.World
         ListTracker<IWorld> worldTracker;
         WorldDataInitializer worldDataInitialize;
         SceneInitializer sceneInitialize;
-
-        public IWorldData Data
-        {
-            get { return worldDataInitialize.Result; }
-        }
-
-        public IWorldScene Scene
-        {
-            get { return sceneInitialize.Result; }
-        }
+        public IWorldData Data { get; private set; }
+        public IWorldScene Scene { get; private set; }
 
         public WorldInfo WorldInfo
         {
@@ -78,10 +70,20 @@ namespace KouXiaGu.World
         void OnGameDataCompleted(IAsyncOperation<IGameData> operation)
         {
             IGameData gameDate = operation.Result;
-            worldDataInitialize.Start(gameDate, WorldInfo, this);
+            worldDataInitialize.Start(gameDate, WorldInfo, this).SubscribeCompleted(OnWorldDataCompleted);
         }
 
+        void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
+        {
+            Data = operation.Result;
+            sceneInitialize.Start(Data, this).SubscribeCompleted(OnSceneCompleted);
+        }
 
+        void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
+        {
+            Scene = operation.Result;
+            worldTracker.Track(this);
+        }
 
 
         [ContextMenu("输出模版文件")]

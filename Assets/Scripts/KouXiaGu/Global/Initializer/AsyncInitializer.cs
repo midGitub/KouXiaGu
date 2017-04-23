@@ -42,16 +42,10 @@ namespace KouXiaGu
     }
 
 
-    public abstract class AsyncInitializer<T> : AsyncOperation<T>, IObservable<T>
+    public abstract class AsyncInitializer<T> : AsyncOperation<T>
     {
         protected const string InitializationCompletedStr = "初始化完毕;";
 
-        public AsyncInitializer()
-        {
-            tracker = new AsyncOperationTracker<T>();
-        }
-
-        AsyncOperationTracker<T> tracker;
         public abstract string Prefix { get; }
 
         string _prefix
@@ -81,34 +75,6 @@ namespace KouXiaGu
         {
             Debug.LogError(_prefix + "  初始化时遇到错误:" + operation.Exception);
         }
-
-        protected override void OnCompleted()
-        {
-            base.OnCompleted();
-            tracker.TrackCompleted(Result);
-        }
-
-        protected override void OnFaulted(Exception ex)
-        {
-            base.OnFaulted(ex);
-            tracker.TrackFaulted(ex);
-        }
-
-        protected override void OnCanceled()
-        {
-            base.OnCanceled();
-            tracker.TrackCanceled();
-        }
-
-        public IDisposable Subscribe(IObserver<T> observer)
-        {
-            if (IsCompleted)
-            {
-
-            }
-            return tracker.Subscribe(observer);
-        }
-
     }
 
 }

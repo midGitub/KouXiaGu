@@ -26,10 +26,11 @@ namespace KouXiaGu.World
             get { return "游戏世界场景"; }
         }
 
-        public void Start(IWorldData worldData, IObservable<IWorld> starter)
+        public IAsyncOperation<IWorldScene> Start(IWorldData worldData, IObservable<IWorld> starter)
         {
             StartInitialize();
             BuildingScene(worldData);
+            return this;
         }
 
         /// <summary>
