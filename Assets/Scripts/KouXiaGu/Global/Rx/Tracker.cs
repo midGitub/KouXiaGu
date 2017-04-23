@@ -118,6 +118,7 @@ namespace KouXiaGu
                     OnError(observer, observerException);
                 }
             }
+            observers.Clear();
         }
 
         /// <summary>
@@ -127,7 +128,6 @@ namespace KouXiaGu
         {
             UnityEngine.Debug.LogError(ex);
         }
-
     }
 
 

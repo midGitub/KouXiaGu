@@ -8,9 +8,8 @@ namespace KouXiaGu
 {
 
 
-    public class AsyncOperationTracker<T> : IObservable<T>
+    public class AsyncOperationTracker<T>
     {
-
         public AsyncOperationTracker()
         {
             tracker = new LinkedListTracker<T>();
@@ -23,70 +22,56 @@ namespace KouXiaGu
 
         TrackerBase<T> tracker;
 
-        public IDisposable Subscribe(IObserver<T> observer)
-        {
-            return tracker.Subscribe(observer);
-        }
-
+        /// <summary>
+        /// 订阅到,若操作已经完成则直接调用对应方法,返回Null;若未完成则加入到观察者合集;
+        /// </summary>
         public IDisposable Subscribe(IAsyncOperation<T> operation, IObserver<T> observer)
         {
             if (operation.IsCompleted)
             {
                 if (operation.IsFaulted)
                 {
-                    TrackFaulted(operation.Exception, observer);
+                    OnFaulted(operation.Exception, observer);
                 }
                 else if (operation.IsCanceled)
                 {
-                    TrackCanceled(observer);
+                    OnCanceled(observer);
                 }
                 else
                 {
-                    TrackCompleted(operation.Result, observer);
+                    OnCompleted(operation.Result, observer);
                 }
+                return null;
             }
             return tracker.Subscribe(observer);
         }
 
-        /// <summary>
-        /// 将信息推送到观察者;
-        /// </summary>
-        public bool Track(IAsyncOperation<T> operation, IObserver<T> observer)
+        void OnCompleted(T result, IObserver<T> observer)
         {
-            if (operation.IsCompleted)
-            {
-                if (operation.IsFaulted)
-                    TrackFaulted(operation.Exception, observer);
-                else if (operation.IsCanceled)
-                    TrackCanceled(observer);
-                else
-                    TrackCompleted(operation.Result, observer);
-                return true;
-            }
-            return false;
+            observer.OnNext(result);
         }
+
+        void OnFaulted(Exception ex, IObserver<T> observer)
+        {
+            observer.OnError(ex);
+        }
+
+        void OnCanceled(IObserver<T> observer)
+        {
+            var error = new OperationCanceledException();
+            observer.OnError(error);
+        }
+
 
         public void TrackCompleted(T result)
         {
             tracker.Track(result);
         }
 
-        public void TrackCompleted(T result, IObserver<T> observer)
-        {
-            observer.OnNext(result);
-        }
-
-
         public void TrackFaulted(Exception ex)
         {
             tracker.TrackError(ex);
         }
-
-        public void TrackFaulted(Exception ex, IObserver<T> observer)
-        {
-            observer.OnError(ex);
-        }
-
 
         public void TrackCanceled()
         {
@@ -94,23 +79,18 @@ namespace KouXiaGu
             tracker.TrackError(error);
         }
 
-        public void TrackCanceled(IObserver<T> observer)
-        {
-            var error = new OperationCanceledException();
-            observer.OnError(error);
-        }
-
-
         public void TrackCanceled(string message)
         {
             var error = new OperationCanceledException(message);
             tracker.TrackError(error);
         }
 
-        public void TrackCanceled(string message, IObserver<T> observer)
+        /// <summary>
+        /// 移除所有观察者,并调用观察者的  OnCompleted();
+        /// </summary>
+        public void ClearObserver()
         {
-            var error = new OperationCanceledException(message);
-            observer.OnError(error);
+            tracker.TrackCompleted();
         }
 
     }
