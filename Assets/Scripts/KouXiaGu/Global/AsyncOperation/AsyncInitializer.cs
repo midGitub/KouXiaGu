@@ -22,7 +22,7 @@ namespace KouXiaGu
         protected void OnCompleted(IList<IAsyncOperation> operations)
         {
             OnCompleted();
-            Debug.Log(_prefix + "  所以内容初始化完毕;");
+            Debug.Log(_prefix + "  所有内容初始化完毕;");
         }
 
         protected void OnFaulted(IList<IAsyncOperation> operations)

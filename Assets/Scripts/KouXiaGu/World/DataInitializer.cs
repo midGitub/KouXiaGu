@@ -46,7 +46,6 @@ namespace KouXiaGu
 
         void Initialize0()
         {
-            base.Start();
             WorldElementResource.ReadAsync().Subscribe(OnWorldResourceCompleted, OnFaulted);
         }
 
