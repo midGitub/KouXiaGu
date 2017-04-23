@@ -16,10 +16,8 @@ namespace KouXiaGu
     /// 负责对游戏资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameInitializer : OperationMonoBehaviour
+    public class GameInitializer : UnitySington<GameInitializer>
     {
-        public static GameInitializer Instance { get; private set; }
-
         /// <summary>
         /// 提供初始化使用的协程方法;
         /// </summary>
@@ -32,120 +30,131 @@ namespace KouXiaGu
         {
         }
 
-        public DataInitializer Data { get; private set; }
+        public static IAsyncOperation ComponentInitialize { get; private set; }
+        public static IAsyncOperation<DataInitializer> GameDataInitialize { get; private set; }
+
+        public static IGameData GameData
+        {
+            get { return GameDataInitialize != null && GameDataInitialize.IsCompleted ? GameDataInitialize.Result : null; }
+        }
 
         /// <summary>
         /// 对内容进行初始化;
         /// </summary>
-        protected override void Awake()
+        void Awake()
         {
-            Instance = this;
-            base.Awake();
+            SetInstance(this);
             ResourcePath.Initialize();
-            Initialize();
+            ComponentInitialize = ComponentInitializer.InitializeAsync().SubscribeCompleted(OnComponentInitializeCompleted);
         }
 
-        void Initialize()
+        void OnComponentInitializeCompleted(IAsyncOperation operation)
         {
-            IAsyncOperation[] missions = new IAsyncOperation[]
-                {
-                    CustomInput.ReadOrDefaultAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
-                    Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
-                    DataInitializer.CreateAsync().Subscribe(OnGameDataCompleted, OnFaulted),
-                };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
+            GameDataInitialize = DataInitializer.CreateAsync();
         }
 
-        void OnCompleted(IList<IAsyncOperation> operations)
-        {
-            OnCompleted();
-            Debug.Log("游戏资源初始化完毕;");
-        }
 
-        void OnFaulted(IList<IAsyncOperation> operations)
-        {
-            AggregateException ex = operations.ToAggregateException();
-            OnFaulted(ex);
-            Debug.LogError("游戏资源初始化失败;");
-        }
+        //void Initialize()
+        //{
+        //    IAsyncOperation[] missions = new IAsyncOperation[]
+        //        {
+        //            CustomInput.ReadOrDefaultAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
+        //            Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
+        //            DataInitializer.CreateAsync().Subscribe(OnGameDataCompleted, OnFaulted),
+        //        };
+        //    (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
+        //}
 
-        void OnFaulted(IAsyncOperation operation)
-        {
-            Debug.LogError("游戏初始化时遇到错误:\n" + operation.Exception);
-        }
+        //void OnCompleted(IList<IAsyncOperation> operations)
+        //{
+        //    OnCompleted();
+        //    Debug.Log("游戏资源初始化完毕;");
+        //}
 
-        void OnCustomInputCompleted(IAsyncOperation operation)
-        {
-            const string prefix = "[输入映射]";
-            var emptyKeys = CustomInput.GetEmptyKeys().ToList();
-            if (emptyKeys.Count != 0)
-            {
-                Debug.LogWarning(prefix + "初始化成功;存在未定义的按键:" + emptyKeys.ToLog());
-            }
-            else
-            {
-                Debug.Log(prefix + "初始化成功;");
-            }
-        }
+        //void OnFaulted(IList<IAsyncOperation> operations)
+        //{
+        //    AggregateException ex = operations.ToAggregateException();
+        //    OnFaulted(ex);
+        //    Debug.LogError("游戏资源初始化失败;");
+        //}
 
-        void OnLocalizationCompleted(IAsyncOperation operation)
-        {
-            const string prefix = "[本地化]";
-            string log = "初始化成功;条目总数:" + Localization.EntriesCount;
-            Debug.Log(prefix + log);
-        }
+        //void OnFaulted(IAsyncOperation operation)
+        //{
+        //    Debug.LogError("游戏初始化时遇到错误:\n" + operation.Exception);
+        //}
 
-        void OnGameDataCompleted(IAsyncOperation<DataInitializer> operation)
-        {
-            Data = operation.Result;
-        }
+        //void OnCustomInputCompleted(IAsyncOperation operation)
+        //{
+        //    const string prefix = "[输入映射]";
+        //    var emptyKeys = CustomInput.GetEmptyKeys().ToList();
+        //    if (emptyKeys.Count != 0)
+        //    {
+        //        Debug.LogWarning(prefix + "初始化成功;存在未定义的按键:" + emptyKeys.ToLog());
+        //    }
+        //    else
+        //    {
+        //        Debug.Log(prefix + "初始化成功;");
+        //    }
+        //}
 
-        string GetGameDateLog(DataInitializer data)
-        {
-            string log =
-                GetWorldElementResourceLog(Data.ElementInfo) +
-                GetTerrainResourceLog(Data.Terrain);
-            return log;
-        }
+        //void OnLocalizationCompleted(IAsyncOperation operation)
+        //{
+        //    const string prefix = "[本地化]";
+        //    string log = "初始化成功;条目总数:" + Localization.EntriesCount;
+        //    Debug.Log(prefix + log);
+        //}
 
-        string GetWorldElementResourceLog(WorldElementResource item)
-        {
-            string str = 
-                "\n[基础资源]"
-               + "\nLandform:" + item.LandformInfos.Count
-               + "\nRoad:" + item.RoadInfos.Count
-               + "\nBuilding:" + item.BuildingInfos.Count
-               + "\nProduct:" + item.ProductInfos.Count;
-            return str;
-        }
+        //void OnGameDataCompleted(IAsyncOperation<DataInitializer> operation)
+        //{
+        //    Data = operation.Result;
+        //}
 
-        string GetTerrainResourceLog(TerrainResource item)
-        {
-            string str =
-                "\n[地形资源]"
-               + "\nLandform:" + item.LandformInfos.Count
-               + "\nRoad:" + item.RoadInfos.Count;
-            return str;
-        }
+        //string GetGameDateLog(DataInitializer data)
+        //{
+        //    string log =
+        //        GetWorldElementResourceLog(Data.ElementInfo) +
+        //        GetTerrainResourceLog(Data.Terrain);
+        //    return log;
+        //}
 
-        [ContextMenu("输出异常")]
-        public string DebugError()
-        {
-            const string prefix = "[游戏初始程序]";
-            string log;
+        //string GetWorldElementResourceLog(WorldElementResource item)
+        //{
+        //    string str = 
+        //        "\n[基础资源]"
+        //       + "\nLandform:" + item.LandformInfos.Count
+        //       + "\nRoad:" + item.RoadInfos.Count
+        //       + "\nBuilding:" + item.BuildingInfos.Count
+        //       + "\nProduct:" + item.ProductInfos.Count;
+        //    return str;
+        //}
 
-            if (IsFaulted)
-            {
-                log = prefix + Exception;
-            }
-            else
-            {
-                log = prefix + "未出现异常;";
-            }
+        //string GetTerrainResourceLog(TerrainResource item)
+        //{
+        //    string str =
+        //        "\n[地形资源]"
+        //       + "\nLandform:" + item.LandformInfos.Count
+        //       + "\nRoad:" + item.RoadInfos.Count;
+        //    return str;
+        //}
 
-            Debug.Log(log);
-            return log;
-        }
+        //[ContextMenu("输出异常")]
+        //public string DebugError()
+        //{
+        //    const string prefix = "[游戏初始程序]";
+        //    string log;
+
+        //    if (IsFaulted)
+        //    {
+        //        log = prefix + Exception;
+        //    }
+        //    else
+        //    {
+        //        log = prefix + "未出现异常;";
+        //    }
+
+        //    Debug.Log(log);
+        //    return log;
+        //}
 
     }
 

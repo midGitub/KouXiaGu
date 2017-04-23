@@ -15,7 +15,7 @@ namespace KouXiaGu.World
     /// </summary>
     public interface IWorldData
     {
-        DataInitializer GameData { get; }
+        IGameData GameData { get; }
         WorldInfo Info { get; }
         TimeManager Time { get; }
         MapResource Map { get; }
@@ -70,9 +70,9 @@ namespace KouXiaGu.World
             get { return useEditorialInfo ? editorialInfo : WorldInfo; }
         }
 
-        DataInitializer IWorldData.GameData
+        IGameData IWorldData.GameData
         {
-            get { return GameInitializer.Instance.Data; }
+            get { return GameInitializer.GameData; }
         }
 
         public TimeManager Time { get; private set; }
@@ -86,7 +86,7 @@ namespace KouXiaGu.World
             Instance = this;
             base.Awake();
             worldTracker = new ListTracker<IWorldScene>();
-            GameInitializer.Instance.SubscribeCompleted(_ => BuildingData());
+            GameInitializer.GameDataInitialize.SubscribeCompleted(_ => BuildingData());
         }
 
         void OnDestroy()
