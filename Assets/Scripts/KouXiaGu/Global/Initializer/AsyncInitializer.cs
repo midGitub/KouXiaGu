@@ -14,7 +14,7 @@ namespace KouXiaGu
             get { return "------" + Prefix; }
         }
 
-        public virtual void Start()
+        protected void StartInitialize()
         {
             Debug.Log(_prefix + "  开始初始化;");
         }
@@ -48,7 +48,7 @@ namespace KouXiaGu
             get { return "------" + Prefix; }
         }
 
-        public virtual void Start()
+        public void StartInitialize()
         {
             Debug.Log(_prefix + "  开始初始化;");
         }

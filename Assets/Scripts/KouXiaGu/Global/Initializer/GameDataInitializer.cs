@@ -33,9 +33,9 @@ namespace KouXiaGu
             get { return "游戏基础资源"; }
         }
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
+            StartInitialize();
             Initialize0();
         }
 

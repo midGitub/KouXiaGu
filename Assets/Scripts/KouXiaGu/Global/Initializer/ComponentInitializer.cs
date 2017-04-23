@@ -24,9 +24,9 @@ namespace KouXiaGu
             get { return "功能组件"; }
         }
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
+            StartInitialize();
             Initialize();
         }
 

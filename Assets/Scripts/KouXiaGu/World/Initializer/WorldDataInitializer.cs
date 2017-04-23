@@ -21,9 +21,10 @@ namespace KouXiaGu.World
             get { return "场景数据"; }
         }
 
-        public void Start(string archiveDir)
+        public void Start(IGameData gameData, Archive archive)
         {
-            base.Start();
+            StartInitialize();
+
         }
 
 
