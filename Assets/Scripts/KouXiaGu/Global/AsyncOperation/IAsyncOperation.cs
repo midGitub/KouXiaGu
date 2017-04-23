@@ -131,6 +131,7 @@ namespace KouXiaGu
     /// <summary>
     /// 继承 MonoBehaviour 的操作类;
     /// </summary>
+    [Obsolete]
     public abstract class OperationMonoBehaviour : MonoBehaviour, IAsyncOperation
     {
         protected OperationMonoBehaviour()
@@ -198,6 +199,13 @@ namespace KouXiaGu
     {
         public Operation(Action operation)
         {
+            this.operation = operation;
+        }
+
+        Action operation;
+
+        public void Start()
+        {
             try
             {
                 operation();
@@ -216,6 +224,13 @@ namespace KouXiaGu
     public class Operation<TResult> : AsyncOperation<TResult>
     {
         public Operation(Func<TResult> operation)
+        {
+            this.operation = operation;
+        }
+
+        Func<TResult> operation;
+
+        public void Start()
         {
             try
             {

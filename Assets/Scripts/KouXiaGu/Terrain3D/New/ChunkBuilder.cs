@@ -64,6 +64,7 @@ namespace KouXiaGu.Terrain3D
             {
                 return ChunkCoord.GetHashCode();
             }
+
         }
 
     }
