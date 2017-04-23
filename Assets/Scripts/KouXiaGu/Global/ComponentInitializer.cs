@@ -12,63 +12,54 @@ namespace KouXiaGu
     /// <summary>
     /// 组建初始化;
     /// </summary>
-    public class ComponentInitializer : AsyncOperation
+    public class ComponentInitializer : AsyncInitializer
     {
 
-        public static IAsyncOperation InitializeAsync()
-        {
-            return new Initializer();
-        }
-
-        ComponentInitializer()
+        public ComponentInitializer()
         {
         }
 
-        class Initializer : AsyncInitializer
+        public override string Prefix
         {
-            public Initializer()
-            {
-                Initialize();
-            }
+            get { return "功能组件"; }
+        }
 
-            public override string Prefix
-            {
-                get { return "功能组件"; }
-            }
+        public override void Start()
+        {
+            base.Start();
+            Initialize();
+        }
 
-            void Initialize()
-            {
-                StartInitialize();
-                IAsyncOperation[] missions = new IAsyncOperation[]
-                    {
+        void Initialize()
+        {
+            IAsyncOperation[] missions = new IAsyncOperation[]
+                {
                     CustomInput.ReadOrDefaultAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
                     Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
-                    };
-                (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
-            }
+                };
+            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
+        }
 
-            void OnCustomInputCompleted(IAsyncOperation operation)
+        void OnCustomInputCompleted(IAsyncOperation operation)
+        {
+            const string prefix = "[输入映射]";
+            var emptyKeys = CustomInput.GetEmptyKeys().ToList();
+            if (emptyKeys.Count != 0)
             {
-                const string prefix = "[输入映射]";
-                var emptyKeys = CustomInput.GetEmptyKeys().ToList();
-                if (emptyKeys.Count != 0)
-                {
-                    Debug.LogWarning(prefix + "初始化成功;存在未定义的按键:" + emptyKeys.ToLog());
-                }
-                else
-                {
-                    Debug.Log(prefix + "初始化成功;");
-                }
+                Debug.LogWarning(prefix + "初始化成功;存在未定义的按键:" + emptyKeys.ToLog());
             }
-
-            void OnLocalizationCompleted(IAsyncOperation operation)
+            else
             {
-                const string prefix = "[本地化]";
-                string log = "初始化成功;条目总数:" + Localization.EntriesCount;
-                Debug.Log(prefix + log);
+                Debug.Log(prefix + "初始化成功;");
             }
         }
 
+        void OnLocalizationCompleted(IAsyncOperation operation)
+        {
+            const string prefix = "[本地化]";
+            string log = "初始化成功;条目总数:" + Localization.EntriesCount;
+            Debug.Log(prefix + log);
+        }
     }
 
 }
