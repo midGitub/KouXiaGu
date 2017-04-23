@@ -35,7 +35,9 @@ namespace KouXiaGu.World
 
         public static IAsyncOperation<TimeManager> Create(WorldTimeInfo info, IObservable<IWorld> world)
         {
-            return new Operation<TimeManager>(() => new TimeManager(info, world));
+            var item = new Operation<TimeManager>(() => new TimeManager(info, world));
+            item.Start();
+            return item;
         }
 
 
