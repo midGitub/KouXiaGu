@@ -24,7 +24,7 @@ namespace KouXiaGu
 
         public static IAsyncOperation<DataInitializer> CreateAsync()
         {
-            return new GameDataInitializer();
+            return new Initializer();
         }
 
         DataInitializer()
@@ -45,9 +45,9 @@ namespace KouXiaGu
         /// <summary>
         /// 游戏文件资源初始化;
         /// </summary>
-        class GameDataInitializer : AsyncOperation<DataInitializer>
+        class Initializer : AsyncInitializer<DataInitializer>
         {
-            public GameDataInitializer()
+            public Initializer()
             {
                 data = new DataInitializer();
                 Initialize0();
@@ -55,27 +55,19 @@ namespace KouXiaGu
 
             DataInitializer data;
 
+            public override string Prefix
+            {
+                get { return "世界基础资源"; }
+            }
+
             void InitializeCompleted(IList<IAsyncOperation> operations)
             {
-                OnCompleted(data);
-                Debug.Log("文件资源初始化完毕;");
-            }
-
-            void InitializeFaulted(IList<IAsyncOperation> operations)
-            {
-                AggregateException ex = operations.ToAggregateException();
-                OnFaulted(ex);
-                Debug.LogError("文件资源初始化失败;");
-            }
-
-            void OnFaulted<T>(IAsyncOperation<T> operation)
-            {
-                OnFaulted(operation.Exception);
-                Debug.LogError("文件资源读取时遇到异常" + operation.Exception);
+                OnCompleted(operations, data);
             }
 
             void Initialize0()
             {
+                StartInitialize();
                 WorldElementResource.ReadAsync().Subscribe(OnWorldResourceCompleted, OnFaulted);
             }
 
@@ -98,14 +90,13 @@ namespace KouXiaGu
                 return str;
             }
 
-
             void Initialize1()
             {
                 IAsyncOperation[] missions = new IAsyncOperation[]
                 {
                     TerrainResource.ReadAsync(data.ElementInfo).Subscribe(OnTerrainCompleted, OnFaulted),
                 };
-                (missions as IEnumerable<IAsyncOperation>).Subscribe(InitializeCompleted, InitializeFaulted);
+                (missions as IEnumerable<IAsyncOperation>).Subscribe(InitializeCompleted, OnFaulted);
             }
 
 

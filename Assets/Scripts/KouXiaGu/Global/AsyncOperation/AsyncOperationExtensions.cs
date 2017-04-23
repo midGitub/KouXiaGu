@@ -41,7 +41,7 @@ namespace KouXiaGu
     /// <summary>
     /// 异步操作拓展,部分需要在 unity 线程内调用;
     /// </summary>
-    public static class AsyncOperationExtensions
+    public static partial class AsyncOperationExtensions
     {
 
         /// <summary>
@@ -132,6 +132,56 @@ namespace KouXiaGu
             }
         }
 
+        /// <summary>
+        /// 当操作完成时,在unity线程内回调;
+        /// </summary>
+        /// <returns>返回传入参数 operation</returns>
+        public static IAsyncOperation<TReturn> Subscribe<TReturn>(
+            this IAsyncOperation<TReturn> operation,
+            Action<IAsyncOperation<TReturn>, TReturn> onCompleted,
+            Action<IAsyncOperation<TReturn>> onFaulted)
+        {
+            var item = new ReturnSubscriber<TReturn>(operation, onCompleted, onFaulted);
+            item.SubscribeUpdate();
+            return operation;
+        }
+
+        class ReturnSubscriber<TReturn> : UnityThreadEvent
+        {
+            public ReturnSubscriber(
+                IAsyncOperation<TReturn> operation,
+                Action<IAsyncOperation<TReturn>, TReturn> onCompleted,
+                Action<IAsyncOperation<TReturn>> onFaulted)
+            {
+                if (operation == null || onCompleted == null || onFaulted == null)
+                    throw new ArgumentNullException();
+
+                this.operation = operation;
+                this.onCompleted = onCompleted;
+                this.onFaulted = onFaulted;
+            }
+
+            IAsyncOperation<TReturn> operation;
+            Action<IAsyncOperation<TReturn>, TReturn> onCompleted;
+            Action<IAsyncOperation<TReturn>> onFaulted;
+
+            public override void OnNext()
+            {
+                if (operation.IsCompleted)
+                {
+                    if (operation.IsFaulted)
+                    {
+                        onFaulted(operation);
+                    }
+                    else
+                    {
+                        onCompleted(operation, operation.Result);
+                    }
+                    Dispose();
+                }
+            }
+        }
+
 
         /// <summary>
         /// 当操作完成时,在unity线程内回调;
@@ -191,63 +241,6 @@ namespace KouXiaGu
                     }
                     Dispose();
                 }
-            }
-        }
-
-
-        /// <summary>
-        /// 当所有完成时调用 onCompleted(完成的操作), 除非出现异常,则调用 onFaulted(出现异常的操作);
-        /// </summary>
-        public static IDisposable Subscribe<T>(this IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)
-            where T : IAsyncOperation
-        {
-            var item = new EnumerateSubscriber<T>(operations, onCompleted, onFaulted);
-            var disposer = item.SubscribeUpdate();
-            return disposer;
-        }
-
-        class EnumerateSubscriber<T> : UnityThreadEvent
-            where T : IAsyncOperation
-        {
-            public EnumerateSubscriber(IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)
-            {
-                if (operations == null || onCompleted == null || onFaulted == null)
-                    throw new ArgumentNullException();
-
-                this.operationArray = operations.ToArray();
-                this.onCompleted = onCompleted;
-                this.onFaulted = onFaulted;
-                errors = new List<T>();
-            }
-
-            int index = 0;
-            T[] operationArray;
-            List<T> errors;
-            Action<IList<T>> onCompleted;
-            Action<IList<T>> onFaulted;
-
-            public override void OnNext()
-            {
-                if (index < operationArray.Length)
-                {
-                    var operation = operationArray[index];
-                    if (operation.IsCompleted)
-                    {
-                        index++;
-                        if (operation.IsFaulted)
-                        {
-                            errors.Add(operation);
-                        }
-                    }
-                    return;
-                }
-
-                if (errors.Count > 0)
-                    onFaulted(errors);
-                else
-                    onCompleted(operationArray);
-
-                Dispose();
             }
         }
 
