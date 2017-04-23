@@ -48,10 +48,10 @@ namespace KouXiaGu
 
         public AsyncInitializer()
         {
-            tracker = new LinkedListTracker<T>();
+            tracker = new AsyncOperationTracker<T>();
         }
 
-        LinkedListTracker<T> tracker;
+        AsyncOperationTracker<T> tracker;
         public abstract string Prefix { get; }
 
         string _prefix
@@ -67,7 +67,7 @@ namespace KouXiaGu
         protected void OnCompleted(IList<IAsyncOperation> operations, T result)
         {
             OnCompleted(result);
-            Debug.Log(_prefix + "  所以内容初始化完毕;");
+            Debug.Log(_prefix + "  所有内容初始化完毕;");
         }
 
         protected void OnFaulted(IList<IAsyncOperation> operations)
@@ -85,47 +85,26 @@ namespace KouXiaGu
         protected override void OnCompleted()
         {
             base.OnCompleted();
-            tracker.Track(Result);
-        }
-
-        void OnCompleted(IObserver<T> observer)
-        {
-            observer.OnNext(Result);
+            tracker.TrackCompleted(Result);
         }
 
         protected override void OnFaulted(Exception ex)
         {
             base.OnFaulted(ex);
-            tracker.TrackError(ex);
+            tracker.TrackFaulted(ex);
         }
-
-        void OnFaulted(IObserver<T> observer, Exception ex)
-        {
-            observer.OnError(ex);
-        }
-
 
         protected override void OnCanceled()
         {
             base.OnCanceled();
-            tracker.TrackError(new OperationCanceledException());
-        }
-
-        void OnCanceled(IObserver<T> observer)
-        {
-            observer.OnError(new OperationCanceledException());
+            tracker.TrackCanceled();
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
             if (IsCompleted)
             {
-                if (IsFaulted)
-                    OnFaulted(observer, Exception);
-                else if (IsCanceled)
-                    OnCanceled(observer);
-                else
-                    OnCompleted(observer);
+
             }
             return tracker.Subscribe(observer);
         }
