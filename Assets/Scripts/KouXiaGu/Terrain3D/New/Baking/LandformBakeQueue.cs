@@ -9,6 +9,9 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 协程队列;
+    /// </summary>
     public class CoroutineQueue<T> : IEnumerator
         where T : IEnumerator
     {
@@ -103,15 +106,11 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Stopwatch runtimeStopwatch;
-
         CoroutineQueue<IEnumerator> requestQueue;
 
         void Awake()
         {
             requestQueue = new CoroutineQueue<IEnumerator>(runtimeStopwatch);
-            requestQueue.Add(Test1());
-            requestQueue.Add(Test1());
-            requestQueue.Add(Test1());
         }
 
         void Update()
@@ -119,23 +118,6 @@ namespace KouXiaGu.Terrain3D
             requestQueue.Next();
         }
 
-        IEnumerator Test1()
-        {
-            Debug.Log("1");
-            yield return Test2();
-        }
-
-        IEnumerator Test2()
-        {
-            Debug.Log("2");
-            yield return Test3();
-        }
-
-        IEnumerator Test3()
-        {
-            Debug.Log("3");
-            yield break;
-        }
     }
 
 }
