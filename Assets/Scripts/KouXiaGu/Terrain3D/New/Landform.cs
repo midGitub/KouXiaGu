@@ -38,21 +38,14 @@ namespace KouXiaGu.Terrain3D
 
         public Landform(IWorldData world)
         {
-            WorldData = world;
             ChunkManager = new ChunkSceneManager();
             BakeManager = LandformBakeManager.Initialise(world);
             Builder = new ChunkBuilder(world, ChunkManager);
         }
 
-        public IWorldData WorldData { get; private set; }
         public ChunkSceneManager ChunkManager { get; private set; }
         public LandformBakeManager BakeManager { get; private set; }
         public ChunkBuilder Builder { get; private set; }
-
-        public IDictionary<CubicHexCoord, MapNode> Map
-        {
-            get { return WorldData.Map.Data; }
-        }
 
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;

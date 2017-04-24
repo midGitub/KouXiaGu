@@ -45,11 +45,6 @@ namespace KouXiaGu.Terrain3D
             private set { requestQueue = value; }
         }
 
-        public LandformBaker Baker
-        {
-            get { return baker; }
-        }
-
         void Awake()
         {
             requestQueue = new CoroutineQueue<IBakingRequest>(runtimeStopwatch);

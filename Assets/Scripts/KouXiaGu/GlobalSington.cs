@@ -11,6 +11,7 @@ namespace KouXiaGu
     /// 只允许内部访问的,延迟实例化的单例;
     /// 主要是"限制多个实例";
     /// </summary>
+    [Obsolete]
     public class GlobalSington<T> : MonoBehaviour
         where T : GlobalSington<T>
     {
