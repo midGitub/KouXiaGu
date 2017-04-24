@@ -21,6 +21,8 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        public Stopwatch _runtimeStopwatch;
+        CoroutineQueue<IEnumerator> requestQueue;
         public BakeLandform _landform;
         public IWorldData WorldData { get; private set; }
 
