@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形烘焙;
+    /// 地形贴图烘焙;
     /// </summary>
     [Serializable]
     public class BakeLandform
@@ -32,6 +32,7 @@ namespace KouXiaGu.Terrain3D
 
         public IWorldData WorldData { get; private set; }
         public CubicHexCoord ChunkCenter { get; private set; }
+        public IEnumerable<CubicHexCoord> Displays { get; private set; }
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
 
@@ -44,21 +45,41 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 开始烘培任务;
+        /// 获取到烘培协程;
         /// </summary>
-        public IEnumerator Bake(IWorldData worldData, CubicHexCoord chunkCenter, IEnumerable<CubicHexCoord> displays)
+        /// <param name="worldData">世界数据</param>
+        /// <param name="chunkCenter">地形块中心坐标;</param>
+        /// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
+        public IEnumerator GetBakeCoroutine(IWorldData worldData, CubicHexCoord chunkCenter, IEnumerable<CubicHexCoord> displays)
         {
             WorldData = worldData;
             ChunkCenter = chunkCenter;
+            Displays = displays;
+            return BakeCoroutine();
+        }
 
-            PrepareScene(displays);
+        IEnumerator BakeCoroutine()
+        {
+            PrepareScene();
             BakeDiffuse();
+            BakeHeight();
             ClearScene();
             yield break;
         }
 
         /// <summary>
-        /// 清空场景
+        /// 重置参数,备下次重复使用,仅在协程中途取消时调用;
+        /// </summary>
+        public void Reset()
+        {
+            if (sceneObjects.Count != 0)
+                ClearScene();
+
+            ReleaseAll();
+        }
+
+        /// <summary>
+        /// 清空场景;
         /// </summary>
         void ClearScene()
         {
@@ -70,11 +91,23 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 释放所有该实例创建的 RenderTexture 类型的资源;
+        /// </summary>
+        public void ReleaseAll()
+        {
+            BakeCamera.ReleaseTemporary(DiffuseRT);
+            DiffuseRT = null;
+
+            BakeCamera.ReleaseTemporary(HeightRT);
+            HeightRT = null;
+        }
+
+        /// <summary>
         /// 在场景内创建烘培使用的网格;
         /// </summary>
-        void PrepareScene(IEnumerable<CubicHexCoord> displays)
+        void PrepareScene()
         {
-            foreach (var display in displays)
+            foreach (var display in Displays)
             {
                 float angle;
                 TerrainLandform info = GetLandformInfo(display, out angle);
@@ -194,19 +227,6 @@ namespace KouXiaGu.Terrain3D
             var material = renderer.Rednerer.material;
             material.SetTexture("_MainTex", res.HeightTex);
             material.SetTexture("_BlendTex", res.HeightBlendTex);
-        }
-
-
-        /// <summary>
-        /// 释放所有该实例创建的 RenderTexture 类型的资源;
-        /// </summary>
-        public void ReleaseAll()
-        {
-            BakeCamera.ReleaseTemporary(DiffuseRT);
-            DiffuseRT = null;
-
-            BakeCamera.ReleaseTemporary(HeightRT);
-            HeightRT = null;
         }
 
         struct Pack
