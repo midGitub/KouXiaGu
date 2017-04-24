@@ -1,29 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 
 namespace KouXiaGu.Terrain3D
 {
 
-
     /// <summary>
     /// 烘培请求;
     /// </summary>
     public abstract class ChunCreateRequest : AsyncOperation<ChunkTexture>, IBakingRequest
     {
-        public ChunCreateRequest(RectCoord chunkCoord, IWorldData worldData)
+        public ChunCreateRequest(Landform landform, RectCoord chunkCoord)
         {
-            WorldData = worldData;
+            Landform = landform;
             ChunkCoord = chunkCoord;
             Current = null;
             bakeCoroutine = Bake();
         }
 
-        public IWorldData WorldData { get; private set; }
+        public Landform Landform { get; private set; }
         public RectCoord ChunkCoord { get; private set; }
         public object Current { get; private set; }
         IEnumerator bakeCoroutine;
@@ -31,6 +28,11 @@ namespace KouXiaGu.Terrain3D
         protected LandformBaker Baker { get; private set; }
         protected CubicHexCoord ChunkCenter { get; private set; }
         protected IEnumerable<CubicHexCoord> Displays { get; private set; }
+
+        protected ChunkSceneManager ChunkManager
+        {
+            get { return Landform.ChunkManager; }
+        }
 
         protected abstract IEnumerator BakeCoroutine();
 
