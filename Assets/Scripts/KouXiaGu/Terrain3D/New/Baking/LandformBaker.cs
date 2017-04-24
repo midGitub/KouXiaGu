@@ -12,7 +12,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形烘培;
+    /// 地形烘培方法类;
     /// </summary>
     [Serializable]
     class LandformBaker
