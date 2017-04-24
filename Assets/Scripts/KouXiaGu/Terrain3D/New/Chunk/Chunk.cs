@@ -105,7 +105,7 @@ namespace KouXiaGu.Terrain3D
             Trigger.RebuildCollisionMesh();
         }
 
-        public void Update(ChunkTexture textures)
+        public void Updating(ChunkTexture textures)
         {
             Renderer.UpdateTextures(textures);
         }
