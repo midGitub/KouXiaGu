@@ -15,20 +15,15 @@ namespace KouXiaGu.Terrain3D
     [Serializable]
     public class BakeLandform
     {
-        BakeLandform()
-        {
-        }
-
         public MeshRenderer prefab;
         public int maxCapacity = 100;
-        GameObjectPool<MeshRenderer> objectPool;
-
         public Shader diffuseShader;
         public Shader heightShader;
+
         Material diffuseMaterial;
         Material heightMaterial;
-
         List<Pack> sceneObjects;
+        GameObjectPool<MeshRenderer> objectPool;
 
         public IWorldData WorldData { get; private set; }
         public CubicHexCoord ChunkCenter { get; private set; }
@@ -38,10 +33,10 @@ namespace KouXiaGu.Terrain3D
 
         public void Initialise()
         {
-            objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);
             diffuseMaterial = new Material(diffuseShader);
             heightMaterial = new Material(heightShader);
             sceneObjects = new List<Pack>();
+            objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);
         }
 
         /// <summary>
@@ -196,9 +191,10 @@ namespace KouXiaGu.Terrain3D
             if (renderer.Rednerer.material != null)
             {
                 GameObject.Destroy(renderer.Rednerer.material);
+                renderer.Rednerer.material = diffuseMaterial;
             }
 
-            var material = renderer.Rednerer.material = new Material(diffuseMaterial);
+            var material = renderer.Rednerer.material;
             material.SetTexture("_MainTex", res.DiffuseTex);
             material.SetTexture("_BlendTex", res.DiffuseBlendTex);
         }
