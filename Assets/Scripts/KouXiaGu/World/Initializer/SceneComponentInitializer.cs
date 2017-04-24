@@ -9,24 +9,19 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
-    public interface IWorldScene
-    {
-        Landform Landform { get; }
-    }
-
     /// <summary>
     /// 场景功能组件初始化;
     /// </summary>
-    public class SceneComponentInitializer : AsyncInitializer<IWorldScene>, IWorldScene
+    public class SceneComponentInitializer : AsyncInitializer<IWorldComponent>, IWorldComponent
     {
         public Landform Landform { get; private set; }
 
         public override string Prefix
         {
-            get { return "游戏世界场景"; }
+            get { return "游戏世界组件"; }
         }
 
-        public IAsyncOperation<IWorldScene> Start(IWorldData worldData, IObservable<IWorld> starter)
+        public IAsyncOperation<IWorldComponent> Start(IWorldData worldData, IObservable<IWorld> starter)
         {
             StartInitialize();
             BuildingScene(worldData);

@@ -4,17 +4,35 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UniRx;
+using KouXiaGu.Terrain3D;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.World
 {
 
-    /// <summary>
-    /// 世界场景;
-    /// </summary>
     public interface IWorld
     {
         IWorldData Data { get; }
+        IWorldComponent Component { get; }
         IWorldScene Scene { get; }
+    }
+
+    public interface IWorldData
+    {
+        IGameData GameData { get; }
+        WorldInfo Info { get; }
+        TimeManager Time { get; }
+        MapResource Map { get; }
+    }
+
+    public interface IWorldComponent
+    {
+        Landform Landform { get; }
+    }
+
+    public interface IWorldScene
+    {
+
     }
 
     /// <summary>
@@ -42,9 +60,11 @@ namespace KouXiaGu.World
         ListTracker<IWorld> worldTracker;
         WorldDataInitializer worldDataInitialize;
         SceneComponentInitializer sceneComponentInitializer;
+        SceneInitializer sceneInitializer;
         public IGameData GameData { get; private set; }
         public WorldInfo Info { get; private set; }
         public IWorldData Data { get; private set; }
+        public IWorldComponent Component { get; private set; }
         public IWorldScene Scene { get; private set; }
 
         void Awake()
@@ -52,6 +72,7 @@ namespace KouXiaGu.World
             worldTracker = new ListTracker<IWorld>();
             worldDataInitialize = new WorldDataInitializer();
             sceneComponentInitializer = new SceneComponentInitializer();
+            sceneInitializer = new SceneInitializer();
 
             if (useEditorialInfo)
                 WorldInfoReader = new WorldInfoReader(editorialInfo);
@@ -82,16 +103,19 @@ namespace KouXiaGu.World
             sceneComponentInitializer.Start(Data, this).SubscribeCompleted(OnSceneComponentCompleted);
         }
 
-        void OnSceneComponentCompleted(IAsyncOperation<IWorldScene> operation)
+        void OnSceneComponentCompleted(IAsyncOperation<IWorldComponent> operation)
         {
-            Scene = operation.Result;
-            OnSceneCompleted();
+            Component = operation.Result;
+            sceneInitializer.Start(Data, Component, this).SubscribeCompleted(OnSceneCompleted);
         }
 
-        /// <summary>
-        /// 当所有初始化完成时;
-        /// </summary>
-        void OnSceneCompleted()
+        void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
+        {
+            Scene = operation.Result;
+            OnInitializeCompleted();
+        }
+
+        void OnInitializeCompleted()
         {
             worldTracker.Track(this);
             Debug.Log("游戏开始!");

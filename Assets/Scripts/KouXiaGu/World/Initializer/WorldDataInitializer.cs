@@ -10,18 +10,6 @@ namespace KouXiaGu.World
 {
 
     /// <summary>
-    /// 世界数据;
-    /// </summary>
-    public interface IWorldData
-    {
-        IGameData GameData { get; }
-        WorldInfo Info { get; }
-        TimeManager Time { get; }
-        MapResource Map { get; }
-    }
-
-
-    /// <summary>
     /// 游戏世界数据初始化,游戏世界相关数据初始化;
     /// </summary>
     public class WorldDataInitializer : AsyncInitializer<IWorldData>, IWorldData

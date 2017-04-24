@@ -22,17 +22,27 @@ namespace KouXiaGu
             Debug.Log(_prefix + "  开始初始化;");
         }
 
+        protected override void OnCompleted()
+        {
+            base.OnCompleted();
+            Debug.Log(_prefix + "  所有内容初始化完毕;");
+        }
+
         protected void OnCompleted(IList<IAsyncOperation> operations)
         {
             OnCompleted();
-            Debug.Log(_prefix + "  所有内容初始化完毕;");
+        }
+
+        protected override void OnFaulted(Exception ex)
+        {
+            base.OnFaulted(ex);
+            Debug.LogError(_prefix + "  初始化失败;" + ex);
         }
 
         protected void OnFaulted(IList<IAsyncOperation> operations)
         {
             AggregateException ex = operations.ToAggregateException();
             OnFaulted(ex);
-            Debug.LogError(_prefix + "  初始化失败;");
         }
 
         protected void OnFaulted(IAsyncOperation operation)
@@ -58,17 +68,27 @@ namespace KouXiaGu
             Debug.Log(_prefix + "  开始初始化;");
         }
 
+        protected override void OnCompleted()
+        {
+            base.OnCompleted();
+            Debug.Log(_prefix + "  所有内容初始化完毕;");
+        }
+
         protected void OnCompleted(IList<IAsyncOperation> operations, T result)
         {
             OnCompleted(result);
-            Debug.Log(_prefix + "  所有内容初始化完毕;");
+        }
+
+        protected override void OnFaulted(Exception ex)
+        {
+            base.OnFaulted(ex);
+            Debug.LogError(_prefix + "  初始化失败;" + ex);
         }
 
         protected void OnFaulted(IList<IAsyncOperation> operations)
         {
             AggregateException ex = operations.ToAggregateException();
             OnFaulted(ex);
-            Debug.LogError(_prefix + "  初始化失败;");
         }
 
         protected void OnFaulted(IAsyncOperation operation)
