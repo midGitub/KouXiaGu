@@ -12,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     [DisallowMultipleComponent]
     [Obsolete]
-    public sealed class TerrainData : SceneSington<TerrainData>
+    public sealed class TerrainData : OSceneSington<TerrainData>
     {
         [SerializeField]
         Shader terrainShader;

@@ -11,10 +11,10 @@ namespace KouXiaGu
     /// 延迟实例化的单例;
     /// 限制一个场景多个实例;
     /// </summary>
-    public class SceneSington<T> : MonoBehaviour
-        where T : SceneSington<T>
+    public class OSceneSington<T> : MonoBehaviour
+        where T : OSceneSington<T>
     {
-        protected SceneSington() { }
+        protected OSceneSington() { }
 
         static T instance;
 

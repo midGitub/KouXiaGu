@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     [DisallowMultipleComponent]
     [Obsolete]
-    public sealed partial class OBaker : SceneSington<OBaker>
+    public sealed partial class OBaker : OSceneSington<OBaker>
     {
         static OBaker()
         {

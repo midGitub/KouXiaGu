@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public sealed partial class OBaker : SceneSington<OBaker>
+    public sealed partial class OBaker : OSceneSington<OBaker>
     {
 
         /// <summary>

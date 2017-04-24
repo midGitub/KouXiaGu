@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     [DisallowMultipleComponent]
     [Obsolete]
-    public sealed class ResInitializer : SceneSington<ResInitializer>
+    public sealed class ResInitializer : OSceneSington<ResInitializer>
     {
         static ResInitializer()
         {
