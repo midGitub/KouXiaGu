@@ -7,31 +7,6 @@ using KouXiaGu.World.Map;
 namespace KouXiaGu.World
 {
 
-    public interface IWorld
-    {
-        IWorldData Data { get; }
-        IWorldComponent Component { get; }
-        IWorldScene Scene { get; }
-    }
-
-    public interface IWorldData
-    {
-        IGameData GameData { get; }
-        WorldInfo Info { get; }
-        TimeManager Time { get; }
-        MapResource Map { get; }
-    }
-
-    public interface IWorldComponent
-    {
-        Landform Landform { get; }
-    }
-
-    public interface IWorldScene
-    {
-
-    }
-
     /// <summary>
     /// 负责初始化游戏场景;
     /// </summary>
