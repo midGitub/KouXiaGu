@@ -96,13 +96,42 @@ namespace KouXiaGu.Terrain3D
         TerrainLandform GetLandformInfo(CubicHexCoord pos, out float angle)
         {
             IDictionary<CubicHexCoord, MapNode> map = WorldData.Map.Data;
+            TerrainLandform info;
             MapNode node;
             if (map.TryGetValue(pos, out node))
             {
-                angle = node.Landform.Angle;
-                //TerrainLandform info = WorldData
+                info = GetLandformInfo(node);
+                angle = GetLandformAngle(node);
             }
-            throw new NotImplementedException();
+            else
+            {
+                info = default(TerrainLandform);
+                angle = default(float);
+            }
+            return info;
+        }
+
+        float GetLandformAngle(MapNode node)
+        {
+            float angle = node.Landform.Angle;
+            return angle;
+        }
+
+        TerrainLandform GetLandformInfo(MapNode node)
+        {
+            int landformID = node.Landform.LandformID;
+            TerrainLandform info = GetLandformInfo(WorldData.GameData.Terrain, landformID);
+            return info;
+        }
+
+        TerrainLandform GetLandformInfo(TerrainResource data, int landformID)
+        {
+            TerrainLandform info;
+            if (!data.LandformInfos.TryGetValue(landformID, out info))
+            {
+                Debug.LogWarning("未找到对应地形贴图,ID:[" + landformID + "];");
+            }
+            return info;
         }
 
         public MeshRenderer Get(CubicHexCoord coord, float angle, float y)
