@@ -56,6 +56,15 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 获取到烘焙方法类,并且锁定,若已经被锁定,则返回异常;
+        /// </summary>
+        /// <returns>取消锁定处理器;</returns>
+        public IDisposable GetBakerAndLock(out LandformBaker baker)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// 取消所有请求;
         /// </summary>
         public void CanceleAll()
