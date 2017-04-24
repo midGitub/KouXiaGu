@@ -12,7 +12,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 场景功能组件初始化;
     /// </summary>
-    public class SceneComponentInitializer : AsyncInitializer<IWorldComponent>, IWorldComponent
+    public class ComponentInitializer : AsyncInitializer<IWorldComponent>, IWorldComponent
     {
         public Landform Landform { get; private set; }
 

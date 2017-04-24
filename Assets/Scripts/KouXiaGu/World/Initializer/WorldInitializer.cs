@@ -55,8 +55,8 @@ namespace KouXiaGu.World
         WorldInfo editorialInfo;
 
         ListTracker<IWorld> worldTracker;
-        WorldDataInitializer worldDataInitialize;
-        SceneComponentInitializer sceneComponentInitializer;
+        DataInitializer worldDataInitialize;
+        ComponentInitializer sceneComponentInitializer;
         SceneInitializer sceneInitializer;
         public IGameData GameData { get; private set; }
         public WorldInfo Info { get; private set; }
@@ -67,8 +67,8 @@ namespace KouXiaGu.World
         void Awake()
         {
             worldTracker = new ListTracker<IWorld>();
-            worldDataInitialize = new WorldDataInitializer();
-            sceneComponentInitializer = new SceneComponentInitializer();
+            worldDataInitialize = new DataInitializer();
+            sceneComponentInitializer = new ComponentInitializer();
             sceneInitializer = new SceneInitializer();
 
             if (useEditorialInfo)
