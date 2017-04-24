@@ -40,12 +40,13 @@ namespace KouXiaGu.Terrain3D
         {
             WorldData = world;
             ChunkManager = new ChunkSceneManager();
+            BakeManager = LandformBaker.Initialise(world);
             Builder = new ChunkBuilder(world, ChunkManager);
         }
 
         public IWorldData WorldData { get; private set; }
         public ChunkSceneManager ChunkManager { get; private set; }
-        public LandformBakeManager BakeManager { get; private set; }
+        public LandformBaker BakeManager { get; private set; }
         public ChunkBuilder Builder { get; private set; }
 
         public IDictionary<CubicHexCoord, MapNode> Map

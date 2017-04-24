@@ -1,39 +1,76 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
-using UnityEngine;
 using KouXiaGu.World;
-using KouXiaGu.World.Map;
+using UniRx;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形烘培方法类;
+    /// 地形烘焙管理;
     /// </summary>
-    [Serializable]
-    class LandformBaker
+    [DisallowMultipleComponent]
+    public class LandformBaker : MonoBehaviour
     {
+
+        public static LandformBaker Initialise(IWorldData worldData)
+        {
+            var item = SceneObject.GetObject<LandformBaker>();
+            item.WorldData = worldData;
+            return item;
+        }
+
         LandformBaker()
         {
         }
 
-        public Stopwatch _runtimeStopwatch;
-        CoroutineQueue<IEnumerator> requestQueue;
-        public BakeLandform _landform;
+        [SerializeField]
+        Stopwatch runtimeStopwatch;
+        CoroutineQueue<IBakingRequest> requestQueue;
+        [SerializeField]
+        BakeLandform landform;
         public IWorldData WorldData { get; private set; }
 
-        public void Initialise(IWorldData worldData)
+        public Stopwatch RuntimeStopwatch
         {
-            WorldData = worldData;
+            get { return runtimeStopwatch; }
+            set { runtimeStopwatch = value; }
         }
 
-        public IEnumerator GetBakeCoroutine(RectCoord chunkCoord)
+        public CoroutineQueue<IBakingRequest> RequestQueue
         {
-            throw new NotImplementedException();
+            get { return requestQueue; }
+            private set { requestQueue = value; }
+        }
+
+        public BakeLandform Landform
+        {
+            get { return landform; }
+        }
+
+        void Awake()
+        {
+            requestQueue = new CoroutineQueue<IBakingRequest>(runtimeStopwatch);
+        }
+
+        void Update()
+        {
+            requestQueue.Next();
+        }
+
+        /// <summary>
+        /// 取消所有请求;
+        /// </summary>
+        public void CanceleAll()
+        {
+            foreach (var request in requestQueue)
+            {
+                request.Cancel();
+            }
+            requestQueue.Clear();
         }
 
     }

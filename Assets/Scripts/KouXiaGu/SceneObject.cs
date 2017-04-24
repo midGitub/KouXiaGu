@@ -13,6 +13,7 @@ namespace KouXiaGu
     public static class SceneObject
     {
 
+        [CustomUnityTag]
         public const string TagName = "SceneController";
 
         /// <summary>
@@ -20,6 +21,7 @@ namespace KouXiaGu
         /// </summary>
         public static GameObject GetGameObject()
         {
+            
             return GameObject.FindWithTag(TagName);
         }
 

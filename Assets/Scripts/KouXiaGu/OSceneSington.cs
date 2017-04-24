@@ -11,6 +11,7 @@ namespace KouXiaGu
     /// 延迟实例化的单例;
     /// 限制一个场景多个实例;
     /// </summary>
+    [Obsolete]
     public class OSceneSington<T> : MonoBehaviour
         where T : OSceneSington<T>
     {

@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形烘焙;
     /// </summary>
     [Serializable]
-    class BakeLandform
+    public class BakeLandform
     {
         BakeLandform()
         {
