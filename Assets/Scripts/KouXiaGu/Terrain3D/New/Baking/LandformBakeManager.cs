@@ -20,10 +20,9 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Stopwatch runtimeStopwatch;
+        CoroutineQueue<IBakingRequest> requestQueue;
         [SerializeField]
         LandformBaker baker;
-        LinkedList<BakingRequest> requestQueue;
-        IReadOnlyCollection<IBakingRequest> readOnlyRequestQueue;
 
         public Stopwatch RuntimeStopwatch
         {
@@ -31,33 +30,14 @@ namespace KouXiaGu.Terrain3D
             set { runtimeStopwatch = value; }
         }
 
-        public IBakingRequest Current
-        {
-            get { return requestQueue.First.Value; }
-        }
-
         void Awake()
         {
-            requestQueue = new LinkedList<BakingRequest>();
-            readOnlyRequestQueue = requestQueue.AsReadOnlyCollection(item => item as IBakingRequest);
+            requestQueue = new CoroutineQueue<IBakingRequest>(runtimeStopwatch);
         }
 
         void Update()
         {
-            if (requestQueue.Count != 0)
-            {
-                runtimeStopwatch.Restart();
-                while (!runtimeStopwatch.Await())
-                {
-                    var current = requestQueue.First.Value;
-                    if (current.IsCompleted)
-                    {
-                        requestQueue.RemoveFirst();
-                        break;
-                    }
-                    current.MoveNext();
-                }
-            }
+            requestQueue.Next();
         }
 
         /// <summary>
@@ -65,9 +45,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IBakingRequest AddRequest(RectCoord chunkCoord)
         {
-            var request = new BakingRequest(chunkCoord, baker);
-            requestQueue.AddLast(request);
-            return request;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -77,65 +55,9 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var request in requestQueue)
             {
-                request.Dispose();
+                request.Cancel();
             }
-        }
-
-        class BakingRequest : AsyncOperation<ChunkTexture>, IBakingRequest
-        {
-            public BakingRequest(RectCoord chunkCoord, LandformBaker baker)
-            {
-                this.chunkCoord = chunkCoord;
-                bakeCoroutine = baker.GetBakeCoroutine(chunkCoord);
-                tracker = new ListTracker<ChunkTexture>(1);
-            }
-
-            readonly RectCoord chunkCoord;
-            readonly IEnumerator bakeCoroutine;
-            readonly ListTracker<ChunkTexture> tracker;
-
-            public RectCoord ChunkCoord
-            {
-                get { return chunkCoord; }
-            }
-
-            protected override void OnCompleted(ChunkTexture result)
-            {
-                base.OnCompleted(result);
-                tracker.Track(result);
-            }
-
-            protected override void OnCanceled()
-            {
-                base.OnCanceled();
-                var error = new OperationCanceledException();
-                tracker.TrackError(error);
-            }
-
-            protected override void OnFaulted(Exception ex)
-            {
-                base.OnFaulted(ex);
-                tracker.TrackError(ex);
-            }
-
-            public IDisposable Subscribe(IObserver<ChunkTexture> observer)
-            {
-                return tracker.Subscribe(observer);
-            }
-
-            public bool MoveNext()
-            {
-                return bakeCoroutine.MoveNext();
-            }
-
-            /// <summary>
-            /// 取消,结束烘培请求;
-            /// </summary>
-            public void Dispose()
-            {
-                OnCanceled();
-            }
-
+            requestQueue.Clear();
         }
 
     }

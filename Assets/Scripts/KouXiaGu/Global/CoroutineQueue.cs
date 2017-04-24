@@ -10,7 +10,7 @@ namespace KouXiaGu
     /// <summary>
     /// 协程队列;
     /// </summary>
-    public class CoroutineQueue<T> : IEnumerator
+    public class CoroutineQueue<T> : IEnumerator, IEnumerable<T>
         where T : IEnumerator
     {
         public CoroutineQueue(ISegmented stopwatch)
@@ -93,6 +93,15 @@ namespace KouXiaGu
             return;
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            return requestQueue.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return requestQueue.GetEnumerator();
+        }
     }
 
 }
