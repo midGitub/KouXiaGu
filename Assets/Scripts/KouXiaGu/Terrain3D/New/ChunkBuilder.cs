@@ -13,14 +13,14 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class ChunkBuilder
     {
-        public ChunkBuilder(IWorldData data, ChunkManager chunkManager)
+        public ChunkBuilder(IWorldData data, ChunkSceneManager chunkManager)
         {
             this.data = data;
             this.chunkManager = chunkManager;
         }
 
         readonly IWorldData data;
-        readonly ChunkManager chunkManager;
+        readonly ChunkSceneManager chunkManager;
 
         IDictionary<CubicHexCoord, MapNode> map
         {
@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
 
         class CreateChunk : AsyncOperation<Chunk>
         {
-            CreateChunk(RectCoord chunkCoord, ChunkManager chunk)
+            CreateChunk(RectCoord chunkCoord, ChunkSceneManager chunk)
             {
                 ChunkCoord = chunkCoord;
             }

@@ -26,10 +26,7 @@ namespace KouXiaGu.Terrain3D
             {
                 try
                 {
-                    var instance = new Landform();
-                    instance.WorldData = worldData;
-                    instance.LandformChunk = new ChunkManager();
-                    OnCompleted(instance);
+                    OnCompleted(new Landform(worldData));
                 }
                 catch (Exception ex)
                 {
@@ -39,12 +36,15 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        Landform()
+        public Landform(IWorldData world)
         {
+            WorldData = world;
+            SceneChunk = new ChunkSceneManager();
+            Builder = new ChunkBuilder(world, SceneChunk);
         }
 
         public IWorldData WorldData { get; private set; }
-        public ChunkManager LandformChunk { get; private set; }
+        public ChunkSceneManager SceneChunk { get; private set; }
         public ChunkBuilder Builder { get; private set; }
 
         public IDictionary<CubicHexCoord, MapNode> Map
@@ -59,7 +59,7 @@ namespace KouXiaGu.Terrain3D
         {
             RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
             Chunk chunk;
-            if (LandformChunk.ActivatedChunks.TryGetValue(chunkCoord, out chunk))
+            if (SceneChunk.InSceneChunks.TryGetValue(chunkCoord, out chunk))
             {
                 Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
                 return chunk.Renderer.GetHeight(uv);

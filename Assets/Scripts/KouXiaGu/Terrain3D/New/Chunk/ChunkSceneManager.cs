@@ -9,29 +9,29 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形块管理;
+    /// 场景地形块管理;
     /// </summary>
-    public class ChunkManager
+    public class ChunkSceneManager
     {
         public RectGrid ChunkGrid
         {
             get { return ChunkInfo.ChunkGrid; }
         }
 
-        public ChunkManager()
+        public ChunkSceneManager()
         {
             chunkPool = new ChunkPool();
-            activatedChunks = new Dictionary<RectCoord, Chunk>();
-            readOnlyActivatedChunks = activatedChunks.AsReadOnlyDictionary();
+            inSceneChunks = new Dictionary<RectCoord, Chunk>();
+            readOnlyInSceneChunks = inSceneChunks.AsReadOnlyDictionary();
         }
 
         readonly ChunkPool chunkPool;
-        readonly Dictionary<RectCoord, Chunk> activatedChunks;
-        readonly IReadOnlyDictionary<RectCoord, Chunk> readOnlyActivatedChunks;
+        readonly Dictionary<RectCoord, Chunk> inSceneChunks;
+        readonly IReadOnlyDictionary<RectCoord, Chunk> readOnlyInSceneChunks;
 
-        public IReadOnlyDictionary<RectCoord, Chunk> ActivatedChunks
+        public IReadOnlyDictionary<RectCoord, Chunk> InSceneChunks
         {
-            get { return readOnlyActivatedChunks; }
+            get { return readOnlyInSceneChunks; }
         }
 
         /// <summary>
@@ -52,13 +52,13 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Chunk Create(RectCoord rectCoord, ChunkTexture textures)
         {
-            if (activatedChunks.ContainsKey(rectCoord))
+            if (inSceneChunks.ContainsKey(rectCoord))
                 throw new ArgumentException();
 
             Chunk chunk = chunkPool.Get();
             chunk.Position = ChunkGrid.GetCenter(rectCoord);
-            chunk.Updating(textures);
-            activatedChunks.Add(rectCoord, chunk);
+            chunk.InitializeOrUpdate(textures);
+            inSceneChunks.Add(rectCoord, chunk);
             return chunk;
         }
 
@@ -68,9 +68,9 @@ namespace KouXiaGu.Terrain3D
         public Chunk Update(RectCoord rectCoord, ChunkTexture textures)
         {
             Chunk chunk;
-            if (activatedChunks.TryGetValue(rectCoord, out chunk))
+            if (inSceneChunks.TryGetValue(rectCoord, out chunk))
             {
-                chunk.Updating(textures);
+                chunk.InitializeOrUpdate(textures);
             }
             return chunk;
         }
@@ -78,7 +78,7 @@ namespace KouXiaGu.Terrain3D
         public void Clear()
         {
             chunkPool.DestroyAll();
-            Destroy(activatedChunks);
+            Destroy(inSceneChunks);
         }
 
         void Destroy(IDictionary<RectCoord, Chunk> activatedChunks)

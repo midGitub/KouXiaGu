@@ -37,31 +37,36 @@ namespace KouXiaGu.Terrain3D
 #if UNITY_EDITOR
         [MenuItem("GameObject/Create Other/TerrainChunk")]
 #endif
-        static void _CraeteTerrainChunk()
+        static void _CraeteLandformChunk()
         {
-            Create();
+            var item = Create();
+            item.InitializeOrUpdate(null);
         }
 
         /// <summary>
-        /// 实例一个地形块,并指定名称;
+        /// 使用默认名实例一个地形块;
         /// </summary>
-        static Chunk CraeteTerrainChunk()
+        public static Chunk Create()
         {
-            GameObject gameObject = new GameObject("TerrainChunk", ChunkScripts);
+            return Create("TerrainChunk");
+        }
+
+        /// <summary>
+        /// 指定实例名创建一个地形块;
+        /// </summary>
+        public static Chunk Create(string name)
+        {
+            GameObject gameObject = new GameObject(name, ChunkScripts);
             return gameObject.GetComponent<Chunk>();
         }
 
-        public static Chunk Create()
-        {
-            var item = CraeteTerrainChunk();
-            item.Initialize(null);
-            return item;
-        }
-
+        /// <summary>
+        /// 创建到场景,并且进行初始化;
+        /// </summary>
         public static Chunk Create(ChunkTexture textures)
         {
-            var item = CraeteTerrainChunk();
-            item.Initialize(textures);
+            var item = Create();
+            item.InitializeOrUpdate(textures);
             return item;
         }
 
@@ -72,6 +77,7 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        public bool IsInitialized { get; private set; }
         public LandformMesh Mesh { get; private set; }
         public LandformRenderer Renderer { get; private set; }
         public LandformTrigger Trigger { get; private set; }
@@ -82,7 +88,23 @@ namespace KouXiaGu.Terrain3D
             set { transform.position = value; }
         }
 
-        public void Initialize(ChunkTexture textures)
+        /// <summary>
+        /// 初始化;若已经进行初始化了,则更新内部参数;
+        /// </summary>
+        public void InitializeOrUpdate(ChunkTexture textures)
+        {
+            if (IsInitialized)
+            {
+                SetNewParameters(textures);
+            }
+            else
+            {
+                Initialize(textures);
+                IsInitialized = true;
+            }
+        }
+
+        void Initialize(ChunkTexture textures)
         {
             var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
@@ -95,19 +117,17 @@ namespace KouXiaGu.Terrain3D
             Renderer.OnHeightChanged += OnHeightChanged;
         }
 
-        void Reset()
+        void SetNewParameters(ChunkTexture textures)
         {
-            Initialize(null);
+            Renderer.UpdateTextures(textures);
         }
 
+        /// <summary>
+        /// 当地形块高度变化时调用;
+        /// </summary>
         void OnHeightChanged(LandformRenderer renderer)
         {
             Trigger.RebuildCollisionMesh();
-        }
-
-        public void Updating(ChunkTexture textures)
-        {
-            Renderer.UpdateTextures(textures);
         }
 
         /// <summary>
