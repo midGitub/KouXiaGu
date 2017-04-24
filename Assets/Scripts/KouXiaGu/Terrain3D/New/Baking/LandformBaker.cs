@@ -15,7 +15,6 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class LandformBaker : MonoBehaviour
     {
-
         public static LandformBaker Initialise(IWorldData worldData)
         {
             var item = SceneObject.GetObject<LandformBaker>();
