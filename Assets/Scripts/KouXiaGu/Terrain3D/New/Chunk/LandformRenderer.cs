@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D
         }
 
         public LandformRenderer(MeshRenderer renderer, ChunkTexture textures)
+            : base(textures)
         {
             Init(renderer);
-            SetTextures(textures);
         }
 
         Material material;

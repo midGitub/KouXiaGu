@@ -18,7 +18,10 @@ namespace KouXiaGu.Terrain3D
 
         public ChunkTexture(ChunkTexture textures)
         {
-            SetTextures(textures);
+            if (textures != null)
+            {
+                SetTextures(textures);
+            }
         }
 
         /// <summary>
@@ -71,21 +74,27 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 设置所有贴图;
+        /// 设置所有贴图,若传入参数为Null,则返回异常;
         /// </summary>
         public virtual void SetTextures(ChunkTexture textures)
         {
+            if (textures == null)
+                throw new ArgumentNullException("textures");
+
             SetDiffuseMap(textures.DiffuseMap);
             SetHeightMap(textures.HeightMap);
             SetNormalMap(textures.NormalMap);
         }
 
         /// <summary>
-        /// 更新所有贴图,若传入的贴图为 Null,则保持原有贴图;
+        /// 更新所有贴图,若贴图为 Null,则保持原有贴图;若传入参数为Null,则返回异常;
         /// </summary>
         public virtual void UpdateTextures(ChunkTexture textures)
         {
-            if(textures.DiffuseMap != null)
+            if (textures == null)
+                throw new ArgumentNullException("textures");
+
+            if (textures.DiffuseMap != null)
                 SetDiffuseMap(textures.DiffuseMap);
 
             if (textures.HeightMap != null)
