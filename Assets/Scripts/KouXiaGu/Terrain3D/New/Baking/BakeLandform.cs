@@ -50,13 +50,14 @@ namespace KouXiaGu.Terrain3D
             WorldData = worldData;
             ChunkCenter = chunkCenter;
             Displays = displays;
-            return BakeCoroutine();
+            return Bake();
         }
 
-        IEnumerator BakeCoroutine()
+        IEnumerator Bake()
         {
             PrepareScene();
             BakeDiffuse();
+            yield return null;
             BakeHeight();
             ClearScene();
             yield break;

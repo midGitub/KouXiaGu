@@ -13,15 +13,17 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BakeRequest : AsyncOperation<ChunkTexture>, IBakingRequest
     {
-        public BakeRequest(LandformBaker baker, RectCoord chunkCoord)
+        public BakeRequest(LandformBaker baker, IWorldData worldData, RectCoord chunkCoord)
         {
-            this.WorldData = baker.WorldData;
+            Baker = baker;
+            WorldData = worldData;
             ChunkCoord = chunkCoord;
             ChunkCenter = chunkCoord.GetChunkHexCenter();
             Current = null;
         }
 
-        public IWorldData WorldData{ get; private set; }
+        public LandformBaker Baker { get; private set; }
+        public IWorldData WorldData { get; private set; }
         public RectCoord ChunkCoord { get; private set; }
         public CubicHexCoord ChunkCenter { get; private set; }
         public object Current { get; private set; }
