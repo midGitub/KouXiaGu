@@ -22,7 +22,7 @@ namespace KouXiaGu.World
 
 
     /// <summary>
-    /// 游戏世界数据初始化;
+    /// 游戏世界数据初始化,游戏世界相关数据初始化;
     /// </summary>
     public class WorldDataInitializer : AsyncInitializer<IWorldData>, IWorldData
     {

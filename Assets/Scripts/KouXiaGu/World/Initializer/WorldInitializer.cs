@@ -41,7 +41,7 @@ namespace KouXiaGu.World
 
         ListTracker<IWorld> worldTracker;
         WorldDataInitializer worldDataInitialize;
-        SceneInitializer sceneInitialize;
+        SceneComponentInitializer sceneComponentInitializer;
         public IGameData GameData { get; private set; }
         public WorldInfo Info { get; private set; }
         public IWorldData Data { get; private set; }
@@ -51,7 +51,7 @@ namespace KouXiaGu.World
         {
             worldTracker = new ListTracker<IWorld>();
             worldDataInitialize = new WorldDataInitializer();
-            sceneInitialize = new SceneInitializer();
+            sceneComponentInitializer = new SceneComponentInitializer();
 
             if (useEditorialInfo)
                 WorldInfoReader = new WorldInfoReader(editorialInfo);
@@ -79,12 +79,20 @@ namespace KouXiaGu.World
         void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
         {
             Data = operation.Result;
-            sceneInitialize.Start(Data, this).SubscribeCompleted(OnSceneCompleted);
+            sceneComponentInitializer.Start(Data, this).SubscribeCompleted(OnSceneComponentCompleted);
         }
 
-        void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
+        void OnSceneComponentCompleted(IAsyncOperation<IWorldScene> operation)
         {
             Scene = operation.Result;
+            OnSceneCompleted();
+        }
+
+        /// <summary>
+        /// 当所有初始化完成时;
+        /// </summary>
+        void OnSceneCompleted()
+        {
             worldTracker.Track(this);
             Debug.Log("游戏开始!");
         }

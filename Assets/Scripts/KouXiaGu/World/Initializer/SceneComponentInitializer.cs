@@ -15,9 +15,9 @@ namespace KouXiaGu.World
     }
 
     /// <summary>
-    /// 游戏世界场景初始化;
+    /// 场景功能组件初始化;
     /// </summary>
-    public class SceneInitializer : AsyncInitializer<IWorldScene>, IWorldScene
+    public class SceneComponentInitializer : AsyncInitializer<IWorldScene>, IWorldScene
     {
         public Landform Landform { get; private set; }
 
