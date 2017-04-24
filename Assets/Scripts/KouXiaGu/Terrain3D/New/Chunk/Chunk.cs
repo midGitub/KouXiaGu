@@ -72,19 +72,9 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        LandformMesh terrainMesh;
-        LandformRenderer terrainRenderer;
-        LandformTrigger trigger;
-
-        public LandformMesh Mesh
-        {
-            get { return terrainMesh; }
-        }
-
-        public LandformRenderer Texture
-        {
-            get { return terrainRenderer; }
-        }
+        public LandformMesh Mesh { get; private set; }
+        public LandformRenderer Renderer { get; private set; }
+        public LandformTrigger Trigger { get; private set; }
 
         public Vector3 Position
         {
@@ -98,9 +88,11 @@ namespace KouXiaGu.Terrain3D
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshCollider = GetComponent<MeshCollider>();
 
-            terrainMesh = new LandformMesh(meshFilter);
-            terrainRenderer = new LandformRenderer(meshRenderer, textures);
-            trigger = new LandformTrigger(meshCollider, terrainRenderer);
+            Mesh = new LandformMesh(meshFilter);
+            Renderer = new LandformRenderer(meshRenderer, textures);
+            Trigger = new LandformTrigger(meshCollider, Renderer);
+
+            Renderer.OnHeightChanged += OnHeightChanged;
         }
 
         void Reset()
@@ -108,16 +100,27 @@ namespace KouXiaGu.Terrain3D
             Initialize(null);
         }
 
-        public void UpdateTextures(ChunkTexture textures)
+        void OnHeightChanged(LandformRenderer renderer)
         {
-            Texture.UpdateTextures(textures);
+            Trigger.RebuildCollisionMesh();
         }
 
+        public void Update(ChunkTexture textures)
+        {
+            Renderer.UpdateTextures(textures);
+        }
+
+        /// <summary>
+        /// 清除所有引用,备下次重复使用;
+        /// </summary>
         public void Clear()
         {
-            terrainRenderer.Clear();
+            Renderer.Clear();
         }
 
+        /// <summary>
+        /// 销毁Unity实例,并清除所有贴图资源;
+        /// </summary>
         public void Destroy()
         {
             Destroy(gameObject);

@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
             base.OnInspectorGUI();
             var target = (Chunk)this.target;
 
-            var texture = target.Texture;
+            var texture = target.Renderer;
 
             if (texture != null)
             {

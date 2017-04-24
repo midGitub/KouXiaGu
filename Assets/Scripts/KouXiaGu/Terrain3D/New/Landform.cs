@@ -62,7 +62,7 @@ namespace KouXiaGu.Terrain3D
             if (LandformChunk.ActivatedChunks.TryGetValue(chunkCoord, out chunk))
             {
                 Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
-                return chunk.Texture.GetHeight(uv);
+                return chunk.Renderer.GetHeight(uv);
             }
             return 0;
         }

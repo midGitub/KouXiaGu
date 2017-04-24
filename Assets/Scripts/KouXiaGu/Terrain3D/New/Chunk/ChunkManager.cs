@@ -57,7 +57,7 @@ namespace KouXiaGu.Terrain3D
 
             Chunk chunk = chunkPool.Get();
             chunk.Position = ChunkGrid.GetCenter(rectCoord);
-            chunk.UpdateTextures(textures);
+            chunk.Update(textures);
             activatedChunks.Add(rectCoord, chunk);
             return chunk;
         }
@@ -70,7 +70,7 @@ namespace KouXiaGu.Terrain3D
             Chunk chunk;
             if (activatedChunks.TryGetValue(rectCoord, out chunk))
             {
-                chunk.UpdateTextures(textures);
+                chunk.Update(textures);
             }
             return chunk;
         }
