@@ -7,6 +7,9 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 地形块贴图信息;
+    /// </summary>
     public class ChunkTexture
     {
         public ChunkTexture()
@@ -16,13 +19,6 @@ namespace KouXiaGu.Terrain3D
         public ChunkTexture(ChunkTexture textures)
         {
             SetTextures(textures);
-        }
-
-        public ChunkTexture(Texture2D diffuseMap, Texture2D heightMap, Texture2D normalMap)
-        {
-            SetDiffuseMap(diffuseMap);
-            SetHeightMap(heightMap);
-            SetNormalMap(normalMap);
         }
 
         /// <summary>
@@ -82,6 +78,21 @@ namespace KouXiaGu.Terrain3D
             SetDiffuseMap(textures.DiffuseMap);
             SetHeightMap(textures.HeightMap);
             SetNormalMap(textures.NormalMap);
+        }
+
+        /// <summary>
+        /// 更新所有贴图,若传入的贴图为 Null,则保持原有贴图;
+        /// </summary>
+        public virtual void UpdateTextures(ChunkTexture textures)
+        {
+            if(textures.DiffuseMap != null)
+                SetDiffuseMap(textures.DiffuseMap);
+
+            if (textures.HeightMap != null)
+                SetHeightMap(textures.HeightMap);
+
+            if (textures.NormalMap != null)
+                SetNormalMap(textures.NormalMap);
         }
 
         /// <summary>

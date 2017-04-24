@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
 {
 
 
-    public class LandformTrigger : IObserver<LandformRenderer>
+    public class LandformTrigger
     {
 
         #region 网格定义;
@@ -78,12 +78,11 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        public LandformTrigger(MeshCollider collider, LandformRenderer renderer, IObservable<LandformRenderer> onHeightMapUpdate)
+        public LandformTrigger(MeshCollider collider, LandformRenderer renderer)
         {
             this.collider = collider;
             this.renderer = renderer;
             BuildCollisionMesh();
-            onHeightMapUpdate.Subscribe(this);
         }
 
         MeshCollider collider;
@@ -132,14 +131,6 @@ namespace KouXiaGu.Terrain3D
             }
             return vertices.ToArray();
         }
-
-        void IObserver<LandformRenderer>.OnNext(LandformRenderer value)
-        {
-            RebuildCollisionMesh();
-        }
-
-        void IObserver<LandformRenderer>.OnError(Exception error) { }
-        void IObserver<LandformRenderer>.OnCompleted() { }
 
     }
 

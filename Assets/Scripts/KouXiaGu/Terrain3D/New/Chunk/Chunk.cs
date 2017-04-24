@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形块;需要通过静态变量创建;
+    /// 地形块;需要通过静态方法创建;
     /// </summary>
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
@@ -54,6 +54,14 @@ namespace KouXiaGu.Terrain3D
         public static Chunk Create()
         {
             var item = CraeteTerrainChunk();
+            item.Initialize(null);
+            return item;
+        }
+
+        public static Chunk Create(ChunkTexture textures)
+        {
+            var item = CraeteTerrainChunk();
+            item.Initialize(textures);
             return item;
         }
 
@@ -84,25 +92,25 @@ namespace KouXiaGu.Terrain3D
             set { transform.position = value; }
         }
 
-        void Awake()
+        public void Initialize(ChunkTexture textures)
         {
             var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshCollider = GetComponent<MeshCollider>();
 
             terrainMesh = new LandformMesh(meshFilter);
-            terrainRenderer = new LandformRenderer(meshRenderer);
-            trigger = new LandformTrigger(meshCollider, terrainRenderer, terrainRenderer.OnHeightMapUpdate);
+            terrainRenderer = new LandformRenderer(meshRenderer, textures);
+            trigger = new LandformTrigger(meshCollider, terrainRenderer);
         }
 
         void Reset()
         {
-            Awake();
+            Initialize(null);
         }
 
-        public void SetTextures(ChunkTexture textures)
+        public void UpdateTextures(ChunkTexture textures)
         {
-            Texture.SetTextures(textures);
+            Texture.UpdateTextures(textures);
         }
 
         public void Clear()

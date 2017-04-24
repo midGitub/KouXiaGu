@@ -45,20 +45,26 @@ namespace KouXiaGu.Terrain3D
         }
 
         Material material;
-        LinkedListTracker<LandformRenderer> onHeightMapUpdate;
+        event Action<LandformRenderer> onHeightChanged;
 
         /// <summary>
-        /// 当高度贴图发生变化时调用;
+        /// 当地形块高度发生变化时调用;
         /// </summary>
-        public IObservable<LandformRenderer> OnHeightMapUpdate
+        public event Action<LandformRenderer> OnHeightChanged
         {
-            get { return onHeightMapUpdate; }
+            add { onHeightChanged += value; }
+            remove { onHeightChanged -= value; }
         }
 
         void Init(MeshRenderer renderer)
         {
             renderer.sharedMaterial = material = new Material(LandformShader);
-            onHeightMapUpdate = new LinkedListTracker<LandformRenderer>();
+        }
+
+        void HeightChanged()
+        {
+            if(onHeightChanged != null)
+                onHeightChanged(this);
         }
 
         public override void SetDiffuseMap(Texture2D diffuseMap)
@@ -76,7 +82,7 @@ namespace KouXiaGu.Terrain3D
             {
                 material.SetTexture("_HeightTex", heightMap);
                 base.SetHeightMap(heightMap);
-                onHeightMapUpdate.Track(this);
+                HeightChanged();
             }
         }
 

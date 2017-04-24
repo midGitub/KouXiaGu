@@ -13,6 +13,13 @@ namespace KouXiaGu.World
         {
             OnCompleted(info);
         }
+
+        public WorldInfoReader(ArchiveFile archive)
+        {
+
+        }
+
+
     }
 
     /// <summary>
@@ -24,7 +31,6 @@ namespace KouXiaGu.World
 
         public WorldTimeInfo Time;
         public ArchiveFile Archive;
-
 
 
 
