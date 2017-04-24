@@ -27,12 +27,12 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        public IWorldData WorldData { get; private set; }
         [SerializeField]
         Stopwatch runtimeStopwatch;
         CoroutineQueue<IBakingRequest> requestQueue;
         [SerializeField]
         BakeLandform landform;
-        public IWorldData WorldData { get; private set; }
 
         public Stopwatch RuntimeStopwatch
         {
