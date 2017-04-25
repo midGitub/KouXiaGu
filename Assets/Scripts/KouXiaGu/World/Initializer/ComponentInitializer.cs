@@ -14,6 +14,9 @@ namespace KouXiaGu.World
     /// </summary>
     public class ComponentInitializer : AsyncInitializer<IWorldComponent>, IWorldComponent
     {
+
+        IWorldData worldData;
+        IObservable<IWorld> starter;
         public Landform Landform { get; private set; }
 
         public override string Prefix
@@ -23,6 +26,9 @@ namespace KouXiaGu.World
 
         public IAsyncOperation<IWorldComponent> Start(IWorldData worldData, IObservable<IWorld> starter)
         {
+            this.worldData = worldData;
+            this.starter = starter;
+
             StartInitialize();
             BuildingScene(worldData);
             return this;
@@ -35,21 +41,21 @@ namespace KouXiaGu.World
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
-                  Landform.Initialize(worldData).Subscribe(OnLandformCompleted, OnFaulted),
               };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(OnBuildingSceneCompleted, OnFaulted);
         }
 
-        void OnLandformCompleted(IAsyncOperation<Landform> operation)
-        {
-            const string prefix = "[地形]";
-            Landform = operation.Result;
-            Debug.Log(prefix + InitializationCompletedStr);
-        }
-
         void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)
         {
+            OnLandformCompleted();
             OnCompleted(operations, this);
+        }
+
+        void OnLandformCompleted()
+        {
+            const string prefix = "[地形]";
+            Landform = Landform.Initialize(worldData);
+            Debug.Log(prefix + InitializationCompletedStr);
         }
     }
 

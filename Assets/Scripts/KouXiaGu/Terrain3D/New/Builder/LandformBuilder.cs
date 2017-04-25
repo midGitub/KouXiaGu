@@ -61,15 +61,14 @@ namespace KouXiaGu.Terrain3D
             requestQueue.Next();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public IAsyncOperation<Chunk> Create(RectCoord chunkCoord)
         {
-            throw new NotImplementedException();
+            var creater = new CreateChunk(chunkCoord, this);
+            AddRequest(creater);
+            return creater;
         }
 
-        public void AddRequest(ChunkRequest request)
+        void AddRequest(ChunkRequest request)
         {
             requestQueue.Add(request);
         }
@@ -77,7 +76,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 取消所有请求;
         /// </summary>
-        public void CanceleAll()
+        void CanceleAll()
         {
             foreach (var request in requestQueue)
             {
