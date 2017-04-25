@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
         BakeLandform landform = null;
         [SerializeField]
         Stopwatch runtimeStopwatch = null;
-        CoroutineQueue<BakeRequest> requestQueue;
+        Coroutine bakeCoroutine;
 
         internal BakeLandform Landform
         {
@@ -45,12 +45,12 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             bakeCamera.Initialize();
-            requestQueue = new CoroutineQueue<BakeRequest>(runtimeStopwatch);
+            bakeCoroutine = new Coroutine(BakeCoroutine());
         }
 
         void Update()
         {
-            requestQueue.Next();
+            bakeCoroutine.Next();
         }
 
         public void Reset()
@@ -58,15 +58,9 @@ namespace KouXiaGu.Terrain3D
             bakeCamera.Settings.UpdataTextureSize();
         }
 
-        public void AddRequest(RectCoord chunkCoord)
+        IEnumerator BakeCoroutine()
         {
-            var requeset = new BakeRequest(chunkCoord, this);
-            AddRequest(requeset);
-        }
-
-        public void AddRequest(BakeRequest request)
-        {
-            requestQueue.Add(request);
+            throw new NotImplementedException();
         }
     }
 

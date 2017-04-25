@@ -21,7 +21,6 @@ namespace KouXiaGu
         /// </summary>
         public static GameObject GetGameObject()
         {
-            
             return GameObject.FindWithTag(TagName);
         }
 
