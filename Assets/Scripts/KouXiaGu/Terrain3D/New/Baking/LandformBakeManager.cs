@@ -1,89 +1,204 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using KouXiaGu.Grids;
-using KouXiaGu.World;
-using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形烘焙管理;
+    /// 用于烘焙场景和品质控制;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformBakeManager : MonoBehaviour
+    public class LandformBakeManager : UnitySington<LandformBakeManager>
     {
 
-        public static LandformBakeManager Initialise(IWorldData worldData)
+        public static LandformBakeManager Initialise()
         {
             var item = SceneObject.GetObject<LandformBakeManager>();
-            item.WorldData = worldData;
             return item;
         }
+
+
+
+        static BakeSettings Settings
+        {
+            get { return Instance.settings; }
+        }
+
+        /// <summary>
+        /// 烘培使用的相机;
+        /// </summary>
+        static Camera Camera
+        {
+            get { return Instance.camera; }
+        }
+
+
+        /// <summary>
+        /// 获取到临时烘焙漫反射贴图的 "RenderTexture";
+        /// </summary>
+        public static RenderTexture GetDiffuseTemporaryRender()
+        {
+            return RenderTexture.GetTemporary(Settings.rDiffuseTexWidth, Settings.rDiffuseTexHeight);
+        }
+
+        /// <summary>
+        /// 获取到临时烘焙高度贴图的 "RenderTexture";
+        /// </summary>
+        public static RenderTexture GetHeightTemporaryRender()
+        {
+            return RenderTexture.GetTemporary(Settings.rHeightMapWidth, Settings.rHeightMapHeight);
+        }
+
+        /// <summary>
+        /// 释放临时的 "RenderTexture";
+        /// </summary>
+        public static void ReleaseTemporary(RenderTexture rt)
+        {
+            RenderTexture.ReleaseTemporary(rt);
+        }
+
+
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, CubicHexCoord cameraPoint, Color backgroundColor)
+        {
+            Color current = Camera.backgroundColor;
+            Camera.backgroundColor = backgroundColor;
+
+            CameraRender(rt, cameraPoint);
+
+            Camera.backgroundColor = current;
+        }
+
+        /// <summary>
+        /// 使用摄像机烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, CubicHexCoord cameraPoint)
+        {
+            Vector3 cameraPixelPoint = cameraPoint.GetTerrainPixel(5f);
+            CameraRender(rt, cameraPixelPoint);
+        }
+
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, Vector3 cameraPoint, Color backgroundColor)
+        {
+            Color current = Camera.backgroundColor;
+            Camera.backgroundColor = backgroundColor;
+
+            CameraRender(rt, cameraPoint);
+
+            Camera.backgroundColor = current;
+        }
+
+        /// <summary>
+        /// 使用摄像机烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, Vector3 cameraPoint)
+        {
+            Instance.transform.position = cameraPoint;
+            CameraRender(rt);
+        }
+
+        /// <summary>
+        /// 使用摄像机指定背景颜色烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt, Color backgroundColor)
+        {
+            Color current = Camera.backgroundColor;
+            Camera.backgroundColor = backgroundColor;
+
+            CameraRender(rt);
+
+            Camera.backgroundColor = current;
+        }
+
+        /// <summary>
+        /// 使用摄像机烘焙;
+        /// </summary>
+        public static void CameraRender(RenderTexture rt)
+        {
+            Camera.targetTexture = rt;
+            Camera.Render();
+            Camera.targetTexture = null;
+        }
+
+
+        public static Texture2D GetDiffuseTexture(
+            RenderTexture rt,
+            TextureFormat format = TextureFormat.RGB24,
+            bool mipmap = false)
+        {
+            RenderTexture.active = rt;
+            Texture2D diffuseTex = new Texture2D(Settings.DiffuseTexWidth, Settings.DiffuseTexHeight, format, mipmap);
+            diffuseTex.ReadPixels(Settings.DiffuseReadPixel, 0, 0, false);
+            diffuseTex.wrapMode = TextureWrapMode.Clamp;
+            diffuseTex.Apply();
+            return diffuseTex;
+        }
+
+        public static Texture2D GetHeightTexture(
+            RenderTexture rt,
+            TextureFormat format = TextureFormat.RGB24,
+            bool mipmap = false)
+        {
+            RenderTexture.active = rt;
+            Texture2D heightMap = new Texture2D(Settings.HeightMapWidth, Settings.HeightMapHeight, format, mipmap);
+            heightMap.ReadPixels(Settings.HeightReadPixel, 0, 0, false);
+            heightMap.wrapMode = TextureWrapMode.Clamp;
+            heightMap.Apply();
+            return heightMap;
+        }
+
 
         LandformBakeManager()
         {
         }
 
-        public IWorldData WorldData { get; private set; }
-        bool isOccupiedBaker;
+        [SerializeField]
+        Camera camera;
+
+        [SerializeField]
+        BakeSettings settings;
+
         [SerializeField]
         LandformBaker baker;
-        [SerializeField]
-        Stopwatch runtimeStopwatch;
-        CoroutineQueue<ChunkRequest> requestQueue;
 
-        public Stopwatch RuntimeStopwatch
+        /// <summary>
+        /// 地形烘培方法;
+        /// </summary>
+        public LandformBaker Baker
         {
-            get { return runtimeStopwatch; }
-            set { runtimeStopwatch = value; }
+            get { return baker; }
         }
 
         void Awake()
         {
-            requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);
+            InitBakingCamera();
         }
 
-        void Update()
+        void OnValidate()
         {
-            requestQueue.Next();
-        }
-
-        /// <summary>
-        /// 获取到烘焙方法类,并且锁定,若已经被锁定,则返回异常;
-        /// </summary>
-        /// <returns>取消锁定处理器;</returns>
-        public IDisposable GetBakerAndLock(out LandformBaker baker)
-        {
-            if (isOccupiedBaker)
-            {
-                throw new ArgumentException("LandformBaker 已被锁定;");
-            }
-            else
-            {
-                baker = this.baker;
-                isOccupiedBaker = true;
-                return new Unsubscriber(() => isOccupiedBaker = false);
-            }
-        }
-
-        public void AddRequest(ChunkRequest request)
-        {
-            requestQueue.Add(request);
+            settings.UpdataTextureSize();
         }
 
         /// <summary>
-        /// 取消所有请求;
+        /// 初始化烘焙相机参数;
         /// </summary>
-        public void CanceleAll()
+        [ContextMenu("初始化相机")]
+        void InitBakingCamera()
         {
-            foreach (var request in requestQueue)
-            {
-                request.Dispose();
-            }
-            requestQueue.Clear();
+            camera.aspect = BakeSettings.CameraAspect;
+            camera.orthographicSize = BakeSettings.CameraSize;
+            camera.transform.rotation = BakeSettings.CameraRotation;
+            camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
+            camera.backgroundColor = Color.black;
         }
 
     }

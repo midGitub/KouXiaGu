@@ -29,10 +29,10 @@ namespace KouXiaGu.Terrain3D
             //var texture = BakeCamera.GetHeightTexture(rt);
             //mesh.SetDiffuseMap(texture);
 
-            var rt = BakeCamera.GetDiffuseTemporaryRender();
-            BakeCamera.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
+            var rt = LandformBakeManager.GetDiffuseTemporaryRender();
+            LandformBakeManager.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
 
-            var texture = BakeCamera.GetDiffuseTexture(rt);
+            var texture = LandformBakeManager.GetDiffuseTexture(rt);
             mesh.SetDiffuseMap(texture);
         }
 

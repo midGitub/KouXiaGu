@@ -39,13 +39,13 @@ namespace KouXiaGu.Terrain3D
         public Landform(IWorldData world)
         {
             ChunkManager = new ChunkSceneManager();
-            BakeManager = LandformBakeManager.Initialise(world);
-            Builder = new ChunkBuilder(world, ChunkManager);
+            BakeManager = LandformBakeManager.Initialise();
+            Builder = LandformBuilder.Initialise(world, ChunkManager, BakeManager);
         }
 
         public ChunkSceneManager ChunkManager { get; private set; }
         public LandformBakeManager BakeManager { get; private set; }
-        public ChunkBuilder Builder { get; private set; }
+        public LandformBuilder Builder { get; private set; }
 
         public void Dispose()
         {

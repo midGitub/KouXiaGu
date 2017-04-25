@@ -142,9 +142,9 @@ namespace KouXiaGu.Terrain3D
                 normalMapRT = normalMapper.Rander(heightMapRT);
 
                 tex = new TerrainTexPack();
-                tex.heightMap = BakeCamera.GetHeightTexture(heightMapRT);
+                tex.heightMap = LandformBakeManager.GetHeightTexture(heightMapRT);
                 tex.normalMap = normalMapper.GetTexture(normalMapRT);
-                tex.diffuseMap = BakeCamera.GetDiffuseTexture(diffuseMapRT);
+                tex.diffuseMap = LandformBakeManager.GetDiffuseTexture(diffuseMapRT);
 
                 request.OnComplete(tex);
                 tex = null;

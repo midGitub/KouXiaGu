@@ -152,8 +152,8 @@ namespace KouXiaGu.Terrain3D
                 SetDiffuserMaterial(meshRenderer);
             }
 
-            DiffuseRT = BakeCamera.GetDiffuseTemporaryRender();
-            BakeCamera.CameraRender(DiffuseRT, Center, Transparent);
+            DiffuseRT = LandformBakeManager.GetDiffuseTemporaryRender();
+            LandformBakeManager.CameraRender(DiffuseRT, Center, Transparent);
         }
 
         void SetDiffuserMaterial(Pack renderer)
@@ -178,8 +178,8 @@ namespace KouXiaGu.Terrain3D
                 SetHeightMaterial(meshRenderer);
             }
 
-            HeightRT = BakeCamera.GetHeightTemporaryRender();
-            BakeCamera.CameraRender(HeightRT, Center);
+            HeightRT = LandformBakeManager.GetHeightTemporaryRender();
+            LandformBakeManager.CameraRender(HeightRT, Center);
         }
 
         void SetHeightMaterial(Pack renderer)
@@ -200,8 +200,8 @@ namespace KouXiaGu.Terrain3D
 
         public void Dispose()
         {
-            BakeCamera.ReleaseTemporary(DiffuseRT);
-            BakeCamera.ReleaseTemporary(HeightRT);
+            LandformBakeManager.ReleaseTemporary(DiffuseRT);
+            LandformBakeManager.ReleaseTemporary(HeightRT);
 
             DiffuseRT = null;
             HeightRT = null;

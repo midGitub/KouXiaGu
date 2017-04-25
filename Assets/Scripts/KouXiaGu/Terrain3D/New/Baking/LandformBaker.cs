@@ -42,8 +42,8 @@ namespace KouXiaGu.Terrain3D
             var heightMapRT = landform.HeightRT;
             var diffuseMapRT = landform.DiffuseRT;
 
-            var diffuseMap = BakeCamera.GetDiffuseTexture(diffuseMapRT);
-            var heightMap = BakeCamera.GetHeightTexture(diffuseMapRT);
+            var diffuseMap = LandformBakeManager.GetDiffuseTexture(diffuseMapRT);
+            var heightMap = LandformBakeManager.GetHeightTexture(diffuseMapRT);
 
             texture.SetDiffuseMap(diffuseMap);
             texture.SetHeightMap(heightMap);

@@ -108,7 +108,7 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             public Texture2D GetTexture(RenderTexture rt)
             {
-                return BakeCamera.GetHeightTexture(rt, TextureFormat.ARGB32);
+                return LandformBakeManager.GetHeightTexture(rt, TextureFormat.ARGB32);
             }
 
         }
