@@ -21,7 +21,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形烘培;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformBaker : MonoBehaviour
+    public sealed class LandformBaker : MonoBehaviour
     {
         /// <summary>
         /// 透明的黑色颜色;
@@ -32,7 +32,6 @@ namespace KouXiaGu.Terrain3D
         /// 地平线颜色;
         /// </summary>
         public static readonly Color Horizon = new Color(0.5f, 0.5f, 0.5f, 1);
-
 
         LandformBaker()
         {

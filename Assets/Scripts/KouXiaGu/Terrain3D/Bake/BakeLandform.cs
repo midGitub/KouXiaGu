@@ -15,13 +15,15 @@ namespace KouXiaGu.Terrain3D
     [Serializable]
     class BakeLandform
     {
-        public MeshRenderer prefab;
-        public int maxCapacity = 100;
-        public Shader diffuseShader;
-        public Shader heightShader;
+        [SerializeField]
+        MeshRenderer prefab = null;
+        [SerializeField]
+        int maxCapacity = 100;
+        [SerializeField]
+        Shader diffuseShader = null;
+        [SerializeField]
+        Shader heightShader = null;
 
-        Material diffuseMaterial;
-        Material heightMaterial;
         List<Pack> sceneObjects;
         GameObjectPool<MeshRenderer> objectPool;
 
@@ -44,8 +46,6 @@ namespace KouXiaGu.Terrain3D
 
         public void Initialise()
         {
-            diffuseMaterial = new Material(diffuseShader);
-            heightMaterial = new Material(heightShader);
             sceneObjects = new List<Pack>();
             objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);
         }
@@ -61,7 +61,7 @@ namespace KouXiaGu.Terrain3D
             this.bakeCamera = bakeCamera;
             this.worldData = worldData;
             this.chunkCenter = chunkCenter;
-            displays = ChunkPartitioner.GetLandform(chunkCenter);
+            this.displays = ChunkPartitioner.GetLandform(chunkCenter);
 
             PrepareScene();
             yield return null;
@@ -135,7 +135,7 @@ namespace KouXiaGu.Terrain3D
             MapNode node;
             if (worldMap.TryGetValue(pos, out node))
             {
-                info = GetLandformInfo(node);
+                info = GetLandformResource(node);
                 angle = GetLandformAngle(node);
             }
             else
@@ -152,14 +152,14 @@ namespace KouXiaGu.Terrain3D
             return angle;
         }
 
-        TerrainLandform GetLandformInfo(MapNode node)
+        TerrainLandform GetLandformResource(MapNode node)
         {
             int landformID = node.Landform.LandformID;
-            TerrainLandform info = GetLandformInfo(landformID);
+            TerrainLandform info = GetLandformResource(landformID);
             return info;
         }
 
-        TerrainLandform GetLandformInfo(int landformID)
+        TerrainLandform GetLandformResource(int landformID)
         {
             TerrainLandform info;
             if (!landformResources.TryGetValue(landformID, out info))
@@ -192,14 +192,8 @@ namespace KouXiaGu.Terrain3D
         void SetDiffuserMaterial(Pack renderer)
         {
             TerrainLandform res = renderer.Res;
-
-            if (renderer.Rednerer.material != null)
-            {
-                GameObject.Destroy(renderer.Rednerer.material);
-                renderer.Rednerer.material = diffuseMaterial;
-            }
-
-            var material = renderer.Rednerer.material;
+            GameObject.Destroy(renderer.Rednerer.sharedMaterial);
+            var material = renderer.Rednerer.sharedMaterial = new Material(diffuseShader);
             material.SetTexture("_MainTex", res.DiffuseTex);
             material.SetTexture("_BlendTex", res.DiffuseBlendTex);
         }
@@ -218,14 +212,8 @@ namespace KouXiaGu.Terrain3D
         void SetHeightMaterial(Pack renderer)
         {
             TerrainLandform res = renderer.Res;
-
-            if (renderer.Rednerer.material != null)
-            {
-                GameObject.Destroy(renderer.Rednerer.material);
-                renderer.Rednerer.material = heightMaterial;
-            }
-
-            var material = renderer.Rednerer.material;
+            GameObject.Destroy(renderer.Rednerer.sharedMaterial);
+            var material = renderer.Rednerer.material = new Material(heightShader);
             material.SetTexture("_MainTex", res.HeightTex);
             material.SetTexture("_BlendTex", res.HeightBlendTex);
         }
