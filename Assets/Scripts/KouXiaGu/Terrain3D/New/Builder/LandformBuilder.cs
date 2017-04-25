@@ -49,6 +49,9 @@ namespace KouXiaGu.Terrain3D
             requestQueue.Next();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IAsyncOperation<Chunk> Create(RectCoord chunkCoord)
         {
             throw new NotImplementedException();
