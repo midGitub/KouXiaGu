@@ -150,9 +150,27 @@ namespace KouXiaGu.Terrain3D
 
         #region 道路
 
+        /// <summary>
+        /// 获取到地形块对应覆盖到的建筑物坐标;
+        /// </summary>
+        public static IEnumerable<CubicHexCoord> GetRoad(RectCoord chunkCoord)
+        {
+            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            return GetBuilding(chunkCenter);
+        }
+
+        /// <summary>
+        /// 获取到地形块对应覆盖到的建筑物坐标;
+        /// </summary>
+        static IEnumerable<CubicHexCoord> GetRoad(CubicHexCoord chunkCenter)
+        {
+            foreach (var item in buildingOverlay)
+            {
+                yield return chunkCenter + item;
+            }
+        }
 
         #endregion
-
 
     }
 

@@ -60,7 +60,7 @@ namespace KouXiaGu.Terrain3D
             this.bakeCamera = bakeCamera;
             this.worldData = worldData;
             this.chunkCenter = chunkCenter;
-            this.displays = ChunkPartitioner.GetLandform(chunkCenter);
+            this.displays = ChunkPartitioner.GetRoad(chunkCenter);
 
             PrepareScene();
             yield return null;
