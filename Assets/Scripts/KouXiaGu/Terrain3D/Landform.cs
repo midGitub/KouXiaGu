@@ -24,6 +24,7 @@ namespace KouXiaGu.Terrain3D
 
         IWorldData worldData;
         public ChunkSceneManager ChunkManager { get; private set; }
+        public LandformBuilder Builder { get; private set; }
 
         void Awake()
         {

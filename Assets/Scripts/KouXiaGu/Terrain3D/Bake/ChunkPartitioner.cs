@@ -162,7 +162,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地形块对应覆盖到的建筑物坐标;
         /// </summary>
-        static IEnumerable<CubicHexCoord> GetRoad(CubicHexCoord chunkCenter)
+        public static IEnumerable<CubicHexCoord> GetRoad(CubicHexCoord chunkCenter)
         {
             foreach (var item in buildingOverlay)
             {
