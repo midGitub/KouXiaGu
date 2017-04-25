@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
         public IWorldData WorldData { get; private set; }
         [SerializeField]
         Stopwatch runtimeStopwatch;
-        CoroutineQueue<IBakingRequest> requestQueue;
+        CoroutineQueue<ChunkRequest> requestQueue;
         [SerializeField]
         LandformBaker baker;
 
@@ -40,7 +40,7 @@ namespace KouXiaGu.Terrain3D
             set { runtimeStopwatch = value; }
         }
 
-        public CoroutineQueue<IBakingRequest> RequestQueue
+        public CoroutineQueue<ChunkRequest> RequestQueue
         {
             get { return requestQueue; }
             private set { requestQueue = value; }
@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
-            requestQueue = new CoroutineQueue<IBakingRequest>(runtimeStopwatch);
+            requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);
         }
 
         void Update()
