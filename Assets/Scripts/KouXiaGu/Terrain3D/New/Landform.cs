@@ -13,14 +13,12 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形控制;
     /// </summary>
-    public class Landform : MonoBehaviour
+    public class Landform
     {
 
         public static Landform Initialize(IWorldData worldData)
         {
-            var item = SceneObject.GetObject<Landform>();
-            item.worldData = worldData;
-            return item;
+            return null;
         }
 
 
@@ -30,66 +28,15 @@ namespace KouXiaGu.Terrain3D
 
         IWorldData worldData;
         ChunkSceneManager chunkManager;
-        [SerializeField]
-        LandformBaker bakeManager;
-        [SerializeField]
-        Stopwatch runtimeStopwatch;
-        CoroutineQueue<ChunkRequest> requestQueue;
 
         public ChunkSceneManager ChunkManager
         {
             get { return chunkManager; }
         }
 
-        public BakeCamera BakeManager
-        {
-            get { return bakeManager; }
-        }
-
-        public bool IsRunning
-        {
-            get { return requestQueue.Count == 0; }
-        }
-
-        public Stopwatch RuntimeStopwatch
-        {
-            get { return runtimeStopwatch; }
-            set { runtimeStopwatch = value; }
-        }
-
         void Awake()
         {
             chunkManager = new ChunkSceneManager();
-            requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);
-        }
-
-        void Update()
-        {
-            requestQueue.Next();
-        }
-
-        public IAsyncOperation<Chunk> Create(RectCoord chunkCoord)
-        {
-            var creater = new CreateChunk(chunkCoord, this);
-            AddRequest(creater);
-            return creater;
-        }
-
-        void AddRequest(ChunkRequest request)
-        {
-            requestQueue.Add(request);
-        }
-
-        /// <summary>
-        /// 取消所有请求;
-        /// </summary>
-        void CanceleAll()
-        {
-            foreach (var request in requestQueue)
-            {
-                request.Dispose();
-            }
-            requestQueue.Clear();
         }
 
         /// <summary>
