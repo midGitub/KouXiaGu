@@ -15,6 +15,14 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public sealed class LandformBaker : MonoBehaviour
     {
+
+        public static LandformBaker Initialize(IWorldData worldData)
+        {
+            var item = SceneObject.GetObject<LandformBaker>();
+            item.worldData = worldData;
+            return item;
+        }
+
         /// <summary>
         /// 透明的黑色颜色;
         /// </summary>
@@ -35,6 +43,7 @@ namespace KouXiaGu.Terrain3D
         BakeLandform landform = null;
         [SerializeField]
         Stopwatch runtimeStopwatch = null;
+        IWorldData worldData;
         Coroutine bakeCoroutine;
 
         internal BakeLandform Landform

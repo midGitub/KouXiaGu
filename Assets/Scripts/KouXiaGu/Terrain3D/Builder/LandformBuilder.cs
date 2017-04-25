@@ -17,7 +17,6 @@ namespace KouXiaGu.Terrain3D
         public LandformBuilder()
         {
             ChunkManager = new ChunkSceneManager();
-            Baker = SceneObject.GetObject<LandformBaker>();
         }
 
         public ChunkSceneManager ChunkManager { get; private set; }
