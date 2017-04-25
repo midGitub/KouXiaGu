@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 用于烘焙场景和品质控制;
     /// </summary>
-    [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
+    [DisallowMultipleComponent]
     public class BakeCamera : UnitySington<BakeCamera>
     {
         static BakeSettings Settings
@@ -185,10 +185,6 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("初始化相机")]
         void InitBakingCamera()
         {
-#if UNITY_EDITOR
-            if (camera == null)
-                camera = GetComponent<Camera>();
-#endif
             camera.aspect = BakeSettings.CameraAspect;
             camera.orthographicSize = BakeSettings.CameraSize;
             camera.transform.rotation = BakeSettings.CameraRotation;
