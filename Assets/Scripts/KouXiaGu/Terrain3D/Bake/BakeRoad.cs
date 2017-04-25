@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形道路烘培;
     /// </summary>
     [Serializable]
-    public class BakeRoad
+    class BakeRoad
     {
 
 
