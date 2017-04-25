@@ -18,14 +18,14 @@ namespace KouXiaGu.Terrain3D
             ChunkCoord = chunkCoord;
             Current = null;
             ChunkCenter = ChunkCoord.GetChunkHexCenter();
-            BakeCoroutine = Operate();
+            Coroutine = Operate();
         }
 
         public LandformBuilder Builder { get; private set; }
         public RectCoord ChunkCoord { get; private set; }
         public object Current { get; private set; }
         public CubicHexCoord ChunkCenter { get; private set; }
-        public IEnumerator BakeCoroutine { get; private set; }
+        public IEnumerator Coroutine { get; private set; }
 
         /// <summary>
         /// 进行的操作;
@@ -42,8 +42,8 @@ namespace KouXiaGu.Terrain3D
 
         bool IEnumerator.MoveNext()
         {
-            bool moveNext = BakeCoroutine.MoveNext();
-            Current = BakeCoroutine.Current;
+            bool moveNext = Coroutine.MoveNext();
+            Current = Coroutine.Current;
             return moveNext;
         }
 

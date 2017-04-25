@@ -50,15 +50,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建到,若已经存在则返回异常;
         /// </summary>
-        public Chunk Create(RectCoord rectCoord, ChunkTexture textures)
+        public Chunk Create(RectCoord chunkCoord, ChunkTexture textures)
         {
-            if (inSceneChunks.ContainsKey(rectCoord))
+            if (inSceneChunks.ContainsKey(chunkCoord))
                 throw new ArgumentException();
 
             Chunk chunk = chunkPool.Get();
-            chunk.Position = ChunkGrid.GetCenter(rectCoord);
+            chunk.Position = ChunkGrid.GetCenter(chunkCoord);
             chunk.InitializeOrUpdate(textures);
-            inSceneChunks.Add(rectCoord, chunk);
+            inSceneChunks.Add(chunkCoord, chunk);
             return chunk;
         }
 
