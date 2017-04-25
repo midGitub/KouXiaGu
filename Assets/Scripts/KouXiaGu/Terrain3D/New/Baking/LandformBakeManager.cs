@@ -28,22 +28,17 @@ namespace KouXiaGu.Terrain3D
         }
 
         public IWorldData WorldData { get; private set; }
+        bool isOccupiedBaker;
+        [SerializeField]
+        LandformBaker baker;
         [SerializeField]
         Stopwatch runtimeStopwatch;
         CoroutineQueue<ChunkRequest> requestQueue;
-        [SerializeField]
-        LandformBaker baker;
 
         public Stopwatch RuntimeStopwatch
         {
             get { return runtimeStopwatch; }
             set { runtimeStopwatch = value; }
-        }
-
-        public CoroutineQueue<ChunkRequest> RequestQueue
-        {
-            get { return requestQueue; }
-            private set { requestQueue = value; }
         }
 
         void Awake()
@@ -62,7 +57,21 @@ namespace KouXiaGu.Terrain3D
         /// <returns>取消锁定处理器;</returns>
         public IDisposable GetBakerAndLock(out LandformBaker baker)
         {
-            throw new NotImplementedException();
+            if (isOccupiedBaker)
+            {
+                throw new ArgumentException("LandformBaker 已被锁定;");
+            }
+            else
+            {
+                baker = this.baker;
+                isOccupiedBaker = true;
+                return new Unsubscriber(() => isOccupiedBaker = false);
+            }
+        }
+
+        public void AddRequest(ChunkRequest request)
+        {
+            requestQueue.Add(request);
         }
 
         /// <summary>

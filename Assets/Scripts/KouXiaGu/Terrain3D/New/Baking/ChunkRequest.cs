@@ -47,6 +47,8 @@ namespace KouXiaGu.Terrain3D
             Displays = GetOverlaye();
             yield return BakeCoroutine();
             bakerDisposer.Dispose();
+            bakerDisposer = null;
+            baker = null;
         }
 
         protected abstract IEnumerator BakeCoroutine();
@@ -67,7 +69,11 @@ namespace KouXiaGu.Terrain3D
             OnCanceled();
 
             if (bakerDisposer != null)
+            {
                 bakerDisposer.Dispose();
+                bakerDisposer = null;
+                baker = null;
+            }
         }
 
         bool IEnumerator.MoveNext()
