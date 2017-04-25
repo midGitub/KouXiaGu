@@ -137,7 +137,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地形块对应覆盖到的地貌坐标;
         /// </summary>
-        static IEnumerable<CubicHexCoord> GetLandform(CubicHexCoord chunkCenter)
+        public static IEnumerable<CubicHexCoord> GetLandform(CubicHexCoord chunkCenter)
         {
             foreach (var item in landformOverlay)
             {

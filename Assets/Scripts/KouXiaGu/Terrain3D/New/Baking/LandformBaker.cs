@@ -28,14 +28,17 @@ namespace KouXiaGu.Terrain3D
             get { return landform; }
         }
 
-        public void Reset()
+        /// <summary>
+        /// 
+        /// </summary>
+        IEnumerator<ChunkTexture> Bake()
         {
-            landform.Reset();
+            yield break;
         }
 
-        public void Dispose()
+        public void Reset()
         {
-            throw new NotImplementedException();
+            landform.ReleaseAll();
         }
     }
 

@@ -25,11 +25,21 @@ namespace KouXiaGu.Terrain3D
         List<Pack> sceneObjects;
         GameObjectPool<MeshRenderer> objectPool;
 
-        public IWorldData WorldData { get; private set; }
-        public CubicHexCoord ChunkCenter { get; private set; }
-        public IEnumerable<CubicHexCoord> Displays { get; private set; }
+        IWorldData worldData;
+        CubicHexCoord chunkCenter;
+        IEnumerable<CubicHexCoord> displays;
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
+
+        IDictionary<CubicHexCoord, MapNode> worldMap
+        {
+            get { return worldData.Map.Data; }
+        }
+
+        IDictionary<int, TerrainLandform> landformResources
+        {
+            get { return worldData.GameData.Terrain.LandformInfos; }
+        }
 
         public void Initialise()
         {
@@ -45,34 +55,43 @@ namespace KouXiaGu.Terrain3D
         /// <param name="worldData">世界数据</param>
         /// <param name="chunkCenter">地形块中心坐标;</param>
         /// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
-        public IEnumerator GetBakeCoroutine(IWorldData worldData, CubicHexCoord chunkCenter, IEnumerable<CubicHexCoord> displays)
+        public IEnumerator GetBakeCoroutine(IWorldData worldData, CubicHexCoord chunkCenter)
         {
-            WorldData = worldData;
-            ChunkCenter = chunkCenter;
-            Displays = displays;
-            return Bake();
-        }
+            this.worldData = worldData;
+            this.chunkCenter = chunkCenter;
+            displays = ChunkPartitioner.GetLandform(chunkCenter);
 
-        IEnumerator Bake()
-        {
             PrepareScene();
+            yield return null;
             BakeDiffuse();
             yield return null;
             BakeHeight();
             yield return null;
             ClearScene();
-            yield break;
+            yield return null;
         }
 
         /// <summary>
-        /// 重置参数,备下次重复使用,仅在协程中途取消时调用;
+        /// 重置所有参数,在协程运行失败时候调用;
         /// </summary>
-        public void Reset()
+        public void ReleaseAll()
         {
             if (sceneObjects.Count != 0)
                 ClearScene();
 
-            ReleaseAll();
+            Release();
+        }
+
+        /// <summary>
+        /// 释放所有该实例创建的 RenderTexture 类型的资源;
+        /// </summary>
+        public void Release()
+        {
+            BakeCamera.ReleaseTemporary(DiffuseRT);
+            DiffuseRT = null;
+
+            BakeCamera.ReleaseTemporary(HeightRT);
+            HeightRT = null;
         }
 
         /// <summary>
@@ -88,23 +107,11 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 释放所有该实例创建的 RenderTexture 类型的资源;
-        /// </summary>
-        public void ReleaseAll()
-        {
-            BakeCamera.ReleaseTemporary(DiffuseRT);
-            DiffuseRT = null;
-
-            BakeCamera.ReleaseTemporary(HeightRT);
-            HeightRT = null;
-        }
-
-        /// <summary>
         /// 在场景内创建烘培使用的网格;
         /// </summary>
         void PrepareScene()
         {
-            foreach (var display in Displays)
+            foreach (var display in displays)
             {
                 float angle;
                 TerrainLandform info = GetLandformInfo(display, out angle);
@@ -122,10 +129,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         TerrainLandform GetLandformInfo(CubicHexCoord pos, out float angle)
         {
-            IDictionary<CubicHexCoord, MapNode> map = WorldData.Map.Data;
             TerrainLandform info;
             MapNode node;
-            if (map.TryGetValue(pos, out node))
+            if (worldMap.TryGetValue(pos, out node))
             {
                 info = GetLandformInfo(node);
                 angle = GetLandformAngle(node);
@@ -147,14 +153,14 @@ namespace KouXiaGu.Terrain3D
         TerrainLandform GetLandformInfo(MapNode node)
         {
             int landformID = node.Landform.LandformID;
-            TerrainLandform info = GetLandformInfo(WorldData.GameData.Terrain, landformID);
+            TerrainLandform info = GetLandformInfo(landformID);
             return info;
         }
 
-        TerrainLandform GetLandformInfo(TerrainResource data, int landformID)
+        TerrainLandform GetLandformInfo(int landformID)
         {
             TerrainLandform info;
-            if (!data.LandformInfos.TryGetValue(landformID, out info))
+            if (!landformResources.TryGetValue(landformID, out info))
             {
                 Debug.LogWarning("未找到对应地形贴图,ID:[" + landformID + "];");
             }
@@ -183,7 +189,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             DiffuseRT = BakeCamera.GetDiffuseTemporaryRender();
-            BakeCamera.CameraRender(DiffuseRT, ChunkCenter, Transparent);
+            BakeCamera.CameraRender(DiffuseRT, chunkCenter, Transparent);
         }
 
         void SetDiffuserMaterial(Pack renderer)
@@ -209,7 +215,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             HeightRT = BakeCamera.GetHeightTemporaryRender();
-            BakeCamera.CameraRender(HeightRT, ChunkCenter);
+            BakeCamera.CameraRender(HeightRT, chunkCenter);
         }
 
         void SetHeightMaterial(Pack renderer)
