@@ -1,17 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Grids;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
-
-    public interface ISingtonBaker : IDisposable
-    {
-        IDisposable GetAndLock(out LandformBaker baker);
-    }
-
 
     [Serializable]
     public class LandformBaker
@@ -31,7 +27,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 
         /// </summary>
-        IEnumerator<ChunkTexture> Bake()
+        IEnumerator Bake(CubicHexCoord chunkCenter, ChunkTexture texture)
         {
             yield break;
         }
