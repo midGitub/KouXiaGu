@@ -37,8 +37,24 @@ namespace KouXiaGu
                 while (!Stopwatch.Await())
                 {
                     IEnumerator request = coroutineStack.Peek();
+                    bool moveNext;
 
-                    bool moveNext = request.MoveNext();
+                    try
+                    {
+                        moveNext = request.MoveNext();
+                    }
+                    catch(Exception e)
+                    {
+                        coroutineStack.Clear();
+                        requestQueue.Dequeue();
+                        if (requestQueue.Count != 0)
+                        {
+                            T item = requestQueue.Peek();
+                            coroutineStack.Push(item);
+                        }
+                        throw e;
+                    }
+
                     if (!moveNext)
                     {
                         coroutineStack.Pop();

@@ -15,7 +15,6 @@ namespace KouXiaGu.Terrain3D
     public interface IBakingRequest : IAsyncOperation<ChunkTexture>, IDisposable, IEnumerator
     {
         RectCoord ChunkCoord { get; }
-        void Cancel();
     }
 
 }

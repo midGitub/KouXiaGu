@@ -25,7 +25,8 @@ namespace KouXiaGu.Terrain3D
         public object Current { get; private set; }
         IEnumerator bakeCoroutine;
 
-        protected LandformBaker Baker { get; private set; }
+        LandformBaker baker;
+        IDisposable bakerDisposer;
         protected CubicHexCoord ChunkCenter { get; private set; }
         protected IEnumerable<CubicHexCoord> Displays { get; private set; }
 
@@ -34,37 +35,21 @@ namespace KouXiaGu.Terrain3D
             get { return Landform.ChunkManager; }
         }
 
-        protected abstract IEnumerator BakeCoroutine();
+        protected LandformBaker Baker
+        {
+            get { return baker; }
+        }
 
         IEnumerator Bake()
         {
+            bakerDisposer = Landform.BakeManager.GetBakerAndLock(out baker);
             ChunkCenter = ChunkCoord.GetChunkHexCenter();
             Displays = GetOverlaye();
             yield return BakeCoroutine();
+            bakerDisposer.Dispose();
         }
 
-        /// <summary>
-        /// 取消创建请求;
-        /// </summary>
-        public virtual void Cancel()
-        {
-            OnCanceled();
-        }
-
-        public void Dispose()
-        {
-            Baker.Reset();
-        }
-
-        public bool MoveNext()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Reset()
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract IEnumerator BakeCoroutine();
 
         /// <summary>
         /// 获取到覆盖到的坐标;
@@ -73,6 +58,30 @@ namespace KouXiaGu.Terrain3D
         {
             return ChunkPartitioner.GetLandform(ChunkCoord);
         }
+
+        /// <summary>
+        /// 取消创建请求;
+        /// </summary>
+        public virtual void Dispose()
+        {
+            OnCanceled();
+
+            if (bakerDisposer != null)
+                bakerDisposer.Dispose();
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            bool moveNext = bakeCoroutine.MoveNext();
+            Current = bakeCoroutine.Current;
+            return moveNext;
+        }
+
+        void IEnumerator.Reset()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
 }

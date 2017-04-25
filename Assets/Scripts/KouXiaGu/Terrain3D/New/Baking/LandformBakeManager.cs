@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var request in requestQueue)
             {
-                request.Cancel();
+                request.Dispose();
             }
             requestQueue.Clear();
         }
