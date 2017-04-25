@@ -23,6 +23,7 @@ namespace KouXiaGu.Terrain3D
             return item;
         }
 
+
         Landform()
         {
         }
@@ -30,7 +31,7 @@ namespace KouXiaGu.Terrain3D
         IWorldData worldData;
         ChunkSceneManager chunkManager;
         [SerializeField]
-        BakeCamera bakeManager;
+        LandformBaker bakeManager;
         [SerializeField]
         Stopwatch runtimeStopwatch;
         CoroutineQueue<ChunkRequest> requestQueue;
