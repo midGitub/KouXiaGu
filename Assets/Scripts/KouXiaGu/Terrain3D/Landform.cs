@@ -13,30 +13,21 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形控制;
     /// </summary>
-    public class Landform
+    public class Landform : MonoBehaviour
     {
-
         public static Landform Initialize(IWorldData worldData)
         {
-            return null;
-        }
-
-
-        Landform()
-        {
+            var item = SceneObject.GetObject<Landform>();
+            item.worldData = worldData;
+            return item;
         }
 
         IWorldData worldData;
-        ChunkSceneManager chunkManager;
-
-        public ChunkSceneManager ChunkManager
-        {
-            get { return chunkManager; }
-        }
+        public ChunkSceneManager ChunkManager { get; private set; }
 
         void Awake()
         {
-            chunkManager = new ChunkSceneManager();
+            ChunkManager = new ChunkSceneManager();
         }
 
         /// <summary>
