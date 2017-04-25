@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形贴图烘焙;
     /// </summary>
     [Serializable]
-    public class BakeLandform
+    class BakeLandform
     {
         public MeshRenderer prefab;
         public int maxCapacity = 100;

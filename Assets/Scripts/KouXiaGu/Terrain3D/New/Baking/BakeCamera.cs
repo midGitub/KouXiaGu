@@ -12,9 +12,9 @@ namespace KouXiaGu.Terrain3D
     /// 用于烘焙场景和品质控制;
     /// </summary>
     [Serializable]
-    public class BakeCamera
+    class BakeCamera
     {
-        protected BakeCamera()
+        BakeCamera()
         {
         }
 
@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
             get { return settings; }
         }
 
-        public virtual void Initialize()
+        public void Initialize()
         {
             InitBakingCamera();
             settings.UpdataTextureSize();
@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 初始化烘焙相机参数;
         /// </summary>
-        public void InitBakingCamera()
+        void InitBakingCamera()
         {
             camera.aspect = BakeSettings.CameraAspect;
             camera.orthographicSize = BakeSettings.CameraSize;
