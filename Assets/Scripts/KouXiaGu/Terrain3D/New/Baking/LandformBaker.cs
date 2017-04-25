@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 using UnityEngine;
@@ -37,18 +36,27 @@ namespace KouXiaGu.Terrain3D
             get { return landform; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         IEnumerator Bake(IWorldData worldData, CubicHexCoord chunkCenter, ChunkTexture texture)
         {
             yield return landform.BakeCoroutine(worldData, chunkCenter);
+            var heightMapRT = landform.HeightRT;
+            var diffuseMapRT = landform.DiffuseRT;
+
+            var diffuseMap = BakeCamera.GetDiffuseTexture(diffuseMapRT);
+            var heightMap = BakeCamera.GetHeightTexture(diffuseMapRT);
+
+            texture.SetDiffuseMap(diffuseMap);
+            texture.SetHeightMap(heightMap);
+
+            landform.Reset();
+            yield break;
         }
 
         public void Reset()
         {
-            landform.ReleaseAll();
+            landform.ResetAll();
         }
+
     }
 
 }
