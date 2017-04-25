@@ -20,8 +20,8 @@ namespace KouXiaGu.Terrain3D
         {
             var item = SceneObject.GetObject<LandformBuilder>();
             item.WorldData = worldData;
-            item.chunkManager = chunkManager;
-            item.bakeManager = bakeManager;
+            item.ChunkManager = chunkManager;
+            item.BakeManager = bakeManager;
             item.requestQueue = new CoroutineQueue<ChunkRequest>(item.runtimeStopwatch);
             return item;
         }
@@ -31,8 +31,8 @@ namespace KouXiaGu.Terrain3D
         }
 
         IWorldData WorldData;
-        ChunkSceneManager chunkManager;
-        LandformBakeManager bakeManager;
+        public ChunkSceneManager ChunkManager { get; private set; }
+        public LandformBakeManager BakeManager { get; private set; }
 
         [SerializeField]
         Stopwatch runtimeStopwatch;

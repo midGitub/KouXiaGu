@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
             ChunkCoord = chunkCoord;
             Current = null;
             ChunkCenter = ChunkCoord.GetChunkHexCenter();
-            BakeCoroutine = Bake();
+            BakeCoroutine = Operate();
         }
 
         public LandformBuilder Builder { get; private set; }
@@ -27,7 +27,10 @@ namespace KouXiaGu.Terrain3D
         public CubicHexCoord ChunkCenter { get; private set; }
         public IEnumerator BakeCoroutine { get; private set; }
 
-        protected abstract IEnumerator Bake();
+        /// <summary>
+        /// 进行的操作;
+        /// </summary>
+        protected abstract IEnumerator Operate();
 
         /// <summary>
         /// 取消创建请求;
