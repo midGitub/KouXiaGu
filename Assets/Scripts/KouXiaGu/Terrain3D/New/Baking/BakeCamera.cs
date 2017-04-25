@@ -155,14 +155,26 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 烘培摄像机;
         /// </summary>
+        [SerializeField]
         Camera _camera;
 
         [SerializeField]
         BakeSettings settings;
 
+        [SerializeField]
+        LandformBaker baker;
+
+        /// <summary>
+        /// 地形烘培方法;
+        /// </summary>
+        public LandformBaker Baker
+        {
+            get { return baker; }
+        }
+
         void Awake()
         {
-            _camera = GetComponent<Camera>();
+            //_camera = GetComponent<Camera>();
             InitBakingCamera();
         }
 

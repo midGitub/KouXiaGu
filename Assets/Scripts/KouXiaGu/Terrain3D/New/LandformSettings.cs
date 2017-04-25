@@ -82,7 +82,6 @@ namespace KouXiaGu.Terrain3D
             snowLevel = value;
         }
 
-
         void Start()
         {
             SetTessellation(tessellation);
