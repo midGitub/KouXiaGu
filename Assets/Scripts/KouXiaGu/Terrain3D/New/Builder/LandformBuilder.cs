@@ -22,7 +22,6 @@ namespace KouXiaGu.Terrain3D
             item.WorldData = worldData;
             item.ChunkManager = chunkManager;
             item.BakeManager = bakeManager;
-            item.requestQueue = new CoroutineQueue<ChunkRequest>(item.runtimeStopwatch);
             return item;
         }
 
@@ -42,6 +41,11 @@ namespace KouXiaGu.Terrain3D
         {
             get { return runtimeStopwatch; }
             set { runtimeStopwatch = value; }
+        }
+
+        void Awake()
+        {
+            requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);
         }
 
         void Update()
