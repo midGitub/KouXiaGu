@@ -22,7 +22,7 @@ namespace KouXiaGu
         /// 提供初始化使用的协程方法;
         /// </summary>
         [Obsolete]
-        internal static Coroutine _StartCoroutine(IEnumerator routine)
+        internal static UnityEngine.Coroutine _StartCoroutine(IEnumerator routine)
         {
             return Instance.StartCoroutine(routine);
         }

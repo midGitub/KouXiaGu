@@ -9,6 +9,24 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    interface IBakeRequest : IAsyncOperation
+    {
+        /// <summary>
+        /// 地形块坐标;
+        /// </summary>
+        RectCoord ChunkCoord { get; }
+
+        /// <summary>
+        /// 贴图烘焙完成;
+        /// </summary>
+        void OnComplete(ChunkTexture textures);
+
+        /// <summary>
+        /// 出现错误时调用;
+        /// </summary>
+        void OnFaulted(Exception ex);
+    }
+
     /// <summary>
     /// 地形烘培;
     /// </summary>
@@ -45,6 +63,7 @@ namespace KouXiaGu.Terrain3D
         Stopwatch runtimeStopwatch = null;
         IWorldData worldData;
         Coroutine bakeCoroutine;
+        Queue<IBakeRequest> requestQueue;
 
         internal BakeLandform Landform
         {
@@ -59,7 +78,9 @@ namespace KouXiaGu.Terrain3D
 
         void Update()
         {
-            bakeCoroutine.Next();
+            runtimeStopwatch.Restart();
+            while (!runtimeStopwatch.Await() && bakeCoroutine.MoveNext())
+                continue;
         }
 
         public void Reset()
@@ -69,8 +90,19 @@ namespace KouXiaGu.Terrain3D
 
         IEnumerator BakeCoroutine()
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                IBakeRequest bakeRequest = requestQueue.Dequeue();
+
+                if (bakeRequest.IsCompleted)
+                    bakeRequest.OnFaulted(new Exception("已经完成;"));
+
+                CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
+                yield return landform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+
+            }
         }
+
     }
 
 }

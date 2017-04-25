@@ -25,18 +25,7 @@ namespace KouXiaGu
             get { return null; }
         }
 
-        bool IEnumerator.MoveNext()
-        {
-            Next();
-            return IsCompleted;
-        }
-
-        void IEnumerator.Reset()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Next()
+        public bool MoveNext()
         {
             if (coroutineStack.Count != 0)
             {
@@ -61,7 +50,7 @@ namespace KouXiaGu
                         coroutineStack.Clear();
                         OnCompleted();
                     }
-                    return;
+                    return IsCompleted;
                 }
 
                 var newCoroutine = request.Current as IEnumerator;
@@ -70,12 +59,19 @@ namespace KouXiaGu
                     coroutineStack.Push(newCoroutine);
                 }
             }
+            return IsCompleted;
         }
 
         public void Cancele()
         {
             OnCanceled();
         }
+
+        void IEnumerator.Reset()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
 }
