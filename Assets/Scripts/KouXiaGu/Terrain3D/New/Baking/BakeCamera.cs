@@ -24,7 +24,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static Camera Camera
         {
-            get { return Instance._camera; }
+            get { return Instance.camera; }
         }
 
 
@@ -152,11 +152,8 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        /// <summary>
-        /// 烘培摄像机;
-        /// </summary>
         [SerializeField]
-        Camera _camera;
+        Camera camera;
 
         [SerializeField]
         BakeSettings settings;
@@ -174,7 +171,6 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
-            //_camera = GetComponent<Camera>();
             InitBakingCamera();
         }
 
@@ -190,14 +186,14 @@ namespace KouXiaGu.Terrain3D
         void InitBakingCamera()
         {
 #if UNITY_EDITOR
-            if (_camera == null)
-                _camera = GetComponent<Camera>();
+            if (camera == null)
+                camera = GetComponent<Camera>();
 #endif
-            _camera.aspect = BakeSettings.CameraAspect;
-            _camera.orthographicSize = BakeSettings.CameraSize;
-            _camera.transform.rotation = BakeSettings.CameraRotation;
-            _camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
-            _camera.backgroundColor = Color.black;
+            camera.aspect = BakeSettings.CameraAspect;
+            camera.orthographicSize = BakeSettings.CameraSize;
+            camera.transform.rotation = BakeSettings.CameraRotation;
+            camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
+            camera.backgroundColor = Color.black;
         }
 
     }
