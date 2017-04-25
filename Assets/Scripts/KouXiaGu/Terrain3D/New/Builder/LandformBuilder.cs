@@ -43,6 +43,14 @@ namespace KouXiaGu.Terrain3D
             set { runtimeStopwatch = value; }
         }
 
+        /// <summary>
+        /// 是否正在构建中?
+        /// </summary>
+        public bool IsBuilding
+        {
+            get { return requestQueue.Count == 0; }
+        }
+
         void Awake()
         {
             requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);

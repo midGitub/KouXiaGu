@@ -24,6 +24,11 @@ namespace KouXiaGu
         readonly Stack<IEnumerator> coroutineStack;
         public ISegmented Stopwatch { get; set; }
 
+        public int Count
+        {
+            get { return requestQueue.Count; }
+        }
+
         object IEnumerator.Current
         {
             get { return null; }
