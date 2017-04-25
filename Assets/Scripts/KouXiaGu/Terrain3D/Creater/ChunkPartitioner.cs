@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetBuilding(RectCoord chunkCoord)
         {
-            CubicHexCoord chunkCenter = OLandformChunk.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
             return GetBuilding(chunkCenter);
         }
 
@@ -130,7 +130,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IEnumerable<CubicHexCoord> GetLandform(RectCoord chunkCoord)
         {
-            CubicHexCoord chunkCenter = OLandformChunk.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
             return GetLandform(chunkCenter);
         }
 
@@ -146,6 +146,13 @@ namespace KouXiaGu.Terrain3D
         }
 
         #endregion
+
+
+        #region 道路
+
+
+        #endregion
+
 
     }
 

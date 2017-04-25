@@ -59,6 +59,7 @@ namespace KouXiaGu.Terrain3D
             BakeDiffuse();
             yield return null;
             BakeHeight();
+            yield return null;
             ClearScene();
             yield break;
         }

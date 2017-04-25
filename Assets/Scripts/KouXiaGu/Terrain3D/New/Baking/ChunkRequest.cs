@@ -28,7 +28,6 @@ namespace KouXiaGu.Terrain3D
         LandformBaker baker;
         IDisposable bakerDisposer;
         protected CubicHexCoord ChunkCenter { get; private set; }
-        protected IEnumerable<CubicHexCoord> Displays { get; private set; }
 
         protected ChunkSceneManager ChunkManager
         {
@@ -44,7 +43,6 @@ namespace KouXiaGu.Terrain3D
         {
             bakerDisposer = Landform.BakeManager.GetBakerAndLock(out baker);
             ChunkCenter = ChunkCoord.GetChunkHexCenter();
-            Displays = GetOverlaye();
             yield return BakeCoroutine();
             bakerDisposer.Dispose();
             bakerDisposer = null;
@@ -52,14 +50,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         protected abstract IEnumerator BakeCoroutine();
-
-        /// <summary>
-        /// 获取到覆盖到的坐标;
-        /// </summary>
-        IEnumerable<CubicHexCoord> GetOverlaye()
-        {
-            return ChunkPartitioner.GetLandform(ChunkCoord);
-        }
 
         /// <summary>
         /// 取消创建请求;
