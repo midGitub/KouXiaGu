@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Stopwatch runtimeStopwatch;
-        CoroutineQueue<ChunkRequest> requestQueue;
+        CoroutineQueue<BakeRequest> requestQueue;
 
         public Stopwatch RuntimeStopwatch
         {
@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
-            requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);
+            requestQueue = new CoroutineQueue<BakeRequest>(runtimeStopwatch);
         }
 
         void Update()
@@ -61,7 +61,7 @@ namespace KouXiaGu.Terrain3D
             throw new NotImplementedException();
         }
 
-        void AddRequest(ChunkRequest request)
+        void AddRequest(BakeRequest request)
         {
             requestQueue.Add(request);
         }
@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var request in requestQueue)
             {
-                request.Dispose();
+                request.Cancele();
             }
             requestQueue.Clear();
         }

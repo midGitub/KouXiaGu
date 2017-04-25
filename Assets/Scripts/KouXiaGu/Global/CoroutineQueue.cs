@@ -90,6 +90,9 @@ namespace KouXiaGu
 
         public void Add(T item)
         {
+            if (item == null)
+                throw new ArgumentNullException();
+
             requestQueue.Enqueue(item);
             if (coroutineStack.Count == 0)
             {

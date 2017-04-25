@@ -8,37 +8,24 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形块操作请求;
+    /// 烘培请求;
     /// </summary>
-    public abstract class ChunkRequest : AsyncOperation<Chunk>, IEnumerator, IDisposable
+    public class BakeRequest : AsyncOperation<Chunk>, IEnumerator
     {
-        public ChunkRequest(RectCoord chunkCoord, Landform landform)
+        public BakeRequest(RectCoord chunkCoord, LandformBaker baker)
         {
-            Landform = landform;
+            Baker = baker;
             ChunkCoord = chunkCoord;
             Current = null;
             ChunkCenter = ChunkCoord.GetChunkHexCenter();
             Coroutine = Operate();
         }
 
-        public Landform Landform { get; private set; }
+        public LandformBaker Baker { get; private set; }
         public RectCoord ChunkCoord { get; private set; }
         public object Current { get; private set; }
         public CubicHexCoord ChunkCenter { get; private set; }
         public IEnumerator Coroutine { get; private set; }
-
-        /// <summary>
-        /// 进行的操作;
-        /// </summary>
-        protected abstract IEnumerator Operate();
-
-        /// <summary>
-        /// 取消创建请求;
-        /// </summary>
-        public virtual void Dispose()
-        {
-            OnCanceled();
-        }
 
         bool IEnumerator.MoveNext()
         {
@@ -50,6 +37,22 @@ namespace KouXiaGu.Terrain3D
         void IEnumerator.Reset()
         {
             throw new NotImplementedException();
+        }
+
+        public void Cancele()
+        {
+            OnCanceled();
+        }
+
+        /// <summary>
+        /// 进行的操作;
+        /// </summary>
+        IEnumerator Operate()
+        {
+            if (IsCompleted)
+                yield break;
+
+
         }
 
     }

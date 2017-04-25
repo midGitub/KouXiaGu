@@ -10,14 +10,6 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 烘培请求;
-    /// </summary>
-    class BakeRequest : AsyncOperation<ChunkTexture>
-    {
-
-    }
-
-    /// <summary>
     /// 地形烘培;
     /// </summary>
     [DisallowMultipleComponent]
@@ -38,9 +30,12 @@ namespace KouXiaGu.Terrain3D
         }
 
         [SerializeField]
-        BakeCamera bakeCamera;
+        BakeCamera bakeCamera = null;
         [SerializeField]
-        BakeLandform landform;
+        BakeLandform landform = null;
+        [SerializeField]
+        Stopwatch runtimeStopwatch = null;
+        CoroutineQueue<BakeRequest> requestQueue;
 
         internal BakeLandform Landform
         {
@@ -50,11 +45,28 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             bakeCamera.Initialize();
+            requestQueue = new CoroutineQueue<BakeRequest>(runtimeStopwatch);
+        }
+
+        void Update()
+        {
+            requestQueue.Next();
         }
 
         public void Reset()
         {
             bakeCamera.Settings.UpdataTextureSize();
+        }
+
+        public void AddRequest(RectCoord chunkCoord)
+        {
+            var requeset = new BakeRequest(chunkCoord, this);
+            AddRequest(requeset);
+        }
+
+        public void AddRequest(BakeRequest request)
+        {
+            requestQueue.Add(request);
         }
 
     }
