@@ -10,13 +10,13 @@ namespace KouXiaGu.Terrain3D
 
     class CreateChunk : ChunkRequest
     {
-        public CreateChunk(RectCoord chunkCoord, LandformBuilder builder) : base(chunkCoord, builder)
+        public CreateChunk(RectCoord chunkCoord, Landform landform) : base(chunkCoord, landform)
         {
         }
 
         protected override IEnumerator Operate()
         {
-            Builder.ChunkManager.Create(ChunkCoord, null);
+            Landform.ChunkManager.Create(ChunkCoord, null);
             yield break;
         }
 

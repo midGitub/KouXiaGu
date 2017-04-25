@@ -1,73 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Xml.Serialization;
 
-namespace KouXiaGu.Terrain3D.Navigation
-{
+//namespace KouXiaGu.Terrain3D.Navigation
+//{
 
-    /// <summary>
-    /// 地形导航信息;
-    /// </summary>
-    [XmlType("Navigation")]
-    public struct NavigationDescr
-    {
+//    /// <summary>
+//    /// 地形导航信息;
+//    /// </summary>
+//    [XmlType("Navigation")]
+//    public struct NavigationDescr
+//    {
 
-        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(NavigationDescr[]));
+//        static readonly XmlSerializer arraySerializer = new XmlSerializer(typeof(NavigationDescr[]));
 
-        public static XmlSerializer ArraySerializer
-        {
-            get { return arraySerializer; }
-        }
+//        public static XmlSerializer ArraySerializer
+//        {
+//            get { return arraySerializer; }
+//        }
 
-        /// <summary>
-        /// 关联的地貌ID;
-        /// </summary>
-        [XmlAttribute("landform")]
-        public int Landform { get; set; }
+//        /// <summary>
+//        /// 关联的地貌ID;
+//        /// </summary>
+//        [XmlAttribute("landform")]
+//        public int Landform { get; set; }
 
-        /// <summary>
-        /// 可行走的;
-        /// </summary>
-        [XmlElement("Walkable")]
-        public bool Walkable { get; set; }
+//        /// <summary>
+//        /// 可行走的;
+//        /// </summary>
+//        [XmlElement("Walkable")]
+//        public bool Walkable { get; set; }
 
-        /// <summary>
-        /// 行走速度(百分比);
-        /// </summary>
-        [XmlElement("SpeedOfTravel")]
-        public float SpeedOfTravel { get; set; }
+//        /// <summary>
+//        /// 行走速度(百分比);
+//        /// </summary>
+//        [XmlElement("SpeedOfTravel")]
+//        public float SpeedOfTravel { get; set; }
 
-        /// <summary>
-        /// 寻路时的代价值;
-        /// </summary>
-        [XmlElement("NavigationCost")]
-        public float NavigationCost { get; set; }
+//        /// <summary>
+//        /// 寻路时的代价值;
+//        /// </summary>
+//        [XmlElement("NavigationCost")]
+//        public float NavigationCost { get; set; }
 
-        public override int GetHashCode()
-        {
-            return Landform.GetHashCode();
-        }
+//        public override int GetHashCode()
+//        {
+//            return Landform.GetHashCode();
+//        }
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is NavigationDescr))
-                return false;
-            return ((NavigationDescr)obj).Landform == Landform;
-        }
+//        public override bool Equals(object obj)
+//        {
+//            if (!(obj is NavigationDescr))
+//                return false;
+//            return ((NavigationDescr)obj).Landform == Landform;
+//        }
 
-        public override string ToString()
-        {
-            return 
-                "[" + 
-                "Landform:" + Landform +
-                "Walkable:" + Walkable +
-                "SpeedOfTravel:" + SpeedOfTravel +
-                "NavigationCost" + NavigationCost +
-                "]";
-        }
+//        public override string ToString()
+//        {
+//            return 
+//                "[" + 
+//                "Landform:" + Landform +
+//                "Walkable:" + Walkable +
+//                "SpeedOfTravel:" + SpeedOfTravel +
+//                "NavigationCost" + NavigationCost +
+//                "]";
+//        }
 
-    }
+//    }
 
-}
+//}

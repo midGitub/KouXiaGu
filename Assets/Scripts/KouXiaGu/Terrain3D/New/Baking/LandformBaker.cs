@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     [Serializable]
-    public class LandformBaker
+    public class LandformBaker : BakeCamera
     {
         /// <summary>
         /// 透明的黑色颜色;
@@ -23,11 +23,6 @@ namespace KouXiaGu.Terrain3D
         public static readonly Color Horizon = new Color(0.5f, 0.5f, 0.5f, 1);
 
 
-
-        LandformBaker()
-        {
-        }
-
         [SerializeField]
         BakeLandform landform;
 
@@ -38,12 +33,12 @@ namespace KouXiaGu.Terrain3D
 
         IEnumerator Bake(IWorldData worldData, CubicHexCoord chunkCenter, ChunkTexture texture)
         {
-            yield return landform.BakeCoroutine(worldData, chunkCenter);
+            yield return landform.BakeCoroutine(this, worldData, chunkCenter);
             var heightMapRT = landform.HeightRT;
             var diffuseMapRT = landform.DiffuseRT;
 
-            var diffuseMap = LandformBakeManager.GetDiffuseTexture(diffuseMapRT);
-            var heightMap = LandformBakeManager.GetHeightTexture(diffuseMapRT);
+            var diffuseMap = GetDiffuseTexture(diffuseMapRT);
+            var heightMap = GetHeightTexture(diffuseMapRT);
 
             texture.SetDiffuseMap(diffuseMap);
             texture.SetHeightMap(heightMap);

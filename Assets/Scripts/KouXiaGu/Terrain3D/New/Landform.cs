@@ -16,9 +16,10 @@ namespace KouXiaGu.Terrain3D
     public class Landform : MonoBehaviour
     {
 
-        public static Landform Initialize(IWorldData world)
+        public static Landform Initialize(IWorldData worldData)
         {
             var item = SceneObject.GetObject<Landform>();
+            item.worldData = worldData;
             return item;
         }
 
@@ -26,21 +27,69 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        public ChunkSceneManager ChunkManager { get; private set; }
-        public LandformBakeManager BakeManager { get; private set; }
+        IWorldData worldData;
+        ChunkSceneManager chunkManager;
+        [SerializeField]
+        BakeCamera bakeManager;
+        [SerializeField]
+        Stopwatch runtimeStopwatch;
+        CoroutineQueue<ChunkRequest> requestQueue;
+
+        public ChunkSceneManager ChunkManager
+        {
+            get { return chunkManager; }
+        }
+
+        public BakeCamera BakeManager
+        {
+            get { return bakeManager; }
+        }
+
+        public bool IsRunning
+        {
+            get { return requestQueue.Count == 0; }
+        }
+
+        public Stopwatch RuntimeStopwatch
+        {
+            get { return runtimeStopwatch; }
+            set { runtimeStopwatch = value; }
+        }
 
         void Awake()
         {
-            ChunkManager = new ChunkSceneManager();
+            chunkManager = new ChunkSceneManager();
+            requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);
         }
 
-        public Landform(IWorldData world)
+        void Update()
         {
-            BakeManager = LandformBakeManager.Initialise();
-            Builder = LandformBuilder.Initialise(world, ChunkManager, BakeManager);
+            requestQueue.Next();
         }
 
-        public LandformBuilder Builder { get; private set; }
+        public IAsyncOperation<Chunk> Create(RectCoord chunkCoord)
+        {
+            var creater = new CreateChunk(chunkCoord, this);
+            AddRequest(creater);
+            return creater;
+        }
+
+        void AddRequest(ChunkRequest request)
+        {
+            requestQueue.Add(request);
+        }
+
+        /// <summary>
+        /// 取消所有请求;
+        /// </summary>
+        void CanceleAll()
+        {
+            foreach (var request in requestQueue)
+            {
+                request.Dispose();
+            }
+            requestQueue.Clear();
+        }
 
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;

@@ -25,6 +25,7 @@ namespace KouXiaGu.Terrain3D
         List<Pack> sceneObjects;
         GameObjectPool<MeshRenderer> objectPool;
 
+        BakeCamera bakeCamera;
         IWorldData worldData;
         CubicHexCoord chunkCenter;
         IEnumerable<CubicHexCoord> displays;
@@ -55,8 +56,9 @@ namespace KouXiaGu.Terrain3D
         /// <param name="worldData">世界数据</param>
         /// <param name="chunkCenter">地形块中心坐标;</param>
         /// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
-        public IEnumerator BakeCoroutine(IWorldData worldData, CubicHexCoord chunkCenter)
+        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter)
         {
+            this.bakeCamera = bakeCamera;
             this.worldData = worldData;
             this.chunkCenter = chunkCenter;
             displays = ChunkPartitioner.GetLandform(chunkCenter);
@@ -87,10 +89,10 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Reset()
         {
-            LandformBakeManager.ReleaseTemporary(DiffuseRT);
+            bakeCamera.ReleaseTemporary(DiffuseRT);
             DiffuseRT = null;
 
-            LandformBakeManager.ReleaseTemporary(HeightRT);
+            bakeCamera.ReleaseTemporary(HeightRT);
             HeightRT = null;
         }
 
@@ -183,8 +185,8 @@ namespace KouXiaGu.Terrain3D
                 SetDiffuserMaterial(meshRenderer);
             }
 
-            DiffuseRT = LandformBakeManager.GetDiffuseTemporaryRender();
-            LandformBakeManager.CameraRender(DiffuseRT, chunkCenter, LandformBaker.BlackTransparent);
+            DiffuseRT = bakeCamera.GetDiffuseTemporaryRender();
+            bakeCamera.CameraRender(DiffuseRT, chunkCenter, LandformBaker.BlackTransparent);
         }
 
         void SetDiffuserMaterial(Pack renderer)
@@ -209,8 +211,8 @@ namespace KouXiaGu.Terrain3D
                 SetHeightMaterial(meshRenderer);
             }
 
-            HeightRT = LandformBakeManager.GetHeightTemporaryRender();
-            LandformBakeManager.CameraRender(HeightRT, chunkCenter);
+            HeightRT = bakeCamera.GetHeightTemporaryRender();
+            bakeCamera.CameraRender(HeightRT, chunkCenter);
         }
 
         void SetHeightMaterial(Pack renderer)

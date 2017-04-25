@@ -1,41 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using UnityEngine;
 
-namespace KouXiaGu.Terrain3D
-{
+//namespace KouXiaGu.Terrain3D
+//{
 
-    /// <summary>
-    /// 用于测试烘培;
-    /// </summary>
-    [Serializable]
-    public class TestBaker
-    {
+//    /// <summary>
+//    /// 用于测试烘培;
+//    /// </summary>
+//    [Serializable]
+//    public class TestBaker
+//    {
 
-        [SerializeField]
-        OLandformRenderer terrainChunk;
+//        [SerializeField]
+//        OLandformRenderer terrainChunk;
 
-        public void Bake(IBakeRequest request)
-        {
-            Vector3 pos = OLandformChunk.ChunkGrid.GetCenter(request.ChunkCoord);
-            OLandformRenderer mesh = GameObject.Instantiate(terrainChunk, pos, Quaternion.identity);
-            mesh.gameObject.SetActive(true);
+//        public void Bake(IBakeRequest request)
+//        {
+//            Vector3 pos = OLandformChunk.ChunkGrid.GetCenter(request.ChunkCoord);
+//            OLandformRenderer mesh = GameObject.Instantiate(terrainChunk, pos, Quaternion.identity);
+//            mesh.gameObject.SetActive(true);
 
-            //var rt = BakeCamera.GetHeightTemporaryRender();
-            //BakeCamera.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
+//            //var rt = BakeCamera.GetHeightTemporaryRender();
+//            //BakeCamera.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
 
-            //var texture = BakeCamera.GetHeightTexture(rt);
-            //mesh.SetDiffuseMap(texture);
+//            //var texture = BakeCamera.GetHeightTexture(rt);
+//            //mesh.SetDiffuseMap(texture);
 
-            var rt = LandformBakeManager.GetDiffuseTemporaryRender();
-            LandformBakeManager.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
+//            var rt = BakeCamera.GetDiffuseTemporaryRender();
+//            BakeCamera.CameraRender(rt, new Grids.CubicHexCoord(), Color.black);
 
-            var texture = LandformBakeManager.GetDiffuseTexture(rt);
-            mesh.SetDiffuseMap(texture);
-        }
+//            var texture = BakeCamera.GetDiffuseTexture(rt);
+//            mesh.SetDiffuseMap(texture);
+//        }
 
-    }
+//    }
 
-}
+//}

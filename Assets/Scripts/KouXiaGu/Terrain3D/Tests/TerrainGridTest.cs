@@ -45,8 +45,9 @@ namespace KouXiaGu.Terrain3D.Tests
 
         string GetTestPointsLog(Vector3 mousePosition)
         {
+            LandformRay landformRay = new LandformRay();
 
-            Vector3 terrainPixel = OLandformTrigger.MouseRayPointOrDefault();
+            Vector3 terrainPixel = landformRay.MouseRayPointOrDefault();
             CubicHexCoord cube = TerrainConvert.Grid.GetCubic(terrainPixel);
 
             Vector3 cubePixel = TerrainConvert.Grid.GetPixel(cube);
@@ -57,7 +58,7 @@ namespace KouXiaGu.Terrain3D.Tests
 
             Vector2 terrainBlockLocal = ChunkInfo.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
             Vector2 terrainBlockUV = ChunkInfo.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
-            float terrainHeight = TerrainData.GetHeight(terrainPixel);
+            float terrainHeight = /*TerrainData.GetHeight(terrainPixel);*/ 0;
             RectCoord[] terrainBlocks = ChunkInfo.GetBelongChunks(cube);
 
             string str = "";

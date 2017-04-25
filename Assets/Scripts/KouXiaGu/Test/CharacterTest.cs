@@ -38,7 +38,7 @@ namespace KouXiaGu.Test
 
             this.position = new Vector3(
                 currentPosition.x + Input.GetAxis("Horizontal") * movingSpeed * Time.deltaTime,
-                Terrain3D.TerrainData.GetHeight(currentPosition), 
+               /* Terrain3D.TerrainData.GetHeight(currentPosition)*/0, 
                 currentPosition.z + Input.GetAxis("Vertical") * movingSpeed * Time.deltaTime);
         }
 

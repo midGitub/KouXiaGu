@@ -1,224 +1,224 @@
-﻿using System;
-using System.Collections.Generic;
-using KouXiaGu.Grids;
-using KouXiaGu.World.Map;
-using UnityEngine;
+﻿//using System;
+//using System.Collections.Generic;
+//using KouXiaGu.Grids;
+//using KouXiaGu.World.Map;
+//using UnityEngine;
 
-namespace KouXiaGu.Terrain3D
-{
+//namespace KouXiaGu.Terrain3D
+//{
 
-    /// <summary>
-    /// 地形烘焙;
-    /// </summary>
-    [Serializable]
-    public class OLandformBaker : OGameObjectPool<MeshRenderer>, IDisposable
-    {
+//    /// <summary>
+//    /// 地形烘焙;
+//    /// </summary>
+//    [Serializable]
+//    public class OLandformBaker : OGameObjectPool<MeshRenderer>, IDisposable
+//    {
 
-        [SerializeField]
-        MeshRenderer prefab;
+//        [SerializeField]
+//        MeshRenderer prefab;
 
-        /// <summary>
-        /// 中心点,根据传入坐标位置转换到此中心点附近;
-        /// </summary>
-        [SerializeField]
-        CubicHexCoord center;
+//        /// <summary>
+//        /// 中心点,根据传入坐标位置转换到此中心点附近;
+//        /// </summary>
+//        [SerializeField]
+//        CubicHexCoord center;
 
-        /// <summary>
-        /// 目标中心点;
-        /// </summary>
-        CubicHexCoord targetCenter;
+//        /// <summary>
+//        /// 目标中心点;
+//        /// </summary>
+//        CubicHexCoord targetCenter;
 
-        List<Pack> inSceneMeshs;
-
-
-        [SerializeField]
-        Shader diffuseShader;
-
-        [SerializeField]
-        Shader heightShader;
-
-        Material diffuseMaterial;
-        Material heightMaterial;
-
-        public RenderTexture DiffuseRT { get; private set; }
-        public RenderTexture HeightRT { get; private set; }
-
-        IEnumerable<Pack> Renderers
-        {
-            get { return inSceneMeshs; }
-        }
-
-        CubicHexCoord Center
-        {
-            get { return center; }
-        }
-
-        public void Initialise()
-        {
-            inSceneMeshs = new List<Pack>();
-
-            diffuseMaterial = new Material(diffuseShader);
-            heightMaterial = new Material(heightShader);
-        }
+//        List<Pack> inSceneMeshs;
 
 
-        public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
-        {
-            PrepareScene(request, displays);
-            BakeDiffuse();
-            BakeHeight();
-        }
+//        [SerializeField]
+//        Shader diffuseShader;
+
+//        [SerializeField]
+//        Shader heightShader;
+
+//        Material diffuseMaterial;
+//        Material heightMaterial;
+
+//        public RenderTexture DiffuseRT { get; private set; }
+//        public RenderTexture HeightRT { get; private set; }
+
+//        IEnumerable<Pack> Renderers
+//        {
+//            get { return inSceneMeshs; }
+//        }
+
+//        CubicHexCoord Center
+//        {
+//            get { return center; }
+//        }
+
+//        public void Initialise()
+//        {
+//            inSceneMeshs = new List<Pack>();
+
+//            diffuseMaterial = new Material(diffuseShader);
+//            heightMaterial = new Material(heightShader);
+//        }
 
 
-        void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
-        {
-            SetTargetCenter(request);
-            ClearInSceneMeshs();
-
-            foreach (var display in displays)
-            {
-                MapNode info;
-                if (request.Data.TryGetValue(display, out info))
-                {
-                    LandformNode landformNode = info.Landform;
-                    var renderer = Get(display, landformNode.Angle);
-                    LandformRes res = GetLandform(landformNode.LandformID);
-                    inSceneMeshs.Add(new Pack(res, renderer));
-                }
-            }
-        }
-
-        void SetTargetCenter(IBakeRequest request)
-        {
-            this.targetCenter = OLandformChunk.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
-        }
-
-        void ClearInSceneMeshs()
-        {
-            foreach (var roadMesh in inSceneMeshs)
-            {
-                Release(roadMesh.Rednerer);
-            }
-            inSceneMeshs.Clear();
-        }
-
-        MeshRenderer Get(CubicHexCoord coord, float angle)
-        {
-            MeshRenderer item = Get();
-            item.transform.position = PositionConvert(coord);
-            item.transform.rotation = Quaternion.Euler(0, angle, 0);
-            return item;
-        }
-
-        Vector3 PositionConvert(CubicHexCoord terget)
-        {
-            CubicHexCoord coord = terget - targetCenter;
-            return (coord + this.center).GetTerrainPixel(-inSceneMeshs.Count);
-        }
-
-        /// <summary>
-        /// 获取到地貌信息;
-        /// </summary>
-        LandformRes GetLandform(int id)
-        {
-            try
-            {
-                return LandformRes.initializedInstances[id];
-            }
-            catch (KeyNotFoundException ex)
-            {
-                //Debug.LogError("缺少材质资源;ID: " + id + ex.ToString());
-                throw new LackOfResourcesException("缺少材质资源;ID: " + id, ex);
-            }
-        }
-
-        protected override MeshRenderer Create()
-        {
-            var item = GameObject.Instantiate(prefab, Parent);
-            item.gameObject.SetActive(true);
-            return item;
-        }
+//        public void Bake(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
+//        {
+//            PrepareScene(request, displays);
+//            BakeDiffuse();
+//            BakeHeight();
+//        }
 
 
-        /// <summary>
-        /// 完全透明颜色;
-        /// </summary>
-        static readonly Color Transparent = new Color(0, 0, 0, 0);
+//        void PrepareScene(IBakeRequest request, IEnumerable<CubicHexCoord> displays)
+//        {
+//            SetTargetCenter(request);
+//            ClearInSceneMeshs();
 
-        void BakeDiffuse()
-        {
-            foreach (var meshRenderer in Renderers)
-            {
-                SetDiffuserMaterial(meshRenderer);
-            }
+//            foreach (var display in displays)
+//            {
+//                MapNode info;
+//                if (request.Data.TryGetValue(display, out info))
+//                {
+//                    LandformNode landformNode = info.Landform;
+//                    var renderer = Get(display, landformNode.Angle);
+//                    LandformRes res = GetLandform(landformNode.LandformID);
+//                    inSceneMeshs.Add(new Pack(res, renderer));
+//                }
+//            }
+//        }
 
-            DiffuseRT = LandformBakeManager.GetDiffuseTemporaryRender();
-            LandformBakeManager.CameraRender(DiffuseRT, Center, Transparent);
-        }
+//        void SetTargetCenter(IBakeRequest request)
+//        {
+//            this.targetCenter = OLandformChunk.ChunkGrid.GetCenter(request.ChunkCoord).GetTerrainCubic();
+//        }
 
-        void SetDiffuserMaterial(Pack renderer)
-        {
-            LandformRes res = renderer.Res;
+//        void ClearInSceneMeshs()
+//        {
+//            foreach (var roadMesh in inSceneMeshs)
+//            {
+//                Release(roadMesh.Rednerer);
+//            }
+//            inSceneMeshs.Clear();
+//        }
 
-            if (renderer.Rednerer.material != null)
-            {
-                GameObject.Destroy(renderer.Rednerer.material);
-            }
+//        MeshRenderer Get(CubicHexCoord coord, float angle)
+//        {
+//            MeshRenderer item = Get();
+//            item.transform.position = PositionConvert(coord);
+//            item.transform.rotation = Quaternion.Euler(0, angle, 0);
+//            return item;
+//        }
 
-            var material = renderer.Rednerer.material = new Material(diffuseMaterial);
-            material.SetTexture("_MainTex", res.DiffuseTex);
-            material.SetTexture("_BlendTex", res.DiffuseBlendTex);
-        }
+//        Vector3 PositionConvert(CubicHexCoord terget)
+//        {
+//            CubicHexCoord coord = terget - targetCenter;
+//            return (coord + this.center).GetTerrainPixel(-inSceneMeshs.Count);
+//        }
+
+//        /// <summary>
+//        /// 获取到地貌信息;
+//        /// </summary>
+//        LandformRes GetLandform(int id)
+//        {
+//            try
+//            {
+//                return LandformRes.initializedInstances[id];
+//            }
+//            catch (KeyNotFoundException ex)
+//            {
+//                //Debug.LogError("缺少材质资源;ID: " + id + ex.ToString());
+//                throw new LackOfResourcesException("缺少材质资源;ID: " + id, ex);
+//            }
+//        }
+
+//        protected override MeshRenderer Create()
+//        {
+//            var item = GameObject.Instantiate(prefab, Parent);
+//            item.gameObject.SetActive(true);
+//            return item;
+//        }
 
 
-        void BakeHeight()
-        {
-            foreach (var meshRenderer in Renderers)
-            {
-                SetHeightMaterial(meshRenderer);
-            }
+//        /// <summary>
+//        /// 完全透明颜色;
+//        /// </summary>
+//        static readonly Color Transparent = new Color(0, 0, 0, 0);
 
-            HeightRT = LandformBakeManager.GetHeightTemporaryRender();
-            LandformBakeManager.CameraRender(HeightRT, Center);
-        }
+//        void BakeDiffuse()
+//        {
+//            foreach (var meshRenderer in Renderers)
+//            {
+//                SetDiffuserMaterial(meshRenderer);
+//            }
 
-        void SetHeightMaterial(Pack renderer)
-        {
-            LandformRes res = renderer.Res;
+//            DiffuseRT = BakeCamera.GetDiffuseTemporaryRender();
+//            BakeCamera.CameraRender(DiffuseRT, Center, Transparent);
+//        }
 
-            if (renderer.Rednerer.material != null)
-            {
-                GameObject.Destroy(renderer.Rednerer.material);
-                renderer.Rednerer.material = heightMaterial;
-            }
+//        void SetDiffuserMaterial(Pack renderer)
+//        {
+//            LandformRes res = renderer.Res;
 
-            var material = renderer.Rednerer.material;
-            material.SetTexture("_MainTex", res.HeightTex);
-            material.SetTexture("_BlendTex", res.HeightBlendTex);
-        }
+//            if (renderer.Rednerer.material != null)
+//            {
+//                GameObject.Destroy(renderer.Rednerer.material);
+//            }
+
+//            var material = renderer.Rednerer.material = new Material(diffuseMaterial);
+//            material.SetTexture("_MainTex", res.DiffuseTex);
+//            material.SetTexture("_BlendTex", res.DiffuseBlendTex);
+//        }
 
 
-        public void Dispose()
-        {
-            LandformBakeManager.ReleaseTemporary(DiffuseRT);
-            LandformBakeManager.ReleaseTemporary(HeightRT);
+//        void BakeHeight()
+//        {
+//            foreach (var meshRenderer in Renderers)
+//            {
+//                SetHeightMaterial(meshRenderer);
+//            }
 
-            DiffuseRT = null;
-            HeightRT = null;
-        }
+//            HeightRT = BakeCamera.GetHeightTemporaryRender();
+//            BakeCamera.CameraRender(HeightRT, Center);
+//        }
 
-        struct Pack
-        {
-            public Pack(LandformRes res, MeshRenderer rednerer)
-            {
-                this.Res = res;
-                this.Rednerer = rednerer;
-            }
+//        void SetHeightMaterial(Pack renderer)
+//        {
+//            LandformRes res = renderer.Res;
 
-            public LandformRes Res { get; private set; }
-            public MeshRenderer Rednerer { get; private set; }
-        }
+//            if (renderer.Rednerer.material != null)
+//            {
+//                GameObject.Destroy(renderer.Rednerer.material);
+//                renderer.Rednerer.material = heightMaterial;
+//            }
 
-    }
+//            var material = renderer.Rednerer.material;
+//            material.SetTexture("_MainTex", res.HeightTex);
+//            material.SetTexture("_BlendTex", res.HeightBlendTex);
+//        }
 
-}
+
+//        public void Dispose()
+//        {
+//            BakeCamera.ReleaseTemporary(DiffuseRT);
+//            BakeCamera.ReleaseTemporary(HeightRT);
+
+//            DiffuseRT = null;
+//            HeightRT = null;
+//        }
+
+//        struct Pack
+//        {
+//            public Pack(LandformRes res, MeshRenderer rednerer)
+//            {
+//                this.Res = res;
+//                this.Rednerer = rednerer;
+//            }
+
+//            public LandformRes Res { get; private set; }
+//            public MeshRenderer Rednerer { get; private set; }
+//        }
+
+//    }
+
+//}
