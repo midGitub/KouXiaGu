@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
-            requestQueue = new CoroutineQueue<ChunkRequest>();
+            requestQueue = new CoroutineQueue<ChunkRequest>(runtimeStopwatch);
         }
 
         void Update()

@@ -13,14 +13,16 @@ namespace KouXiaGu
     public class CoroutineQueue<T> : IEnumerator, IEnumerable<T>
         where T : IEnumerator
     {
-        public CoroutineQueue()
+        public CoroutineQueue(ISegmented stopwatch)
         {
             requestQueue = new Queue<T>();
             coroutineStack = new Stack<IEnumerator>();
+            Stopwatch = stopwatch;
         }
 
         readonly Queue<T> requestQueue;
         readonly Stack<IEnumerator> coroutineStack;
+        public ISegmented Stopwatch { get; set; }
 
         object IEnumerator.Current
         {
@@ -31,45 +33,53 @@ namespace KouXiaGu
         {
             if (coroutineStack.Count != 0)
             {
-                IEnumerator request = coroutineStack.Peek();
-                bool moveNext;
+                Stopwatch.Restart();
+                while (!Stopwatch.Await())
+                {
+                    IEnumerator request = coroutineStack.Peek();
+                    bool moveNext;
 
-                try
-                {
-                    moveNext = request.MoveNext();
-                }
-                catch (Exception e)
-                {
-                    MoveNextCoroutine();
-                    throw e;
-                }
-
-                if (!moveNext)
-                {
-                    coroutineStack.Pop();
-                    if (coroutineStack.Count == 0)
+                    try
                     {
-                        MoveNextCoroutine();
+                        moveNext = request.MoveNext();
+                    }
+                    catch(Exception e)
+                    {
+                        coroutineStack.Clear();
+                        requestQueue.Dequeue();
+                        if (requestQueue.Count != 0)
+                        {
+                            T item = requestQueue.Peek();
+                            coroutineStack.Push(item);
+                        }
+                        throw e;
+                    }
+
+                    if (!moveNext)
+                    {
+                        coroutineStack.Pop();
+                        if (coroutineStack.Count == 0)
+                        {
+                            requestQueue.Dequeue();
+                            if (requestQueue.Count == 0)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                T item = requestQueue.Peek();
+                                coroutineStack.Push(item);
+                            }
+                        }
+                        continue;
+                    }
+
+                    var newCoroutine = request.Current as IEnumerator;
+                    if (newCoroutine != null)
+                    {
+                        coroutineStack.Push(newCoroutine);
                     }
                 }
-
-                var newCoroutine = request.Current as IEnumerator;
-                if (newCoroutine != null)
-                {
-                    coroutineStack.Push(newCoroutine);
-                }
-
-            }
-        }
-
-        void MoveNextCoroutine()
-        {
-            coroutineStack.Clear();
-            requestQueue.Dequeue();
-            if (requestQueue.Count != 0)
-            {
-                T item = requestQueue.Peek();
-                coroutineStack.Push(item);
             }
         }
 
