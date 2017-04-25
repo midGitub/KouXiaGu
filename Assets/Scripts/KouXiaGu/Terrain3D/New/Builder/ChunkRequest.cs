@@ -12,16 +12,16 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public abstract class ChunkRequest : AsyncOperation<Chunk>, IEnumerator, IDisposable
     {
-        public ChunkRequest(Landform landform, RectCoord chunkCoord)
+        public ChunkRequest(RectCoord chunkCoord, LandformBuilder builder)
         {
-            Landform = landform;
+            Builder = builder;
             ChunkCoord = chunkCoord;
             Current = null;
             ChunkCenter = ChunkCoord.GetChunkHexCenter();
             BakeCoroutine = Bake();
         }
 
-        public Landform Landform { get; private set; }
+        public LandformBuilder Builder { get; private set; }
         public RectCoord ChunkCoord { get; private set; }
         public object Current { get; private set; }
         public CubicHexCoord ChunkCenter { get; private set; }
