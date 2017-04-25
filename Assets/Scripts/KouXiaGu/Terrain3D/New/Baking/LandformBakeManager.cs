@@ -15,6 +15,7 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class LandformBakeManager : MonoBehaviour
     {
+
         public static LandformBakeManager Initialise(IWorldData worldData)
         {
             var item = SceneObject.GetObject<LandformBakeManager>();

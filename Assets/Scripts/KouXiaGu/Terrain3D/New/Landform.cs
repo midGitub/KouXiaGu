@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形控制;
     /// </summary>
-    public class Landform
+    public class Landform : IDisposable
     {
         public static IAsyncOperation<Landform> Initialize(IWorldData world)
         {
@@ -46,6 +46,11 @@ namespace KouXiaGu.Terrain3D
         public ChunkSceneManager ChunkManager { get; private set; }
         public LandformBakeManager BakeManager { get; private set; }
         public ChunkBuilder Builder { get; private set; }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;

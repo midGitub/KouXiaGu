@@ -10,9 +10,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 烘培请求;
     /// </summary>
-    public abstract class ChunCreateRequest : AsyncOperation<ChunkTexture>, IBakingRequest
+    public abstract class ChunkRequest : AsyncOperation<ChunkTexture>, IBakingRequest
     {
-        public ChunCreateRequest(Landform landform, RectCoord chunkCoord)
+        public ChunkRequest(Landform landform, RectCoord chunkCoord)
         {
             Landform = landform;
             ChunkCoord = chunkCoord;
