@@ -5,7 +5,15 @@ using System.Text;
 
 namespace KouXiaGu.Terrain3D
 {
-    class BakeRoad
+
+    /// <summary>
+    /// 地形道路烘培;
+    /// </summary>
+    [Serializable]
+    public class BakeRoad
     {
+
+
     }
+
 }

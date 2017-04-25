@@ -55,7 +55,7 @@ namespace KouXiaGu.Terrain3D
         /// <param name="worldData">世界数据</param>
         /// <param name="chunkCenter">地形块中心坐标;</param>
         /// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
-        public IEnumerator GetBakeCoroutine(IWorldData worldData, CubicHexCoord chunkCenter)
+        public IEnumerator BakeCoroutine(IWorldData worldData, CubicHexCoord chunkCenter)
         {
             this.worldData = worldData;
             this.chunkCenter = chunkCenter;
@@ -176,11 +176,6 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        /// <summary>
-        /// 完全透明颜色;
-        /// </summary>
-        static readonly Color Transparent = new Color(0, 0, 0, 0);
-
         void BakeDiffuse()
         {
             foreach (var meshRenderer in sceneObjects)
@@ -189,7 +184,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             DiffuseRT = BakeCamera.GetDiffuseTemporaryRender();
-            BakeCamera.CameraRender(DiffuseRT, chunkCenter, Transparent);
+            BakeCamera.CameraRender(DiffuseRT, chunkCenter, LandformBaker.BlackTransparent);
         }
 
         void SetDiffuserMaterial(Pack renderer)
