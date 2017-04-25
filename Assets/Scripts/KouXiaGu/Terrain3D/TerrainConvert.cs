@@ -113,33 +113,6 @@ namespace KouXiaGu.Terrain3D
             return rectAngleDictionary[(int)direction];
         }
 
-
-        #region 鼠标坐标转换;
-
-
-        /// <summary>
-        /// 获取到位于地形上的点;
-        /// </summary>
-        /// <param name="pos">望向点;</param>
-        /// <param name="zenithAngle">天顶角</param>
-        /// <param name="azimuth">与正Z轴形成的角度</param>
-        /// <returns></returns>
-        static Vector3 GetTerrainPoint(Vector3 pos, float zenithAngle, float azimuth)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 获取到两个点的角度(忽略Y),单位弧度;原型:Math.Atan2()
-        /// </summary>
-        public static double AngleY(Vector3 from, Vector3 to)
-        {
-            double angle = (Math.Atan2((to.x - from.x), (to.z - from.z)));
-            return angle;
-        }
-
-        #endregion
-
     }
 
 }
