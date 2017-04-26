@@ -18,12 +18,19 @@ namespace KouXiaGu.Terrain3D
         {
             baker = LandformBaker.Initialize(worldData);
             chunkPool = new ChunkPool();
-            inSceneChunks = new Dictionary<RectCoord, BuildRequest>();
+            sceneChunks = new Dictionary<RectCoord, IAsyncOperation<Chunk>>();
+            readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
         }
 
         readonly LandformBaker baker;
         readonly ChunkPool chunkPool;
-        readonly Dictionary<RectCoord, BuildRequest> inSceneChunks;
+        readonly Dictionary<RectCoord, IAsyncOperation<Chunk>> sceneChunks;
+        readonly IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> readOnlySceneChunks;
+
+        public IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> SceneChunks
+        {
+            get { return readOnlySceneChunks; }
+        }
 
         public IAsyncOperation<Chunk> Create()
         {
@@ -40,13 +47,17 @@ namespace KouXiaGu.Terrain3D
             public BuildRequest(RectCoord chunkCoord, Chunk chunk)
             {
                 ChunkCoord = chunkCoord;
-                Chunk = chunk;
+                Result = chunk;
             }
 
             public RectCoord ChunkCoord { get; private set; }
-            public Chunk Chunk { get; private set; }
 
-            public ChunkTexture Textures
+            public Chunk Chunk
+            {
+                get { return Result; }
+            }
+
+            ChunkTexture IBakeRequest.Textures
             {
                 get { return Chunk.Renderer; }
             }
