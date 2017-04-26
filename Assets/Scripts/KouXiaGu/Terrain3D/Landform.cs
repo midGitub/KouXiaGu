@@ -19,7 +19,6 @@ namespace KouXiaGu.Terrain3D
         {
             var item = SceneObject.GetObject<Landform>();
             item.Builder = new LandformBuilder(worldData);
-            item.Builder.Create(RectCoord.Self);
             return item;
         }
 
