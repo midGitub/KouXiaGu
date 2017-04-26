@@ -56,9 +56,9 @@ namespace KouXiaGu.Terrain3D
         Coroutine bakeCoroutine;
         Queue<IBakeRequest> requestQueue;
 
-        internal BakeLandform Landform
+        public int RequestCount
         {
-            get { return landform; }
+            get { return requestQueue.Count; }
         }
 
         void Awake()

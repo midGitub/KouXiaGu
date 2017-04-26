@@ -35,18 +35,18 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 尝试构建地图块,若已经存在地图块,则返回 false 和 构建地图块的操作结果;
-        /// 若不存在地图块,则返回 true 和 构建地图块的操作结果;
+        /// 创建地图块;
         /// </summary>
-        public bool TryCreate(RectCoord chunkCoord, out IAsyncOperation<Chunk> request)
+        public IAsyncOperation<Chunk> Create(RectCoord chunkCoord)
         {
-            if (sceneChunks.TryGetValue(chunkCoord, out request))
-                return false;
-
-            BuildRequest buildRequest = CreateChunk(chunkCoord);
-            AddRequest(buildRequest);
-            request = buildRequest;
-            return true;
+            IAsyncOperation<Chunk> request;
+            if (!sceneChunks.TryGetValue(chunkCoord, out request))
+            {
+                BuildRequest buildRequest = CreateChunk(chunkCoord);
+                AddRequest(buildRequest);
+                request = buildRequest;
+            }
+            return request;
         }
 
         /// <summary>
