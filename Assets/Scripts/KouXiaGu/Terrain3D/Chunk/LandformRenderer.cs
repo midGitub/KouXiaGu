@@ -46,6 +46,7 @@ namespace KouXiaGu.Terrain3D
 
         Material material;
         event Action<LandformRenderer> onHeightChanged;
+        bool isHeightChanged;
 
         /// <summary>
         /// 当地形块高度发生变化时调用;
@@ -59,12 +60,6 @@ namespace KouXiaGu.Terrain3D
         void Init(MeshRenderer renderer)
         {
             renderer.sharedMaterial = material = new Material(LandformShader);
-        }
-
-        void HeightChanged()
-        {
-            if(onHeightChanged != null)
-                onHeightChanged(this);
         }
 
         public override void SetDiffuseMap(Texture2D diffuseMap)
@@ -82,7 +77,7 @@ namespace KouXiaGu.Terrain3D
             {
                 material.SetTexture("_HeightTex", heightMap);
                 base.SetHeightMap(heightMap);
-                HeightChanged();
+                isHeightChanged = true;
             }
         }
 
@@ -93,6 +88,15 @@ namespace KouXiaGu.Terrain3D
                 material.SetTexture("_NormalMap", normalMap);
                 base.SetNormalMap(normalMap);
             }
+        }
+
+        /// <summary>
+        /// 应用到贴图,设置完毕后需要手动调用;
+        /// </summary>
+        public void Apply()
+        {
+            if (isHeightChanged && onHeightChanged != null)
+                onHeightChanged(this);
         }
 
         /// <summary>

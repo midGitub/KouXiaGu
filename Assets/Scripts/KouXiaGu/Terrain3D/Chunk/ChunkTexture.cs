@@ -64,16 +64,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 重设所有贴图;
-        /// </summary>
-        public virtual void SetTextures()
-        {
-            SetDiffuseMap(DiffuseMap);
-            SetHeightMap(HeightMap);
-            SetNormalMap(NormalMap);
-        }
-
-        /// <summary>
         /// 设置所有贴图,若传入参数为Null,则返回异常;
         /// </summary>
         public virtual void SetTextures(ChunkTexture textures)
