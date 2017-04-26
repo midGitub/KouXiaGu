@@ -72,7 +72,6 @@ namespace KouXiaGu.World.Map
     {
         public RandomMapReadr()
         {
-            //UnityEngine.Debug.Log("123123");
         }
 
         public RandomMapReadr(ArchiveFile archive)
