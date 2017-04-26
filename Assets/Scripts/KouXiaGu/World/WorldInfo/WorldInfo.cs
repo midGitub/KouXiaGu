@@ -31,8 +31,7 @@ namespace KouXiaGu.World
 
         public WorldTimeInfo Time;
         public ArchiveFile Archive;
-
-
+        public MapResourceReader MapReader;
 
         /// <summary>
         /// 人口每日增长比例;

@@ -53,7 +53,7 @@ namespace KouXiaGu.World
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
-                  MapResource.ReadOrCreateAsync().Subscribe(OnMapResourceCompleted, OnFaulted),
+                  Info.MapReader.ReadAsync(GameData).Subscribe(OnMapResourceCompleted, OnFaulted),
                   TimeManager.Create(Info.Time, starter).Subscribe(OnTimeCompleted, OnFaulted),
               };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(OnBuildingDataCompleted, OnFaulted);

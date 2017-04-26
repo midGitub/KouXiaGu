@@ -492,6 +492,9 @@ namespace KouXiaGu.Grids
         /// <param name="radius">需要大于0</param>
         public static IEnumerable<CubicHexCoord> Ring(CubicHexCoord center, int radius)
         {
+            if (radius <= 0)
+                throw new ArgumentOutOfRangeException();
+
             var cube = center + (CubicHexCoord.GetDirectionOffset(HexDirections.Northeast) * radius);
 
             foreach (var direction in Directions)
@@ -510,6 +513,9 @@ namespace KouXiaGu.Grids
         /// <param name="radius">需要大于0</param>
         public static List<CubicHexCoord> Spiral(CubicHexCoord center, int radius)
         {
+            if (radius <= 0)
+                throw new ArgumentOutOfRangeException();
+
             List<CubicHexCoord> coords = new List<CubicHexCoord>();
             for (int k = 1; k <= radius; k++)
             {
