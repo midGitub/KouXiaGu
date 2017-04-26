@@ -36,12 +36,14 @@ namespace KouXiaGu.Terrain3D
         public LandformRenderer(MeshRenderer renderer)
         {
             Init(renderer);
+            Apply();
         }
 
         public LandformRenderer(MeshRenderer renderer, ChunkTexture textures)
             : base(textures)
         {
             Init(renderer);
+            Apply();
         }
 
         Material material;

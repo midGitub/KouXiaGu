@@ -39,7 +39,6 @@ namespace KouXiaGu.Terrain3D
         static void _CraeteLandformChunk()
         {
             var item = Create();
-            item.InitializeOrUpdate(null);
         }
 
         /// <summary>
@@ -56,17 +55,8 @@ namespace KouXiaGu.Terrain3D
         public static Chunk Create(string name)
         {
             GameObject gameObject = new GameObject(name, ChunkScripts);
-            return gameObject.GetComponent<Chunk>();
-        }
-
-        /// <summary>
-        /// 创建到场景,并且进行初始化;
-        /// </summary>
-        public static Chunk Create(ChunkTexture textures)
-        {
-            var item = Create();
-            item.InitializeOrUpdate(textures);
-            return item;
+            Chunk chunk = gameObject.GetComponent<Chunk>();
+            return chunk;
         }
 
         #endregion
@@ -87,38 +77,15 @@ namespace KouXiaGu.Terrain3D
             set { transform.position = value; }
         }
 
-        /// <summary>
-        /// 初始化;若已经进行初始化了,则更新内部参数;
-        /// </summary>
-        public void InitializeOrUpdate(ChunkTexture textures)
-        {
-            if (IsInitialized)
-            {
-                SetNewParameters(textures);
-            }
-            else
-            {
-                Initialize(textures);
-                IsInitialized = true;
-            }
-        }
-
-        void Initialize(ChunkTexture textures)
+        void Awake()
         {
             var meshFilter = GetComponent<MeshFilter>();
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshCollider = GetComponent<MeshCollider>();
 
             Mesh = new LandformMesh(meshFilter);
-            Renderer = new LandformRenderer(meshRenderer, textures);
+            Renderer = new LandformRenderer(meshRenderer);
             Trigger = new LandformTrigger(meshCollider, Renderer);
-
-            Renderer.OnHeightChanged += OnHeightChanged;
-        }
-
-        void SetNewParameters(ChunkTexture textures)
-        {
-            Renderer.UpdateTextures(textures);
         }
 
         /// <summary>
@@ -142,6 +109,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Destroy()
         {
+            Renderer.Destroy();
             Destroy(gameObject);
         }
 
