@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地图信息转换;
     /// </summary>
-    public static class TerrainConvert
+    public static class LandformConvert
     {
 
         /// <summary>

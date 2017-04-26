@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         static Hexagon MapHexagon
         {
-            get { return TerrainConvert.hexagon; }
+            get { return LandformConvert.hexagon; }
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D
         public static CubicHexCoord GetChunkHexCenter(this RectCoord coord)
         {
             Vector3 pixelCenter = ChunkGrid.GetCenter(coord);
-            return TerrainConvert.Grid.GetCubic(pixelCenter);
+            return LandformConvert.Grid.GetCubic(pixelCenter);
         }
 
 
@@ -70,7 +70,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static void GetBelongChunks(CubicHexCoord coord, ref RectCoord[] chunks)
         {
-            Vector3 point = TerrainConvert.Grid.GetPixel(coord);
+            Vector3 point = LandformConvert.Grid.GetPixel(coord);
             GetBelongChunks(point, ref chunks);
         }
 

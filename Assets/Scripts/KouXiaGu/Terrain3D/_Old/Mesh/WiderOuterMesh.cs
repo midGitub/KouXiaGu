@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 游戏使用的六边形参数;
         /// </summary>
-        static readonly Hexagon HEXAGON = TerrainConvert.hexagon;
+        static readonly Hexagon HEXAGON = LandformConvert.hexagon;
 
         /// <summary>
         /// 矩形大小;

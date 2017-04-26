@@ -48,9 +48,9 @@ namespace KouXiaGu.Terrain3D.Tests
             LandformRay landformRay = new LandformRay();
 
             Vector3 terrainPixel = landformRay.MouseRayPointOrDefault();
-            CubicHexCoord cube = TerrainConvert.Grid.GetCubic(terrainPixel);
+            CubicHexCoord cube = LandformConvert.Grid.GetCubic(terrainPixel);
 
-            Vector3 cubePixel = TerrainConvert.Grid.GetPixel(cube);
+            Vector3 cubePixel = LandformConvert.Grid.GetPixel(cube);
 
             RectCoord terrainBlockCoord = ChunkInfo.ChunkGrid.GetCoord(terrainPixel);
             Vector3 terrainBlockCenter = ChunkInfo.ChunkGrid.GetCenter(terrainBlockCoord);
