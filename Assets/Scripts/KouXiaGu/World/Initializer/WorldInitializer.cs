@@ -23,13 +23,8 @@ namespace KouXiaGu.World
         {
         }
 
-        [SerializeField]
-        bool useEditorialInfo = false;
-
-        [SerializeField]
-        WorldInfo editorialInfo;
-
-        ListTracker<IWorld> worldTracker;
+        LinkedListTracker<IWorld> worldTracker;
+        event Action<IWorld> onInitializeCompleted;
         DataInitializer worldDataInitialize;
         ComponentInitializer sceneComponentInitializer;
         SceneInitializer sceneInitializer;
@@ -39,16 +34,18 @@ namespace KouXiaGu.World
         public IWorldComponent Component { get; private set; }
         public IWorldScene Scene { get; private set; }
 
+        public event Action<IWorld> OnInitializeCompleted
+        {
+            add { onInitializeCompleted += value; }
+            remove { onInitializeCompleted -= value; }
+        }
+
         void Awake()
         {
-            worldTracker = new ListTracker<IWorld>();
+            worldTracker = new LinkedListTracker<IWorld>();
             worldDataInitialize = new DataInitializer();
             sceneComponentInitializer = new ComponentInitializer();
             sceneInitializer = new SceneInitializer();
-
-            if (useEditorialInfo)
-                WorldInfoReader = new WorldInfoReader(editorialInfo);
-
             GameInitializer.GameDataInitialize.SubscribeCompleted(Initialize);
         }
 
@@ -84,12 +81,16 @@ namespace KouXiaGu.World
         void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
         {
             Scene = operation.Result;
-            OnInitializeCompleted();
+            _OnInitializeCompleted();
         }
 
-        void OnInitializeCompleted()
+        void _OnInitializeCompleted()
         {
             worldTracker.Track(this);
+
+            if (onInitializeCompleted != null)
+                onInitializeCompleted(this);
+
             Debug.Log("游戏开始!");
         }
 

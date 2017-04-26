@@ -73,13 +73,14 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             bakeCamera.Initialize();
+            requestQueue = new Queue<IBakeRequest>();
             bakeCoroutine = new Coroutine(BakeCoroutine());
         }
 
         void Update()
         {
             runtimeStopwatch.Restart();
-            while (!runtimeStopwatch.Await() && bakeCoroutine.MoveNext())
+            while (!runtimeStopwatch.Await() && requestQueue.Count != 0 && bakeCoroutine.MoveNext())
                 continue;
         }
 
@@ -95,7 +96,10 @@ namespace KouXiaGu.Terrain3D
                 IBakeRequest bakeRequest = requestQueue.Dequeue();
 
                 if (bakeRequest.IsCompleted)
+                {
                     bakeRequest.OnFaulted(new Exception("已经完成;"));
+                    continue;
+                }
 
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
                 yield return landform.BakeCoroutine(bakeCamera, worldData, chunkCenter);

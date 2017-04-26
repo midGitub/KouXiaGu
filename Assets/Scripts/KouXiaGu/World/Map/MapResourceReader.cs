@@ -70,13 +70,15 @@ namespace KouXiaGu.World.Map
     [Serializable]
     public class RandomMapReadr : MapResourceReader
     {
-        public RandomMapReadr()
+        public RandomMapReadr(int mapSize)
         {
+            MapSize = mapSize;
         }
 
-        public RandomMapReadr(ArchiveFile archive)
+        public RandomMapReadr(int mapSize, ArchiveFile archive)
             : base(archive)
         {
+            MapSize = mapSize;
         }
 
         public int MapSize { get; set; }
