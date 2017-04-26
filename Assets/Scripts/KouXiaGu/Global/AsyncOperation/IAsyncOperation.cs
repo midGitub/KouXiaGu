@@ -53,15 +53,24 @@ namespace KouXiaGu
     {
         public AsyncOperation()
         {
-            IsCompleted = false;
-            IsFaulted = false;
-            Exception = null;
+            ResetState();
         }
 
         public bool IsCompleted { get; protected set; }
         public bool IsFaulted { get; protected set; }
         public bool IsCanceled { get; protected set; }
         public Exception Exception { get; protected set; }
+
+        /// <summary>
+        /// 重置状态;
+        /// </summary>
+        protected virtual void ResetState()
+        {
+            IsCompleted = false;
+            IsFaulted = false;
+            IsCanceled = false;
+            Exception = null;
+        }
 
         protected virtual void OnCompleted()
         {
@@ -115,7 +124,6 @@ namespace KouXiaGu
     {
         public AsyncOperation()
         {
-            Result = default(TResult);
         }
 
         public TResult Result { get; protected set; }
