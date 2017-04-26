@@ -19,6 +19,12 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Shader landformShader;
+        [SerializeField, Range(0, 32)]
+        float tessellation = 16f;
+        [SerializeField, Range(0, 5)]
+        float displacement = 1.3f;
+        [SerializeField, Range(0, 20)]
+        float snowLevel = 0f;
 
         /// <summary>
         /// 地形Shader;
@@ -28,10 +34,6 @@ namespace KouXiaGu.Terrain3D
             get { return landformShader; }
         }
 
-
-        [SerializeField, Range(0, 32)]
-        float tessellation = 16f;
-
         /// <summary>
         /// 地形细分程度;
         /// </summary>
@@ -40,40 +42,32 @@ namespace KouXiaGu.Terrain3D
             get { return tessellation; }
         }
 
+        /// <summary>
+        /// 地形高度缩放;
+        /// </summary>
+        public float Displacement
+        {
+            get { return displacement; }
+        }
+
+        /// <summary>
+        /// 降雪程度;
+        /// </summary>
+        public float SnowLevel
+        {
+            get { return snowLevel; }
+        }
+
         public void SetTessellation(float value)
         {
             Shader.SetGlobalFloat("_TerrainTess", value);
             tessellation = value;
         }
 
-
-        /// <summary>
-        /// 地形高度缩放;
-        /// </summary>
-        [SerializeField, Range(0, 5)]
-        float displacement = 1.3f;
-
-        public float Displacement
-        {
-            get { return displacement; }
-        }
-
         public void SetDisplacement(float value)
         {
             Shader.SetGlobalFloat("_TerrainDisplacement", value);
             displacement = value;
-        }
-
-
-        /// <summary>
-        /// 降雪程度;
-        /// </summary>
-        [SerializeField, Range(0, 20)]
-        float snowLevel = 0f;
-
-        public float SnowLevel
-        {
-            get { return snowLevel; }
         }
 
         public void SetSnowLevel(float value)
