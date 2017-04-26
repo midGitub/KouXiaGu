@@ -72,6 +72,7 @@ namespace KouXiaGu.World.Map
     {
         public RandomMapReadr()
         {
+            //UnityEngine.Debug.Log("123123");
         }
 
         public RandomMapReadr(ArchiveFile archive)
@@ -79,7 +80,7 @@ namespace KouXiaGu.World.Map
         {
         }
 
-        public int MapSize { get; private set; }
+        public int MapSize { get; set; }
 
         protected override PredefinedMap ReadPredefinedMap(IGameData gameData)
         {
