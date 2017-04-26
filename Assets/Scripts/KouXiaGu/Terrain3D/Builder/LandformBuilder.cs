@@ -133,6 +133,7 @@ namespace KouXiaGu.Terrain3D
 
             void IBakeRequest.OnCompleted()
             {
+                Chunk.Renderer.Apply();
                 OnCompleted(Chunk);
             }
 
