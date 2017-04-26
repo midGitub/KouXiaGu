@@ -9,21 +9,12 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    interface IBakeRequest : IAsyncOperation
+    public interface IBakeRequest : IAsyncOperation
     {
-        /// <summary>
-        /// 地形块坐标;
-        /// </summary>
         RectCoord ChunkCoord { get; }
+        ChunkTexture Textures { get; }
 
-        /// <summary>
-        /// 贴图烘焙完成;
-        /// </summary>
-        void OnComplete(ChunkTexture textures);
-
-        /// <summary>
-        /// 出现错误时调用;
-        /// </summary>
+        void OnCompleted();
         void OnFaulted(Exception ex);
     }
 
@@ -104,7 +95,18 @@ namespace KouXiaGu.Terrain3D
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
                 yield return landform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
 
+                var diffuseMap = bakeCamera.GetDiffuseTexture(landform.DiffuseRT);
+                var heightMap = bakeCamera.GetHeightTexture(landform.HeightRT);
+
+                bakeRequest.Textures.SetDiffuseMap(diffuseMap);
+                bakeRequest.Textures.SetHeightMap(heightMap);
+                bakeRequest.OnCompleted();
             }
+        }
+
+        public void AddRequest(IBakeRequest request)
+        {
+            requestQueue.Enqueue(request);
         }
 
     }

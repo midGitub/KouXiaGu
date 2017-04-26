@@ -14,15 +14,53 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class LandformBuilder
     {
-        public LandformBuilder()
+        public LandformBuilder(IWorldData worldData)
         {
-            ChunkManager = new ChunkSceneManager();
+            baker = LandformBaker.Initialize(worldData);
+            chunkPool = new ChunkPool();
+            inSceneChunks = new Dictionary<RectCoord, BuildRequest>();
         }
 
-        public ChunkSceneManager ChunkManager { get; private set; }
-        public LandformBaker Baker { get; private set; }
+        readonly LandformBaker baker;
+        readonly ChunkPool chunkPool;
+        readonly Dictionary<RectCoord, BuildRequest> inSceneChunks;
 
+        public IAsyncOperation<Chunk> Create()
+        {
+            throw new NotImplementedException();
+        }
 
+        public void Destroy()
+        {
+            throw new NotImplementedException();
+        }
+
+        class BuildRequest : AsyncOperation<Chunk>, IBakeRequest
+        {
+            public BuildRequest(RectCoord chunkCoord, Chunk chunk)
+            {
+                ChunkCoord = chunkCoord;
+                Chunk = chunk;
+            }
+
+            public RectCoord ChunkCoord { get; private set; }
+            public Chunk Chunk { get; private set; }
+
+            public ChunkTexture Textures
+            {
+                get { return Chunk.Renderer; }
+            }
+
+            void IBakeRequest.OnCompleted()
+            {
+                OnCompleted(Chunk);
+            }
+
+            void IBakeRequest.OnFaulted(Exception ex)
+            {
+                OnFaulted(ex);
+            }
+        }
 
     }
 
