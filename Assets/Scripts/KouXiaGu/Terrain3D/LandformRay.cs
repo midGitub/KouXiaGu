@@ -12,8 +12,15 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class LandformRay
     {
+        static readonly LandformRay instance = new LandformRay();
+
+        public static LandformRay Instance
+        {
+            get { return instance; }
+        }
+
         [CustomUnityLayer("地形层")]
-        public const string LayerName = "Terrain";
+        public const string LayerName = "Landform";
         const float DefaultRayMaxDistance = 8000f;
 
         public LandformRay()

@@ -86,6 +86,7 @@ namespace KouXiaGu.Terrain3D
             Mesh = new LandformMesh(meshFilter);
             Renderer = new LandformRenderer(meshRenderer);
             Trigger = new LandformTrigger(meshCollider, Renderer);
+            gameObject.layer = LandformRay.Instance.RayLayer;
         }
 
         /// <summary>
