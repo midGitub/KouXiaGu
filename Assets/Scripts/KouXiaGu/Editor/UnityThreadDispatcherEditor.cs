@@ -68,11 +68,11 @@ namespace KouXiaGu.Rx
                 int i = 0;
                 foreach (var item in items)
                 {
-                    string text = string.Format("[{0}]{1}", i++, item.GetType().FullName);
+                    string text = string.Format("[{0}]{1}", i++, item.ToString());
                     EditorGUILayout.LabelField(text);
                 }
             }
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndToggleGroup();
         }
 
     }

@@ -24,7 +24,7 @@ namespace KouXiaGu
         /// <summary>
         /// 是否已经实例化?
         /// </summary>
-        public static bool IsInstanced
+        public static bool IsInitialized
         {
             get { return instance != null; }
         }

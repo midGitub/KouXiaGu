@@ -17,6 +17,16 @@ namespace KouXiaGu
         readonly LinkedList<T> observersList;
         LinkedListNode<T> currentNode;
 
+        public IEnumerable<T> Observers
+        {
+            get { return observersList; }
+        }
+
+        public int ObserverCount
+        {
+            get { return observersList.Count; }
+        }
+
         /// <summary>
         /// 订阅到,不检查是否存在重复项目;
         /// 若在遍历观察者时加入的,将不会出现在迭代内;

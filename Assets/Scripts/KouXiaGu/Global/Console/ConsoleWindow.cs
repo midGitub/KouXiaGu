@@ -9,9 +9,17 @@ namespace KouXiaGu
     [Serializable]
     class ConsoleUI
     {
+        public GameObject consoleWindows;
         public ScrollRect OutputScrollRect;
         public Text OutputConsoleText;
         public InputField InputField;
+        [SerializeField]
+        bool isDisplay;
+
+        public bool IsDisplay
+        {
+            get { return consoleWindows.activeSelf; }
+        }
 
         public string OutputText
         {
@@ -23,6 +31,16 @@ namespace KouXiaGu
         {
             get { return InputField.text; }
             set { InputField.text = value; }
+        }
+
+        public void OnValidate()
+        {
+            SetDisplay(isDisplay);
+        }
+
+        public void SetDisplay(bool isDisplay)
+        {
+            consoleWindows.SetActive(isDisplay);
         }
 
         public void ScrollToBottom()
@@ -81,15 +99,10 @@ namespace KouXiaGu
 
         [SerializeField]
         ConsoleUI ui;
-
         [SerializeField]
         ConsoleOutputTextStyle outputStype;
-
         [SerializeField]
         bool isShowUnityLog = true;
-
-        [SerializeField]
-        bool isDisplay = false;
 
         int inputContentRecordIndex;
         float uiScrollSize;
@@ -107,12 +120,6 @@ namespace KouXiaGu
         {
             get { return isShowUnityLog; }
             private set { isShowUnityLog = value; }
-        }
-
-        public bool IsDisplay
-        {
-            get { return isDisplay = gameObject.activeSelf; }
-            private set { isDisplay = value; }
         }
 
         public string FinalInputContent
@@ -154,11 +161,8 @@ namespace KouXiaGu
 
         void OnValidate()
         {
-            //if (Application.isPlaying)
-            //{
-            //    SetDisplayUnityLog(isShowUnityLog);
-            //}
-            SetDisplay(isDisplay);
+            ui.OnValidate();
+            //SetDisplayUnityLog(IsDisplayUnityLog);
         }
 
         void LateUpdate()
@@ -248,13 +252,7 @@ namespace KouXiaGu
 
         void OnDisplayKeyDown()
         {
-            SetDisplay(!IsDisplay);
-        }
-
-        void SetDisplay(bool isDisplay)
-        {
-            gameObject.SetActive(isDisplay);
-            IsDisplay = isDisplay;
+           ui.SetDisplay(!ui.IsDisplay);
         }
 
         void ILogHandler.LogException(Exception exception, UnityEngine.Object context)
