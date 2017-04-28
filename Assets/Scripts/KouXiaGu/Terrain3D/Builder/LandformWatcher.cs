@@ -13,15 +13,13 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class LandformWatcher : MonoBehaviour
     {
-
-        static bool isStart = false;
         static readonly List<LandformWatcher> watcherList = new List<LandformWatcher>();
 
-        internal static void Initialize(LandformScene scene)
+        internal static void UpdateDispalyCoords(LandformScene scene)
         {
             foreach (var item in watcherList)
             {
-                item.StartUpdate(scene);
+                item.UpdateDispaly(scene);
             }
         }
 
@@ -40,34 +38,21 @@ namespace KouXiaGu.Terrain3D
         int updateInterval = 60;
 
         int lastUpdateTime;
-        LandformScene scene;
 
         RectGrid Grid
         {
             get { return ChunkInfo.ChunkGrid; }
         }
 
-        void Awake()
+        void Start()
         {
-            enabled = false;
             watcherList.Add(this);
         }
 
-        void StartUpdate(LandformScene scene)
+        void UpdateDispaly(LandformScene scene)
         {
-            this.scene = scene;
-            SendDisplayCoords();
-            enabled = true;
-        }
-
-        void Update()
-        {
-            lastUpdateTime++;
-            if (lastUpdateTime >= updateInterval)
-            {
-                lastUpdateTime = 0;
-                SendDisplayCoords();
-            }
+            IEnumerable<RectCoord> coords = GetDisplay(transform.position);
+            scene.Display(coords);
         }
 
         void OnValidate()
@@ -82,12 +67,6 @@ namespace KouXiaGu.Terrain3D
         {
             coord.x = MathI.Clamp(coord.x, coord.x, short.MaxValue);
             coord.y = MathI.Clamp(coord.y, coord.y, short.MaxValue);
-        }
-
-        void SendDisplayCoords()
-        {
-            IEnumerable<RectCoord> coords = GetDisplay(transform.position);
-            scene.Display(coords);
         }
 
         /// <summary>

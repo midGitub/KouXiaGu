@@ -17,6 +17,7 @@ namespace KouXiaGu.Terrain3D
             this.builder = builder;
             createCoords = new HashSet<RectCoord>();
             destroyCoords = new List<RectCoord>();
+            OnLateUpdateSendDisplay();
             this.SubscribeLateUpdate();
         }
 
@@ -51,6 +52,8 @@ namespace KouXiaGu.Terrain3D
 
         void OnLateUpdateSendDisplay()
         {
+            LandformWatcher.UpdateDispalyCoords(this);
+
             ICollection<RectCoord> needDestroyCoords = GetNeedDestroyCoords();
             foreach (var coord in needDestroyCoords)
             {
