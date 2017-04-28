@@ -58,7 +58,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             ICollection<RectCoord> needCreateCoords = GetNeedCreateCoords();
-            foreach (var coord in createCoords)
+            foreach (var coord in needCreateCoords)
             {
                 this.builder.Create(coord);
             }
