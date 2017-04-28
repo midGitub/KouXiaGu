@@ -61,12 +61,13 @@ namespace KouXiaGu
         /// </summary>
         public static IDisposable Subscribe<T>(
             this IEnumerable<T> operations,
+            object sender,
             Action<IList<T>> onCompleted,
             Action<IList<T>> onFaulted)
             where T : IAsyncOperation
         {
             var item = new EnumerateSubscriber<T>(operations, onCompleted, onFaulted);
-            var disposer = item.SubscribeUpdate();
+            var disposer = item.SubscribeUpdate(sender);
             return disposer;
         }
 

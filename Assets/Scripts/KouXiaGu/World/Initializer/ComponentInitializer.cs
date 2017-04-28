@@ -42,7 +42,7 @@ namespace KouXiaGu.World
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
               };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnBuildingSceneCompleted, OnFaulted);
+            (missions as IEnumerable<IAsyncOperation>).Subscribe(this, OnBuildingSceneCompleted, OnFaulted);
         }
 
         void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)

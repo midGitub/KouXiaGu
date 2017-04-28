@@ -46,7 +46,7 @@ namespace KouXiaGu.World
             worldDataInitialize = new DataInitializer();
             sceneComponentInitializer = new ComponentInitializer();
             sceneInitializer = new SceneInitializer();
-            GameInitializer.GameDataInitialize.SubscribeCompleted(Initialize);
+            GameInitializer.Instance.GameDataInitialize.SubscribeCompleted(this, Initialize);
         }
 
         public IDisposable Subscribe(IObserver<IWorld> observer)
@@ -57,25 +57,25 @@ namespace KouXiaGu.World
         void Initialize(IAsyncOperation<IGameData> operation)
         {
             GameData = operation.Result;
-            WorldInfoReader.SubscribeCompleted(OnWorldInfoReadCompleted);
+            WorldInfoReader.SubscribeCompleted(this, OnWorldInfoReadCompleted);
         }
 
         void OnWorldInfoReadCompleted(IAsyncOperation<WorldInfo> operation)
         {
             Info = operation.Result;
-            worldDataInitialize.Start(GameData, Info, this).SubscribeCompleted(OnWorldDataCompleted);
+            worldDataInitialize.Start(GameData, Info, this).SubscribeCompleted(this, OnWorldDataCompleted);
         }
 
         void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
         {
             Data = operation.Result;
-            sceneComponentInitializer.Start(Data, this).SubscribeCompleted(OnSceneComponentCompleted);
+            sceneComponentInitializer.Start(Data, this).SubscribeCompleted(this, OnSceneComponentCompleted);
         }
 
         void OnSceneComponentCompleted(IAsyncOperation<IWorldComponent> operation)
         {
             Component = operation.Result;
-            sceneInitializer.Start(Data, Component, this).SubscribeCompleted(OnSceneCompleted);
+            sceneInitializer.Start(Data, Component, this).SubscribeCompleted(this, OnSceneCompleted);
         }
 
         void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)

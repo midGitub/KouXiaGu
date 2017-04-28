@@ -185,7 +185,7 @@ namespace KouXiaGu.Globalization
         {
             public AsyncInitializer()
             {
-                this.SubscribeCompleted(OnCompleted);
+                this.SubscribeCompleted(this, OnCompleted);
                 Start();
             }
 
@@ -247,7 +247,7 @@ namespace KouXiaGu.Globalization
             public AsyncLanguageChanger(int index)
             {
                 this.index = index;
-                this.SubscribeCompleted(OnCompleted);
+                this.SubscribeCompleted(this, OnCompleted);
                 Start();
             }
 

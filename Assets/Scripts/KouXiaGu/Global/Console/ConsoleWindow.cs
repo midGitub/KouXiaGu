@@ -9,12 +9,12 @@ namespace KouXiaGu
     [Serializable]
     class ConsoleUI
     {
-        public GameObject consoleWindows;
-        public ScrollRect OutputScrollRect;
-        public Text OutputConsoleText;
-        public InputField InputField;
+        public GameObject consoleWindows = null;
+        public ScrollRect OutputScrollRect = null;
+        public Text OutputConsoleText = null;
+        public InputField InputField = null;
         [SerializeField]
-        bool isDisplay;
+        bool isDisplay = false;
 
         public bool IsDisplay
         {
@@ -40,7 +40,8 @@ namespace KouXiaGu
 
         public void SetDisplay(bool isDisplay)
         {
-            consoleWindows.SetActive(isDisplay);
+            if(consoleWindows != null)
+                consoleWindows.SetActive(isDisplay);
         }
 
         public void ScrollToBottom()
@@ -138,7 +139,7 @@ namespace KouXiaGu
             SetDisplayUnityLog(isShowUnityLog);
 
             displayKeyObserver = new KeyDownObserver(KeyFunction.Console_DisplayOrHide, OnDisplayKeyDown);
-            displayKeyObserver.SubscribeUpdate();
+            displayKeyObserver.SubscribeUpdate(this);
         }
 
         void SetDisplayUnityLog(bool isDisplay)

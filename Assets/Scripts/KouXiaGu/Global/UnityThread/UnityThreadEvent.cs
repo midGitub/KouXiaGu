@@ -8,13 +8,12 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-    public abstract class UnityThreadEvent : IObserver<object>, IDisposable
+    public abstract class UnityThreadEvent : IDisposable
     {
         static UnityThreadDispatcher instance
         {
             get { return UnityThreadDispatcher.Instance; }
         }
-
 
         public UnityThreadEvent()
         {
@@ -29,29 +28,6 @@ namespace KouXiaGu
 
         public abstract void OnNext();
 
-        public void OnNext(object none)
-        {
-            try
-            {
-                OnNext();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("将取消委托执行,因为在委托Unity线程执行时出现异常:\n" + ex);
-                Dispose();
-            }
-        }
-
-        public void OnCompleted()
-        {
-            Dispose();
-        }
-
-        public void OnError(Exception error)
-        {
-            Debug.LogError(new NotImplementedException());
-        }
-
         public void Dispose()
         {
             if (disposer != null)
@@ -61,24 +37,23 @@ namespace KouXiaGu
             }
         }
 
-        public IDisposable SubscribeUpdate()
+        public IDisposable SubscribeUpdate(object sender)
         {
             if (IsSubscribed)
                 throw new ArgumentException();
 
-            disposer = instance.SubscribeUpdate(this);
+            disposer = instance.SubscribeUpdate(sender, OnNext);
             return this;
         }
 
-        public IDisposable SubscribeFixedUpdate()
+        public IDisposable SubscribeFixedUpdate(object sender)
         {
             if (IsSubscribed)
                 throw new ArgumentException();
 
-            disposer = instance.SubscribeFixedUpdate(this);
+            disposer = instance.SubscribeFixedUpdate(sender, OnNext);
             return this;
         }
-
     }
 
 

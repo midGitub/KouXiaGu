@@ -34,10 +34,10 @@ namespace KouXiaGu
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
                 {
-                    CustomInput.ReadOrDefaultAsync().Subscribe(OnCustomInputCompleted, OnFaulted),
-                    Localization.InitializeAsync().Subscribe(OnLocalizationCompleted, OnFaulted),
+                    CustomInput.ReadOrDefaultAsync().Subscribe(this, OnCustomInputCompleted, OnFaulted),
+                    Localization.InitializeAsync().Subscribe(this, OnLocalizationCompleted, OnFaulted),
                 };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(OnCompleted, OnFaulted);
+            (missions as IEnumerable<IAsyncOperation>).Subscribe(this, OnCompleted, OnFaulted);
         }
 
         void OnCustomInputCompleted(IAsyncOperation operation)

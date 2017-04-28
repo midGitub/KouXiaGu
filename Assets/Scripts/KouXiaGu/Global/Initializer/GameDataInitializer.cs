@@ -46,7 +46,7 @@ namespace KouXiaGu
 
         void Initialize0()
         {
-            WorldElementResource.ReadAsync().Subscribe(OnWorldResourceCompleted, OnFaulted);
+            WorldElementResource.ReadAsync().Subscribe(this, OnWorldResourceCompleted, OnFaulted);
         }
 
         void OnWorldResourceCompleted(IAsyncOperation<WorldElementResource> operation)
@@ -72,9 +72,9 @@ namespace KouXiaGu
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
             {
-                    TerrainResource.ReadAsync(ElementInfo).Subscribe(OnTerrainCompleted, OnFaulted),
+                    TerrainResource.ReadAsync(ElementInfo).Subscribe(this, OnTerrainCompleted, OnFaulted),
             };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(InitializeCompleted, OnFaulted);
+            (missions as IEnumerable<IAsyncOperation>).Subscribe(this, InitializeCompleted, OnFaulted);
         }
 
 

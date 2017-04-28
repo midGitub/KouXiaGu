@@ -9,7 +9,6 @@ namespace KouXiaGu
 {
 
     public class UnityThreadBehaviour<T>
-        where T :class
     {
         public UnityThreadBehaviour(object sender, T action)
         {

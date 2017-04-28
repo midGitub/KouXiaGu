@@ -80,11 +80,11 @@ namespace KouXiaGu
         /// 当操作失败时,在unity线程内回调;
         /// </summary>
         /// <returns>返回传入参数 operation</returns>
-        public static T SubscribeFaulted<T>(this T operation, Action<T> onFaulted)
+        public static T SubscribeFaulted<T>(this T operation, object sender, Action<T> onFaulted)
             where T : IAsyncOperation
         {
             var item = new FaultedSubscriber<T>(operation, onFaulted);
-            item.SubscribeUpdate();
+            item.SubscribeUpdate(sender);
             return operation;
         }
 
@@ -121,11 +121,11 @@ namespace KouXiaGu
         /// 完成时调用,若失败则不调用;在unity线程内回调;
         /// </summary>
         /// <returns>返回传入参数 operation</returns>
-        public static T SubscribeCompleted<T>(this T operation, Action<T> onCompleted)
+        public static T SubscribeCompleted<T>(this T operation, object sender, Action<T> onCompleted)
             where T : IAsyncOperation
         {
             var item = new CompletedSubscriber<T>(operation, onCompleted);
-            item.SubscribeUpdate();
+            item.SubscribeUpdate(sender);
             return operation;
         }
 
@@ -165,12 +165,13 @@ namespace KouXiaGu
         /// </summary>
         /// <returns>返回传入参数 operation</returns>
         public static IAsyncOperation<TReturn> Subscribe<TReturn>(
-            this IAsyncOperation<TReturn> operation,
+            this IAsyncOperation<TReturn> operation, 
+            object sender,
             Action<IAsyncOperation<TReturn>, TReturn> onCompleted,
             Action<IAsyncOperation<TReturn>> onFaulted)
         {
             var item = new ReturnSubscriber<TReturn>(operation, onCompleted, onFaulted);
-            item.SubscribeUpdate();
+            item.SubscribeUpdate(sender);
             return operation;
         }
 
@@ -215,11 +216,11 @@ namespace KouXiaGu
         /// 当操作完成时,在unity线程内回调;
         /// </summary>
         /// <returns>返回传入参数 operation</returns>
-        public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onFaulted)
+        public static T Subscribe<T>(this T operation, object sender, Action<T> onCompleted, Action<T> onFaulted)
             where T : IAsyncOperation
         {
             var item = new Subscriber<T>(operation, onCompleted, onFaulted);
-            item.SubscribeUpdate();
+            item.SubscribeUpdate(sender);
             return operation;
         }
 
@@ -227,11 +228,11 @@ namespace KouXiaGu
         /// 当操作完成时,在unity线程内回调;
         /// </summary>
         /// <returns>返回传入参数 operation</returns>
-        public static T Subscribe<T>(this T operation, Action<T> onCompleted, Action<T> onFaulted, out IDisposable disposer)
+        public static T Subscribe<T>(this T operation, object sender, Action<T> onCompleted, Action<T> onFaulted, out IDisposable disposer)
             where T : IAsyncOperation
         {
             var item = new Subscriber<T>(operation, onCompleted, onFaulted);
-            disposer = item.SubscribeUpdate();
+            disposer = item.SubscribeUpdate(sender);
             return operation;
         }
 

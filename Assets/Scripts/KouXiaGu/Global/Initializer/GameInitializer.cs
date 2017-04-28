@@ -31,33 +31,22 @@ namespace KouXiaGu
         {
         }
 
-        static readonly ComponentInitializer componentInitialize = new ComponentInitializer();
-        static readonly GameDataInitializer gameDataInitialize = new GameDataInitializer();
+        ComponentInitializer componentInitialize = new ComponentInitializer();
+        GameDataInitializer gameDataInitialize = new GameDataInitializer();
 
-        public static IAsyncOperation ComponentInitialize
+        public IAsyncOperation ComponentInitialize
         {
             get { return componentInitialize; }
         }
 
-        public static IAsyncOperation<IGameData> GameDataInitialize
+        public IAsyncOperation<IGameData> GameDataInitialize
         {
             get { return gameDataInitialize; }
         }
 
-        public static IGameData GameData
+        public IGameData GameData
         {
             get { return GameDataInitialize.Result; }
-        }
-
-        static void Initialize()
-        {
-            componentInitialize.Start();
-            componentInitialize.SubscribeCompleted(OnComponentInitializeCompleted);
-        }
-
-        static void OnComponentInitializeCompleted(IAsyncOperation operation)
-        {
-            gameDataInitialize.Start();
         }
 
         /// <summary>
@@ -67,8 +56,20 @@ namespace KouXiaGu
         {
             SetInstance(this);
             ResourcePath.Initialize();
-            Initialize();
+            Initialize(this);
         }
+
+        void Initialize(GameInitializer initializer)
+        {
+            componentInitialize.Start();
+            componentInitialize.SubscribeCompleted(initializer, OnComponentInitializeCompleted);
+        }
+
+        void OnComponentInitializeCompleted(IAsyncOperation operation)
+        {
+            gameDataInitialize.Start();
+        }
+
     }
 
 }

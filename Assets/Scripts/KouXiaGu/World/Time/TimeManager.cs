@@ -82,7 +82,7 @@ namespace KouXiaGu.World
         public void StartTimeUpdating()
         {
             if(!timeUpdater.IsSubscribed)
-                timeUpdater.SubscribeFixedUpdate();
+                timeUpdater.SubscribeFixedUpdate(this);
         }
 
         public void StopTimeUpdating()
