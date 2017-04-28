@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
         ChunkTexture Textures { get; }
 
         void OnCompleted();
-        void OnFaulted(Exception ex);
+        //void OnFaulted(Exception ex);
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ namespace KouXiaGu.Terrain3D
         void Update()
         {
             runtimeStopwatch.Restart();
-            while (!runtimeStopwatch.Await() && requestQueue.Count != 0 && bakeCoroutine.MoveNext())
+            while (requestQueue.Count != 0 && !runtimeStopwatch.Await() && bakeCoroutine.MoveNext())
                 continue;
         }
 
@@ -84,13 +84,10 @@ namespace KouXiaGu.Terrain3D
         {
             while (true)
             {
-                IBakeRequest bakeRequest = requestQueue.Dequeue();
+                IBakeRequest bakeRequest = requestQueue.Peek();
 
                 if (bakeRequest.IsCompleted)
-                {
-                    bakeRequest.OnFaulted(new Exception("已经完成;"));
-                    continue;
-                }
+                    goto Complete;
 
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
                 yield return landform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
@@ -101,6 +98,11 @@ namespace KouXiaGu.Terrain3D
                 bakeRequest.Textures.SetDiffuseMap(diffuseMap);
                 bakeRequest.Textures.SetHeightMap(heightMap);
                 bakeRequest.OnCompleted();
+
+
+                Complete:
+                requestQueue.Dequeue();
+                yield return null;
             }
         }
 

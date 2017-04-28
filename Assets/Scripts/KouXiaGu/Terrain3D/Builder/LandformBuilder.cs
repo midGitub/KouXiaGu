@@ -137,10 +137,6 @@ namespace KouXiaGu.Terrain3D
                 OnCompleted(Chunk);
             }
 
-            void IBakeRequest.OnFaulted(Exception ex)
-            {
-                OnFaulted(ex);
-            }
         }
 
     }
