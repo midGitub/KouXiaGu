@@ -29,7 +29,7 @@ namespace KouXiaGu
 
         public override string ToString()
         {
-            return "[Sender:" + Sender.ToString() + "]";
+            return Sender.ToString();
         }
     }
 
