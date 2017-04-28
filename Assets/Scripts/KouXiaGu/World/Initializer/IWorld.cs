@@ -11,8 +11,7 @@ namespace KouXiaGu.World
     public interface IWorld
     {
         IWorldData Data { get; }
-        IWorldComponent Component { get; }
-        IWorldScene Scene { get; }
+        IWorldScene Component { get; }
     }
 
     public interface IWorldData
@@ -23,15 +22,9 @@ namespace KouXiaGu.World
         MapResource Map { get; }
     }
 
-    public interface IWorldComponent
+    public interface IWorldScene
     {
         Landform Landform { get; }
     }
-
-    public interface IWorldScene
-    {
-
-    }
-
 
 }

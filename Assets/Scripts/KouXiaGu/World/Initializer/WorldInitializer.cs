@@ -13,6 +13,7 @@ namespace KouXiaGu.World
     [DisallowMultipleComponent]
     public class WorldInitializer : MonoBehaviour, IWorld, IObservable<IWorld>
     {
+        const string Name = "WorldInitializer";
         /// <summary>
         /// 初始化时使用的世界信息;
         /// </summary>
@@ -26,13 +27,11 @@ namespace KouXiaGu.World
         LinkedListTracker<IWorld> worldTracker;
         event Action<IWorld> onInitializeCompleted;
         DataInitializer worldDataInitialize;
-        ComponentInitializer sceneComponentInitializer;
         SceneInitializer sceneInitializer;
         public IGameData GameData { get; private set; }
         public WorldInfo Info { get; private set; }
         public IWorldData Data { get; private set; }
-        public IWorldComponent Component { get; private set; }
-        public IWorldScene Scene { get; private set; }
+        public IWorldScene Component { get; private set; }
 
         public event Action<IWorld> OnInitializeCompleted
         {
@@ -44,9 +43,8 @@ namespace KouXiaGu.World
         {
             worldTracker = new LinkedListTracker<IWorld>();
             worldDataInitialize = new DataInitializer();
-            sceneComponentInitializer = new ComponentInitializer();
             sceneInitializer = new SceneInitializer();
-            GameInitializer.Instance.GameDataInitialize.SubscribeCompleted(this, Initialize);
+            GameInitializer.Instance.GameDataInitialize.SubscribeCompleted(Name + "等待游戏数据初始化完毕;", Initialize);
         }
 
         public IDisposable Subscribe(IObserver<IWorld> observer)
@@ -57,30 +55,26 @@ namespace KouXiaGu.World
         void Initialize(IAsyncOperation<IGameData> operation)
         {
             GameData = operation.Result;
-            WorldInfoReader.SubscribeCompleted("等待游戏世界信息读取完毕;", OnWorldInfoReadCompleted);
+            WorldInfoReader.SubscribeCompleted(Name + "等待游戏世界信息读取完毕;", OnWorldInfoReadCompleted);
         }
 
         void OnWorldInfoReadCompleted(IAsyncOperation<WorldInfo> operation)
         {
             Info = operation.Result;
-            worldDataInitialize.Start(GameData, Info, this).SubscribeCompleted("等待游戏世界数据初始化;", OnWorldDataCompleted);
+            worldDataInitialize.Start(GameData, Info, this)
+                .SubscribeCompleted(Name + "等待游戏世界数据初始化;", OnWorldDataCompleted);
         }
 
         void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
         {
             Data = operation.Result;
-            sceneComponentInitializer.Start(Data, this).SubscribeCompleted("等待游戏世界组件初始化;", OnSceneComponentCompleted);
-        }
-
-        void OnSceneComponentCompleted(IAsyncOperation<IWorldComponent> operation)
-        {
-            Component = operation.Result;
-            sceneInitializer.Start(Data, Component, this).SubscribeCompleted("等待游戏世界场景初始化;", OnSceneCompleted);
+            sceneInitializer.Start(Data, this)
+                .SubscribeCompleted(Name + "等待游戏世界组件初始化;", OnSceneCompleted);
         }
 
         void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
         {
-            Scene = operation.Result;
+            Component = operation.Result;
             _OnInitializeCompleted();
         }
 

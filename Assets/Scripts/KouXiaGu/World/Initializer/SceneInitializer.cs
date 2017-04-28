@@ -2,28 +2,61 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Terrain3D;
 using UniRx;
+using UnityEngine;
 
 namespace KouXiaGu.World
 {
 
     /// <summary>
-    /// 场景初始化,如根据角色位置进行 地形烘培 人物创建 等;
+    /// 场景功能组件初始化;
     /// </summary>
     public class SceneInitializer : AsyncInitializer<IWorldScene>, IWorldScene
     {
+
+        IWorldData worldData;
+        IObservable<IWorld> starter;
+        public Landform Landform { get; private set; }
+
         public override string Prefix
         {
-            get { return "游戏世界场景"; }
+            get { return "游戏世界组件"; }
         }
 
-        public IAsyncOperation<IWorldScene> Start(IWorldData data, IWorldComponent component, IObservable<IWorld> starter)
+        public IAsyncOperation<IWorldScene> Start(IWorldData worldData, IObservable<IWorld> starter)
         {
+            this.worldData = worldData;
+            this.starter = starter;
+
             StartInitialize();
-            OnCompleted(this);
+            BuildingScene(worldData);
             return this;
         }
 
+        /// <summary>
+        /// 初始化游戏场景;
+        /// </summary>
+        void BuildingScene(IWorldData worldData)
+        {
+            IAsyncOperation[] missions = new IAsyncOperation[]
+              {
+                  Landform.InitializeAsync(worldData).Subscribe("等待地形初始化", OnLandformCompleted, OnFaulted),
+              };
+            (missions as IEnumerable<IAsyncOperation>).Subscribe("等待场景组件初始化", OnBuildingSceneCompleted, OnFaulted);
+        }
+
+        void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)
+        {
+            OnCompleted(operations, this);
+        }
+
+        void OnLandformCompleted(IAsyncOperation<Landform> operations)
+        {
+            const string prefix = "[地形]";
+            Landform = operations.Result;
+            Debug.Log(prefix + InitializationCompletedStr);
+        }
     }
 
 }
