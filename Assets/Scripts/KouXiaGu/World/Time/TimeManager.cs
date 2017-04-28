@@ -107,7 +107,7 @@ namespace KouXiaGu.World
         public class TimeUpdater : UnityThreadBehaviour
         {
             public TimeUpdater(TimeManager manager)
-                : base(manager)
+                : base("更新世界时间")
             {
                 this.manager = manager;
             }
