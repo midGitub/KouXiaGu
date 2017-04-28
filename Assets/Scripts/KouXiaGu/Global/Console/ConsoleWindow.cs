@@ -138,7 +138,7 @@ namespace KouXiaGu
             ResetInputContent();
             SetDisplayUnityLog(isShowUnityLog);
 
-            displayKeyObserver = new KeyDownObserver(this, KeyFunction.Console_DisplayOrHide, OnDisplayKeyDown);
+            displayKeyObserver = new KeyDownObserver("ConsoleWindow 显示/隐藏按键响应", KeyFunction.Console_DisplayOrHide, OnDisplayKeyDown);
             displayKeyObserver.SubscribeUpdate();
         }
 
