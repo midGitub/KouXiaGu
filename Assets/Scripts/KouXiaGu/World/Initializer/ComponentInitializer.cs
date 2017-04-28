@@ -43,7 +43,7 @@ namespace KouXiaGu.World
               {
                   Landform.InitializeAsync(worldData).Subscribe("等待地形初始化", OnLandformCompleted, OnFaulted),
               };
-            (missions as IEnumerable<IAsyncOperation>).Subscribe(this, OnBuildingSceneCompleted, OnFaulted);
+            (missions as IEnumerable<IAsyncOperation>).Subscribe("等待场景组件初始化", OnBuildingSceneCompleted, OnFaulted);
         }
 
         void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)

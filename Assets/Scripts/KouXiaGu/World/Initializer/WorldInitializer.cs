@@ -57,25 +57,25 @@ namespace KouXiaGu.World
         void Initialize(IAsyncOperation<IGameData> operation)
         {
             GameData = operation.Result;
-            WorldInfoReader.SubscribeCompleted(this, OnWorldInfoReadCompleted);
+            WorldInfoReader.SubscribeCompleted("等待游戏世界信息读取完毕;", OnWorldInfoReadCompleted);
         }
 
         void OnWorldInfoReadCompleted(IAsyncOperation<WorldInfo> operation)
         {
             Info = operation.Result;
-            worldDataInitialize.Start(GameData, Info, this).SubscribeCompleted(this, OnWorldDataCompleted);
+            worldDataInitialize.Start(GameData, Info, this).SubscribeCompleted("等待游戏世界数据初始化;", OnWorldDataCompleted);
         }
 
         void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
         {
             Data = operation.Result;
-            sceneComponentInitializer.Start(Data, this).SubscribeCompleted(this, OnSceneComponentCompleted);
+            sceneComponentInitializer.Start(Data, this).SubscribeCompleted("等待游戏世界组件初始化;", OnSceneComponentCompleted);
         }
 
         void OnSceneComponentCompleted(IAsyncOperation<IWorldComponent> operation)
         {
             Component = operation.Result;
-            sceneInitializer.Start(Data, Component, this).SubscribeCompleted(this, OnSceneCompleted);
+            sceneInitializer.Start(Data, Component, this).SubscribeCompleted("等待游戏世界场景初始化;", OnSceneCompleted);
         }
 
         void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
