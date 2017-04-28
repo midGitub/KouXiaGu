@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
             get { return ChunkInfo.ChunkGrid; }
         }
 
-        public IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> SceneChunks
+        public IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> SceneDisplayedChunks
         {
             get { return readOnlySceneChunks; }
         }

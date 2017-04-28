@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
         {
             RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
             IAsyncOperation<Chunk> chunk;
-            if (Builder.SceneChunks.TryGetValue(chunkCoord, out chunk))
+            if (Builder.SceneDisplayedChunks.TryGetValue(chunkCoord, out chunk))
             {
                 Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
                 return chunk.Result.Renderer.GetHeight(uv);
