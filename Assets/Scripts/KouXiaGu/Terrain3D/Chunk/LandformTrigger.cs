@@ -82,7 +82,6 @@ namespace KouXiaGu.Terrain3D
         {
             this.collider = collider;
             this.renderer = renderer;
-            BuildCollisionMesh();
         }
 
         MeshCollider collider;
@@ -91,19 +90,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 构建碰撞网格;
         /// </summary>
-        void BuildCollisionMesh()
-        {
-            Mesh mesh = new Mesh();
-            mesh.name = MeshName;
-            collider.sharedMesh = BuildCollisionMesh(mesh);
-        }
-
-        /// <summary>
-        /// 重新构建碰撞网格;
-        /// </summary>
-        public void RebuildCollisionMesh()
+        public void BuildCollisionMesh()
         {
             Mesh mesh = collider.sharedMesh;
+            if (mesh == null)
+            {
+                mesh = new Mesh();
+                mesh.name = MeshName;
+                collider.sharedMesh = mesh;
+            }
             collider.sharedMesh = BuildCollisionMesh(mesh);
         }
 

@@ -86,6 +86,8 @@ namespace KouXiaGu.Terrain3D
             Mesh = new LandformMesh(meshFilter);
             Renderer = new LandformRenderer(meshRenderer);
             Trigger = new LandformTrigger(meshCollider, Renderer);
+
+            Renderer.OnHeightChanged += OnHeightChanged;
             gameObject.layer = LandformRay.Instance.RayLayer;
         }
 
@@ -94,7 +96,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void OnHeightChanged(LandformRenderer renderer)
         {
-            Trigger.RebuildCollisionMesh();
+            Trigger.BuildCollisionMesh();
         }
 
         /// <summary>
