@@ -32,6 +32,17 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        LandformScene scene;
+
+        void Awake()
+        {
+            SceneObject.GetObject<Landform>();
+        }
+
+        void Update()
+        {
+
+        }
 
 
         //LandformWatcher() { }
