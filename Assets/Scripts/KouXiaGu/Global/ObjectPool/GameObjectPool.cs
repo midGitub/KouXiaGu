@@ -54,7 +54,7 @@ namespace KouXiaGu
 
         public override void Destroy(T item)
         {
-            GameObject.DestroyObject(item.gameObject);
+            GameObject.Destroy(item.gameObject);
         }
     }
 

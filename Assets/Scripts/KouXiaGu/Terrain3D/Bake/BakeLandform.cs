@@ -31,6 +31,8 @@ namespace KouXiaGu.Terrain3D
         IWorldData worldData;
         CubicHexCoord chunkCenter;
         IEnumerable<CubicHexCoord> displays;
+        Material diffuseMaterial;
+        Material heightMaterial;
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
 
@@ -46,6 +48,8 @@ namespace KouXiaGu.Terrain3D
 
         public void Initialize()
         {
+            diffuseMaterial = new Material(diffuseShader);
+            heightMaterial = new Material(heightShader);
             sceneObjects = new List<Pack>();
             objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);
         }
@@ -103,7 +107,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var roadMesh in sceneObjects)
             {
-                GameObject.Destroy(roadMesh.Rednerer);
+                objectPool.Release(roadMesh.Rednerer);
             }
             sceneObjects.Clear();
         }
@@ -192,8 +196,11 @@ namespace KouXiaGu.Terrain3D
         void SetDiffuserMaterial(Pack renderer)
         {
             TerrainLandform res = renderer.Res;
-            GameObject.Destroy(renderer.Rednerer.sharedMaterial);
-            var material = renderer.Rednerer.sharedMaterial = new Material(diffuseShader);
+
+            var material = renderer.Rednerer.material;
+            //GameObject.Destroy(material);
+            //material = renderer.Rednerer.material = diffuseMaterial;
+
             material.SetTexture("_MainTex", res.DiffuseTex);
             material.SetTexture("_BlendTex", res.DiffuseBlendTex);
         }
@@ -212,8 +219,11 @@ namespace KouXiaGu.Terrain3D
         void SetHeightMaterial(Pack renderer)
         {
             TerrainLandform res = renderer.Res;
-            GameObject.Destroy(renderer.Rednerer.sharedMaterial);
-            var material = renderer.Rednerer.material = new Material(heightShader);
+
+            var material = renderer.Rednerer.material;
+            //GameObject.Destroy(material);
+            //material = renderer.Rednerer.material = heightMaterial;
+
             material.SetTexture("_MainTex", res.HeightTex);
             material.SetTexture("_BlendTex", res.HeightBlendTex);
         }
