@@ -14,7 +14,7 @@ namespace KouXiaGu
         /// 多个操作基类;
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        abstract class EnumerateSubscriberBase<T> : UnityThreadEvent
+        abstract class EnumerateSubscriberBase<T> : IUnityThreadBehaviour<Action>, IDisposable
             where T : IAsyncOperation
         {
             public EnumerateSubscriberBase(IEnumerable<T> operations)
@@ -26,11 +26,24 @@ namespace KouXiaGu
             int index = 0;
             T[] operationArray;
             protected List<T> faultedOperations { get; private set; }
+            IDisposable disposer;
+
+            public object Sender { get; private set; }
+
+            public Action Action
+            {
+                get { return OnNext; }
+            }
 
             protected abstract void OnCompleted(IList<T> completedOperations);
             protected abstract void OnFaulted(IList<T> faultedOperations);
 
-            public override void OnNext()
+            protected void SubscribeToUpdate()
+            {
+                disposer = UnityThreadDispatcher.Instance.SubscribeUpdate(this);
+            }
+
+            public void OnNext()
             {
                 if (index < operationArray.Length)
                 {
@@ -53,6 +66,15 @@ namespace KouXiaGu
 
                 Dispose();
             }
+
+            public void Dispose()
+            {
+                if (disposer != null)
+                {
+                    disposer.Dispose();
+                    disposer = null;
+                }
+            }
         }
 
 
@@ -67,8 +89,7 @@ namespace KouXiaGu
             where T : IAsyncOperation
         {
             var item = new EnumerateSubscriber<T>(operations, onCompleted, onFaulted);
-            var disposer = item.SubscribeUpdate(sender);
-            return disposer;
+            return item;
         }
 
 
@@ -83,6 +104,7 @@ namespace KouXiaGu
 
                 this.onCompleted = onCompleted;
                 this.onFaulted = onFaulted;
+                SubscribeToUpdate();
             }
 
             Action<IList<T>> onCompleted;

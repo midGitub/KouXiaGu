@@ -8,7 +8,13 @@ using UniRx;
 namespace KouXiaGu
 {
 
-    public class UnityThreadBehaviour<T>
+    public interface IUnityThreadBehaviour<T>
+    {
+        object Sender { get; }
+        T Action { get; }
+    }
+
+    public class UnityThreadBehaviour<T> : IUnityThreadBehaviour<T>
     {
         public UnityThreadBehaviour(object sender, T action)
         {
@@ -38,7 +44,7 @@ namespace KouXiaGu
         ActionCollection onUpdate;
         ActionCollection onFixedUpdate;
 
-        public IEnumerable<UnityThreadBehaviour<Action>> UpdateObservers
+        public IEnumerable<IUnityThreadBehaviour<Action>> UpdateObservers
         {
             get { return onUpdate.Observers; }
         }
@@ -48,7 +54,7 @@ namespace KouXiaGu
             get { return onUpdate.ObserverCount; }
         }
 
-        public IEnumerable<UnityThreadBehaviour<Action>> FixedUpdateObservers
+        public IEnumerable<IUnityThreadBehaviour<Action>> FixedUpdateObservers
         {
             get { return onFixedUpdate.Observers; }
         }
@@ -74,44 +80,12 @@ namespace KouXiaGu
             onFixedUpdate.Next();
         }
 
-        /// <summary>
-        /// 订阅到 Update 更新,每次更新都会调用 OnNext(),若返回异常,则输出异常到日志;
-        /// </summary>
-        [Obsolete]
-        public IDisposable SubscribeUpdate(IObserver<object> item)
-        {
-            return SubscribeUpdate(item, () => item.OnNext(this));
-        }
-
-        /// <summary>
-        /// 订阅到 FixedUpdate 更新,只会更新观察者的 OnNext() 和 OnCompleted();
-        /// </summary>
-        [Obsolete]
-        public IDisposable SubscribeFixedUpdate(IObserver<object> item)
-        {
-            return SubscribeFixedUpdate(item, () => item.OnNext(this));
-        }
-
-
-        public IDisposable SubscribeUpdate(object sender, Action action)
-        {
-            var behaviour = new UnityThreadBehaviour<Action>(sender, action);
-            return SubscribeUpdate(behaviour);
-        }
-
-        public IDisposable SubscribeUpdate(UnityThreadBehaviour<Action> behaviour)
+        public IDisposable SubscribeUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
             return onUpdate.Subscribe(behaviour);
         }
 
-
-        public IDisposable SubscribeFixedUpdate(object sender, Action action)
-        {
-            var behaviour = new UnityThreadBehaviour<Action>(sender, action);
-            return SubscribeFixedUpdate(behaviour);
-        }
-
-        public IDisposable SubscribeFixedUpdate(UnityThreadBehaviour<Action> behaviour)
+        public IDisposable SubscribeFixedUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
             return onFixedUpdate.Subscribe(behaviour);
         }
@@ -125,7 +99,7 @@ namespace KouXiaGu
             }
         }
 
-        class ActionCollection : ActionCollectionBase<UnityThreadBehaviour<Action>>
+        class ActionCollection : ActionCollectionBase<IUnityThreadBehaviour<Action>>
         {
             public void Next()
             {
