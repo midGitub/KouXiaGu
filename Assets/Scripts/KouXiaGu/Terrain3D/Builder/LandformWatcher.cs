@@ -17,11 +17,11 @@ namespace KouXiaGu.Terrain3D
         static bool isStart = false;
         static readonly List<LandformWatcher> watcherList = new List<LandformWatcher>();
 
-        internal static void Initialize()
+        internal static void Initialize(LandformScene scene)
         {
             foreach (var item in watcherList)
             {
-                item.StartUpdate();
+                item.StartUpdate(scene);
             }
         }
 
@@ -39,6 +39,9 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         int updateInterval = 60;
 
+        int lastUpdateTime;
+        LandformScene scene;
+
         RectGrid Grid
         {
             get { return ChunkInfo.ChunkGrid; }
@@ -50,9 +53,20 @@ namespace KouXiaGu.Terrain3D
             watcherList.Add(this);
         }
 
+        void StartUpdate(LandformScene scene)
+        {
+            this.scene = scene;
+            Update();
+            enabled = true;
+        }
+
         void Update()
         {
-
+            if (lastUpdateTime >= updateInterval)
+            {
+                IEnumerable<RectCoord> coords = GetDisplay(transform.position);
+                scene.Display(coords);
+            }
         }
 
         void OnValidate()
@@ -79,11 +93,6 @@ namespace KouXiaGu.Terrain3D
             return coords;
         }
 
-        void StartUpdate()
-        {
-            enabled = true;
-            Update();
-        }
     }
 
 }
