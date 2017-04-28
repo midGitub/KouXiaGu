@@ -50,6 +50,7 @@ namespace KouXiaGu.Terrain3D
                 BuildRequest buildRequest = CreateChunk(chunkCoord);
                 AddRequest(buildRequest);
                 request = buildRequest;
+                sceneChunks.Add(chunkCoord, buildRequest);
             }
             return request;
         }

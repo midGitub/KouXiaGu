@@ -119,6 +119,12 @@ namespace KouXiaGu.Terrain3D
             requestQueue.Enqueue(request);
         }
 
+        [ContextMenu("Log")]
+        void Log()
+        {
+            Debug.Log(typeof(LandformBaker).Name + ";RequestCount:" + RequestCount);
+        }
+
     }
 
 }
