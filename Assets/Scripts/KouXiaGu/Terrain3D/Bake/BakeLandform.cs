@@ -50,6 +50,7 @@ namespace KouXiaGu.Terrain3D
         {
             diffuseMaterial = new Material(diffuseShader);
             heightMaterial = new Material(heightShader);
+            prefab.material = diffuseMaterial;
             sceneObjects = new List<Pack>();
             objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);
         }
