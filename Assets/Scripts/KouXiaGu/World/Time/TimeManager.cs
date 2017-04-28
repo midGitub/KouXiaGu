@@ -146,7 +146,7 @@ namespace KouXiaGu.World
             public void Start()
             {
                 if(updateCanceler == null)
-                    updateCanceler = UnityThreadDispatcher.Instance.SubscribeUpdate(this);
+                    updateCanceler = UnityThreadDispatcher.Instance.SubscribeFixedUpdate(this);
             }
 
             public void Stop()

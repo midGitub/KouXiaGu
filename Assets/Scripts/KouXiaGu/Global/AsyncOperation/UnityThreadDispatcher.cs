@@ -67,7 +67,7 @@ namespace KouXiaGu
             get { return onFixedUpdate.ObserverCount; }
         }
 
-        public IEnumerable<IUnityThreadBehaviour<Action>> LastUpdateObservers
+        public IEnumerable<IUnityThreadBehaviour<Action>> LateUpdateObservers
         {
             get { return onLateUpdate.Observers; }
         }

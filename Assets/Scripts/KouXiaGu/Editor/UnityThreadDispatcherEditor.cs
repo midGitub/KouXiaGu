@@ -27,20 +27,11 @@ namespace KouXiaGu.Rx
             {
                 Runtime(target);
             }
-            else
-            {
-                DefaultOnInspectorGUI(target);
-            }
-        }
-
-        void DefaultOnInspectorGUI(UnityThreadDispatcher target)
-        {
-            //EditorGUILayout.LabelField("Update:" + "0");
-            //EditorGUILayout.LabelField("FixedUpdate:" + "0");
         }
 
         bool isShowUpdateInfo;
         bool isShowFixedUpdateInfo;
+        bool isShowLateUpdateInfo;
 
         void Runtime(UnityThreadDispatcher target)
         {
@@ -57,6 +48,13 @@ namespace KouXiaGu.Rx
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField("FixedUpdate:" + target.FixedUpdateObserverCount, GUILayout.Width(width));
             Display(target.FixedUpdateObservers, "ShowMore", ref isShowFixedUpdateInfo);
+            EditorGUILayout.EndVertical();
+
+            GUILayout.Space(interval);
+
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField("LateUpdate:" + target.LateUpdateObserverCount, GUILayout.Width(width));
+            Display(target.LateUpdateObservers, "ShowMore", ref isShowLateUpdateInfo);
             EditorGUILayout.EndVertical();
         }
 
