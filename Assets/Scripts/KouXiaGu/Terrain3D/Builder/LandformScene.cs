@@ -15,20 +15,27 @@ namespace KouXiaGu.Terrain3D
         public LandformScene(LandformBuilder builder)
         {
             this.builder = builder;
-            displayCoords = new HashSet<RectCoord>();
+            createCoords = new HashSet<RectCoord>();
+            destroyCoords = new List<RectCoord>();
         }
 
         readonly LandformBuilder builder;
-        readonly HashSet<RectCoord> displayCoords;
+        readonly HashSet<RectCoord> createCoords;
+        readonly List<RectCoord> destroyCoords;
 
-        IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> SceneDisplayedChunks
+        IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> sceneDisplayedChunks
         {
             get { return builder.SceneDisplayedChunks; }
         }
 
+        IEnumerable<RectCoord> sceneCoords
+        {
+            get { return sceneDisplayedChunks.Keys; }
+        }
+
         public object Sender
         {
-            get { return "场景的地形创建销毁管理"; }
+            get { return "场景的地形块创建销毁管理"; }
         }
 
         public Action Action
@@ -36,17 +43,43 @@ namespace KouXiaGu.Terrain3D
             get { return OnLateUpdateSendDisplay; }
         }
 
-        public void Display(IEnumerable<RectCoord> displayedCoord)
+        public void Display(IEnumerable<RectCoord> coords)
         {
-            displayCoords.UnionWith(displayedCoord);
+            createCoords.UnionWith(coords);
         }
 
         void OnLateUpdateSendDisplay()
         {
-            foreach (var coord in displayCoords)
+            ICollection<RectCoord> needDestroyCoords = GetNeedDestroyCoords();
+            foreach (var coord in needDestroyCoords)
             {
-                builder.Create(coord);
+                this.builder.Destroy(coord);
             }
+
+            ICollection<RectCoord> needCreateCoords = GetNeedCreateCoords();
+            foreach (var coord in createCoords)
+            {
+                this.builder.Create(coord);
+            }
+
+            createCoords.Clear();
+            destroyCoords.Clear();
+        }
+
+        ICollection<RectCoord> GetNeedDestroyCoords()
+        {
+            foreach (var coord in sceneCoords)
+            {
+                if (!createCoords.Contains(coord))
+                    destroyCoords.Add(coord);
+            }
+            return destroyCoords;
+        }
+
+        ICollection<RectCoord> GetNeedCreateCoords()
+        {
+            createCoords.ExceptWith(sceneCoords);
+            return createCoords;
         }
 
     }
