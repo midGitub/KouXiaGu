@@ -15,6 +15,15 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class Landform : MonoBehaviour
     {
+
+        /// <summary>
+        /// 初始化,并且在等待地形初始化完毕;
+        /// </summary>
+        public static IAsyncOperation<Landform> InitializeAsync(IWorldData worldData)
+        {
+            throw new NotImplementedException();
+        }
+
         Landform()
         {
         }
@@ -23,7 +32,7 @@ namespace KouXiaGu.Terrain3D
         public LandformBuilder Builder { get; private set; }
         public LandformScene Scene { get; private set; }
 
-        public Landform Initialize(IWorldData worldData)
+        Landform Initialize(IWorldData worldData)
         {
             if (!IsInitialized)
             {

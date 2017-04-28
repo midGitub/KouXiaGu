@@ -41,20 +41,20 @@ namespace KouXiaGu.World
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
+                  Landform.InitializeAsync(worldData).Subscribe("等待地形初始化", OnLandformCompleted, OnFaulted),
               };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(this, OnBuildingSceneCompleted, OnFaulted);
         }
 
         void OnBuildingSceneCompleted(IList<IAsyncOperation> operations)
         {
-            OnLandformCompleted();
             OnCompleted(operations, this);
         }
 
-        void OnLandformCompleted()
+        void OnLandformCompleted(IAsyncOperation<Landform> operations)
         {
             const string prefix = "[地形]";
-            Landform = SceneObject.GetObject<Landform>().Initialize(worldData);
+            Landform = operations.Result;
             Debug.Log(prefix + InitializationCompletedStr);
         }
     }
