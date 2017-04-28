@@ -15,14 +15,23 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class Landform : MonoBehaviour
     {
-        public static Landform Initialize(IWorldData worldData)
+        Landform()
         {
-            var item = SceneObject.GetObject<Landform>();
-            item.Builder = new LandformBuilder(worldData);
-            return item;
         }
 
+        public bool IsInitialized { get; private set; }
         public LandformBuilder Builder { get; private set; }
+        public LandformScene Scene { get; private set; }
+
+        public Landform Initialize(IWorldData worldData)
+        {
+            if (!IsInitialized)
+            {
+                Builder = new LandformBuilder(worldData);
+                Scene = new LandformScene(Builder);
+            }
+            return this;
+        }
 
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;

@@ -54,7 +54,7 @@ namespace KouXiaGu.World
         void OnLandformCompleted()
         {
             const string prefix = "[地形]";
-            Landform = Landform.Initialize(worldData);
+            Landform = SceneObject.GetObject<Landform>().Initialize(worldData);
             Debug.Log(prefix + InitializationCompletedStr);
         }
     }
