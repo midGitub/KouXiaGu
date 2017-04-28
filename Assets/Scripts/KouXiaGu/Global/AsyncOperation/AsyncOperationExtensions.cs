@@ -8,268 +8,46 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
-
-    class AsyncOperationObserver : IObserver<UnityThreadDispatcher>, IDisposable
-    {
-        public AsyncOperationObserver()
-        {
-
-        }
-
-        void IObserver<UnityThreadDispatcher>.OnCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IObserver<UnityThreadDispatcher>.OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IObserver<UnityThreadDispatcher>.OnNext(UnityThreadDispatcher item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
     /// <summary>
     /// 异步操作拓展,部分需要在 unity 线程内调用;
     /// </summary>
     public static partial class AsyncOperationExtensions
     {
 
-        abstract class SubscriberBase<T> : UnityThreadEvent
-            where T : IAsyncOperation
+        abstract class UnityThreadBehaviour : IUnityThreadBehaviour<Action>, IDisposable
         {
-            public SubscriberBase(T operation)
+            public UnityThreadBehaviour(object sender)
             {
-                this.operation = operation;
+                Sender = sender;
             }
 
-            protected T operation { get; private set; }
+            IDisposable disposer;
+            public object Sender { get; private set; }
 
-            protected abstract void OnCompleted(T operation);
-            protected abstract void OnFaulted(T operation);
-
-            public override void OnNext()
+            public Action Action
             {
-                if (operation.IsCompleted)
+                get { return OnNext; }
+            }
+
+            protected abstract void OnNext();
+
+            protected void SubscribeToUpdate()
+            {
+                disposer = UnityThreadDispatcher.Instance.SubscribeUpdate(this);
+            }
+
+            public void Dispose()
+            {
+                if (disposer != null)
                 {
-                    if (operation.IsFaulted)
-                    {
-                        OnFaulted(operation);
-                    }
-                    else
-                    {
-                        OnCompleted(operation);
-                    }
-                    Dispose();
+                    disposer.Dispose();
+                    disposer = null;
                 }
             }
-        }
 
-
-
-        /// <summary>
-        /// 当操作失败时,在unity线程内回调;
-        /// </summary>
-        /// <returns>返回传入参数 operation</returns>
-        public static T SubscribeFaulted<T>(this T operation, object sender, Action<T> onFaulted)
-            where T : IAsyncOperation
-        {
-            var item = new FaultedSubscriber<T>(operation, onFaulted);
-            item.SubscribeUpdate(sender);
-            return operation;
-        }
-
-        /// <summary>
-        /// 失败时调用;
-        /// </summary>
-        class FaultedSubscriber<T> : SubscriberBase<T>
-            where T : IAsyncOperation
-        {
-            public FaultedSubscriber(T operation, Action<T> onFaulted)
-                : base(operation)
+            public override string ToString()
             {
-                if (operation == null || onFaulted == null)
-                    throw new ArgumentNullException();
-
-                this.onFaulted = onFaulted;
-            }
-
-            Action<T> onFaulted;
-
-            protected override void OnCompleted(T operation)
-            {
-                return;
-            }
-
-            protected override void OnFaulted(T operation)
-            {
-                onFaulted(operation);
-            }
-        }
-
-
-        /// <summary>
-        /// 完成时调用,若失败则不调用;在unity线程内回调;
-        /// </summary>
-        /// <returns>返回传入参数 operation</returns>
-        public static T SubscribeCompleted<T>(this T operation, object sender, Action<T> onCompleted)
-            where T : IAsyncOperation
-        {
-            var item = new CompletedSubscriber<T>(operation, onCompleted);
-            item.SubscribeUpdate(sender);
-            return operation;
-        }
-
-        /// <summary>
-        /// 监视完成时调用,若失败则不调用;
-        /// </summary>
-        class CompletedSubscriber<T> : UnityThreadEvent
-            where T : IAsyncOperation
-        {
-            public CompletedSubscriber(T operation, Action<T> onCompleted)
-            {
-                if (operation == null || onCompleted == null)
-                    throw new ArgumentNullException();
-
-                this.operation = operation;
-                this.onCompleted = onCompleted;
-            }
-
-            T operation;
-            Action<T> onCompleted;
-
-            public override void OnNext()
-            {
-                if (operation.IsCompleted)
-                {
-                    if (!operation.IsFaulted)
-                    {
-                        onCompleted(operation);
-                    }
-                    Dispose();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 当操作完成时,在unity线程内回调;
-        /// </summary>
-        /// <returns>返回传入参数 operation</returns>
-        public static IAsyncOperation<TReturn> Subscribe<TReturn>(
-            this IAsyncOperation<TReturn> operation, 
-            object sender,
-            Action<IAsyncOperation<TReturn>, TReturn> onCompleted,
-            Action<IAsyncOperation<TReturn>> onFaulted)
-        {
-            var item = new ReturnSubscriber<TReturn>(operation, onCompleted, onFaulted);
-            item.SubscribeUpdate(sender);
-            return operation;
-        }
-
-        class ReturnSubscriber<TReturn> : UnityThreadEvent
-        {
-            public ReturnSubscriber(
-                IAsyncOperation<TReturn> operation,
-                Action<IAsyncOperation<TReturn>, TReturn> onCompleted,
-                Action<IAsyncOperation<TReturn>> onFaulted)
-            {
-                if (operation == null || onCompleted == null || onFaulted == null)
-                    throw new ArgumentNullException();
-
-                this.operation = operation;
-                this.onCompleted = onCompleted;
-                this.onFaulted = onFaulted;
-            }
-
-            IAsyncOperation<TReturn> operation;
-            Action<IAsyncOperation<TReturn>, TReturn> onCompleted;
-            Action<IAsyncOperation<TReturn>> onFaulted;
-
-            public override void OnNext()
-            {
-                if (operation.IsCompleted)
-                {
-                    if (operation.IsFaulted)
-                    {
-                        onFaulted(operation);
-                    }
-                    else
-                    {
-                        onCompleted(operation, operation.Result);
-                    }
-                    Dispose();
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// 当操作完成时,在unity线程内回调;
-        /// </summary>
-        /// <returns>返回传入参数 operation</returns>
-        public static T Subscribe<T>(this T operation, object sender, Action<T> onCompleted, Action<T> onFaulted)
-            where T : IAsyncOperation
-        {
-            var item = new Subscriber<T>(operation, onCompleted, onFaulted);
-            item.SubscribeUpdate(sender);
-            return operation;
-        }
-
-        /// <summary>
-        /// 当操作完成时,在unity线程内回调;
-        /// </summary>
-        /// <returns>返回传入参数 operation</returns>
-        public static T Subscribe<T>(this T operation, object sender, Action<T> onCompleted, Action<T> onFaulted, out IDisposable disposer)
-            where T : IAsyncOperation
-        {
-            var item = new Subscriber<T>(operation, onCompleted, onFaulted);
-            disposer = item.SubscribeUpdate(sender);
-            return operation;
-        }
-
-        /// <summary>
-        /// 监视完成和失败;
-        /// </summary>
-        class Subscriber<T> : UnityThreadEvent
-             where T : IAsyncOperation
-        {
-            public Subscriber(T operation, Action<T> onCompleted, Action<T> onFaulted)
-            {
-                if (operation == null || onCompleted == null || onFaulted == null)
-                    throw new ArgumentNullException();
-
-                this.operation = operation;
-                this.onCompleted = onCompleted;
-                this.onFaulted = onFaulted;
-            }
-
-            T operation;
-            Action<T> onCompleted;
-            Action<T> onFaulted;
-
-            public override void OnNext()
-            {
-                if (operation.IsCompleted)
-                {
-                    if (operation.IsFaulted)
-                    {
-                        onFaulted(operation);
-                    }
-                    else
-                    {
-                        onCompleted(operation);
-                    }
-                    Dispose();
-                }
+                return "[Sender:" + Sender.ToString() + "]";
             }
         }
 

@@ -9,15 +9,16 @@ namespace KouXiaGu.World
     /// <summary>
     /// 国家信息;
     /// </summary>
+    [Obsolete]
     public class Country : IEquatable<Country>
     {
 
-        public Country(int id, WorldManager manager)
-        {
-            CountryID = id;
-            ProductInfo = new ProductInfoGroup(manager.Product);
-            ManpowerFactor = new ManpowerNationalFactor(manager.Info);
-        }
+        //public Country(int id, WorldManager manager)
+        //{
+        //    CountryID = id;
+        //    ProductInfo = new ProductInfoGroup(manager.Product);
+        //    ManpowerFactor = new ManpowerNationalFactor(manager.Info);
+        //}
 
 
         /// <summary>

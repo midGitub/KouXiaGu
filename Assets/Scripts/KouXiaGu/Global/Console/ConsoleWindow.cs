@@ -138,8 +138,8 @@ namespace KouXiaGu
             ResetInputContent();
             SetDisplayUnityLog(isShowUnityLog);
 
-            displayKeyObserver = new KeyDownObserver(KeyFunction.Console_DisplayOrHide, OnDisplayKeyDown);
-            displayKeyObserver.SubscribeUpdate(this);
+            displayKeyObserver = new KeyDownObserver(this, KeyFunction.Console_DisplayOrHide, OnDisplayKeyDown);
+            displayKeyObserver.SubscribeUpdate();
         }
 
         void SetDisplayUnityLog(bool isDisplay)

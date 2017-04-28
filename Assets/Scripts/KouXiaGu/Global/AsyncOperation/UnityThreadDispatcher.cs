@@ -14,20 +14,25 @@ namespace KouXiaGu
         T Action { get; }
     }
 
-    public class UnityThreadBehaviour<T> : IUnityThreadBehaviour<T>
+    public abstract class UnityThreadBehaviour : IUnityThreadBehaviour<Action>
     {
-        public UnityThreadBehaviour(object sender, T action)
+        public UnityThreadBehaviour(object sender)
         {
             Sender = sender;
-            Action = action;
         }
 
         public object Sender { get; private set; }
-        public T Action { get; private set; }
+
+        public Action Action
+        {
+            get { return OnNext; }
+        }
+
+        protected abstract void OnNext();
 
         public override string ToString()
         {
-            return "[Sender:" + Sender.ToString() + ",Action:" + Action.ToString() + "]";
+            return "[Sender:" + Sender.ToString() + "]";
         }
     }
 
@@ -116,7 +121,25 @@ namespace KouXiaGu
                 }
             }
         }
+    }
 
+
+    public static class UnityThreadBehaviourExtensions
+    {
+        static UnityThreadDispatcher unityThreadDispatcher
+        {
+            get { return UnityThreadDispatcher.Instance; }
+        }
+
+        public static IDisposable SubscribeUpdate(this IUnityThreadBehaviour<Action> behaviour)
+        {
+            return unityThreadDispatcher.SubscribeUpdate(behaviour);
+        }
+
+        public static IDisposable SubscribeFixedUpdate(this IUnityThreadBehaviour<Action> behaviour)
+        {
+            return unityThreadDispatcher.SubscribeFixedUpdate(behaviour);
+        }
     }
 
 }

@@ -6,9 +6,10 @@ using System.Text;
 namespace KouXiaGu.KeyInput
 {
 
-    public class KeyDownObserver : UnityThreadEvent
+    public class KeyDownObserver : UnityThreadBehaviour
     {
-        public KeyDownObserver(KeyFunction key, Action onKeyDown)
+        public KeyDownObserver(object sender, KeyFunction key, Action onKeyDown)
+            : base(sender)
         {
             Key = key;
             this.onKeyDown = onKeyDown;
@@ -17,7 +18,7 @@ namespace KouXiaGu.KeyInput
         Action onKeyDown;
         public KeyFunction Key { get; private set; }
 
-        public override void OnNext()
+        protected override void OnNext()
         {
             if (CustomInput.GetKeyDown(Key))
             {

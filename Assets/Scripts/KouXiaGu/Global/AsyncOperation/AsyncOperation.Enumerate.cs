@@ -17,8 +17,9 @@ namespace KouXiaGu
         abstract class EnumerateSubscriberBase<T> : IUnityThreadBehaviour<Action>, IDisposable
             where T : IAsyncOperation
         {
-            public EnumerateSubscriberBase(IEnumerable<T> operations)
+            public EnumerateSubscriberBase(object sender, IEnumerable<T> operations)
             {
+                Sender = sender;
                 operationArray = operations.ToArray();
                 faultedOperations = new List<T>();
             }
@@ -88,7 +89,7 @@ namespace KouXiaGu
             Action<IList<T>> onFaulted)
             where T : IAsyncOperation
         {
-            var item = new EnumerateSubscriber<T>(operations, onCompleted, onFaulted);
+            var item = new EnumerateSubscriber<T>(sender, operations, onCompleted, onFaulted);
             return item;
         }
 
@@ -96,8 +97,9 @@ namespace KouXiaGu
         class EnumerateSubscriber<T> : EnumerateSubscriberBase<T>
             where T : IAsyncOperation
         {
-            public EnumerateSubscriber(IEnumerable<T> operations, Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)
-                : base(operations)
+            public EnumerateSubscriber(object sender, IEnumerable<T> operations, 
+                Action<IList<T>> onCompleted, Action<IList<T>> onFaulted)
+                : base(sender, operations)
             {
                 if (operations == null || onCompleted == null || onFaulted == null)
                     throw new ArgumentNullException();
