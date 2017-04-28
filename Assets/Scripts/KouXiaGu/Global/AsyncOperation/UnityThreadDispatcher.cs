@@ -119,7 +119,7 @@ namespace KouXiaGu
         {
             protected void OnError(T item, Exception ex)
             {
-                Debug.LogError("UnityThreadDispatcher:" + item.ToString() + ex);
+                Debug.LogError("UnityThreadDispatcher:" + item.ToString() + "\n" + ex);
             }
         }
 

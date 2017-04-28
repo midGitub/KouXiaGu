@@ -24,6 +24,11 @@ namespace KouXiaGu.Terrain3D
         readonly Dictionary<RectCoord, IAsyncOperation<Chunk>> sceneChunks;
         readonly IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> readOnlySceneChunks;
 
+        public LandformBaker Baker
+        {
+            get { return baker; }
+        }
+
         public RectGrid ChunkGrid
         {
             get { return ChunkInfo.ChunkGrid; }
