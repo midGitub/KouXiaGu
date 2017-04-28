@@ -45,6 +45,7 @@ namespace KouXiaGu
 
         ActionCollection onUpdate;
         ActionCollection onFixedUpdate;
+        ActionCollection onLateUpdate;
 
         public IEnumerable<IUnityThreadBehaviour<Action>> UpdateObservers
         {
@@ -66,15 +67,31 @@ namespace KouXiaGu
             get { return onFixedUpdate.ObserverCount; }
         }
 
+        public IEnumerable<IUnityThreadBehaviour<Action>> LastUpdateObservers
+        {
+            get { return onLateUpdate.Observers; }
+        }
+
+        public int LateUpdateObserverCount
+        {
+            get { return onLateUpdate.ObserverCount; }
+        }
+
         void Awake()
         {
             onUpdate = new ActionCollection();
             onFixedUpdate = new ActionCollection();
+            onLateUpdate = new ActionCollection();
         }
 
         void Update()
         {
             onUpdate.Next();
+        }
+
+        void LateUpdate()
+        {
+            onLateUpdate.Next();
         }
 
         void FixedUpdate()
@@ -85,6 +102,11 @@ namespace KouXiaGu
         public IDisposable SubscribeUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
             return onUpdate.Subscribe(behaviour);
+        }
+
+        public IDisposable SubscribeLateUpdate(IUnityThreadBehaviour<Action> behaviour)
+        {
+            return onLateUpdate.Subscribe(behaviour);
         }
 
         public IDisposable SubscribeFixedUpdate(IUnityThreadBehaviour<Action> behaviour)

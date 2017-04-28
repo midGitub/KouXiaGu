@@ -18,15 +18,16 @@ namespace KouXiaGu.Terrain3D
         }
 
         readonly LandformBuilder builder;
+        readonly HashSet<RectCoord> display;
 
         IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> SceneDisplayedChunks
         {
             get { return builder.SceneDisplayedChunks; }
         }
 
-        public void Add(IEnumerable<RectCoord> displayedCoord)
+        public void Display(IEnumerable<RectCoord> displayedCoord)
         {
-
+            display.UnionWith(displayedCoord);
         }
 
     }
