@@ -56,10 +56,34 @@ namespace KouXiaGu
             ResetState();
         }
 
-        public bool IsCompleted { get; protected set; }
-        public bool IsFaulted { get; protected set; }
-        public bool IsCanceled { get; protected set; }
-        public Exception Exception { get; protected set; }
+        protected bool isCompleted;
+        protected bool isFaulted;
+        protected bool isCanceled;
+        protected Exception exception;
+
+        public virtual bool IsCompleted
+        {
+            get { return isCompleted; }
+            protected set { isCompleted = value; }
+        }
+
+        public virtual bool IsFaulted
+        {
+            get { return isFaulted; }
+            protected set { isFaulted = value; }
+        }
+
+        public virtual bool IsCanceled
+        {
+            get { return isCanceled; }
+            protected set { isCanceled = value; }
+        }
+
+        public virtual Exception Exception
+        {
+            get { return exception; }
+            protected set { exception = value; }
+        }
 
         /// <summary>
         /// 重置状态;
@@ -126,7 +150,13 @@ namespace KouXiaGu
         {
         }
 
-        public TResult Result { get; protected set; }
+        protected TResult result;
+
+        public virtual TResult Result
+        {
+            get { return result; }
+            protected set { result = value; }
+        }
 
         protected virtual void OnCompleted(TResult result)
         {

@@ -155,10 +155,17 @@ namespace KouXiaGu
             return unityThreadDispatcher.SubscribeUpdate(behaviour);
         }
 
+        public static IDisposable SubscribeLateUpdate(this IUnityThreadBehaviour<Action> behaviour)
+        {
+            return unityThreadDispatcher.SubscribeLateUpdate(behaviour);
+        }
+
         public static IDisposable SubscribeFixedUpdate(this IUnityThreadBehaviour<Action> behaviour)
         {
             return unityThreadDispatcher.SubscribeFixedUpdate(behaviour);
         }
+
+
     }
 
 }

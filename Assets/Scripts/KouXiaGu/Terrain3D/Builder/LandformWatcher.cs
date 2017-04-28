@@ -56,16 +56,17 @@ namespace KouXiaGu.Terrain3D
         void StartUpdate(LandformScene scene)
         {
             this.scene = scene;
-            Update();
+            SendDisplayCoords();
             enabled = true;
         }
 
         void Update()
         {
+            lastUpdateTime++;
             if (lastUpdateTime >= updateInterval)
             {
-                IEnumerable<RectCoord> coords = GetDisplay(transform.position);
-                scene.Display(coords);
+                lastUpdateTime = 0;
+                SendDisplayCoords();
             }
         }
 
@@ -83,10 +84,16 @@ namespace KouXiaGu.Terrain3D
             coord.y = MathI.Clamp(coord.y, coord.y, short.MaxValue);
         }
 
+        void SendDisplayCoords()
+        {
+            IEnumerable<RectCoord> coords = GetDisplay(transform.position);
+            scene.Display(coords);
+        }
+
         /// <summary>
         /// 获取到需要显示到场景的坐标;
         /// </summary>
-        public IEnumerable<RectCoord> GetDisplay(Vector3 pos)
+        IEnumerable<RectCoord> GetDisplay(Vector3 pos)
         {
             var center = Grid.GetCoord(pos);
             IEnumerable<RectCoord> coords = RectCoord.Range(center, displayRadius.x, displayRadius.y);

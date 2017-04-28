@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEngine;
 
 namespace KouXiaGu
 {
@@ -36,10 +35,11 @@ namespace KouXiaGu
                 {
                     moveNext = request.MoveNext();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    OnFaulted(e);
+                    OnFaulted(ex);
                     coroutineStack.Clear();
+                    throw ex;
                 }
 
                 if (!moveNext)

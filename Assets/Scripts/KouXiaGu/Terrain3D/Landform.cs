@@ -21,8 +21,33 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public static IAsyncOperation<Landform> InitializeAsync(IWorldData worldData)
         {
-            throw new NotImplementedException();
+            return new AsyncInitializer(worldData);
         }
+
+        class AsyncInitializer : AsyncOperation<Landform>
+        {
+            public AsyncInitializer(IWorldData worldData)
+            {
+                try
+                {
+                    Result = SceneObject.GetObject<Landform>();
+                    Result.Initialize(worldData);
+                    LandformWatcher.Initialize(Result.Scene);
+                    OnCompleted();
+                }
+                catch (Exception ex)
+                {
+                    OnFaulted(ex);
+                }
+            }
+
+            public override bool IsCompleted
+            {
+                get { return isFaulted || Result.Baker.IsEmpty; }
+            }
+
+        }
+
 
         Landform()
         {
@@ -30,6 +55,7 @@ namespace KouXiaGu.Terrain3D
 
         public bool IsInitialized { get; private set; }
         public LandformBuilder Builder { get; private set; }
+        public LandformBaker Baker { get; private set; }
         public LandformScene Scene { get; private set; }
 
         Landform Initialize(IWorldData worldData)
@@ -37,6 +63,7 @@ namespace KouXiaGu.Terrain3D
             if (!IsInitialized)
             {
                 Builder = new LandformBuilder(worldData);
+                Baker = Builder.Baker;
                 Scene = new LandformScene(Builder);
             }
             return this;

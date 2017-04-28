@@ -61,9 +61,15 @@ namespace KouXiaGu.Terrain3D
             get { return requestQueue.Count; }
         }
 
+        public bool IsEmpty
+        {
+            get { return RequestCount == 0; }
+        }
+
         void Awake()
         {
             bakeCamera.Initialize();
+            landform.Initialize();
             requestQueue = new Queue<IBakeRequest>();
             bakeCoroutine = new Coroutine(BakeCoroutine());
         }
@@ -71,7 +77,9 @@ namespace KouXiaGu.Terrain3D
         void Update()
         {
             runtimeStopwatch.Restart();
-            while (requestQueue.Count != 0 && !runtimeStopwatch.Await() && bakeCoroutine.MoveNext())
+            while (requestQueue.Count != 0 
+                && !runtimeStopwatch.Await() 
+                && bakeCoroutine.MoveNext())
                 continue;
         }
 

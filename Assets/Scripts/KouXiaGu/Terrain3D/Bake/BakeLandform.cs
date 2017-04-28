@@ -44,7 +44,7 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.GameData.Terrain.LandformInfos; }
         }
 
-        public void Initialise()
+        public void Initialize()
         {
             sceneObjects = new List<Pack>();
             objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);

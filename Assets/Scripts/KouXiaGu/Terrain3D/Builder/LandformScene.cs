@@ -17,6 +17,7 @@ namespace KouXiaGu.Terrain3D
             this.builder = builder;
             createCoords = new HashSet<RectCoord>();
             destroyCoords = new List<RectCoord>();
+            this.SubscribeLateUpdate();
         }
 
         readonly LandformBuilder builder;
