@@ -34,11 +34,6 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         RectCoord displayRadius = new RectCoord(2, 2);
 
-        [SerializeField]
-        int updateInterval = 60;
-
-        int lastUpdateTime;
-
         RectGrid Grid
         {
             get { return ChunkInfo.ChunkGrid; }

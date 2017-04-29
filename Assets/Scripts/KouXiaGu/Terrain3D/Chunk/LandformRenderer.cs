@@ -68,7 +68,7 @@ namespace KouXiaGu.Terrain3D
         {
             if (DiffuseMap != diffuseMap)
             {
-                material.SetTexture("_MainTex", diffuseMap);
+                material.SetTexture("_DiffuseMap", diffuseMap);
                 base.SetDiffuseMap(diffuseMap);
             }
         }
@@ -77,8 +77,27 @@ namespace KouXiaGu.Terrain3D
         {
             if (HeightMap != heightMap)
             {
-                material.SetTexture("_HeightTex", heightMap);
+                material.SetTexture("_HeightMap", heightMap);
                 base.SetHeightMap(heightMap);
+                isHeightChanged = true;
+            }
+        }
+
+        public override void SetRoadDiffuseMap(Texture2D roadDiffuseMap)
+        {
+            if (RoadDiffuseMap != roadDiffuseMap)
+            {
+                material.SetTexture("_RoadDiffuseMap", roadDiffuseMap);
+                base.SetRoadDiffuseMap(roadDiffuseMap);
+            }
+        }
+
+        public override void SetRoadHeightMap(Texture2D roadHeightMap)
+        {
+            if (RoadHeightMap != roadHeightMap)
+            {
+                material.SetTexture("_RoadHeightMap", roadHeightMap);
+                base.SetRoadHeightMap(roadHeightMap);
                 isHeightChanged = true;
             }
         }

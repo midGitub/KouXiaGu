@@ -5,9 +5,12 @@
 
 Shader "HexTerrain/TerrainSnow" 
 {
+
        Properties {
-            _MainTex ("Base (RGB)", 2D) = "white" {}
-            _HeightTex ("HeightMap", 2D) = "black" {}
+            _DiffuseMap ("DiffuseMap", 2D) = "white" {}
+            _HeightMap ("HeightMap", 2D) = "black" {}
+			_RoadDiffuseMap ("RoadDiffuseMap", 2D) = "black" {}
+			_RoadHeightMap ("RoadHeightMap", 2D) = "black" {}
 			_NormalMap ("Normalmap", 2D) = "bump" {}
 
 			_SnowColor ("Snow Color", Color) = (1.0,1.0,1.0,1.0)
@@ -15,6 +18,7 @@ Shader "HexTerrain/TerrainSnow"
 
             _Color ("Color", color) = (1,1,1,0)
         }
+
         SubShader {
             Tags { "RenderType"="Opaque" }
             LOD 300
@@ -29,23 +33,25 @@ Shader "HexTerrain/TerrainSnow"
             uniform float _TerrainDisplacement;
 			uniform float _TerrainSnow;
 
-			sampler2D _MainTex;
-            sampler2D _HeightTex;
+			sampler2D _DiffuseMap;
+            sampler2D _HeightMap;
+			sampler2D _RoadDiffuseMap;
+			sampler2D _RoadHeightMap;
 			sampler2D _NormalMap;
             fixed4 _Color;
 
 			float4 _SnowColor;
 			float4 _SnowDirection;
 
-			inline float4 LightingCustomDiffuse (SurfaceOutput s, fixed3 lightDir, fixed atten)
-			{
-				float difLight = dot (s.Normal, lightDir);
-				float hLambert = difLight * 0.5 + 0.5;
-				float4 col;
-				col.rgb = s.Albedo * _LightColor0.rgb * (hLambert * atten * 2);
-				col.a = s.Alpha;
-				return col;
-			}
+			//inline float4 LightingCustomDiffuse (SurfaceOutput s, fixed3 lightDir, fixed atten)
+			//{
+			//	float difLight = dot (s.Normal, lightDir);
+			//	float hLambert = difLight * 0.5 + 0.5;
+			//	float4 col;
+			//	col.rgb = s.Albedo * _LightColor0.rgb * (hLambert * atten * 2);
+			//	col.a = s.Alpha;
+			//	return col;
+			//}
 
 			struct appdata 
 			{
@@ -62,13 +68,13 @@ Shader "HexTerrain/TerrainSnow"
 
             void vert (inout appdata v)
             {
-                float d = tex2Dlod(_HeightTex, float4(v.texcoord.xy, 0, 0)).r * _TerrainDisplacement;
+                float d = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0)).r * _TerrainDisplacement;
                 v.vertex.xyz += v.normal * d;
             }
 
             struct Input 
 			{
-                float2 uv_MainTex;
+                float2 uv_DiffuseMap;
 				float2 uv_NormalMap;
 				float2 uv_SnowTex;
 				float3 worldNormal;
@@ -77,7 +83,7 @@ Shader "HexTerrain/TerrainSnow"
 
             void surf (Input IN, inout SurfaceOutput o) 
 			{
-                half4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+                half4 c = tex2D (_DiffuseMap, IN.uv_DiffuseMap) * _Color;
 
 				o.Normal = UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap));
 
@@ -90,8 +96,15 @@ Shader "HexTerrain/TerrainSnow"
 					o.Albedo = c.rgb;
 				}
             }
+
+
+			fixed3 GetDiffuseColorAt()
+			{
+				return 0;
+			}
  
             ENDCG
         }
-        FallBack "Diffuse"
+
+	FallBack "Diffuse"
 }

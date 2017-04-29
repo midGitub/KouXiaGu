@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
                 texture.SetRoadDiffuseMap(roadDiffuse);
 
                 var roadHeight = EditorGUILayout.ObjectField("RoadHeight", texture.RoadHeightMap, typeof(Texture2D), false) as Texture2D;
-                texture.SetRoadDiffuseMap(roadHeight);
+                texture.SetRoadHeightMap(roadHeight);
 
                 var normalMap = EditorGUILayout.ObjectField("HeightMap", texture.NormalMap, typeof(Texture2D), false) as Texture2D;
                 texture.SetNormalMap(normalMap);

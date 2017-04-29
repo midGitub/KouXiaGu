@@ -76,8 +76,22 @@ namespace KouXiaGu.Terrain3D
             bakeCoroutine = new Coroutine(BakeCoroutine());
         }
 
+        //[SerializeField]
+        //int waitUpdate = 80;
+        //int currentUpdateTime;
+
         void Update()
         {
+            //if (currentUpdateTime < waitUpdate)
+            //{
+            //    currentUpdateTime++;
+            //    return;
+            //}
+            //else
+            //{
+            //    currentUpdateTime = 0;
+            //}
+
             runtimeStopwatch.Restart();
             while (requestQueue.Count != 0 
                 && !runtimeStopwatch.Await() 
@@ -108,11 +122,11 @@ namespace KouXiaGu.Terrain3D
                 bakeRequest.Textures.SetHeightMap(heightMap);
 
 
-                //yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
-                //var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT);
-                //var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
-                //bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
-                //bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
+                yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT);
+                var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
+                bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
+                bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
 
 
                 bakeRequest.OnCompleted();
