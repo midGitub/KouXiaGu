@@ -128,8 +128,6 @@ namespace KouXiaGu.Terrain3D
                 bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
                 bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
 
-                roadDiffuseMap.SavePNG(@"11");
-
                 bakeRequest.OnCompleted();
                 Complete:
                 requestQueue.Dequeue();
