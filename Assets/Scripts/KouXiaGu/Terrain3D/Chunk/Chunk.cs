@@ -32,13 +32,19 @@ namespace KouXiaGu.Terrain3D
                 typeof(Chunk)
             };
 
+        static Transform chunkObjectParent;
+
+        public static Transform ChunkObjectParent
+        {
+            get { return chunkObjectParent ?? (chunkObjectParent = new GameObject("LandformChunk").transform); }
+        }
 
 #if UNITY_EDITOR
-        [MenuItem("GameObject/Create Other/TerrainChunk")]
+        [MenuItem("GameObject/Create Other/LandformChunk")]
 #endif
         static void _CraeteLandformChunk()
         {
-            var item = Create();
+            new GameObject("LandformChunk", ChunkScripts);
         }
 
         /// <summary>
@@ -55,6 +61,7 @@ namespace KouXiaGu.Terrain3D
         public static Chunk Create(string name)
         {
             GameObject gameObject = new GameObject(name, ChunkScripts);
+            gameObject.transform.SetParent(ChunkObjectParent);
             Chunk chunk = gameObject.GetComponent<Chunk>();
             return chunk;
         }
