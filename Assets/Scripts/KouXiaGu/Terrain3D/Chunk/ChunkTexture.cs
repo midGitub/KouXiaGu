@@ -35,29 +35,40 @@ namespace KouXiaGu.Terrain3D
         public Texture2D HeightMap { get; protected set; }
 
         /// <summary>
+        /// 道路漫反射贴图;
+        /// </summary>
+        public Texture2D RoadDiffuseMap { get; protected set; }
+
+        /// <summary>
+        /// 道路高度贴图;
+        /// </summary>
+        public Texture2D RoadHeightMap { get; protected set; }
+
+        /// <summary>
         /// 法线贴图;
         /// </summary>
         public Texture2D NormalMap { get; protected set; }
 
-        /// <summary>
-        /// 设置漫反射贴图;
-        /// </summary>
         public virtual void SetDiffuseMap(Texture2D diffuseMap)
         {
             DiffuseMap = diffuseMap;
         }
 
-        /// <summary>
-        /// 设置高度贴图;
-        /// </summary>
         public virtual void SetHeightMap(Texture2D heightMap)
         {
             HeightMap = heightMap;
         }
 
-        /// <summary>
-        /// 设置法线贴图;
-        /// </summary>
+        public virtual void SetRoadDiffuseMap(Texture2D roadDiffuseMap)
+        {
+            RoadDiffuseMap = roadDiffuseMap;
+        }
+
+        public virtual void SetRoadHeightMap(Texture2D roadHeightMap)
+        {
+            RoadHeightMap = roadHeightMap;
+        }
+
         public virtual void SetNormalMap(Texture2D normalMap)
         {
             NormalMap = normalMap;
@@ -73,6 +84,8 @@ namespace KouXiaGu.Terrain3D
 
             SetDiffuseMap(textures.DiffuseMap);
             SetHeightMap(textures.HeightMap);
+            SetRoadDiffuseMap(textures.RoadDiffuseMap);
+            SetRoadHeightMap(textures.RoadHeightMap);
             SetNormalMap(textures.NormalMap);
         }
 
@@ -90,6 +103,12 @@ namespace KouXiaGu.Terrain3D
             if (textures.HeightMap != null)
                 SetHeightMap(textures.HeightMap);
 
+            if (textures.RoadDiffuseMap != null)
+                SetRoadDiffuseMap(textures.RoadDiffuseMap);
+
+            if (textures.RoadHeightMap != null)
+                SetRoadHeightMap(textures.RoadHeightMap);
+
             if (textures.NormalMap != null)
                 SetNormalMap(textures.NormalMap);
         }
@@ -101,6 +120,8 @@ namespace KouXiaGu.Terrain3D
         {
             GameObject.Destroy(DiffuseMap);
             GameObject.Destroy(HeightMap);
+            GameObject.Destroy(RoadDiffuseMap);
+            GameObject.Destroy(RoadHeightMap);
             GameObject.Destroy(NormalMap);
             Clear();
         }
@@ -112,6 +133,8 @@ namespace KouXiaGu.Terrain3D
         {
             SetDiffuseMap(null);
             SetHeightMap(null);
+            SetRoadDiffuseMap(null);
+            SetRoadHeightMap(null);
             SetNormalMap(null);
         }
     }

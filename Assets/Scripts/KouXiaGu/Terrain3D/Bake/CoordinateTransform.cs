@@ -18,13 +18,24 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 中心点,根据传入坐标位置转换到此中心点附近;
         /// </summary>
-        [SerializeField]
-        CubicHexCoord center;
+        public CubicHexCoord center;
 
         /// <summary>
         /// 目标中心点;
         /// </summary>
-        protected CubicHexCoord targetCenter { get; set; }
+        public CubicHexCoord targetCenter { get; private set; }
+
+
+        public void SetTargetCenter(RectCoord chunkCoord)
+        {
+            targetCenter = chunkCoord.GetChunkHexCenter();
+        }
+
+        public void SetTargetCenter(CubicHexCoord coord)
+        {
+            targetCenter = coord;
+        }
+
 
         /// <summary>
         /// 将坐标转换到中心坐标附近;
@@ -38,7 +49,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将坐标转换到中心坐标附近;
         /// </summary>
-        CubicHexCoord PositionConvert(CubicHexCoord terget)
+        public CubicHexCoord PositionConvert(CubicHexCoord terget)
         {
             CubicHexCoord coord = terget - targetCenter;
             return coord + center;

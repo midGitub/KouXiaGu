@@ -15,7 +15,6 @@ namespace KouXiaGu.Terrain3D
         ChunkTexture Textures { get; }
 
         void OnCompleted();
-        //void OnFaulted(Exception ex);
     }
 
     /// <summary>
