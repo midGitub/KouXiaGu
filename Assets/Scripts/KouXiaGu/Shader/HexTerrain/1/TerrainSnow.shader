@@ -68,6 +68,9 @@ Shader "HexTerrain/TerrainSnow"
 
             void vert (inout appdata v)
             {
+				//half4 heightColor = tex2D (_HeightMap, IN.uv_HeightMap);
+				//half4 roadHeightColor = tex2D (_RoadHeightMap, IN.uv_RoadHeightMap);
+
                 float d = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0)).r * _TerrainDisplacement;
                 v.vertex.xyz += v.normal * d;
             }
@@ -75,6 +78,9 @@ Shader "HexTerrain/TerrainSnow"
             struct Input 
 			{
                 float2 uv_DiffuseMap;
+				float2 uv_HeightMap;
+				float2 uv_RoadDiffuseMap;
+				float2 uv_RoadHeightMap;
 				float2 uv_NormalMap;
 				float2 uv_SnowTex;
 				float3 worldNormal;
@@ -83,26 +89,25 @@ Shader "HexTerrain/TerrainSnow"
 
             void surf (Input IN, inout SurfaceOutput o) 
 			{
-                half4 c = tex2D (_DiffuseMap, IN.uv_DiffuseMap) * _Color;
+    //            half4 c = tex2D (_DiffuseMap, IN.uv_DiffuseMap) * _Color;
+				//o.Normal = UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap));
 
-				o.Normal = UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap));
+				//if (dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz) > lerp(1, -1, _TerrainSnow/10000)) 
+				//{
+				//	o.Albedo = _SnowColor.rgb;
+				//} 
+				//else 
+				//{
+				//	o.Albedo = c.rgb;
+				//}
 
-				if (dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz) > lerp(1, -1, _TerrainSnow/10000)) 
-				{
-					o.Albedo = _SnowColor.rgb;
-				} 
-				else 
-				{
-					o.Albedo = c.rgb;
-				}
+
+				half4 diffuseColor = tex2D (_DiffuseMap, IN.uv_DiffuseMap);
+				half4 roadDiffuseColor = tex2D (_RoadDiffuseMap, IN.uv_RoadDiffuseMap);
+				o.Albedo = lerp(diffuseColor, roadDiffuseColor, roadDiffuseColor.a).rgb;				
+				
             }
 
-
-			fixed3 GetDiffuseColorAt()
-			{
-				return 0;
-			}
- 
             ENDCG
         }
 

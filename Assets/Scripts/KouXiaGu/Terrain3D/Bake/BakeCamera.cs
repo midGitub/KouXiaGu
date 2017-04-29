@@ -84,9 +84,7 @@ namespace KouXiaGu.Terrain3D
         {
             Color current = Camera.backgroundColor;
             Camera.backgroundColor = backgroundColor;
-
             CameraRender(rt, cameraPoint);
-
             Camera.backgroundColor = current;
         }
 

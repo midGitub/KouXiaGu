@@ -123,11 +123,12 @@ namespace KouXiaGu.Terrain3D
 
 
                 yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
-                var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT);
+                var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT, TextureFormat.ARGB32);
                 var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
                 bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
                 bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
 
+                roadDiffuseMap.SavePNG(@"11");
 
                 bakeRequest.OnCompleted();
                 Complete:

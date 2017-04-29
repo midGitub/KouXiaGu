@@ -16,6 +16,7 @@ namespace KouXiaGu.Terrain3D
     /// 地形块;需要通过静态方法创建;
     /// </summary>
     [DisallowMultipleComponent]
+    [ExecuteInEditMode]
     public sealed class Chunk : MonoBehaviour
     {
 
