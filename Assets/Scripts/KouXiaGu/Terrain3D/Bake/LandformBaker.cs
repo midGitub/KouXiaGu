@@ -108,11 +108,11 @@ namespace KouXiaGu.Terrain3D
                 bakeRequest.Textures.SetHeightMap(heightMap);
 
 
-                yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
-                var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT);
-                var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
-                bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
-                bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
+                //yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                //var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT);
+                //var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
+                //bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
+                //bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
 
 
                 bakeRequest.OnCompleted();
