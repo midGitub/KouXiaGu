@@ -135,7 +135,7 @@ namespace KouXiaGu.World.Map
 
 
         /// <summary>
-        /// 获取到这个点通向周围的路径点,若不存在节点则不返回;
+        /// 迭代获取到这个点通向周围的路径点,若不存在节点则不返回;
         /// </summary>
         public static IEnumerable<CubicHexCoord[]> FindPaths(
             this IDictionary<CubicHexCoord, MapNode> map

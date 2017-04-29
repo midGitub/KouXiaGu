@@ -68,14 +68,14 @@ namespace KouXiaGu.World.Map
 
 
     [Serializable]
-    public class RandomMapReadr : MapResourceReader
+    public class RandomMapReader : MapResourceReader
     {
-        public RandomMapReadr(int mapSize)
+        public RandomMapReader(int mapSize)
         {
             MapSize = mapSize;
         }
 
-        public RandomMapReadr(int mapSize, ArchiveFile archive)
+        public RandomMapReader(int mapSize, ArchiveFile archive)
             : base(archive)
         {
             MapSize = mapSize;
@@ -100,6 +100,7 @@ namespace KouXiaGu.World.Map
                     },
                 };
 
+                node = node.CreateRoad(map, 1);
                 map.Data.Add(point, node);
             }
             return map;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
@@ -72,6 +73,8 @@ namespace KouXiaGu.Terrain3D
             yield return null;
         }
 
+
+
         void PrepareScene()
         {
             foreach (var display in displays)
@@ -79,40 +82,16 @@ namespace KouXiaGu.Terrain3D
                 MapNode node;
                 if (worldMap.TryGetValue(display, out node))
                 {
-                    var meshs = GetRoadInfo(display, node);
-                    sceneObjects.Add(meshs);
+                    RoadMesh[] meshs = CreateMesh(display).ToArray();
+
+                    if (meshs.Length > 0)
+                    {
+                        TerrainRoad res = GetRoadResource(node.Road.Type);
+                        var pack = new Pack(res, meshs);
+                        sceneObjects.Add(pack);
+                    }
                 }
             }
-        }
-
-        void ClearScene()
-        {
-            foreach (var pack in sceneObjects)
-            {
-                foreach (var mesh in pack.Rednerers)
-                {
-                    objectPool.Release(mesh);
-                }
-            }
-            sceneObjects.Clear();
-        }
-
-
-        Pack GetRoadInfo(CubicHexCoord pos, MapNode node)
-        {
-            TerrainRoad res = GetRoadResource(node.Road.Type);
-            IEnumerable<RoadMesh> meshs = CreateMesh(pos);
-            return new Pack(res, meshs);
-        }
-
-        TerrainRoad GetRoadResource(int roadID)
-        {
-            TerrainRoad res;
-            if (!roadResources.TryGetValue(roadID, out res))
-            {
-                Debug.LogWarning("未找到对应道路贴图,ID:[" + roadID + "];");
-            }
-            return res;
         }
 
         IEnumerable<RoadMesh> CreateMesh(CubicHexCoord target)
@@ -130,9 +109,6 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        /// <summary>
-        /// 转换目标点到相应位置;
-        /// </summary>
         Vector3[] ConvertPixel(CubicHexCoord[] path)
         {
             Vector3[] newPath = new Vector3[path.Length];
@@ -145,11 +121,28 @@ namespace KouXiaGu.Terrain3D
             return newPath;
         }
 
+        TerrainRoad GetRoadResource(int roadID)
+        {
+            TerrainRoad res;
+            if (!roadResources.TryGetValue(roadID, out res))
+            {
+                Debug.LogWarning("未找到对应道路贴图,ID:[" + roadID + "];");
+            }
+            return res;
+        }
 
-        /// <summary>
-        /// 完全透明颜色;
-        /// </summary>
-        static readonly Color Transparent = new Color(0, 0, 0, 0);
+
+        void ClearScene()
+        {
+            foreach (var pack in sceneObjects)
+            {
+                foreach (var mesh in pack.Rednerers)
+                {
+                    objectPool.Release(mesh);
+                }
+            }
+            sceneObjects.Clear();
+        }
 
         void BakeDiffuse()
         {
@@ -159,7 +152,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             DiffuseRT = bakeCamera.GetDiffuseTemporaryRender();
-            bakeCamera.CameraRender(DiffuseRT, chunkCenter, Transparent);
+            bakeCamera.CameraRender(DiffuseRT, chunkCenter, LandformBaker.BlackTransparent);
         }
 
         void SetDiffuserMaterial(Pack pack)

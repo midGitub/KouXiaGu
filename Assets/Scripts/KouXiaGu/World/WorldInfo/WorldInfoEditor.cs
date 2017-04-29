@@ -40,7 +40,7 @@ namespace KouXiaGu.World
                 {
                     Archive = info.Archive,
                     Time = info.Time,
-                    MapReader = info.UseRandomMap ? new RandomMapReadr(50) : new MapResourceReader(),
+                    MapReader = info.UseRandomMap ? new RandomMapReader(50) : new MapResourceReader(),
                 };
                 OnCompleted(worldInfo);
             }

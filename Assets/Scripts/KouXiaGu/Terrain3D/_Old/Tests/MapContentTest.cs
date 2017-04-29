@@ -90,7 +90,7 @@ namespace KouXiaGu.Terrain3D.Tests
                     return
                         "坐标:" + coord.ToString()
                         + "\nLandform:" + node.Landform.LandformID
-                        + "\nRoad:" + node.Road.Type + ",ExistRoad:" + node.ExistRoad()
+                        + "\nRoad:" + node.Road.Type + ",ID:" + node.Road.ID + ",ExistRoad:" + node.ExistRoad()
                         + "\nBuilding:" + node.Building.BuildingID + ",ExistBuilding:" + true + ",Angle:" + node.Building.Angle
                         ;
                 }
