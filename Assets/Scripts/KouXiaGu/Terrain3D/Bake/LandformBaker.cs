@@ -48,7 +48,9 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         BakeCamera bakeCamera = null;
         [SerializeField]
-        BakeLandform landform = null;
+        BakeLandform bakeLandform = null;
+        [SerializeField]
+        BakeRoad bakeRoad = null;
         [SerializeField]
         Stopwatch runtimeStopwatch = null;
         IWorldData worldData;
@@ -68,7 +70,8 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             bakeCamera.Initialize();
-            landform.Initialize();
+            bakeLandform.Initialize();
+            bakeRoad.Initialise();
             requestQueue = new Queue<IBakeRequest>();
             bakeCoroutine = new Coroutine(BakeCoroutine());
         }
@@ -97,16 +100,22 @@ namespace KouXiaGu.Terrain3D
                     goto Complete;
 
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
-                yield return landform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
 
-                var diffuseMap = bakeCamera.GetDiffuseTexture(landform.DiffuseRT);
-                var heightMap = bakeCamera.GetHeightTexture(landform.HeightRT);
-
+                yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                var diffuseMap = bakeCamera.GetDiffuseTexture(bakeLandform.DiffuseRT);
+                var heightMap = bakeCamera.GetHeightTexture(bakeLandform.HeightRT);
                 bakeRequest.Textures.SetDiffuseMap(diffuseMap);
                 bakeRequest.Textures.SetHeightMap(heightMap);
+
+
+                yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT);
+                var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
+                bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
+                bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
+
+
                 bakeRequest.OnCompleted();
-
-
                 Complete:
                 requestQueue.Dequeue();
                 yield return null;

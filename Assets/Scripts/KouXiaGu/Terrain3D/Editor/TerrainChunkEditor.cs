@@ -28,6 +28,12 @@ namespace KouXiaGu.Terrain3D
                 var height = EditorGUILayout.ObjectField("HeightMap", texture.HeightMap, typeof(Texture2D), false) as Texture2D;
                 texture.SetHeightMap(height);
 
+                var roadDiffuse = EditorGUILayout.ObjectField("RoadDiffuse", texture.RoadDiffuseMap, typeof(Texture2D), false) as Texture2D;
+                texture.SetRoadDiffuseMap(roadDiffuse);
+
+                var roadHeight = EditorGUILayout.ObjectField("RoadHeight", texture.RoadHeightMap, typeof(Texture2D), false) as Texture2D;
+                texture.SetRoadDiffuseMap(roadHeight);
+
                 var normalMap = EditorGUILayout.ObjectField("HeightMap", texture.NormalMap, typeof(Texture2D), false) as Texture2D;
                 texture.SetNormalMap(normalMap);
             }
