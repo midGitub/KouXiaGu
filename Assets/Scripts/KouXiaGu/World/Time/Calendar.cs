@@ -108,11 +108,11 @@ namespace KouXiaGu.World
     }
 
 
-    public static class CalendarFormLuaScript
+    public class CalendarFormLuaScript
     {
 
         [CSharpCallLua]
-        delegate ICalendar CalendarCreater();
+        public delegate ICalendar CalendarReader();
 
         internal const string luaScriptName = "Calendar.New";
 
@@ -124,7 +124,7 @@ namespace KouXiaGu.World
             const string errorString = "无法从Lua获取到日历信息;";
 
             LuaEnv luaenv = LuaManager.Luaenv;
-            CalendarCreater creater = luaenv.Global.GetInPath<CalendarCreater>(luaScriptName);
+            CalendarReader creater = luaenv.Global.GetInPath<CalendarReader>(luaScriptName);
             if (creater == null)
                 throw new ArgumentException(errorString);
 
