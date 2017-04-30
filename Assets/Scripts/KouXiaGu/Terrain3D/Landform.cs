@@ -32,7 +32,6 @@ namespace KouXiaGu.Terrain3D
                 {
                     Result = SceneObject.GetObject<Landform>();
                     Result.Initialize(worldData);
-                    LandformWatcher.UpdateDispalyCoords(Result.Scene);
                     OnCompleted();
                 }
                 catch (Exception ex)

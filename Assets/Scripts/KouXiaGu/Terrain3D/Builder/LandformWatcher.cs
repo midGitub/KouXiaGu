@@ -13,20 +13,7 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class LandformWatcher : MonoBehaviour, ILandformWatcher
     {
-        //static readonly List<LandformWatcher> watcherList = new List<LandformWatcher>();
-
-        //internal static void UpdateDispalyCoords(LandformScene scene)
-        //{
-        //    foreach (var item in watcherList)
-        //    {
-        //        item.UpdateDispaly(scene);
-        //    }
-        //}
-
-
-        LandformWatcher()
-        {
-        }
+        LandformWatcher() { }
 
         /// <summary>
         /// 显示半径,在这个半径内的地形块会创建并显示;
@@ -41,7 +28,7 @@ namespace KouXiaGu.Terrain3D
 
         void Start()
         {
-            LandformScene..Add(this);
+            //LandformScene..Add(this);
         }
 
         void ILandformWatcher.UpdateDispaly(LandformScene scene)

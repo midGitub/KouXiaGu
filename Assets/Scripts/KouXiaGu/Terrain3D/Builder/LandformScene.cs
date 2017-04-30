@@ -42,12 +42,12 @@ namespace KouXiaGu.Terrain3D
             get { return sceneDisplayedChunks.Keys; }
         }
 
-        public object Sender
+        object IUnityThreadBehaviour<Action>.Sender
         {
             get { return "场景的地形块创建销毁管理"; }
         }
 
-        public Action Action
+        Action IUnityThreadBehaviour<Action>.Action
         {
             get { return OnUpdateSendDisplay; }
         }
