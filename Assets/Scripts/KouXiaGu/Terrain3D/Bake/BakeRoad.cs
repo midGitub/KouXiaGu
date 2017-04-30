@@ -71,8 +71,6 @@ namespace KouXiaGu.Terrain3D
             yield return null;
         }
 
-
-
         void PrepareScene()
         {
             foreach (var display in displays)
