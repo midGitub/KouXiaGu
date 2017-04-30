@@ -111,7 +111,7 @@ namespace KouXiaGu.Terrain3D
 
             for (int i = 0; i < path.Length; i++)
             {
-                newPath[i] = path[i].GetTerrainPixel(-sceneObjects.Count);
+                newPath[i] = path[i].GetTerrainPixel();
             }
 
             return newPath;
@@ -234,6 +234,7 @@ namespace KouXiaGu.Terrain3D
 
             public override void ResetWhenEnterPool(Pack<RoadMesh, MeshRenderer> item)
             {
+                item.Value1.Reset();
                 item.Value1.gameObject.SetActive(false);
             }
 
