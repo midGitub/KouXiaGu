@@ -88,7 +88,7 @@ namespace KouXiaGu.World
             }
             catch(Exception ex)
             {
-                Debug.LogError(ex);
+                Debug.LogError("无法从Lua文件获取到日历信息:" + ex);
             }
         }
 
