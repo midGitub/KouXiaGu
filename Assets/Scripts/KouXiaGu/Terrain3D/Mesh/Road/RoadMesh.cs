@@ -42,8 +42,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void DestroyMesh()
         {
-            MeshFilter.sharedMesh = null;
             MeshFilter.sharedMesh.DestroyXia();
+            MeshFilter.sharedMesh = null;
         }
 
         /// <summary>
