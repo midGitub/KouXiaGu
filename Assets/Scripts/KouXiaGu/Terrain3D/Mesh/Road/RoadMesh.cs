@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -16,9 +17,7 @@ namespace KouXiaGu.Terrain3D
 
         const string MESH_NAME = "Road Mesh";
 
-
         public MeshFilter MeshFilter { get; private set; }
-        public MeshRenderer MeshRenderer { get; private set; }
 
         /// <summary>
         /// 是否已经生成网格?
@@ -31,7 +30,6 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             MeshFilter = GetComponent<MeshFilter>();
-            MeshRenderer = GetComponent<MeshRenderer>();
         }
 
         public void Reset()
@@ -47,7 +45,6 @@ namespace KouXiaGu.Terrain3D
             MeshFilter.sharedMesh = null;
             MeshFilter.sharedMesh.DestroyXia();
         }
-
 
         /// <summary>
         /// 路径点数量大于等于 4 的;

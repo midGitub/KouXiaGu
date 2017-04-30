@@ -63,18 +63,28 @@ namespace KouXiaGu.Terrain3D.Tests
             Vector3 mousePoint;
             if (Input.GetKeyDown(KeyCode.Mouse0) && LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
             {
-                CubicHexCoord coord = mousePoint.GetTerrainCubic();
-                MapNode node = data[coord];
-                node = node.CreateRoad(mapData, 1);
-                data[coord] = node;
+                OnMouse0Down(mousePoint);
             }
             else if (Input.GetKeyDown(KeyCode.Mouse1) && LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
             {
-                CubicHexCoord coord = mousePoint.GetTerrainCubic();
-                MapNode node = data[coord];
-                node = node.DestroyRoad();
-                data[coord] = node;
+                OnMouse1Down(mousePoint);
             }
+        }
+
+        void OnMouse0Down(Vector3 mousePoint)
+        {
+            CubicHexCoord coord = mousePoint.GetTerrainCubic();
+            MapNode node = data[coord];
+            node = node.CreateRoad(mapData, 1);
+            data[coord] = node;
+        }
+
+        void OnMouse1Down(Vector3 mousePoint)
+        {
+            CubicHexCoord coord = mousePoint.GetTerrainCubic();
+            MapNode node = data[coord];
+            node = node.DestroyRoad();
+            data[coord] = node;
         }
 
         string TextUpdate()
