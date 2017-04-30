@@ -41,12 +41,16 @@ namespace KouXiaGu
             }
         }
 
+        /// <summary>
+        /// 传送完成信息,并且清空订阅合集;
+        /// </summary>
         public void SendCompleted()
         {
             foreach (var observer in observerCollection.EnumerateObserver())
             {
                 observer.OnCompleted();
             }
+            Clear();
         }
 
         public void Clear()

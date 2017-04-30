@@ -11,7 +11,7 @@ namespace KouXiaGu.World
     /// 负责初始化游戏场景;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : MonoBehaviour, IWorld, IObservable<IWorld>, IResultSend<IWorld>
+    public class WorldInitializer : MonoBehaviour, IObservable<IWorld>
     {
         const string Name = "WorldInitializer";
         /// <summary>
@@ -19,81 +19,36 @@ namespace KouXiaGu.World
         /// </summary>
         public static IAsyncOperation<WorldInfo> WorldInfoReader { get; set; }
 
+        WorldInitializer() { }
 
-        WorldInitializer()
+        AsyncInitializer gameWorldInitializer;
+
+        public IAsyncOperation<IWorld> GameWorldInitializer
         {
+            get { return gameWorldInitializer; }
         }
-
-        DataInitializer worldDataInitialize;
-        SceneInitializer sceneInitializer;
-        public IGameData GameData { get; private set; }
-        public WorldInfo Info { get; private set; }
-        public IWorldData Data { get; private set; }
-        public IWorldScene Component { get; private set; }
-
-        LinkedListTracker<IWorld> worldTracker;
 
         void Awake()
         {
-            worldTracker = new LinkedListTracker<IWorld>();
-            worldDataInitialize = new DataInitializer();
-            sceneInitializer = new SceneInitializer();
-            GameInitializer.Instance.GameDataInitialize.SubscribeCompleted(Name + "等待游戏数据初始化完毕;", Initialize);
-        }
-
-        IDisposable IResultSend<IWorld>.SubscribeResult(Action<IWorld> action)
-        {
-            throw new NotImplementedException();
+            gameWorldInitializer = new AsyncInitializer(GameInitializer.Instance.GameDataInitialize);
         }
 
         public IDisposable Subscribe(IObserver<IWorld> observer)
         {
-            return worldTracker.Subscribe(observer);
+            return gameWorldInitializer.Subscribe(observer);
         }
-
-        void Initialize(IAsyncOperation<IGameData> operation)
-        {
-            GameData = operation.Result;
-            WorldInfoReader.SubscribeCompleted(Name + "等待游戏世界信息读取完毕;", OnWorldInfoReadCompleted);
-        }
-
-        void OnWorldInfoReadCompleted(IAsyncOperation<WorldInfo> operation)
-        {
-            Info = operation.Result;
-            worldDataInitialize.Start(GameData, Info, this)
-                .SubscribeCompleted(Name + "等待游戏世界数据初始化;", OnWorldDataCompleted);
-        }
-
-        void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
-        {
-            Data = operation.Result;
-            sceneInitializer.Start(Data, this)
-                .SubscribeCompleted(Name + "等待游戏世界组件初始化;", OnSceneCompleted);
-        }
-
-        void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
-        {
-            Component = operation.Result;
-            _OnInitializeCompleted();
-        }
-
-        void _OnInitializeCompleted()
-        {
-            worldTracker.Track(this);
-            Debug.Log("游戏开始!");
-        }
-
 
         class AsyncInitializer : AsyncOperation<IWorld>, IWorld, IObservable<IWorld>
         {
-            public AsyncInitializer()
+            public AsyncInitializer(IAsyncOperation<IGameData> gameDataInitializer)
             {
-                worldSender = new ResultSend<IWorld>(this);
+                stateSender = new ResultSend<IWorld>(this);
                 worldDataInitialize = new DataInitializer();
                 sceneInitializer = new SceneInitializer();
+                gameDataInitializer.Subscribe(Name + "等待游戏数据初始化完毕;", Initialize, OnInitializeFaulted);
             }
 
-            readonly ResultSend<IWorld> worldSender;
+            readonly ResultSend<IWorld> stateSender;
             readonly DataInitializer worldDataInitialize;
             readonly SceneInitializer sceneInitializer;
             public IGameData GameData { get; private set; }
@@ -103,7 +58,7 @@ namespace KouXiaGu.World
 
             public IDisposable Subscribe(IObserver<IWorld> observer)
             {
-                return worldSender.Subscribe(observer);
+                return stateSender.Subscribe(observer);
             }
 
             void Initialize(IAsyncOperation<IGameData> operation)
@@ -134,13 +89,19 @@ namespace KouXiaGu.World
 
             void OnInitializeCompleted()
             {
-                OnCompleted(this);
+                IWorld world = this;
+                OnCompleted(world);
+                stateSender.Send(world);
+                stateSender.SendCompleted();
                 Debug.Log("游戏开始!");
             }
 
             void OnInitializeFaulted(IAsyncOperation operation)
             {
-                OnFaulted(operation.Exception);
+                Exception ex = operation.Exception;
+                OnFaulted(ex);
+                stateSender.SendError(ex);
+                stateSender.SendCompleted();
                 Debug.Log("游戏初始化失败!");
             }
 
