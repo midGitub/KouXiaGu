@@ -11,17 +11,17 @@ namespace KouXiaGu.Terrain3D
     /// 根据挂载物体所在位置创建附近地形;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformWatcher : MonoBehaviour
+    public class LandformWatcher : MonoBehaviour, ILandformWatcher
     {
-        static readonly List<LandformWatcher> watcherList = new List<LandformWatcher>();
+        //static readonly List<LandformWatcher> watcherList = new List<LandformWatcher>();
 
-        internal static void UpdateDispalyCoords(LandformScene scene)
-        {
-            foreach (var item in watcherList)
-            {
-                item.UpdateDispaly(scene);
-            }
-        }
+        //internal static void UpdateDispalyCoords(LandformScene scene)
+        //{
+        //    foreach (var item in watcherList)
+        //    {
+        //        item.UpdateDispaly(scene);
+        //    }
+        //}
 
 
         LandformWatcher()
@@ -41,10 +41,10 @@ namespace KouXiaGu.Terrain3D
 
         void Start()
         {
-            watcherList.Add(this);
+            LandformScene..Add(this);
         }
 
-        void UpdateDispaly(LandformScene scene)
+        void ILandformWatcher.UpdateDispaly(LandformScene scene)
         {
             IEnumerable<RectCoord> coords = GetDisplay(transform.position);
             scene.Display(coords);

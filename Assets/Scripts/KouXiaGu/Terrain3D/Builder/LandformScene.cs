@@ -7,6 +7,11 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
+    public interface ILandformWatcher
+    {
+        void UpdateDispaly(LandformScene scene);
+    }
+
     /// <summary>
     /// 场景管理,负责对场景地形块的创建和销毁进行管理;
     /// </summary>
@@ -17,13 +22,15 @@ namespace KouXiaGu.Terrain3D
             this.builder = builder;
             createCoords = new HashSet<RectCoord>();
             destroyCoords = new List<RectCoord>();
-            OnLateUpdateSendDisplay();
-            this.SubscribeLateUpdate();
+            watcherList = new List<ILandformWatcher>();
+            OnUpdateSendDisplay();
+            this.SubscribeUpdate();
         }
 
         readonly LandformBuilder builder;
         readonly HashSet<RectCoord> createCoords;
         readonly List<RectCoord> destroyCoords;
+        readonly List<ILandformWatcher> watcherList;
 
         IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> sceneDisplayedChunks
         {
@@ -42,7 +49,12 @@ namespace KouXiaGu.Terrain3D
 
         public Action Action
         {
-            get { return OnLateUpdateSendDisplay; }
+            get { return OnUpdateSendDisplay; }
+        }
+
+        public ICollection<ILandformWatcher> WatcherCollection
+        {
+            get { return watcherList; }
         }
 
         public void Display(IEnumerable<RectCoord> coords)
@@ -50,9 +62,9 @@ namespace KouXiaGu.Terrain3D
             createCoords.UnionWith(coords);
         }
 
-        void OnLateUpdateSendDisplay()
+        void OnUpdateSendDisplay()
         {
-            LandformWatcher.UpdateDispalyCoords(this);
+            UpdateDispalyCoords();
 
             ICollection<RectCoord> needDestroyCoords = GetNeedDestroyCoords();
             foreach (var coord in needDestroyCoords)
@@ -68,6 +80,14 @@ namespace KouXiaGu.Terrain3D
 
             createCoords.Clear();
             destroyCoords.Clear();
+        }
+
+        void UpdateDispalyCoords()
+        {
+            foreach (var item in watcherList)
+            {
+                item.UpdateDispaly(this);
+            }
         }
 
         ICollection<RectCoord> GetNeedDestroyCoords()
