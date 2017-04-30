@@ -6,9 +6,9 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    public class ObserverCollection<T>
+    public class ObserverLinkedList<T>
     {
-        public ObserverCollection()
+        public ObserverLinkedList()
         {
             observersList = new LinkedList<T>();
             currentNode = null;
@@ -46,7 +46,7 @@ namespace KouXiaGu
         }
 
         /// <summary>
-        /// 迭代获取到观察者;
+        /// 迭代获取到观察者,并且在迭代过程中允许对删除合集元素,但是不允许嵌套;
         /// </summary>
         protected IEnumerable<T> EnumerateObserver()
         {
@@ -61,7 +61,7 @@ namespace KouXiaGu
 
         class Unsubscriber : IDisposable
         {
-            public Unsubscriber(ObserverCollection<T> parent, LinkedListNode<T> node)
+            public Unsubscriber(ObserverLinkedList<T> parent, LinkedListNode<T> node)
             {
                 isUnsubscribed = false;
                 this.parent = parent;
@@ -69,7 +69,7 @@ namespace KouXiaGu
             }
 
             bool isUnsubscribed;
-            ObserverCollection<T> parent;
+            ObserverLinkedList<T> parent;
             LinkedListNode<T> node;
 
             LinkedList<T> observers

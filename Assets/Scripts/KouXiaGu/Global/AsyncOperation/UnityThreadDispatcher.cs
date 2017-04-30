@@ -115,7 +115,7 @@ namespace KouXiaGu
         }
 
 
-        abstract class ActionCollectionBase<T> : ObserverCollection<T>
+        abstract class ActionCollectionBase<T> : ObserverLinkedList<T>
         {
             protected void OnError(T item, Exception ex)
             {
