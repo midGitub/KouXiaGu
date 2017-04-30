@@ -76,21 +76,21 @@ namespace KouXiaGu.Terrain3D
             bakeCoroutine = new Coroutine(BakeCoroutine());
         }
 
-        //[SerializeField]
-        //int waitUpdate = 80;
-        //int currentUpdateTime;
+        [SerializeField]
+        int waitUpdate = 80;
+        int currentUpdateTime;
 
         void Update()
         {
-            //if (currentUpdateTime < waitUpdate)
-            //{
-            //    currentUpdateTime++;
-            //    return;
-            //}
-            //else
-            //{
-            //    currentUpdateTime = 0;
-            //}
+            if (currentUpdateTime < waitUpdate)
+            {
+                currentUpdateTime++;
+                return;
+            }
+            else
+            {
+                currentUpdateTime = 0;
+            }
 
             runtimeStopwatch.Restart();
             while (requestQueue.Count != 0 

@@ -40,7 +40,7 @@ namespace KouXiaGu.Terrain3D
 
 
         /// <summary>
-        /// 舍弃首尾节点,只计算中间部分;
+        /// 获取到曲线;
         /// </summary>
         /// <param name="segmentPoints">分段点数</param>
         /// <returns>迭代结构;</returns>

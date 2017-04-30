@@ -20,7 +20,6 @@ namespace KouXiaGu.Terrain3D
         public MeshFilter MeshFilter { get; private set; }
         public MeshRenderer MeshRenderer { get; private set; }
 
-
         /// <summary>
         /// 是否已经生成网格?
         /// </summary>

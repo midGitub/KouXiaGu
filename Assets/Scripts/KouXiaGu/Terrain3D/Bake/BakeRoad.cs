@@ -28,7 +28,7 @@ namespace KouXiaGu.Terrain3D
         Shader heightShader = null;
 
         List<Pack> sceneObjects;
-        GameObjectPool<RoadMesh> objectPool;
+        RoadMeshPool objectPool;
 
         BakeCamera bakeCamera;
         IWorldData worldData;
@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D
         public void Initialise()
         {
             sceneObjects = new List<Pack>();
-            objectPool = new GameObjectPool<RoadMesh>(prefab, "BakeRoadMesh");
+            objectPool = new RoadMeshPool(prefab, "BakeRoadMesh");
         }
 
 
@@ -80,7 +80,7 @@ namespace KouXiaGu.Terrain3D
                 MapNode node;
                 if (worldMap.TryGetValue(display, out node))
                 {
-                    RoadMesh[] meshs = CreateMesh(display).ToArray();
+                    var meshs = CreateMesh(display).ToArray();
 
                     if (meshs.Length > 0)
                     {
@@ -92,7 +92,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        IEnumerable<RoadMesh> CreateMesh(CubicHexCoord target)
+        IEnumerable<Pack<RoadMesh, MeshRenderer>> CreateMesh(CubicHexCoord target)
         {
             var paths = worldMap.FindPaths(target);
 
@@ -100,8 +100,8 @@ namespace KouXiaGu.Terrain3D
             {
                 Vector3[] pixelPath = ConvertPixel(path);
 
-                RoadMesh roadMesh = objectPool.Get();
-                roadMesh.SetPath(pixelPath, segmentPoints, roadWidth);
+                var roadMesh = objectPool.Get();
+                roadMesh.Value1.SetPath(pixelPath, segmentPoints, roadWidth);
 
                 yield return roadMesh;
             }
@@ -134,7 +134,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var pack in sceneObjects)
             {
-                foreach (var mesh in pack.Rednerers)
+                foreach (var mesh in pack.Packs)
                 {
                     objectPool.Release(mesh);
                 }
@@ -160,12 +160,12 @@ namespace KouXiaGu.Terrain3D
             material.SetTexture("_MainTex", res.DiffuseTex);
             material.SetTexture("_BlendTex", res.DiffuseBlendTex);
 
-            foreach (var renderer in pack.Rednerers)
+            foreach (var item in pack.Packs)
             {
-                if (renderer.MeshRenderer.sharedMaterial != null)
-                    GameObject.Destroy(renderer.MeshRenderer.sharedMaterial);
+                if (item.Value2.sharedMaterial != null)
+                    GameObject.Destroy(item.Value2.sharedMaterial);
 
-                renderer.MeshRenderer.sharedMaterial = material;
+                item.Value2.sharedMaterial = material;
             }
         }
 
@@ -187,25 +187,62 @@ namespace KouXiaGu.Terrain3D
             Material material = new Material(heightShader);
             material.SetTexture("_MainTex", res.HeightAdjustTex);
 
-            foreach (var renderer in pack.Rednerers)
+            foreach (var item in pack.Packs)
             {
-                if (renderer.MeshRenderer.sharedMaterial != null)
-                    GameObject.Destroy(renderer.MeshRenderer.sharedMaterial);
+                if (item.Value2.sharedMaterial != null)
+                    GameObject.Destroy(item.Value2.sharedMaterial);
 
-                renderer.MeshRenderer.sharedMaterial = material;
+                item.Value2.sharedMaterial = material;
             }
         }
 
         struct Pack
         {
-            public Pack(TerrainRoad res, IEnumerable<RoadMesh> rednerer)
+            public Pack(TerrainRoad res, IEnumerable<Pack<RoadMesh, MeshRenderer>> rednerer)
             {
                 this.Res = res;
-                this.Rednerers = rednerer;
+                this.Packs = rednerer;
             }
 
             public TerrainRoad Res { get; private set; }
-            public IEnumerable<RoadMesh> Rednerers { get; private set; }
+            public IEnumerable<Pack<RoadMesh, MeshRenderer>> Packs { get; private set; }
+        }
+
+
+        class RoadMeshPool : ObjectPool<Pack<RoadMesh, MeshRenderer>>
+        {
+            public RoadMeshPool(RoadMesh prefab, string parentName)
+            {
+                this.prefab = prefab;
+                this.objectParent = new GameObject(parentName).transform;
+            }
+
+            readonly RoadMesh prefab;
+            readonly Transform objectParent;
+
+            public override Pack<RoadMesh, MeshRenderer> Instantiate()
+            {
+                var mesh = GameObject.Instantiate(prefab);
+                mesh.transform.SetParent(objectParent);
+                MeshRenderer renderer = mesh.GetComponent<MeshRenderer>();
+                return new Pack<RoadMesh, MeshRenderer>(mesh, renderer);
+            }
+
+            public override void Destroy(Pack<RoadMesh, MeshRenderer> item)
+            {
+                var gameObject = item.Value1.gameObject;
+                GameObject.Destroy(gameObject);
+            }
+
+            public override void ResetWhenEnterPool(Pack<RoadMesh, MeshRenderer> item)
+            {
+                item.Value1.gameObject.SetActive(false);
+            }
+
+            public override void ResetWhenOutPool(Pack<RoadMesh, MeshRenderer> item)
+            {
+                item.Value1.gameObject.SetActive(true);
+            }
         }
 
     }
