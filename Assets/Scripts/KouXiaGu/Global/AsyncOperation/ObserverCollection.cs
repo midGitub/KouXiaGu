@@ -25,27 +25,32 @@ namespace KouXiaGu
         /// 迭代获取到观察者,并且在迭代过程中允许对删除合集元素,但是不允许嵌套;
         /// </summary>
         IEnumerable<T> EnumerateObserver();
+
+        /// <summary>
+        /// 清除所有观察者;
+        /// </summary>
+        void Clear();
     }
 
     public class ObserverLinkedList<T> : IObserverCollection<T>
     {
         public ObserverLinkedList()
         {
-            observersList = new LinkedList<T>();
+            observersCollection = new LinkedList<T>();
             currentNode = null;
         }
 
-        readonly LinkedList<T> observersList;
+        readonly LinkedList<T> observersCollection;
         LinkedListNode<T> currentNode;
 
         public IEnumerable<T> Observers
         {
-            get { return observersList; }
+            get { return observersCollection; }
         }
 
         public int Count
         {
-            get { return observersList.Count; }
+            get { return observersCollection.Count; }
         }
 
         /// <summary>
@@ -57,11 +62,11 @@ namespace KouXiaGu
             LinkedListNode<T> node;
             if (currentNode == null)
             {
-                node = observersList.AddLast(observer);
+                node = observersCollection.AddLast(observer);
             }
             else
             {
-                node = observersList.AddBefore(currentNode, observer);
+                node = observersCollection.AddBefore(currentNode, observer);
             }
             return new Unsubscriber(this, node);
         }
@@ -71,13 +76,18 @@ namespace KouXiaGu
         /// </summary>
         public IEnumerable<T> EnumerateObserver()
         {
-            currentNode = observersList.First;
+            currentNode = observersCollection.First;
             while (currentNode != null)
             {
                 var observer = currentNode.Value;
                 currentNode = currentNode.Next;
                 yield return observer;
             }
+        }
+
+        public void Clear()
+        {
+            observersCollection.Clear();
         }
 
         class Unsubscriber : IDisposable
@@ -95,7 +105,7 @@ namespace KouXiaGu
 
             LinkedList<T> observers
             {
-                get { return parent.observersList; }
+                get { return parent.observersCollection; }
             }
 
             LinkedListNode<T> currentNode
@@ -154,6 +164,11 @@ namespace KouXiaGu
         {
             T[] observerArray = observersCollection.ToArray();
             return observerArray;
+        }
+
+        public void Clear()
+        {
+            observersCollection.Clear();
         }
 
         class Unsubscriber : IDisposable

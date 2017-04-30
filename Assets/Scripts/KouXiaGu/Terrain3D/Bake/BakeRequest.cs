@@ -41,7 +41,7 @@ namespace KouXiaGu.Terrain3D
 
         public void Cancele()
         {
-            OnCanceled();
+            OnFaulted(new OperationCanceledException());
         }
 
         /// <summary>

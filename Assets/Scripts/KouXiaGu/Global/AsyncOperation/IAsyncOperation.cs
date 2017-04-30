@@ -23,10 +23,10 @@ namespace KouXiaGu
         /// </summary>
         bool IsFaulted { get; }
 
-        /// <summary>
-        /// 是否因为被取消而完成;
-        /// </summary>
-        bool IsCanceled { get; }
+        ///// <summary>
+        ///// 是否因为被取消而完成;
+        ///// </summary>
+        //bool IsCanceled { get; }
 
         /// <summary>
         /// 导致提前结束的异常;
@@ -58,7 +58,6 @@ namespace KouXiaGu
 
         protected bool isCompleted;
         protected bool isFaulted;
-        protected bool isCanceled;
         protected Exception exception;
 
         public virtual bool IsCompleted
@@ -71,12 +70,6 @@ namespace KouXiaGu
         {
             get { return isFaulted; }
             protected set { isFaulted = value; }
-        }
-
-        public virtual bool IsCanceled
-        {
-            get { return isCanceled; }
-            protected set { isCanceled = value; }
         }
 
         public virtual Exception Exception
@@ -92,15 +85,20 @@ namespace KouXiaGu
         {
             IsCompleted = false;
             IsFaulted = false;
-            IsCanceled = false;
             Exception = null;
         }
 
+        /// <summary>
+        /// 当操作完成调用;
+        /// </summary>
         protected virtual void OnCompleted()
         {
             IsCompleted = true;
         }
 
+        /// <summary>
+        /// 出现异常导致操作结束调用,可重复调用添加异常;
+        /// </summary>
         protected virtual void OnFaulted(Exception ex)
         {
             if (Exception != null)
@@ -126,10 +124,12 @@ namespace KouXiaGu
             IsCompleted = true;
         }
 
-        protected virtual void OnCanceled()
+        /// <summary>
+        /// 取消时调用;
+        /// </summary>
+        protected virtual void OnCanceled(string message = "")
         {
-            IsCanceled = true;
-            IsCompleted = true;
+            OnFaulted(new OperationCanceledException(message));
         }
 
         public override string ToString()

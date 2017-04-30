@@ -64,7 +64,7 @@ namespace KouXiaGu
 
         public void Cancele()
         {
-            OnCanceled();
+            OnFaulted(new OperationCanceledException());
         }
 
         void IEnumerator.Reset()
