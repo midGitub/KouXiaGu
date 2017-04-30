@@ -49,32 +49,32 @@ namespace KouXiaGu
 
         public IEnumerable<IUnityThreadBehaviour<Action>> UpdateObservers
         {
-            get { return onUpdate.Observers; }
+            get { return onUpdate.ObserverCollection.Observers; }
         }
 
         public int UpdateObserverCount
         {
-            get { return onUpdate.ObserverCount; }
+            get { return onUpdate.ObserverCollection.Count; }
         }
 
         public IEnumerable<IUnityThreadBehaviour<Action>> FixedUpdateObservers
         {
-            get { return onFixedUpdate.Observers; }
+            get { return onFixedUpdate.ObserverCollection.Observers; }
         }
 
         public int FixedUpdateObserverCount
         {
-            get { return onFixedUpdate.ObserverCount; }
+            get { return onFixedUpdate.ObserverCollection.Count; }
         }
 
         public IEnumerable<IUnityThreadBehaviour<Action>> LateUpdateObservers
         {
-            get { return onLateUpdate.Observers; }
+            get { return onLateUpdate.ObserverCollection.Observers; }
         }
 
         public int LateUpdateObserverCount
         {
-            get { return onLateUpdate.ObserverCount; }
+            get { return onLateUpdate.ObserverCollection.Count; }
         }
 
         void Awake()
@@ -101,33 +101,46 @@ namespace KouXiaGu
 
         public IDisposable SubscribeUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
-            return onUpdate.Subscribe(behaviour);
+            return onUpdate.ObserverCollection.Subscribe(behaviour);
         }
 
         public IDisposable SubscribeLateUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
-            return onLateUpdate.Subscribe(behaviour);
+            return onLateUpdate.ObserverCollection.Subscribe(behaviour);
         }
 
         public IDisposable SubscribeFixedUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
-            return onFixedUpdate.Subscribe(behaviour);
+            return onFixedUpdate.ObserverCollection.Subscribe(behaviour);
         }
 
 
-        abstract class ActionCollectionBase<T> : ObserverLinkedList<T>
+        abstract class ActionCollectionBase<T>
         {
+            public ActionCollectionBase()
+            {
+                observerCollection = new ObserverLinkedList<T>();
+            }
+
+            readonly IObserverCollection<T> observerCollection;
+
+            public IObserverCollection<T> ObserverCollection
+            {
+                get { return observerCollection; }
+            }
+
             protected void OnError(T item, Exception ex)
             {
                 Debug.LogError("UnityThreadDispatcher:" + item.ToString() + "\n" + ex);
             }
+
         }
 
         class ActionCollection : ActionCollectionBase<IUnityThreadBehaviour<Action>>
         {
             public void Next()
             {
-                foreach (var item in EnumerateObserver())
+                foreach (var item in ObserverCollection.EnumerateObserver())
                 {
                     try
                     {
