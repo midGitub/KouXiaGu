@@ -6,9 +6,9 @@ using System.Text;
 namespace KouXiaGu
 {
 
-    public interface IResultSender
+    public interface IResultSend<T>
     {
-
+        IDisposable SubscribeResult(Action<T> action);
     }
 
 }
