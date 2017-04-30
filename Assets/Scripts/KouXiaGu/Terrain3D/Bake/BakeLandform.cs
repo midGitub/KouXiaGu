@@ -18,8 +18,6 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         MeshRenderer prefab = null;
         [SerializeField]
-        int maxCapacity = 100;
-        [SerializeField]
         Shader diffuseShader = null;
         [SerializeField]
         Shader heightShader = null;
@@ -52,7 +50,7 @@ namespace KouXiaGu.Terrain3D
             heightMaterial = new Material(heightShader);
             prefab.material = diffuseMaterial;
             sceneObjects = new List<Pack>();
-            objectPool = new GameObjectPool<MeshRenderer>(prefab, maxCapacity);
+            objectPool = new GameObjectPool<MeshRenderer>(prefab, "BakeLandformMesh");
         }
 
         /// <summary>

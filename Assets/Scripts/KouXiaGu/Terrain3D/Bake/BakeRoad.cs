@@ -18,8 +18,6 @@ namespace KouXiaGu.Terrain3D
     {
         [SerializeField]
         RoadMesh prefab = null;
-        [SerializeField]
-        int maxCapacity = 100;
         [SerializeField, Range(4, 60)]
         public int segmentPoints = 16;
         [SerializeField, Range(0.01f, 2)]
@@ -52,7 +50,7 @@ namespace KouXiaGu.Terrain3D
         public void Initialise()
         {
             sceneObjects = new List<Pack>();
-            objectPool = new GameObjectPool<RoadMesh>(prefab, maxCapacity);
+            objectPool = new GameObjectPool<RoadMesh>(prefab, "BakeRoadMesh");
         }
 
 

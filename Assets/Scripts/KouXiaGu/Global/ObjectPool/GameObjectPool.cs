@@ -22,6 +22,14 @@ namespace KouXiaGu
             this.prefab = prefab;
         }
 
+        public GameObjectPool(T prefab, string parentName)
+        {
+            if (prefab == null)
+                throw new ArgumentNullException();
+            this.prefab = prefab;
+            this.objectParent = new GameObject(parentName).transform;
+        }
+
         public GameObjectPool(T prefab, int maxCapacity)
             : base(maxCapacity)
         {
@@ -31,15 +39,24 @@ namespace KouXiaGu
         }
 
         readonly T prefab;
+        Transform objectParent;
 
         public T Prefab
         {
             get { return prefab; }
         }
 
+        public Transform ObjectParent
+        {
+            get { return objectParent; }
+            set { objectParent = value; }
+        }
+
         public override T Instantiate()
         {
-            return GameObject.Instantiate(prefab);
+            var item = GameObject.Instantiate(prefab);
+            item.transform.SetParent(objectParent);
+            return item;
         }
 
         public override void ResetWhenEnterPool(T item)
