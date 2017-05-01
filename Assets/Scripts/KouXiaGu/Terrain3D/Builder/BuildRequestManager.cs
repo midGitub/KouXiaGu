@@ -92,7 +92,7 @@ namespace KouXiaGu.Terrain3D
             IDictionary<RectCoord, BakeTargets> needCreateCoords = GetNeedCreateCoords();
             foreach (var item in needCreateCoords)
             {
-                this.builder.CreateOrUpdate(item.Key, item.Value);
+                this.builder.Create(item.Key, item.Value);
             }
 
             createCoords.Clear();
