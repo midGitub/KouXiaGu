@@ -63,7 +63,7 @@ namespace KouXiaGu.Terrain3D
 
         public int RequestCount
         {
-            get { return requestQueue.Count; }
+            get { return requestQueue == null ? 0 : requestQueue.Count; }
         }
 
         public bool IsEmpty
