@@ -55,10 +55,35 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 仅更新对应地形块,若不存在对应地形块,则返回Null;
+        /// </summary>
+        public Chunk Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        {
+            ChunkBakeRequest request;
+            if (sceneChunks.TryGetValue(chunkCoord, out request))
+            {
+                if (request.IsInBakeQueue & !request.IsBaking)
+                {
+                    request.ResetState();
+                    request.Targets |= targets;
+                }
+                else
+                {
+                    request.ResetState();
+                    request.Targets = targets;
+                    AddBakeQueue(request);
+                }
+                return request.Chunk;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// 更新或创建地形块,若地形块已经在构建队列中,则变更到合适的烘培项目;
         /// 若已经烘焙完成,或者正在烘焙,则重新加入到构建队列;
         /// 若未找到对应的地形块,则创建到;
         /// </summary>
+        [Obsolete]
         public Chunk CreateOrUpdate(RectCoord chunkCoord, BakeTargets targets)
         {
             ChunkBakeRequest request;
