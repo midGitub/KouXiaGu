@@ -17,18 +17,45 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildRequestManager
     {
+        static BuildRequestManager()
+        {
+            watcherList = new List<ILandformWatcher>();
+            readOnlyWatcherList = watcherList.AsReadOnlyCollection();
+        }
+
+        static readonly List<ILandformWatcher> watcherList;
+        static readonly IReadOnlyCollection<ILandformWatcher> readOnlyWatcherList;
+
+        public static IReadOnlyCollection<ILandformWatcher> WatcherList
+        {
+            get { return readOnlyWatcherList; }
+        }
+
+        public static void AddLandformWatcher(ILandformWatcher watcher)
+        {
+            if (watcherList.Contains(watcher))
+                throw new ArgumentException();
+
+            watcherList.Add(watcher);
+        }
+
+        public static bool RemoveLandformWatcher(ILandformWatcher watcher)
+        {
+            return watcherList.Remove(watcher);
+        }
+
+
+
         public BuildRequestManager(LandformBuilder builder)
         {
             this.builder = builder;
             createCoords = new Dictionary<RectCoord, BakeTargets>();
             destroyCoords = new List<RectCoord>();
-            watcherList = new List<ILandformWatcher>();
         }
 
         readonly LandformBuilder builder;
         readonly Dictionary<RectCoord, BakeTargets> createCoords;
         readonly List<RectCoord> destroyCoords;
-        readonly List<ILandformWatcher> watcherList;
 
         IReadOnlyDictionary<RectCoord, ChunkBakeRequest> sceneDisplayedChunks
         {
@@ -38,19 +65,6 @@ namespace KouXiaGu.Terrain3D
         IEnumerable<RectCoord> sceneCoords
         {
             get { return sceneDisplayedChunks.Keys; }
-        }
-
-        public void AddLandformWatcher(ILandformWatcher watcher)
-        {
-            if (watcherList.Contains(watcher))
-                throw new ArgumentException();
-
-            watcherList.Add(watcher);
-        }
-
-        public bool RemoveLandformWatcher(ILandformWatcher watcher)
-        {
-            return watcherList.Remove(watcher);
         }
 
         public void Display(RectCoord chunkCoord, BakeTargets targets)

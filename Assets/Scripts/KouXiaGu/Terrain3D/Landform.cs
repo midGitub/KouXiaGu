@@ -55,7 +55,8 @@ namespace KouXiaGu.Terrain3D
         public bool IsInitialized { get; private set; }
         public LandformBuilder Builder { get; private set; }
         public LandformBaker Baker { get; private set; }
-        public BuildRequestManager Scene { get; private set; }
+        public BuildRequestManager BuildManager { get; private set; }
+        public BuildRequestUpdater BuildUpdater { get; private set; }
 
         Landform Initialize(IWorldData worldData)
         {
@@ -63,7 +64,8 @@ namespace KouXiaGu.Terrain3D
             {
                 Builder = new LandformBuilder(worldData);
                 Baker = Builder.Baker;
-                Scene = new BuildRequestManager(Builder);
+                BuildManager = new BuildRequestManager(Builder);
+                BuildUpdater = new BuildRequestUpdater(BuildManager);
             }
             return this;
         }
