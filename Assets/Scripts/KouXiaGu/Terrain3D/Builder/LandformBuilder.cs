@@ -6,79 +6,6 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.Terrain3D
 {
 
-
-    class ChunkRequest : IBakeRequest
-    {
-        public ChunkRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets)
-        {
-            ChunkCoord = chunkCoord;
-            Chunk = chunk;
-            Targets = targets;
-            IsBaking = false;
-            IsInBakeQueue = false;
-            IsBakeCompleted = false;
-            IsCanceled = false;
-        }
-
-        public RectCoord ChunkCoord { get; private set; }
-        public BakeTargets Targets { get; internal set; }
-        public Chunk Chunk { get; private set; }
-        public bool IsInBakeQueue { get; private set; }
-        public bool IsBaking { get; private set; }
-        public bool IsBakeCompleted { get; private set; }
-        public bool IsCanceled { get; private set; }
-
-        ChunkTexture IBakeRequest.Textures
-        {
-            get { return Chunk.Renderer; }
-        }
-
-        void IBakeRequest.AddBakeQueue()
-        {
-            if (IsInBakeQueue)
-                UnityEngine.Debug.LogError("重复加入烘培队列?");
-
-            IsInBakeQueue = true;
-        }
-
-        void IBakeRequest.StartBake()
-        {
-            if (IsBaking)
-                UnityEngine.Debug.LogError("重复烘焙?");
-
-            IsBaking = true;
-        }
-
-        void IBakeRequest.BakeCompleted()
-        {
-            try
-            {
-                Chunk.Renderer.Apply();
-            }
-            finally
-            {
-                IsBakeCompleted = true;
-                IsBaking = false;
-                IsInBakeQueue = false;
-            }
-        }
-
-        /// <summary>
-        /// 重置状态;
-        /// </summary>
-        internal void ResetState()
-        {
-            IsBakeCompleted = false;
-            IsCanceled = false;
-        }
-
-        internal void Cancel()
-        {
-            IsCanceled = true;
-        }
-    }
-
-
     /// <summary>
     /// 地形块创建管理;
     /// </summary>
@@ -88,14 +15,14 @@ namespace KouXiaGu.Terrain3D
         {
             baker = LandformBaker.Initialize(worldData);
             chunkPool = new ChunkPool();
-            sceneChunks = new Dictionary<RectCoord, ChunkRequest>();
+            sceneChunks = new Dictionary<RectCoord, ChunkBakeRequest>();
             readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
         }
 
         readonly LandformBaker baker;
         readonly ChunkPool chunkPool;
-        readonly Dictionary<RectCoord, ChunkRequest> sceneChunks;
-        readonly IReadOnlyDictionary<RectCoord, ChunkRequest> readOnlySceneChunks;
+        readonly Dictionary<RectCoord, ChunkBakeRequest> sceneChunks;
+        readonly IReadOnlyDictionary<RectCoord, ChunkBakeRequest> readOnlySceneChunks;
 
         public LandformBaker Baker
         {
@@ -107,7 +34,7 @@ namespace KouXiaGu.Terrain3D
             get { return ChunkInfo.ChunkGrid; }
         }
 
-        internal IReadOnlyDictionary<RectCoord, ChunkRequest> SceneDisplayedChunks
+        internal IReadOnlyDictionary<RectCoord, ChunkBakeRequest> SceneDisplayedChunks
         {
             get { return readOnlySceneChunks; }
         }
@@ -119,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Chunk CreateOrUpdate(RectCoord chunkCoord, BakeTargets targets)
         {
-            ChunkRequest request;
+            ChunkBakeRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
                 if (request.IsInBakeQueue && !request.IsBaking)
@@ -143,22 +70,22 @@ namespace KouXiaGu.Terrain3D
             return request.Chunk;
         }
 
-        void AddBakeQueue(ChunkRequest request)
+        void AddBakeQueue(ChunkBakeRequest request)
         {
             baker.AddRequest(request);
         }
 
-        ChunkRequest CreateChunk(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        ChunkBakeRequest CreateChunk(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             Chunk chunk = chunkPool.Get();
             chunk.Position = ChunkGrid.GetCenter(chunkCoord);
-            ChunkRequest buildRequest = new ChunkRequest(chunkCoord, chunk, targets);
+            ChunkBakeRequest buildRequest = new ChunkBakeRequest(chunkCoord, chunk, targets);
             return buildRequest;
         }
 
         public void Destroy(RectCoord chunkCoord)
         {
-            ChunkRequest request;
+            ChunkBakeRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
                 chunkPool.Release(request.Chunk);

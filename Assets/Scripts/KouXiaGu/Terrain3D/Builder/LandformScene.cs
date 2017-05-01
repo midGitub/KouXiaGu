@@ -23,8 +23,6 @@ namespace KouXiaGu.Terrain3D
             createCoords = new Dictionary<RectCoord, BakeTargets>();
             destroyCoords = new List<RectCoord>();
             watcherList = new List<ILandformWatcher>();
-            OnUpdateSendDisplay();
-            this.SubscribeUpdate();
         }
 
         readonly LandformBuilder builder;
@@ -32,7 +30,7 @@ namespace KouXiaGu.Terrain3D
         readonly List<RectCoord> destroyCoords;
         readonly List<ILandformWatcher> watcherList;
 
-        IReadOnlyDictionary<RectCoord, ChunkRequest> sceneDisplayedChunks
+        IReadOnlyDictionary<RectCoord, ChunkBakeRequest> sceneDisplayedChunks
         {
             get { return builder.SceneDisplayedChunks; }
         }
@@ -50,11 +48,6 @@ namespace KouXiaGu.Terrain3D
         Action IUnityThreadBehaviour<Action>.Action
         {
             get { return OnUpdateSendDisplay; }
-        }
-
-        public ICollection<ILandformWatcher> WatcherCollection
-        {
-            get { return watcherList; }
         }
 
         public void AddLandformWatcher(ILandformWatcher watcher)
@@ -82,7 +75,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        void OnUpdateSendDisplay()
+        internal void OnUpdateSendDisplay()
         {
             UpdateDispalyCoords();
 
@@ -124,7 +117,6 @@ namespace KouXiaGu.Terrain3D
         {
             return createCoords;
         }
-
     }
 
 }
