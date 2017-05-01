@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         public LandformScene(LandformBuilder builder)
         {
             this.builder = builder;
-            createCoords = new HashSet<RectCoord>();
+            createCoords = new Dictionary<RectCoord, BakeTargets>();
             destroyCoords = new List<RectCoord>();
             watcherList = new List<ILandformWatcher>();
             OnUpdateSendDisplay();
@@ -28,11 +28,11 @@ namespace KouXiaGu.Terrain3D
         }
 
         readonly LandformBuilder builder;
-        readonly HashSet<RectCoord> createCoords;
+        readonly Dictionary<RectCoord, BakeTargets> createCoords;
         readonly List<RectCoord> destroyCoords;
         readonly List<ILandformWatcher> watcherList;
 
-        IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> sceneDisplayedChunks
+        IReadOnlyDictionary<RectCoord, ChunkRequest> sceneDisplayedChunks
         {
             get { return builder.SceneDisplayedChunks; }
         }
@@ -57,9 +57,29 @@ namespace KouXiaGu.Terrain3D
             get { return watcherList; }
         }
 
-        public void Display(IEnumerable<RectCoord> coords)
+        public void AddLandformWatcher(ILandformWatcher watcher)
         {
-            createCoords.UnionWith(coords);
+            if (watcherList.Contains(watcher))
+                throw new ArgumentException();
+
+            watcherList.Add(watcher);
+        }
+
+        public bool RemoveLandformWatcher(ILandformWatcher watcher)
+        {
+            return watcherList.Remove(watcher);
+        }
+
+        public void Display(RectCoord chunkCoord, BakeTargets targets)
+        {
+            if (createCoords.ContainsKey(chunkCoord))
+            {
+                createCoords[chunkCoord] |= targets;
+            }
+            else
+            {
+                createCoords.Add(chunkCoord, targets);
+            }
         }
 
         void OnUpdateSendDisplay()
@@ -72,10 +92,10 @@ namespace KouXiaGu.Terrain3D
                 this.builder.Destroy(coord);
             }
 
-            ICollection<RectCoord> needCreateCoords = GetNeedCreateCoords();
-            foreach (var coord in needCreateCoords)
+            IDictionary<RectCoord, BakeTargets> needCreateCoords = GetNeedCreateCoords();
+            foreach (var item in needCreateCoords)
             {
-                this.builder.Create(coord);
+                this.builder.CreateOrUpdate(item.Key, item.Value);
             }
 
             createCoords.Clear();
@@ -94,15 +114,14 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var coord in sceneCoords)
             {
-                if (!createCoords.Contains(coord))
+                if (!createCoords.ContainsKey(coord))
                     destroyCoords.Add(coord);
             }
             return destroyCoords;
         }
 
-        ICollection<RectCoord> GetNeedCreateCoords()
+        IDictionary<RectCoord, BakeTargets> GetNeedCreateCoords()
         {
-            createCoords.ExceptWith(sceneCoords);
             return createCoords;
         }
 
