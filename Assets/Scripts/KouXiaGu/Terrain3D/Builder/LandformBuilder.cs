@@ -49,10 +49,19 @@ namespace KouXiaGu.Terrain3D
             ChunkBakeRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                if (request.IsInBakeQueue && !request.IsBaking)
+                if (request.IsInBakeQueue)
                 {
-                    request.ResetState();
-                    request.Targets |= targets;
+                    if (request.IsBaking)
+                    {
+                        request.ResetState();
+                        request.Targets = targets;
+                        AddBakeQueue(request);
+                    }
+                    else
+                    {
+                        request.ResetState();
+                        request.Targets |= targets;
+                    }
                 }
                 else
                 {

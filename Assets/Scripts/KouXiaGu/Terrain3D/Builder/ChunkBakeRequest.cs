@@ -14,19 +14,22 @@ namespace KouXiaGu.Terrain3D
             ChunkCoord = chunkCoord;
             Chunk = chunk;
             Targets = targets;
+            inBakeQueueTime = 0;
             IsBaking = false;
-            IsInBakeQueue = false;
-            IsBakeCompleted = false;
             IsCanceled = false;
         }
 
         public RectCoord ChunkCoord { get; private set; }
         public BakeTargets Targets { get; internal set; }
         public Chunk Chunk { get; private set; }
-        public bool IsInBakeQueue { get; private set; }
+        int inBakeQueueTime;
         public bool IsBaking { get; private set; }
-        public bool IsBakeCompleted { get; private set; }
         public bool IsCanceled { get; private set; }
+
+        public bool IsInBakeQueue
+        {
+            get { return inBakeQueueTime > 0; }
+        }
 
         ChunkTexture IBakeRequest.Textures
         {
@@ -35,10 +38,7 @@ namespace KouXiaGu.Terrain3D
 
         void IBakeRequest.AddBakeQueue()
         {
-            if (IsInBakeQueue)
-                UnityEngine.Debug.LogError("重复加入烘培队列?");
-
-            IsInBakeQueue = true;
+            inBakeQueueTime++;
         }
 
         void IBakeRequest.StartBake()
@@ -57,9 +57,8 @@ namespace KouXiaGu.Terrain3D
             }
             finally
             {
-                IsBakeCompleted = true;
                 IsBaking = false;
-                IsInBakeQueue = false;
+                inBakeQueueTime--;
             }
         }
 
@@ -68,7 +67,6 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         internal void ResetState()
         {
-            IsBakeCompleted = false;
             IsCanceled = false;
         }
 
