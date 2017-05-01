@@ -11,8 +11,9 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class SceneUpdater : IUnityThreadBehaviour<Action>
     {
-        public SceneUpdater()
+        public SceneUpdater(BuildRequestManager buildRequestManager)
         {
+            this.buildRequestManager = buildRequestManager;
         }
 
         readonly BuildRequestManager buildRequestManager;
