@@ -13,8 +13,11 @@ namespace KouXiaGu.Terrain3D
     {
         RectCoord ChunkCoord { get; }
         ChunkTexture Textures { get; }
+        BakeTargets Targets { get; }
 
-        void OnCompleted();
+        void AddBakeQueue();
+        void StartBake();
+        void BakeCompleted();
     }
 
     /// <summary>
@@ -128,7 +131,7 @@ namespace KouXiaGu.Terrain3D
                 bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
                 bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
 
-                bakeRequest.OnCompleted();
+                bakeRequest.BakeCompleted();
                 Complete:
                 requestQueue.Dequeue();
                 yield return null;

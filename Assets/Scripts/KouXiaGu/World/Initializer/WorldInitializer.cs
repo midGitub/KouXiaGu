@@ -14,15 +14,20 @@ namespace KouXiaGu.World
     public class WorldInitializer : MonoBehaviour, IObservable<IWorld>
     {
         const string Name = "WorldInitializer";
+
         /// <summary>
         /// 初始化时使用的世界信息;
         /// </summary>
         public static IAsyncOperation<WorldInfo> WorldInfoReader { get; set; }
 
+
         WorldInitializer() { }
 
         AsyncInitializer gameWorldInitializer;
 
+        /// <summary>
+        /// 游戏场景初始化程序;
+        /// </summary>
         public IAsyncOperation<IWorld> GameWorldInitializer
         {
             get { return gameWorldInitializer; }

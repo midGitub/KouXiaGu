@@ -46,15 +46,8 @@ namespace KouXiaGu.Terrain3D.Tests
             enabled = true;
         }
 
-        void IObserver<IWorld>.OnCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IObserver<IWorld>.OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
+        void IObserver<IWorld>.OnCompleted() { }
+        void IObserver<IWorld>.OnError(Exception error) { }
 
         void Update()
         {

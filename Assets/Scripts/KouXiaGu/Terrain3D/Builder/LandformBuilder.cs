@@ -77,17 +77,19 @@ namespace KouXiaGu.Terrain3D
             return buildRequest;
         }
 
-        BuildRequest CreateChunk(RectCoord chunkCoord)
+        BuildRequest CreateChunk(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             Chunk chunk = chunkPool.Get();
             chunk.Position = ChunkGrid.GetCenter(chunkCoord);
-            BuildRequest buildRequest = new BuildRequest(chunkCoord, chunk);
+            BuildRequest buildRequest = new BuildRequest(chunkCoord, chunk, targets);
             return buildRequest;
         }
 
-        void AddRequest(BuildRequest request)
+        BuildRequest AddRequest(BuildRequest request, BakeTargets targets = BakeTargets.All)
         {
+            request.Targets |= targets;
             baker.AddRequest(request);
+            return request;
         }
 
         public void Destroy(RectCoord chunkCoord)
@@ -109,17 +111,58 @@ namespace KouXiaGu.Terrain3D
 
         class BuildRequest : AsyncOperation<Chunk>, IBakeRequest
         {
-            public BuildRequest(RectCoord chunkCoord, Chunk chunk)
+            public BuildRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets)
             {
                 ChunkCoord = chunkCoord;
-                Result = chunk;
+                Chunk = chunk;
+                Targets = targets;
+                IsBaking = false;
             }
 
             public RectCoord ChunkCoord { get; private set; }
+            public BakeTargets Targets { get; set; }
+            public bool InBakeQueue { get; set; }
+            public bool IsBaking { get; private set; }
 
             public Chunk Chunk
             {
                 get { return Result; }
+                private set { Result = value; }
+            }
+
+            ChunkTexture IBakeRequest.Textures
+            {
+                get { return Chunk.Renderer; }
+            }
+
+            void IBakeRequest.AddBakeQueue()
+            {
+                if(InBakeQueue)
+                    UnityEngine.Debug.LogError("重复加入烘培队列?");
+
+                InBakeQueue = true;
+            }
+
+            void IBakeRequest.StartBake()
+            {
+                if (IsBaking)
+                    UnityEngine.Debug.LogError("重复烘焙?");
+
+                IsBaking = true;
+            }
+
+            void IBakeRequest.BakeCompleted()
+            {
+                try
+                {
+                    Chunk.Renderer.Apply();
+                    OnCompleted();
+                }
+                finally
+                {
+                    IsBaking = false;
+                    InBakeQueue = false;
+                }
             }
 
             public void Reset()
@@ -131,18 +174,6 @@ namespace KouXiaGu.Terrain3D
             {
                 OnCanceled();
             }
-
-            ChunkTexture IBakeRequest.Textures
-            {
-                get { return Chunk.Renderer; }
-            }
-
-            void IBakeRequest.OnCompleted()
-            {
-                Chunk.Renderer.Apply();
-                OnCompleted(Chunk);
-            }
-
         }
 
     }
