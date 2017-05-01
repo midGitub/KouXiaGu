@@ -55,7 +55,7 @@ namespace KouXiaGu.Terrain3D
         public bool IsInitialized { get; private set; }
         public LandformBuilder Builder { get; private set; }
         public LandformBaker Baker { get; private set; }
-        public LandformScene Scene { get; private set; }
+        public BuildRequestManager Scene { get; private set; }
 
         Landform Initialize(IWorldData worldData)
         {
@@ -63,7 +63,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Builder = new LandformBuilder(worldData);
                 Baker = Builder.Baker;
-                Scene = new LandformScene(Builder);
+                Scene = new BuildRequestManager(Builder);
             }
             return this;
         }
@@ -74,11 +74,11 @@ namespace KouXiaGu.Terrain3D
         public float GetHeight(Vector3 position)
         {
             RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
-            IAsyncOperation<Chunk> chunk;
+            ChunkBakeRequest chunk;
             if (Builder.SceneDisplayedChunks.TryGetValue(chunkCoord, out chunk))
             {
                 Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
-                return chunk.Result.Renderer.GetHeight(uv);
+                return chunk.Chunk.Renderer.GetHeight(uv);
             }
             return 0;
         }

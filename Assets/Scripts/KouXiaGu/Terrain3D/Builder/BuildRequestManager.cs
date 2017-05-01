@@ -9,15 +9,15 @@ namespace KouXiaGu.Terrain3D
 
     public interface ILandformWatcher
     {
-        void UpdateDispaly(LandformScene scene);
+        void UpdateDispaly(BuildRequestManager scene);
     }
 
     /// <summary>
-    /// 场景管理,负责对场景地形块的创建和销毁进行管理;
+    /// 场景创建请求管理,负责对场景地形块的创建和销毁进行管理;
     /// </summary>
-    public class LandformScene : IUnityThreadBehaviour<Action>
+    public class BuildRequestManager
     {
-        public LandformScene(LandformBuilder builder)
+        public BuildRequestManager(LandformBuilder builder)
         {
             this.builder = builder;
             createCoords = new Dictionary<RectCoord, BakeTargets>();
@@ -38,16 +38,6 @@ namespace KouXiaGu.Terrain3D
         IEnumerable<RectCoord> sceneCoords
         {
             get { return sceneDisplayedChunks.Keys; }
-        }
-
-        object IUnityThreadBehaviour<Action>.Sender
-        {
-            get { return "场景的地形块创建销毁管理"; }
-        }
-
-        Action IUnityThreadBehaviour<Action>.Action
-        {
-            get { return OnUpdateSendDisplay; }
         }
 
         public void AddLandformWatcher(ILandformWatcher watcher)
@@ -75,7 +65,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        internal void OnUpdateSendDisplay()
+        public void SendDisplay()
         {
             UpdateDispalyCoords();
 

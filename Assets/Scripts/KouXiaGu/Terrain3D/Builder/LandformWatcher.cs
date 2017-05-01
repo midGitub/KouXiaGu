@@ -31,10 +31,13 @@ namespace KouXiaGu.Terrain3D
             //LandformScene..Add(this);
         }
 
-        void ILandformWatcher.UpdateDispaly(LandformScene scene)
+        void ILandformWatcher.UpdateDispaly(BuildRequestManager scene)
         {
             IEnumerable<RectCoord> coords = GetDisplay(transform.position);
-            scene.Display(coords);
+            foreach (var coord in coords)
+            {
+                scene.Display(coord, BakeTargets.All);
+            }
         }
 
         void OnValidate()
