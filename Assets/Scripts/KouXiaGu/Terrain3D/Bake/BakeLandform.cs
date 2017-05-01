@@ -111,12 +111,6 @@ namespace KouXiaGu.Terrain3D
             sceneObjects.Clear();
         }
 
-
-        void PrepareSceneFirst()
-        {
-
-        }
-
         /// <summary>
         /// 在场景内创建烘培使用的网格;
         /// </summary>
