@@ -28,7 +28,7 @@ namespace KouXiaGu.Terrain3D
 
         void Start()
         {
-            //LandformScene..Add(this);
+            BuildRequestManager.AddLandformWatcher(this);
         }
 
         void ILandformWatcher.UpdateDispaly(BuildRequestManager scene)

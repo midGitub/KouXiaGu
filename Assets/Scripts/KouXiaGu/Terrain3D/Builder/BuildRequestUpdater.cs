@@ -14,6 +14,7 @@ namespace KouXiaGu.Terrain3D
         public BuildRequestUpdater(BuildRequestManager buildRequestManager)
         {
             this.buildRequestManager = buildRequestManager;
+            this.SubscribeUpdate();
         }
 
         readonly BuildRequestManager buildRequestManager;
