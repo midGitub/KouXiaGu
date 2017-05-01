@@ -9,9 +9,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 对场景创建管理进行更新;
     /// </summary>
-    public class SceneUpdater : IUnityThreadBehaviour<Action>
+    public class BuildRequestUpdater : IUnityThreadBehaviour<Action>
     {
-        public SceneUpdater(BuildRequestManager buildRequestManager)
+        public BuildRequestUpdater(BuildRequestManager buildRequestManager)
         {
             this.buildRequestManager = buildRequestManager;
         }
