@@ -100,7 +100,7 @@ namespace KouXiaGu.World.Map
                     },
                 };
 
-                node = node.CreateRoad(map, 1);
+                //node = node.CreateRoad(map, 1);
                 map.Data.Add(point, node);
             }
             return map;
