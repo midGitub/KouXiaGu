@@ -31,6 +31,15 @@ namespace KouXiaGu.Terrain3D
             unsubscriber = observable.Subscribe(this);
         }
 
+        public void Unsubscribe()
+        {
+            if (unsubscriber != null)
+            {
+                unsubscriber.Dispose();
+                unsubscriber = null;
+            }
+        }
+
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnAdded(CubicHexCoord key, MapNode newValue)
         {
             UpdateChunks(key, BakeTargets.All);
@@ -44,10 +53,13 @@ namespace KouXiaGu.Terrain3D
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnUpdated(CubicHexCoord key, MapNode originalValue, MapNode newValue)
         {
             BakeTargets targets = BakeTargets.None;
+
             if (originalValue.Road != newValue.Road)
             {
                 targets |= BakeTargets.Road;
             }
+
+
 
             if (targets != BakeTargets.None)
             {

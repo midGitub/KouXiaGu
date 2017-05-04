@@ -121,18 +121,23 @@ namespace KouXiaGu.Terrain3D
                 BakeTargets targets = bakeRequest.Targets;
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
 
-                yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
-                var diffuseMap = bakeCamera.GetDiffuseTexture(bakeLandform.DiffuseRT);
-                var heightMap = bakeCamera.GetHeightTexture(bakeLandform.HeightRT);
-                bakeRequest.Textures.SetDiffuseMap(diffuseMap);
-                bakeRequest.Textures.SetHeightMap(heightMap);
+                if ((targets & BakeTargets.Landform) > 0)
+                {
+                    yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                    var diffuseMap = bakeCamera.GetDiffuseTexture(bakeLandform.DiffuseRT);
+                    var heightMap = bakeCamera.GetHeightTexture(bakeLandform.HeightRT);
+                    bakeRequest.Textures.SetDiffuseMap(diffuseMap);
+                    bakeRequest.Textures.SetHeightMap(heightMap);
+                }
 
-
-                yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
-                var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT, TextureFormat.ARGB32);
-                var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
-                bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
-                bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
+                if ((targets & BakeTargets.Road) > 0)
+                {
+                    yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                    var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT, TextureFormat.ARGB32);
+                    var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
+                    bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
+                    bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
+                }
 
                 bakeRequest.BakeCompleted();
                 Complete:
