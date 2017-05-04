@@ -33,17 +33,35 @@ namespace KouXiaGu.Terrain3D
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnAdded(CubicHexCoord key, MapNode newValue)
         {
-            Debug.Log("OnAdded");
+            UpdateChunks(key, BakeTargets.All);
         }
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnRemoved(CubicHexCoord key, MapNode originalValue)
         {
-            Debug.Log("OnRemoved");
+            UpdateChunks(key, BakeTargets.All);
         }
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnUpdated(CubicHexCoord key, MapNode originalValue, MapNode newValue)
         {
-            Debug.Log("OnUpdated");
+            BakeTargets targets = BakeTargets.None;
+            if (originalValue.Road != newValue.Road)
+            {
+                targets |= BakeTargets.Road;
+            }
+
+            if (targets != BakeTargets.None)
+            {
+                UpdateChunks(key, targets);
+            }
+        }
+
+        void UpdateChunks(CubicHexCoord coord, BakeTargets targets)
+        {
+            var belongChunks = GetBelongChunks(coord);
+            foreach (var belongChunk in belongChunks)
+            {
+                builder.Update(belongChunk, targets);
+            }
         }
 
         static readonly CubicHexCoord[] checkDirections = new CubicHexCoord[]

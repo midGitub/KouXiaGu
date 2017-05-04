@@ -12,7 +12,7 @@ namespace KouXiaGu.World.Map
     /// 节点道路信息;
     /// </summary>
     [ProtoContract]
-    public struct RoadNode
+    public struct RoadNode : IEquatable<RoadNode>
     {
         /// <summary>
         /// 道路的唯一编号;
@@ -25,6 +25,36 @@ namespace KouXiaGu.World.Map
         /// </summary>
         [ProtoMember(2)]
         public int Type;
+
+        public bool Equals(RoadNode other)
+        {
+            return 
+                this.ExistRoad() == other.ExistRoad()
+                && Type == other.Type;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is RoadNode))
+                return false;
+
+            return Equals((RoadNode)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)ID;
+        }
+
+        public static bool operator ==(RoadNode a, RoadNode b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RoadNode a, RoadNode b)
+        {
+            return !a.Equals(b);
+        }
     }
 
     [ProtoContract]
