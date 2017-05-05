@@ -28,14 +28,6 @@ Shader "HexTerrain/TerrainSnow"
             #pragma target 5.0
 			#include "Tessellation.cginc"
 
-			struct appdata 
-			{
-                float4 vertex : POSITION;
-                float4 tangent : TANGENT;
-                float3 normal : NORMAL;
-                float2 texcoord : TEXCOORD0;
-            };
-
 			sampler2D _DiffuseMap;
             sampler2D _HeightMap;
 			sampler2D _RoadDiffuseMap;
@@ -55,6 +47,14 @@ Shader "HexTerrain/TerrainSnow"
             {
                 return _TerrainTess;
             }
+
+			struct appdata 
+			{
+                float4 vertex : POSITION;
+                float4 tangent : TANGENT;
+                float3 normal : NORMAL;
+                float2 texcoord : TEXCOORD0;
+            };
 
             void disp (inout appdata v)
             {
