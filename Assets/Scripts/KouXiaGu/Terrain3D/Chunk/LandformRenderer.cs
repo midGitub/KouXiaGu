@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UniRx;
+using UnityEngine.Rendering;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -13,22 +14,6 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class LandformRenderer : ChunkTexture
     {
-
-        static LandformSettings Parameter
-        {
-            get { return LandformSettings.Instance; }
-        }
-
-        static Shader LandformShader
-        {
-            get { return Parameter.LandformShader; }
-        }
-
-        static float Displacement
-        {
-            get { return Parameter.Displacement; }
-        }
-
         public LandformRenderer()
         {
         }
@@ -49,6 +34,22 @@ namespace KouXiaGu.Terrain3D
         Material material;
         event Action<LandformRenderer> onHeightChanged;
         bool isHeightChanged;
+        static readonly ShadowCastingMode shadowCastingMode = ShadowCastingMode.TwoSided;
+
+        static LandformSettings Parameter
+        {
+            get { return LandformSettings.Instance; }
+        }
+
+        static Shader LandformShader
+        {
+            get { return Parameter.LandformShader; }
+        }
+
+        static float Displacement
+        {
+            get { return Parameter.Displacement; }
+        }
 
         /// <summary>
         /// 当地形块高度发生变化时调用;
@@ -62,6 +63,7 @@ namespace KouXiaGu.Terrain3D
         void Init(MeshRenderer renderer)
         {
             renderer.sharedMaterial = material = new Material(LandformShader);
+            renderer.shadowCastingMode = shadowCastingMode;
         }
 
         public override void SetDiffuseMap(Texture2D diffuseMap)
