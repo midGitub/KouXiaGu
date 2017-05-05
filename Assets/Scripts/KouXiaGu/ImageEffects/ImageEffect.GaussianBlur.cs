@@ -7,7 +7,7 @@ using UnityEngine;
 namespace KouXiaGu.ImageEffects
 {
 
-    public sealed partial class ImageEffect : GlobalSington<ImageEffect>
+    public sealed partial class ImageEffect : UnitySington<ImageEffect>
     {
 
         [SerializeField]
@@ -48,7 +48,7 @@ namespace KouXiaGu.ImageEffects
             RenderTexture rt = null;
             try
             {
-                material = new Material(GetInstance.gaussianBlur);
+                material = new Material(Instance.gaussianBlur);
                 rt = RenderTexture.GetTemporary(source.width >> downSample, source.height >> downSample, 0);
 
                 //进行迭代高斯模糊  

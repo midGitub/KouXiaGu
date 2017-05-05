@@ -11,7 +11,7 @@ namespace KouXiaGu.ImageEffects
     /// 图片效果;
     /// </summary>
     [ExecuteInEditMode, DisallowMultipleComponent]
-    public sealed partial class ImageEffect : GlobalSington<ImageEffect>
+    public sealed partial class ImageEffect : UnitySington<ImageEffect>
     {
         ImageEffect()
         {

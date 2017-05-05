@@ -7,7 +7,7 @@ using UnityEngine;
 namespace KouXiaGu.ImageEffects
 {
 
-    public sealed partial class ImageEffect : GlobalSington<ImageEffect>
+    public sealed partial class ImageEffect : UnitySington<ImageEffect>
     {
 
         [SerializeField]
@@ -17,7 +17,7 @@ namespace KouXiaGu.ImageEffects
 
         static Material blurMaterial
         {
-            get { return _blurMaterial ?? (_blurMaterial = new Material(GetInstance.blurOptimizedShader)); }
+            get { return _blurMaterial ?? (_blurMaterial = new Material(Instance.blurOptimizedShader)); }
         }
 
         public enum BlurType
