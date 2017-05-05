@@ -18,8 +18,8 @@ namespace KouXiaGu.Terrain3D
 
         const string meshName = "Terrain Mesh";
 
-        static readonly float chunkHalfWidth = ChunkInfo.ChunkHalfWidth;
-        static readonly float chunkHalfHeight = ChunkInfo.ChunkHalfHeight;
+        static readonly float chunkHalfWidth = ChunkInfo.ChunkHalfWidth + 0.001f;
+        static readonly float chunkHalfHeight = ChunkInfo.ChunkHalfHeight + 0.001f;
 
         /// <summary>
         /// 网格生成的高度;
