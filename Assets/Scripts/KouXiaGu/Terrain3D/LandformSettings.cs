@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Shader landformShader;
-        [SerializeField, Range(0, 32)]
+        [SerializeField, Range(0, 64)]
         float tessellation = 16f;
         [SerializeField, Range(0, 5)]
         float displacement = 1.3f;

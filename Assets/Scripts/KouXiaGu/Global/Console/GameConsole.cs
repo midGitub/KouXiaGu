@@ -42,7 +42,7 @@ namespace KouXiaGu
         public static void Log(string format, params object[] args)
         {
             string message = string.Format(format, args);
-            Log(format, args);
+            Log(message);
         }
 
 
@@ -59,7 +59,7 @@ namespace KouXiaGu
         public static void LogWarning(string format, params object[] args)
         {
             string message = string.Format(format, args);
-            LogWarning(format, args);
+            Log(message);
         }
 
 

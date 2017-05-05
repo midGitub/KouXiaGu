@@ -17,7 +17,7 @@ namespace KouXiaGu.World
 
         public override string ToString()
         {
-            return "[ID:" + ID + ",Name" + Name + "]"; 
+            return "[ID:" + ID + ",Name:" + Name + "]"; 
         }
     }
 

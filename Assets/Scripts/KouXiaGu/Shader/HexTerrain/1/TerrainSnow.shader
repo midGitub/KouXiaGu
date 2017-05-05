@@ -24,34 +24,9 @@ Shader "HexTerrain/TerrainSnow"
             LOD 300
 
             CGPROGRAM
-            #pragma surface surf BlinnPhong addshadow fullforwardshadows vertex:vert tessellate:tessFixed nolightmap 
+            #pragma surface surf BlinnPhong addshadow fullforwardshadows vertex:disp tessellate:tessFixed nolightmap 
             #pragma target 5.0
-            #include "Tessellation.cginc"
-			#include "UnityCG.cginc"
-
-			uniform float _TerrainTess;
-            uniform float _TerrainDisplacement;
-			uniform float _TerrainSnow;
-
-			sampler2D _DiffuseMap;
-            sampler2D _HeightMap;
-			sampler2D _RoadDiffuseMap;
-			sampler2D _RoadHeightMap;
-			sampler2D _NormalMap;
-            fixed4 _Color;
-
-			float4 _SnowColor;
-			float4 _SnowDirection;
-
-			//inline float4 LightingCustomDiffuse (SurfaceOutput s, fixed3 lightDir, fixed atten)
-			//{
-			//	float difLight = dot (s.Normal, lightDir);
-			//	float hLambert = difLight * 0.5 + 0.5;
-			//	float4 col;
-			//	col.rgb = s.Albedo * _LightColor0.rgb * (hLambert * atten * 2);
-			//	col.a = s.Alpha;
-			//	return col;
-			//}
+			#include "Tessellation.cginc"
 
 			struct appdata 
 			{
@@ -61,16 +36,28 @@ Shader "HexTerrain/TerrainSnow"
                 float2 texcoord : TEXCOORD0;
             };
 
+			sampler2D _DiffuseMap;
+            sampler2D _HeightMap;
+			sampler2D _RoadDiffuseMap;
+			sampler2D _RoadHeightMap;
+			sampler2D _NormalMap;
+            fixed4 _Color;
+
+			uniform float _TerrainSnow;
+			float4 _SnowColor;
+			float4 _SnowDirection;
+			
+			uniform float _TerrainTess;
+            uniform float _TerrainDisplacement;
+
+			//固定数量细分;
 			float4 tessFixed()
             {
                 return _TerrainTess;
             }
 
-            void vert (inout appdata v)
+            void disp (inout appdata v)
             {
-				//half4 heightColor = tex2D (_HeightMap, IN.uv_HeightMap);
-				//half4 roadHeightColor = tex2D (_RoadHeightMap, IN.uv_RoadHeightMap);
-
                 float d = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0)).r * _TerrainDisplacement;
                 v.vertex.xyz += v.normal * d;
             }
