@@ -8,7 +8,7 @@ namespace KouXiaGu.ImageEffects
 {
 
     /// <summary>
-    /// 图片效果;
+    /// 图片特效静态方法类;
     /// </summary>
     [ExecuteInEditMode, DisallowMultipleComponent]
     public sealed partial class ImageEffect : UnitySington<ImageEffect>
