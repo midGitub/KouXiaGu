@@ -29,6 +29,8 @@ namespace KouXiaGu.Terrain3D
         Texture gridLineMap;
         [SerializeField]
         Color gridLineColor;
+        [SerializeField]
+        bool isDisplayGridLine = true;
 
         #endregion
 
@@ -62,6 +64,7 @@ namespace KouXiaGu.Terrain3D
             SetDisplacement(displacement);
             SetGridLineMap(gridLineMap);
             SetGridLineColor(gridLineColor);
+            SetIsDisplayGridLine(isDisplayGridLine);
         }
 
         void OnValidate()
@@ -123,6 +126,21 @@ namespace KouXiaGu.Terrain3D
         public static void SetGridLineColor(Color color)
         {
             Shader.SetGlobalColor(GridLineColorName, color);
+        }
+
+
+        const string IsDisplayGridLineName = "_LandformIsDisplayGridLine";
+
+        public static bool GetIsDisplayGridLine()
+        {
+            var value = Shader.GetGlobalInt(IsDisplayGridLineName);
+            return value != 0;
+        }
+
+        public static void SetIsDisplayGridLine(bool isDisplay)
+        {
+            int value = isDisplay ? 1 : 0;
+            Shader.SetGlobalInt(IsDisplayGridLineName, value);
         }
 
     }

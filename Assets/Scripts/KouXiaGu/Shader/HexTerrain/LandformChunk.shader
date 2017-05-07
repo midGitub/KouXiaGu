@@ -39,6 +39,7 @@ Shader "Landform3D/LandformChunk"
 			float4 _SnowColor;
 			float4 _SnowDirection;
 
+			uniform int _LandformIsDisplayGridLine;
 			uniform sampler2D _LandformGridLineMap;
 			uniform half3 _LandformGridLineColor;
 
@@ -93,9 +94,13 @@ Shader "Landform3D/LandformChunk"
 				half4 roadDiffuseColor = tex2D (_RoadDiffuseMap, IN.uv_RoadDiffuseMap);
 				half3 result = lerp(diffuseColor, roadDiffuseColor, roadDiffuseColor.a).rgb;
 
-				half3 gridLineColor = tex2D (_LandformGridLineMap, IN.uv_LandformGridLineMap);
+				if(_LandformIsDisplayGridLine != 0)
+				{
+					half3 gridLineColor = tex2D (_LandformGridLineMap, IN.uv_LandformGridLineMap);
+					result = lerp(result, _LandformGridLineColor, gridLineColor.r).rgb;
+				}
 
-				o.Albedo = lerp(result, _LandformGridLineColor, gridLineColor.r).rgb;
+				o.Albedo = result;
             }
 
             ENDCG
