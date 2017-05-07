@@ -3,7 +3,7 @@
 	游戏地形显示;
 */
 
-Shader "HexTerrain/TerrainSnow" 
+Shader "Landform3D/LandformChunk" 
 {
 
        Properties {
@@ -14,9 +14,7 @@ Shader "HexTerrain/TerrainSnow"
 			_NormalMap ("Normalmap", 2D) = "bump" {}
 
 			_SnowColor ("Snow Color", Color) = (1.0,1.0,1.0,1.0)
-			_SnowDirection ("Snow Direction", Vector) = (0,1,0)
-
-            _Color ("Color", color) = (1,1,1,0)
+			_SnowDirection ("Snow Direction", Vector) = (0, 1, 0)
         }
 
         SubShader {
@@ -28,25 +26,21 @@ Shader "HexTerrain/TerrainSnow"
             #pragma target 5.0
 			#include "Tessellation.cginc"
 
+			uniform float _Tess;
+            uniform float _Displacement;
+
 			sampler2D _DiffuseMap;
             sampler2D _HeightMap;
 			sampler2D _RoadDiffuseMap;
 			sampler2D _RoadHeightMap;
 			sampler2D _NormalMap;
-            fixed4 _Color;
 
 			uniform float _TerrainSnow;
 			float4 _SnowColor;
 			float4 _SnowDirection;
-			
-			uniform float _TerrainTess;
-            uniform float _TerrainDisplacement;
 
-			//固定数量细分;
-			float4 tessFixed()
-            {
-                return _TerrainTess;
-            }
+			uniform sampler2D _GridLineMap;
+			uniform half3 _GridLineColor;
 
 			struct appdata 
 			{
@@ -56,27 +50,34 @@ Shader "HexTerrain/TerrainSnow"
                 float2 texcoord : TEXCOORD0;
             };
 
+			//固定数量细分;
+			float4 tessFixed()
+            {
+                return _Tess;
+            }
+
             void disp (inout appdata v)
             {
-                float d = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0)).r * _TerrainDisplacement;
+                float d = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0)).r * _Displacement;
                 v.vertex.xyz += v.normal * d;
             }
 
             struct Input 
 			{
-                float2 uv_DiffuseMap;
-				float2 uv_HeightMap;
-				float2 uv_RoadDiffuseMap;
-				float2 uv_RoadHeightMap;
-				float2 uv_NormalMap;
-				float2 uv_SnowTex;
+                half2 uv_DiffuseMap;
+				half2 uv_HeightMap;
+				half2 uv_RoadDiffuseMap;
+				half2 uv_RoadHeightMap;
+				half2 uv_NormalMap;
+				half2 uv_GridLineMap;
+				half2 uv_SnowTex;
 				float3 worldNormal;
 				INTERNAL_DATA
             };
 
             void surf (Input IN, inout SurfaceOutput o) 
 			{
-    //            half4 c = tex2D (_DiffuseMap, IN.uv_DiffuseMap) * _Color;
+				//half4 c = tex2D (_DiffuseMap, IN.uv_DiffuseMap) * _Color;
 				//o.Normal = UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap));
 
 				//if (dot(WorldNormalVector(IN, o.Normal), _SnowDirection.xyz) > lerp(1, -1, _TerrainSnow/10000)) 
@@ -87,12 +88,12 @@ Shader "HexTerrain/TerrainSnow"
 				//{
 				//	o.Albedo = c.rgb;
 				//}
-
-
+				
 				half4 diffuseColor = tex2D (_DiffuseMap, IN.uv_DiffuseMap);
 				half4 roadDiffuseColor = tex2D (_RoadDiffuseMap, IN.uv_RoadDiffuseMap);
-				o.Albedo = lerp(diffuseColor, roadDiffuseColor, roadDiffuseColor.a).rgb;				
-				
+				half3 gridLineColor = tex2D (_GridLineMap, IN.uv_GridLineMap);
+				half3 result = lerp(diffuseColor, roadDiffuseColor, roadDiffuseColor.a).rgb;
+				o.Albedo = lerp(result, _GridLineColor, gridLineColor.r).rgb;
             }
 
             ENDCG

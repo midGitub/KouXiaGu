@@ -17,14 +17,20 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        #region 编辑器设置变量;
+
         [SerializeField]
         Shader landformShader;
         [SerializeField, Range(0, 64)]
         float tessellation = 16f;
         [SerializeField, Range(0, 5)]
         float displacement = 1.3f;
-        [SerializeField, Range(0, 20)]
-        float snowLevel = 0f;
+        [SerializeField]
+        Texture gridLineMap;
+        [SerializeField]
+        Color gridLineColor;
+
+        #endregion
 
         /// <summary>
         /// 地形Shader;
@@ -50,42 +56,73 @@ namespace KouXiaGu.Terrain3D
             get { return displacement; }
         }
 
-        /// <summary>
-        /// 降雪程度;
-        /// </summary>
-        public float SnowLevel
-        {
-            get { return snowLevel; }
-        }
-
-        public void SetTessellation(float value)
-        {
-            Shader.SetGlobalFloat("_TerrainTess", value);
-            tessellation = value;
-        }
-
-        public void SetDisplacement(float value)
-        {
-            Shader.SetGlobalFloat("_TerrainDisplacement", value);
-            displacement = value;
-        }
-
-        public void SetSnowLevel(float value)
-        {
-            Shader.SetGlobalFloat("_TerrainSnow", value);
-            snowLevel = value;
-        }
-
-        void Start()
+        void Awake()
         {
             SetTessellation(tessellation);
             SetDisplacement(displacement);
-            SetSnowLevel(snowLevel);
+            SetGridLineMap(gridLineMap);
+            SetGridLineColor(gridLineColor);
         }
 
         void OnValidate()
         {
-            Start();
+            Awake();
+        }
+
+
+        const string TessellationName = "_Tess";
+
+        public float GetTessellation()
+        {
+            float value = Shader.GetGlobalFloat(TessellationName);
+            return value;
+        }
+
+        public void SetTessellation(float value)
+        {
+            Shader.SetGlobalFloat(TessellationName, value);
+        }
+
+
+        const string DisplacementName = "_Displacement";
+
+        public float GetDisplacement()
+        {
+            float value = Shader.GetGlobalFloat(DisplacementName);
+            return value;
+        }
+
+        public void SetDisplacement(float value)
+        {
+            Shader.SetGlobalFloat(DisplacementName, value);
+        }
+
+
+        const string GridLineMapName = "_GridLineMap";
+
+        public Texture GetGridLineMap()
+        {
+            var texture = Shader.GetGlobalTexture(GridLineMapName);
+            return texture;
+        }
+
+        public void SetGridLineMap(Texture texture)
+        {
+            Shader.SetGlobalTexture(GridLineMapName, texture);
+        }
+
+
+        const string GridLineColorName = "_GridLineColor";
+
+        public Color GetGridLineColor()
+        {
+            var color = Shader.GetGlobalColor(GridLineColorName);
+            return color;
+        }
+
+        public void SetGridLineColor(Color color)
+        {
+            Shader.SetGlobalColor(GridLineColorName, color);
         }
 
     }
