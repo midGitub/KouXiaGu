@@ -26,8 +26,8 @@ Shader "Landform3D/LandformChunk"
             #pragma target 5.0
 			#include "Tessellation.cginc"
 
-			uniform float _Tess;
-            uniform float _Displacement;
+			uniform float _LandformTess;
+            uniform float _LandformDisplacement;
 
 			sampler2D _DiffuseMap;
             sampler2D _HeightMap;
@@ -39,8 +39,8 @@ Shader "Landform3D/LandformChunk"
 			float4 _SnowColor;
 			float4 _SnowDirection;
 
-			uniform sampler2D _GridLineMap;
-			uniform half3 _GridLineColor;
+			uniform sampler2D _LandformGridLineMap;
+			uniform half3 _LandformGridLineColor;
 
 			struct appdata 
 			{
@@ -53,12 +53,12 @@ Shader "Landform3D/LandformChunk"
 			//固定数量细分;
 			float4 tessFixed()
             {
-                return _Tess;
+                return _LandformTess;
             }
 
             void disp (inout appdata v)
             {
-                float d = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0)).r * _Displacement;
+                float d = tex2Dlod(_HeightMap, float4(v.texcoord.xy, 0, 0)).r * _LandformDisplacement;
                 v.vertex.xyz += v.normal * d;
             }
 
@@ -69,7 +69,7 @@ Shader "Landform3D/LandformChunk"
 				half2 uv_RoadDiffuseMap;
 				half2 uv_RoadHeightMap;
 				half2 uv_NormalMap;
-				half2 uv_GridLineMap;
+				half2 uv_LandformGridLineMap;
 				half2 uv_SnowTex;
 				float3 worldNormal;
 				INTERNAL_DATA
@@ -91,9 +91,11 @@ Shader "Landform3D/LandformChunk"
 				
 				half4 diffuseColor = tex2D (_DiffuseMap, IN.uv_DiffuseMap);
 				half4 roadDiffuseColor = tex2D (_RoadDiffuseMap, IN.uv_RoadDiffuseMap);
-				half3 gridLineColor = tex2D (_GridLineMap, IN.uv_GridLineMap);
 				half3 result = lerp(diffuseColor, roadDiffuseColor, roadDiffuseColor.a).rgb;
-				o.Albedo = lerp(result, _GridLineColor, gridLineColor.r).rgb;
+
+				half3 gridLineColor = tex2D (_LandformGridLineMap, IN.uv_LandformGridLineMap);
+
+				o.Albedo = lerp(result, _LandformGridLineColor, gridLineColor.r).rgb;
             }
 
             ENDCG

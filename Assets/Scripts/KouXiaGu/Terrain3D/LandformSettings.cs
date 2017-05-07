@@ -70,57 +70,57 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        const string TessellationName = "_Tess";
+        const string TessellationName = "_LandformTess";
 
-        public float GetTessellation()
+        public static float GetTessellation()
         {
             float value = Shader.GetGlobalFloat(TessellationName);
             return value;
         }
 
-        public void SetTessellation(float value)
+        public static void SetTessellation(float value)
         {
             Shader.SetGlobalFloat(TessellationName, value);
         }
 
 
-        const string DisplacementName = "_Displacement";
+        const string DisplacementName = "_LandformDisplacement";
 
-        public float GetDisplacement()
+        public static float GetDisplacement()
         {
             float value = Shader.GetGlobalFloat(DisplacementName);
             return value;
         }
 
-        public void SetDisplacement(float value)
+        public static void SetDisplacement(float value)
         {
             Shader.SetGlobalFloat(DisplacementName, value);
         }
 
 
-        const string GridLineMapName = "_GridLineMap";
+        const string GridLineMapName = "_LandformGridLineMap";
 
-        public Texture GetGridLineMap()
+        public static Texture GetGridLineMap()
         {
             var texture = Shader.GetGlobalTexture(GridLineMapName);
             return texture;
         }
 
-        public void SetGridLineMap(Texture texture)
+        public static void SetGridLineMap(Texture texture)
         {
             Shader.SetGlobalTexture(GridLineMapName, texture);
         }
 
 
-        const string GridLineColorName = "_GridLineColor";
+        const string GridLineColorName = "_LandformGridLineColor";
 
-        public Color GetGridLineColor()
+        public static Color GetGridLineColor()
         {
             var color = Shader.GetGlobalColor(GridLineColorName);
             return color;
         }
 
-        public void SetGridLineColor(Color color)
+        public static void SetGridLineColor(Color color)
         {
             Shader.SetGlobalColor(GridLineColorName, color);
         }
