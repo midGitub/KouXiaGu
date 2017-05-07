@@ -1,4 +1,6 @@
-﻿
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+
 /*
 	混合高度贴图,且模糊化贴图, r通道 为提高高度, g通道 为降低高度;
 */
@@ -31,7 +33,7 @@ Shader "HexTerrain/BlendHeightMap"
 	v2f vert (appdata v)
 	{
 		v2f o;
-		o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+		o.vertex = UnityObjectToClipPos(v.vertex);
 		o.uv = v.uv;
 		return o;
 	}
