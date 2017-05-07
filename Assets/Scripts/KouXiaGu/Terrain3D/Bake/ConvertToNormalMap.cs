@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
 
         RenderTexture Blur(RenderTexture rt)
         {
-            var blurRT = ImageEffect.BlurOptimized(rt, blurSize, downsample, blurIterations, ImageEffect.BlurType.StandardGauss);
+            var blurRT = ImageEffect.BlurOptimized.Render(rt, blurSize, downsample, blurIterations, BlurOptimized.BlurType.StandardGauss);
             return blurRT;
         }
 

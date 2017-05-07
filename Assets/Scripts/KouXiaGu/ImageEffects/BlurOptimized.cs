@@ -7,17 +7,21 @@ using UnityEngine;
 namespace KouXiaGu.ImageEffects
 {
 
-    public sealed partial class ImageEffect : UnitySington<ImageEffect>
+    [Serializable]
+    public class BlurOptimized
     {
+        BlurOptimized()
+        {
+        }
 
         [SerializeField]
         Shader blurOptimizedShader;
 
-        static Material _blurMaterial;
+        Material _blurMaterial;
 
-        static Material blurMaterial
+        Material blurMaterial
         {
-            get { return _blurMaterial ?? (_blurMaterial = new Material(Instance.blurOptimizedShader)); }
+            get { return _blurMaterial ?? (_blurMaterial = new Material(blurOptimizedShader)); }
         }
 
         public enum BlurType
@@ -26,7 +30,7 @@ namespace KouXiaGu.ImageEffects
             SgxGauss = 1,
         }
 
-        public static RenderTexture BlurOptimized(
+        public RenderTexture Render(
             RenderTexture source,
             float blurSize,
             int downsample,
@@ -38,13 +42,11 @@ namespace KouXiaGu.ImageEffects
 
             // downsample
             RenderTexture rt = RenderTexture.GetTemporary(rtW, rtH, 0, source.format);
-
-            BlurOptimized(source, rt, blurSize, downsample, blurIterations, blurType);
-
+            Render(source, rt, blurSize, downsample, blurIterations, blurType);
             return rt;
         }
 
-        public static void BlurOptimized(
+        public void Render(
             RenderTexture source,
             RenderTexture destination,
             float blurSize,
@@ -52,7 +54,6 @@ namespace KouXiaGu.ImageEffects
             int blurIterations,
             BlurType blurType)
         {
-
             float widthMod = 1.0f / (1.0f * (1 << downsample));
 
             blurMaterial.SetVector("_Parameter", new Vector4(blurSize * widthMod, -blurSize * widthMod, 0.0f, 0.0f));
@@ -93,7 +94,6 @@ namespace KouXiaGu.ImageEffects
 
             RenderTexture.ReleaseTemporary(rt);
         }
-
 
     }
 

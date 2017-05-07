@@ -15,7 +15,22 @@ namespace KouXiaGu.ImageEffects
     {
         ImageEffect()
         {
+        }
 
+        [SerializeField]
+        BlurOptimized blurOptimized;
+
+        [SerializeField]
+        GaussianBlur gaussianBlur;
+
+        public static BlurOptimized BlurOptimized
+        {
+            get { return Instance.blurOptimized; }
+        }
+
+        public static GaussianBlur GaussianBlur
+        {
+            get { return Instance.gaussianBlur; }
         }
 
     }

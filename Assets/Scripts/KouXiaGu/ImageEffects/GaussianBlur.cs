@@ -7,11 +7,25 @@ using UnityEngine;
 namespace KouXiaGu.ImageEffects
 {
 
-    public sealed partial class ImageEffect : UnitySington<ImageEffect>
+    [Serializable]
+    public class GaussianBlur
     {
+        GaussianBlur()
+        {
+        }
 
         [SerializeField]
         Shader gaussianBlur;
+        Material blurMaterial;
+        public bool IsInitialized { get; private set; }
+
+        public void Initialize()
+        {
+            if (!IsInitialized)
+            {
+                blurMaterial = new Material(gaussianBlur);
+            }
+        }
 
         /// <summary>
         /// 获取到高斯模糊后的效果;
@@ -19,16 +33,16 @@ namespace KouXiaGu.ImageEffects
         /// <param name="radius">[模糊半径]此值越大相邻像素间隔越远，图像越模糊。但过大的值会导致失真</param>
         /// <param name="downSample">[降分辨率]此值越大,则采样间隔越大,需要处理的像素点越少,运行速度越快</param>
         /// <param name="iteration">[迭代次数]此值越大,则模糊操作的迭代次数越多，模糊效果越好，但消耗越大</param>
-        public static RenderTexture GaussianBlur(Texture source, float radius, int downSample, int iteration)
+        public RenderTexture Render(Texture source, float radius, int downSample, int iteration)
         {
             RenderTexture rt = null;
             try
             {
                 rt = RenderTexture.GetTemporary(source.width >> downSample, source.height >> downSample, 0);
-                GaussianBlur(source, rt, radius, downSample, iteration);
+                Render(source, rt, radius, downSample, iteration);
                 return rt;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (rt != null)
                     RenderTexture.ReleaseTemporary(rt);
@@ -42,36 +56,32 @@ namespace KouXiaGu.ImageEffects
         /// <param name="radius">[模糊半径]此值越大相邻像素间隔越远，图像越模糊。但过大的值会导致失真</param>
         /// <param name="downSample">[降分辨率]此值越大,则采样间隔越大,需要处理的像素点越少,运行速度越快</param>
         /// <param name="iteration">[迭代次数]此值越大,则模糊操作的迭代次数越多，模糊效果越好，但消耗越大</param>
-        public static void GaussianBlur(Texture source, RenderTexture destination, float radius, int downSample, int iteration)
+        public void Render(Texture source, RenderTexture destination, float radius, int downSample, int iteration)
         {
-            Material material = null;
             RenderTexture rt = null;
             try
             {
-                material = new Material(Instance.gaussianBlur);
                 rt = RenderTexture.GetTemporary(source.width >> downSample, source.height >> downSample, 0);
 
                 //进行迭代高斯模糊  
                 for (int i = 0; i < iteration; i++)
                 {
                     //第一次高斯模糊，设置offsets，竖向模糊  
-                    material.SetVector("_offsets", new Vector4(0, radius, 0, 0));
-                    Graphics.Blit(source, rt, material);
+                    blurMaterial.SetVector("_offsets", new Vector4(0, radius, 0, 0));
+                    Graphics.Blit(source, rt, blurMaterial);
                     //第二次高斯模糊，设置offsets，横向模糊  
-                    material.SetVector("_offsets", new Vector4(radius, 0, 0, 0));
-                    Graphics.Blit(rt, destination, material);
+                    blurMaterial.SetVector("_offsets", new Vector4(radius, 0, 0, 0));
+                    Graphics.Blit(rt, destination, blurMaterial);
                 }
             }
             finally
             {
                 if (rt != null)
                     RenderTexture.ReleaseTemporary(rt);
-                if(material != null)
-                    DestroyImmediate(material);
+                if (blurMaterial != null)
+                    GameObject.DestroyImmediate(blurMaterial);
             }
         }
-
-
 
     }
 
