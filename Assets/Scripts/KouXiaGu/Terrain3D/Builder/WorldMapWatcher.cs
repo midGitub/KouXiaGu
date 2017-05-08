@@ -59,8 +59,6 @@ namespace KouXiaGu.Terrain3D
                 targets |= BakeTargets.Road;
             }
 
-
-
             if (targets != BakeTargets.None)
             {
                 UpdateChunks(key, targets);
@@ -81,8 +79,10 @@ namespace KouXiaGu.Terrain3D
                 CubicHexCoord.Self,
                 CubicHexCoord.DIR_North,
                 CubicHexCoord.DIR_South,
+                CubicHexCoord.DIR_Northeast,
                 CubicHexCoord.DIR_Northwest,
                 CubicHexCoord.DIR_Southeast,
+                CubicHexCoord.DIR_Southwest,
             };
 
         readonly List<RectCoord> chunkCoordList = new List<RectCoord>();
@@ -94,7 +94,9 @@ namespace KouXiaGu.Terrain3D
             {
                 CubicHexCoord checkCoord = coord + direction;
                 RectCoord chunkCoord = GetBelongChunk(checkCoord);
-                chunkCoordList.Add(chunkCoord);
+
+                if(!chunkCoordList.Contains(chunkCoord))
+                    chunkCoordList.Add(chunkCoord);
             }
             return chunkCoordList;
         }
