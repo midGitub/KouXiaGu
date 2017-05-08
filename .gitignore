@@ -297,10 +297,3 @@ sysinfo.txt
 /Assets/StreamingAssets/*
 !/Assets/StreamingAssets/Scripts
 
-/Assets/XLua
-/Assets/TestTex
-/Assets/Textrue
-/Assets/Materials
-/Assets/AssetBundles
-/Assets/Data
-/Assets/Plugins
