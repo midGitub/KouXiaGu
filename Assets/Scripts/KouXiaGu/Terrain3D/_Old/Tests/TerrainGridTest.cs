@@ -2,6 +2,8 @@
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace KouXiaGu.Terrain3D.Tests
 {
@@ -59,7 +61,7 @@ namespace KouXiaGu.Terrain3D.Tests
             Vector2 terrainBlockLocal = ChunkInfo.ChunkGrid.GetLocal(terrainPixel, out terrainBlockCoord);
             Vector2 terrainBlockUV = ChunkInfo.ChunkGrid.GetUV(terrainPixel, out terrainBlockCoord);
             float terrainHeight = /*TerrainData.GetHeight(terrainPixel);*/ 0;
-            RectCoord[] terrainBlocks = ChunkInfo.GetBelongChunks(cube);
+            RectCoord[] belongChunks = ChunkInfo.GetBelongChunks(cube).ToArray();
 
             string str = "";
 
@@ -77,9 +79,20 @@ namespace KouXiaGu.Terrain3D.Tests
                 + "UV:" + terrainBlockUV
 
                 + "\n高度:" + terrainHeight
-                + "所属1:" + terrainBlocks[0]
-                + "所属2:" + terrainBlocks[1]
+                + GetBelongChunksString(belongChunks)
                 ;
+
+            return str;
+        }
+
+        string GetBelongChunksString(RectCoord[] chunkCoords)
+        {
+            string str = "";
+
+            for (int i = 0; i < chunkCoords.Length; i++)
+            {
+                str += "所属" + (i + 1) + ":" + chunkCoords[i].ToString();
+            }
 
             return str;
         }

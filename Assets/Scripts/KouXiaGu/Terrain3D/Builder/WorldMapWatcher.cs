@@ -67,7 +67,7 @@ namespace KouXiaGu.Terrain3D
 
         void UpdateChunks(CubicHexCoord coord, BakeTargets targets)
         {
-            var belongChunks = GetBelongChunks(coord);
+            var belongChunks = GetBakeChunks(coord);
             foreach (var belongChunk in belongChunks)
             {
                 builder.Update(belongChunk, targets);
@@ -76,34 +76,32 @@ namespace KouXiaGu.Terrain3D
 
         static readonly CubicHexCoord[] checkDirections = new CubicHexCoord[]
             {
-                CubicHexCoord.Self,
+                //CubicHexCoord.Self,
                 CubicHexCoord.DIR_North,
-                CubicHexCoord.DIR_South,
-                CubicHexCoord.DIR_Northeast,
-                CubicHexCoord.DIR_Northwest,
+                //CubicHexCoord.DIR_South,
+                //CubicHexCoord.DIR_Northeast,
+                //CubicHexCoord.DIR_Northwest,
                 CubicHexCoord.DIR_Southeast,
                 CubicHexCoord.DIR_Southwest,
             };
 
         readonly List<RectCoord> chunkCoordList = new List<RectCoord>();
 
-        IEnumerable<RectCoord> GetBelongChunks(CubicHexCoord coord)
+        IEnumerable<RectCoord> GetBakeChunks(CubicHexCoord coord)
         {
             chunkCoordList.Clear();
             foreach (var direction in checkDirections)
             {
                 CubicHexCoord checkCoord = coord + direction;
-                RectCoord chunkCoord = GetBelongChunk(checkCoord);
+                var chunkCoords = ChunkInfo.GetBelongChunks(checkCoord);
 
-                if(!chunkCoordList.Contains(chunkCoord))
-                    chunkCoordList.Add(chunkCoord);
+                foreach (var chunkCoord in chunkCoords)
+                {
+                    if (!chunkCoordList.Contains(chunkCoord))
+                        chunkCoordList.Add(chunkCoord);
+                }
             }
             return chunkCoordList;
-        }
-
-        RectCoord GetBelongChunk(CubicHexCoord coord)
-        {
-            return ChunkInfo.ChunkGrid.GetCoord(coord.GetTerrainPixel());
         }
 
     }

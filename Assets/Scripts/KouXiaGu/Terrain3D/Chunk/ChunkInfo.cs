@@ -54,24 +54,55 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        /// <summary>
-        /// 获取到地图节点所属的地形块;
-        /// </summary>
-        public static RectCoord[] GetBelongChunks(CubicHexCoord coord)
-        {
-            RectCoord[] chunks = new RectCoord[2];
-            GetBelongChunks(coord, ref chunks);
-            return chunks;
-        }
+        ///// <summary>
+        ///// 获取到地图节点所属的地形块;
+        ///// </summary>
+        //public static RectCoord[] GetBelongChunks(CubicHexCoord coord)
+        //{
+        //    RectCoord[] chunks = new RectCoord[2];
+        //    GetBelongChunks(coord, ref chunks);
+        //    return chunks;
+        //}
+
+        ///// <summary>
+        ///// 获取到地图节点所属的地形块;
+        ///// 传入数组容量需要大于或者等于2,所属的地形块编号放置在 0 和 1 下标处;
+        ///// </summary>
+        //public static void GetBelongChunks(CubicHexCoord coord, ref RectCoord[] chunks)
+        //{
+        //    Vector3 point = LandformConvert.Grid.GetPixel(coord);
+        //    GetBelongChunks(point, ref chunks);
+        //}
+
+        ///// <summary>
+        ///// 获取到地图节点所属的地形块;
+        ///// 传入数组容量需要大于或者等于2,所属的地形块编号放置在 0 和 1 下标处;
+        ///// </summary>
+        //public static void GetBelongChunks(Vector3 pointCenter, ref RectCoord[] chunks)
+        //{
+        //    try
+        //    {
+        //        Vector3 point1 = pointCenter + CheckBelongChunkPoint;
+        //        chunks[0] = ChunkGrid.GetCoord(point1);
+
+        //        Vector3 point2 = pointCenter - CheckBelongChunkPoint;
+        //        chunks[1] = ChunkGrid.GetCoord(point2);
+        //    }
+        //    catch (ArgumentOutOfRangeException)
+        //    {
+        //        return;
+        //    }
+        //}
+
+
 
         /// <summary>
         /// 获取到地图节点所属的地形块;
-        /// 传入数组容量需要大于或者等于2,所属的地形块编号放置在 0 和 1 下标处;
         /// </summary>
-        public static void GetBelongChunks(CubicHexCoord coord, ref RectCoord[] chunks)
+        public static IEnumerable<RectCoord> GetBelongChunks(CubicHexCoord coord)
         {
             Vector3 point = LandformConvert.Grid.GetPixel(coord);
-            GetBelongChunks(point, ref chunks);
+            return GetBelongChunks(point);
         }
 
         static readonly Vector3 CheckBelongChunkPoint =
@@ -79,21 +110,23 @@ namespace KouXiaGu.Terrain3D
 
         /// <summary>
         /// 获取到地图节点所属的地形块;
-        /// 传入数组容量需要大于或者等于2,所属的地形块编号放置在 0 和 1 下标处;
         /// </summary>
-        public static void GetBelongChunks(Vector3 pointCenter, ref RectCoord[] chunks)
+        public static IEnumerable<RectCoord> GetBelongChunks(Vector3 pointCenter)
         {
-            try
-            {
-                Vector3 point1 = pointCenter + CheckBelongChunkPoint;
-                chunks[0] = ChunkGrid.GetCoord(point1);
+            Vector3 point1 = pointCenter + CheckBelongChunkPoint;
+            RectCoord chunk1 = ChunkGrid.GetCoord(point1);
 
-                Vector3 point2 = pointCenter - CheckBelongChunkPoint;
-                chunks[1] = ChunkGrid.GetCoord(point2);
-            }
-            catch (ArgumentOutOfRangeException)
+            Vector3 point2 = pointCenter - CheckBelongChunkPoint;
+            RectCoord chunk2 = ChunkGrid.GetCoord(point2);
+
+            if (chunk1 == chunk2)
             {
-                return;
+                yield return chunk1;
+            }
+            else
+            {
+                yield return chunk1;
+                yield return chunk2;
             }
         }
 
