@@ -8,6 +8,7 @@ namespace KouXiaGu.Initialization
     /// </summary>
     public interface IStartOperate : IAsyncOperation
     {
+
         /// <summary>
         /// 初始化内容,返回当所有内容初始化完成后的回调;
         /// </summary>
