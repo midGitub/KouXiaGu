@@ -285,10 +285,18 @@ sysinfo.txt
 
 # End of https://www.gitignore.io/api/unity
 
-/Assets/StreamingAssets
-!/Assets/StreamingAssets/Scripts/*.lua
-
 /*.xlsx
+
+/Assets/*
+!/Assets/Scripts
+!/Assets/Shader
+!/Assets/Prefabs
+!/Assets/Scenes
+
+!/Assets/StreamingAssets
+/Assets/StreamingAssets/*
+!/Assets/StreamingAssets/Scripts
+
 /Assets/XLua
 /Assets/TestTex
 /Assets/Textrue
