@@ -76,11 +76,7 @@ namespace KouXiaGu.Terrain3D
 
         static readonly CubicHexCoord[] checkDirections = new CubicHexCoord[]
             {
-                //CubicHexCoord.Self,
                 CubicHexCoord.DIR_North,
-                //CubicHexCoord.DIR_South,
-                //CubicHexCoord.DIR_Northeast,
-                //CubicHexCoord.DIR_Northwest,
                 CubicHexCoord.DIR_Southeast,
                 CubicHexCoord.DIR_Southwest,
             };
