@@ -58,7 +58,7 @@ namespace KouXiaGu.Rx
             EditorGUILayout.EndVertical();
         }
 
-        void Display<T>(IEnumerable<T> items, string label, ref bool toggle)
+        void Display<T>(IEnumerable<IUnityThreadBehaviour<T>> items, string label, ref bool toggle)
         {
             toggle = EditorGUILayout.BeginToggleGroup(label, toggle);
             if (toggle)
@@ -66,7 +66,7 @@ namespace KouXiaGu.Rx
                 int i = 0;
                 foreach (var item in items)
                 {
-                    string text = string.Format("[{0}]{1}", i++, item.ToString());
+                    string text = string.Format("[{0}]{1}", ++i, item.Sender.ToString());
                     EditorGUILayout.LabelField(text);
                 }
             }

@@ -72,6 +72,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4659982930886554}
   - component: {fileID: 114659846882801574}
+  - component: {fileID: 114892668518266524}
   m_Layer: 0
   m_Name: Landform
   m_TagString: Untagged
@@ -667,7 +668,7 @@ MonoBehaviour:
   displacement: 1.3
   gridLineMap: {fileID: 2800000, guid: a150c6ac3c4198d448d505080a6d8f1a, type: 3}
   gridLineColor: {r: 0.19852942, g: 0.19852942, b: 0.19852942, a: 0}
-  isDisplayGridLine: 0
+  isDisplayGridLine: 1
 --- !u!114 &114662523845607008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -849,6 +850,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114892668518266524
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1249173694254914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8173fc5894be454f9d1c31f067f41b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  daytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
+  nighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
+  size: 0
 --- !u!114 &114920700574159214
 MonoBehaviour:
   m_ObjectHideFlags: 1

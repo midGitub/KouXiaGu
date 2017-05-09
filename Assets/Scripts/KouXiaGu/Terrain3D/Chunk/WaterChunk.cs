@@ -11,15 +11,14 @@ namespace KouXiaGu.Terrain3D
 
 
     [DisallowMultipleComponent]
-    [ExecuteInEditMode]
     public class WaterChunk : MonoBehaviour
     {
         #region 静态;
         static readonly Type[] ChunkScripts = new Type[]
            {
                 typeof(MeshFilter),
-                typeof(Water),
                 typeof(MeshRenderer),
+                typeof(Water),
                 typeof(WaterChunk),
            };
 
@@ -52,20 +51,6 @@ namespace KouXiaGu.Terrain3D
             return chunk;
         }
         #endregion
-
-
-        WaterChunk() { }
-
-        public ChunkMesh Mesh { get; private set; }
-
-
-        void Awake()
-        {
-            var meshFilter = GetComponent<MeshFilter>();
-
-            Mesh = new ChunkMesh(meshFilter);
-        }
-
     }
 
 }
