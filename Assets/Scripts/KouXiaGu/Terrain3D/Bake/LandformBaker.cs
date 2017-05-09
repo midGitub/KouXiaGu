@@ -96,12 +96,6 @@ namespace KouXiaGu.Terrain3D
                 currentUpdateTime = 0;
             }
 
-            //runtimeStopwatch.Restart();
-            //while (requestQueue.Count != 0 
-            //    && !runtimeStopwatch.Await() 
-            //    && bakeCoroutine.MoveNext())
-            //    continue;
-
             runtimeStopwatch.Restart();
             bakeCoroutine.MoveNext();
         }
@@ -151,10 +145,12 @@ namespace KouXiaGu.Terrain3D
                     bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
                 }
 
+                if (runtimeStopwatch.Await())
+                    yield return null;
+
                 bakeRequest.BakeCompleted();
                 Complete:
                 requestQueue.Dequeue();
-                yield return null;
             }
         }
 

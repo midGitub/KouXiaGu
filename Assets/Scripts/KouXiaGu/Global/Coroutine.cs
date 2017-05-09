@@ -28,6 +28,7 @@ namespace KouXiaGu
         {
             if (coroutineStack.Count != 0)
             {
+            Start:
                 IEnumerator request = coroutineStack.Peek();
                 bool moveNext = false;
 
@@ -57,6 +58,7 @@ namespace KouXiaGu
                 if (newCoroutine != null)
                 {
                     coroutineStack.Push(newCoroutine);
+                    goto Start;
                 }
             }
             return IsCompleted;

@@ -513,8 +513,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayRadius:
-    x: 2
-    y: 2
+    x: 10
+    y: 10
 --- !u!33 &232559847
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2039,7 +2039,7 @@ MonoBehaviour:
     diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
     heightShader: {fileID: 4800000, guid: 1f2f90526623fcc43b7dd38171b75795, type: 3}
   runtimeStopwatch:
-    idleSeconds: 1
+    idleSeconds: 0.5
   waitUpdate: 0
 --- !u!114 &1146917774
 MonoBehaviour:
