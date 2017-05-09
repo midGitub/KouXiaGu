@@ -96,11 +96,14 @@ namespace KouXiaGu.Terrain3D
                 currentUpdateTime = 0;
             }
 
+            //runtimeStopwatch.Restart();
+            //while (requestQueue.Count != 0 
+            //    && !runtimeStopwatch.Await() 
+            //    && bakeCoroutine.MoveNext())
+            //    continue;
+
             runtimeStopwatch.Restart();
-            while (requestQueue.Count != 0 
-                && !runtimeStopwatch.Await() 
-                && bakeCoroutine.MoveNext())
-                continue;
+            bakeCoroutine.MoveNext();
         }
 
         void Reset()
@@ -112,6 +115,12 @@ namespace KouXiaGu.Terrain3D
         {
             while (true)
             {
+                if (requestQueue.Count == 0)
+                {
+                    yield return null;
+                    continue;
+                }
+
                 IBakeRequest bakeRequest = requestQueue.Peek();
 
                 if (bakeRequest.IsCanceled)
@@ -123,16 +132,19 @@ namespace KouXiaGu.Terrain3D
 
                 if ((targets & BakeTargets.Landform) > 0)
                 {
-                    yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                    yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter, runtimeStopwatch);
                     var diffuseMap = bakeCamera.GetDiffuseTexture(bakeLandform.DiffuseRT);
                     var heightMap = bakeCamera.GetHeightTexture(bakeLandform.HeightRT);
                     bakeRequest.Textures.SetDiffuseMap(diffuseMap);
                     bakeRequest.Textures.SetHeightMap(heightMap);
                 }
 
+                if (runtimeStopwatch.Await())
+                    yield return null;
+
                 if ((targets & BakeTargets.Road) > 0)
                 {
-                    yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter);
+                    yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter, runtimeStopwatch);
                     var roadDiffuseMap = bakeCamera.GetDiffuseTexture(bakeRoad.DiffuseRT, TextureFormat.ARGB32);
                     var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
                     bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);

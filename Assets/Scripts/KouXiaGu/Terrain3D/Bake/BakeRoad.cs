@@ -54,7 +54,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter)
+        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter, ISegmented state)
         {
             this.bakeCamera = bakeCamera;
             this.worldData = worldData;
@@ -62,13 +62,20 @@ namespace KouXiaGu.Terrain3D
             this.displays = ChunkPartitioner.GetRoad(chunkCenter);
 
             PrepareScene();
-            yield return null;
+            if(state.Await())
+                yield return null;
+
             BakeDiffuse();
-            yield return null;
+            if (state.Await())
+                yield return null;
+
             BakeHeight();
-            yield return null;
+            if (state.Await())
+                yield return null;
+
             ClearScene();
-            yield return null;
+            if (state.Await())
+                yield return null;
         }
 
         void PrepareScene()
