@@ -75,7 +75,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         public bool IsInitialized { get; private set; }
-        public LandformMesh Mesh { get; private set; }
+        public ChunkMesh Mesh { get; private set; }
         public LandformRenderer Renderer { get; private set; }
         public LandformTrigger Trigger { get; private set; }
 
@@ -91,7 +91,7 @@ namespace KouXiaGu.Terrain3D
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshCollider = GetComponent<MeshCollider>();
 
-            Mesh = new LandformMesh(meshFilter);
+            Mesh = new ChunkMesh(meshFilter);
             Renderer = new LandformRenderer(meshRenderer);
             Trigger = new LandformTrigger(meshCollider, Renderer);
 
