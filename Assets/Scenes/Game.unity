@@ -513,8 +513,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayRadius:
-    x: 10
-    y: 10
+    x: 4
+    y: 4
 --- !u!33 &232559847
 MeshFilter:
   m_ObjectHideFlags: 0
