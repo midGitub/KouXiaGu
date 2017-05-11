@@ -8,8 +8,17 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    [Serializable]
     public class DynamicWall
     {
+        public DynamicWall()
+        {
+
+        }
+
+
+        List<Node> nodeList;
+
 
         /// <summary>
         /// 构建节点记录;
@@ -18,6 +27,10 @@ namespace KouXiaGu.Terrain3D
         {
             SortedList<Vector3> verticeSortedList = new SortedList<Vector3>(vertices, VerticeComparer_x.instance);
 
+            foreach (var vertice in verticeSortedList)
+            {
+
+            }
 
         }
 
@@ -42,34 +55,65 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 节点记录;
         /// </summary>
+        [Serializable]
         class Node
         {
-            public Node(float interpolatedValue)
+            public Node(Vector3 position, float interpolatedValue)
             {
+                this.position = position;
                 this.interpolatedValue = interpolatedValue;
+                points = new List<Point>();
+            }
+
+            Vector3 position;
+            float interpolatedValue;
+            List<Point> points;
+
+            public void Add(Vector3 childPosition)
+            {
+                Vector3 localPosition = position - childPosition;
+                float localAngle = AngleY(position, childPosition);
+                Point point = new Point(localPosition, localAngle);
+                points.Add(point);
             }
 
             /// <summary>
-            /// 插入值;
+            /// 返回弧度;
             /// </summary>
-            float interpolatedValue;
-            List<Point> points;
+            float AngleY(Vector3 from, Vector3 to)
+            {
+                return Mathf.Atan2((to.x - from.x), (to.z - from.z));
+            }
+
         }
 
         /// <summary>
         /// 点记录;
         /// </summary>
+        [Serializable]
         class Point
         {
-            /// <summary>
-            /// 相对于父节点的角度;
-            /// </summary>
-            float localAngle;
+            public Point(Vector3 localPosition, float localAngle)
+            {
+                this.localPosition = localPosition;
+                this.localAngle = localAngle;
+            }
 
             /// <summary>
             /// 相对于父节点的位置;
             /// </summary>
             Vector3 localPosition;
+
+            /// <summary>
+            /// 相对于父节点的角度;
+            /// </summary>
+            float localAngle;
+
+            public override string ToString()
+            {
+                return "[Position:" + localPosition + ",Angle:" + localAngle + "]";
+            }
+
         }
 
     }
