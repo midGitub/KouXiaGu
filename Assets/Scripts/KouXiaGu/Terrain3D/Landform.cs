@@ -58,6 +58,7 @@ namespace KouXiaGu.Terrain3D
         public BuildRequestManager BuildManager { get; private set; }
         public BuildRequestUpdater BuildUpdater { get; private set; }
         public WorldMapWatcher MapWatcher { get; private set; }
+        public WaterManager Water { get; private set; }
 
         Landform Initialize(IWorldData worldData)
         {
@@ -68,6 +69,7 @@ namespace KouXiaGu.Terrain3D
                 BuildManager = new BuildRequestManager(Builder);
                 BuildUpdater = new BuildRequestUpdater(BuildManager);
                 MapWatcher = new WorldMapWatcher(Builder, worldData.Map.PredefinedMap.Data);
+                Water = SceneObject.GetObject<WaterManager>();
             }
             return this;
         }
