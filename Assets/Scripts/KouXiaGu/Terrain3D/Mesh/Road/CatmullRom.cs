@@ -5,19 +5,24 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-
-    public static class CatmullRom
+    /// <summary>
+    /// CatmullRom 样条曲线;
+    /// </summary>
+    public class CatmullRom : ISpline
     {
 
         /// <summary>
-        /// 获取到完整的样条曲线路径;
+        /// 获取到完整的样条曲线路径;与 GetSpline() 不同于 points 参数;
         /// </summary>
+        /// <param name="points">最少需要2个点</param>
         /// <param name="segmentPoints">分段点数</param>
         /// <returns>迭代结构;</returns>
         public static IEnumerable<Vector3> GetFullSpline(IList<Vector3> points, int segmentPoints)
         {
             if (points == null)
                 throw new ArgumentNullException();
+            if (points.Count < 2)
+                throw new ArgumentException();
 
             float segment = Math.Abs(1f / segmentPoints);
             int endIndex = points.Count - 1;
@@ -42,12 +47,15 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到曲线;
         /// </summary>
+        /// <param name="points">最少需要4个点</param>
         /// <param name="segmentPoints">分段点数</param>
         /// <returns>迭代结构;</returns>
         public static IEnumerable<Vector3> GetSpline(IList<Vector3> points, int segmentPoints)
         {
             if (points == null)
                 throw new ArgumentNullException();
+            if (points.Count < 4)
+                throw new ArgumentException();
 
             float segment = Math.Abs(1f / segmentPoints);
             int endIndex = points.Count - 2;
@@ -86,6 +94,19 @@ namespace KouXiaGu.Terrain3D
 
             return new Vector3((float)x, 0f, (float)z);
         }
+
+
+
+        public CatmullRom()
+        {
+
+        }
+
+        public Vector3 GetPoint(float f)
+        {
+            throw new NotImplementedException();
+        }
+
 
     }
 

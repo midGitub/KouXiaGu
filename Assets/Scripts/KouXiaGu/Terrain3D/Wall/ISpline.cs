@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 曲线接口;
+    /// 曲线;
     /// </summary>
     public interface ISpline
     {
