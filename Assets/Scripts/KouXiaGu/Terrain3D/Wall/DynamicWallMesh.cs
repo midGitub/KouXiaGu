@@ -11,12 +11,19 @@ namespace KouXiaGu.Terrain3D
     /// 动态墙体网格;
     /// </summary>
     [DisallowMultipleComponent]
-    class DynamicWallMesh : MonoBehaviour
+    [RequireComponent(typeof(MeshFilter))]
+    public class DynamicWallMesh : MonoBehaviour
     {
         DynamicWallMesh()
         {
         }
 
+        MeshFilter meshFilter;
+
+        void Awake()
+        {
+            meshFilter = GetComponent<MeshFilter>();
+        }
 
 
 
