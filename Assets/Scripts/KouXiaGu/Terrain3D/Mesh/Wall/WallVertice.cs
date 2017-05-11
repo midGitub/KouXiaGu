@@ -72,9 +72,9 @@ namespace KouXiaGu.Terrain3D
 
             for (int i = 0; i < wall.Count; i++)
             {
-                Vector3 anchorPoint = spline.GetPoint(d);
+                Vector3 anchorPoint = spline.InterpolatedPoint(d);
                 d += increment;
-                Vector3 nextPoint = spline.GetPoint(d);
+                Vector3 nextPoint = spline.InterpolatedPoint(d);
 
                 WallSection section = wall[i];
                 section.Recalculate(anchorPoint, nextPoint);
