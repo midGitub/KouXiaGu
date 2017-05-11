@@ -84,17 +84,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 重置所有参数,在协程运行失败时候调用;
-        /// </summary>
-        public void ResetAll()
-        {
-            if (sceneObjects.Count != 0)
-                ClearScene();
-
-            Reset();
-        }
-
-        /// <summary>
         /// 释放所有该实例创建的 RenderTexture 类型的资源;
         /// </summary>
         public void Reset()

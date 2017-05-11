@@ -19,7 +19,9 @@ namespace KouXiaGu.Terrain3D
             base.OnInspectorGUI();
             var target = (WaterManager)this.target;
 
+            target.IsDisplay = EditorGUILayout.Toggle("IsDisplay", target.IsDisplay);
             target.WaterMode = (Water.WaterMode)EditorGUILayout.EnumPopup("WaterMode", target.WaterMode);
+            target.Size = EditorGUILayout.FloatField("Size", target.Size);
 
             //if (Application.isPlaying)
             //{

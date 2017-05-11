@@ -23,16 +23,15 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Water waterScript;
-        [SerializeField]
         MeshRenderer waterMeshRenderer;
         [SerializeField]
         Material daytimeMaterial;
         [SerializeField]
         Material nighttimeMaterial;
-        [SerializeField, Range(1, 100)]
-        int size = 3;
         [SerializeField]
         WaterTypes waterType;
+        [SerializeField]
+        float seaLevel;
 
         public Material DaytimeMaterial
         {
@@ -42,6 +41,17 @@ namespace KouXiaGu.Terrain3D
         public Material NighttimeMaterial
         {
             get { return nighttimeMaterial; }
+        }
+
+        public float Size
+        {
+            get { return waterScript.transform.localScale.x; }
+            set { waterScript.transform.localScale = new Vector3(value, 1, value); }
+        }
+
+        public WaterTypes WaterType
+        {
+            get { return waterType; }
         }
 
         public Water.WaterMode WaterMode
@@ -56,20 +66,29 @@ namespace KouXiaGu.Terrain3D
             set { waterScript.gameObject.SetActive(value); }
         }
 
-        void Start()
+        /// <summary>
+        /// 水资源显示块的位置;世界坐标;
+        /// </summary>
+        public Vector3 ChunkPosition
         {
-            SetSize(size);
+            get
+            {
+                Vector3 pos = waterScript.transform.position;
+                pos.y = seaLevel;
+                return pos;
+            }
+            set
+            {
+                Vector3 pos = value;
+                pos.y = seaLevel;
+                waterScript.transform.position = pos;
+            }
+        }
+
+        void Awake()
+        {
+            waterMeshRenderer = waterScript.GetComponent<MeshRenderer>();
             SetWaterTypes(waterType);
-        }
-
-        void OnValidate()
-        {
-            Start();
-        }
-
-        public void SetSize(int size)
-        {
-            transform.localScale = new Vector3(size, 1, size);
         }
 
         public void SetWaterTypes(WaterTypes type)

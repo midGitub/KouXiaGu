@@ -53,6 +53,17 @@ namespace KouXiaGu.Terrain3D
             objectPool = new RoadMeshPool(prefab, "BakeRoadMesh");
         }
 
+        /// <summary>
+        /// 释放所有该实例创建的 RenderTexture 类型的资源;
+        /// </summary>
+        public void Reset()
+        {
+            bakeCamera.ReleaseTemporary(DiffuseRT);
+            DiffuseRT = null;
+
+            bakeCamera.ReleaseTemporary(HeightRT);
+            HeightRT = null;
+        }
 
         public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter, ISegmented state)
         {

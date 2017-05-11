@@ -131,6 +131,7 @@ namespace KouXiaGu.Terrain3D
                     var heightMap = bakeCamera.GetHeightTexture(bakeLandform.HeightRT);
                     bakeRequest.Textures.SetDiffuseMap(diffuseMap);
                     bakeRequest.Textures.SetHeightMap(heightMap);
+                    bakeLandform.Reset();
                 }
 
                 if (runtimeStopwatch.Await())
@@ -143,6 +144,7 @@ namespace KouXiaGu.Terrain3D
                     var roadHeightMap = bakeCamera.GetHeightTexture(bakeRoad.HeightRT);
                     bakeRequest.Textures.SetRoadDiffuseMap(roadDiffuseMap);
                     bakeRequest.Textures.SetRoadHeightMap(roadHeightMap);
+                    bakeRoad.Reset();
                 }
 
                 if (runtimeStopwatch.Await())
