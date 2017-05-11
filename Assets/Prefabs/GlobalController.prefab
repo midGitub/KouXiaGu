@@ -861,6 +861,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8173fc5894be454f9d1c31f067f41b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waterScript: {fileID: 0}
+  waterMeshRenderer: {fileID: 0}
   daytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
   nighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
   size: 0

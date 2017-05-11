@@ -9,7 +9,6 @@ namespace KouXiaGu.Terrain3D
 {
 
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(Water))]
     public class WaterManager : MonoBehaviour
     {
         WaterManager()
@@ -23,14 +22,15 @@ namespace KouXiaGu.Terrain3D
         }
 
         [SerializeField]
+        Water waterScript;
+        [SerializeField]
+        MeshRenderer waterMeshRenderer;
+        [SerializeField]
         Material daytimeMaterial;
         [SerializeField]
         Material nighttimeMaterial;
         [SerializeField, Range(1, 100)]
         int size = 3;
-
-        MeshRenderer _renderer;
-        Water waterScript;
 
         public Material DaytimeMaterial
         {
@@ -46,12 +46,6 @@ namespace KouXiaGu.Terrain3D
         {
             get { return waterScript.waterMode; }
             set { waterScript.waterMode = value; }
-        }
-
-        void Awake()
-        {
-            _renderer = GetComponent<MeshRenderer>();
-            waterScript = GetComponent<Water>();
         }
 
         void Start()
@@ -81,7 +75,7 @@ namespace KouXiaGu.Terrain3D
                     throw new ArgumentException();
             }
 
-            _renderer.sharedMaterial = material;
+            waterMeshRenderer.sharedMaterial = material;
         }
 
     }
