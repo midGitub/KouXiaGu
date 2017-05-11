@@ -1,33 +1,15 @@
-﻿using System;
+﻿using KouXiaGu.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using KouXiaGu.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
 
-    /// <summary>
-    /// 动态墙体网格;
-    /// </summary>
-    [DisallowMultipleComponent]
-    [RequireComponent(typeof(MeshFilter))]
-    public sealed class DynamicWallMesh : MonoBehaviour
+    public class DynamicWall
     {
-        DynamicWallMesh()
-        {
-        }
-
-
-
-        [ContextMenu("Build")]
-        public void Build()
-        {
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
-            Mesh mesh = meshFilter.sharedMesh;
-            Build(mesh.vertices);
-        }
 
         /// <summary>
         /// 构建节点记录;
@@ -56,6 +38,40 @@ namespace KouXiaGu.Terrain3D
                 return (x.x - y.x) < 0 ? -1 : 1;
             }
         }
+
+        /// <summary>
+        /// 节点记录;
+        /// </summary>
+        class Node
+        {
+            public Node(float interpolatedValue)
+            {
+                this.interpolatedValue = interpolatedValue;
+            }
+
+            /// <summary>
+            /// 插入值;
+            /// </summary>
+            float interpolatedValue;
+            List<Point> points;
+        }
+
+        /// <summary>
+        /// 点记录;
+        /// </summary>
+        class Point
+        {
+            /// <summary>
+            /// 相对于父节点的角度;
+            /// </summary>
+            float localAngle;
+
+            /// <summary>
+            /// 相对于父节点的位置;
+            /// </summary>
+            Vector3 localPosition;
+        }
+
     }
 
 }

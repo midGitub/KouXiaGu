@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace KouXiaGu.Collections
@@ -7,7 +8,7 @@ namespace KouXiaGu.Collections
     /// <summary>
     /// 不稳定的排序合集;使用二分插入排序;
     /// </summary>
-    public class SortedList<T> : ICollection<T>, IEnumerable<T>
+    public class SortedList<T> : ICollection<T>, IEnumerable<T>, IReadOnlyCollection<T>, IReadOnlyList<T>
     {
 
         public SortedList()
@@ -103,6 +104,7 @@ namespace KouXiaGu.Collections
         /// <summary>
         /// 获取到插入下标;
         /// </summary>
+        [Obsolete]
         int BinarySearch(T item)
         {
             int low = 0;
