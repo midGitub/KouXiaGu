@@ -19,10 +19,17 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        [SerializeField]
+        float spacing;
+        DynamicWall dynamicWall;
 
+        public DynamicWall DynamicWall
+        {
+            get { return dynamicWall; }
+        }
 
         [ContextMenu("Build")]
-        public void Build()
+        void Build()
         {
             MeshFilter meshFilter = GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
@@ -32,29 +39,10 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 构建节点记录;
         /// </summary>
-        public void Build(Vector3[] vertices)
+        void Build(Vector3[] vertices)
         {
-            SortedList<Vector3> verticeSortedList = new SortedList<Vector3>(vertices, VerticeComparer_x.instance);
-
-
-        }
-
-        /// <summary>
-        /// 对比坐标的x值;
-        /// </summary>
-        class VerticeComparer_x : IComparer<Vector3>
-        {
-            public static readonly VerticeComparer_x instance = new VerticeComparer_x();
-
-            /// <summary>
-            /// 小于零  x 小于 y。
-            /// 零      x 等于 y。
-            /// 大于零  x 大于 y。
-            /// </summary>
-            public int Compare(Vector3 x, Vector3 y)
-            {
-                return (x.x - y.x) < 0 ? -1 : 1;
-            }
+            dynamicWall = new DynamicWall();
+            dynamicWall.Build(vertices, spacing);
         }
     }
 
