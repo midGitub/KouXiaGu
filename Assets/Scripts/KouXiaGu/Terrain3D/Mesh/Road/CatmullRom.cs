@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -17,6 +18,7 @@ namespace KouXiaGu.Terrain3D
         /// <param name="points">最少需要2个点</param>
         /// <param name="segmentPoints">分段点数</param>
         /// <returns>迭代结构;</returns>
+        [Obsolete]
         public static IEnumerable<Vector3> GetFullSpline(IList<Vector3> points, int segmentPoints)
         {
             if (points == null)
@@ -97,10 +99,12 @@ namespace KouXiaGu.Terrain3D
 
 
 
-        public CatmullRom()
+        public CatmullRom(params Vector3[] points)
         {
-
+            this.points = new ReadOnlyCollection<Vector3>(points);
         }
+
+        ReadOnlyCollection<Vector3> points;
 
         public Vector3 GetPoint(float f)
         {
