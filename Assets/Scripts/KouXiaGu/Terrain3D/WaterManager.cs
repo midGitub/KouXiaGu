@@ -31,6 +31,8 @@ namespace KouXiaGu.Terrain3D
         Material nighttimeMaterial;
         [SerializeField, Range(1, 100)]
         int size = 3;
+        [SerializeField]
+        WaterTypes waterType;
 
         public Material DaytimeMaterial
         {
@@ -50,14 +52,19 @@ namespace KouXiaGu.Terrain3D
 
         public bool IsDisplay
         {
-            get { return waterScript.enabled; }
-            set { waterScript.enabled = value; }
+            get { return waterScript.gameObject.activeSelf; }
+            set { waterScript.gameObject.SetActive(value); }
         }
 
         void Start()
         {
             SetSize(size);
-            SetWaterTypes(WaterTypes.DayTime);
+            SetWaterTypes(waterType);
+        }
+
+        void OnValidate()
+        {
+            Start();
         }
 
         public void SetSize(int size)

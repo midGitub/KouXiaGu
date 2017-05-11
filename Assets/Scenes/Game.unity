@@ -3026,7 +3026,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
+  - {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3076,7 +3076,7 @@ Transform:
   m_GameObject: {fileID: 2025523264}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.27, z: 0}
-  m_LocalScale: {x: 6, y: 1, z: 6}
+  m_LocalScale: {x: 11, y: 1, z: 11}
   m_Children:
   - {fileID: 1989664918}
   m_Father: {fileID: 1146917776}
@@ -3097,7 +3097,8 @@ MonoBehaviour:
   waterMeshRenderer: {fileID: 1989664921}
   daytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
   nighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
-  size: 6
+  size: 11
+  waterType: 1
 --- !u!1 &2055660885
 GameObject:
   m_ObjectHideFlags: 0

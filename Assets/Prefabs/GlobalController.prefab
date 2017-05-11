@@ -304,7 +304,7 @@ Transform:
   m_GameObject: {fileID: 1249173694254914}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 1, z: 0}
   m_Children: []
   m_Father: {fileID: 4819578455441702}
   m_RootOrder: 0
@@ -866,6 +866,7 @@ MonoBehaviour:
   daytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
   nighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
   size: 0
+  waterType: 0
 --- !u!114 &114920700574159214
 MonoBehaviour:
   m_ObjectHideFlags: 1
