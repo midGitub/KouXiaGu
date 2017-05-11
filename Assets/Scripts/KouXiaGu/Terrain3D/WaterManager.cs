@@ -48,6 +48,12 @@ namespace KouXiaGu.Terrain3D
             set { waterScript.waterMode = value; }
         }
 
+        public bool IsDisplay
+        {
+            get { return waterScript.enabled; }
+            set { waterScript.enabled = value; }
+        }
+
         void Start()
         {
             SetSize(size);

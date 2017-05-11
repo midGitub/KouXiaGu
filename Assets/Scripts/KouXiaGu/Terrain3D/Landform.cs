@@ -70,6 +70,7 @@ namespace KouXiaGu.Terrain3D
                 BuildUpdater = new BuildRequestUpdater(BuildManager);
                 MapWatcher = new WorldMapWatcher(Builder, worldData.Map.PredefinedMap.Data);
                 Water = SceneObject.GetObject<WaterManager>();
+                Water.IsDisplay = true;
             }
             return this;
         }
