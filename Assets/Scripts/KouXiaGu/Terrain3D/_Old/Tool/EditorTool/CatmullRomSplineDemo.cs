@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// 用于演示曲线;
     /// </summary>
     [ExecuteInEditMode]
-    public class CatmullRomSpline : MonoBehaviour
+    public class CatmullRomSplineDemo : MonoBehaviour
     {
 
         public Vector3[] Points;
@@ -40,7 +40,7 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("初始化完整网格;")]
         void SetFull()
         {
-            IEnumerable<Vector3> spline = CatmullRom.GetFullSpline(Points, SegmentPoints);
+            IEnumerable<Vector3> spline = CatmullRomSpline.GetFullSpline(Points, SegmentPoints);
             List<Vector3> path = new List<Vector3>(spline);
             GetComponent<RoadMesh>().SetSpline(path, roadWidth);
         }
@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("初始化网格;")]
         void Set()
         {
-            IEnumerable<Vector3> spline = CatmullRom.GetSpline(Points, SegmentPoints);
+            IEnumerable<Vector3> spline = CatmullRomSpline.GetSpline(Points, SegmentPoints);
             List<Vector3> path = new List<Vector3>(spline);
             GetComponent<RoadMesh>().SetSpline(path, roadWidth);
             Debug.Log(path.ToLog());

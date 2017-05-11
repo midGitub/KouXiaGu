@@ -12,11 +12,11 @@ namespace KouXiaGu.Terrain3D
     /// 用于演示曲线;
     /// </summary>
     [CanEditMultipleObjects]
-    [CustomEditor(typeof(CatmullRomSpline))]
+    [CustomEditor(typeof(CatmullRomSplineDemo))]
     public class CatmullRomSplineEditor : Editor
     {
 
-        CatmullRomSpline catmullRomSpline;
+        CatmullRomSplineDemo catmullRomSpline;
         Transform handleTransform;
         Quaternion handleRotation;
 
@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
 
         void OnSceneGUI()
         {
-            catmullRomSpline = (CatmullRomSpline)this.target;
+            catmullRomSpline = (CatmullRomSplineDemo)this.target;
             points = catmullRomSpline.Points;
             handleTransform = catmullRomSpline.transform;
             handleRotation = Tools.pivotRotation == PivotRotation.Local ?
@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             newPoints.Clear();
-            newPoints.AddRange(CatmullRom.GetFullSpline(points, segmentPoints));
+            newPoints.AddRange(CatmullRomSpline.GetFullSpline(points, segmentPoints));
 
             for (int i = 0; i < newPoints.Count - 1; i++)
             {

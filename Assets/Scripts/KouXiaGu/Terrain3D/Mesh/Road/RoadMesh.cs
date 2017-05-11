@@ -51,7 +51,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void SetPath(IList<Vector3> paths, int segmentPoints, float width)
         {
-            var spline = CatmullRom.GetSpline(paths, segmentPoints);
+            var spline = CatmullRomSpline.GetSpline(paths, segmentPoints);
             SetSpline(spline.ToArray(), width);
         }
 

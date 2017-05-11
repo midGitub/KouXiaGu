@@ -9,7 +9,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// CatmullRom 样条曲线;
     /// </summary>
-    public class CatmullRom : ISpline
+    public class CatmullRomSpline : ISpline
     {
 
         /// <summary>
@@ -98,20 +98,20 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-
-        public CatmullRom(params Vector3[] points)
+        public CatmullRomSpline(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
-            this.points = new ReadOnlyCollection<Vector3>(points);
+            this.p0 = p0;
+            this.p1 = p1;
+            this.p2 = p2;
+            this.p3 = p3;
         }
 
-        ReadOnlyCollection<Vector3> points;
+        public Vector3 p0, p1, p2, p3;
 
         public Vector3 GetPoint(float f)
         {
-            throw new NotImplementedException();
+            return InterpolatedPoint(p0, p1, p2, p3, f);
         }
-
-
     }
 
 }
