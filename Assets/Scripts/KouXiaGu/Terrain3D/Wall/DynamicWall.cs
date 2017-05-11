@@ -13,25 +13,55 @@ namespace KouXiaGu.Terrain3D
     {
         public DynamicWall()
         {
-
+            nodeList = new List<Node>();
         }
 
-
         List<Node> nodeList;
-
 
         /// <summary>
         /// 构建节点记录;
         /// </summary>
-        public void Build(Vector3[] vertices)
+        public void Build(Vector3[] vertices, float spacing)
         {
             SortedList<Vector3> verticeSortedList = new SortedList<Vector3>(vertices, VerticeComparer_x.instance);
+            Node currentNode = CreateNode(verticeSortedList, 0);
 
-            foreach (var vertice in verticeSortedList)
+            for (int index = 0; index < verticeSortedList.Count; index++)
             {
-
+                Vector3 point = verticeSortedList[index];
+                if (point.x - currentNode.Position.x > spacing)
+                {
+                    currentNode = CreateNode(verticeSortedList, index);
+                }
+                currentNode.Add(point);
             }
+        }
 
+        Node CreateNode(SortedList<Vector3> verticeSortedList, int index)
+        {
+            Vector3 point = verticeSortedList[index];
+            float start = verticeSortedList[0].x;
+            float end = verticeSortedList[verticeSortedList.Count - 1].x;
+            float interpolatedValue = (point.x - start) / (end - start);
+            Vector3 nodePosition = new Vector3(0, point.x, 0);
+            var node = new Node(nodePosition, interpolatedValue);
+            nodeList.Add(node);
+            return node;
+        }
+
+        /// <summary>
+        /// 获取到所有原始的顶点坐标;
+        /// </summary>
+        IEnumerable<Vector3> GetOriginalVertices()
+        {
+            foreach (var node in nodeList)
+            {
+                var originalVertices = node.GetOriginalVertices();
+                foreach (var originalVertice in originalVertices)
+                {
+                    yield return originalVertice;
+                }
+            }
         }
 
         /// <summary>
@@ -56,7 +86,7 @@ namespace KouXiaGu.Terrain3D
         /// 节点记录;
         /// </summary>
         [Serializable]
-        class Node
+        public class Node
         {
             public Node(Vector3 position, float interpolatedValue)
             {
@@ -68,6 +98,11 @@ namespace KouXiaGu.Terrain3D
             Vector3 position;
             float interpolatedValue;
             List<Point> points;
+
+            public Vector3 Position
+            {
+                get { return position; }
+            }
 
             public void Add(Vector3 childPosition)
             {
@@ -85,13 +120,23 @@ namespace KouXiaGu.Terrain3D
                 return Mathf.Atan2((to.x - from.x), (to.z - from.z));
             }
 
+            /// <summary>
+            /// 获取到所有原始的顶点坐标;
+            /// </summary>
+            public IEnumerable<Vector3> GetOriginalVertices()
+            {
+                foreach (var point in points)
+                {
+                    yield return position + point.LocalPosition;
+                }
+            }
         }
 
         /// <summary>
         /// 点记录;
         /// </summary>
         [Serializable]
-        class Point
+        public struct Point
         {
             public Point(Vector3 localPosition, float localAngle)
             {
@@ -109,13 +154,20 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             float localAngle;
 
+            public Vector3 LocalPosition
+            {
+                get { return localPosition; }
+            }
+
+            public float LocalAngle
+            {
+                get { return localAngle; }
+            }
+
             public override string ToString()
             {
                 return "[Position:" + localPosition + ",Angle:" + localAngle + "]";
             }
-
         }
-
     }
-
 }
