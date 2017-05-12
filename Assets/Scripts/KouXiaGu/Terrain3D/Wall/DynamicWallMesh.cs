@@ -41,8 +41,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void Build(Vector3[] vertices)
         {
-            dynamicWall = new DynamicWallSectionInfo();
-            dynamicWall.Build(vertices, spacing);
+            dynamicWall = new DynamicWallSectionInfo(vertices, spacing);
         }
     }
 

@@ -2,22 +2,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 动态墙体节点信息;
+    /// </summary>
     [Serializable]
     public class DynamicWallSectionInfo
     {
-        public DynamicWallSectionInfo()
+        DynamicWallSectionInfo()
         {
             sectionList = new List<Section>();
             pointList = new List<Point>();
         }
 
-        public DynamicWallSectionInfo(Vector3[] vertices, float spacing)
+        public DynamicWallSectionInfo(Vector3[] vertices, float spacing) : this()
         {
             Build(vertices, spacing);
         }
@@ -35,6 +37,11 @@ namespace KouXiaGu.Terrain3D
         public List<Point> PointList
         {
             get { return pointList; }
+        }
+
+        public int VerticeCount
+        {
+            get { return pointList.Count; }
         }
 
         /// <summary>
@@ -88,6 +95,20 @@ namespace KouXiaGu.Terrain3D
             return Mathf.Atan2((to.x - from.x), (to.z - from.z));
         }
 
+        /// <summary>
+        /// 获取到所有原始的顶点坐标;
+        /// </summary>
+        public IEnumerable<Vector3> GetOriginalVertices()
+        {
+            foreach (var section in SectionList)
+            {
+                foreach (var index in section.Children)
+                {
+                    Point pointObject = pointList[index];
+                    yield return pointObject.LocalPosition + section.Position;
+                }
+            }
+        }
 
         /// <summary>
         /// 对比坐标的x值;
@@ -106,7 +127,6 @@ namespace KouXiaGu.Terrain3D
                 return (x.x - y.x) < 0 ? -1 : 1;
             }
         }
-
 
         [Serializable]
         public class Section
@@ -171,55 +191,5 @@ namespace KouXiaGu.Terrain3D
                 return "[Position:" + localPosition + ",Angle:" + localAngle + "]";
             }
         }
-
-        ///// <summary>
-        ///// 节点记录;
-        ///// </summary>
-        //[Serializable]
-        //public class Node
-        //{
-        //    public Node(Vector3 position, float interpolatedValue)
-        //    {
-        //        this.position = position;
-        //        this.interpolatedValue = interpolatedValue;
-        //        points = new List<Point>();
-        //    }
-
-        //    Vector3 position;
-        //    float interpolatedValue;
-        //    List<Point> points;
-
-        //    public Vector3 Position
-        //    {
-        //        get { return position; }
-        //    }
-
-        //    public void Add(Vector3 childPosition)
-        //    {
-        //        Vector3 localPosition = position - childPosition;
-        //        float localAngle = AngleY(position, childPosition);
-        //        Point point = new Point(localPosition, localAngle);
-        //        points.Add(point);
-        //    }
-
-        //    /// <summary>
-        //    /// 返回弧度;
-        //    /// </summary>
-        //    float AngleY(Vector3 from, Vector3 to)
-        //    {
-        //        return Mathf.Atan2((to.x - from.x), (to.z - from.z));
-        //    }
-
-        //    /// <summary>
-        //    /// 获取到所有原始的顶点坐标;
-        //    /// </summary>
-        //    public IEnumerable<Vector3> GetOriginalVertices()
-        //    {
-        //        foreach (var point in points)
-        //        {
-        //            yield return position + point.LocalPosition;
-        //        }
-        //    }
-        //}
     }
 }

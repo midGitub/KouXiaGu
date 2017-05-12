@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         {
             base.OnInspectorGUI();
             disPlayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", disPlayPointSize);
-            EditorGUILayout.LabelField("VerticeCount:" + Target.DynamicWall.GetOriginalVertices().Count());
+            EditorGUILayout.LabelField("VerticeCount:" + Target.DynamicWall.VerticeCount);
         }
 
         void OnSceneGUI()
@@ -35,18 +35,18 @@ namespace KouXiaGu.Terrain3D
 
         void DisPlayDynamicWall(DynamicWallSectionInfo item)
         {
-            foreach (var node in item.Nodes)
+            Handles.color = Color.red;
+            foreach (var vertice in item.GetOriginalVertices())
             {
-                Handles.color = Color.blue;
-                Vector3 nodePos = Target.transform.TransformPoint(node.Position);
-                Handles.SphereHandleCap(1, nodePos, Quaternion.identity, disPlayPointSize, EventType.Repaint);
+                Vector3 newVertice = Target.transform.TransformPoint(vertice);
+                Handles.SphereHandleCap(1, newVertice, Quaternion.identity, disPlayPointSize, EventType.Repaint);
+            }
 
-                foreach (var vertice in node.GetOriginalVertices())
-                {
-                    Handles.color = Color.red;
-                    Vector3 newVertice = Target.transform.TransformPoint(vertice);
-                    Handles.SphereHandleCap(1, newVertice, Quaternion.identity, disPlayPointSize, EventType.Repaint);
-                }
+            Handles.color = Color.blue;
+            foreach (var section in item.SectionList)
+            {
+                Vector3 nodePos = Target.transform.TransformPoint(section.Position);
+                Handles.SphereHandleCap(1, nodePos, Quaternion.identity, disPlayPointSize, EventType.Repaint);
             }
         }
 
