@@ -18,6 +18,11 @@ namespace KouXiaGu.Terrain3D
 
         List<Node> nodeList;
 
+        public List<Node> Nodes
+        {
+            get { return nodeList; }
+        }
+
         /// <summary>
         /// 构建节点记录;
         /// </summary>
@@ -43,7 +48,7 @@ namespace KouXiaGu.Terrain3D
             float start = verticeSortedList[0].x;
             float end = verticeSortedList[verticeSortedList.Count - 1].x;
             float interpolatedValue = (point.x - start) / (end - start);
-            Vector3 nodePosition = new Vector3(0, point.x, 0);
+            Vector3 nodePosition = new Vector3(point.x, 0, 0);
             var node = new Node(nodePosition, interpolatedValue);
             nodeList.Add(node);
             return node;
@@ -52,7 +57,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到所有原始的顶点坐标;
         /// </summary>
-        IEnumerable<Vector3> GetOriginalVertices()
+        public IEnumerable<Vector3> GetOriginalVertices()
         {
             foreach (var node in nodeList)
             {
