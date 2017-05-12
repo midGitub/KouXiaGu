@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     class DynamicWallMeshEditor : Editor
     {
 
-        public float disPlayPointSize;
+        public float disPlayPointSize = 0.01f;
 
 
         DynamicWallMesh Target
@@ -33,7 +33,7 @@ namespace KouXiaGu.Terrain3D
             DisPlayDynamicWall(Target.DynamicWall);
         }
 
-        void DisPlayDynamicWall(DynamicWall item)
+        void DisPlayDynamicWall(DynamicWallSectionInfo item)
         {
             foreach (var node in item.Nodes)
             {

@@ -21,9 +21,9 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         float spacing;
-        DynamicWall dynamicWall;
+        DynamicWallSectionInfo dynamicWall;
 
-        public DynamicWall DynamicWall
+        public DynamicWallSectionInfo DynamicWall
         {
             get { return dynamicWall; }
         }
@@ -41,7 +41,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void Build(Vector3[] vertices)
         {
-            dynamicWall = new DynamicWall();
+            dynamicWall = new DynamicWallSectionInfo();
             dynamicWall.Build(vertices, spacing);
         }
     }
