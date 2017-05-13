@@ -54,19 +54,10 @@ namespace KouXiaGu.Terrain3D.Wall
         /// <summary>
         /// 更改顶点坐标到曲线;
         /// </summary>
-        void Transformation(ref Vector3[] vertices, ISpline spline)
+        void Transformation(ISpline spline, ref Vector3[] vertices)
         {
-            foreach (var section in dynamicWall.JointInfo.JointPoints)
-            {
-                Vector3 newSection = spline.InterpolatedPoint(section.InterpolatedValue);
-                foreach (var childIndex in section.Children)
-                {
-                    Vector3 newVertice = WallInfo.Points[childIndex].LocalPosition + newSection;
-                    vertices[childIndex] = newVertice;
-                }
-            }
+            dynamicWall.Transformation(spline, ref vertices);
         }
-
 
         /// <summary>
         /// 更改节点坐标;
@@ -77,26 +68,31 @@ namespace KouXiaGu.Terrain3D.Wall
         {
             Mesh mesh = meshFilter.sharedMesh;
             Vector3[] vertices = mesh.vertices;
-            ChangeSection(sectionIndex, position, ref vertices);
+            WallInfo.TransformSection(sectionIndex, position, ref vertices);
             mesh.vertices = vertices;
         }
 
-        /// <summary>
-        /// 更改节点坐标;
-        /// </summary>
-        /// <param name="sectionIndex">节点坐标下标;</param>
-        /// <param name="position">更改后的位置;</param>
-        /// <param name="vertices">进行变化的顶点;</param>
-        public void ChangeSection(int sectionIndex, Vector3 position, ref Vector3[] vertices)
-        {
-            JointPoint section = WallInfo.JointInfo.JointPoints[sectionIndex];
-            foreach (var childIndex in section.Children)
-            {
-                Vector3 newVertice = WallInfo.Points[childIndex].LocalPosition + position;
-                vertices[childIndex] = newVertice;
-            }
-        }
 
+        static readonly ISpline spline = new CatmullRomSpline(
+                new Vector3(-1, 0, 0),
+                new Vector3(0, 0, 1),
+                new Vector3(1, 0, 0),
+                new Vector3(2, 0, -1)
+            );
+
+        static readonly ISpline spline2 = new CatmullRomSpline(
+                new Vector3(0, 0, -1),
+                new Vector3(0, 0, 0),
+                new Vector3(0, 0, 1),
+                new Vector3(0, 0, 2)
+            );
+
+        static readonly ISpline spline3 = new CatmullRomSpline(
+                new Vector3(-1, 0, -1),
+                new Vector3(0, 0, 0),
+                new Vector3(1, 0, 1),
+                new Vector3(2, 0, 2)
+            );
 
 
         [ContextMenu("Test")]
@@ -105,20 +101,7 @@ namespace KouXiaGu.Terrain3D.Wall
             var meshFilter = GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
             Vector3[] vertices = mesh.vertices;
-            ISpline spline = new CatmullRomSpline(
-                new Vector3(-1, 0, 0),
-                new Vector3(0, 0, 1),
-                new Vector3(1, 0, 0),
-                new Vector3(2, 0, -1)
-                );
-
-            ISpline spline2 = new CatmullRomSpline(
-                new Vector3(0, 0, -1),
-                new Vector3(0, 0, 0),
-                new Vector3(0, 0, 1),
-                new Vector3(0, 0, 2)
-                );
-            Transformation(ref vertices, spline2);
+            Transformation(spline3, ref vertices);
             mesh.vertices = vertices;
         }
 
@@ -128,7 +111,7 @@ namespace KouXiaGu.Terrain3D.Wall
             var meshFilter = GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
             Vector3[] vertices = mesh.vertices;
-            dynamicWall.ChangeSection(0, 0.195f, ref vertices);
+            dynamicWall.TransformSection(0, 0.195f, ref vertices);
             mesh.vertices = vertices;
         }
 
