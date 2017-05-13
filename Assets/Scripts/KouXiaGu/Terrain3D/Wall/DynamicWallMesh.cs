@@ -21,6 +21,7 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         float spacing;
+        [SerializeField, HideInInspector]
         DynamicWallSectionInfo dynamicWall;
 
         public DynamicWallSectionInfo DynamicWall

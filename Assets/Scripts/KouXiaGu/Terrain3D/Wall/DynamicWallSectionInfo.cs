@@ -131,6 +131,10 @@ namespace KouXiaGu.Terrain3D
         [Serializable]
         public class Section
         {
+            Section()
+            {
+            }
+
             public Section(Vector3 position, float interpolatedValue)
             {
                 this.position = position;
@@ -138,8 +142,11 @@ namespace KouXiaGu.Terrain3D
                 children = new List<int>();
             }
 
+            [SerializeField]
             Vector3 position;
+            [SerializeField]
             float interpolatedValue;
+            [SerializeField]
             List<int> children;
 
             public Vector3 Position
@@ -167,7 +174,9 @@ namespace KouXiaGu.Terrain3D
                 this.localAngle = localAngle;
             }
 
+            [SerializeField]
             Vector3 localPosition;
+            [SerializeField]
             float localAngle;
 
             /// <summary>
