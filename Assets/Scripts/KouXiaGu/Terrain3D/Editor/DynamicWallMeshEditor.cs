@@ -13,14 +13,14 @@ namespace KouXiaGu.Terrain3D
     class DynamicWallMeshEditor : Editor
     {
 
-        float disPlayPointSize = 0.01f;
-        bool isDisplayCurrentVertices = true;
+        public float disPlayPointSize = 0.01f;
+        public bool isDisplayCurrentVertices = true;
         MeshFilter meshFilter;
 
         DynamicWallMesh Target
         {
             get { return (DynamicWallMesh)this.target; }
-        } 
+        }
 
         void OnEnable()
         {
@@ -37,6 +37,10 @@ namespace KouXiaGu.Terrain3D
 
         void OnSceneGUI()
         {
+            Transform handleTransform = Target.transform;
+            Quaternion handleRotation = Tools.pivotRotation == PivotRotation.Local ?
+                handleTransform.rotation : Quaternion.identity;
+
             if (isDisplayCurrentVertices)
             {
                 DisplayCurrentVertices();
@@ -45,44 +49,69 @@ namespace KouXiaGu.Terrain3D
             {
                 DisPlayDynamicWall();
             }
+
+            DisPlaySection(handleTransform, handleRotation);
         }
 
         void DisPlayDynamicWall()
         {
-            Handles.color = Color.red;
-            foreach (var vertice in Target.DynamicWall.GetVertices())
-            {
-                SceneGUISphere(vertice);
-                //Vector3 newVertice = Target.transform.TransformPoint(vertice);
-                //Handles.SphereHandleCap(1, newVertice, Quaternion.identity, disPlayPointSize, EventType.Repaint);
-            }
+            IList<DynamicWallSectionInfo.Section> sections = Target.DynamicWall.Sections;
+            IList<DynamicWallSectionInfo.Point> points = Target.DynamicWall.Points;
 
-            Handles.color = Color.blue;
-            foreach (var section in Target.DynamicWall.SectionPoint)
+            foreach (var section in sections)
             {
-                SceneGUISphere(section);
-                //Vector3 nodePos = Target.transform.TransformPoint(section);
-                //Handles.SphereHandleCap(1, nodePos, Quaternion.identity, disPlayPointSize, EventType.Repaint);
+                Handles.color = RandomColor.Get((int)(section.InterpolatedValue * 100), 1);
+                SceneGUISphere(section.Position);
+                foreach (var childIndex in section.Children)
+                {
+                    Vector3 locaPosition = points[childIndex].LocalPosition;
+                    Vector3 position = locaPosition + section.Position;
+                    SceneGUISphere(position);
+                }
             }
         }
 
-        void SceneGUISphere(Vector3 localPosition)
+        Vector3 SceneGUISphere(Vector3 localPosition)
         {
             Vector3 position = Target.transform.TransformPoint(localPosition);
             Handles.SphereHandleCap(1, position, Quaternion.identity, disPlayPointSize, EventType.Repaint);
+            return position;
         }
 
         void DisplayCurrentVertices()
         {
-            Handles.color = Color.red;
-            Mesh mesh = meshFilter.sharedMesh;
+            IList<DynamicWallSectionInfo.Section> sections = Target.DynamicWall.Sections;
+            IList<Vector3> points = meshFilter.sharedMesh.vertices;
 
-            foreach (var vertice in mesh.vertices)
+            foreach (var section in sections)
             {
-                SceneGUISphere(vertice);
+                Handles.color = RandomColor.Get((int)(section.InterpolatedValue * 100), 1);
+                SceneGUISphere(section.Position);
+                foreach (var childIndex in section.Children)
+                {
+                    Vector3 position = points[childIndex];
+                    SceneGUISphere(position);
+                }
             }
         }
 
+        void DisPlaySection(Transform handleTransform, Quaternion handleRotation)
+        {
+            IList<DynamicWallSectionInfo.Section> sections = Target.DynamicWall.Sections;
+            for (int i = 0; i < sections.Count; i++)
+            {
+                Vector3 point = handleTransform.TransformPoint(sections[i].Position);
+                EditorGUI.BeginChangeCheck();
+                point = Handles.DoPositionHandle(point, handleRotation);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(Target, "Move Point");
+                    EditorUtility.SetDirty(Target);
+                    var result = handleTransform.InverseTransformPoint(point);
+                    Target.ChangeSection(i, result);
+                }
+            }
+        }
     }
 
 }

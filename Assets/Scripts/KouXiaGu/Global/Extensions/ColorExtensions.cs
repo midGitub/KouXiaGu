@@ -8,9 +8,9 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 颜色拓展;
+    /// 十六位颜色表示拓展;
     /// </summary>
-    public static class ColorExtensions
+    public static class HexColorExtensions
     {
 
         public static Color HexToColor(string hex)
@@ -61,6 +61,49 @@ namespace KouXiaGu
         static float ToColorSingle(this int i)
         {
             return i / 255;
+        }
+
+    }
+
+    /// <summary>
+    /// 随机颜色;
+    /// </summary>
+    public static class RandomColor
+    {
+
+        static float Value01
+        {
+            get { return UnityEngine.Random.value; }
+        }
+
+        public static Color Next()
+        {
+            return Next(Value01);
+        }
+
+        public static Color Next(float alpha)
+        {
+            return new Color(Value01, Value01, Value01, alpha);
+        }
+
+        public static float Sample(this System.Random random)
+        {
+            return (float)random.NextDouble();
+        }
+
+        /// <summary>
+        /// 根据种子获取到颜色;
+        /// </summary>
+        public static Color Get(int seed)
+        {
+            var random = new System.Random(seed);
+            return new Color(random.Sample(), random.Sample(), random.Sample(), random.Sample());
+        }
+
+        public static Color Get(int seed, float alpha)
+        {
+            var random = new System.Random(seed);
+            return new Color(random.Sample(), random.Sample(), random.Sample(), alpha);
         }
 
     }

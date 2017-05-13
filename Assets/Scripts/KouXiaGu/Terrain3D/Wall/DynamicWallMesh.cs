@@ -19,6 +19,7 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
+        MeshFilter _meshFilter;
         [SerializeField]
         float spacing;
         [SerializeField]
@@ -29,10 +30,14 @@ namespace KouXiaGu.Terrain3D
             get { return dynamicWall; }
         }
 
+        MeshFilter meshFilter
+        {
+            get { return _meshFilter ?? (_meshFilter = GetComponent<MeshFilter>()); }
+        }
+
         [ContextMenu("Build")]
         void Build()
         {
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
             Build(mesh.vertices);
         }
@@ -60,6 +65,38 @@ namespace KouXiaGu.Terrain3D
                 }
             }
         }
+
+
+        /// <summary>
+        /// 更改节点坐标;
+        /// </summary>
+        /// <param name="sectionIndex">节点坐标下标;</param>
+        /// <param name="position">更改后的位置;</param>
+        public void ChangeSection(int sectionIndex, Vector3 position)
+        {
+            Mesh mesh = meshFilter.sharedMesh;
+            Vector3[] vertices = mesh.vertices;
+            ChangeSection(sectionIndex, position, ref vertices);
+            mesh.vertices = vertices;
+        }
+
+        /// <summary>
+        /// 更改节点坐标;
+        /// </summary>
+        /// <param name="sectionIndex">节点坐标下标;</param>
+        /// <param name="position">更改后的位置;</param>
+        /// <param name="vertices">进行变化的顶点;</param>
+        public void ChangeSection(int sectionIndex, Vector3 position, ref Vector3[] vertices)
+        {
+            DynamicWallSectionInfo.Section section = DynamicWall.Sections[sectionIndex];
+            foreach (var childIndex in section.Children)
+            {
+                Vector3 newVertice = DynamicWall.Points[childIndex].LocalPosition + position;
+                vertices[childIndex] = newVertice;
+            }
+        }
+
+
 
         [ContextMenu("Test")]
         void Test()

@@ -54,12 +54,12 @@ namespace KouXiaGu.Terrain3D
             get { return sectionList.Select(item => item.Position); }
         }
 
-        internal IList<Section> Sections
+        public IList<Section> Sections
         {
             get { return sectionList; }
         }
 
-        internal IList<Point> Points
+        public IList<Point> Points
         {
             get { return pointList; }
         }
@@ -186,7 +186,7 @@ namespace KouXiaGu.Terrain3D
                 get { return interpolatedValue; }
             }
 
-            internal List<int> Children
+            public List<int> Children
             {
                 get { return children; }
             }
