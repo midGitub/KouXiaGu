@@ -116,18 +116,5 @@ namespace KouXiaGu.Terrain3D.Wall
                 vertices[childIndex] = position;
             }
         }
-
-        /// <summary>
-        /// 获取到半径圆上任何一点,忽略Y轴;
-        /// </summary>
-        Vector3 Circle(Vector3 position, WallVertice info, float angle)
-        {
-            float radius = info.localRadius;
-            angle = info.LocalAngle + angle;
-            position.x += Mathf.Sin(angle) * radius;
-            position.y += info.LocalPosition.y;
-            position.z += Mathf.Cos(angle) * radius;
-            return position;
-        }
     }
 }
