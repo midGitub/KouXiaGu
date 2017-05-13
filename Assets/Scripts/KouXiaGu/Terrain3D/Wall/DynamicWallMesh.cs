@@ -32,8 +32,7 @@ namespace KouXiaGu.Terrain3D.Wall
 
         MeshFilter meshFilter
         {
-            get { return _meshFilter ??
-                    (_meshFilter = GetComponent<MeshFilter>()); }
+            get { return _meshFilter == null ? (_meshFilter = GetComponent<MeshFilter>()) : _meshFilter; }
         }
 
         [ContextMenu("Build")]
@@ -103,7 +102,7 @@ namespace KouXiaGu.Terrain3D.Wall
         [ContextMenu("Test")]
         void Test()
         {
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
+            var meshFilter = GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
             Vector3[] vertices = mesh.vertices;
             ISpline spline = new CatmullRomSpline(
@@ -114,12 +113,22 @@ namespace KouXiaGu.Terrain3D.Wall
                 );
 
             ISpline spline2 = new CatmullRomSpline(
-                new Vector3(2, 0, 0),
-                new Vector3(1, 0, 0),
+                new Vector3(0, 0, -1),
                 new Vector3(0, 0, 0),
-                new Vector3(-1, 0, 0)
+                new Vector3(0, 0, 1),
+                new Vector3(0, 0, 2)
                 );
-            Transformation(ref vertices, spline);
+            Transformation(ref vertices, spline2);
+            mesh.vertices = vertices;
+        }
+
+        [ContextMenu("Test_Angle")]
+        void Test_Angle()
+        {
+            var meshFilter = GetComponent<MeshFilter>();
+            Mesh mesh = meshFilter.sharedMesh;
+            Vector3[] vertices = mesh.vertices;
+            dynamicWall.ChangeSection(0, 0.195f, ref vertices);
             mesh.vertices = vertices;
         }
 

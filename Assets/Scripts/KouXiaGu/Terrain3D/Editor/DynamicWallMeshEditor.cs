@@ -57,7 +57,7 @@ namespace KouXiaGu.Terrain3D
         void DisPlayDynamicWall()
         {
             IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
-            IList<LocalVertice> points = Target.WallInfo.Points;
+            IList<Wall.WallVertice> points = Target.WallInfo.Points;
 
             foreach (var section in sections)
             {

@@ -58,9 +58,9 @@ namespace KouXiaGu.Terrain3D.Wall
     /// 转换为本地坐标的顶点;
     /// </summary>
     [Serializable]
-    public struct LocalVertice
+    public struct WallVertice
     {
-        public LocalVertice(Vector3 localPosition, float localAngle)
+        public WallVertice(Vector3 localPosition, float localAngle)
         {
             this.localPosition = localPosition;
             this.localAngle = localAngle;
@@ -70,6 +70,11 @@ namespace KouXiaGu.Terrain3D.Wall
         Vector3 localPosition;
         [SerializeField]
         float localAngle;
+
+        public float localRadius
+        {
+            get { return Mathf.Sqrt(localPosition.x * localPosition.x + localPosition.z * localPosition.z); }
+        }
 
         /// <summary>
         /// 相对于父节点的位置;

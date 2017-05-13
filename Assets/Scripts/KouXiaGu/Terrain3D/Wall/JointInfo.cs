@@ -44,9 +44,9 @@ namespace KouXiaGu.Terrain3D.Wall
         void AutoBuild(Vector3[] vertices, float spacing)
         {
             sectionCollection = new List<JointPoint>();
-            SortedList<Record> verticeSortedList = SortByPosition_X(vertices);
-            float start = verticeSortedList[0].Position.x;
-            float end = verticeSortedList[verticeSortedList.Count - 1].Position.x;
+            SortedList<Record> verticeSortedList = SortByPosition_Z(vertices);
+            float start = verticeSortedList[0].Position.z;
+            float end = verticeSortedList[verticeSortedList.Count - 1].Position.z;
 
             JointPoint currentSection = CreateSection(start, end, start);
             sectionCollection.Add(currentSection);
@@ -55,10 +55,9 @@ namespace KouXiaGu.Terrain3D.Wall
             {
                 Record record = verticeSortedList[index];
                 int verticeIndex = record.Index;
-
-                if (record.Position.x - currentSection.Position.x > spacing)
+                if (record.Position.z - currentSection.Position.z > spacing)
                 {
-                    currentSection = CreateSection(start, end, record.Position.x);
+                    currentSection = CreateSection(start, end, record.Position.z);
                     sectionCollection.Add(currentSection);
                 }
                 currentSection.Children.Add(verticeIndex);
@@ -68,9 +67,9 @@ namespace KouXiaGu.Terrain3D.Wall
         /// <summary>
         /// 获取到根据点的X值从小到达排序的合集;
         /// </summary>
-        SortedList<Record> SortByPosition_X(Vector3[] vertices)
+        SortedList<Record> SortByPosition_Z(Vector3[] vertices)
         {
-            SortedList<Record> verticeSortedList = new SortedList<Record>(VerticeComparer_x.instance);
+            SortedList<Record> verticeSortedList = new SortedList<Record>(VerticeComparer_Z.instance);
             for (int i = 0; i < vertices.Length; i++)
             {
                 Record record = new Record(i, vertices[i]);
@@ -82,21 +81,21 @@ namespace KouXiaGu.Terrain3D.Wall
         JointPoint CreateSection(float start, float end, float current)
         {
             float interpolatedValue = (current - start) / (end - start);
-            Vector3 nodePosition = new Vector3(current, 0, 0);
+            Vector3 nodePosition = new Vector3(0, 0, current);
             var section = new JointPoint(nodePosition, interpolatedValue);
             return section;
         }
 
         /// <summary>
-        /// 对比坐标的x值;
+        /// 对比坐标的z值;
         /// </summary>
-        class VerticeComparer_x : IComparer<Record>
+        class VerticeComparer_Z : IComparer<Record>
         {
-            public static readonly VerticeComparer_x instance = new VerticeComparer_x();
+            public static readonly VerticeComparer_Z instance = new VerticeComparer_Z();
 
             public int Compare(Record x, Record y)
             {
-                return (x.Position.x - y.Position.x) < 0 ? -1 : 1;
+                return (x.Position.z - y.Position.z) < 0 ? -1 : 1;
             }
         }
 

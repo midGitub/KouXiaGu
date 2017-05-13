@@ -46,6 +46,20 @@ namespace KouXiaGu.Terrain3D
             MeshFilter.sharedMesh = null;
         }
 
+        [ContextMenu("Test")]
+        void Test()
+        {
+            Vector3[] points = new Vector3[]
+                {
+                    new Vector3(-1, 0, 0),
+                    new Vector3(0, 0, 1),
+                    new Vector3(1, 0, 0),
+                    new Vector3(0, 0, -1),
+                };
+
+            SetPath(points, 16, 0.1f);
+        }
+
         /// <summary>
         /// 路径点数量大于等于 4 的;
         /// </summary>
