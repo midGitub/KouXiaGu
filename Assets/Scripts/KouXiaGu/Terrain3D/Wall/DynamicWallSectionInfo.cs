@@ -24,19 +24,24 @@ namespace KouXiaGu.Terrain3D
             Build(vertices, spacing);
         }
 
+        /// <summary>
+        /// 深拷贝;
+        /// </summary>
+        public DynamicWallSectionInfo(IEnumerable<Section> sections, IEnumerable<Point> points)
+        {
+            sections = sections.Select(item => new Section(item));
+            sectionList = new List<Section>(sections);
+            pointList = new List<Point>(points);
+        }
+
         [SerializeField]
         List<Section> sectionList;
         [SerializeField]
         List<Point> pointList;
 
-        public List<Section> SectionList
+        public int SectionCount
         {
-            get { return sectionList; }
-        }
-
-        public List<Point> PointList
-        {
-            get { return pointList; }
+            get { return sectionList.Count; }
         }
 
         public int VerticeCount
@@ -44,10 +49,25 @@ namespace KouXiaGu.Terrain3D
             get { return pointList.Count; }
         }
 
+        public IEnumerable<Vector3> SectionPoint
+        {
+            get { return sectionList.Select(item => item.Position); }
+        }
+
+        internal IList<Section> Sections
+        {
+            get { return sectionList; }
+        }
+
+        internal IList<Point> Points
+        {
+            get { return pointList; }
+        }
+
         /// <summary>
         /// 构建节点记录;
         /// </summary>
-        public void Build(Vector3[] vertices, float spacing)
+        void Build(Vector3[] vertices, float spacing)
         {
             SortedList<Vector3> verticeSortedList = new SortedList<Vector3>(vertices, VerticeComparer_x.instance);
             Section currentSection = CreateSection(verticeSortedList, 0);
@@ -81,7 +101,7 @@ namespace KouXiaGu.Terrain3D
 
         Point CreatePoint(Section parent, Vector3 point)
         {
-            Vector3 localPosition = parent.Position - point;
+            Vector3 localPosition = point - parent.Position;
             float localAngle = AngleY(parent.Position, point);
             var item = new Point(localPosition, localAngle);
             return item;
@@ -98,9 +118,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到所有原始的顶点坐标;
         /// </summary>
-        public IEnumerable<Vector3> GetOriginalVertices()
+        public IEnumerable<Vector3> GetVertices()
         {
-            foreach (var section in SectionList)
+            foreach (var section in sectionList)
             {
                 foreach (var index in section.Children)
                 {
@@ -135,6 +155,13 @@ namespace KouXiaGu.Terrain3D
             {
             }
 
+            public Section(Section section)
+            {
+                position = section.position;
+                interpolatedValue = section.interpolatedValue;
+                children = new List<int>(section.children);
+            }
+
             public Section(Vector3 position, float interpolatedValue)
             {
                 this.position = position;
@@ -159,7 +186,7 @@ namespace KouXiaGu.Terrain3D
                 get { return interpolatedValue; }
             }
 
-            public List<int> Children
+            internal List<int> Children
             {
                 get { return children; }
             }
