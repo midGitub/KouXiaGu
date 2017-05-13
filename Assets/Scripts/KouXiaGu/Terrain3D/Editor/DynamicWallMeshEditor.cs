@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
             base.OnInspectorGUI();
             isDisplayCurrentVertices = EditorGUILayout.Toggle("IsDisplayCurrentVertices", isDisplayCurrentVertices);
             disPlayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", disPlayPointSize);
-            EditorGUILayout.LabelField("VerticeCount:" + Target.DynamicWall.VerticeCount);
+            EditorGUILayout.LabelField("VerticeCount:" + Target.DynamicWall.Points.Count);
         }
 
         void OnSceneGUI()

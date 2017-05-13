@@ -106,9 +106,9 @@ namespace KouXiaGu.Terrain3D
             Vector3[] vertices = mesh.vertices;
             ISpline spline = new CatmullRomSpline(
                 new Vector3(-1, 0, 0),
-                new Vector3(0, 0, 0),
+                new Vector3(0, 0, 1),
                 new Vector3(1, 0, 0),
-                new Vector3(2, 0, 0)
+                new Vector3(2, 0, -1)
                 );
 
             ISpline spline2 = new CatmullRomSpline(
@@ -117,7 +117,7 @@ namespace KouXiaGu.Terrain3D
                 new Vector3(0, 0, 0),
                 new Vector3(-1, 0, 0)
                 );
-            Transformation(ref vertices, spline2);
+            Transformation(ref vertices, spline);
             mesh.vertices = vertices;
         }
 

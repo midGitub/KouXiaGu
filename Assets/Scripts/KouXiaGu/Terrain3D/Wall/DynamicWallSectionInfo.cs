@@ -13,13 +13,10 @@ namespace KouXiaGu.Terrain3D
     [Serializable]
     public class DynamicWallSectionInfo
     {
-        DynamicWallSectionInfo()
-        {
-            sectionList = new List<Section>();
-            pointList = new List<Point>();
-        }
-
-        public DynamicWallSectionInfo(Vector3[] vertices, float spacing) : this()
+        /// <summary>
+        /// 根据定义间隔自动构建;
+        /// </summary>
+        public DynamicWallSectionInfo(Vector3[] vertices, float spacing)
         {
             Build(vertices, spacing);
         }
@@ -30,38 +27,23 @@ namespace KouXiaGu.Terrain3D
         public DynamicWallSectionInfo(IEnumerable<Section> sections, IEnumerable<Point> points)
         {
             sections = sections.Select(item => new Section(item));
-            sectionList = new List<Section>(sections);
-            pointList = new List<Point>(points);
+            sectionCollection = new List<Section>(sections);
+            pointCollection = points.ToArray();
         }
 
         [SerializeField]
-        List<Section> sectionList;
+        List<Section> sectionCollection;
         [SerializeField]
-        List<Point> pointList;
-
-        public int SectionCount
-        {
-            get { return sectionList.Count; }
-        }
-
-        public int VerticeCount
-        {
-            get { return pointList.Count; }
-        }
-
-        public IEnumerable<Vector3> SectionPoint
-        {
-            get { return sectionList.Select(item => item.Position); }
-        }
+        Point[] pointCollection;
 
         public IList<Section> Sections
         {
-            get { return sectionList; }
+            get { return sectionCollection; }
         }
 
         public IList<Point> Points
         {
-            get { return pointList; }
+            get { return pointCollection; }
         }
 
         /// <summary>
@@ -69,34 +51,52 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void Build(Vector3[] vertices, float spacing)
         {
-            SortedList<Vector3> verticeSortedList = new SortedList<Vector3>(vertices, VerticeComparer_x.instance);
-            Section currentSection = CreateSection(verticeSortedList, 0);
-            sectionList.Add(currentSection);
+            sectionCollection = new List<Section>();
+            pointCollection = new Point[vertices.Length];
+            SortedList<Record> verticeSortedList = SortByPosition_X(vertices);
+            float start = verticeSortedList[0].Position.x;
+            float end = verticeSortedList[verticeSortedList.Count - 1].Position.x;
+
+            Section currentSection = CreateSection(start, end, start);
+            sectionCollection.Add(currentSection);
 
             for (int index = 0; index < verticeSortedList.Count; index++)
             {
-                Vector3 point = verticeSortedList[index];
-                if (point.x - currentSection.Position.x > spacing)
-                {
-                    currentSection = CreateSection(verticeSortedList, index);
-                    sectionList.Add(currentSection);
-                }
-                currentSection.Children.Add(index);
+                Record record = verticeSortedList[index];
+                int verticeIndex = record.Index;
 
-                Point currentPoint = CreatePoint(currentSection, point);
-                pointList.Add(currentPoint);
+                if (record.Position.x - currentSection.Position.x > spacing)
+                {
+                    currentSection = CreateSection(start, end, record.Position.x);
+                    sectionCollection.Add(currentSection);
+                }
+                currentSection.Children.Add(verticeIndex);
+
+                Point currentPoint = CreatePoint(currentSection, record.Position);
+                pointCollection[verticeIndex] = currentPoint;
             }
         }
 
-        Section CreateSection(SortedList<Vector3> verticeSortedList, int index)
+        /// <summary>
+        /// 获取到根据点的X值从小到达排序的合集;
+        /// </summary>
+        SortedList<Record> SortByPosition_X(Vector3[] vertices)
         {
-            Vector3 point = verticeSortedList[index];
-            float start = verticeSortedList[0].x;
-            float end = verticeSortedList[verticeSortedList.Count - 1].x;
-            float interpolatedValue = (point.x - start) / (end - start);
-            Vector3 nodePosition = new Vector3(point.x, 0, 0);
-            var item = new Section(nodePosition, interpolatedValue);
-            return item;
+            SortedList<Record> verticeSortedList = new SortedList<Record>(VerticeComparer_x.instance);
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                Record record = new Record(i, vertices[i]);
+                verticeSortedList.Add(record);
+            }
+            return verticeSortedList;
+        }
+
+        Section CreateSection(float start, float end, float current)
+        {
+            float interpolatedValue = (current - start) / (end - start);
+            Vector3 nodePosition = new Vector3(current, 0, 0);
+            var section = new Section(nodePosition, interpolatedValue);
+            return section;
         }
 
         Point CreatePoint(Section parent, Vector3 point)
@@ -120,11 +120,11 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<Vector3> GetVertices()
         {
-            foreach (var section in sectionList)
+            foreach (var section in sectionCollection)
             {
                 foreach (var index in section.Children)
                 {
-                    Point pointObject = pointList[index];
+                    Point pointObject = pointCollection[index];
                     yield return pointObject.LocalPosition + section.Position;
                 }
             }
@@ -133,19 +133,26 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 对比坐标的x值;
         /// </summary>
-        class VerticeComparer_x : IComparer<Vector3>
+        class VerticeComparer_x : IComparer<Record>
         {
             public static readonly VerticeComparer_x instance = new VerticeComparer_x();
 
-            /// <summary>
-            /// 小于零  x 小于 y。
-            /// 零      x 等于 y。
-            /// 大于零  x 大于 y。
-            /// </summary>
-            public int Compare(Vector3 x, Vector3 y)
+            public int Compare(Record x, Record y)
             {
-                return (x.x - y.x) < 0 ? -1 : 1;
+                return (x.Position.x - y.Position.x) < 0 ? -1 : 1;
             }
+        }
+
+        struct Record
+        {
+            public Record(int index, Vector3 position)
+            {
+                Index = index;
+                Position = position;
+            }
+
+            public int Index { get; private set; }
+            public Vector3 Position { get; private set; }
         }
 
         [Serializable]
