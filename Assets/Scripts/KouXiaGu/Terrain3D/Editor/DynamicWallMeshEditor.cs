@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEditor;
+using KouXiaGu.Terrain3D.Wall;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -32,7 +33,7 @@ namespace KouXiaGu.Terrain3D
             base.OnInspectorGUI();
             isDisplayCurrentVertices = EditorGUILayout.Toggle("IsDisplayCurrentVertices", isDisplayCurrentVertices);
             disPlayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", disPlayPointSize);
-            EditorGUILayout.LabelField("VerticeCount:" + Target.DynamicWall.Points.Count);
+            EditorGUILayout.LabelField("VerticeCount:" + Target.WallInfo.Points.Count);
         }
 
         void OnSceneGUI()
@@ -55,8 +56,8 @@ namespace KouXiaGu.Terrain3D
 
         void DisPlayDynamicWall()
         {
-            IList<DynamicWallSectionInfo.Section> sections = Target.DynamicWall.Sections;
-            IList<DynamicWallSectionInfo.Point> points = Target.DynamicWall.Points;
+            IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
+            IList<LocalVertice> points = Target.WallInfo.Points;
 
             foreach (var section in sections)
             {
@@ -80,7 +81,7 @@ namespace KouXiaGu.Terrain3D
 
         void DisplayCurrentVertices()
         {
-            IList<DynamicWallSectionInfo.Section> sections = Target.DynamicWall.Sections;
+            IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
             IList<Vector3> points = meshFilter.sharedMesh.vertices;
 
             foreach (var section in sections)
@@ -97,7 +98,7 @@ namespace KouXiaGu.Terrain3D
 
         void DisPlaySection(Transform handleTransform, Quaternion handleRotation)
         {
-            IList<DynamicWallSectionInfo.Section> sections = Target.DynamicWall.Sections;
+            IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
             for (int i = 0; i < sections.Count; i++)
             {
                 Vector3 point = handleTransform.TransformPoint(sections[i].Position);

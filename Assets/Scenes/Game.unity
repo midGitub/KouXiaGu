@@ -799,8 +799,317 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spacing: 0
   dynamicWall:
-    sectionCollection: []
-    pointCollection: []
+    sectionCollection:
+    - position: {x: -0.29999998, y: 0, z: 0}
+      interpolatedValue: 0
+      children: 0c0000000d000000140000001b0000001c0000001d0000001e0000001f000000200000002100000022000000230000002400000025000000260000002700000028000000290000002a0000002b0000002d0000002e0000003b0000004200000064000000650000006c000000730000008000000081000000880000008f000000
+    - position: {x: -0.19999999, y: 0, z: 0}
+      interpolatedValue: 0.16666667
+      children: 0a0000000b000000130000001a0000002c0000002f0000003a0000004100000062000000630000006b000000720000007e0000007f000000870000008e000000
+    - position: {x: -0.099999994, y: 0, z: 0}
+      interpolatedValue: 0.33333334
+      children: 0800000009000000120000001900000030000000310000003c0000004300000060000000610000006a000000710000007c0000007d000000860000008d000000
+    - position: {x: 0, y: 0, z: 0}
+      interpolatedValue: 0.5
+      children: 0600000007000000110000001800000032000000330000003d000000440000005e0000005f00000069000000700000007a0000007b000000850000008c000000
+    - position: {x: 0.099999994, y: 0, z: 0}
+      interpolatedValue: 0.6666667
+      children: 0400000005000000100000001700000034000000350000003e000000450000005c0000005d000000680000006f0000007800000079000000840000008b000000
+    - position: {x: 0.19999999, y: 0, z: 0}
+      interpolatedValue: 0.8333333
+      children: 00000000030000000e0000001500000036000000370000003f00000046000000580000005b000000660000006d00000074000000770000008200000089000000
+    - position: {x: 0.29999998, y: 0, z: 0}
+      interpolatedValue: 1
+      children: 01000000020000000f000000160000003800000039000000400000004700000048000000490000004a0000004b0000004c0000004d0000004e0000004f0000005000000051000000520000005300000054000000550000005600000057000000590000005a000000670000006e0000007500000076000000830000008a000000
+    pointCollection:
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.03333333, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.03333333, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.03333333, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: 0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.03333333}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: -0.099999994}
+      localAngle: 3.1415927
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.03333333}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
+    - localPosition: {x: 0, y: -0.099999994, z: 0.099999994}
+      localAngle: 0
 --- !u!33 &594589399
 MeshFilter:
   m_ObjectHideFlags: 0

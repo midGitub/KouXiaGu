@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.Terrain3D.Wall
 {
 
     /// <summary>
@@ -23,31 +23,33 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         float spacing;
         [SerializeField]
-        DynamicWallSectionInfo dynamicWall;
+        DynamicWall dynamicWall;
 
-        public DynamicWallSectionInfo DynamicWall
+        public DynamicWall WallInfo
         {
             get { return dynamicWall; }
         }
 
         MeshFilter meshFilter
         {
-            get { return _meshFilter ?? (_meshFilter = GetComponent<MeshFilter>()); }
+            get { return _meshFilter ??
+                    (_meshFilter = GetComponent<MeshFilter>()); }
         }
 
         [ContextMenu("Build")]
         void Build()
         {
             Mesh mesh = meshFilter.sharedMesh;
-            Build(mesh.vertices);
+            Build(mesh.vertices, spacing);
         }
 
         /// <summary>
         /// 构建节点记录;
         /// </summary>
-        void Build(Vector3[] vertices)
+        void Build(Vector3[] vertices, float spacing)
         {
-            dynamicWall = new DynamicWallSectionInfo(vertices, spacing);
+            JointInfo jointInfo = new JointInfo(vertices, spacing);
+            dynamicWall = new DynamicWall(jointInfo, vertices);
         }
 
         /// <summary>
@@ -55,12 +57,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void Transformation(ref Vector3[] vertices, ISpline spline)
         {
-            foreach (var section in dynamicWall.Sections)
+            foreach (var section in dynamicWall.JointInfo.JointPoints)
             {
                 Vector3 newSection = spline.InterpolatedPoint(section.InterpolatedValue);
                 foreach (var childIndex in section.Children)
                 {
-                    Vector3 newVertice = DynamicWall.Points[childIndex].LocalPosition + newSection;
+                    Vector3 newVertice = WallInfo.Points[childIndex].LocalPosition + newSection;
                     vertices[childIndex] = newVertice;
                 }
             }
@@ -88,10 +90,10 @@ namespace KouXiaGu.Terrain3D
         /// <param name="vertices">进行变化的顶点;</param>
         public void ChangeSection(int sectionIndex, Vector3 position, ref Vector3[] vertices)
         {
-            DynamicWallSectionInfo.Section section = DynamicWall.Sections[sectionIndex];
+            JointPoint section = WallInfo.JointInfo.JointPoints[sectionIndex];
             foreach (var childIndex in section.Children)
             {
-                Vector3 newVertice = DynamicWall.Points[childIndex].LocalPosition + position;
+                Vector3 newVertice = WallInfo.Points[childIndex].LocalPosition + position;
                 vertices[childIndex] = newVertice;
             }
         }
