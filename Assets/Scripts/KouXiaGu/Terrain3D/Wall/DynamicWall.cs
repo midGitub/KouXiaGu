@@ -28,11 +28,17 @@ namespace KouXiaGu.Terrain3D.Wall
         [SerializeField]
         WallVertice[] pointCollection;
 
+        /// <summary>
+        /// 节点信息;
+        /// </summary>
         public JointInfo JointInfo
         {
             get { return joint; }
         }
 
+        /// <summary>
+        /// 对应节点位置,转换后的顶点坐标;
+        /// </summary>
         public IList<WallVertice> Points
         {
             get { return pointCollection; }

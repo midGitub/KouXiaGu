@@ -14,105 +14,86 @@ namespace KouXiaGu.Terrain3D
     class DynamicWallMeshEditor : Editor
     {
 
-        public float disPlayPointSize = 0.01f;
-        public bool isDisplayCurrentVertices = true;
+        bool isEditMode;
+        float displayPointSize = 0.01f;
+        float spacing = 0.1f;
+        bool isEditJointPoint;
         MeshFilter meshFilter;
+        DynamicWallMesh instance;
 
-        DynamicWallMesh Target
+        void Awake()
         {
-            get { return (DynamicWallMesh)this.target; }
-        }
-
-        void OnEnable()
-        {
-            meshFilter = Target.GetComponent<MeshFilter>();
+            instance = (DynamicWallMesh)this.target;
+            meshFilter = instance.GetComponent<MeshFilter>();
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            isDisplayCurrentVertices = EditorGUILayout.Toggle("IsDisplayCurrentVertices", isDisplayCurrentVertices);
-            disPlayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", disPlayPointSize);
-            EditorGUILayout.LabelField("VerticeCount:" + Target.WallInfo.Points.Count);
+
+            if (isEditMode = EditorGUILayout.BeginToggleGroup("IsEditMode", isEditMode))
+            {
+                spacing = EditorGUILayout.FloatField("Spacing", spacing);
+                if (GUILayout.Button("Initialize"))
+                {
+                    instance.Build(spacing);
+                }
+
+                displayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", displayPointSize);
+                EditorGUILayout.LabelField("VerticeCount:" + instance.WallInfo.Points.Count);
+            }
+            EditorGUILayout.EndToggleGroup();
         }
 
         void OnSceneGUI()
         {
-            Transform handleTransform = Target.transform;
+            Transform handleTransform = instance.transform;
             Quaternion handleRotation = Tools.pivotRotation == PivotRotation.Local ?
                 handleTransform.rotation : Quaternion.identity;
 
-            if (isDisplayCurrentVertices)
+            if (isEditMode)
             {
-                DisplayCurrentVertices();
+                DisplayVertices(handleTransform, handleRotation);
             }
-            else
-            {
-                DisPlayDynamicWall();
-            }
-
-            DisPlaySection(handleTransform, handleRotation);
         }
 
-        void DisPlayDynamicWall()
+        void SceneGUISphere(Vector3 localPosition)
         {
-            IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
-            IList<Wall.WallVertice> points = Target.WallInfo.Points;
+            Handles.SphereHandleCap(1, localPosition, Quaternion.identity, displayPointSize, EventType.Repaint);
+        }
+
+        void DisplayVertices(Transform handleTransform, Quaternion handleRotation)
+        {
+            IList<JointPoint> sections = instance.WallInfo.JointInfo.JointPoints;
+            Vector3[] vertices = meshFilter.sharedMesh.vertices;
 
             foreach (var section in sections)
             {
                 Handles.color = RandomColor.Get((int)(section.InterpolatedValue * 100), 1);
-                SceneGUISphere(section.Position);
                 foreach (var childIndex in section.Children)
                 {
-                    Vector3 locaPosition = points[childIndex].LocalPosition;
-                    Vector3 position = locaPosition + section.Position;
-                    SceneGUISphere(position);
+                    Vector3 point = handleTransform.TransformPoint(vertices[childIndex]);
+                    SceneGUISphere(point);
                 }
             }
         }
 
-        Vector3 SceneGUISphere(Vector3 localPosition)
-        {
-            Vector3 position = Target.transform.TransformPoint(localPosition);
-            Handles.SphereHandleCap(1, position, Quaternion.identity, disPlayPointSize, EventType.Repaint);
-            return position;
-        }
-
-        void DisplayCurrentVertices()
-        {
-            IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
-            IList<Vector3> points = meshFilter.sharedMesh.vertices;
-
-            foreach (var section in sections)
-            {
-                Handles.color = RandomColor.Get((int)(section.InterpolatedValue * 100), 1);
-                SceneGUISphere(section.Position);
-                foreach (var childIndex in section.Children)
-                {
-                    Vector3 position = points[childIndex];
-                    SceneGUISphere(position);
-                }
-            }
-        }
-
-        void DisPlaySection(Transform handleTransform, Quaternion handleRotation)
-        {
-            IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
-            for (int i = 0; i < sections.Count; i++)
-            {
-                Vector3 point = handleTransform.TransformPoint(sections[i].Position);
-                EditorGUI.BeginChangeCheck();
-                point = Handles.DoPositionHandle(point, handleRotation);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(Target, "Move Point");
-                    EditorUtility.SetDirty(Target);
-                    var result = handleTransform.InverseTransformPoint(point);
-                    //Target.ChangeSection(i, result);
-                }
-            }
-        }
+        //void DisplaySection(Transform handleTransform, Quaternion handleRotation)
+        //{
+        //    IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
+        //    for (int i = 0; i < sections.Count; i++)
+        //    {
+        //        Vector3 point = handleTransform.TransformPoint(sections[i].Position);
+        //        EditorGUI.BeginChangeCheck();
+        //        point = Handles.DoPositionHandle(point, handleRotation);
+        //        if (EditorGUI.EndChangeCheck())
+        //        {
+        //            Undo.RecordObject(Target, "Move Point");
+        //            EditorUtility.SetDirty(Target);
+        //            var result = handleTransform.InverseTransformPoint(point);
+        //        }
+        //    }
+        //}
     }
 
 }

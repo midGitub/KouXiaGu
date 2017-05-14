@@ -106,18 +106,12 @@ namespace KouXiaGu.Terrain3D.Wall
             mesh.vertices = vertices;
         }
 
-        [ContextMenu("Build")]
-        void Build()
-        {
-            Mesh mesh = meshFilter.sharedMesh;
-            Build(mesh.vertices, 0.05f);
-        }
-
         /// <summary>
         /// 构建节点记录;
         /// </summary>
-        void Build(Vector3[] vertices, float spacing)
+        public void Build(float spacing)
         {
+            Vector3[] vertices = currentMesh.vertices;
             JointInfo jointInfo = new JointInfo(vertices, spacing);
             dynamicWall = new DynamicWall(jointInfo, vertices);
         }
