@@ -13,19 +13,18 @@ namespace KouXiaGu.Terrain3D.Wall
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
-    public sealed class DynamicWallMesh : MonoBehaviour
+    public sealed class DynamicMeshScript : MonoBehaviour
     {
-        DynamicWallMesh()
+        DynamicMeshScript()
         {
         }
 
         MeshFilter _meshFilter;
-        [SerializeField]
-        DynamicWall dynamicWall;
+        DynamicMeshData wallInfo;
 
-        public DynamicWall WallInfo
+        public DynamicMeshData WallInfo
         {
-            get { return dynamicWall; }
+            get { return wallInfo; }
         }
 
         MeshFilter meshFilter
@@ -44,7 +43,7 @@ namespace KouXiaGu.Terrain3D.Wall
         [ContextMenu("复原网格")]
         public void RestoreVertices()
         {
-            Vector3[] vertices = dynamicWall.GetOriginalVertices();
+            Vector3[] vertices = wallInfo.GetOriginalVertices();
             currentMesh.vertices = vertices;
         }
 
@@ -63,7 +62,7 @@ namespace KouXiaGu.Terrain3D.Wall
         /// </summary>
         void Transformation(ISpline spline, ref Vector3[] vertices)
         {
-            dynamicWall.Transformation(spline, ref vertices);
+            wallInfo.Transformation(spline, ref vertices);
         }
 
 #region Test
@@ -102,7 +101,7 @@ namespace KouXiaGu.Terrain3D.Wall
             var meshFilter = GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
             Vector3[] vertices = mesh.vertices;
-            dynamicWall.TransformSection(0, 0.195f, ref vertices);
+            wallInfo.TransformSection(0, 0.195f, ref vertices);
             mesh.vertices = vertices;
         }
 
@@ -113,7 +112,7 @@ namespace KouXiaGu.Terrain3D.Wall
         {
             Vector3[] vertices = currentMesh.vertices;
             JointInfo jointInfo = new JointInfo(vertices, spacing);
-            dynamicWall = new DynamicWall(jointInfo, vertices);
+            wallInfo = new DynamicMeshData(jointInfo, vertices);
         }
 
 #endregion

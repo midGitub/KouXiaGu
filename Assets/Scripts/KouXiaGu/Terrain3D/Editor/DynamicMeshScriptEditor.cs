@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEditor;
-using KouXiaGu.Terrain3D.Wall;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.Terrain3D.Wall
 {
 
-    [CustomEditor(typeof(DynamicWallMesh))]
+    [CustomEditor(typeof(DynamicMeshScript))]
     [CanEditMultipleObjects]
-    class DynamicWallMeshEditor : Editor
+    class DynamicMeshScriptEditor : Editor
     {
 
         bool isEditMode;
@@ -19,11 +18,11 @@ namespace KouXiaGu.Terrain3D
         float spacing = 0.1f;
         bool isEditJointPoint;
         MeshFilter meshFilter;
-        DynamicWallMesh instance;
+        DynamicMeshScript instance;
 
         void Awake()
         {
-            instance = (DynamicWallMesh)this.target;
+            instance = (DynamicMeshScript)this.target;
             meshFilter = instance.GetComponent<MeshFilter>();
         }
 

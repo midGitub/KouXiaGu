@@ -8,16 +8,16 @@ namespace KouXiaGu.Terrain3D.Wall
 {
 
     /// <summary>
-    /// 动态墙体,模型中心轴需要沿着z轴;
+    /// 存储网格原始数据,提供转换方法;
     /// </summary>
     [Serializable]
-    public class DynamicWall
+    public class DynamicMeshData
     {
-        DynamicWall()
+        DynamicMeshData()
         {
         }
 
-        public DynamicWall(JointInfo joint, Vector3[] vertices)
+        public DynamicMeshData(JointInfo joint, Vector3[] vertices)
         {
             this.joint = joint;
             pointCollection = Build(joint, vertices);
