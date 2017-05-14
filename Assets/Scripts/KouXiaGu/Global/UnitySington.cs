@@ -17,8 +17,16 @@ namespace KouXiaGu
         /// </summary>
         public static T Instance
         {
-            get { return instance ?? Initialize(); }
-            private set { instance = value; }
+            get
+            {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    return FindOrCreate();
+                }
+#endif
+                return instance ?? FindOrCreate();
+            }
         }
 
         /// <summary>
@@ -29,6 +37,30 @@ namespace KouXiaGu
             get { return instance != null; }
         }
 
+        static T FindOrCreate()
+        {
+            if (instance == null)
+            {
+                instance = GameObject.FindObjectOfType<T>();
+                if (instance == null)
+                {
+                    instance = CreateInstance();
+                }
+            }
+            return instance;
+        }
+
+        static T CreateInstance()
+        {
+            var type = typeof(T);
+            var gameObject = new GameObject(type.Name, type);
+            T item = gameObject.GetComponent<T>();
+            return item;
+        }
+
+
+
+        [Obsolete]
         static T Initialize()
         {
             if (instance == null)
@@ -70,12 +102,15 @@ namespace KouXiaGu
         /// </summary>
         protected static void SetInstance(T instance)
         {
-            if (Instance != instance && Instance != null)
+            if (instance == null)
             {
-                throw new ArgumentException("实例化多个Unity单例;");
+                throw new ArgumentNullException();
             }
-
-            Instance = instance;
+            if (Instance != null && Instance != instance)
+            {
+                throw new ArgumentException("设置不同的单例;");
+            }
+            UnitySington<T>.instance = instance;
         }
 
         [ContextMenu("输出场景实例数目;")]

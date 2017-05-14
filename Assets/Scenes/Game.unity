@@ -925,7 +925,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f3e74073005a6346bc77273d57cd517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dynamicMeshName: Test12
+  dynamicMeshName: Test1
 --- !u!1 &794308486
 GameObject:
   m_ObjectHideFlags: 0
@@ -2620,17 +2620,17 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
