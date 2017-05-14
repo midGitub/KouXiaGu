@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D.Wall
         }
 
 
-        static readonly ISpline spline = new CatmullRomSpline(
+        static readonly ISpline spline1 = new CatmullRomSpline(
                 new Vector3(-1, 0, 0),
                 new Vector3(0, 0, 1),
                 new Vector3(1, 0, 0),
@@ -101,7 +101,7 @@ namespace KouXiaGu.Terrain3D.Wall
             var meshFilter = GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
             Vector3[] vertices = mesh.vertices;
-            Transformation(spline3, ref vertices);
+            Transformation(spline1, ref vertices);
             mesh.vertices = vertices;
         }
 
