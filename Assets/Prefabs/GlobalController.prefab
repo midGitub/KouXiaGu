@@ -72,7 +72,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4659982930886554}
   - component: {fileID: 114659846882801574}
-  - component: {fileID: 114892668518266524}
   m_Layer: 0
   m_Name: Landform
   m_TagString: Untagged
@@ -219,6 +218,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1799603893117666
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4904971604171610}
+  - component: {fileID: 114478259999239896}
+  m_Layer: 0
+  m_Name: DynamicMeshManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1819433102827622
 GameObject:
   m_ObjectHideFlags: 1
@@ -323,8 +338,22 @@ Transform:
   - {fileID: 4468783295347262}
   - {fileID: 4392707522646926}
   - {fileID: 224005208746329952}
+  - {fileID: 4904971604171610}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4904971604171610
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1799603893117666}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4819578455441702}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114131731680187598
 MonoBehaviour:
@@ -550,6 +579,17 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114478259999239896
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1799603893117666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d378e09e972b7994199d9c9e6db3cbcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114496319503267620
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -850,22 +890,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &114892668518266524
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1249173694254914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8173fc5894be454f9d1c31f067f41b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  waterScript: {fileID: 0}
-  daytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
-  nighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
-  waterType: 0
-  seaLevel: 0
 --- !u!114 &114920700574159214
 MonoBehaviour:
   m_ObjectHideFlags: 1

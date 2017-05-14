@@ -14,8 +14,7 @@ namespace KouXiaGu.Terrain3D.Wall
         {
         }
 
-        [SerializeField]
-        Dictionary<string, DynamicMeshData> dynamicMeshs;
+        Dictionary<string, DynamicMeshData> meshData;
 
         void Awake()
         {
