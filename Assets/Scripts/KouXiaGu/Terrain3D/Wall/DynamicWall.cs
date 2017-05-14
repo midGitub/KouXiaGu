@@ -7,6 +7,9 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D.Wall
 {
 
+    /// <summary>
+    /// 动态墙体,模型中心轴需要沿着z轴;
+    /// </summary>
     [Serializable]
     public class DynamicWall
     {
@@ -61,6 +64,24 @@ namespace KouXiaGu.Terrain3D.Wall
         float AngleY(Vector3 from, Vector3 to)
         {
             return Mathf.Atan2((to.x - from.x), (to.z - from.z));
+        }
+
+        /// <summary>
+        /// 获取到原本的顶点坐标合集;
+        /// </summary>
+        public Vector3[] GetOriginalVertices()
+        {
+            Vector3[] vertices = new Vector3[pointCollection.Length];
+            foreach (var section in joint.JointPoints)
+            {
+                foreach (var childIndex in section.Children)
+                {
+                    WallVertice point = pointCollection[childIndex];
+                    Vector3 vertice = point.LocalPosition + section.Position;
+                    vertices[childIndex] = vertice;
+                }
+            }
+            return vertices;
         }
 
         /// <summary>

@@ -109,7 +109,7 @@ namespace KouXiaGu.Terrain3D
                     Undo.RecordObject(Target, "Move Point");
                     EditorUtility.SetDirty(Target);
                     var result = handleTransform.InverseTransformPoint(point);
-                    Target.ChangeSection(i, result);
+                    //Target.ChangeSection(i, result);
                 }
             }
         }

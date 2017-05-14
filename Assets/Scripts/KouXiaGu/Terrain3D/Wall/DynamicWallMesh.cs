@@ -21,8 +21,6 @@ namespace KouXiaGu.Terrain3D.Wall
 
         MeshFilter _meshFilter;
         [SerializeField]
-        float spacing;
-        [SerializeField]
         DynamicWall dynamicWall;
 
         public DynamicWall WallInfo
@@ -35,43 +33,40 @@ namespace KouXiaGu.Terrain3D.Wall
             get { return _meshFilter == null ? (_meshFilter = GetComponent<MeshFilter>()) : _meshFilter; }
         }
 
-        [ContextMenu("Build")]
-        void Build()
+        Mesh currentMesh
         {
-            Mesh mesh = meshFilter.sharedMesh;
-            Build(mesh.vertices, spacing);
+            get { return Application.isPlaying ? meshFilter.mesh : meshFilter.sharedMesh; }
         }
 
         /// <summary>
-        /// 构建节点记录;
+        /// 恢复为原本的顶点数据;
         /// </summary>
-        void Build(Vector3[] vertices, float spacing)
+        [ContextMenu("复原网格")]
+        public void RestoreVertices()
         {
-            JointInfo jointInfo = new JointInfo(vertices, spacing);
-            dynamicWall = new DynamicWall(jointInfo, vertices);
+            Vector3[] vertices = dynamicWall.GetOriginalVertices();
+            currentMesh.vertices = vertices;
         }
 
         /// <summary>
-        /// 更改顶点坐标到曲线;
+        /// 转换到曲线路径;
+        /// </summary>
+        public void Transformation(ISpline spline)
+        {
+            Vector3[] vertices = currentMesh.vertices;
+            Transformation(spline1, ref vertices);
+            currentMesh.vertices = vertices;
+        }
+
+        /// <summary>
+        /// 转换到曲线路径;
         /// </summary>
         void Transformation(ISpline spline, ref Vector3[] vertices)
         {
             dynamicWall.Transformation(spline, ref vertices);
         }
 
-        /// <summary>
-        /// 更改节点坐标;
-        /// </summary>
-        /// <param name="sectionIndex">节点坐标下标;</param>
-        /// <param name="position">更改后的位置;</param>
-        public void ChangeSection(int sectionIndex, Vector3 position)
-        {
-            Mesh mesh = meshFilter.sharedMesh;
-            Vector3[] vertices = mesh.vertices;
-            WallInfo.TransformSection(sectionIndex, position, ref vertices);
-            mesh.vertices = vertices;
-        }
-
+#region Test
 
         static readonly ISpline spline1 = new CatmullRomSpline(
                 new Vector3(-1, 0, 0),
@@ -98,11 +93,7 @@ namespace KouXiaGu.Terrain3D.Wall
         [ContextMenu("Test")]
         void Test()
         {
-            var meshFilter = GetComponent<MeshFilter>();
-            Mesh mesh = meshFilter.sharedMesh;
-            Vector3[] vertices = mesh.vertices;
-            Transformation(spline1, ref vertices);
-            mesh.vertices = vertices;
+            Transformation(spline1);
         }
 
         [ContextMenu("Test_Angle")]
@@ -114,6 +105,24 @@ namespace KouXiaGu.Terrain3D.Wall
             dynamicWall.TransformSection(0, 0.195f, ref vertices);
             mesh.vertices = vertices;
         }
+
+        [ContextMenu("Build")]
+        void Build()
+        {
+            Mesh mesh = meshFilter.sharedMesh;
+            Build(mesh.vertices, 0.05f);
+        }
+
+        /// <summary>
+        /// 构建节点记录;
+        /// </summary>
+        void Build(Vector3[] vertices, float spacing)
+        {
+            JointInfo jointInfo = new JointInfo(vertices, spacing);
+            dynamicWall = new DynamicWall(jointInfo, vertices);
+        }
+
+#endregion
 
     }
 
