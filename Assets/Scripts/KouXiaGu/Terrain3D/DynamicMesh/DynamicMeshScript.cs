@@ -19,22 +19,34 @@ namespace KouXiaGu.Terrain3D.Wall
         {
         }
 
-        MeshFilter _meshFilter;
+        [SerializeField]
+        string dynamicMeshName;
+        MeshFilter meshFilter;
         DynamicMeshData wallInfo;
+
+        public DynamicMeshManager manager
+        {
+            get { return DynamicMeshManager.Instance; }
+        }
+
+        public string DynamicMeshName
+        {
+            get { return dynamicMeshName; }
+        }
 
         public DynamicMeshData WallInfo
         {
             get { return wallInfo; }
         }
 
-        MeshFilter meshFilter
-        {
-            get { return _meshFilter == null ? (_meshFilter = GetComponent<MeshFilter>()) : _meshFilter; }
-        }
-
         Mesh currentMesh
         {
             get { return Application.isPlaying ? meshFilter.mesh : meshFilter.sharedMesh; }
+        }
+
+        void Awake()
+        {
+            meshFilter = GetComponent<MeshFilter>();
         }
 
         /// <summary>
