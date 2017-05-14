@@ -108,6 +108,21 @@ namespace KouXiaGu.Terrain3D.Wall
         /// <summary>
         /// 获取到对应网格数据,若不存在则返回异常;
         /// </summary>
+        public DynamicMeshData Find(string name)
+        {
+            if (Application.isPlaying)
+            {
+                return meshDataDictionary[name];
+            }
+            else
+            {
+                return FindInEditor(name);
+            }
+        }
+
+        /// <summary>
+        /// 获取到对应网格数据,若不存在则返回异常;
+        /// </summary>
         public DynamicMeshData FindInEditor(string name)
         {
             int index = FindIndexInEditor(name);
