@@ -2584,6 +2584,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114478259999239896, guid: b268a1f3b9d228b45bd5efd770c18be2,
+        type: 2}
+      propertyPath: serializableData.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4819578455441702, guid: b268a1f3b9d228b45bd5efd770c18be2, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2619,17 +2624,17 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
@@ -2645,6 +2650,21 @@ Prefab:
         type: 2}
       propertyPath: m_SizeDelta.x
       value: -23
+      objectReference: {fileID: 0}
+    - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114478259999239896, guid: b268a1f3b9d228b45bd5efd770c18be2,
+        type: 2}
+      propertyPath: serializableData.Array.data[0].Name
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 114478259999239896, guid: b268a1f3b9d228b45bd5efd770c18be2,
+        type: 2}
+      propertyPath: serializableData.Array.data[1].Name
+      value: 233
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b268a1f3b9d228b45bd5efd770c18be2, type: 2}

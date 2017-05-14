@@ -16,7 +16,6 @@ namespace KouXiaGu.Terrain3D.Wall
 
         [SerializeField]
         List<SerializableDynamicMeshData> serializableData;
-        Dictionary<string, DynamicMeshData> meshData;
 
         public List<SerializableDynamicMeshData> SerializableData
         {
@@ -28,10 +27,7 @@ namespace KouXiaGu.Terrain3D.Wall
             SetInstance(this);
         }
 
-        public void Add(string name, DynamicMeshData meshData)
-        {
-            
-        }
+
 
     }
 
