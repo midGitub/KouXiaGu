@@ -877,7 +877,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: baa227e947579154992a9bb50077561d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.809
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: baa227e947579154992a9bb50077561d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -925,6 +925,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f3e74073005a6346bc77273d57cd517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dynamicMeshName: Test12
 --- !u!1 &794308486
 GameObject:
   m_ObjectHideFlags: 0
@@ -2584,11 +2585,6 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 114478259999239896, guid: b268a1f3b9d228b45bd5efd770c18be2,
-        type: 2}
-      propertyPath: serializableData.Array.size
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4819578455441702, guid: b268a1f3b9d228b45bd5efd770c18be2, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2650,21 +2646,6 @@ Prefab:
         type: 2}
       propertyPath: m_SizeDelta.x
       value: -23
-      objectReference: {fileID: 0}
-    - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
-        type: 2}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114478259999239896, guid: b268a1f3b9d228b45bd5efd770c18be2,
-        type: 2}
-      propertyPath: serializableData.Array.data[0].Name
-      value: 123
-      objectReference: {fileID: 0}
-    - target: {fileID: 114478259999239896, guid: b268a1f3b9d228b45bd5efd770c18be2,
-        type: 2}
-      propertyPath: serializableData.Array.data[1].Name
-      value: 233
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b268a1f3b9d228b45bd5efd770c18be2, type: 2}

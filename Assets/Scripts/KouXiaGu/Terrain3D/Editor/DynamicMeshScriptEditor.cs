@@ -20,6 +20,11 @@ namespace KouXiaGu.Terrain3D.Wall
         MeshFilter meshFilter;
         DynamicMeshScript instance;
 
+        bool isInitialized
+        {
+            get { return instance.MeshData != null; }
+        }
+
         void Awake()
         {
             instance = (DynamicMeshScript)this.target;
@@ -38,20 +43,23 @@ namespace KouXiaGu.Terrain3D.Wall
                     instance.Build(spacing);
                 }
 
-                displayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", displayPointSize);
-                EditorGUILayout.LabelField("VerticeCount:" + instance.WallInfo.Points.Count);
+                if (isInitialized)
+                {
+                    displayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", displayPointSize);
+                    EditorGUILayout.LabelField("VerticeCount:" + instance.MeshData.Points.Count);
+                }
             }
             EditorGUILayout.EndToggleGroup();
         }
 
         void OnSceneGUI()
         {
-            Transform handleTransform = instance.transform;
-            Quaternion handleRotation = Tools.pivotRotation == PivotRotation.Local ?
-                handleTransform.rotation : Quaternion.identity;
-
-            if (isEditMode)
+            if (isEditMode && isInitialized)
             {
+                Transform handleTransform = instance.transform;
+                Quaternion handleRotation = Tools.pivotRotation == PivotRotation.Local ?
+                    handleTransform.rotation : Quaternion.identity;
+
                 DisplayVertices(handleTransform, handleRotation);
             }
         }
@@ -63,7 +71,7 @@ namespace KouXiaGu.Terrain3D.Wall
 
         void DisplayVertices(Transform handleTransform, Quaternion handleRotation)
         {
-            IList<JointPoint> sections = instance.WallInfo.JointInfo.JointPoints;
+            IList<JointPoint> sections = instance.MeshData.JointInfo.JointPoints;
             Vector3[] vertices = meshFilter.sharedMesh.vertices;
 
             foreach (var section in sections)

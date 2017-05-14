@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D.Wall
         [SerializeField]
         string dynamicMeshName;
         MeshFilter meshFilter;
-        DynamicMeshData wallInfo;
+        DynamicMeshData meshData;
 
         public DynamicMeshManager manager
         {
@@ -34,19 +34,15 @@ namespace KouXiaGu.Terrain3D.Wall
             get { return dynamicMeshName; }
         }
 
-        public DynamicMeshData WallInfo
+        public DynamicMeshData MeshData
         {
-            get { return wallInfo; }
-        }
-
-        Mesh currentMesh
-        {
-            get { return Application.isPlaying ? meshFilter.mesh : meshFilter.sharedMesh; }
+            get { return meshData; }
         }
 
         void Awake()
         {
             meshFilter = GetComponent<MeshFilter>();
+            meshData = manager.Find(dynamicMeshName);
         }
 
         /// <summary>
@@ -55,8 +51,9 @@ namespace KouXiaGu.Terrain3D.Wall
         [ContextMenu("复原网格")]
         public void RestoreVertices()
         {
-            Vector3[] vertices = wallInfo.GetOriginalVertices();
-            currentMesh.vertices = vertices;
+            Vector3[] vertices = meshData.GetOriginalVertices();
+            Mesh mesh = meshFilter.mesh;
+            mesh.vertices = vertices;
         }
 
         /// <summary>
@@ -64,9 +61,10 @@ namespace KouXiaGu.Terrain3D.Wall
         /// </summary>
         public void Transformation(ISpline spline)
         {
-            Vector3[] vertices = currentMesh.vertices;
+            Mesh mesh = meshFilter.mesh;
+            Vector3[] vertices = mesh.vertices;
             Transformation(spline1, ref vertices);
-            currentMesh.vertices = vertices;
+            mesh.vertices = vertices;
         }
 
         /// <summary>
@@ -74,7 +72,7 @@ namespace KouXiaGu.Terrain3D.Wall
         /// </summary>
         void Transformation(ISpline spline, ref Vector3[] vertices)
         {
-            wallInfo.Transformation(spline, ref vertices);
+            meshData.Transformation(spline, ref vertices);
         }
 
 #region Test
@@ -111,9 +109,9 @@ namespace KouXiaGu.Terrain3D.Wall
         void Test_Angle()
         {
             var meshFilter = GetComponent<MeshFilter>();
-            Mesh mesh = meshFilter.sharedMesh;
+            Mesh mesh = meshFilter.mesh;
             Vector3[] vertices = mesh.vertices;
-            wallInfo.TransformSection(0, 0.195f, ref vertices);
+            meshData.TransformSection(0, 0.195f, ref vertices);
             mesh.vertices = vertices;
         }
 
@@ -122,13 +120,14 @@ namespace KouXiaGu.Terrain3D.Wall
         /// </summary>
         public void Build(float spacing)
         {
-            Vector3[] vertices = currentMesh.vertices;
+            Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
+            Vector3[] vertices = mesh.vertices;
             JointInfo jointInfo = new JointInfo(vertices, spacing);
-            wallInfo = new DynamicMeshData(jointInfo, vertices);
+            meshData = new DynamicMeshData(jointInfo, vertices);
+            manager.AddInEditor(dynamicMeshName, meshData);
         }
 
 #endregion
-
     }
 
 }
