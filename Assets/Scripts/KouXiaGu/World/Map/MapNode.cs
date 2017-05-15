@@ -45,23 +45,4 @@ namespace KouXiaGu.World.Map
         public float Angle;
     }
 
-    /// <summary>
-    /// 节点建筑信息;
-    /// </summary>
-    [ProtoContract]
-    public struct BuildingNode
-    {
-        /// <summary>
-        /// 建筑物类型编号;
-        /// </summary>
-        [ProtoMember(1)]
-        public int BuildingID;
-
-        /// <summary>
-        /// 建筑物旋转的角度;
-        /// </summary>
-        [ProtoMember(2)]
-        public float Angle;
-    }
-
 }

@@ -28,8 +28,7 @@ namespace KouXiaGu.World.Map
 
         public bool Equals(RoadNode other)
         {
-            return 
-                this.ExistRoad() == other.ExistRoad()
+            return ID == other.ID
                 && Type == other.Type;
         }
 
@@ -37,13 +36,12 @@ namespace KouXiaGu.World.Map
         {
             if (!(obj is RoadNode))
                 return false;
-
             return Equals((RoadNode)obj);
         }
 
         public override int GetHashCode()
         {
-            return (int)ID;
+            return ID.GetHashCode();
         }
 
         public static bool operator ==(RoadNode a, RoadNode b)
