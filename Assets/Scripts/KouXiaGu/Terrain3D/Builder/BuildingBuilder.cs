@@ -106,8 +106,10 @@ namespace KouXiaGu.Terrain3D
                 {
                     MapNode node = GetAt(overlayPoint);
                     BuildingResource resource = FindResource(node.Building.Type);
-                    resource.Building.Build(overlayPoint, node, null, worldData);
+                    var building = resource.Building.Build(overlayPoint, node, null, worldData);
+                    chunk.Add(overlayPoint, building);
                 }
+                sceneChunks.Add(chunkCoord, chunk);
             }
             return chunk;
         }
