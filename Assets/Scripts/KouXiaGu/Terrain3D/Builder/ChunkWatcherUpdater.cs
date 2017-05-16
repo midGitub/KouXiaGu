@@ -81,7 +81,7 @@ namespace KouXiaGu.Terrain3D
             foreach (var watcher in Watchers)
             {
                 var displayChunkCoords = watcher.GetDispaly();
-                createCoords.IntersectWith(displayChunkCoords);
+                createCoords.UnionWith(displayChunkCoords);
             }
         }
 

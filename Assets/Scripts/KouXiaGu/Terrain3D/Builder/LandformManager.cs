@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 
@@ -11,7 +10,6 @@ namespace KouXiaGu.Terrain3D
     public interface ILandformWatcher : IChunkWatcher
     {
     }
-
 
     public class LandformManager : ChunkWatcherUpdater
     {
