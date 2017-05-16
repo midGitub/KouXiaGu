@@ -42,6 +42,11 @@ namespace KouXiaGu.Terrain3D
             get { return builder; }
         }
 
+        protected override object Sender
+        {
+            get { return "场景的地形块创建和销毁管理"; }
+        }
+
         protected override IEnumerable<IChunkWatcher> Watchers
         {
             get { return watcherList.Cast<IChunkWatcher>(); }

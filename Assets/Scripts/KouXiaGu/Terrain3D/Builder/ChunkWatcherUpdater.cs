@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
 
         protected virtual object Sender
         {
-            get { return "场景的地形块创建销毁管理"; }
+            get { return "观察者更新"; }
         }
 
         protected abstract IEnumerable<IChunkWatcher> Watchers { get; }
@@ -108,7 +108,6 @@ namespace KouXiaGu.Terrain3D
             public UnityThreadBehaviour(ChunkWatcherUpdater manager)
             {
                 Manager = manager;
-                this.SubscribeUpdate();
             }
 
             readonly ChunkWatcherUpdater Manager;
