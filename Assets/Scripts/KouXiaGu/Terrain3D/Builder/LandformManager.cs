@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
 
         public LandformManager(IWorldData worldData)
         {
-            manager = new LandformBuilder(worldData);
+            builder = new LandformBuilder(worldData);
             updater = new BuildRequestUpdater(this);
             createCoords = new Dictionary<RectCoord, BakeTargets>();
             destroyCoords = new List<RectCoord>();
@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
 
         static readonly List<ILandformWatcher> watcherList;
         static readonly IReadOnlyCollection<ILandformWatcher> readOnlyWatcherList;
-        readonly LandformBuilder manager;
+        readonly LandformBuilder builder;
         readonly BuildRequestUpdater updater;
         readonly Dictionary<RectCoord, BakeTargets> createCoords;
         readonly List<RectCoord> destroyCoords;
@@ -44,14 +44,14 @@ namespace KouXiaGu.Terrain3D
             get { return readOnlyWatcherList; }
         }
 
-        public LandformBuilder Manager
+        public LandformBuilder Builder
         {
-            get { return manager; }
+            get { return builder; }
         }
 
         IReadOnlyDictionary<RectCoord, ChunkBakeRequest> sceneDisplayedChunks
         {
-            get { return manager.SceneDisplayedChunks; }
+            get { return builder.SceneDisplayedChunks; }
         }
 
         IEnumerable<RectCoord> sceneCoords
@@ -91,13 +91,13 @@ namespace KouXiaGu.Terrain3D
             ICollection<RectCoord> needDestroyCoords = GetNeedDestroyCoords();
             foreach (var coord in needDestroyCoords)
             {
-                this.manager.Destroy(coord);
+                this.builder.Destroy(coord);
             }
 
             IDictionary<RectCoord, BakeTargets> needCreateCoords = GetNeedCreateCoords();
             foreach (var item in needCreateCoords)
             {
-                this.manager.Create(item.Key, item.Value);
+                this.builder.Create(item.Key, item.Value);
             }
 
             createCoords.Clear();

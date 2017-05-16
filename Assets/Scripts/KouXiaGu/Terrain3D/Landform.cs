@@ -60,7 +60,7 @@ namespace KouXiaGu.Terrain3D
 
         public LandformBuilder LandformBuilder
         {
-            get { return LandformManager.Manager; }
+            get { return LandformManager.Builder; }
         }
 
         Landform Initialize(IWorldData worldData)

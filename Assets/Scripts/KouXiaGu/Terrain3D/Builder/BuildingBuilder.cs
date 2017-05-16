@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public interface ILandformBuilding
     {
-        GameObject Build(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
+        GameObject Build(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
     }
 
     /// <summary>
@@ -24,21 +24,28 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder
     {
-        public BuildingBuilder(IWorldData worldData, Landform landform)
+        public BuildingBuilder(IWorldData worldData, LandformManager landform)
         {
             this.worldData = worldData;
             sceneChunks = new Dictionary<RectCoord, BuildingChunk>();
+            readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
         }
 
         readonly IWorldData worldData;
         readonly Dictionary<RectCoord, BuildingChunk> sceneChunks;
+        readonly IReadOnlyDictionary<RectCoord, BuildingChunk> readOnlySceneChunks;
+
+        public IReadOnlyDictionary<RectCoord, BuildingChunk> SceneChunks
+        {
+            get { return readOnlySceneChunks; }
+        }
 
         TerrainResource Resources
         {
             get { return worldData.GameData.Terrain; }
         }
 
-        public RectGrid ChunkGrid
+        RectGrid ChunkGrid
         {
             get { return ChunkInfo.ChunkGrid; }
         }
@@ -119,6 +126,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Update(RectCoord chunkCoord)
         {
+        }
+
+        /// <summary>
+        /// 销毁这个地图块;
+        /// </summary>
+        public void Destroy(RectCoord chunkCoord)
+        {
+
         }
 
         /// <summary>
