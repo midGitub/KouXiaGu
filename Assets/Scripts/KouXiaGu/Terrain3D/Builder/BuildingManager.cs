@@ -28,6 +28,7 @@ namespace KouXiaGu.Terrain3D
         public BuildingManager(IWorldData worldData, LandformManager landform)
         {
             builder = new BuildingBuilder(worldData, landform);
+            SendDisplay();
             StartUpdate();
         }
 

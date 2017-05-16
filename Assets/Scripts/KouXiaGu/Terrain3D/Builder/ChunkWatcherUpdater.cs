@@ -51,7 +51,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        void SendDisplay()
+        protected void SendDisplay()
         {
             UpdateDispalyCoords();
 
