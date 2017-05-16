@@ -13,9 +13,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 建筑物创建接口,需要挂载在预制物体上;
     /// </summary>
-    public interface IBuilding
+    public interface ILandformBuilding
     {
-        void Build(CubicHexCoord coord, Landform landform, IWorldData data);
+        void Build(CubicHexCoord coord, LandformBuilder landform, IWorldData data);
     }
 
     /// <summary>
@@ -23,18 +23,26 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder
     {
-        public BuildingBuilder()
+        public BuildingBuilder(IWorldData data, LandformBuilder landform)
         {
+            worldData = data;
             sceneChunks = new Dictionary<RectCoord, BuildingChunk>();
         }
 
+        readonly IWorldData worldData;
         readonly Dictionary<RectCoord, BuildingChunk> sceneChunks;
+
+        TerrainResource Resources
+        {
+            get { return worldData.GameData.Terrain; }
+        }
 
         /// <summary>
         /// 仅创建对应块,若已经存在则返回存在的元素;
         /// </summary>
         public void Create(RectCoord chunkCoord)
         {
+            
         }
 
         /// <summary>
