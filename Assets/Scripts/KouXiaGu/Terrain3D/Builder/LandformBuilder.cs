@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using KouXiaGu.World;
 using KouXiaGu.Grids;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -95,6 +96,21 @@ namespace KouXiaGu.Terrain3D
                 chunkPool.Release(request.Chunk);
                 sceneChunks.Remove(chunkCoord);
             }
+        }
+
+        /// <summary>
+        /// 获取到高度,若不存在高度信息,则返回0;
+        /// </summary>
+        public float GetHeight(Vector3 position)
+        {
+            RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
+            ChunkBakeRequest chunk;
+            if (sceneChunks.TryGetValue(chunkCoord, out chunk))
+            {
+                Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
+                return chunk.Chunk.Renderer.GetHeight(uv);
+            }
+            return 0;
         }
     }
 

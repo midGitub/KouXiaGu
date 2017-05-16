@@ -5,6 +5,7 @@ using System.Text;
 using KouXiaGu.World;
 using KouXiaGu.Grids;
 using UnityEngine;
+using System.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -15,7 +16,6 @@ namespace KouXiaGu.Terrain3D
     public interface IBuilding
     {
         void Build(CubicHexCoord coord, Landform landform, IWorldData data);
-        void Destroy();
     }
 
     /// <summary>
@@ -25,7 +25,10 @@ namespace KouXiaGu.Terrain3D
     {
         public BuildingBuilder()
         {
+            sceneChunks = new Dictionary<RectCoord, BuildingChunk>();
         }
+
+        readonly Dictionary<RectCoord, BuildingChunk> sceneChunks;
 
         /// <summary>
         /// 仅创建对应块,若已经存在则返回存在的元素;
@@ -42,20 +45,66 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    public class BuildingChunk
+    public class BuildingChunk : IEnumerable<BuildingChunk.BuildingItem>
     {
         public BuildingChunk()
         {
-            buildingGroup = new List<Building>();
+            buildingGroup = new List<BuildingItem>();
         }
 
-        readonly List<Building> buildingGroup;
+        readonly List<BuildingItem> buildingGroup;
 
-    }
+        public void Add(CubicHexCoord position, GameObject buildingObject)
+        {
+            BuildingItem item = new BuildingItem(position, buildingObject);
+            buildingGroup.Add(item);
+        }
 
-    class Building
-    {
-        readonly IBuilding builder;
-        readonly GameObject gameObject;
+        public GameObject GetAt(CubicHexCoord position)
+        {
+            int index = FindIndex(position);
+            if (index < 0)
+            {
+                throw new KeyNotFoundException();
+            }
+            return buildingGroup[index].BuildingObject;
+        }
+
+        int FindIndex(CubicHexCoord position)
+        {
+            return buildingGroup.FindIndex(item => item.Position == position);
+        }
+
+        public IEnumerator<BuildingItem> GetEnumerator()
+        {
+            return buildingGroup.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public struct BuildingItem
+        {
+            public BuildingItem(CubicHexCoord position, GameObject buildingObject)
+            {
+                this.position = position;
+                this.buildingObject = buildingObject;
+            }
+
+            readonly CubicHexCoord position;
+            readonly GameObject buildingObject;
+
+            public CubicHexCoord Position
+            {
+                get { return position; }
+            }
+
+            public GameObject BuildingObject
+            {
+                get { return buildingObject; }
+            }
+        }
     }
 }

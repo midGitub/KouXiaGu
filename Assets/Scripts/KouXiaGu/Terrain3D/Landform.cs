@@ -79,14 +79,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public float GetHeight(Vector3 position)
         {
-            RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
-            ChunkBakeRequest chunk;
-            if (LandformBuilder.SceneDisplayedChunks.TryGetValue(chunkCoord, out chunk))
-            {
-                Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
-                return chunk.Chunk.Renderer.GetHeight(uv);
-            }
-            return 0;
+            return LandformBuilder.GetHeight(position);
         }
 
     }
