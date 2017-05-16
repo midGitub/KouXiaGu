@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using KouXiaGu.World;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -13,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     }
 
     /// <summary>
-    /// 场景创建请求管理,负责对场景地形块的创建和销毁进行管理;
+    /// 场景创建请求管理;统一创建和销毁请求;
     /// </summary>
     public class LandformBuilder
     {
@@ -23,12 +24,40 @@ namespace KouXiaGu.Terrain3D
             readOnlyWatcherList = watcherList.AsReadOnlyCollection();
         }
 
+        public LandformBuilder(IWorldData worldData)
+        {
+            builder = new LandformManager(worldData);
+            createCoords = new Dictionary<RectCoord, BakeTargets>();
+            destroyCoords = new List<RectCoord>();
+        }
+
+        [Obsolete]
+        public LandformBuilder(LandformManager builder)
+        {
+            this.builder = builder;
+            createCoords = new Dictionary<RectCoord, BakeTargets>();
+            destroyCoords = new List<RectCoord>();
+        }
+
         static readonly List<ILandformWatcher> watcherList;
         static readonly IReadOnlyCollection<ILandformWatcher> readOnlyWatcherList;
+        readonly LandformManager builder;
+        readonly Dictionary<RectCoord, BakeTargets> createCoords;
+        readonly List<RectCoord> destroyCoords;
 
         public static IReadOnlyCollection<ILandformWatcher> WatcherList
         {
             get { return readOnlyWatcherList; }
+        }
+
+        IReadOnlyDictionary<RectCoord, ChunkBakeRequest> sceneDisplayedChunks
+        {
+            get { return builder.SceneDisplayedChunks; }
+        }
+
+        IEnumerable<RectCoord> sceneCoords
+        {
+            get { return sceneDisplayedChunks.Keys; }
         }
 
         public static void AddLandformWatcher(ILandformWatcher watcher)
@@ -42,29 +71,6 @@ namespace KouXiaGu.Terrain3D
         public static bool RemoveLandformWatcher(ILandformWatcher watcher)
         {
             return watcherList.Remove(watcher);
-        }
-
-
-
-        public LandformBuilder(LandformManager builder)
-        {
-            this.builder = builder;
-            createCoords = new Dictionary<RectCoord, BakeTargets>();
-            destroyCoords = new List<RectCoord>();
-        }
-
-        readonly LandformManager builder;
-        readonly Dictionary<RectCoord, BakeTargets> createCoords;
-        readonly List<RectCoord> destroyCoords;
-
-        IReadOnlyDictionary<RectCoord, ChunkBakeRequest> sceneDisplayedChunks
-        {
-            get { return builder.SceneDisplayedChunks; }
-        }
-
-        IEnumerable<RectCoord> sceneCoords
-        {
-            get { return sceneDisplayedChunks.Keys; }
         }
 
         public void Display(RectCoord chunkCoord, BakeTargets targets)
