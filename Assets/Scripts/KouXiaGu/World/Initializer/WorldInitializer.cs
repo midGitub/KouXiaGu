@@ -49,12 +49,14 @@ namespace KouXiaGu.World
             {
                 stateSender = new ResultSend<IWorld>(this);
                 worldDataInitialize = new DataInitializer();
+                componentInitializer = new ComponentInitializer();
                 sceneInitializer = new SceneInitializer();
                 gameDataInitializer.Subscribe(Name + "等待游戏数据初始化完毕;", Initialize, OnInitializeFaulted);
             }
 
             readonly ResultSend<IWorld> stateSender;
             readonly DataInitializer worldDataInitialize;
+            readonly ComponentInitializer componentInitializer;
             readonly SceneInitializer sceneInitializer;
             public IGameData GameData { get; private set; }
             public WorldInfo Info { get; private set; }
@@ -82,7 +84,7 @@ namespace KouXiaGu.World
             void OnWorldDataCompleted(IAsyncOperation<IWorldData> operation)
             {
                 Data = operation.Result;
-                sceneInitializer.Start(Data, this)
+                componentInitializer.Start(Data, this)
                     .Subscribe(Name + "等待游戏世界组件初始化;", OnSceneCompleted, OnInitializeFaulted);
             }
 
