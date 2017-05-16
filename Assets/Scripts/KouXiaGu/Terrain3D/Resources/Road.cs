@@ -43,12 +43,14 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路 地形贴图资源;
     /// </summary>
-    public class RoadResource : TerrainElementInfo<RoadInfo>, IDisposable
+    public class RoadResource : IDisposable
     {
-        public RoadResource(RoadInfo info) : base(info)
+        public RoadResource(RoadInfo info)
         {
+            Info = info;
         }
 
+        public RoadInfo Info { get; internal set; }
         public Texture DiffuseTex { get; internal set; }
         public Texture DiffuseBlendTex { get; internal set; }
         public Texture HeightAdjustTex { get; internal set; }
@@ -104,57 +106,45 @@ namespace KouXiaGu.Terrain3D
     }
 
 
-
-
-
     /// <summary>
     /// 道路资源读取;
     /// </summary>
-    public class RoadReadRequest : AssetReadRequest<Dictionary<int, RoadResource>>
+    public class RoadResourceReader : AsyncOperation<Dictionary<int, RoadResource>>
     {
-
-        public RoadReadRequest(AssetBundle assetBundle, ISegmented segmented, IEnumerable<RoadInfo> infos) 
-            : base(assetBundle, segmented)
+        public RoadResourceReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<RoadInfo> infos) 
         {
+            this.stopwatch = stopwatch;
+            this.assetBundle = assetBundle;
             this.infos = infos;
-            dictionary = new Dictionary<int, RoadResource>();
         }
 
-        public RoadReadRequest(AssetBundle assetBundle, ISegmented segmented, WorldElementResource elementInfo)
-            : this(assetBundle, segmented, elementInfo.RoadInfos.Values)
-        {
-        }
-
-        IEnumerable<RoadInfo> infos;
-        Dictionary<int, RoadResource> dictionary;
+        readonly ISegmented stopwatch;
+        readonly AssetBundle assetBundle;
+        readonly IEnumerable<RoadInfo> infos;
 
         protected override void OnFaulted(Exception ex)
         {
             base.OnFaulted(ex);
-            dictionary.Values.DisposeAll();
-            dictionary.Clear();
+            Result.Values.DisposeAll();
+            Result.Clear();
         }
 
-        protected override IEnumerator Operate()
+        public IEnumerator ReadAsync()
         {
+            Result = new Dictionary<int, RoadResource>();
             foreach (var info in infos)
             {
-                RoadResource item;
-                if (TryReadAndReport(info, out item))
-                    dictionary.AddOrUpdate(info.ID, item);
-                yield return null;
-            }
-            OnCompleted(dictionary);
-        }
+                RoadResource resource;
+                TryRead(info, out resource);
+                Result.Add(info.ID, resource);
 
-        bool TryReadAndReport(RoadInfo info, out RoadResource item)
-        {
-            if (TryRead(info, out item))
-            {
-                return true;
+                if (stopwatch.Await())
+                {
+                    yield return null;
+                    stopwatch.Restart();
+                }
             }
-            Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
-            return false;
+            OnCompleted();
         }
 
         bool TryRead(RoadInfo info, out RoadResource item)
@@ -167,9 +157,22 @@ namespace KouXiaGu.Terrain3D
                 HeightAdjustTex = ReadTexture(tInfo.HeightAdjustTex),
                 HeightAdjustBlendTex = ReadTexture(tInfo.HeightAdjustTex),
             };
-            return item.IsLoadComplete;
+
+            if (item.IsLoadComplete)
+            {
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
+                return false;
+            }
         }
 
+        private Texture ReadTexture(string name)
+        {
+            return assetBundle.LoadAsset<Texture>(name);
+        }
     }
 
 }

@@ -43,9 +43,9 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    public class BuildingReader : AsyncOperation<Dictionary<int, BuildingResource>>
+    public class BuildingResourceReader : AsyncOperation<Dictionary<int, BuildingResource>>
     {
-        public BuildingReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<BuildingInfo> infos)
+        public BuildingResourceReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<BuildingInfo> infos)
         {
             this.stopwatch = stopwatch;
             this.assetBundle = assetBundle;

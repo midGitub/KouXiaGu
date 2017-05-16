@@ -39,9 +39,11 @@ namespace KouXiaGu.Terrain3D
             yield return landformReader.ReadAsync();
             LandformInfos = landformReader.Result;
 
+            RoadResourceReader roadReader = new RoadResourceReader(stopwatch, assetBundle, elementInfos.RoadInfos.Values);
+            yield return roadReader.ReadAsync();
+            RoadInfos = roadReader.Result;
 
-
-            BuildingReader buildingReader = new BuildingReader(stopwatch, assetBundle, elementInfos.BuildingInfos.Values);
+            BuildingResourceReader buildingReader = new BuildingResourceReader(stopwatch, assetBundle, elementInfos.BuildingInfos.Values);
             yield return buildingReader.ReadAsync();
             BuildingInfos = buildingReader.Result;
 
