@@ -60,20 +60,26 @@ namespace KouXiaGu.Terrain3D
         {
             UpdateDispalyCoords();
 
-            IEnumerable<RectCoord> needDestroyCoords = GetNeedDestroyCoords();
-            foreach (var coord in needDestroyCoords)
+            foreach (var coord in SceneCoords)
+            {
+                if (!createCoords.Contains(coord))
+                {
+                    destroyCoords.Add(coord);
+                }
+            }
+
+            foreach (var coord in destroyCoords)
             {
                 DestroyAt(coord);
             }
 
-            IEnumerable<RectCoord> needCreateCoords = GetNeedCreateCoords();
-            foreach (var coord in needCreateCoords)
+            foreach (var coord in createCoords)
             {
                 CreateAt(coord);
             }
 
-            createCoords.Clear();
             destroyCoords.Clear();
+            createCoords.Clear();
         }
 
         void UpdateDispalyCoords()
@@ -83,21 +89,6 @@ namespace KouXiaGu.Terrain3D
                 var displayChunkCoords = watcher.GetDispaly();
                 createCoords.UnionWith(displayChunkCoords);
             }
-        }
-
-        IEnumerable<RectCoord> GetNeedDestroyCoords()
-        {
-            foreach (var coord in SceneCoords)
-            {
-                if (!createCoords.Contains(coord))
-                    destroyCoords.Add(coord);
-            }
-            return destroyCoords;
-        }
-
-        IEnumerable<RectCoord> GetNeedCreateCoords()
-        {
-            return createCoords;
         }
 
         /// <summary>
