@@ -28,21 +28,17 @@ namespace KouXiaGu.Terrain3D
 
         void Start()
         {
-            LandformManager.AddLandformWatcher(this);
-        }
-
-        void ILandformWatcher.UpdateDispaly(LandformManager scene)
-        {
-            IEnumerable<RectCoord> coords = GetDisplay(transform.position);
-            foreach (var coord in coords)
-            {
-                scene.Display(coord, BakeTargets.All);
-            }
+            LandformManager.WatcherList.Add(this);
         }
 
         void OnValidate()
         {
             Normalize(ref displayRadius);
+        }
+
+        public IEnumerable<RectCoord> GetDispaly()
+        {
+            return GetDisplay(transform.position);
         }
 
         /// <summary>
@@ -63,7 +59,6 @@ namespace KouXiaGu.Terrain3D
             IEnumerable<RectCoord> coords = RectCoord.Range(center, displayRadius.x, displayRadius.y);
             return coords;
         }
-
     }
 
 }

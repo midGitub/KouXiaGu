@@ -3,7 +3,6 @@ using KouXiaGu.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -29,6 +28,7 @@ namespace KouXiaGu.Terrain3D
         public BuildingManager(IWorldData worldData, LandformManager landform)
         {
             builder = new BuildingBuilder(worldData, landform);
+            StartUpdate();
         }
 
         readonly BuildingBuilder builder;

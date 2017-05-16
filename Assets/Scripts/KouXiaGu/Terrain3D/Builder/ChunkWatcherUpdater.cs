@@ -34,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         protected abstract void CreateAt(RectCoord coord);
         protected abstract void DestroyAt(RectCoord coord);
 
-        void StartUpdate()
+        public void StartUpdate()
         {
             if (updaterDisposer == null)
             {
@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        void StopUpdate()
+        public void StopUpdate()
         {
             if (updaterDisposer != null)
             {

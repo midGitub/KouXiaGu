@@ -48,6 +48,8 @@ namespace KouXiaGu.Terrain3D
         Landform(IWorldData worldData)
         {
             LandformManager = new LandformManager(worldData);
+            BuildingManager = new BuildingManager(worldData, LandformManager);
+
             MapWatcher = new WorldMapWatcher(LandformBuilder, worldData.Map.PredefinedMap.Data);
             Water = SceneObject.GetObject<WaterManager>();
             Water.IsDisplay = true;
@@ -55,6 +57,8 @@ namespace KouXiaGu.Terrain3D
 
         public bool IsInitialized { get; private set; }
         public LandformManager LandformManager { get; private set; }
+        public BuildingManager BuildingManager { get; private set; }
+
         public WorldMapWatcher MapWatcher { get; private set; }
         public WaterManager Water { get; private set; }
 
@@ -63,26 +67,19 @@ namespace KouXiaGu.Terrain3D
             get { return LandformManager.Builder; }
         }
 
-        Landform Initialize(IWorldData worldData)
+        public BuildingBuilder BuildingBuilder
         {
-            if (!IsInitialized)
-            {
-                LandformManager = new LandformManager(worldData);
-                MapWatcher = new WorldMapWatcher(LandformBuilder, worldData.Map.PredefinedMap.Data);
-                Water = SceneObject.GetObject<WaterManager>();
-                Water.IsDisplay = true;
-            }
-            return this;
+            get { return BuildingManager.Builder; }
         }
 
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;
         /// </summary>
+        [Obsolete]
         public float GetHeight(Vector3 position)
         {
             return LandformBuilder.GetHeight(position);
         }
-
     }
 
 }
