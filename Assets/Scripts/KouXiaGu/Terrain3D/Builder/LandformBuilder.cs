@@ -1,155 +1,173 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KouXiaGu.Grids;
 using KouXiaGu.World;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
 {
 
-    public interface ILandformWatcher
-    {
-        void UpdateDispaly(LandformBuilder scene);
-    }
-
     /// <summary>
-    /// 场景创建请求管理;统一创建和销毁请求;
+    /// 场景地形块管理;
     /// </summary>
     public class LandformBuilder
     {
-        static LandformBuilder()
-        {
-            watcherList = new List<ILandformWatcher>();
-            readOnlyWatcherList = watcherList.AsReadOnlyCollection();
-        }
-
         public LandformBuilder(IWorldData worldData)
         {
-            manager = new LandformManager(worldData);
-            updater = new BuildRequestUpdater(this);
-            createCoords = new Dictionary<RectCoord, BakeTargets>();
-            destroyCoords = new List<RectCoord>();
+            baker = LandformBaker.Initialize(worldData);
+            chunkPool = new ChunkPool();
+            sceneChunks = new Dictionary<RectCoord, ChunkBakeRequest>();
+            readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
         }
 
-        static readonly List<ILandformWatcher> watcherList;
-        static readonly IReadOnlyCollection<ILandformWatcher> readOnlyWatcherList;
-        readonly LandformManager manager;
-        readonly BuildRequestUpdater updater;
-        readonly Dictionary<RectCoord, BakeTargets> createCoords;
-        readonly List<RectCoord> destroyCoords;
+        readonly LandformBaker baker;
+        readonly ChunkPool chunkPool;
+        readonly Dictionary<RectCoord, ChunkBakeRequest> sceneChunks;
+        readonly IReadOnlyDictionary<RectCoord, ChunkBakeRequest> readOnlySceneChunks;
 
-        public static IReadOnlyCollection<ILandformWatcher> WatcherList
+        public LandformBaker Baker
         {
-            get { return readOnlyWatcherList; }
+            get { return baker; }
         }
 
-        public LandformManager Manager
+        public RectGrid ChunkGrid
         {
-            get { return manager; }
+            get { return ChunkInfo.ChunkGrid; }
         }
 
-        IReadOnlyDictionary<RectCoord, ChunkBakeRequest> sceneDisplayedChunks
+        internal IReadOnlyDictionary<RectCoord, ChunkBakeRequest> SceneDisplayedChunks
         {
-            get { return manager.SceneDisplayedChunks; }
-        }
-
-        IEnumerable<RectCoord> sceneCoords
-        {
-            get { return sceneDisplayedChunks.Keys; }
-        }
-
-        public static void AddLandformWatcher(ILandformWatcher watcher)
-        {
-            if (watcherList.Contains(watcher))
-                throw new ArgumentException();
-
-            watcherList.Add(watcher);
-        }
-
-        public static bool RemoveLandformWatcher(ILandformWatcher watcher)
-        {
-            return watcherList.Remove(watcher);
-        }
-
-        public void Display(RectCoord chunkCoord, BakeTargets targets)
-        {
-            if (createCoords.ContainsKey(chunkCoord))
-            {
-                createCoords[chunkCoord] |= targets;
-            }
-            else
-            {
-                createCoords.Add(chunkCoord, targets);
-            }
-        }
-
-        void SendDisplay()
-        {
-            UpdateDispalyCoords();
-
-            ICollection<RectCoord> needDestroyCoords = GetNeedDestroyCoords();
-            foreach (var coord in needDestroyCoords)
-            {
-                this.manager.Destroy(coord);
-            }
-
-            IDictionary<RectCoord, BakeTargets> needCreateCoords = GetNeedCreateCoords();
-            foreach (var item in needCreateCoords)
-            {
-                this.manager.Create(item.Key, item.Value);
-            }
-
-            createCoords.Clear();
-            destroyCoords.Clear();
-        }
-
-        void UpdateDispalyCoords()
-        {
-            foreach (var item in watcherList)
-            {
-                item.UpdateDispaly(this);
-            }
-        }
-
-        ICollection<RectCoord> GetNeedDestroyCoords()
-        {
-            foreach (var coord in sceneCoords)
-            {
-                if (!createCoords.ContainsKey(coord))
-                    destroyCoords.Add(coord);
-            }
-            return destroyCoords;
-        }
-
-        IDictionary<RectCoord, BakeTargets> GetNeedCreateCoords()
-        {
-            return createCoords;
+            get { return readOnlySceneChunks; }
         }
 
         /// <summary>
-        /// 对场景创建管理进行更新;
+        /// 仅创建对应地形块,若已经存在则返回存在的元素;
         /// </summary>
-        class BuildRequestUpdater : IUnityThreadBehaviour<Action>
+        public Chunk Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
-            public BuildRequestUpdater(LandformBuilder buildRequestManager)
+            ChunkBakeRequest request;
+            if (!sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                this.buildRequestManager = buildRequestManager;
-                this.SubscribeUpdate();
+                Chunk chunk = chunkPool.Get();
+                chunk.Position = ChunkGrid.GetCenter(chunkCoord);
+                request = new ChunkBakeRequest(chunkCoord, chunk, targets);
+                AddBakeQueue(request);
+                sceneChunks.Add(chunkCoord, request);
             }
+            return request.Chunk;
+        }
 
-            readonly LandformBuilder buildRequestManager;
-
-            object IUnityThreadBehaviour<Action>.Sender
+        /// <summary>
+        /// 仅更新对应地形块,若不存在对应地形块,则返回Null;
+        /// </summary>
+        public Chunk Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        {
+            ChunkBakeRequest request;
+            if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                get { return "场景的地形块创建销毁管理"; }
+                if (request.IsInBakeQueue & !request.IsBaking)
+                {
+                    request.ResetState();
+                    request.Targets |= targets;
+                }
+                else
+                {
+                    request.ResetState();
+                    request.Targets = targets;
+                    AddBakeQueue(request);
+                }
+                return request.Chunk;
             }
+            return null;
+        }
 
-            Action IUnityThreadBehaviour<Action>.Action
+        void AddBakeQueue(ChunkBakeRequest request)
+        {
+            baker.AddRequest(request);
+        }
+
+        public void Destroy(RectCoord chunkCoord)
+        {
+            ChunkBakeRequest request;
+            if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                get { return buildRequestManager.SendDisplay; }
+                request.Cancel();
+                request.Chunk.Clear();
+                chunkPool.Release(request.Chunk);
+                sceneChunks.Remove(chunkCoord);
             }
+        }
+    }
 
+
+    /// <summary>
+    /// 地形块烘培请求;
+    /// </summary>
+    class ChunkBakeRequest : IBakeRequest
+    {
+        public ChunkBakeRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets)
+        {
+            ChunkCoord = chunkCoord;
+            Chunk = chunk;
+            Targets = targets;
+            inBakeQueueTime = 0;
+            IsBaking = false;
+            IsCanceled = false;
+        }
+
+        public RectCoord ChunkCoord { get; private set; }
+        public BakeTargets Targets { get; internal set; }
+        public Chunk Chunk { get; private set; }
+        int inBakeQueueTime;
+        public bool IsBaking { get; private set; }
+        public bool IsCanceled { get; private set; }
+
+        public bool IsInBakeQueue
+        {
+            get { return inBakeQueueTime > 0; }
+        }
+
+        ChunkTexture IBakeRequest.Textures
+        {
+            get { return Chunk.Renderer; }
+        }
+
+        void IBakeRequest.AddBakeQueue()
+        {
+            inBakeQueueTime++;
+        }
+
+        void IBakeRequest.StartBake()
+        {
+            if (IsBaking)
+                UnityEngine.Debug.LogError("重复烘焙?");
+
+            IsBaking = true;
+        }
+
+        void IBakeRequest.BakeCompleted()
+        {
+            try
+            {
+                Chunk.Renderer.Apply();
+            }
+            finally
+            {
+                IsBaking = false;
+                inBakeQueueTime--;
+            }
+        }
+
+        /// <summary>
+        /// 重置状态;
+        /// </summary>
+        internal void ResetState()
+        {
+            IsCanceled = false;
+        }
+
+        internal void Cancel()
+        {
+            IsCanceled = true;
         }
     }
 

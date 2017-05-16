@@ -14,9 +14,9 @@ namespace KouXiaGu.Terrain3D
         void Destroy();
     }
 
-    public class BuildingBuilder
+    public class BuildingManager
     {
-        public BuildingBuilder()
+        public BuildingManager()
         {
         }
 

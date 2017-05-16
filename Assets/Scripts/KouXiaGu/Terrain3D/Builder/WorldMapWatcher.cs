@@ -14,14 +14,14 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class WorldMapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
     {
-        public WorldMapWatcher(LandformManager builder, IObservableDictionary<CubicHexCoord, MapNode> observable)
+        public WorldMapWatcher(LandformBuilder builder, IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
             this.builder = builder;
             Subscribe(observable);
         }
 
         IDisposable unsubscriber;
-        readonly LandformManager builder;
+        readonly LandformBuilder builder;
 
         public void Subscribe(IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
