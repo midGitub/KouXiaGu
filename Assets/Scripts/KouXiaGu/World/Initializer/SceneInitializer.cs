@@ -21,7 +21,7 @@ namespace KouXiaGu.World
 
         public override string Prefix
         {
-            get { return "游戏世界组件"; }
+            get { return "等待世界构建完成;"; }
         }
 
         public IAsyncOperation<IWorldScene> Start(IWorldData worldData, IObservable<IWorld> starter)
