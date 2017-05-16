@@ -90,10 +90,84 @@ namespace KouXiaGu.Terrain3D
             ChunkBakeRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                chunkPool.Release(request.Chunk);
                 request.Cancel();
+                request.Chunk.Destroy();
+                chunkPool.Release(request.Chunk);
                 sceneChunks.Remove(chunkCoord);
             }
+        }
+    }
+
+
+    /// <summary>
+    /// 地形块烘培请求;
+    /// </summary>
+    class ChunkBakeRequest : IBakeRequest
+    {
+        public ChunkBakeRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets)
+        {
+            ChunkCoord = chunkCoord;
+            Chunk = chunk;
+            Targets = targets;
+            inBakeQueueTime = 0;
+            IsBaking = false;
+            IsCanceled = false;
+        }
+
+        public RectCoord ChunkCoord { get; private set; }
+        public BakeTargets Targets { get; internal set; }
+        public Chunk Chunk { get; private set; }
+        int inBakeQueueTime;
+        public bool IsBaking { get; private set; }
+        public bool IsCanceled { get; private set; }
+
+        public bool IsInBakeQueue
+        {
+            get { return inBakeQueueTime > 0; }
+        }
+
+        ChunkTexture IBakeRequest.Textures
+        {
+            get { return Chunk.Renderer; }
+        }
+
+        void IBakeRequest.AddBakeQueue()
+        {
+            inBakeQueueTime++;
+        }
+
+        void IBakeRequest.StartBake()
+        {
+            if (IsBaking)
+                UnityEngine.Debug.LogError("重复烘焙?");
+
+            IsBaking = true;
+        }
+
+        void IBakeRequest.BakeCompleted()
+        {
+            try
+            {
+                Chunk.Renderer.Apply();
+            }
+            finally
+            {
+                IsBaking = false;
+                inBakeQueueTime--;
+            }
+        }
+
+        /// <summary>
+        /// 重置状态;
+        /// </summary>
+        internal void ResetState()
+        {
+            IsCanceled = false;
+        }
+
+        internal void Cancel()
+        {
+            IsCanceled = true;
         }
     }
 
