@@ -22,13 +22,12 @@ namespace KouXiaGu.Terrain3D
             get { return gameObject; }
         }
 
-        GameObject ILandformBuilding.Build(CubicHexCoord coord, LandformBuilder landform, IWorldData data)
+        GameObject ILandformBuilding.Build(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data)
         {
-            MapNode node = data.Map.Data[coord];
             BuildingNode buildingNode = node.Building;
 
             Vector3 position = coord.GetTerrainPixel();
-            position.y = landform.GetHeight(position);
+            position.y = landform.LandformBuilder.GetHeight(position);
 
             Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
 

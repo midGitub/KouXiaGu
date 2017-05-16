@@ -13,9 +13,8 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形控制;
     /// </summary>
-    public class Landform : MonoBehaviour
+    public class Landform
     {
-
         /// <summary>
         /// 初始化,并且在等待地形初始化完毕;
         /// </summary>
@@ -30,8 +29,7 @@ namespace KouXiaGu.Terrain3D
             {
                 try
                 {
-                    Result = SceneObject.GetObject<Landform>();
-                    Result.Initialize(worldData);
+                    Result = new Landform(worldData);
                     OnCompleted();
                 }
                 catch (Exception ex)
@@ -42,13 +40,17 @@ namespace KouXiaGu.Terrain3D
 
             public override bool IsCompleted
             {
-                get { return IsFaulted || Result.LandformBuilder.Baker.IsEmpty; }
+                get { return IsFaulted || (isCompleted && Result.LandformBuilder.Baker.IsEmpty); }
             }
         }
 
 
-        Landform()
+        Landform(IWorldData worldData)
         {
+            LandformManager = new LandformManager(worldData);
+            MapWatcher = new WorldMapWatcher(LandformBuilder, worldData.Map.PredefinedMap.Data);
+            Water = SceneObject.GetObject<WaterManager>();
+            Water.IsDisplay = true;
         }
 
         public bool IsInitialized { get; private set; }

@@ -6,6 +6,7 @@ using KouXiaGu.World;
 using KouXiaGu.Grids;
 using UnityEngine;
 using System.Collections;
+using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -15,7 +16,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public interface ILandformBuilding
     {
-        GameObject Build(CubicHexCoord coord, LandformBuilder landform, IWorldData data);
+        GameObject Build(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
     }
 
     /// <summary>
@@ -23,9 +24,9 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder
     {
-        public BuildingBuilder(IWorldData data, LandformBuilder landform)
+        public BuildingBuilder(IWorldData worldData, Landform landform)
         {
-            worldData = data;
+            this.worldData = worldData;
             sceneChunks = new Dictionary<RectCoord, BuildingChunk>();
         }
 
@@ -37,12 +38,78 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.GameData.Terrain; }
         }
 
+        public RectGrid ChunkGrid
+        {
+            get { return ChunkInfo.ChunkGrid; }
+        }
+
+        #region 建筑物覆盖节点;
+
+        /// <summary>
+        /// (0, 0)对应覆盖的节点(依赖地图块大小);
+        /// </summary>
+        static readonly CubicHexCoord[] buildingOverlay = new CubicHexCoord[]
+            {
+                new CubicHexCoord(-2, 2),
+                new CubicHexCoord(-2, 1),
+                new CubicHexCoord(-2, 0),
+
+                new CubicHexCoord(-1, 2),
+                new CubicHexCoord(-1, 1),
+                new CubicHexCoord(-1, 0),
+
+                new CubicHexCoord(0, 1),
+                new CubicHexCoord(0, 0),
+                new CubicHexCoord(0, -1),
+
+                new CubicHexCoord(1, 1),
+                new CubicHexCoord(1, 0),
+                new CubicHexCoord(1, -1),
+            };
+
+        /// <summary>
+        /// 获取到地形块对应覆盖到的建筑物坐标;
+        /// </summary>
+        public static IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
+        {
+            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            foreach (var item in buildingOverlay)
+            {
+                yield return chunkCenter + item;
+            }
+        }
+
+        #endregion
+
+        MapNode GetAt(CubicHexCoord coord)
+        {
+            return worldData.Map.Data[coord];
+        }
+
+        BuildingResource FindResource(int id)
+        {
+            Dictionary<int, BuildingResource> resources = worldData.GameData.Terrain.BuildingInfos;
+            return resources[id];
+        }
+
         /// <summary>
         /// 仅创建对应块,若已经存在则返回存在的元素;
         /// </summary>
-        public void Create(RectCoord chunkCoord)
+        public BuildingChunk Create(RectCoord chunkCoord)
         {
-            
+            BuildingChunk chunk;
+            if (!sceneChunks.TryGetValue(chunkCoord, out chunk))
+            {
+                chunk = new BuildingChunk();
+                IEnumerable<CubicHexCoord> overlayPoints = GetOverlayPoints(chunkCoord);
+                foreach (var overlayPoint in overlayPoints)
+                {
+                    MapNode node = GetAt(overlayPoint);
+                    BuildingResource resource = FindResource(node.Building.Type);
+                    resource.Building.Build(overlayPoint, node, null, worldData);
+                }
+            }
+            return chunk;
         }
 
         /// <summary>
@@ -50,6 +117,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Update(RectCoord chunkCoord)
         {
+        }
+
+        /// <summary>
+        /// 清除所有实例化的物体;
+        /// </summary>
+        void Clear(BuildingChunk chunk)
+        {
+
         }
     }
 

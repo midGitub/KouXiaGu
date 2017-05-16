@@ -461,8 +461,8 @@ GameObject:
   - component: {fileID: 232559848}
   - component: {fileID: 232559847}
   - component: {fileID: 232559845}
-  - component: {fileID: 232559846}
   - component: {fileID: 232559849}
+  - component: {fileID: 232559850}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -502,20 +502,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &232559846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 232559844}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20b955fe408d59d4795a2111cde57b51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  displayRadius:
-    x: 2
-    y: 2
 --- !u!33 &232559847
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -547,6 +533,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4913a6264c6b93449bdbc205df34176e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &232559850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 232559844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bdd4bd1df7e7f54ebf0027de63bbade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayRadius:
+    x: 2
+    y: 2
 --- !u!1 &253871572
 GameObject:
   m_ObjectHideFlags: 0
@@ -1876,7 +1876,7 @@ GameObject:
   - component: {fileID: 1058029138}
   - component: {fileID: 1058029137}
   - component: {fileID: 1058029136}
-  - component: {fileID: 1058029135}
+  - component: {fileID: 1058029134}
   m_Layer: 0
   m_Name: Capsule (1)
   m_TagString: Untagged
@@ -1884,7 +1884,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1058029135
+--- !u!114 &1058029134
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1892,7 +1892,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1058029133}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20b955fe408d59d4795a2111cde57b51, type: 3}
+  m_Script: {fileID: 11500000, guid: 1bdd4bd1df7e7f54ebf0027de63bbade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   displayRadius:
@@ -2189,7 +2189,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1146917776}
-  - component: {fileID: 1146917774}
   - component: {fileID: 1146917773}
   - component: {fileID: 1146917775}
   m_Layer: 0
@@ -2229,17 +2228,6 @@ MonoBehaviour:
   runtimeStopwatch:
     idleSeconds: 0.5
   waitUpdate: 0
---- !u!114 &1146917774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1146917772}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82e899f5dded25e4da6e42c4ee92478f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1146917775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2704,17 +2692,17 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
