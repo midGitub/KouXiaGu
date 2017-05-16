@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
 
             public override bool IsCompleted
             {
-                get { return isFaulted || Result.Builder.Baker.IsEmpty; }
+                get { return isFaulted || Result.LandformManager.Baker.IsEmpty; }
             }
 
         }
@@ -53,20 +53,21 @@ namespace KouXiaGu.Terrain3D
         }
 
         public bool IsInitialized { get; private set; }
-        public LandformManager Builder { get; private set; }
-        public LandformBuilder BuildManager { get; private set; }
-        public BuildRequestUpdater BuildUpdater { get; private set; }
+        public LandformBuilder LandformBuilder { get; private set; }
         public WorldMapWatcher MapWatcher { get; private set; }
         public WaterManager Water { get; private set; }
+
+        public LandformManager LandformManager
+        {
+            get { return LandformBuilder.Manager; }
+        }
 
         Landform Initialize(IWorldData worldData)
         {
             if (!IsInitialized)
             {
-                Builder = new LandformManager(worldData);
-                BuildManager = new LandformBuilder(Builder);
-                BuildUpdater = new BuildRequestUpdater(BuildManager);
-                MapWatcher = new WorldMapWatcher(Builder, worldData.Map.PredefinedMap.Data);
+                LandformBuilder = new LandformBuilder(worldData);
+                MapWatcher = new WorldMapWatcher(LandformManager, worldData.Map.PredefinedMap.Data);
                 Water = SceneObject.GetObject<WaterManager>();
                 Water.IsDisplay = true;
             }
@@ -80,7 +81,7 @@ namespace KouXiaGu.Terrain3D
         {
             RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
             ChunkBakeRequest chunk;
-            if (Builder.SceneDisplayedChunks.TryGetValue(chunkCoord, out chunk))
+            if (LandformManager.SceneDisplayedChunks.TryGetValue(chunkCoord, out chunk))
             {
                 Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
                 return chunk.Chunk.Renderer.GetHeight(uv);

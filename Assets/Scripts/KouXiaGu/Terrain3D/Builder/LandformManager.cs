@@ -91,7 +91,7 @@ namespace KouXiaGu.Terrain3D
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
                 request.Cancel();
-                request.Chunk.Destroy();
+                request.Chunk.Clear();
                 chunkPool.Release(request.Chunk);
                 sceneChunks.Remove(chunkCoord);
             }
