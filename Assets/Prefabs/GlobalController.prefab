@@ -1432,7 +1432,7 @@ MonoBehaviour:
   gameDataInitialize:
     terrain:
       stopwatch:
-        idleSeconds: 0
+        idleSeconds: 0.1
 --- !u!114 &114612743509320056
 MonoBehaviour:
   m_ObjectHideFlags: 1

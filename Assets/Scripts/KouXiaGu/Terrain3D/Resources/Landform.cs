@@ -109,9 +109,9 @@ namespace KouXiaGu.Terrain3D
     }
 
     [Serializable]
-    public class LandformReader : AsyncOperation<Dictionary<int, LandformResource>>
+    public class LandformResourceReader : AsyncOperation<Dictionary<int, LandformResource>>
     {
-        public LandformReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<LandformInfo> infos)
+        public LandformResourceReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<LandformInfo> infos)
         {
             this.stopwatch = stopwatch;
             this.assetBundle = assetBundle;
