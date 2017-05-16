@@ -49,6 +49,7 @@ namespace KouXiaGu
     /// <summary>
     /// 表示异步的操作;
     /// </summary>
+    [Serializable]
     public abstract class AsyncOperation : IAsyncOperation
     {
         public AsyncOperation()
@@ -144,6 +145,7 @@ namespace KouXiaGu
     /// <summary>
     /// 表示异步的操作;
     /// </summary>
+    [Serializable]
     public abstract class AsyncOperation<TResult> : AsyncOperation, IAsyncOperation<TResult>
     {
         public AsyncOperation()

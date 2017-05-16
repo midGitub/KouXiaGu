@@ -32,7 +32,8 @@ namespace KouXiaGu
         }
 
         ComponentInitializer componentInitialize = new ComponentInitializer();
-        GameDataInitializer gameDataInitialize = new GameDataInitializer();
+        [SerializeField]
+        GameDataInitializer gameDataInitialize;
 
         public IAsyncOperation ComponentInitialize
         {

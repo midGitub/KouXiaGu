@@ -9,6 +9,8 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+
+
     public abstract class AssetReadRequest<TResult> : CoroutineOperation<TResult>
     {
         public AssetReadRequest(AssetBundle assetBundle, ISegmented segmented) 

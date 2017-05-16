@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World;
-using KouXiaGu.World.Map;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -19,14 +15,22 @@ namespace KouXiaGu
     /// <summary>
     /// 游戏数据,开始游戏前需要读取的资源;
     /// </summary>
+    [Serializable]
     public class GameDataInitializer : AsyncInitializer<IGameData>, IGameData
     {
         public GameDataInitializer()
         {
         }
 
+        [SerializeField]
+        TerrainResource terrain;
+
         public WorldElementResource ElementInfo { get; private set; }
-        public TerrainResource Terrain { get; private set; }
+
+        public TerrainResource Terrain
+        {
+            get { return terrain; }
+        }
 
         public override string Prefix
         {
@@ -72,16 +76,15 @@ namespace KouXiaGu
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
             {
-                    TerrainResource.ReadAsync(ElementInfo).Subscribe(this, OnTerrainCompleted, OnFaulted),
+                    terrain.Init(ElementInfo).Subscribe(this, OnTerrainCompleted, OnFaulted),
             };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(this, InitializeCompleted, OnFaulted);
         }
 
 
-        void OnTerrainCompleted(IAsyncOperation<TerrainResource> operation)
+        void OnTerrainCompleted(IAsyncOperation operation)
         {
-            Terrain = operation.Result;
-            string log = GetTerrainResourceLog(operation.Result);
+            string log = GetTerrainResourceLog(terrain);
             Debug.Log(log);
         }
 
