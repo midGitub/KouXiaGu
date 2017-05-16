@@ -29,6 +29,11 @@ namespace KouXiaGu.Terrain3D
             get { return updaterDisposer != null; }
         }
 
+        protected virtual object Sender
+        {
+            get { return "场景的地形块创建销毁管理"; }
+        }
+
         protected abstract IEnumerable<IChunkWatcher> Watchers { get; }
         protected abstract IEnumerable<RectCoord> SceneCoords { get; }
         protected abstract void CreateAt(RectCoord coord);
@@ -110,7 +115,7 @@ namespace KouXiaGu.Terrain3D
 
             object IUnityThreadBehaviour<Action>.Sender
             {
-                get { return "场景的地形块创建销毁管理"; }
+                get { return Manager.Sender; }
             }
 
             Action IUnityThreadBehaviour<Action>.Action
