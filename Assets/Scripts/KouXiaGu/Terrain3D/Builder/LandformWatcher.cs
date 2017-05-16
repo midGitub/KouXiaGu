@@ -28,10 +28,10 @@ namespace KouXiaGu.Terrain3D
 
         void Start()
         {
-            BuildRequestManager.AddLandformWatcher(this);
+            LandformBuilder.AddLandformWatcher(this);
         }
 
-        void ILandformWatcher.UpdateDispaly(BuildRequestManager scene)
+        void ILandformWatcher.UpdateDispaly(LandformBuilder scene)
         {
             IEnumerable<RectCoord> coords = GetDisplay(transform.position);
             foreach (var coord in coords)

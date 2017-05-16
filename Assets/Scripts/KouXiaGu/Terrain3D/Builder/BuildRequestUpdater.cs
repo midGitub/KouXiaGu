@@ -11,13 +11,13 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildRequestUpdater : IUnityThreadBehaviour<Action>
     {
-        public BuildRequestUpdater(BuildRequestManager buildRequestManager)
+        public BuildRequestUpdater(LandformBuilder buildRequestManager)
         {
             this.buildRequestManager = buildRequestManager;
             this.SubscribeUpdate();
         }
 
-        readonly BuildRequestManager buildRequestManager;
+        readonly LandformBuilder buildRequestManager;
 
         object IUnityThreadBehaviour<Action>.Sender
         {

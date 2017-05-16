@@ -53,8 +53,8 @@ namespace KouXiaGu.Terrain3D
         }
 
         public bool IsInitialized { get; private set; }
-        public LandformBuilder Builder { get; private set; }
-        public BuildRequestManager BuildManager { get; private set; }
+        public LandformManager Builder { get; private set; }
+        public LandformBuilder BuildManager { get; private set; }
         public BuildRequestUpdater BuildUpdater { get; private set; }
         public WorldMapWatcher MapWatcher { get; private set; }
         public WaterManager Water { get; private set; }
@@ -63,8 +63,8 @@ namespace KouXiaGu.Terrain3D
         {
             if (!IsInitialized)
             {
-                Builder = new LandformBuilder(worldData);
-                BuildManager = new BuildRequestManager(Builder);
+                Builder = new LandformManager(worldData);
+                BuildManager = new LandformBuilder(Builder);
                 BuildUpdater = new BuildRequestUpdater(BuildManager);
                 MapWatcher = new WorldMapWatcher(Builder, worldData.Map.PredefinedMap.Data);
                 Water = SceneObject.GetObject<WaterManager>();
