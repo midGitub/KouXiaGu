@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
     public interface ILandformBuilding
     {
         GameObject gameObject { get; }
-        GameObject Build(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
+        ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
     }
 
     /// <summary>
@@ -81,20 +81,38 @@ namespace KouXiaGu.Terrain3D
             get { return readOnlySceneChunks; }
         }
 
-        RectGrid ChunkGrid
+        RectGrid chunkGrid
         {
             get { return ChunkInfo.ChunkGrid; }
         }
 
-        MapNode GetAt(CubicHexCoord coord)
+        IDictionary<CubicHexCoord, MapNode> mapData
         {
-            return worldData.Map.Data[coord];
+            get { return worldData.Map.Data; }
         }
 
-        BuildingResource FindResource(int id)
+        IDictionary<int, BuildingResource> resources
         {
-            Dictionary<int, BuildingResource> resources = worldData.GameData.Terrain.BuildingInfos;
-            return resources[id];
+            get { return worldData.GameData.Terrain.BuildingInfos; }
+        }
+
+        /// <summary>
+        /// 创建建筑物到该坐标,若不存在建筑物则返回false;
+        /// </summary>
+        bool TryCreate(CubicHexCoord coord, out ILandformBuilding building)
+        {
+            MapNode node;
+            if (mapData.TryGetValue(coord, out node))
+            {
+                BuildingResource resource;
+                int buildingType = node.Building.Type;
+                if (resources.TryGetValue(buildingType, out resource))
+                {
+                    building = resource.Building.BuildAt(coord, node, null, worldData);
+                }
+            }
+            building = null;
+            return false;
         }
 
         /// <summary>

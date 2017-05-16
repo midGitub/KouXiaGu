@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
             get { return gameObject; }
         }
 
-        GameObject ILandformBuilding.Build(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data)
+        ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data)
         {
             BuildingNode buildingNode = node.Building;
 
@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
             Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
 
             GameObject instance = Instantiate(Prefab, position, angle);
-            return instance;
+            return instance.GetComponent<ILandformBuilding>();
         }
 
     }
