@@ -16,6 +16,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public interface ILandformBuilding
     {
+        GameObject gameObject { get; }
         GameObject Build(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
     }
 
@@ -24,34 +25,6 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder
     {
-        public BuildingBuilder(IWorldData worldData, LandformManager landform)
-        {
-            this.worldData = worldData;
-            sceneChunks = new Dictionary<RectCoord, BuildingChunk>();
-            readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
-        }
-
-        readonly IWorldData worldData;
-        readonly Dictionary<RectCoord, BuildingChunk> sceneChunks;
-        readonly IReadOnlyDictionary<RectCoord, BuildingChunk> readOnlySceneChunks;
-
-        public IReadOnlyDictionary<RectCoord, BuildingChunk> SceneChunks
-        {
-            get { return readOnlySceneChunks; }
-        }
-
-        TerrainResource Resources
-        {
-            get { return worldData.GameData.Terrain; }
-        }
-
-        RectGrid ChunkGrid
-        {
-            get { return ChunkInfo.ChunkGrid; }
-        }
-
-        #region 建筑物覆盖节点;
-
         /// <summary>
         /// (0, 0)对应覆盖的节点(依赖地图块大小);
         /// </summary>
@@ -77,7 +50,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到地形块对应覆盖到的建筑物坐标;
         /// </summary>
-        public static IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
+        static IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
         {
             CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
             foreach (var item in buildingOverlay)
@@ -86,7 +59,27 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        #endregion
+
+        public BuildingBuilder(IWorldData worldData, LandformManager landform)
+        {
+            this.worldData = worldData;
+            sceneChunks = new Dictionary<RectCoord, BuildingChunk>();
+            readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
+        }
+
+        readonly IWorldData worldData;
+        readonly Dictionary<RectCoord, BuildingChunk> sceneChunks;
+        readonly IReadOnlyDictionary<RectCoord, BuildingChunk> readOnlySceneChunks;
+
+        public IReadOnlyDictionary<RectCoord, BuildingChunk> SceneChunks
+        {
+            get { return readOnlySceneChunks; }
+        }
+
+        RectGrid ChunkGrid
+        {
+            get { return ChunkInfo.ChunkGrid; }
+        }
 
         MapNode GetAt(CubicHexCoord coord)
         {
@@ -104,21 +97,31 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public BuildingChunk Create(RectCoord chunkCoord)
         {
-            BuildingChunk chunk;
-            if (!sceneChunks.TryGetValue(chunkCoord, out chunk))
-            {
-                chunk = new BuildingChunk();
-                IEnumerable<CubicHexCoord> overlayPoints = GetOverlayPoints(chunkCoord);
-                foreach (var overlayPoint in overlayPoints)
-                {
-                    MapNode node = GetAt(overlayPoint);
-                    BuildingResource resource = FindResource(node.Building.Type);
-                    var building = resource.Building.Build(overlayPoint, node, null, worldData);
-                    chunk.Add(overlayPoint, building);
-                }
-                sceneChunks.Add(chunkCoord, chunk);
-            }
-            return chunk;
+            //BuildingChunk chunk;
+            //if (!sceneChunks.TryGetValue(chunkCoord, out chunk))
+            //{
+            //    chunk = new BuildingChunk();
+            //    IEnumerable<CubicHexCoord> overlayPoints = GetOverlayPoints(chunkCoord);
+            //    foreach (var overlayPoint in overlayPoints)
+            //    {
+            //        MapNode node;
+            //        IDictionary<CubicHexCoord, MapNode> mapData = worldData.Map.Data;
+            //        if (mapData.TryGetValue(overlayPoint, out node))
+            //        {
+            //            Dictionary<int, BuildingResource> resources = worldData.GameData.Terrain.BuildingInfos;
+            //            BuildingResource resource;
+            //            int buildingType = node.Building.Type;
+            //            if (resources.TryGetValue(buildingType, out resource))
+            //            {
+            //                var building = resource.Building.Build(overlayPoint, node, null, worldData);
+            //                chunk.Add(overlayPoint, building);
+            //            }
+            //        }
+            //    }
+            //    sceneChunks.Add(chunkCoord, chunk);
+            //}
+            //return chunk;
+            throw new NotImplementedException();
         }
 
         /// <summary>
