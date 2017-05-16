@@ -73,7 +73,6 @@ namespace KouXiaGu
         {
             throw new NotImplementedException();
         }
-
     }
 
 }

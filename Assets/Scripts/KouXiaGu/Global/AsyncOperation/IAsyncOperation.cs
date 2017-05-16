@@ -57,9 +57,9 @@ namespace KouXiaGu
             ResetState();
         }
 
-        protected bool isCompleted;
-        protected bool isFaulted;
-        protected Exception exception;
+        bool isCompleted;
+        bool isFaulted;
+        Exception exception;
 
         public virtual bool IsCompleted
         {
@@ -152,7 +152,7 @@ namespace KouXiaGu
         {
         }
 
-        protected TResult result;
+        TResult result;
 
         public virtual TResult Result
         {

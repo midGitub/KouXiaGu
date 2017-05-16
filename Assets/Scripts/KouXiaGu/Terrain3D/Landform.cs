@@ -42,9 +42,8 @@ namespace KouXiaGu.Terrain3D
 
             public override bool IsCompleted
             {
-                get { return isFaulted || Result.LandformBuilder.Baker.IsEmpty; }
+                get { return IsFaulted || Result.LandformBuilder.Baker.IsEmpty; }
             }
-
         }
 
 

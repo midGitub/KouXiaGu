@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using KouXiaGu.World;
 using UnityEngine;
 using System.IO;
@@ -19,19 +18,42 @@ namespace KouXiaGu.Terrain3D
         public Dictionary<int, LandformResource> LandformInfos { get; private set; }
         public Dictionary<int, RoadResource> RoadInfos { get; private set; }
         public Dictionary<int, BuildingResource> BuildingInfos { get; private set; }
+        IDisposable resourceReaderDisposer;
 
-        public static string AssetBundleFilePath
+        internal static string AssetBundleFilePath
         {
             get { return ResourcePath.CombineAssetBundle(assetBundleName); }
         }
 
         public IAsyncOperation Init(WorldElementResource elementInfos)
         {
-            GameInitializer._StartCoroutine(ReadAsync(elementInfos));
+            if (IsCompleted)
+            {
+                throw new ArgumentException("已经初始化完毕;");
+            }
+
+            UnityCoroutine coroutine = new UnityCoroutine("初始地形资源", ReadAsync(elementInfos));
+            resourceReaderDisposer = coroutine.SubscribeUpdate();
             return this;
         }
 
-        public IEnumerator ReadAsync(WorldElementResource elementInfos)
+        protected override void OnCompleted()
+        {
+            base.OnCompleted();
+
+            if (assetBundle != null)
+            {
+                assetBundle.Unload(false);
+                assetBundle = null;
+            }
+            if (resourceReaderDisposer != null)
+            {
+                resourceReaderDisposer.Dispose();
+                resourceReaderDisposer = null;
+            }
+        }
+
+        IEnumerator ReadAsync(WorldElementResource elementInfos)
         {
             yield return ReadAssetBundle();
 
@@ -47,11 +69,6 @@ namespace KouXiaGu.Terrain3D
             yield return buildingReader.ReadAsync();
             BuildingInfos = buildingReader.Result;
 
-            if (assetBundle != null)
-            {
-                assetBundle.Unload(false);
-                assetBundle = null;
-            }
             OnCompleted();
         }
 
@@ -68,5 +85,4 @@ namespace KouXiaGu.Terrain3D
             }
         }
     }
-
 }
