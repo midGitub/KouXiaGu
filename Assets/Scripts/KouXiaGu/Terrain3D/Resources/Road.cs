@@ -43,9 +43,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 道路 地形贴图资源;
     /// </summary>
-    public class TerrainRoad : TerrainElementInfo<RoadInfo>, IDisposable
+    public class RoadResource : TerrainElementInfo<RoadInfo>, IDisposable
     {
-        public TerrainRoad(RoadInfo info) : base(info)
+        public RoadResource(RoadInfo info) : base(info)
         {
         }
 
@@ -104,17 +104,20 @@ namespace KouXiaGu.Terrain3D
     }
 
 
+
+
+
     /// <summary>
     /// 道路资源读取;
     /// </summary>
-    public class RoadReadRequest : AssetReadRequest<Dictionary<int, TerrainRoad>>
+    public class RoadReadRequest : AssetReadRequest<Dictionary<int, RoadResource>>
     {
 
         public RoadReadRequest(AssetBundle assetBundle, ISegmented segmented, IEnumerable<RoadInfo> infos) 
             : base(assetBundle, segmented)
         {
             this.infos = infos;
-            dictionary = new Dictionary<int, TerrainRoad>();
+            dictionary = new Dictionary<int, RoadResource>();
         }
 
         public RoadReadRequest(AssetBundle assetBundle, ISegmented segmented, WorldElementResource elementInfo)
@@ -123,7 +126,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         IEnumerable<RoadInfo> infos;
-        Dictionary<int, TerrainRoad> dictionary;
+        Dictionary<int, RoadResource> dictionary;
 
         protected override void OnFaulted(Exception ex)
         {
@@ -136,7 +139,7 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var info in infos)
             {
-                TerrainRoad item;
+                RoadResource item;
                 if (TryReadAndReport(info, out item))
                     dictionary.AddOrUpdate(info.ID, item);
                 yield return null;
@@ -144,7 +147,7 @@ namespace KouXiaGu.Terrain3D
             OnCompleted(dictionary);
         }
 
-        bool TryReadAndReport(RoadInfo info, out TerrainRoad item)
+        bool TryReadAndReport(RoadInfo info, out RoadResource item)
         {
             if (TryRead(info, out item))
             {
@@ -154,10 +157,10 @@ namespace KouXiaGu.Terrain3D
             return false;
         }
 
-        bool TryRead(RoadInfo info, out TerrainRoad item)
+        bool TryRead(RoadInfo info, out RoadResource item)
         {
             TerrainRoadInfo tInfo = info.Terrain;
-            item = new TerrainRoad(info)
+            item = new RoadResource(info)
             {
                 DiffuseTex = ReadTexture(tInfo.DiffuseTex),
                 DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),

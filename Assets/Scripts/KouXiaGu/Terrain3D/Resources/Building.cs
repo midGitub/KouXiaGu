@@ -20,16 +20,16 @@ namespace KouXiaGu.Terrain3D
         public string PrefabName { get; set; }
     }
 
-    public class Building : IDisposable
+    public class BuildingResource : IDisposable
     {
-        public Building(TerrainBuildingInfo info, GameObject prefab)
+        public BuildingResource(TerrainBuildingInfo info, GameObject prefab)
         {
             Info = info;
             Prefab = prefab;
         }
 
         public TerrainBuildingInfo Info { get; private set; }
-        public GameObject Prefab { get; private set; }
+        public GameObject Prefab { get; internal set; }
 
         public bool IsLoadComplete
         {
@@ -43,21 +43,30 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    [Serializable]
-    public class BuildingReader : AsyncOperation<Dictionary<int, Building>>
+    public class BuildingReader : AsyncOperation<Dictionary<int, BuildingResource>>
     {
-        [SerializeField]
-        Stopwatch stopwatch;
-        AssetBundle assetBundle;
-
-        public IEnumerator ReadAsync(AssetBundle assetBundle, IEnumerable<BuildingInfo> infos)
+        public BuildingReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<BuildingInfo> infos)
         {
-            Result = new Dictionary<int, Building>();
+            this.stopwatch = stopwatch;
+            this.assetBundle = assetBundle;
+            this.infos = infos;
+        }
+
+        readonly ISegmented stopwatch;
+        readonly AssetBundle assetBundle;
+        readonly IEnumerable<BuildingInfo> infos;
+
+        /// <summary>
+        /// 在协程读取;
+        /// </summary>
+        public IEnumerator ReadAsync()
+        {
+            Result = new Dictionary<int, BuildingResource>();
             foreach (BuildingInfo info in infos)
             {
-                Building item;
-                TryRead(info.Terrain, out item);
-                Result.Add(info.ID, item);
+                BuildingResource resource;
+                TryRead(info.Terrain, out resource);
+                Result.Add(info.ID, resource);
 
                 if (stopwatch.Await())
                 {
@@ -68,10 +77,10 @@ namespace KouXiaGu.Terrain3D
             OnCompleted();
         }
 
-        public bool TryRead(TerrainBuildingInfo info, out Building item)
+        public bool TryRead(TerrainBuildingInfo info, out BuildingResource item)
         {
             GameObject prefab = assetBundle.LoadAsset<GameObject>(info.PrefabName);
-            item = new Building(info, prefab);
+            item = new BuildingResource(info, prefab);
 
             if (item.IsLoadComplete)
             {

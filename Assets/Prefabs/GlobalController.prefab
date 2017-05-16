@@ -1431,9 +1431,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameDataInitialize:
     terrain:
-      buildingReader:
-        stopwatch:
-          idleSeconds: 0
+      stopwatch:
+        idleSeconds: 0
 --- !u!114 &114612743509320056
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -14,11 +14,11 @@ namespace KouXiaGu.Terrain3D
     {
         const string assetBundleName = "terrain";
 
-        public BuildingReader buildingReader;
+        public Stopwatch stopwatch;
         AssetBundle assetBundle;
-        public Dictionary<int, TerrainLandform> LandformInfos { get; private set; }
-        public Dictionary<int, TerrainRoad> RoadInfos { get; private set; }
-        public Dictionary<int, Building> BuildingInfos { get; private set; }
+        public Dictionary<int, LandformResource> LandformInfos { get; private set; }
+        public Dictionary<int, RoadResource> RoadInfos { get; private set; }
+        public Dictionary<int, BuildingResource> BuildingInfos { get; private set; }
 
         public static string AssetBundleFilePath
         {
@@ -27,13 +27,23 @@ namespace KouXiaGu.Terrain3D
 
         public IAsyncOperation Init(WorldElementResource elementInfos)
         {
-            throw new NotImplementedException();
+            GameInitializer._StartCoroutine(ReadAsync(elementInfos));
+            return this;
         }
 
         public IEnumerator ReadAsync(WorldElementResource elementInfos)
         {
             yield return ReadAssetBundle();
-            yield return buildingReader.ReadAsync(assetBundle, elementInfos.BuildingInfos.Values);
+
+            LandformReader landformReader = new LandformReader(stopwatch, assetBundle, elementInfos.LandformInfos.Values);
+            yield return landformReader.ReadAsync();
+            LandformInfos = landformReader.Result;
+
+
+
+            BuildingReader buildingReader = new BuildingReader(stopwatch, assetBundle, elementInfos.BuildingInfos.Values);
+            yield return buildingReader.ReadAsync();
+            BuildingInfos = buildingReader.Result;
 
             if (assetBundle != null)
             {
@@ -48,7 +58,6 @@ namespace KouXiaGu.Terrain3D
             AssetBundleCreateRequest bundleLoadRequest = AssetBundle.LoadFromFileAsync(AssetBundleFilePath);
             yield return bundleLoadRequest;
             assetBundle = bundleLoadRequest.assetBundle;
-
             if (assetBundle == null)
             {
                 Exception ex = new FileNotFoundException("未找到地形资源包;");
@@ -58,104 +67,104 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        /// <summary>
-        /// 初始化方法;
-        /// </summary>
-        class TerrainResourceCreater : AsyncOperation<TerrainResource>
-        {
-            const string assetBundleName = "terrain";
-            static readonly ISegmented DefaultSegmented = new SegmentedFalse();
+        ///// <summary>
+        ///// 初始化方法;
+        ///// </summary>
+        //class TerrainResourceCreater : AsyncOperation<TerrainResource>
+        //{
+        //    const string assetBundleName = "terrain";
+        //    static readonly ISegmented DefaultSegmented = new SegmentedFalse();
 
-            public static string AssetBundleFilePath
-            {
-                get { return ResourcePath.CombineAssetBundle(assetBundleName); }
-            }
+        //    public static string AssetBundleFilePath
+        //    {
+        //        get { return ResourcePath.CombineAssetBundle(assetBundleName); }
+        //    }
 
-            public TerrainResourceCreater(WorldElementResource elementInfos)
-            {
-                this.elementInfos = elementInfos;
-                resource = new TerrainResource();
-                GameInitializer._StartCoroutine(Read());
-            }
+        //    public TerrainResourceCreater(WorldElementResource elementInfos)
+        //    {
+        //        this.elementInfos = elementInfos;
+        //        resource = new TerrainResource();
+        //        GameInitializer._StartCoroutine(Read());
+        //    }
 
-            TerrainResource resource;
-            WorldElementResource elementInfos;
-            AssetBundle assetBundle;
+        //    TerrainResource resource;
+        //    WorldElementResource elementInfos;
+        //    AssetBundle assetBundle;
 
-            IEnumerator Read()
-            {
-                if (IsFaulted)
-                    goto _Last_;
-                yield return ReadAssetBundle();
+        //    IEnumerator Read()
+        //    {
+        //        if (IsFaulted)
+        //            goto _Last_;
+        //        yield return ReadAssetBundle();
 
-                if (IsFaulted)
-                    goto _Last_;
-                yield return ReadLandform(assetBundle);
+        //        if (IsFaulted)
+        //            goto _Last_;
+        //        yield return ReadLandform(assetBundle);
 
-                if (IsFaulted)
-                    goto _Last_;
-                yield return ReadRoad(assetBundle);
+        //        if (IsFaulted)
+        //            goto _Last_;
+        //        yield return ReadRoad(assetBundle);
 
-                _Last_:
-                LastOperation();
-            }
+        //        _Last_:
+        //        LastOperation();
+        //    }
 
-            IEnumerator ReadAssetBundle()
-            {
-                AssetBundleCreateRequest bundleLoadRequest = AssetBundle.LoadFromFileAsync(AssetBundleFilePath);
-                yield return bundleLoadRequest;
-                assetBundle = bundleLoadRequest.assetBundle;
+        //    IEnumerator ReadAssetBundle()
+        //    {
+        //        AssetBundleCreateRequest bundleLoadRequest = AssetBundle.LoadFromFileAsync(AssetBundleFilePath);
+        //        yield return bundleLoadRequest;
+        //        assetBundle = bundleLoadRequest.assetBundle;
 
-                if (assetBundle == null)
-                {
-                    Exception ex = new FileNotFoundException("未找到地形资源包;");
-                    Debug.LogError(ex);
-                    OnFaulted(ex);
-                }
-            }
+        //        if (assetBundle == null)
+        //        {
+        //            Exception ex = new FileNotFoundException("未找到地形资源包;");
+        //            Debug.LogError(ex);
+        //            OnFaulted(ex);
+        //        }
+        //    }
 
-            void LastOperation()
-            {
-                if(assetBundle != null)
-                    assetBundle.Unload(false);
+        //    void LastOperation()
+        //    {
+        //        if(assetBundle != null)
+        //            assetBundle.Unload(false);
 
-                if(!IsCompleted)
-                    OnCompleted(resource);
-            }
+        //        if(!IsCompleted)
+        //            OnCompleted(resource);
+        //    }
 
-            IEnumerator ReadLandform(AssetBundle assetBundle)
-            {
-                var request = new LandformReadRequest(assetBundle, DefaultSegmented, elementInfos);
-                yield return request;
+        //    IEnumerator ReadLandform(AssetBundle assetBundle)
+        //    {
+        //        var request = new LandformReadRequest(assetBundle, DefaultSegmented, elementInfos);
+        //        yield return request;
 
-                if (request.IsFaulted)
-                {
-                    Debug.LogError(request.Exception);
-                    OnFaulted(request.Exception);
-                }
-                else
-                {
-                    resource.LandformInfos = request.Result;
-                }
-            }
+        //        if (request.IsFaulted)
+        //        {
+        //            Debug.LogError(request.Exception);
+        //            OnFaulted(request.Exception);
+        //        }
+        //        else
+        //        {
+        //            resource.LandformInfos = request.Result;
+        //        }
+        //    }
 
-            IEnumerator ReadRoad(AssetBundle assetBundle)
-            {
-                var request = new RoadReadRequest(assetBundle, DefaultSegmented, elementInfos);
-                yield return request;
+        //    IEnumerator ReadRoad(AssetBundle assetBundle)
+        //    {
+        //        var request = new RoadReadRequest(assetBundle, DefaultSegmented, elementInfos);
+        //        yield return request;
 
-                if (request.IsFaulted)
-                {
-                    Debug.LogError(request.Exception);
-                    OnFaulted(request.Exception);
-                }
-                else
-                {
-                    resource.RoadInfos = request.Result;
-                }
-            }
+        //        if (request.IsFaulted)
+        //        {
+        //            Debug.LogError(request.Exception);
+        //            OnFaulted(request.Exception);
+        //        }
+        //        else
+        //        {
+        //            resource.RoadInfos = request.Result;
+        //        }
+        //    }
 
-        }
+        //}
 
     }
 

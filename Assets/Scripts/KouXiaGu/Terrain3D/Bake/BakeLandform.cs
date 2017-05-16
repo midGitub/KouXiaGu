@@ -39,7 +39,7 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.Map.Data; }
         }
 
-        IDictionary<int, TerrainLandform> landformResources
+        IDictionary<int, LandformResource> landformResources
         {
             get { return worldData.GameData.Terrain.LandformInfos; }
         }
@@ -115,7 +115,7 @@ namespace KouXiaGu.Terrain3D
             foreach (var display in displays)
             {
                 float angle;
-                TerrainLandform info = GetLandformInfo(display, out angle);
+                LandformResource info = GetLandformInfo(display, out angle);
 
                 if (info != null)
                 {
@@ -128,9 +128,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到该点的地形贴图信息;
         /// </summary>
-        TerrainLandform GetLandformInfo(CubicHexCoord pos, out float angle)
+        LandformResource GetLandformInfo(CubicHexCoord pos, out float angle)
         {
-            TerrainLandform info;
+            LandformResource info;
             MapNode node;
             if (worldMap.TryGetValue(pos, out node))
             {
@@ -139,7 +139,7 @@ namespace KouXiaGu.Terrain3D
             }
             else
             {
-                info = default(TerrainLandform);
+                info = default(LandformResource);
                 angle = default(float);
             }
             return info;
@@ -151,16 +151,16 @@ namespace KouXiaGu.Terrain3D
             return angle;
         }
 
-        TerrainLandform GetLandformResource(MapNode node)
+        LandformResource GetLandformResource(MapNode node)
         {
             int landformID = node.Landform.LandformID;
-            TerrainLandform info = GetLandformResource(landformID);
+            LandformResource info = GetLandformResource(landformID);
             return info;
         }
 
-        TerrainLandform GetLandformResource(int landformID)
+        LandformResource GetLandformResource(int landformID)
         {
-            TerrainLandform info;
+            LandformResource info;
             if (!landformResources.TryGetValue(landformID, out info))
             {
                 Debug.LogWarning("未找到对应地形贴图,ID:[" + landformID + "];");
@@ -190,7 +190,7 @@ namespace KouXiaGu.Terrain3D
 
         void SetDiffuserMaterial(Pack renderer)
         {
-            TerrainLandform res = renderer.Res;
+            LandformResource res = renderer.Res;
 
             var material = renderer.Rednerer.material;
             //GameObject.Destroy(material);
@@ -213,7 +213,7 @@ namespace KouXiaGu.Terrain3D
 
         void SetHeightMaterial(Pack renderer)
         {
-            TerrainLandform res = renderer.Res;
+            LandformResource res = renderer.Res;
 
             var material = renderer.Rednerer.material;
             //GameObject.Destroy(material);
@@ -225,13 +225,13 @@ namespace KouXiaGu.Terrain3D
 
         struct Pack
         {
-            public Pack(TerrainLandform res, MeshRenderer rednerer)
+            public Pack(LandformResource res, MeshRenderer rednerer)
             {
                 this.Res = res;
                 this.Rednerer = rednerer;
             }
 
-            public TerrainLandform Res { get; private set; }
+            public LandformResource Res { get; private set; }
             public MeshRenderer Rednerer { get; private set; }
         }
 

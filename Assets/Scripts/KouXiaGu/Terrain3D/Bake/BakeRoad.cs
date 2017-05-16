@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.Map.Data; }
         }
 
-        IDictionary<int, TerrainRoad> roadResources
+        IDictionary<int, RoadResource> roadResources
         {
             get { return worldData.GameData.Terrain.RoadInfos; }
         }
@@ -100,7 +100,7 @@ namespace KouXiaGu.Terrain3D
 
                     if (meshs.Length > 0)
                     {
-                        TerrainRoad res = GetRoadResource(node.Road.Type);
+                        RoadResource res = GetRoadResource(node.Road.Type);
                         var pack = new Pack(res, meshs);
                         sceneObjects.Add(pack);
                     }
@@ -135,9 +135,9 @@ namespace KouXiaGu.Terrain3D
             return newPath;
         }
 
-        TerrainRoad GetRoadResource(int roadID)
+        RoadResource GetRoadResource(int roadID)
         {
-            TerrainRoad res;
+            RoadResource res;
             if (!roadResources.TryGetValue(roadID, out res))
             {
                 Debug.LogWarning("未找到对应道路贴图,ID:[" + roadID + "];");
@@ -171,7 +171,7 @@ namespace KouXiaGu.Terrain3D
 
         void SetDiffuserMaterial(Pack pack)
         {
-            TerrainRoad res = pack.Res;
+            RoadResource res = pack.Res;
             Material material = new Material(diffuseShader);
             material.SetTexture("_MainTex", res.DiffuseTex);
             material.SetTexture("_BlendTex", res.DiffuseBlendTex);
@@ -199,7 +199,7 @@ namespace KouXiaGu.Terrain3D
 
         void SetHeightMaterial(Pack pack)
         {
-            TerrainRoad res = pack.Res;
+            RoadResource res = pack.Res;
             Material material = new Material(heightShader);
             material.SetTexture("_MainTex", res.HeightAdjustTex);
 
@@ -214,13 +214,13 @@ namespace KouXiaGu.Terrain3D
 
         struct Pack
         {
-            public Pack(TerrainRoad res, IEnumerable<Pack<RoadMesh, MeshRenderer>> rednerer)
+            public Pack(RoadResource res, IEnumerable<Pack<RoadMesh, MeshRenderer>> rednerer)
             {
                 this.Res = res;
                 this.Packs = rednerer;
             }
 
-            public TerrainRoad Res { get; private set; }
+            public RoadResource Res { get; private set; }
             public IEnumerable<Pack<RoadMesh, MeshRenderer>> Packs { get; private set; }
         }
 
