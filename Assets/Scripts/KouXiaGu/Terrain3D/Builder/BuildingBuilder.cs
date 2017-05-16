@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public interface ILandformBuilding
     {
-        void Build(CubicHexCoord coord, LandformBuilder landform, IWorldData data);
+        GameObject Build(CubicHexCoord coord, LandformBuilder landform, IWorldData data);
     }
 
     /// <summary>
