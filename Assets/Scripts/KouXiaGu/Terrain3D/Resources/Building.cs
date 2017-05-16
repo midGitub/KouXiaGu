@@ -65,7 +65,7 @@ namespace KouXiaGu.Terrain3D
             foreach (BuildingInfo info in infos)
             {
                 BuildingResource resource;
-                TryRead(info.Terrain, out resource);
+                TryRead(info, out resource);
                 Result.Add(info.ID, resource);
 
                 if (stopwatch.Await())
@@ -77,10 +77,11 @@ namespace KouXiaGu.Terrain3D
             OnCompleted();
         }
 
-        public bool TryRead(TerrainBuildingInfo info, out BuildingResource item)
+        public bool TryRead(BuildingInfo info, out BuildingResource item)
         {
-            GameObject prefab = assetBundle.LoadAsset<GameObject>(info.PrefabName);
-            item = new BuildingResource(info, prefab);
+            TerrainBuildingInfo bInfo = info.Terrain;
+            GameObject prefab = assetBundle.LoadAsset<GameObject>(bInfo.PrefabName);
+            item = new BuildingResource(bInfo, prefab);
 
             if (item.IsLoadComplete)
             {
@@ -88,7 +89,7 @@ namespace KouXiaGu.Terrain3D
             }
             else
             {
-                Debug.LogWarning("[地形建筑读取]未找到对应的预制物体;Name:" + info.PrefabName);
+                Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString());
                 return false;
             }
         }
