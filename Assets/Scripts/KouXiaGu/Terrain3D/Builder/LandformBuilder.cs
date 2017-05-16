@@ -47,7 +47,9 @@ namespace KouXiaGu.Terrain3D
             ChunkBakeRequest request;
             if (!sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                request = CreateChunk(chunkCoord);
+                Chunk chunk = chunkPool.Get();
+                chunk.Position = ChunkGrid.GetCenter(chunkCoord);
+                request = new ChunkBakeRequest(chunkCoord, chunk, targets);
                 AddBakeQueue(request);
                 sceneChunks.Add(chunkCoord, request);
             }
@@ -78,58 +80,9 @@ namespace KouXiaGu.Terrain3D
             return null;
         }
 
-        /// <summary>
-        /// 更新或创建地形块,若地形块已经在构建队列中,则变更到合适的烘培项目;
-        /// 若已经烘焙完成,或者正在烘焙,则重新加入到构建队列;
-        /// 若未找到对应的地形块,则创建到;
-        /// </summary>
-        [Obsolete]
-        public Chunk CreateOrUpdate(RectCoord chunkCoord, BakeTargets targets)
-        {
-            ChunkBakeRequest request;
-            if (sceneChunks.TryGetValue(chunkCoord, out request))
-            {
-                if (request.IsInBakeQueue)
-                {
-                    if (request.IsBaking)
-                    {
-                        request.ResetState();
-                        request.Targets = targets;
-                        AddBakeQueue(request);
-                    }
-                    else
-                    {
-                        request.ResetState();
-                        request.Targets |= targets;
-                    }
-                }
-                else
-                {
-                    request.ResetState();
-                    request.Targets = targets;
-                    AddBakeQueue(request);
-                }
-            }
-            else
-            {
-                request = CreateChunk(chunkCoord);
-                AddBakeQueue(request);
-                sceneChunks.Add(chunkCoord, request);
-            }
-            return request.Chunk;
-        }
-
         void AddBakeQueue(ChunkBakeRequest request)
         {
             baker.AddRequest(request);
-        }
-
-        ChunkBakeRequest CreateChunk(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
-        {
-            Chunk chunk = chunkPool.Get();
-            chunk.Position = ChunkGrid.GetCenter(chunkCoord);
-            ChunkBakeRequest buildRequest = new ChunkBakeRequest(chunkCoord, chunk, targets);
-            return buildRequest;
         }
 
         public void Destroy(RectCoord chunkCoord)

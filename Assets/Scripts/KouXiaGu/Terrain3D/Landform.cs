@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
 
             public override bool IsCompleted
             {
-                get { return isFaulted || Result.Baker.IsEmpty; }
+                get { return isFaulted || Result.Builder.Baker.IsEmpty; }
             }
 
         }
@@ -54,7 +54,6 @@ namespace KouXiaGu.Terrain3D
 
         public bool IsInitialized { get; private set; }
         public LandformBuilder Builder { get; private set; }
-        public LandformBaker Baker { get; private set; }
         public BuildRequestManager BuildManager { get; private set; }
         public BuildRequestUpdater BuildUpdater { get; private set; }
         public WorldMapWatcher MapWatcher { get; private set; }
@@ -65,7 +64,6 @@ namespace KouXiaGu.Terrain3D
             if (!IsInitialized)
             {
                 Builder = new LandformBuilder(worldData);
-                Baker = Builder.Baker;
                 BuildManager = new BuildRequestManager(Builder);
                 BuildUpdater = new BuildRequestUpdater(BuildManager);
                 MapWatcher = new WorldMapWatcher(Builder, worldData.Map.PredefinedMap.Data);
