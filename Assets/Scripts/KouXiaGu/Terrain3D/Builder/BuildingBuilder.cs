@@ -63,15 +63,20 @@ namespace KouXiaGu.Terrain3D
         public BuildingBuilder(IWorldData worldData, LandformManager landform)
         {
             this.worldData = worldData;
-            sceneChunks = new Dictionary<RectCoord, BuildingChunk>();
-            readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
+            sceneBuildings = new Dictionary<CubicHexCoord, ILandformBuilding>();
+            sceneChunks = new HashSet<RectCoord>();
+            readOnlySceneChunks = sceneChunks.AsReadOnlyCollection();
         }
 
         readonly IWorldData worldData;
-        readonly Dictionary<RectCoord, BuildingChunk> sceneChunks;
-        readonly IReadOnlyDictionary<RectCoord, BuildingChunk> readOnlySceneChunks;
+        readonly Dictionary<CubicHexCoord, ILandformBuilding> sceneBuildings;
+        readonly HashSet<RectCoord> sceneChunks;
+        readonly IReadOnlyCollection<RectCoord> readOnlySceneChunks;
 
-        public IReadOnlyDictionary<RectCoord, BuildingChunk> SceneChunks
+        /// <summary>
+        /// 已经在场景中构建的块坐标;
+        /// </summary>
+        public IReadOnlyCollection<RectCoord> SceneChunks
         {
             get { return readOnlySceneChunks; }
         }
