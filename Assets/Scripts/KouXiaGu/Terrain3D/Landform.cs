@@ -94,7 +94,6 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;
         /// </summary>
-        [Obsolete]
         public float GetHeight(Vector3 position)
         {
             return LandformBuilder.GetHeight(position);
