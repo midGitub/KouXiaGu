@@ -27,12 +27,12 @@ namespace KouXiaGu.Terrain3D
             Destroy(gameObject);
         }
 
-        ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data)
+        ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data)
         {
             BuildingNode buildingNode = node.Building;
 
             Vector3 position = coord.GetTerrainPixel();
-            position.y = landform.Builder.GetHeight(position);
+            position.y = landform.LandformBuilder.GetHeight(position);
 
             Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
 

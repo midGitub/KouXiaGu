@@ -14,21 +14,33 @@ namespace KouXiaGu
     public static class ResourcePath
     {
 
+        static string assetBundleDirectoryPath = string.Empty;
+        static string configDirectoryPath = string.Empty;
+
         /// <summary>
         /// 存放 AssetBundle 的文件夹路径;
         /// </summary>
-        public static string AssetBundleDirectoryPath { get; private set; }
+        public static string AssetBundleDirectoryPath
+        {
+            get { return assetBundleDirectoryPath != string.Empty ? assetBundleDirectoryPath :
+                    (assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles")); }
+            private set { assetBundleDirectoryPath = value; }
+        }
 
         /// <summary>
         /// 存放配置文件的文件夹路径;
         /// </summary>
-        public static string ConfigDirectoryPath { get; private set; }
+        public static string ConfigDirectoryPath
+        {
+            get { return configDirectoryPath != string.Empty ? configDirectoryPath : (configDirectoryPath = Application.streamingAssetsPath); }
+            private set { configDirectoryPath = value; }
+        }
 
 
         public static void Initialize()
         {
-            AssetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles");
-            ConfigDirectoryPath = Application.streamingAssetsPath;
+            AssetBundleDirectoryPath = AssetBundleDirectoryPath;
+            ConfigDirectoryPath = ConfigDirectoryPath;
         }
 
         /// <summary>

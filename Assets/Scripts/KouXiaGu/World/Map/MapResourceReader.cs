@@ -86,6 +86,7 @@ namespace KouXiaGu.World.Map
         protected override PredefinedMap ReadPredefinedMap(IGameData gameData)
         {
             int[] landformArray = gameData.Terrain.LandformInfos.Keys.ToArray();
+            int[] buildArray = gameData.Terrain.BuildingInfos.Keys.ToArray();
             PredefinedMap map = new PredefinedMap();
             var points = CubicHexCoord.Range(CubicHexCoord.Self, MapSize);
 
@@ -98,9 +99,13 @@ namespace KouXiaGu.World.Map
                         LandformID = Random(landformArray),
                         Angle = RandomAngle(),
                     },
-                };
 
-                //node = node.CreateRoad(map, 1);
+                    Building = new BuildingNode()
+                    {
+                        Type = Random(buildArray),
+                        Angle = RandomAngle(),
+                    },
+                };
                 map.Data.Add(point, node);
             }
             return map;

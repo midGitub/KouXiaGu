@@ -926,6 +926,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dynamicMeshName: Test1
+--- !u!1001 &765264213
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748166962885864, guid: aca6245907954f549a1e2795b1575829, type: 2}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: aca6245907954f549a1e2795b1575829, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &794308486
 GameObject:
   m_ObjectHideFlags: 0
@@ -2731,7 +2773,7 @@ Prefab:
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}

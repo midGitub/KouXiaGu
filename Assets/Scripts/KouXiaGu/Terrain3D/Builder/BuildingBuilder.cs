@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     public interface ILandformBuilding
     {
         GameObject gameObject { get; }
-        ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
+        ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
         void Destroy();
     }
 
@@ -76,7 +76,7 @@ namespace KouXiaGu.Terrain3D
                     int buildingType = node.Building.Type;
                     if (resources.TryGetValue(buildingType, out resource))
                     {
-                        ILandformBuilding building = resource.Building.BuildAt(position, node, null, worldData);
+                        ILandformBuilding building = resource.Building.BuildAt(position, node, landform, worldData);
                         return building;
                     }
                     else
