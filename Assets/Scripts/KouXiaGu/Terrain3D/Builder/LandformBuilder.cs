@@ -41,7 +41,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 仅创建对应地形块,若已经存在则返回存在的元素;
         /// </summary>
-        public Chunk Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        public IAsyncOperation<Chunk> Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             ChunkCreateRequest request;
             if (!sceneChunks.TryGetValue(chunkCoord, out request))
@@ -52,13 +52,13 @@ namespace KouXiaGu.Terrain3D
                 AddBakeQueue(request);
                 sceneChunks.Add(chunkCoord, request);
             }
-            return request.Result;
+            return request;
         }
 
         /// <summary>
         /// 仅更新对应地形块,若不存在对应地形块,则返回Null;
         /// </summary>
-        public Chunk Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        public IAsyncOperation<Chunk> Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             ChunkCreateRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
@@ -70,11 +70,16 @@ namespace KouXiaGu.Terrain3D
                     AddBakeQueue(request);
                     sceneChunks[chunkCoord] = newRequest;
                 }
-                else
+                else if (request.IsInQueue)
                 {
                     request.Targets |= targets;
                 }
-                return request.Chunk;
+                else
+                {
+                    request.Reset();
+                    AddBakeQueue(request);
+                }
+                return request;
             }
             return null;
         }
@@ -138,6 +143,21 @@ namespace KouXiaGu.Terrain3D
             {
                 get { return Result; }
                 set { Result = value; }
+            }
+
+            /// <summary>
+            /// 重置状态信息;
+            /// </summary>
+            public void Reset()
+            {
+                if (IsInQueue)
+                {
+                    throw new ArgumentException();
+                }
+
+                IsInQueue = false;
+                IsBaking = false;
+                IsCanceled = false;
             }
 
             ChunkTexture IBakeRequest.Textures
