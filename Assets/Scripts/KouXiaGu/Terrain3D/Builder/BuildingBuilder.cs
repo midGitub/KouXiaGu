@@ -10,57 +10,35 @@ using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D
 {
+    /// <summary>
+    /// 建筑物创建接口,需要挂载在预制物体上;
+    /// </summary>
+    public interface ILandformBuilding
+    {
+        GameObject gameObject { get; }
+        ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
+        void Destroy();
+    }
 
     /// <summary>
     /// 对场景建筑物进行构建;
     /// </summary>
     public class BuildingBuilder
     {
-        /// <summary>
-        /// (0, 0)对应覆盖的节点(依赖地图块大小);
-        /// </summary>
-        static readonly CubicHexCoord[] buildingOverlay = new CubicHexCoord[]
-            {
-                new CubicHexCoord(-2, 2),
-                new CubicHexCoord(-2, 1),
-                new CubicHexCoord(-2, 0),
-
-                new CubicHexCoord(-1, 2),
-                new CubicHexCoord(-1, 1),
-                new CubicHexCoord(-1, 0),
-
-                new CubicHexCoord(0, 1),
-                new CubicHexCoord(0, 0),
-                new CubicHexCoord(0, -1),
-
-                new CubicHexCoord(1, 1),
-                new CubicHexCoord(1, 0),
-                new CubicHexCoord(1, -1),
-            };
-
-        /// <summary>
-        /// 获取到地形块对应覆盖到的建筑物坐标;
-        /// </summary>
-        static IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
-        {
-            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
-            foreach (var item in buildingOverlay)
-            {
-                yield return chunkCenter + item;
-            }
-        }
-
-
-        public BuildingBuilder(IWorldData worldData, LandformManager landform)
+        public BuildingBuilder(IWorldData worldData, Landform landform, RequestDispatcher requestDispatcher)
         {
             this.worldData = worldData;
-            sceneBuildings = new Dictionary<CubicHexCoord, ILandformBuilding>();
+            this.landform = landform;
+            this.requestDispatcher = requestDispatcher;
+            sceneBuildings = new Dictionary<CubicHexCoord, BuildingCreateRequest>();
             sceneChunks = new HashSet<RectCoord>();
             readOnlySceneChunks = sceneChunks.AsReadOnlyCollection();
         }
 
         readonly IWorldData worldData;
-        readonly Dictionary<CubicHexCoord, ILandformBuilding> sceneBuildings;
+        readonly Landform landform;
+        readonly RequestDispatcher requestDispatcher;
+        readonly Dictionary<CubicHexCoord, BuildingCreateRequest> sceneBuildings;
         readonly HashSet<RectCoord> sceneChunks;
         readonly IReadOnlyCollection<RectCoord> readOnlySceneChunks;
 
@@ -88,42 +66,118 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 创建建筑物到该坐标,若不存在建筑物则返回false;
+        /// 创建建筑物到该坐标,若不存在建筑物则返回 null;
         /// </summary>
-        bool TryCreate(CubicHexCoord coord, out ILandformBuilding building)
+        ILandformBuilding Create(CubicHexCoord position)
         {
             MapNode node;
-            if (mapData.TryGetValue(coord, out node))
+            if (mapData.TryGetValue(position, out node))
             {
-                BuildingResource resource;
-                int buildingType = node.Building.Type;
-                if (resources.TryGetValue(buildingType, out resource))
+                if (node.Building.Exist())
                 {
-                    building = resource.Building.BuildAt(coord, node, null, worldData);
-                    sceneBuildings.Add(coord, building);
+                    BuildingResource resource;
+                    int buildingType = node.Building.Type;
+                    if (resources.TryGetValue(buildingType, out resource))
+                    {
+                        ILandformBuilding building = resource.Building.BuildAt(position, node, null, worldData);
+                        return building;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException("未找到对应的建筑物预制资源;BuildingType:" + buildingType);
+                    }
                 }
             }
-            building = null;
-            return false;
+            return null;
         }
 
         /// <summary>
-        /// 仅创建对应块,若已经存在则返回存在的元素;
+        /// 异步创建,若已经存在创建,则返回之前的;
+        /// </summary>
+        BuildingCreateRequest CreateAsync(CubicHexCoord position)
+        {
+            BuildingCreateRequest request;
+            if (!sceneBuildings.TryGetValue(position, out request))
+            {
+                request = new BuildingCreateRequest(this, position);
+                AddQueue(request);
+                sceneBuildings.Add(position, request);
+            }
+            return request;
+        }
+
+        /// <summary>
+        /// 添加到处理队列中;
+        /// </summary>
+        void AddQueue(IRequest request)
+        {
+            requestDispatcher.AddQueue(request);
+        }
+
+        /// <summary>
+        /// 创建对应块的建筑物;
         /// </summary>
         public void Create(RectCoord chunkCoord)
         {
             var overlayPoints = GetOverlayPoints(chunkCoord);
             foreach (var point in overlayPoints)
             {
-                
+                CreateAsync(point);
             }
         }
 
         /// <summary>
-        /// 仅更新对应地形块,若不存在对应地形块,则返回Null;
+        /// (0, 0)对应覆盖的节点(依赖地图块大小);
         /// </summary>
-        public void Update(RectCoord chunkCoord)
+        static readonly CubicHexCoord[] buildingOverlay = new CubicHexCoord[]
+            {
+                new CubicHexCoord(-2, 2),
+                new CubicHexCoord(-2, 1),
+                new CubicHexCoord(-2, 0),
+
+                new CubicHexCoord(-1, 2),
+                new CubicHexCoord(-1, 1),
+                new CubicHexCoord(-1, 0),
+
+                new CubicHexCoord(0, 1),
+                new CubicHexCoord(0, 0),
+                new CubicHexCoord(0, -1),
+
+                new CubicHexCoord(1, 1),
+                new CubicHexCoord(1, 0),
+                new CubicHexCoord(1, -1),
+            };
+
+        /// <summary>
+        /// 获取到地形块对应覆盖到的建筑物坐标;
+        /// </summary>
+        IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
         {
+            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            foreach (var item in buildingOverlay)
+            {
+                yield return chunkCenter + item;
+            }
+        }
+
+        /// <summary>
+        /// 更新指定地点的建筑物,若不存在建筑物,则返回null;
+        /// </summary>
+        public IAsyncOperation<ILandformBuilding> Update(CubicHexCoord position)
+        {
+            BuildingCreateRequest request;
+            if (sceneBuildings.TryGetValue(position, out request))
+            {
+                if (!request.IsInQueue)
+                {
+                    request.Result.Destroy();
+                }
+                return request;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -145,25 +199,71 @@ namespace KouXiaGu.Terrain3D
 
         class BuildingCreateRequest : AsyncOperation<ILandformBuilding>, IRequest
         {
+            public BuildingCreateRequest(BuildingBuilder builder, CubicHexCoord position)
+            {
+                this.builder = builder;
+                this.position = position;
+            }
+
+            readonly BuildingBuilder builder;
+            readonly CubicHexCoord position;
+            public bool IsInQueue { get; private set; }
             public bool IsCanceled { get; private set; }
 
+            public CubicHexCoord Position
+            {
+                get { return position; }
+            }
+
+            public void Cancele()
+            {
+                IsCanceled = true;
+            }
+
+            protected override void ResetState()
+            {
+                base.ResetState();
+                IsInQueue = false;
+                IsCanceled = false;
+            }
+
+            public void Restart()
+            {
+                if (!IsInQueue)
+                {
+                    ResetState();
+                    Result.Destroy();
+                    Result = null;
+                }
+            }
 
             void IRequest.Operate()
             {
-                throw new NotImplementedException();
+                try
+                {
+                    var building = builder.Create(position);
+                    OnCompleted(building);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex);
+                    OnFaulted(ex);
+                }
             }
 
             void IRequest.AddQueue()
             {
-                throw new NotImplementedException();
+                IsInQueue = true;
             }
 
             void IRequest.OutQueue()
             {
-                throw new NotImplementedException();
+                IsInQueue = false;
             }
         }
     }
+
+
 
     public class BuildingChunk : IEnumerable<BuildingChunk.BuildingItem>
     {

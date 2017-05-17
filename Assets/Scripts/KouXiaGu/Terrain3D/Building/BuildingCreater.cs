@@ -1,71 +1,61 @@
-﻿using KouXiaGu.Grids;
-using KouXiaGu.World;
-using KouXiaGu.World.Map;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿//using KouXiaGu.Grids;
+//using KouXiaGu.World;
+//using KouXiaGu.World.Map;
+//using System;
+//using System.Collections;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using UnityEngine;
 
-namespace KouXiaGu.Terrain3D
-{
+//namespace KouXiaGu.Terrain3D
+//{
+//    public interface IBuildingCreateRequest
+//    {
+//        bool IsCanceled { get; }
+//        void AddQueue();
+//        void OutQueue();
+//    }
 
-    /// <summary>
-    /// 建筑物创建接口,需要挂载在预制物体上;
-    /// </summary>
-    public interface ILandformBuilding
-    {
-        GameObject gameObject { get; }
-        ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
-    }
+//    /// <summary>
+//    /// 异步的创建建筑物到场景;
+//    /// </summary>
+//    public sealed class BuildingCreater : MonoBehaviour
+//    {
+//        BuildingCreater()
+//        {
+//        }
 
-    public interface IBuildingCreateRequest
-    {
-        bool IsCanceled { get; }
-        void AddQueue();
-        void OutQueue();
-    }
+//        [SerializeField]
+//        Stopwatch runtimeStopwatch;
+//        Queue<IBuildingCreateRequest> requestQueue;
+//        Coroutine createrCoroutine;
 
-    /// <summary>
-    /// 异步的创建建筑物到场景;
-    /// </summary>
-    public sealed class BuildingCreater : MonoBehaviour
-    {
-        BuildingCreater()
-        {
-        }
+//        void Awake()
+//        {
+//            requestQueue = new Queue<IBuildingCreateRequest>();
+//            createrCoroutine = new Coroutine(Coroutine());
+//        }
 
-        [SerializeField]
-        Stopwatch runtimeStopwatch;
-        Queue<IBuildingCreateRequest> requestQueue;
-        Coroutine createrCoroutine;
+//        void Update()
+//        {
+//            runtimeStopwatch.Restart();
+//            createrCoroutine.MoveNext();
+//        }
 
-        void Awake()
-        {
-            requestQueue = new Queue<IBuildingCreateRequest>();
-            createrCoroutine = new Coroutine(Coroutine());
-        }
+//        IEnumerator Coroutine()
+//        {
+//            while (true)
+//            {
+//                while (requestQueue.Count == 0)
+//                    yield return null;
 
-        void Update()
-        {
-            runtimeStopwatch.Restart();
-            createrCoroutine.MoveNext();
-        }
+//                IBuildingCreateRequest request = requestQueue.Dequeue();
 
-        IEnumerator Coroutine()
-        {
-            while (true)
-            {
-                while (requestQueue.Count == 0)
-                    yield return null;
+//                if (runtimeStopwatch.Await())
+//                    yield return null;
+//            }
+//        }
+//    }
 
-                IBuildingCreateRequest request = requestQueue.Dequeue();
-
-                if (runtimeStopwatch.Await())
-                    yield return null;
-            }
-        }
-    }
-
-}
+//}

@@ -2190,7 +2190,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1146917776}
   - component: {fileID: 1146917773}
-  - component: {fileID: 1146917774}
   - component: {fileID: 1146917775}
   m_Layer: 0
   m_Name: Landform
@@ -2229,19 +2228,6 @@ MonoBehaviour:
   runtimeStopwatch:
     idleSeconds: 0.2
   waitUpdate: 0
---- !u!114 &1146917774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1146917772}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9977eee919c4e4544ba79354769247f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runtimeStopwatch:
-    idleSeconds: 0.2
 --- !u!114 &1146917775
 MonoBehaviour:
   m_ObjectHideFlags: 0
