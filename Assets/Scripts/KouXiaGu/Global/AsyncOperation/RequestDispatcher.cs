@@ -30,6 +30,16 @@ namespace KouXiaGu
         Queue<IRequest> requestQueue;
         Coroutine createrCoroutine;
 
+        public IEnumerable<IRequest> Requests
+        {
+            get { return requestQueue; }
+        }
+
+        public int RequestCount
+        {
+            get { return requestQueue.Count; }
+        }
+
         void Awake()
         {
             requestQueue = new Queue<IRequest>();
