@@ -27,7 +27,7 @@ namespace KouXiaGu.Terrain3D
 
         public BuildingManager(IWorldData worldData, Landform landform)
         {
-            builder = new BuildingBuilder(worldData, landform, null);
+            builder = new BuildingBuilder(worldData, landform);
         }
 
         readonly BuildingBuilder builder;

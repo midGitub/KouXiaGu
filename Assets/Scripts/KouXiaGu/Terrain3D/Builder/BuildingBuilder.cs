@@ -22,11 +22,11 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder
     {
-        public BuildingBuilder(IWorldData worldData, Landform landform, RequestDispatcher requestDispatcher)
+        public BuildingBuilder(IWorldData worldData, Landform landform)
         {
             this.worldData = worldData;
             this.landform = landform;
-            this.requestDispatcher = requestDispatcher;
+            requestDispatcher = SceneObject.GetObject<BuildingRequestDispatcher>();
             sceneBuildings = new Dictionary<CubicHexCoord, BuildingCreateRequest>();
             sceneChunks = new HashSet<RectCoord>();
             readOnlySceneChunks = sceneChunks.AsReadOnlyCollection();

@@ -2252,7 +2252,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1146917772}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96742984d39e5d1489ed90927872202c, type: 3}
+  m_Script: {fileID: 11500000, guid: 85ef4230bd03cad45b10093fe988f21b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   runtimeStopwatch:
@@ -2721,17 +2721,17 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
