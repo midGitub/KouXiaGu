@@ -84,8 +84,8 @@ namespace KouXiaGu.Terrain3D
             this.renderer = renderer;
         }
 
-        MeshCollider collider;
-        LandformRenderer renderer;
+        readonly MeshCollider collider;
+        readonly LandformRenderer renderer;
 
         /// <summary>
         /// 构建碰撞网格;

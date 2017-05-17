@@ -128,7 +128,5 @@ namespace KouXiaGu.Terrain3D
             Renderer.Destroy();
             Destroy(gameObject);
         }
-
     }
-
 }
