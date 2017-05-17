@@ -92,7 +92,7 @@ namespace KouXiaGu.World
             {
                 Component = operation.Result;
                 sceneInitializer.Start(this).
-                    Subscribe(Name + "等待游戏场景初始化;", OnInitializeCompleted, OnInitializeFaulted);
+                    Subscribe(Name + "等待场景初始化;", OnInitializeCompleted, OnInitializeFaulted);
             }
 
             void OnInitializeCompleted(IAsyncOperation operation)
