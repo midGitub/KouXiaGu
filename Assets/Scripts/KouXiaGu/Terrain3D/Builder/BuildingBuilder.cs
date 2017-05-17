@@ -120,30 +120,6 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public BuildingChunk Create(RectCoord chunkCoord)
         {
-            //BuildingChunk chunk;
-            //if (!sceneChunks.TryGetValue(chunkCoord, out chunk))
-            //{
-            //    chunk = new BuildingChunk();
-            //    IEnumerable<CubicHexCoord> overlayPoints = GetOverlayPoints(chunkCoord);
-            //    foreach (var overlayPoint in overlayPoints)
-            //    {
-            //        MapNode node;
-            //        IDictionary<CubicHexCoord, MapNode> mapData = worldData.Map.Data;
-            //        if (mapData.TryGetValue(overlayPoint, out node))
-            //        {
-            //            Dictionary<int, BuildingResource> resources = worldData.GameData.Terrain.BuildingInfos;
-            //            BuildingResource resource;
-            //            int buildingType = node.Building.Type;
-            //            if (resources.TryGetValue(buildingType, out resource))
-            //            {
-            //                var building = resource.Building.Build(overlayPoint, node, null, worldData);
-            //                chunk.Add(overlayPoint, building);
-            //            }
-            //        }
-            //    }
-            //    sceneChunks.Add(chunkCoord, chunk);
-            //}
-            //return chunk;
             throw new NotImplementedException();
         }
 
