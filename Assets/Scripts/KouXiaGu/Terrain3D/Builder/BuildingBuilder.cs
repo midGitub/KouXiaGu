@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KouXiaGu.World;
-using KouXiaGu.Grids;
 using UnityEngine;
-using System.Collections;
+using KouXiaGu.Grids;
+using KouXiaGu.World;
 using KouXiaGu.World.Map;
 
 namespace KouXiaGu.Terrain3D
@@ -84,11 +81,27 @@ namespace KouXiaGu.Terrain3D
                     }
                     else
                     {
-                        throw new KeyNotFoundException("未找到对应的建筑物预制资源;BuildingType:" + buildingType);
+                        throw new KeyNotFoundException("未找到对应的建筑物资源;BuildingType:" + buildingType);
                     }
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// 创建对应块的建筑物;
+        /// </summary>
+        public void Create(RectCoord chunkCoord)
+        {
+            if (!sceneChunks.Contains(chunkCoord))
+            {
+                sceneChunks.Add(chunkCoord);
+                var overlayPoints = GetOverlayPoints(chunkCoord);
+                foreach (var point in overlayPoints)
+                {
+                    CreateAsync(point);
+                }
+            }
         }
 
         /// <summary>
@@ -112,22 +125,6 @@ namespace KouXiaGu.Terrain3D
         void AddQueue(IRequest request)
         {
             requestDispatcher.AddQueue(request);
-        }
-
-        /// <summary>
-        /// 创建对应块的建筑物;
-        /// </summary>
-        public void Create(RectCoord chunkCoord)
-        {
-            if (!sceneChunks.Contains(chunkCoord))
-            {
-                sceneChunks.Add(chunkCoord);
-                var overlayPoints = GetOverlayPoints(chunkCoord);
-                foreach (var point in overlayPoints)
-                {
-                    CreateAsync(point);
-                }
-            }
         }
 
         /// <summary>
@@ -175,21 +172,23 @@ namespace KouXiaGu.Terrain3D
                 var overlayPoints = GetOverlayPoints(chunkCoord);
                 foreach (var point in overlayPoints)
                 {
-                    CreateAsync(point);
+                    Destroy(point);
                 }
                 return true;
             }
             return false;
         }
 
-        void Destroy(CubicHexCoord position)
+        bool Destroy(CubicHexCoord position)
         {
             BuildingCreateRequest request;
             if (sceneBuildings.TryGetValue(position, out request))
             {
                 request.Destroy();
                 sceneBuildings.Remove(position);
+                return true;
             }
+            return false;
         }
 
         /// <summary>
