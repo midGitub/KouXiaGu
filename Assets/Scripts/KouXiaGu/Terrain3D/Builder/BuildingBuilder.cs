@@ -119,10 +119,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Create(RectCoord chunkCoord)
         {
-            var overlayPoints = GetOverlayPoints(chunkCoord);
-            foreach (var point in overlayPoints)
+            if (!sceneChunks.Contains(chunkCoord))
             {
-                CreateAsync(point);
+                sceneChunks.Add(chunkCoord);
+                var overlayPoints = GetOverlayPoints(chunkCoord);
+                foreach (var point in overlayPoints)
+                {
+                    CreateAsync(point);
+                }
             }
         }
 
@@ -161,6 +165,34 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 销毁这个地图块;
+        /// </summary>
+        public bool Destroy(RectCoord chunkCoord)
+        {
+            if (sceneChunks.Contains(chunkCoord))
+            {
+                sceneChunks.Remove(chunkCoord);
+                var overlayPoints = GetOverlayPoints(chunkCoord);
+                foreach (var point in overlayPoints)
+                {
+                    CreateAsync(point);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        void Destroy(CubicHexCoord position)
+        {
+            BuildingCreateRequest request;
+            if (sceneBuildings.TryGetValue(position, out request))
+            {
+                request.Destroy();
+                sceneBuildings.Remove(position);
+            }
+        }
+
+        /// <summary>
         /// 更新指定地点的建筑物,若不存在建筑物,则返回null;
         /// </summary>
         public IAsyncOperation<ILandformBuilding> Update(CubicHexCoord position)
@@ -181,14 +213,6 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        /// <summary>
-        /// 销毁这个地图块;
-        /// </summary>
-        public void Destroy(RectCoord chunkCoord)
-        {
-
-        }
-
         class BuildingCreateRequest : AsyncOperation<ILandformBuilding>, IRequest
         {
             public BuildingCreateRequest(BuildingBuilder builder, CubicHexCoord position)
@@ -200,16 +224,11 @@ namespace KouXiaGu.Terrain3D
             readonly BuildingBuilder builder;
             readonly CubicHexCoord position;
             public bool IsInQueue { get; private set; }
-            public bool IsCanceled { get; private set; }
+            public bool IsCanceled { get; set; }
 
             public CubicHexCoord Position
             {
                 get { return position; }
-            }
-
-            public void Cancele()
-            {
-                IsCanceled = true;
             }
 
             protected override void ResetState()
@@ -217,6 +236,19 @@ namespace KouXiaGu.Terrain3D
                 base.ResetState();
                 IsInQueue = false;
                 IsCanceled = false;
+            }
+
+            /// <summary>
+            /// 销毁这个请求;
+            /// </summary>
+            public void Destroy()
+            {
+                IsCanceled = true;
+                if (Result != null)
+                {
+                    Result.Destroy();
+                    Result = null;
+                }
             }
 
             /// <summary>
