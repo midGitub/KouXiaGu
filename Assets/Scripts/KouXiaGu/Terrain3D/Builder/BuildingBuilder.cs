@@ -109,6 +109,7 @@ namespace KouXiaGu.Terrain3D
                 if (resources.TryGetValue(buildingType, out resource))
                 {
                     building = resource.Building.BuildAt(coord, node, null, worldData);
+                    sceneBuildings.Add(coord, building);
                 }
             }
             building = null;
@@ -118,9 +119,13 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 仅创建对应块,若已经存在则返回存在的元素;
         /// </summary>
-        public BuildingChunk Create(RectCoord chunkCoord)
+        public void Create(RectCoord chunkCoord)
         {
-            throw new NotImplementedException();
+            var overlayPoints = GetOverlayPoints(chunkCoord);
+            foreach (var point in overlayPoints)
+            {
+                
+            }
         }
 
         /// <summary>
