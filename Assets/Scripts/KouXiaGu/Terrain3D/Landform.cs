@@ -30,20 +30,14 @@ namespace KouXiaGu.Terrain3D
                 try
                 {
                     Result = new Landform(worldData);
-                    OnCompleted();
+                    OnCompleted(Result);
                 }
                 catch (Exception ex)
                 {
                     OnFaulted(ex);
                 }
             }
-
-            public override bool IsCompleted
-            {
-                get { return IsFaulted || (isCompleted && Result.LandformBuilder.Baker.IsEmpty); }
-            }
         }
-
 
         Landform(IWorldData worldData)
         {
@@ -70,6 +64,29 @@ namespace KouXiaGu.Terrain3D
         public BuildingBuilder BuildingBuilder
         {
             get { return BuildingManager.Builder; }
+        }
+
+        /// <summary>
+        /// 开始构建场景;
+        /// </summary>
+        public IAsyncOperation StartBuildScene()
+        {
+            return new SceneBuilder(this);
+        }
+
+        class SceneBuilder : AsyncOperation
+        {
+            public SceneBuilder(Landform landform)
+            {
+                this.landform = landform;
+            }
+
+            readonly Landform landform;
+
+            public override bool IsCompleted
+            {
+                get { return landform.LandformBuilder.Baker.IsEmpty; }
+            }
         }
 
         /// <summary>
