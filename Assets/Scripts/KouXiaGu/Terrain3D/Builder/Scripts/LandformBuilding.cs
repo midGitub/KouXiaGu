@@ -24,7 +24,7 @@ namespace KouXiaGu.Terrain3D
 
         public void Destroy()
         {
-            throw new NotImplementedException();
+            Destroy(gameObject);
         }
 
         ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data)
