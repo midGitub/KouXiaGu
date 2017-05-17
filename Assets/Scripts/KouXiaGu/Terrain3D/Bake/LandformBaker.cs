@@ -109,10 +109,9 @@ namespace KouXiaGu.Terrain3D
         {
             while (true)
             {
-                if (requestQueue.Count == 0)
+                while (requestQueue.Count == 0)
                 {
                     yield return null;
-                    continue;
                 }
 
                 IBakeRequest bakeRequest = requestQueue.Peek();
