@@ -22,6 +22,11 @@ namespace KouXiaGu.Terrain3D
             get { return gameObject; }
         }
 
+        public void Destroy()
+        {
+            throw new NotImplementedException();
+        }
+
         ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data)
         {
             BuildingNode buildingNode = node.Building;

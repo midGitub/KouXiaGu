@@ -184,7 +184,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 销毁这个地图块;
         /// </summary>
-        public void Destroy(CubicHexCoord position)
+        public void Destroy(RectCoord chunkCoord)
         {
 
         }
