@@ -85,16 +85,17 @@ namespace KouXiaGu.World
             {
                 Data = operation.Result;
                 componentInitializer.Start(Data, this)
-                    .Subscribe(Name + "等待游戏世界组件初始化;", OnSceneCompleted, OnInitializeFaulted);
+                    .Subscribe(Name + "等待游戏世界组件初始化;", OnComponentCompleted, OnInitializeFaulted);
             }
 
-            void OnSceneCompleted(IAsyncOperation<IWorldScene> operation)
+            void OnComponentCompleted(IAsyncOperation<IWorldScene> operation)
             {
                 Component = operation.Result;
-                OnInitializeCompleted();
+                sceneInitializer.Start(this).
+                    Subscribe(Name + "等待游戏场景初始化;", OnInitializeCompleted, OnInitializeFaulted);
             }
 
-            void OnInitializeCompleted()
+            void OnInitializeCompleted(IAsyncOperation operation)
             {
                 IWorld world = this;
                 OnCompleted(world);
