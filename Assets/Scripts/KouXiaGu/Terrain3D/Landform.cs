@@ -79,6 +79,8 @@ namespace KouXiaGu.Terrain3D
             public SceneBuilder(Landform landform)
             {
                 this.landform = landform;
+                landform.LandformManager.StartUpdate();
+                landform.BuildingManager.StartUpdate();
             }
 
             readonly Landform landform;
