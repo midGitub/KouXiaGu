@@ -35,15 +35,15 @@ namespace KouXiaGu.Terrain3D
 
         ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord position, MapNode node, Landform landform, IWorldData data)
         {
-            Position = position;
-            Landform = landform;
-            WorldData = data;
 
             BuildingNode buildingNode = node.Building;
             Vector3 pixelPosition = position.GetTerrainPixel();
             Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
             GameObject instance = Instantiate(Prefab, pixelPosition, angle);
             LandformBuilding item = instance.GetComponent<LandformBuilding>();
+            item.Position = position;
+            item.Landform = landform;
+            item.WorldData = data;
             return item;
         }
 

@@ -11,7 +11,9 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class ChunkPool : ObjectPool<Chunk>
     {
-        public ChunkPool()
+        const int defaultMaxCapacity = 10;
+
+        public ChunkPool() : base(defaultMaxCapacity)
         {
         }
 
@@ -28,7 +30,7 @@ namespace KouXiaGu.Terrain3D
 
         public override void ResetWhenEnterPool(Chunk chunk)
         {
-            chunk.Clear();
+            chunk.ResetData();
             chunk.gameObject.SetActive(false);
         }
 

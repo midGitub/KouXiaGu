@@ -110,6 +110,11 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 清除所有引用,备下次重复使用;
         /// </summary>
+        public void ResetData()
+        {
+            Renderer.Destroy();
+        }
+
         public void Clear()
         {
             Renderer.Clear();
