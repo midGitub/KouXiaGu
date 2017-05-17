@@ -141,6 +141,28 @@ namespace KouXiaGu.Terrain3D
         {
 
         }
+
+
+        class BuildingCreateRequest : AsyncOperation<ILandformBuilding>, IRequest
+        {
+            public bool IsCanceled { get; private set; }
+
+
+            void IRequest.Operate()
+            {
+                throw new NotImplementedException();
+            }
+
+            void IRequest.AddQueue()
+            {
+                throw new NotImplementedException();
+            }
+
+            void IRequest.OutQueue()
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 
     public class BuildingChunk : IEnumerable<BuildingChunk.BuildingItem>
