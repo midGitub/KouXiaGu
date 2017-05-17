@@ -19,14 +19,14 @@ namespace KouXiaGu
     /// <summary>
     /// 异步请求处理;
     /// </summary>
-    public sealed class RequestDispatcher : MonoBehaviour
+    public class RequestDispatcher : MonoBehaviour
     {
-        RequestDispatcher()
+        protected RequestDispatcher()
         {
         }
 
         [SerializeField]
-        Stopwatch runtimeStopwatch;
+        Stopwatch runtimeStopwatch = new Stopwatch(0.2f);
         Queue<IRequest> requestQueue;
         Coroutine createrCoroutine;
 

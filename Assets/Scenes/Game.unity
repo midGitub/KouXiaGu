@@ -2206,6 +2206,7 @@ GameObject:
   - component: {fileID: 1146917776}
   - component: {fileID: 1146917773}
   - component: {fileID: 1146917775}
+  - component: {fileID: 1146917774}
   m_Layer: 0
   m_Name: Landform
   m_TagString: Untagged
@@ -2243,6 +2244,19 @@ MonoBehaviour:
   runtimeStopwatch:
     idleSeconds: 0.2
   waitUpdate: 0
+--- !u!114 &1146917774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1146917772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96742984d39e5d1489ed90927872202c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeStopwatch:
+    idleSeconds: 0.2
 --- !u!114 &1146917775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2707,12 +2721,12 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
