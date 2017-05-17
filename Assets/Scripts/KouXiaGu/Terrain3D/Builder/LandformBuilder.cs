@@ -16,14 +16,12 @@ namespace KouXiaGu.Terrain3D
         {
             baker = LandformBaker.Initialize(worldData);
             chunkPool = new ChunkPool();
-            sceneChunks = new Dictionary<RectCoord, ChunkBakeRequest>();
-            readOnlySceneChunks = sceneChunks.AsReadOnlyDictionary();
+            sceneChunks = new Dictionary<RectCoord, ChunkCreateRequest>();
         }
 
         readonly LandformBaker baker;
         readonly ChunkPool chunkPool;
-        readonly Dictionary<RectCoord, ChunkBakeRequest> sceneChunks;
-        readonly IReadOnlyDictionary<RectCoord, ChunkBakeRequest> readOnlySceneChunks;
+        readonly Dictionary<RectCoord, ChunkCreateRequest> sceneChunks;
 
         public LandformBaker Baker
         {
@@ -35,26 +33,21 @@ namespace KouXiaGu.Terrain3D
             get { return ChunkInfo.ChunkGrid; }
         }
 
-        internal IReadOnlyDictionary<RectCoord, ChunkBakeRequest> SceneDisplayedChunks
-        {
-            get { return readOnlySceneChunks; }
-        }
-
         /// <summary>
         /// 仅创建对应地形块,若已经存在则返回存在的元素;
         /// </summary>
         public Chunk Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
-            ChunkBakeRequest request;
+            ChunkCreateRequest request;
             if (!sceneChunks.TryGetValue(chunkCoord, out request))
             {
                 Chunk chunk = chunkPool.Get();
                 chunk.Position = ChunkGrid.GetCenter(chunkCoord);
-                request = new ChunkBakeRequest(chunkCoord, chunk, targets);
+                request = new ChunkCreateRequest(chunkCoord, chunk, targets);
                 AddBakeQueue(request);
                 sceneChunks.Add(chunkCoord, request);
             }
-            return request.Chunk;
+            return request.Result;
         }
 
         /// <summary>
@@ -62,38 +55,39 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Chunk Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
-            ChunkBakeRequest request;
+            ChunkCreateRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                if (request.IsInBakeQueue & !request.IsBaking)
+                if (request.IsBaking)
                 {
-                    request.ResetState();
-                    request.Targets |= targets;
+                    request.IsCanceled = true;
+                    ChunkCreateRequest newRequest = new ChunkCreateRequest(chunkCoord, request.Chunk, targets);
+                    AddBakeQueue(request);
+                    sceneChunks[chunkCoord] = newRequest;
                 }
                 else
                 {
-                    request.ResetState();
-                    request.Targets = targets;
-                    AddBakeQueue(request);
+                    request.Targets |= targets;
                 }
                 return request.Chunk;
             }
             return null;
         }
 
-        void AddBakeQueue(ChunkBakeRequest request)
+        void AddBakeQueue(ChunkCreateRequest request)
         {
             baker.AddRequest(request);
         }
 
         public void Destroy(RectCoord chunkCoord)
         {
-            ChunkBakeRequest request;
+            ChunkCreateRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
                 sceneChunks.Remove(chunkCoord);
                 chunkPool.Release(request.Chunk);
-                request.Destroy();
+                request.Chunk = null;
+                request.IsCanceled = true;
             }
         }
 
@@ -103,7 +97,7 @@ namespace KouXiaGu.Terrain3D
         public float GetHeight(Vector3 position)
         {
             RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
-            ChunkBakeRequest chunk;
+            ChunkCreateRequest chunk;
             if (sceneChunks.TryGetValue(chunkCoord, out chunk))
             {
                 Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
@@ -111,83 +105,142 @@ namespace KouXiaGu.Terrain3D
             }
             return 0;
         }
-    }
 
 
-    /// <summary>
-    /// 地形块烘培请求;
-    /// </summary>
-    class ChunkBakeRequest : IBakeRequest
-    {
-        public ChunkBakeRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets)
+        class ChunkCreateRequest : AsyncOperation<Chunk>, IBakeRequest
         {
-            ChunkCoord = chunkCoord;
-            Chunk = chunk;
-            Targets = targets;
-            inBakeQueueTime = 0;
-            IsBaking = false;
-            IsCanceled = false;
-        }
-
-        public RectCoord ChunkCoord { get; private set; }
-        public BakeTargets Targets { get; internal set; }
-        public Chunk Chunk { get; private set; }
-        int inBakeQueueTime;
-        public bool IsBaking { get; private set; }
-        public bool IsCanceled { get; private set; }
-
-        public bool IsInBakeQueue
-        {
-            get { return inBakeQueueTime > 0; }
-        }
-
-        ChunkTexture IBakeRequest.Textures
-        {
-            get { return Chunk.Renderer; }
-        }
-
-        void IRequest.AddQueue()
-        {
-            inBakeQueueTime++;
-        }
-
-        void IRequest.Operate()
-        {
-            if (IsBaking)
-                UnityEngine.Debug.LogError("重复烘焙?");
-
-            IsBaking = true;
-        }
-
-        void IRequest.OutQueue()
-        {
-            try
+            ChunkCreateRequest()
             {
-                Chunk.Renderer.Apply();
-            }
-            finally
-            {
+                IsInQueue = false;
                 IsBaking = false;
-                inBakeQueueTime--;
+                IsCanceled = false;
+            }
+
+            public ChunkCreateRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets) : this()
+            {
+                ChunkCoord = chunkCoord;
+                Chunk = chunk;
+                Targets = targets;
+            }
+
+            public RectCoord ChunkCoord { get; set; }
+            public BakeTargets Targets { get; set; }
+            public bool IsInQueue { get; private set; }
+            public bool IsBaking { get; private set; }
+            public bool IsCanceled { get; set; }
+
+            public Chunk Chunk
+            {
+                get { return Result; }
+                set { Result = value; }
+            }
+
+            ChunkTexture IBakeRequest.Textures
+            {
+                get { return Chunk.Renderer; }
+            }
+
+            void IRequest.Operate()
+            {
+                IsBaking = true;
+            }
+
+            void IRequest.AddQueue()
+            {
+                IsInQueue = true;
+            }
+
+            void IRequest.OutQueue()
+            {
+                try
+                {
+                    Result.Renderer.Apply();
+                    OnCompleted(Chunk);
+                }
+                finally
+                {
+                    IsInQueue = false;
+                    IsBaking = false;
+                }
             }
         }
-
-        /// <summary>
-        /// 重置状态;
-        /// </summary>
-        internal void ResetState()
-        {
-            IsCanceled = false;
-        }
-
-        /// <summary>
-        /// 停用这个块请求;
-        /// </summary>
-        internal void Destroy()
-        {
-            IsCanceled = true;
-            Chunk = null;
-        }
     }
+
+
+    ///// <summary>
+    ///// 地形块烘培请求;
+    ///// </summary>
+    //class ChunkCreateRequest : IBakeRequest
+    //{
+    //    public ChunkCreateRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets)
+    //    {
+    //        ChunkCoord = chunkCoord;
+    //        Chunk = chunk;
+    //        Targets = targets;
+    //        inBakeQueueTime = 0;
+    //        IsBaking = false;
+    //        IsCanceled = false;
+    //    }
+
+    //    public RectCoord ChunkCoord { get; private set; }
+    //    public BakeTargets Targets { get; internal set; }
+    //    public Chunk Chunk { get; private set; }
+    //    int inBakeQueueTime;
+    //    public bool IsBaking { get; private set; }
+    //    public bool IsCanceled { get; private set; }
+
+    //    public bool IsInBakeQueue
+    //    {
+    //        get { return inBakeQueueTime > 0; }
+    //    }
+
+    //    ChunkTexture IBakeRequest.Textures
+    //    {
+    //        get { return Chunk.Renderer; }
+    //    }
+
+    //    void IRequest.AddQueue()
+    //    {
+    //        inBakeQueueTime++;
+    //    }
+
+    //    void IRequest.Operate()
+    //    {
+    //        if (IsBaking)
+    //            UnityEngine.Debug.LogError("重复烘焙?");
+
+    //        IsBaking = true;
+    //    }
+
+    //    void IRequest.OutQueue()
+    //    {
+    //        try
+    //        {
+    //            Chunk.Renderer.Apply();
+    //        }
+    //        finally
+    //        {
+    //            IsBaking = false;
+    //            inBakeQueueTime--;
+    //        }
+    //    }
+
+    //    /// <summary>
+    //    /// 重置状态;
+    //    /// </summary>
+    //    internal void ResetState()
+    //    {
+    //        IsCanceled = false;
+    //    }
+
+    //    /// <summary>
+    //    /// 停用这个块请求;
+    //    /// </summary>
+    //    internal void Destroy()
+    //    {
+    //        IsCanceled = true;
+    //        Chunk = null;
+    //    }
+    //}
 
 }
