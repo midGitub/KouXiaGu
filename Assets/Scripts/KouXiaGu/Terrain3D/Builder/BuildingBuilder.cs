@@ -170,7 +170,8 @@ namespace KouXiaGu.Terrain3D
             {
                 if (!request.IsInQueue)
                 {
-                    request.Result.Destroy();
+                    request.Restart();
+                    AddQueue(request);
                 }
                 return request;
             }
@@ -183,7 +184,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 销毁这个地图块;
         /// </summary>
-        public void Destroy(RectCoord chunkCoord)
+        public void Destroy(CubicHexCoord position)
         {
 
         }
@@ -227,11 +228,14 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = false;
             }
 
+            /// <summary>
+            /// 重置所有,为重新进入队列做准备;
+            /// </summary>
             public void Restart()
             {
-                if (!IsInQueue)
+                ResetState();
+                if (Result != null)
                 {
-                    ResetState();
                     Result.Destroy();
                     Result = null;
                 }
@@ -253,11 +257,21 @@ namespace KouXiaGu.Terrain3D
 
             void IRequest.AddQueue()
             {
+                if (IsInQueue)
+                {
+                    Debug.LogError("重复加入队列;");
+                }
+
                 IsInQueue = true;
             }
 
             void IRequest.OutQueue()
             {
+                if (!IsInQueue)
+                {
+                    Debug.LogError("重复移除队列;");
+                }
+
                 IsInQueue = false;
             }
         }
