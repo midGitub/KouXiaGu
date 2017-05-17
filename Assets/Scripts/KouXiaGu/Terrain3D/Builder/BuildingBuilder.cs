@@ -189,15 +189,6 @@ namespace KouXiaGu.Terrain3D
 
         }
 
-        /// <summary>
-        /// 清除所有实例化的物体;
-        /// </summary>
-        void Clear(BuildingChunk chunk)
-        {
-
-        }
-
-
         class BuildingCreateRequest : AsyncOperation<ILandformBuilding>, IRequest
         {
             public BuildingCreateRequest(BuildingBuilder builder, CubicHexCoord position)
@@ -273,71 +264,6 @@ namespace KouXiaGu.Terrain3D
                 }
 
                 IsInQueue = false;
-            }
-        }
-    }
-
-
-
-    public class BuildingChunk : IEnumerable<BuildingChunk.BuildingItem>
-    {
-        public BuildingChunk()
-        {
-            buildingGroup = new List<BuildingItem>();
-        }
-
-        readonly List<BuildingItem> buildingGroup;
-
-        public void Add(CubicHexCoord position, GameObject buildingObject)
-        {
-            BuildingItem item = new BuildingItem(position, buildingObject);
-            buildingGroup.Add(item);
-        }
-
-        public GameObject GetAt(CubicHexCoord position)
-        {
-            int index = FindIndex(position);
-            if (index < 0)
-            {
-                throw new KeyNotFoundException();
-            }
-            return buildingGroup[index].BuildingObject;
-        }
-
-        int FindIndex(CubicHexCoord position)
-        {
-            return buildingGroup.FindIndex(item => item.Position == position);
-        }
-
-        public IEnumerator<BuildingItem> GetEnumerator()
-        {
-            return buildingGroup.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public struct BuildingItem
-        {
-            public BuildingItem(CubicHexCoord position, GameObject buildingObject)
-            {
-                this.position = position;
-                this.buildingObject = buildingObject;
-            }
-
-            readonly CubicHexCoord position;
-            readonly GameObject buildingObject;
-
-            public CubicHexCoord Position
-            {
-                get { return position; }
-            }
-
-            public GameObject BuildingObject
-            {
-                get { return buildingObject; }
             }
         }
     }
