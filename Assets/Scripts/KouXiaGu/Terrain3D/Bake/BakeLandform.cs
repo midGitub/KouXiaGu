@@ -59,28 +59,39 @@ namespace KouXiaGu.Terrain3D
         /// <param name="worldData">世界数据</param>
         /// <param name="chunkCenter">地形块中心坐标;</param>
         /// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
-        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter, ISegmented state)
+        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter, ICoroutineState state)
         {
             this.bakeCamera = bakeCamera;
             this.worldData = worldData;
             this.chunkCenter = chunkCenter;
             this.displays = ChunkPartitioner.GetLandform(chunkCenter);
 
-            PrepareScene();
             if (state.Await())
                 yield return null;
+            if (state.IsCanceled)
+                yield break; 
+
+            PrepareScene();
+
+            if (state.Await())
+                yield return null;
+            if (state.IsCanceled)
+                goto _End_;
 
             BakeDiffuse();
+
             if (state.Await())
                 yield return null;
+            if (state.IsCanceled)
+                goto _End_;
 
             BakeHeight();
+
             if (state.Await())
                 yield return null;
 
+            _End_:
             ClearScene();
-            if (state.Await())
-                yield return null;
         }
 
         /// <summary>

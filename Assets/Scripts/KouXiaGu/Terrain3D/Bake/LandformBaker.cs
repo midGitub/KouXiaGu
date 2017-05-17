@@ -9,6 +9,24 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    public interface ICoroutineState
+    {
+        /// <summary>
+        /// 是否已经取消?
+        /// </summary>
+        bool IsCanceled { get; }
+
+        /// <summary>
+        /// 重新开始计算;
+        /// </summary>
+        void Restart();
+
+        /// <summary>
+        /// 需要等待返回true,不需要等待返回false;
+        /// </summary>
+        bool Await();
+    }
+
     public interface IBakeRequest : IRequest
     {
         RectCoord ChunkCoord { get; }
@@ -51,7 +69,7 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         BakeRoad bakeRoad = null;
         [SerializeField]
-        Stopwatch runtimeStopwatch = null;
+        Stopwatch runtimeStopwatch = new Stopwatch(0.2f);
         IWorldData worldData;
         Coroutine bakeCoroutine;
         Queue<IBakeRequest> requestQueue;
@@ -110,6 +128,7 @@ namespace KouXiaGu.Terrain3D
                 }
 
                 IBakeRequest bakeRequest = requestQueue.Peek();
+                ICoroutineState state = new CoroutineState(runtimeStopwatch, bakeRequest);
 
                 if (bakeRequest.IsCanceled)
                     goto Complete;
@@ -120,7 +139,7 @@ namespace KouXiaGu.Terrain3D
 
                 if ((targets & BakeTargets.Landform) > 0)
                 {
-                    yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter, runtimeStopwatch);
+                    yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter, state);
                     var diffuseMap = bakeCamera.GetDiffuseTexture(bakeLandform.DiffuseRT);
                     var heightMap = bakeCamera.GetHeightTexture(bakeLandform.HeightRT);
                     bakeRequest.Textures.SetDiffuseMap(diffuseMap);
@@ -162,6 +181,32 @@ namespace KouXiaGu.Terrain3D
             Debug.Log(typeof(LandformBaker).Name + ";RequestCount:" + RequestCount);
         }
 
+        class CoroutineState : ICoroutineState
+        {
+            public CoroutineState(ISegmented stopwatch, IRequest request)
+            {
+                this.stopwatch = stopwatch;
+                this.request = request;
+            }
+
+            readonly ISegmented stopwatch;
+            readonly IRequest request;
+
+            public bool IsCanceled
+            {
+                get { return request.IsCanceled; }
+            }
+
+            public bool Await()
+            {
+                return stopwatch.Await();
+            }
+
+            public void Restart()
+            {
+                stopwatch.Restart();
+            }
+        }
     }
 
 }
