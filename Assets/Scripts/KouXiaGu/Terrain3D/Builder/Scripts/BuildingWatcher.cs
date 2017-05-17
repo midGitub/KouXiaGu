@@ -8,10 +8,21 @@ namespace KouXiaGu.Terrain3D
 {
 
     [DisallowMultipleComponent]
-    public class BuildingWatcher : MonoBehaviour
+    public class BuildingWatcher : ChunkWatcher, IBuildingWatcher
     {
+        BuildingWatcher()
+        {
+        }
 
+        void OnEnable()
+        {
+            BuildingManager.WatcherList.Add(this);
+        }
 
+        void OnDisable()
+        {
+            BuildingManager.WatcherList.Remove(this);
+        }
     }
 
 }
