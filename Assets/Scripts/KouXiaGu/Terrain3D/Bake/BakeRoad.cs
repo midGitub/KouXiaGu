@@ -65,28 +65,39 @@ namespace KouXiaGu.Terrain3D
             HeightRT = null;
         }
 
-        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter, ISegmented state)
+        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter, ICoroutineState state)
         {
             this.bakeCamera = bakeCamera;
             this.worldData = worldData;
             this.chunkCenter = chunkCenter;
             this.displays = ChunkPartitioner.GetRoad(chunkCenter);
 
-            PrepareScene();
-            if(state.Await())
+            if (state.Await())
                 yield return null;
+            if (state.IsCanceled)
+                yield break;
+
+            PrepareScene();
+
+            if (state.Await())
+                yield return null;
+            if (state.IsCanceled)
+                goto _End_;
 
             BakeDiffuse();
+
             if (state.Await())
                 yield return null;
+            if (state.IsCanceled)
+                goto _End_;
 
             BakeHeight();
+
             if (state.Await())
                 yield return null;
 
+            _End_:
             ClearScene();
-            if (state.Await())
-                yield return null;
         }
 
         void PrepareScene()

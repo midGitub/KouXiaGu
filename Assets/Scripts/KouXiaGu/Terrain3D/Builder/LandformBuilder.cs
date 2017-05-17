@@ -179,8 +179,11 @@ namespace KouXiaGu.Terrain3D
             {
                 try
                 {
-                    Result.Renderer.Apply();
-                    OnCompleted(Chunk);
+                    if (!IsCanceled)
+                    {
+                        Result.Renderer.Apply();
+                        OnCompleted(Chunk);
+                    }
                 }
                 finally
                 {
