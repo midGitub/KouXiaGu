@@ -2190,6 +2190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1146917776}
   - component: {fileID: 1146917773}
+  - component: {fileID: 1146917774}
   - component: {fileID: 1146917775}
   m_Layer: 0
   m_Name: Landform
@@ -2226,8 +2227,21 @@ MonoBehaviour:
     diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
     heightShader: {fileID: 4800000, guid: 1f2f90526623fcc43b7dd38171b75795, type: 3}
   runtimeStopwatch:
-    idleSeconds: 0.5
+    idleSeconds: 0.2
   waitUpdate: 0
+--- !u!114 &1146917774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1146917772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9977eee919c4e4544ba79354769247f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeStopwatch:
+    idleSeconds: 0.2
 --- !u!114 &1146917775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2692,17 +2706,17 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}

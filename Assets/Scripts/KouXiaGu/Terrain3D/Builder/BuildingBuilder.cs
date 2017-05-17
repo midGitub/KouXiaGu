@@ -12,15 +12,6 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 建筑物创建接口,需要挂载在预制物体上;
-    /// </summary>
-    public interface ILandformBuilding
-    {
-        GameObject gameObject { get; }
-        ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, LandformManager landform, IWorldData data);
-    }
-
-    /// <summary>
     /// 对场景建筑物进行构建;
     /// </summary>
     public class BuildingBuilder
