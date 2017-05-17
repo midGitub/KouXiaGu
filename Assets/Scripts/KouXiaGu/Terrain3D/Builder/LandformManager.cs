@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D
 
         protected override IEnumerable<RectCoord> SceneCoords
         {
-            get { return builder.SceneDisplayedChunks.Keys; }
+            get { return builder.SceneCoords; }
         }
 
         protected override void CreateAt(RectCoord coord)

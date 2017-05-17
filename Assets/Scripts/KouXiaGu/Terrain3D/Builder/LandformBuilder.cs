@@ -33,6 +33,11 @@ namespace KouXiaGu.Terrain3D
             get { return ChunkInfo.ChunkGrid; }
         }
 
+        public IEnumerable<RectCoord> SceneCoords
+        {
+            get { return sceneChunks.Keys; }
+        }
+
         /// <summary>
         /// 仅创建对应地形块,若已经存在则返回存在的元素;
         /// </summary>
