@@ -92,8 +92,8 @@ namespace KouXiaGu.Terrain3D
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
                 sceneChunks.Remove(chunkCoord);
-                request.Cancel();
                 chunkPool.Release(request.Chunk);
+                request.Destroy();
             }
         }
 
@@ -146,12 +146,12 @@ namespace KouXiaGu.Terrain3D
             get { return Chunk.Renderer; }
         }
 
-        void IBakeRequest.AddBakeQueue()
+        void IRequest.AddQueue()
         {
             inBakeQueueTime++;
         }
 
-        void IBakeRequest.StartBake()
+        void IRequest.Operate()
         {
             if (IsBaking)
                 UnityEngine.Debug.LogError("重复烘焙?");
@@ -159,7 +159,7 @@ namespace KouXiaGu.Terrain3D
             IsBaking = true;
         }
 
-        void IBakeRequest.BakeCompleted()
+        void IRequest.OutQueue()
         {
             try
             {
@@ -180,9 +180,13 @@ namespace KouXiaGu.Terrain3D
             IsCanceled = false;
         }
 
-        internal void Cancel()
+        /// <summary>
+        /// 停用这个块请求;
+        /// </summary>
+        internal void Destroy()
         {
             IsCanceled = true;
+            Chunk = null;
         }
     }
 

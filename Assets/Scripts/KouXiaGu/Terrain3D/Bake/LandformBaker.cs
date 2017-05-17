@@ -9,16 +9,11 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public interface IBakeRequest
+    public interface IBakeRequest : IRequest
     {
         RectCoord ChunkCoord { get; }
         ChunkTexture Textures { get; }
         BakeTargets Targets { get; }
-        bool IsCanceled { get; }
-
-        void AddBakeQueue();
-        void StartBake();
-        void BakeCompleted();
     }
 
     /// <summary>
@@ -119,7 +114,7 @@ namespace KouXiaGu.Terrain3D
                 if (bakeRequest.IsCanceled)
                     goto Complete;
 
-                bakeRequest.StartBake();
+                bakeRequest.Operate();
                 BakeTargets targets = bakeRequest.Targets;
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
 
@@ -149,7 +144,7 @@ namespace KouXiaGu.Terrain3D
                 if (runtimeStopwatch.Await())
                     yield return null;
 
-                bakeRequest.BakeCompleted();
+                bakeRequest.OutQueue();
                 Complete:
                 requestQueue.Dequeue();
             }
@@ -157,7 +152,7 @@ namespace KouXiaGu.Terrain3D
 
         public void AddRequest(IBakeRequest request)
         {
-            request.AddBakeQueue();
+            request.AddQueue();
             requestQueue.Enqueue(request);
         }
 
