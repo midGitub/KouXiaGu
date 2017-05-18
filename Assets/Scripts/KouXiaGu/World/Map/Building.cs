@@ -32,46 +32,6 @@ namespace KouXiaGu.World.Map
         public float Angle;
     }
 
-    [ProtoContract]
-    public class MapBuilding
-    {
-        /// <summary>
-        /// 起始的有效ID;
-        /// </summary>
-        internal const uint InitialID = 1;
-
-        public MapBuilding() : this(InitialID)
-        {
-        }
-
-        public MapBuilding(uint effectiveID)
-        {
-            EffectiveID = effectiveID;
-        }
-
-        /// <summary>
-        /// 当前有效的ID;
-        /// </summary>
-        [ProtoMember(1)]
-        public uint EffectiveID { get; private set; }
-
-        /// <summary>
-        /// 获取到一个唯一的有效ID;
-        /// </summary>
-        public uint GetNewEffectiveID()
-        {
-            return EffectiveID++;
-        }
-
-        /// <summary>
-        /// 重置记录信息;
-        /// </summary>
-        internal void Reset()
-        {
-            EffectiveID = InitialID;
-        }
-    }
-
     public static class MapBuildingExtensions
     {
         /// <summary>

@@ -26,6 +26,9 @@ namespace KouXiaGu.World.Map
         [ProtoMember(3)]
         public MapTown Town { get; private set; }
 
+        [ProtoMember(4)]
+        public IdentifierGenerator BuildingIdentifierGenerator { get; private set; }
+
         public bool IsReadOnly
         {
             get { return Data.IsReadOnly; }
