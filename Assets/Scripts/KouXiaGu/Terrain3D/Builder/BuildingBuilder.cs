@@ -41,6 +41,7 @@ namespace KouXiaGu.Terrain3D
             this.landform = landform;
             requestDispatcher = SceneObject.GetObject<BuildingRequestDispatcher>();
             sceneBuildings = new Dictionary<CubicHexCoord, BuildingCreateRequest>();
+            readOnlySceneBuildings = sceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<ILandformBuilding>);
             sceneChunks = new HashSet<RectCoord>();
             readOnlySceneChunks = sceneChunks.AsReadOnlyCollection();
         }
@@ -49,12 +50,16 @@ namespace KouXiaGu.Terrain3D
         readonly Landform landform;
         readonly RequestDispatcher requestDispatcher;
         readonly Dictionary<CubicHexCoord, BuildingCreateRequest> sceneBuildings;
+        readonly IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<ILandformBuilding>> readOnlySceneBuildings;
         readonly HashSet<RectCoord> sceneChunks;
         readonly IReadOnlyCollection<RectCoord> readOnlySceneChunks;
 
-        public IAsyncOperation<ILandformBuilding> this[CubicHexCoord position]
+        /// <summary>
+        /// 在场景中已经创建或者正在创建的建筑;
+        /// </summary>
+        public IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<ILandformBuilding>> SceneBuildings
         {
-            get { return sceneBuildings[position]; }
+            get { return readOnlySceneBuildings; }
         }
 
         /// <summary>
@@ -332,12 +337,12 @@ namespace KouXiaGu.Terrain3D
 
             void IObserver<RectCoord>.OnCompleted()
             {
-                throw new NotImplementedException();
+                Unsubscribe();
             }
 
             void IObserver<RectCoord>.OnError(Exception error)
             {
-                throw new NotImplementedException();
+                return;
             }
 
             void IObserver<RectCoord>.OnNext(RectCoord chunkCoord)
@@ -345,9 +350,11 @@ namespace KouXiaGu.Terrain3D
                 var overlayPoints = parent.GetOverlayPoints(chunkCoord);
                 foreach (var point in overlayPoints)
                 {
-                    ILandformBuilding building = parent.
-
-
+                    BuildingCreateRequest building;
+                    if (parent.sceneBuildings.TryGetValue(point, out building))
+                    {
+                        building.Result.Rebuild();
+                    }
                 }
             }
 
@@ -360,6 +367,5 @@ namespace KouXiaGu.Terrain3D
                 }
             }
         }
-
     }
 }
