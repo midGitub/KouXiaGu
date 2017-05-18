@@ -360,7 +360,10 @@ namespace KouXiaGu.Terrain3D
                     BuildingCreateRequest building;
                     if (parent.sceneBuildings.TryGetValue(point, out building))
                     {
-                        building.Result.Rebuild();
+                        if (building.IsCompleted)
+                        {
+                            building.Result.Rebuild();
+                        }
                     }
                 }
             }
