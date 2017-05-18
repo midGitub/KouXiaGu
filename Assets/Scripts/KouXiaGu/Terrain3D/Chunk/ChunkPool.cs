@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class ChunkPool : ObjectPool<Chunk>
     {
-        const int defaultMaxCapacity = 10;
+        const int defaultMaxCapacity = 100;
 
         public ChunkPool() : base(defaultMaxCapacity)
         {
