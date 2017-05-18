@@ -14,6 +14,12 @@ namespace KouXiaGu.World.Map
     public struct BuildingNode
     {
         /// <summary>
+        /// 编号,不存在建筑则为0;
+        /// </summary>
+        [ProtoMember(0)]
+        public uint ID;
+
+        /// <summary>
         /// 建筑物类型编号;
         /// </summary>
         [ProtoMember(1)]
@@ -26,21 +32,64 @@ namespace KouXiaGu.World.Map
         public float Angle;
     }
 
-    public static class MapBuilding
+    [ProtoContract]
+    public class MapBuilding
+    {
+        /// <summary>
+        /// 起始的有效ID;
+        /// </summary>
+        internal const uint InitialID = 1;
+
+        public MapBuilding() : this(InitialID)
+        {
+        }
+
+        public MapBuilding(uint effectiveID)
+        {
+            EffectiveID = effectiveID;
+        }
+
+        /// <summary>
+        /// 当前有效的ID;
+        /// </summary>
+        [ProtoMember(1)]
+        public uint EffectiveID { get; private set; }
+
+        /// <summary>
+        /// 获取到一个唯一的有效ID;
+        /// </summary>
+        public uint GetNewEffectiveID()
+        {
+            return EffectiveID++;
+        }
+
+        /// <summary>
+        /// 重置记录信息;
+        /// </summary>
+        internal void Reset()
+        {
+            EffectiveID = InitialID;
+        }
+    }
+
+    public static class MapBuildingExtensions
     {
         /// <summary>
         /// 不存在建筑时放置的标志;
         /// </summary>
-        internal const int EmptyMark = 0;
+        public const int EmptyMark = 0;
 
         /// <summary>
         /// 是否存在建筑物?
         /// </summary>
         public static bool Exist(this BuildingNode node)
         {
-            return node.Type != EmptyMark;
+            return node.ID != EmptyMark;
         }
 
+        /// <summary>
+        /// 清除建筑信息;
+        /// </summary>
         public static BuildingNode Destroy(this BuildingNode node)
         {
             return default(BuildingNode);

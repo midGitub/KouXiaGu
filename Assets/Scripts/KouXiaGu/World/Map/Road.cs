@@ -100,7 +100,7 @@ namespace KouXiaGu.World.Map
         }
     }
 
-    public static class RoadExtensions
+    public static class MapRoadExtensions
     {
 
         /// <summary>
