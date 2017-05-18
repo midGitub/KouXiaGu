@@ -24,7 +24,7 @@ namespace KouXiaGu.World.Map
             get { return data; }
         }
 
-        public DataArchive DataArchive
+        internal DataArchive DataArchive
         {
             get { return dataArchive; }
         }
