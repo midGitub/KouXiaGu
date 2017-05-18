@@ -11,9 +11,9 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 记录地图变化;
     /// </summary>
-    public class ArchivedMap : IDictionary<CubicHexCoord, MapNode>, IReadOnlyDictionary<CubicHexCoord, MapNode>
+    public class DataArchive : IDictionary<CubicHexCoord, MapNode>, IReadOnlyDictionary<CubicHexCoord, MapNode>
     {
-        public ArchivedMap(MapData data)
+        public DataArchive(MapData data)
         {
             this.data = data;
             changedPositions = new HashSet<CubicHexCoord>();

@@ -13,9 +13,11 @@ namespace KouXiaGu.World.Map
         public GameMap()
         {
             data = new MapData();
+            dataArchive = new DataArchive(data);
         }
 
         readonly MapData data;
+        readonly DataArchive dataArchive;
 
         internal MapData Data
         {
@@ -24,12 +26,12 @@ namespace KouXiaGu.World.Map
 
         internal IDictionary<CubicHexCoord, MapNode> Map
         {
-            get { throw new NotImplementedException(); }
+            get { return dataArchive; }
         }
 
         public IReadOnlyDictionary<CubicHexCoord, MapNode> ReadOnlyMap
         {
-            get { throw new NotImplementedException(); }
+            get { return dataArchive; }
         }
 
         /// <summary>
@@ -39,7 +41,6 @@ namespace KouXiaGu.World.Map
         {
             throw new NotImplementedException();
         }
-
     }
 
 }
