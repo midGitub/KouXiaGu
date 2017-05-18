@@ -40,6 +40,7 @@ namespace KouXiaGu.Terrain3D
             this.worldData = worldData;
             this.landform = landform;
             requestDispatcher = SceneObject.GetObject<BuildingRequestDispatcher>();
+            landformObserver = new LandformObserver(this, landform.LandformBuilder.CompletedChunkSender);
             sceneBuildings = new Dictionary<CubicHexCoord, BuildingCreateRequest>();
             readOnlySceneBuildings = sceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<ILandformBuilding>);
             sceneChunks = new HashSet<RectCoord>();
@@ -49,6 +50,7 @@ namespace KouXiaGu.Terrain3D
         readonly IWorldData worldData;
         readonly Landform landform;
         readonly RequestDispatcher requestDispatcher;
+        readonly LandformObserver landformObserver;
         readonly Dictionary<CubicHexCoord, BuildingCreateRequest> sceneBuildings;
         readonly IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<ILandformBuilding>> readOnlySceneBuildings;
         readonly HashSet<RectCoord> sceneChunks;
@@ -334,6 +336,11 @@ namespace KouXiaGu.Terrain3D
 
             readonly BuildingBuilder parent;
             IDisposable landformChangedDisposer;
+
+            public bool IsSubscribed
+            {
+                get { return landformChangedDisposer != null; }
+            }
 
             void IObserver<RectCoord>.OnCompleted()
             {
