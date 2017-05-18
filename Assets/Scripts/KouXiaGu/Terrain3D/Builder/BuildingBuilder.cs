@@ -354,7 +354,7 @@ namespace KouXiaGu.Terrain3D
 
             void IObserver<RectCoord>.OnNext(RectCoord chunkCoord)
             {
-                var overlayPoints = parent.GetOverlayPoints(chunkCoord);
+                var overlayPoints = GetOverlayPoints(chunkCoord);
                 foreach (var point in overlayPoints)
                 {
                     BuildingCreateRequest building;
@@ -368,6 +368,55 @@ namespace KouXiaGu.Terrain3D
                 }
             }
 
+            /// <summary>
+            /// (0, 0)对应覆盖的节点(依赖地图块大小);
+            /// </summary>
+            static readonly CubicHexCoord[] buildingOverlay = new CubicHexCoord[]
+                {
+                    new CubicHexCoord(-2, 3),
+                    new CubicHexCoord(-2, 2),
+                    new CubicHexCoord(-2, 1),
+                    new CubicHexCoord(-2, 0),
+                    new CubicHexCoord(-2, -1),
+
+                    new CubicHexCoord(-1, 2),
+                    new CubicHexCoord(-1, 1),
+                    new CubicHexCoord(-1, 0),
+                    new CubicHexCoord(-1, -1),
+
+                    new CubicHexCoord(0, 2),
+                    new CubicHexCoord(0, 1),
+                    new CubicHexCoord(0, 0),
+                    new CubicHexCoord(0, -1),
+                    new CubicHexCoord(0, -2),
+
+                    new CubicHexCoord(1, 1),
+                    new CubicHexCoord(1, 0),
+                    new CubicHexCoord(1, -1),
+                    new CubicHexCoord(1, -2),
+
+                    new CubicHexCoord(2, 1),
+                    new CubicHexCoord(2, 0),
+                    new CubicHexCoord(2, -1),
+                    new CubicHexCoord(2, -2),
+                    new CubicHexCoord(2, -3),
+                };
+
+            /// <summary>
+            /// 获取到地形块对应需要更新的建筑物坐标,比 BuildingBuilder.GetOverlayPoints() 范围要大;
+            /// </summary>
+            IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
+            {
+                CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+                foreach (var item in buildingOverlay)
+                {
+                    yield return chunkCenter + item;
+                }
+            }
+
+            /// <summary>
+            /// 取消订阅;
+            /// </summary>
             public void Unsubscribe()
             {
                 if (landformChangedDisposer != null)
