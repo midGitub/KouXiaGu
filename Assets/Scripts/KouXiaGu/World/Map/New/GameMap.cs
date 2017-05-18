@@ -24,6 +24,11 @@ namespace KouXiaGu.World.Map
             get { return data; }
         }
 
+        public DataArchive DataArchive
+        {
+            get { return dataArchive; }
+        }
+
         internal IDictionary<CubicHexCoord, MapNode> Map
         {
             get { return dataArchive; }
@@ -32,14 +37,6 @@ namespace KouXiaGu.World.Map
         public IReadOnlyDictionary<CubicHexCoord, MapNode> ReadOnlyMap
         {
             get { return dataArchive; }
-        }
-
-        /// <summary>
-        /// 将地图数据保存到
-        /// </summary>
-        public void Save(string filePath)
-        {
-            throw new NotImplementedException();
         }
     }
 
