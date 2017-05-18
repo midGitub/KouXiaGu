@@ -16,13 +16,28 @@ namespace KouXiaGu.World.Map
         public ArchivedMapData(MapData data)
         {
             this.data = data;
+            changedPositions = new HashSet<CubicHexCoord>();
         }
 
         readonly MapData data;
+        readonly HashSet<CubicHexCoord> changedPositions;
 
         Dictionary<CubicHexCoord, MapNode> map
         {
             get { return data.Map; }
+        }
+
+        public MapData Data
+        {
+            get { return data; }
+        }
+
+        /// <summary>
+        /// 发生变化的节点;
+        /// </summary>
+        public ICollection<CubicHexCoord> ChangedPositions
+        {
+            get { return changedPositions; }
         }
 
         public ICollection<CubicHexCoord> Keys
