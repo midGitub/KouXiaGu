@@ -171,7 +171,7 @@ namespace KouXiaGu.Terrain3D
 
         LandformResource GetLandformResource(MapNode node)
         {
-            int landformID = node.Landform.LandformID;
+            int landformID = node.Landform.Type;
             LandformResource info = GetLandformResource(landformID);
             return info;
         }

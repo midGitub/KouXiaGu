@@ -13,6 +13,9 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public struct MapNode
     {
+        [ProtoMember(0)]
+        public int ID;
+
         [ProtoMember(1)]
         public LandformNode Landform;
 
@@ -33,10 +36,10 @@ namespace KouXiaGu.World.Map
     public struct LandformNode
     {
         /// <summary>
-        /// 代表的地形ID;
+        /// 地形类型;
         /// </summary>
         [ProtoMember(1)]
-        public int LandformID;
+        public int Type;
 
         /// <summary>
         /// 地形旋转角度;

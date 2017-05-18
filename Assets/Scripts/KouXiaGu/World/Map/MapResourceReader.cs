@@ -96,7 +96,7 @@ namespace KouXiaGu.World.Map
                 {
                     Landform = new LandformNode()
                     {
-                        LandformID = Random(landformArray),
+                        Type = Random(landformArray),
                         Angle = RandomAngle(),
                     },
 
