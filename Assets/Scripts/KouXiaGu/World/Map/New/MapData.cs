@@ -19,9 +19,6 @@ namespace KouXiaGu.World.Map
             Map = new Dictionary<CubicHexCoord, MapNode>();
         }
 
-        /// <summary>
-        /// 地图数据;
-        /// </summary>
         [ProtoMember(1)]
         public Dictionary<CubicHexCoord, MapNode> Map { get; set; }
 

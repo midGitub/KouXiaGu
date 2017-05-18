@@ -11,9 +11,9 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 记录地图变化;
     /// </summary>
-    public class ArchivedMapData : IDictionary<CubicHexCoord, MapNode>, IReadOnlyDictionary<CubicHexCoord, MapNode>
+    public class ArchivedMap : IDictionary<CubicHexCoord, MapNode>, IReadOnlyDictionary<CubicHexCoord, MapNode>
     {
-        public ArchivedMapData(MapData data)
+        public ArchivedMap(MapData data)
         {
             this.data = data;
             changedPositions = new HashSet<CubicHexCoord>();
@@ -22,7 +22,7 @@ namespace KouXiaGu.World.Map
         readonly MapData data;
         readonly HashSet<CubicHexCoord> changedPositions;
 
-        Dictionary<CubicHexCoord, MapNode> map
+        IDictionary<CubicHexCoord, MapNode> map
         {
             get { return data.Map; }
         }
@@ -33,7 +33,7 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 发生变化的节点;
+        /// 发生变化的节点,不包括被移除的节点;
         /// </summary>
         public ICollection<CubicHexCoord> ChangedPositions
         {
@@ -73,27 +73,34 @@ namespace KouXiaGu.World.Map
         public MapNode this[CubicHexCoord key]
         {
             get { return map[key]; }
-            set { map[key] = value; }
+            set
+            {
+                map[key] = value;
+                changedPositions.Add(key);
+            }
+        }
+
+        public void Add(KeyValuePair<CubicHexCoord, MapNode> item)
+        {
+            Add(item.Key, item.Value);
         }
 
         public void Add(CubicHexCoord key, MapNode value)
         {
             map.Add(key, value);
-        }
-
-        public void Add(KeyValuePair<CubicHexCoord, MapNode> item)
-        {
-            map.Add(item.Key, item.Value);
-        }
-
-        public bool Remove(CubicHexCoord key)
-        {
-            return map.Remove(key);
+            changedPositions.Add(key);
         }
 
         public bool Remove(KeyValuePair<CubicHexCoord, MapNode> item)
         {
-            return map.Remove(item.Key);
+            return Remove(item.Key);
+        }
+
+        public bool Remove(CubicHexCoord key)
+        {
+            bool isRemoved = map.Remove(key);
+            changedPositions.Remove(key);
+            return isRemoved;
         }
 
         public bool ContainsKey(CubicHexCoord key)
@@ -116,7 +123,7 @@ namespace KouXiaGu.World.Map
             map.Clear();
         }
 
-        public void CopyTo(KeyValuePair<CubicHexCoord, MapNode>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<CubicHexCoord, MapNode>>.CopyTo(KeyValuePair<CubicHexCoord, MapNode>[] array, int arrayIndex)
         {
             (map as ICollection<KeyValuePair<CubicHexCoord, MapNode>>).CopyTo(array, arrayIndex);
         }
@@ -130,6 +137,31 @@ namespace KouXiaGu.World.Map
         {
             return map.GetEnumerator();
         }
-    }
 
+        /// <summary>
+        /// 获取变化的到用于归档的数据;
+        /// </summary>
+        public MapData GetArchivedData()
+        {
+            MapData archivedData = new MapData()
+            {
+                Map = GetChangedData(),
+            };
+            return archivedData;
+        }
+
+        /// <summary>
+        /// 获取到发生变化的节点结构;
+        /// </summary>
+        public Dictionary<CubicHexCoord, MapNode> GetChangedData()
+        {
+            Dictionary<CubicHexCoord, MapNode> changedData = new Dictionary<CubicHexCoord, MapNode>();
+            foreach (var position in changedPositions)
+            {
+                MapNode node = map[position];
+                changedData.Add(position, node);
+            }
+            return changedData;
+        }
+    }
 }
