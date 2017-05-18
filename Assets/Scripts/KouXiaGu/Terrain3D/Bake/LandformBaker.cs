@@ -126,17 +126,34 @@ namespace KouXiaGu.Terrain3D
                 {
                     yield return null;
                 }
+                if (runtimeStopwatch.Await())
+                {
+                    yield return null;
+                    runtimeStopwatch.Restart();
+                }
 
-                IBakeRequest bakeRequest = requestQueue.Peek();
+
+                IBakeRequest bakeRequest = requestQueue.Dequeue();
                 ICoroutineState state = new CoroutineState(runtimeStopwatch, bakeRequest);
 
-                if (bakeRequest.IsCanceled)
-                    goto Complete;
+                if (state.IsCanceled)
+                {
+                    goto _Complete_;
+                }
+                if (runtimeStopwatch.Await())
+                {
+                    yield return null;
+                    runtimeStopwatch.Restart();
+                }
 
                 bakeRequest.Operate();
                 BakeTargets targets = bakeRequest.Targets;
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
 
+                if (state.IsCanceled)
+                {
+                    goto _Complete_;
+                }
                 if ((targets & BakeTargets.Landform) > 0)
                 {
                     yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter, state);
@@ -151,9 +168,10 @@ namespace KouXiaGu.Terrain3D
                     bakeLandform.Reset();
                 }
 
-                if (runtimeStopwatch.Await())
-                    yield return null;
-
+                if (state.IsCanceled)
+                {
+                    goto _Complete_;
+                }
                 if ((targets & BakeTargets.Road) > 0)
                 {
                     yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter, state);
@@ -168,12 +186,8 @@ namespace KouXiaGu.Terrain3D
                     bakeRoad.Reset();
                 }
 
-                if (runtimeStopwatch.Await())
-                    yield return null;
-
-                Complete:
+            _Complete_:
                 bakeRequest.OutQueue();
-                requestQueue.Dequeue();
             }
         }
 

@@ -72,31 +72,38 @@ namespace KouXiaGu.Terrain3D
             this.chunkCenter = chunkCenter;
             this.displays = ChunkPartitioner.GetRoad(chunkCenter);
 
-            if (state.Await())
-                yield return null;
-            if (state.IsCanceled)
-                yield break;
-
             PrepareScene();
-
-            if (state.Await())
-                yield return null;
             if (state.IsCanceled)
+            {
                 goto _End_;
+            }
+            if (state.Await())
+            {
+                yield return null;
+                state.Restart();
+            }
+
 
             BakeDiffuse();
-
-            if (state.Await())
-                yield return null;
             if (state.IsCanceled)
+            {
                 goto _End_;
+            }
+            if (state.Await())
+            {
+                yield return null;
+                state.Restart();
+            }
+
 
             BakeHeight();
-
             if (state.Await())
+            {
                 yield return null;
+                state.Restart();
+            }
 
-            _End_:
+        _End_:
             ClearScene();
         }
 
