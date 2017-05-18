@@ -27,6 +27,11 @@ namespace KouXiaGu.World.Map
             EffectiveID = effectiveID;
         }
 
+        public IdentifierGenerator(IdentifierGenerator item)
+        {
+            EffectiveID = item.EffectiveID;
+        }
+
         /// <summary>
         /// 当前有效的ID;
         /// </summary>
