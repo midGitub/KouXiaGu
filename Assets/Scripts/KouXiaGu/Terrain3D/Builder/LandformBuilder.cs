@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using KouXiaGu.World;
 using KouXiaGu.Grids;
 using UnityEngine;
+using UniRx;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -17,11 +18,13 @@ namespace KouXiaGu.Terrain3D
             baker = LandformBaker.Initialize(worldData);
             chunkPool = new ChunkPool();
             sceneChunks = new Dictionary<RectCoord, ChunkCreateRequest>();
+            completedChunkSender = new Sender<RectCoord>();
         }
 
         readonly LandformBaker baker;
         readonly ChunkPool chunkPool;
         readonly Dictionary<RectCoord, ChunkCreateRequest> sceneChunks;
+        readonly Sender<RectCoord> completedChunkSender;
 
         public LandformBaker Baker
         {
@@ -39,6 +42,14 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 当地形创建完成时传送消息;
+        /// </summary>
+        public IObservable<RectCoord> CompletedChunkSender
+        {
+            get { return completedChunkSender; }
+        }
+
+        /// <summary>
         /// 仅创建对应地形块,若已经存在则返回存在的元素;
         /// </summary>
         public IAsyncOperation<Chunk> Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
@@ -48,7 +59,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Chunk chunk = chunkPool.Get();
                 chunk.Position = ChunkGrid.GetCenter(chunkCoord);
-                request = new ChunkCreateRequest(chunkCoord, chunk, targets);
+                request = new ChunkCreateRequest(this, chunkCoord, chunk, targets);
                 AddBakeQueue(request);
                 sceneChunks.Add(chunkCoord, request);
             }
@@ -66,7 +77,7 @@ namespace KouXiaGu.Terrain3D
                 if (request.IsBaking)
                 {
                     request.IsCanceled = true;
-                    ChunkCreateRequest newRequest = new ChunkCreateRequest(chunkCoord, request.Chunk, targets);
+                    ChunkCreateRequest newRequest = new ChunkCreateRequest(this, chunkCoord, request.Chunk, targets);
                     AddBakeQueue(request);
                     sceneChunks[chunkCoord] = newRequest;
                 }
@@ -126,13 +137,15 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = false;
             }
 
-            public ChunkCreateRequest(RectCoord chunkCoord, Chunk chunk, BakeTargets targets) : this()
+            public ChunkCreateRequest(LandformBuilder parent, RectCoord chunkCoord, Chunk chunk, BakeTargets targets) : this()
             {
+                Parent = parent;
                 ChunkCoord = chunkCoord;
                 Chunk = chunk;
                 Targets = targets;
             }
 
+            public LandformBuilder Parent { get; private set; }
             public RectCoord ChunkCoord { get; set; }
             public BakeTargets Targets { get; set; }
             public bool IsInQueue { get; private set; }
@@ -183,7 +196,12 @@ namespace KouXiaGu.Terrain3D
                     {
                         Result.Renderer.Apply();
                         OnCompleted(Chunk);
+                        Parent.completedChunkSender.Send(ChunkCoord);
                     }
+                }
+                catch (Exception ex)
+                {
+                    Parent.completedChunkSender.SendError(ex);
                 }
                 finally
                 {
