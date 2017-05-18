@@ -52,6 +52,11 @@ namespace KouXiaGu.Terrain3D
         readonly HashSet<RectCoord> sceneChunks;
         readonly IReadOnlyCollection<RectCoord> readOnlySceneChunks;
 
+        public IAsyncOperation<ILandformBuilding> this[CubicHexCoord position]
+        {
+            get { return sceneBuildings[position]; }
+        }
+
         /// <summary>
         /// 已经在场景中构建的块坐标;
         /// </summary>
@@ -310,5 +315,51 @@ namespace KouXiaGu.Terrain3D
                 IsInQueue = false;
             }
         }
+
+        /// <summary>
+        /// 观察地形发生变化;
+        /// </summary>
+        class LandformObserver : IObserver<RectCoord>
+        {
+            public LandformObserver(BuildingBuilder parent, IObservable<RectCoord> landformChanged)
+            {
+                this.parent = parent;
+                landformChangedDisposer = landformChanged.Subscribe(this);
+            }
+
+            readonly BuildingBuilder parent;
+            IDisposable landformChangedDisposer;
+
+            void IObserver<RectCoord>.OnCompleted()
+            {
+                throw new NotImplementedException();
+            }
+
+            void IObserver<RectCoord>.OnError(Exception error)
+            {
+                throw new NotImplementedException();
+            }
+
+            void IObserver<RectCoord>.OnNext(RectCoord chunkCoord)
+            {
+                var overlayPoints = parent.GetOverlayPoints(chunkCoord);
+                foreach (var point in overlayPoints)
+                {
+                    ILandformBuilding building = parent.
+
+
+                }
+            }
+
+            public void Unsubscribe()
+            {
+                if (landformChangedDisposer != null)
+                {
+                    landformChangedDisposer.Dispose();
+                    landformChangedDisposer = null;
+                }
+            }
+        }
+
     }
 }

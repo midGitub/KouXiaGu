@@ -60,9 +60,7 @@ namespace KouXiaGu
         }
 
 
-        public static IReadOnlyCollection<TResult> AsReadOnlyCollection<TSource, TResult>(
-            this ICollection<TSource> collection,
-            Func<TSource, TResult> selector)
+        public static IReadOnlyCollection<TResult> AsReadOnlyCollection<TSource, TResult>(this ICollection<TSource> collection, Func<TSource, TResult> selector)
         {
             return new _ReadOnlyCollection<TSource, TResult>(collection, selector);
         }
@@ -139,6 +137,89 @@ namespace KouXiaGu
 
         }
 
-    }
 
+        public static IReadOnlyDictionary<TKey, TResult> AsReadOnlyDictionary<TKey, TSource, TResult>(this IDictionary<TKey, TSource> collection, Func<TSource, TResult> selector)
+        {
+            return new _ReadOnlyDictionary<TKey, TSource, TResult>(collection, selector);
+        }
+
+        class _ReadOnlyDictionary<TKey, TSource, TResult> : IReadOnlyDictionary<TKey, TResult>
+        {
+            public _ReadOnlyDictionary(IDictionary<TKey, TSource> dictionary, Func<TSource, TResult> selector)
+            {
+                if (dictionary == null)
+                    throw new ArgumentNullException("dictionary");
+                if (selector == null)
+                    throw new ArgumentNullException("selector");
+
+                this.dictionary = dictionary;
+                this.selector = selector;
+            }
+
+            readonly IDictionary<TKey, TSource> dictionary;
+            readonly Func<TSource, TResult> selector;
+
+            public TResult this[TKey key]
+            {
+                get
+                {
+                    TSource source = dictionary[key];
+                    TResult result = selector(source);
+                    return result;
+                }
+            }
+
+            public IEnumerable<TKey> Keys
+            {
+                get
+                {
+                    return dictionary.Keys;
+                }
+            }
+
+            public IEnumerable<TResult> Values
+            {
+                get { return dictionary.Values.Select(item => selector(item)); }
+            }
+
+            public int Count
+            {
+                get { return dictionary.Count; }
+            }
+
+            public bool ContainsKey(TKey key)
+            {
+                return dictionary.ContainsKey(key);
+            }
+
+            public bool TryGetValue(TKey key, out TResult value)
+            {
+                TSource source;
+                if (dictionary.TryGetValue(key, out source))
+                {
+                    value = selector(source);
+                    return true;
+                }
+                else
+                {
+                    value = default(TResult);
+                    return false;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public IEnumerator<KeyValuePair<TKey, TResult>> GetEnumerator()
+            {
+                return dictionary.Select(delegate (KeyValuePair<TKey, TSource> item)
+                {
+                    TResult result = selector(item.Value);
+                    return new KeyValuePair<TKey, TResult>(item.Key, result);
+                }).GetEnumerator();
+            }
+        }
+    }
 }
