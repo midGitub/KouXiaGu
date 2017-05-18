@@ -26,13 +26,6 @@ namespace KouXiaGu.Terrain3D
             get { return gameObject; }
         }
 
-        void Update()
-        {
-            Vector3 position = transform.position;
-            position.y = Landform.GetHeight(transform.position);
-            transform.position = position;
-        }
-
         ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord position, MapNode node, Landform landform, IWorldData data)
         {
 
@@ -44,12 +37,20 @@ namespace KouXiaGu.Terrain3D
             item.Position = position;
             item.Landform = landform;
             item.WorldData = data;
+            item.Rebuild();
             return item;
         }
 
         void ILandformBuilding.Destroy()
         {
             Destroy(gameObject);
+        }
+
+        public void Rebuild()
+        {
+            Vector3 position = transform.position;
+            position.y = Landform.GetHeight(transform.position);
+            transform.position = position;
         }
     }
 

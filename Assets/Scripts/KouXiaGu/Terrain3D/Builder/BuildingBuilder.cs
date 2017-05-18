@@ -4,23 +4,36 @@ using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
+using UniRx;
 
 namespace KouXiaGu.Terrain3D
 {
+
     /// <summary>
     /// 建筑物创建接口,需要挂载在预制物体上;
     /// </summary>
     public interface ILandformBuilding
     {
-        GameObject gameObject { get; }
+        /// <summary>
+        /// 将建筑物建立到新的位置;
+        /// </summary>
         ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
+
+        /// <summary>
+        /// 重新构建建筑(当地形发生变化时);
+        /// </summary>
+        void Rebuild();
+
+        /// <summary>
+        /// 销毁这个实例;
+        /// </summary>
         void Destroy();
     }
 
     /// <summary>
     /// 对场景建筑物进行构建;
     /// </summary>
-    public class BuildingBuilder
+    public class BuildingBuilder 
     {
         public BuildingBuilder(IWorldData worldData, Landform landform)
         {
