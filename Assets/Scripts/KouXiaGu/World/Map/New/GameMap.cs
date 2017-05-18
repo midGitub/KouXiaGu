@@ -16,6 +16,12 @@ namespace KouXiaGu.World.Map
             dataArchive = new DataArchive(data);
         }
 
+        public GameMap(MapData data)
+        {
+            this.data = data;
+            dataArchive = new DataArchive(data);
+        }
+
         readonly MapData data;
         readonly DataArchive dataArchive;
 
