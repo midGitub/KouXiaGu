@@ -12,6 +12,11 @@ namespace KouXiaGu.World.Map
         MapData Read(IGameData info);
     }
 
+    class ProtoMapDataReader
+    {
+
+    }
+
     /// <summary>
     /// 随机地图创建;
     /// </summary>
