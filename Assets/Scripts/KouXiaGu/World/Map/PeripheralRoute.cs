@@ -38,10 +38,10 @@ namespace KouXiaGu.World.Map
                         if (neighbourValue > targetValue)
                         {
                             CubicHexCoord[] route = new CubicHexCoord[4];
-                            route[0] = MinNeighbourAndSelf(target, targetValue, tryGetValue);
+                            route[0] = MinNeighbourOrSelf(target, targetValue, tryGetValue);
                             route[1] = target;
                             route[2] = neighbour.Point;
-                            route[3] = MaxNeighbourAndSelf(neighbour, neighbourValue, tryGetValue);
+                            route[3] = MaxNeighbourOrSelf(neighbour, neighbourValue, tryGetValue);
                             yield return route;
                         }
                     }
@@ -53,7 +53,7 @@ namespace KouXiaGu.World.Map
         /// 获取到值最小的邻居的,若不存在邻居则返回其本身;
         /// </summary>
         /// <param name="target">目标点;</param>
-        public static CubicHexCoord MinNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
+        public static CubicHexCoord MinNeighbourOrSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
         {
             CubicHexCoord minPos = default(CubicHexCoord);
             uint minValue = uint.MaxValue;
@@ -76,10 +76,10 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 获取到值最大的邻居或本身节点;
+        /// 获取到值最大的邻居,若不存在邻居则返回其本身;
         /// </summary>
         /// <param name="target">目标点;</param>
-        public static CubicHexCoord MaxNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
+        public static CubicHexCoord MaxNeighbourOrSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
         {
             CubicHexCoord maxPos = default(CubicHexCoord);
             uint maxValue = 0;
