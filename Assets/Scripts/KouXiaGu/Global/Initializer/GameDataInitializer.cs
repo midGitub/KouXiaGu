@@ -7,6 +7,9 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 在游戏开始之前初始化的信息;
+    /// </summary>
     public interface IGameData
     {
         TerrainResource Terrain { get; }

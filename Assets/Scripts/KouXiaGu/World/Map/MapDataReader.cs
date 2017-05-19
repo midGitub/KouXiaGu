@@ -17,6 +17,11 @@ namespace KouXiaGu.World.Map
 
     }
 
+    class ProtoMapDataWriter
+    {
+
+    }
+
     /// <summary>
     /// 随机地图创建;
     /// </summary>
