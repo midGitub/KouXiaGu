@@ -1,15 +1,61 @@
-﻿using System;
+﻿using KouXiaGu.Grids;
+using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using KouXiaGu.Grids;
-using ProtoBuf;
 
 namespace KouXiaGu.World.Map
 {
 
+    /// <summary>
+    /// 节点道路信息;
+    /// </summary>
     [ProtoContract]
-    public class MapRoad
+    public struct RoadNode : IEquatable<RoadNode>
+    {
+        /// <summary>
+        /// 道路的唯一编号;
+        /// </summary>
+        [ProtoMember(1)]
+        public uint ID;
+
+        /// <summary>
+        /// 道路类型;
+        /// </summary>
+        [ProtoMember(2)]
+        public int RoadType;
+
+        public bool Equals(RoadNode other)
+        {
+            return ID == other.ID
+                && RoadType == other.RoadType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is RoadNode))
+                return false;
+            return Equals((RoadNode)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
+        }
+
+        public static bool operator ==(RoadNode a, RoadNode b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RoadNode a, RoadNode b)
+        {
+            return !a.Equals(b);
+        }
+    }
+
+    public static class MapRoadExtensions
     {
         /// <summary>
         /// 节点不存在道路时放置的标志;
@@ -17,111 +63,46 @@ namespace KouXiaGu.World.Map
         internal const uint EmptyRoadID = 0;
 
         /// <summary>
-        /// 起始的有效ID;
-        /// </summary>
-        internal const uint InitialEmptyRoadID = uint.MinValue;
-
-        public MapRoad() : this(InitialEmptyRoadID)
-        {
-        }
-
-        public MapRoad(uint effectiveID)
-        {
-            EffectiveID = effectiveID;
-        }
-
-        /// <summary>
-        /// 当前有效的ID;
-        /// </summary>
-        [ProtoMember(1)]
-        public uint EffectiveID { get; private set; }
-
-        /// <summary>
-        /// 获取到一个唯一的有效ID;
-        /// </summary>
-        public uint GetNewEffectiveID()
-        {
-            return EffectiveID++;
-        }
-
-        /// <summary>
-        /// 重置记录信息;
-        /// </summary>
-        internal void Reset()
-        {
-            EffectiveID = InitialEmptyRoadID;
-        }
-    }
-
-    [Obsolete]
-    public static class OMapRoadExtensions
-    {
-
-        /// <summary>
         /// 返回是否存在道路;
         /// </summary>
-        public static bool ExistRoad(this MapNode node)
-        {
-            return node.Road.ExistRoad();
-        }
-
-        /// <summary>
-        /// 返回是否存在道路;
-        /// </summary>
-        public static bool ExistRoad(this RoadNode node)
+        public static bool Exist(this RoadNode node)
         {
             return node.ID != MapRoad.EmptyRoadID;
         }
 
-
         /// <summary>
-        /// 创建道路到改点;
+        /// 销毁该点道路信息;
         /// </summary>
-        public static MapNode CreateRoad(this MapNode node, PredefinedMap map, int roadType)
+        public static RoadNode Destroy(this RoadNode node)
         {
-            node.Road = CreateRoad(node.Road, map.Road, roadType);
-            return node;
+            return default(RoadNode);
         }
 
         /// <summary>
-        /// 创建道路到改点;
+        /// 更新道路信息;
         /// </summary>
-        public static RoadNode CreateRoad(this RoadNode node, MapRoad road, int roadType)
+        public static RoadNode Update(this RoadNode node, MapData data, int roadType)
+        {
+            return Update(node, data.Road, roadType);
+        }
+
+        /// <summary>
+        /// 更新道路信息;
+        /// </summary>
+        public static RoadNode Update(this RoadNode node, IdentifierGenerator roadInfo, int roadType)
         {
             if (!node.ExistRoad())
             {
-                node.ID = road.GetNewEffectiveID();
+                node.ID = roadInfo.GetNewEffectiveID();
             }
             node.RoadType = roadType;
             return node;
         }
 
-
-        /// <summary>
-        /// 销毁该点道路信息;
-        /// </summary>
-        public static MapNode DestroyRoad(this MapNode node)
-        {
-            node.Road = DestroyRoad(node.Road);
-            return node;
-        }
-
-        /// <summary>
-        /// 销毁该点道路信息;
-        /// </summary>
-        public static RoadNode DestroyRoad(this RoadNode node)
-        {
-            node.ID = MapRoad.EmptyRoadID;
-            return node;
-        }
-
-
         /// <summary>
         /// 迭代获取到这个点通向周围的路径点,若不存在节点则不返回;
         /// </summary>
-        public static IEnumerable<CubicHexCoord[]> FindPaths(
-            this IDictionary<CubicHexCoord, MapNode> map
-            ,CubicHexCoord target)
+        public static IEnumerable<CubicHexCoord[]> FindPaths(this IReadOnlyDictionary<CubicHexCoord, MapNode> map, CubicHexCoord target)
         {
             MapNode node;
             if (map.TryGetValue(target, out node))
@@ -157,10 +138,7 @@ namespace KouXiaGu.World.Map
         /// <param name="target">目标点;</param>
         /// <param name="eliminate">排除的点;</param>
         /// <returns></returns>
-        internal static CubicHexCoord RoadMinNeighbour(
-            this IDictionary<CubicHexCoord, MapNode> map
-            ,CubicHexCoord target
-            ,CubicHexCoord eliminate)
+        internal static CubicHexCoord RoadMinNeighbour(IReadOnlyDictionary<CubicHexCoord, MapNode> map, CubicHexCoord target, CubicHexCoord eliminate)
         {
             bool isFind = false;
             uint minID = uint.MaxValue;
@@ -185,7 +163,5 @@ namespace KouXiaGu.World.Map
             else
                 return target;
         }
-
     }
-
 }

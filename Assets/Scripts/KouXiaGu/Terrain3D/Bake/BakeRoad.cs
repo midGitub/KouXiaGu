@@ -118,7 +118,7 @@ namespace KouXiaGu.Terrain3D
 
                     if (meshs.Length > 0)
                     {
-                        RoadResource res = GetRoadResource(node.Road.Type);
+                        RoadResource res = GetRoadResource(node.Road.RoadType);
                         var pack = new Pack(res, meshs);
                         sceneObjects.Add(pack);
                     }

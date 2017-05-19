@@ -53,6 +53,7 @@ namespace KouXiaGu.World.Map
             MapData data = new MapData()
             {
                 Map = map,
+                Road = new IdentifierGenerator(),
             };
 
             return data;
