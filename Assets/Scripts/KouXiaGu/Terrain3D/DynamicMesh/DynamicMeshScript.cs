@@ -65,6 +65,7 @@ namespace KouXiaGu.Terrain3D.Wall
             Vector3[] vertices = mesh.vertices;
             Transformation(spline1, ref vertices);
             mesh.vertices = vertices;
+            mesh.RecalculateNormals();
         }
 
         /// <summary>
@@ -124,7 +125,8 @@ namespace KouXiaGu.Terrain3D.Wall
             Vector3[] vertices = mesh.vertices;
             JointInfo jointInfo = new JointInfo(vertices, spacing);
             meshData = new DynamicMeshData(jointInfo, vertices);
-            manager.AddInEditor(dynamicMeshName, meshData);
+            manager.AddOrUpdate(dynamicMeshName, meshData);
+            Debug.Log("Build:" + DateTime.Now);
         }
 
 #endregion
