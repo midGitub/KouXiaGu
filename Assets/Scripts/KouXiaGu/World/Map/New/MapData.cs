@@ -14,8 +14,11 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public class MapData
     {
-        [ProtoMember(1)]
+        [ProtoMember(0)]
         public Dictionary<CubicHexCoord, MapNode> Map { get; set; }
+
+        [ProtoMember(1)]
+        public IdentifierGenerator Landform { get; set; }
 
         [ProtoMember(2)]
         public IdentifierGenerator Road { get; set; }

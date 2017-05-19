@@ -17,13 +17,13 @@ namespace KouXiaGu.World.Map
         /// 编号,不存在则为0;
         /// </summary>
         [ProtoMember(0)]
-        public int ID;
+        public uint ID;
 
         /// <summary>
         /// 地形类型;
         /// </summary>
         [ProtoMember(1)]
-        public int Type;
+        public int LandformType;
 
         /// <summary>
         /// 地形旋转角度;
@@ -53,6 +53,28 @@ namespace KouXiaGu.World.Map
         public static LandformNode Destroy(this LandformNode node)
         {
             return default(LandformNode);
+        }
+
+        /// <summary>
+        /// 更新建筑信息;
+        /// </summary>
+        public static LandformNode Update(this LandformNode node, MapData data, int landformType, float angle)
+        {
+            return Update(node, data.Landform, landformType, angle);
+        }
+
+        /// <summary>
+        /// 更新建筑信息;
+        /// </summary>
+        public static LandformNode Update(this LandformNode node, IdentifierGenerator landformInfo, int landformType, float angle)
+        {
+            if (!node.Exist())
+            {
+                node.ID = landformInfo.GetNewEffectiveID();
+            }
+            node.LandformType = landformType;
+            node.Angle = angle;
+            return node;
         }
     }
 
