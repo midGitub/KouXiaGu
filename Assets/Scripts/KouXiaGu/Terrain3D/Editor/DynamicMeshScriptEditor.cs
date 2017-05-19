@@ -87,6 +87,8 @@ namespace KouXiaGu.Terrain3D.Wall
                 {
                     Vector3 point = handleTransform.TransformPoint(vertices[childIndex]);
                     SceneGUISphere(point);
+                    //Handles.Label(point, Math.Round(section.InterpolatedValue, 3).ToString());
+                    //Handles.Label(point, (point).ToString());
                 }
             }
         }

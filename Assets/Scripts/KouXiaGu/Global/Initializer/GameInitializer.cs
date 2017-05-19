@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using KouXiaGu.Globalization;
-using KouXiaGu.KeyInput;
-using KouXiaGu.Terrain3D;
-using KouXiaGu.World;
-using KouXiaGu.World.Map;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -18,15 +10,6 @@ namespace KouXiaGu
     [DisallowMultipleComponent]
     public class GameInitializer : UnitySington<GameInitializer>
     {
-        /// <summary>
-        /// 提供初始化使用的协程方法;
-        /// </summary>
-        [Obsolete]
-        internal static UnityEngine.Coroutine _StartCoroutine(IEnumerator routine)
-        {
-            return Instance.StartCoroutine(routine);
-        }
-
         GameInitializer()
         {
         }
