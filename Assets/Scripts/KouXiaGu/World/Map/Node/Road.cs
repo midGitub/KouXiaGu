@@ -60,14 +60,14 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 节点不存在道路时放置的标志;
         /// </summary>
-        internal const uint EmptyRoadID = 0;
+        public const int EmptyMark = 0;
 
         /// <summary>
         /// 返回是否存在道路;
         /// </summary>
         public static bool Exist(this RoadNode node)
         {
-            return node.ID != MapRoad.EmptyRoadID;
+            return node.ID != EmptyMark;
         }
 
         /// <summary>

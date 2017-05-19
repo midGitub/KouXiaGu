@@ -24,9 +24,6 @@ namespace KouXiaGu.World.Map
 
         [ProtoMember(3)]
         public BuildingNode Building;
-
-        [ProtoMember(4)]
-        public TownNode Town;
     }
    
 }
