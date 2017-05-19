@@ -16,6 +16,7 @@ namespace KouXiaGu.World.Map
         public delegate bool TryGetPeripheralValue(CubicHexCoord position, out uint value);
 
 
+        [Obsolete]
         public static IEnumerable<CubicHexCoord[]> GetWallRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
         {
             throw new NotImplementedException();
