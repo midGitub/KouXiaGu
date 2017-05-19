@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D.Wall
             {
                 spacing = EditorGUILayout.FloatField("Spacing", spacing);
 
-                if (GUILayout.Button("InitializeOrUpdate"))
+                if (GUILayout.Button("AutoBuild"))
                 {
-                    instance.BuildOrUpdate(spacing);
+                    instance.AutoBuild(spacing);
                 }
 
                 if (isInitialized)

@@ -131,15 +131,19 @@ namespace KouXiaGu.Terrain3D.Wall
         /// <summary>
         /// 构建节点记录,并且持久保存,若DynamicMeshManager为预制物体,需要重新保存预制物体;
         /// </summary>
-        public void BuildOrUpdate(float spacing)
+        public void AutoBuild(float spacing)
         {
             Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
             Vector3[] vertices = mesh.vertices;
             JointInfo jointInfo = new JointInfo(vertices, spacing);
             meshData = new DynamicMeshData(jointInfo, vertices);
-            manager.AddOrUpdate(dynamicMeshName, meshData);
         }
 
+        [ContextMenu("保存到...")]
+        void Save()
+        {
+            manager.AddOrUpdate(dynamicMeshName, meshData);
+        }
 #endregion
     }
 

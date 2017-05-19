@@ -99,6 +99,9 @@ namespace KouXiaGu.Terrain3D.Wall
             }
         }
 
+        /// <summary>
+        /// 记录下标和值;
+        /// </summary>
         struct Record
         {
             public Record(int index, Vector3 position)
