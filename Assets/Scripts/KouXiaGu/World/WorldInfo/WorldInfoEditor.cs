@@ -41,8 +41,6 @@ namespace KouXiaGu.World
                     Archive = info.Archive,
                     Time = info.Time,
                     MapReader = new RandomGameMapCreater(50),
-                    //MapReader = new GameMapReader(),
-                    //MapReader = info.UseRandomMap ? new RandomGameMapCreater(50) : new GameMapReader(),
                 };
                 OnCompleted(worldInfo);
             }

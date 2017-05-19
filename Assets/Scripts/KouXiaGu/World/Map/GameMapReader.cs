@@ -11,6 +11,9 @@ namespace KouXiaGu.World.Map
         GameMap Read(IGameData info);
     }
 
+    /// <summary>
+    /// 随机生成的地图获取;
+    /// </summary>
     class RandomGameMapCreater : IGameMapReader
     {
         public RandomGameMapCreater(int mapSize)
@@ -24,26 +27,6 @@ namespace KouXiaGu.World.Map
         {
             MapData data = mapDataReader.Read(info);
             return new GameMap(data);
-        }
-    }
-
-    /// <summary>
-    /// 游戏地图读取;
-    /// </summary>
-    class GameMapReader : IGameMapReader
-    {
-        public GameMapReader()
-        {
-        }
-
-        public GameMap Read(IGameData info)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IAsyncOperation<GameMap> ReadAsync(IGameData info)
-        {
-            throw new NotImplementedException();
         }
     }
 }

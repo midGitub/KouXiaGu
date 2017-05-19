@@ -7,25 +7,10 @@ using System.Text;
 namespace KouXiaGu.World.Map
 {
 
-    public interface IMapDataReader
-    {
-        MapData Read(IGameData info);
-    }
-
-    class ProtoMapDataReader
-    {
-
-    }
-
-    class ProtoMapDataWriter
-    {
-
-    }
-
     /// <summary>
     /// 随机地图创建;
     /// </summary>
-    class RandomMapDataCreater : IMapDataReader
+    class RandomMapDataCreater
     {
         public RandomMapDataCreater(int mapSize)
         {
