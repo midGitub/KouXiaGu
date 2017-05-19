@@ -17,7 +17,7 @@ namespace KouXiaGu.World
         public IGameData GameData { get; private set; }
         public WorldInfo Info { get; private set; }
         public TimeManager Time { get; private set; }
-        public GameMap Map { get; private set; }
+        public GameMap MapData { get; private set; }
 
         public override string Prefix
         {
@@ -62,8 +62,8 @@ namespace KouXiaGu.World
         void OnMapResourceCompleted(IAsyncOperation<GameMap> operation)
         {
             const string prefix = "[地图]";
-            Map = operation.Result;
-            Debug.Log(prefix + InitializationCompletedStr + " 总共有 " + Map.Map.Count + " 个节点;");
+            MapData = operation.Result;
+            Debug.Log(prefix + InitializationCompletedStr + " 总共有 " + MapData.Map.Count + " 个节点;");
         }
 
         void OnTimeCompleted(IAsyncOperation<TimeManager> operation)

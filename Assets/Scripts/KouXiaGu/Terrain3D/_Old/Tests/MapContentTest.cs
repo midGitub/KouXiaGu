@@ -24,9 +24,14 @@ namespace KouXiaGu.Terrain3D.Tests
 
         IWorld world;
 
-        IDictionary<CubicHexCoord, MapNode> data
+        IDictionary<CubicHexCoord, MapNode> map
         {
-            get { return world.Data.Map.Map; }
+            get { return world.Data.MapData.Map; }
+        }
+
+        MapData mapData
+        {
+            get { return world.Data.MapData.Data; }
         }
 
         void Awake()
@@ -61,18 +66,18 @@ namespace KouXiaGu.Terrain3D.Tests
 
         void OnMouse0Down(Vector3 mousePoint)
         {
-            //CubicHexCoord coord = mousePoint.GetTerrainCubic();
-            //MapNode node = data[coord];
-            //node = node.CreateRoad(mapData, 1);
-            //data[coord] = node;
+            CubicHexCoord coord = mousePoint.GetTerrainCubic();
+            MapNode node = map[coord];
+            node.Road = node.Road.Update(mapData, 1);
+            map[coord] = node;
         }
 
         void OnMouse1Down(Vector3 mousePoint)
         {
             CubicHexCoord coord = mousePoint.GetTerrainCubic();
-            MapNode node = data[coord];
-            node = node.DestroyRoad();
-            data[coord] = node;
+            MapNode node = map[coord];
+            node.Road = node.Road.Destroy();
+            map[coord] = node;
         }
 
         string TextUpdate()
@@ -83,12 +88,12 @@ namespace KouXiaGu.Terrain3D.Tests
                 CubicHexCoord coord = mousePoint.GetTerrainCubic();
                 MapNode node;
 
-                if (data.TryGetValue(coord, out node))
+                if (map.TryGetValue(coord, out node))
                 {
                     return
                         "坐标:" + coord.ToString()
                         + "\nLandform:" + node.Landform.Type
-                        + "\nRoad:" + node.Road.RoadType + ",ID:" + node.Road.ID + ",ExistRoad:" + node.ExistRoad()
+                        + "\nRoad:" + node.Road.RoadType + ",ID:" + node.Road.ID + ",ExistRoad:" + node.Road.Exist()
                         + "\nBuilding:" + node.Building.Type + ",ExistBuilding:" + node.Building.Exist() + ",Angle:" + node.Building.Angle
                         ;
                 }

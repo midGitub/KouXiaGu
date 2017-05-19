@@ -79,7 +79,7 @@ namespace KouXiaGu.Terrain3D
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> mapData
         {
-            get { return worldData.Map.ReadOnlyMap; }
+            get { return worldData.MapData.ReadOnlyMap; }
         }
 
         IDictionary<int, BuildingResource> resources

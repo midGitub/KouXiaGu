@@ -91,7 +91,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public static RoadNode Update(this RoadNode node, IdentifierGenerator roadInfo, int roadType)
         {
-            if (!node.ExistRoad())
+            if (!node.Exist())
             {
                 node.ID = roadInfo.GetNewEffectiveID();
             }
@@ -109,13 +109,13 @@ namespace KouXiaGu.World.Map
             {
                 RoadNode targetRoadInfo = node.Road;
 
-                if (targetRoadInfo.ExistRoad())
+                if (targetRoadInfo.Exist())
                 {
                     foreach (var neighbour in map.GetNeighbours<CubicHexCoord, HexDirections, MapNode>(target))
                     {
                         RoadNode neighbourRoadInfo = neighbour.Item.Road;
 
-                        if (neighbourRoadInfo.ExistRoad() && neighbourRoadInfo.ID > targetRoadInfo.ID)
+                        if (neighbourRoadInfo.Exist() && neighbourRoadInfo.ID > targetRoadInfo.ID)
                         {
                             CubicHexCoord[] path = new CubicHexCoord[4];
 
@@ -149,7 +149,7 @@ namespace KouXiaGu.World.Map
                 RoadNode neighbourRoadInfo = neighbour.Item.Road;
 
                 if (neighbour.Point != eliminate &&
-                    neighbourRoadInfo.ExistRoad() &&
+                    neighbourRoadInfo.Exist() &&
                     neighbourRoadInfo.ID < minID)
                 {
                     isFind = true;

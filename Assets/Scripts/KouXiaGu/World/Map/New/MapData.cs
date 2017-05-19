@@ -25,6 +25,9 @@ namespace KouXiaGu.World.Map
         [ProtoMember(2)]
         public IdentifierGenerator Road { get; set; }
 
+        [ProtoMember(3)]
+        public IdentifierGenerator Building { get; set; }
+
     }
 
 }

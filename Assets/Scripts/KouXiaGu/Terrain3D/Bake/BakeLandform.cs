@@ -36,7 +36,7 @@ namespace KouXiaGu.Terrain3D
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> worldMap
         {
-            get { return worldData.Map.ReadOnlyMap; }
+            get { return worldData.MapData.ReadOnlyMap; }
         }
 
         IDictionary<int, LandformResource> landformResources

@@ -19,7 +19,7 @@ namespace KouXiaGu.World
         IGameData GameData { get; }
         WorldInfo Info { get; }
         TimeManager Time { get; }
-        GameMap Map { get; }
+        GameMap MapData { get; }
     }
 
     public interface IWorldScene

@@ -44,7 +44,7 @@ namespace KouXiaGu.Terrain3D
             LandformManager = new LandformManager(worldData);
             BuildingManager = new BuildingManager(worldData, this);
 
-            MapWatcher = new WorldMapWatcher(LandformBuilder, worldData.Map.ObservableMap);
+            MapWatcher = new WorldMapWatcher(LandformBuilder, worldData.MapData.ObservableMap);
             Water = SceneObject.GetObject<WaterManager>();
             Water.IsDisplay = true;
         }

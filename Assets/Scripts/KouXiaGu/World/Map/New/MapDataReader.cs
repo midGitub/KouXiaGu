@@ -31,6 +31,9 @@ namespace KouXiaGu.World.Map
             Dictionary<CubicHexCoord, MapNode> map = new Dictionary<CubicHexCoord, MapNode>();
             var points = CubicHexCoord.Range(CubicHexCoord.Self, MapSize);
 
+            IdentifierGenerator road = new IdentifierGenerator();
+            IdentifierGenerator building = new IdentifierGenerator();
+
             foreach (var point in points)
             {
                 MapNode node = new MapNode()
@@ -43,6 +46,7 @@ namespace KouXiaGu.World.Map
 
                     Building = new BuildingNode()
                     {
+                        ID = building.GetNewEffectiveID(),
                         Type = Random(buildArray),
                         Angle = RandomAngle(),
                     },
@@ -53,7 +57,8 @@ namespace KouXiaGu.World.Map
             MapData data = new MapData()
             {
                 Map = map,
-                Road = new IdentifierGenerator(),
+                Road = road,
+                Building = building,
             };
 
             return data;
