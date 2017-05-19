@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D.Wall
         }
 
         [SerializeField]
-        string dynamicMeshName;
+        string dynamicMeshName = string.Empty;
         MeshFilter meshFilter;
         DynamicMeshData meshData;
 
@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D.Wall
         /// <summary>
         /// 读取并设置预定义的网格信息;
         /// </summary>
-        [ContextMenu("ReadPredefinedDynamicMesh")]
+        [ContextMenu("读取预定义的网格")]
         public DynamicMeshData ReadPredefinedDynamicMesh()
         {
             return meshData = manager.Find(dynamicMeshName);
@@ -84,6 +84,7 @@ namespace KouXiaGu.Terrain3D.Wall
         {
             meshData.Transformation(spline, ref vertices);
         }
+
 
 #region Test
 
