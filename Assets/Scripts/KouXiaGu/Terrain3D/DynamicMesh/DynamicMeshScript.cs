@@ -139,8 +139,7 @@ namespace KouXiaGu.Terrain3D.Wall
             meshData = new DynamicMeshData(jointInfo, vertices);
         }
 
-        [ContextMenu("保存到...")]
-        void Save()
+        public void Save()
         {
             manager.AddOrUpdate(dynamicMeshName, meshData);
         }

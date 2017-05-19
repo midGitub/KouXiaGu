@@ -43,6 +43,10 @@ namespace KouXiaGu.Terrain3D.Wall
                 {
                     instance.AutoBuild(spacing);
                 }
+                if (GUILayout.Button("Save..."))
+                {
+                    instance.Save();
+                }
 
                 if (isInitialized)
                 {
