@@ -119,7 +119,7 @@ namespace KouXiaGu.World.Map
                 value = default(uint);
                 return false;
             };
-            return PeripheralRoute.GetRoutes(target, tryGetValue);
+            return PeripheralRoute.GetRoadRoutes(target, tryGetValue);
         }
     }
 }

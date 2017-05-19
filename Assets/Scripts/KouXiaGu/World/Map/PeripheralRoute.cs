@@ -15,10 +15,16 @@ namespace KouXiaGu.World.Map
 
         public delegate bool TryGetPeripheralValue(CubicHexCoord position, out uint value);
 
+
+        public static IEnumerable<CubicHexCoord[]> GetWallRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// 迭代获取到这个点通向周围的路径点,若不存在节点则不进行迭代;
+        /// 迭代获取到这个点通往价值大于本身的邻居点的路径点,若不存在节点则不进行迭代;
         /// </summary>
-        public static IEnumerable<CubicHexCoord[]> GetRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
+        public static IEnumerable<CubicHexCoord[]> GetRoadRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
         {
             uint targetValue;
             if (tryGetValue(target, out targetValue))
@@ -31,12 +37,10 @@ namespace KouXiaGu.World.Map
                         if (neighbourValue > targetValue)
                         {
                             CubicHexCoord[] route = new CubicHexCoord[4];
-
                             route[0] = MinNeighbourAndSelf(target, targetValue, tryGetValue);
                             route[1] = target;
                             route[2] = neighbour.Point;
                             route[3] = MaxNeighbourAndSelf(neighbour, neighbourValue, tryGetValue);
-
                             yield return route;
                         }
                     }
@@ -48,7 +52,7 @@ namespace KouXiaGu.World.Map
         /// 获取到值最小的邻居或本身节点;
         /// </summary>
         /// <param name="target">目标点;</param>
-        static CubicHexCoord MinNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
+        public static CubicHexCoord MinNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
         {
             CubicHexCoord minPos = target;
             uint minValue = targetValue;
@@ -72,7 +76,7 @@ namespace KouXiaGu.World.Map
         /// 获取到值最大的邻居或本身节点;
         /// </summary>
         /// <param name="target">目标点;</param>
-        static CubicHexCoord MaxNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
+        public static CubicHexCoord MaxNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
         {
             CubicHexCoord maxPos = target;
             uint maxValue = targetValue;
