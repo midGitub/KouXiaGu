@@ -128,7 +128,7 @@ namespace KouXiaGu.Terrain3D
 
         IEnumerable<Pack<RoadMesh, MeshRenderer>> CreateMesh(CubicHexCoord target)
         {
-            var paths = worldMap.FindPaths(target);
+            var paths = worldMap.GetPeripheralRoutes(target);
 
             foreach (var path in paths)
             {

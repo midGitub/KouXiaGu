@@ -99,6 +99,30 @@ namespace KouXiaGu.World.Map
             return node;
         }
 
+
+        /// <summary>
+        /// 迭代获取到这个点通向周围的路径点,若不存在节点则不进行迭代;
+        /// </summary>
+        public static IEnumerable<CubicHexCoord[]> GetPeripheralRoutes(this IReadOnlyDictionary<CubicHexCoord, MapNode> map, CubicHexCoord target)
+        {
+            PeripheralRoute.TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
+            {
+                MapNode node;
+                if (map.TryGetValue(position, out node))
+                {
+                    if (node.Road.Exist())
+                    {
+                        value = node.Road.ID;
+                        return true;
+                    }
+                }
+                value = default(uint);
+                return false;
+            };
+            return PeripheralRoute.GetRoutes(target, tryGetValue);
+        }
+
+
         /// <summary>
         /// 迭代获取到这个点通向周围的路径点,若不存在节点则不返回;
         /// </summary>
