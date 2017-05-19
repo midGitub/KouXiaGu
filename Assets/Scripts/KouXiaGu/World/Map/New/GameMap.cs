@@ -25,16 +25,10 @@ namespace KouXiaGu.World.Map
 
         readonly MapData data;
         readonly ObservableDictionary<CubicHexCoord, MapNode> observableMap;
-        readonly DataArchive dataArchive;
 
         internal MapData Data
         {
             get { return data; }
-        }
-
-        internal DataArchive DataArchive
-        {
-            get { return dataArchive; }
         }
 
         internal IDictionary<CubicHexCoord, MapNode> Map
@@ -50,6 +44,12 @@ namespace KouXiaGu.World.Map
         public IObservableDictionary<CubicHexCoord, MapNode> ObservableMap
         {
             get { return observableMap; }
+        }
+
+
+        class DataArchive
+        {
+
         }
     }
 
