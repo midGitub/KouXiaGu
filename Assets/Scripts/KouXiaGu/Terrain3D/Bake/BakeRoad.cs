@@ -37,7 +37,7 @@ namespace KouXiaGu.Terrain3D
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
 
-        IReadOnlyDictionary<CubicHexCoord, MapNode> worldMap
+        IReadOnlyDictionary<CubicHexCoord, MapNode> map
         {
             get { return worldData.MapData.ReadOnlyMap; }
         }
@@ -112,7 +112,7 @@ namespace KouXiaGu.Terrain3D
             foreach (var display in displays)
             {
                 MapNode node;
-                if (worldMap.TryGetValue(display, out node))
+                if (map.TryGetValue(display, out node))
                 {
                     var meshs = CreateMesh(display).ToArray();
 
@@ -128,7 +128,7 @@ namespace KouXiaGu.Terrain3D
 
         IEnumerable<Pack<RoadMesh, MeshRenderer>> CreateMesh(CubicHexCoord target)
         {
-            var paths = worldMap.GetPeripheralRoutes(target);
+            var paths = GetPeripheralRoutes(target);
 
             foreach (var path in paths)
             {
@@ -139,6 +139,28 @@ namespace KouXiaGu.Terrain3D
 
                 yield return roadMesh;
             }
+        }
+
+        /// <summary>
+        /// 迭代获取到这个点通向周围的路径点,若不存在节点则不进行迭代;
+        /// </summary>
+        public IEnumerable<CubicHexCoord[]> GetPeripheralRoutes(CubicHexCoord target)
+        {
+            PeripheralRoute.TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
+            {
+                MapNode node;
+                if (map.TryGetValue(position, out node))
+                {
+                    if (node.Road.Exist())
+                    {
+                        value = node.Road.ID;
+                        return true;
+                    }
+                }
+                value = default(uint);
+                return false;
+            };
+            return PeripheralRoute.GetRoutes(target, tryGetValue);
         }
 
         Vector3[] ConvertPixel(CubicHexCoord[] path)
