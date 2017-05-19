@@ -76,6 +76,7 @@ namespace KouXiaGu.Terrain3D.Wall
             Transformation(spline, ref vertices);
             mesh.vertices = vertices;
             mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
         }
 
         /// <summary>

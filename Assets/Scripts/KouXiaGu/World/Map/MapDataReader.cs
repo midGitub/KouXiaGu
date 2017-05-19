@@ -42,11 +42,11 @@ namespace KouXiaGu.World.Map
                         Angle = RandomAngle(),
                     },
 
-                    Road = new RoadNode()
-                    {
-                        ID = road.GetNewEffectiveID(),
-                        RoadType = Random(roadArray),
-                    },
+                    //Road = new RoadNode()
+                    //{
+                    //    ID = road.GetNewEffectiveID(),
+                    //    RoadType = Random(roadArray),
+                    //},
 
                     Building = new BuildingNode()
                     {
