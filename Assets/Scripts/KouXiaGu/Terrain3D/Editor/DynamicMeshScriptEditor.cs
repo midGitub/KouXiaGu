@@ -37,6 +37,13 @@ namespace KouXiaGu.Terrain3D.Wall
 
             if (isEditMode = EditorGUILayout.BeginToggleGroup("IsEditMode", isEditMode))
             {
+                if (isInitialized)
+                {
+                    displayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", displayPointSize);
+                    EditorGUILayout.LabelField("VerticeCount:" + instance.MeshData.Points.Count);
+                    isEditJointPoint = EditorGUILayout.Toggle("IsEditJointPoint", isEditJointPoint);
+                }
+
                 spacing = EditorGUILayout.FloatField("Spacing", spacing);
 
                 if (GUILayout.Button("AutoBuild"))
@@ -46,12 +53,6 @@ namespace KouXiaGu.Terrain3D.Wall
                 if (GUILayout.Button("Save..."))
                 {
                     instance.Save();
-                }
-
-                if (isInitialized)
-                {
-                    displayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", displayPointSize);
-                    EditorGUILayout.LabelField("VerticeCount:" + instance.MeshData.Points.Count);
                 }
             }
             EditorGUILayout.EndToggleGroup();
@@ -90,22 +91,25 @@ namespace KouXiaGu.Terrain3D.Wall
             }
         }
 
-        //void DisplaySection(Transform handleTransform, Quaternion handleRotation)
-        //{
-        //    IList<JointPoint> sections = Target.WallInfo.JointInfo.JointPoints;
-        //    for (int i = 0; i < sections.Count; i++)
-        //    {
-        //        Vector3 point = handleTransform.TransformPoint(sections[i].Position);
-        //        EditorGUI.BeginChangeCheck();
-        //        point = Handles.DoPositionHandle(point, handleRotation);
-        //        if (EditorGUI.EndChangeCheck())
-        //        {
-        //            Undo.RecordObject(Target, "Move Point");
-        //            EditorUtility.SetDirty(Target);
-        //            var result = handleTransform.InverseTransformPoint(point);
-        //        }
-        //    }
-        //}
+        void DisplaySection(Transform handleTransform, Quaternion handleRotation)
+        {
+            IList<JointPoint> sections = instance.MeshData.JointInfo.JointPoints;
+            Vector3[] vertices = meshFilter.sharedMesh.vertices;
+
+            for (int i = 0; i < sections.Count; i++)
+            {
+                JointPoint joint = sections[i];
+                Vector3 point = handleTransform.TransformPoint(joint.Position);
+                EditorGUI.BeginChangeCheck();
+                point = Handles.DoPositionHandle(point, handleRotation);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(instance, "Move Point");
+                    EditorUtility.SetDirty(instance);
+                    Vector3 result = handleTransform.InverseTransformPoint(point);
+                }
+            }
+        }
     }
 
 }

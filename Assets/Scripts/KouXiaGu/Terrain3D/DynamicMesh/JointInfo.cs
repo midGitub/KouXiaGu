@@ -7,6 +7,11 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D.Wall
 {
 
+    public interface IReadOnlyJointInfo
+    {
+        IReadOnlyList<JointPoint> JointPoints { get; }
+    }
+
     /// <summary>
     /// 动态墙体节点信息;
     /// </summary>

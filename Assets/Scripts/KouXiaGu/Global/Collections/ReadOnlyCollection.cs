@@ -13,6 +13,11 @@ namespace KouXiaGu
         int Count { get; }
     }
 
+    public interface IReadOnlyList<T> : IReadOnlyCollection<T>, IEnumerable<T>
+    {
+        T this[int index] { get; }
+    }
+
     public interface IReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>
     {
         TValue this[TKey key] { get; }
