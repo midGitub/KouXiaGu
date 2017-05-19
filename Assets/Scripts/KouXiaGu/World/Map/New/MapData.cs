@@ -14,11 +14,6 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public class MapData
     {
-        public MapData()
-        {
-            Map = new Dictionary<CubicHexCoord, MapNode>();
-        }
-
         [ProtoMember(1)]
         public Dictionary<CubicHexCoord, MapNode> Map { get; set; }
 
@@ -27,7 +22,6 @@ namespace KouXiaGu.World.Map
 
         [ProtoMember(3)]
         public IdentifierGenerator Building { get; set; }
-
     }
 
 }
