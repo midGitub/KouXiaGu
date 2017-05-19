@@ -1406,6 +1406,200 @@ MonoBehaviour:
         localAngle: -1.5707964
       - localPosition: {x: -0.099999994, y: -0.099999994, z: 0}
         localAngle: -1.5707964
+  - Name: road
+    MeshData:
+      joint:
+        sectionCollection:
+        - position: {x: 0, y: 0, z: -0.5}
+          interpolatedValue: 0
+          children: 3400000035000000
+        - position: {x: 0, y: 0, z: -0.46153846}
+          interpolatedValue: 0.038461536
+          children: 3200000033000000
+        - position: {x: 0, y: 0, z: -0.42307693}
+          interpolatedValue: 0.07692307
+          children: 3000000031000000
+        - position: {x: 0, y: 0, z: -0.3846154}
+          interpolatedValue: 0.11538461
+          children: 2e0000002f000000
+        - position: {x: 0, y: 0, z: -0.34615383}
+          interpolatedValue: 0.15384617
+          children: 2c0000002d000000
+        - position: {x: 0, y: 0, z: -0.3076923}
+          interpolatedValue: 0.19230771
+          children: 2a0000002b000000
+        - position: {x: 0, y: 0, z: -0.26923075}
+          interpolatedValue: 0.23076925
+          children: 2800000029000000
+        - position: {x: 0, y: 0, z: -0.23076923}
+          interpolatedValue: 0.26923078
+          children: 2600000027000000
+        - position: {x: 0, y: 0, z: -0.1923077}
+          interpolatedValue: 0.3076923
+          children: 2400000025000000
+        - position: {x: 0, y: 0, z: -0.15384614}
+          interpolatedValue: 0.34615386
+          children: 2200000023000000
+        - position: {x: 0, y: 0, z: -0.115384616}
+          interpolatedValue: 0.3846154
+          children: 2000000021000000
+        - position: {x: 0, y: 0, z: -0.07692307}
+          interpolatedValue: 0.42307693
+          children: 1e0000001f000000
+        - position: {x: 0, y: 0, z: -0.038461536}
+          interpolatedValue: 0.46153846
+          children: 1c0000001d000000
+        - position: {x: 0, y: 0, z: 0}
+          interpolatedValue: 0.5
+          children: 1a0000001b000000
+        - position: {x: 0, y: 0, z: 0.038461536}
+          interpolatedValue: 0.53846157
+          children: 1800000019000000
+        - position: {x: 0, y: 0, z: 0.07692307}
+          interpolatedValue: 0.5769231
+          children: 1600000017000000
+        - position: {x: 0, y: 0, z: 0.115384616}
+          interpolatedValue: 0.61538464
+          children: 1400000015000000
+        - position: {x: 0, y: 0, z: 0.15384614}
+          interpolatedValue: 0.65384614
+          children: 1200000013000000
+        - position: {x: 0, y: 0, z: 0.1923077}
+          interpolatedValue: 0.6923077
+          children: 1000000011000000
+        - position: {x: 0, y: 0, z: 0.23076923}
+          interpolatedValue: 0.7307692
+          children: 0e0000000f000000
+        - position: {x: 0, y: 0, z: 0.26923075}
+          interpolatedValue: 0.7692307
+          children: 0c0000000d000000
+        - position: {x: 0, y: 0, z: 0.3076923}
+          interpolatedValue: 0.8076923
+          children: 0a0000000b000000
+        - position: {x: 0, y: 0, z: 0.34615383}
+          interpolatedValue: 0.84615386
+          children: 0800000009000000
+        - position: {x: 0, y: 0, z: 0.3846154}
+          interpolatedValue: 0.8846154
+          children: 0600000007000000
+        - position: {x: 0, y: 0, z: 0.42307693}
+          interpolatedValue: 0.9230769
+          children: 0400000005000000
+        - position: {x: 0, y: 0, z: 0.46153846}
+          interpolatedValue: 0.96153843
+          children: 0000000002000000
+        - position: {x: 0, y: 0, z: 0.5}
+          interpolatedValue: 1
+          children: 0100000003000000
+      pointCollection:
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
+      - localPosition: {x: -0.099999994, y: 0, z: 0}
+        localAngle: -1.5707964
+      - localPosition: {x: 0.099999994, y: 0, z: 0}
+        localAngle: 1.5707964
 --- !u!114 &114496319503267620
 MonoBehaviour:
   m_ObjectHideFlags: 1

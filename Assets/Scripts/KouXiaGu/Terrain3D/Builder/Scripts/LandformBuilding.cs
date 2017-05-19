@@ -28,7 +28,6 @@ namespace KouXiaGu.Terrain3D
 
         ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord position, MapNode node, Landform landform, IWorldData data)
         {
-
             BuildingNode buildingNode = node.Building;
             Vector3 pixelPosition = position.GetTerrainPixel();
             Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
