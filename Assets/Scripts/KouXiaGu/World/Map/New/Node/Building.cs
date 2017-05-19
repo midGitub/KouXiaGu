@@ -83,6 +83,28 @@ namespace KouXiaGu.World.Map
         {
             return default(BuildingNode);
         }
+
+        /// <summary>
+        /// 更新建筑信息;
+        /// </summary>
+        public static BuildingNode Update(this BuildingNode node, MapData data, int buildingType, float angle)
+        {
+            return Update(node, data.Building, buildingType, angle);
+        }
+
+        /// <summary>
+        /// 更新建筑信息;
+        /// </summary>
+        public static BuildingNode Update(this BuildingNode node, IdentifierGenerator buildingInfo, int buildingType, float angle)
+        {
+            if (!node.Exist())
+            {
+                node.ID = buildingInfo.GetNewEffectiveID();
+            }
+            node.BuildingType = buildingType;
+            node.Angle = angle;
+            return node;
+        }
     }
 
 }
