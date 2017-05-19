@@ -26,12 +26,7 @@ namespace KouXiaGu.Terrain3D.Tests
 
         IDictionary<CubicHexCoord, MapNode> data
         {
-            get { return world.Data.Map.Data; }
-        }
-
-        PredefinedMap mapData
-        {
-            get { return world.Data.Map.PredefinedMap; }
+            get { return world.Data.Map.Map; }
         }
 
         void Awake()
@@ -66,10 +61,10 @@ namespace KouXiaGu.Terrain3D.Tests
 
         void OnMouse0Down(Vector3 mousePoint)
         {
-            CubicHexCoord coord = mousePoint.GetTerrainCubic();
-            MapNode node = data[coord];
-            node = node.CreateRoad(mapData, 1);
-            data[coord] = node;
+            //CubicHexCoord coord = mousePoint.GetTerrainCubic();
+            //MapNode node = data[coord];
+            //node = node.CreateRoad(mapData, 1);
+            //data[coord] = node;
         }
 
         void OnMouse1Down(Vector3 mousePoint)

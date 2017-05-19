@@ -34,9 +34,9 @@ namespace KouXiaGu.Terrain3D
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
 
-        IDictionary<CubicHexCoord, MapNode> worldMap
+        IReadOnlyDictionary<CubicHexCoord, MapNode> worldMap
         {
-            get { return worldData.Map.Data; }
+            get { return worldData.Map.ReadOnlyMap; }
         }
 
         IDictionary<int, LandformResource> landformResources

@@ -9,12 +9,12 @@ namespace KouXiaGu.World.Map
 
     public interface IMapDataReader
     {
-        /// <summary>
-        /// 异步读取到地图数据;
-        /// </summary>
-        IAsyncOperation<MapData> ReadAsync(IGameData info);
+        MapData Read(IGameData info);
     }
 
+    /// <summary>
+    /// 随机地图创建;
+    /// </summary>
     class RandomMapDataCreater : IMapDataReader
     {
         public RandomMapDataCreater(int mapSize)
@@ -56,11 +56,6 @@ namespace KouXiaGu.World.Map
             };
 
             return data;
-        }
-
-        public IAsyncOperation<MapData> ReadAsync(IGameData info)
-        {
-            return new ThreadDelegateOperation<MapData>(() => Read(info));
         }
 
         static readonly System.Random random = new System.Random();

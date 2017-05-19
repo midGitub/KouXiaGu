@@ -17,7 +17,7 @@ namespace KouXiaGu.World
         public IGameData GameData { get; private set; }
         public WorldInfo Info { get; private set; }
         public TimeManager Time { get; private set; }
-        public MapResource Map { get; private set; }
+        public GameMap Map { get; private set; }
 
         public override string Prefix
         {
@@ -53,17 +53,17 @@ namespace KouXiaGu.World
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
               {
-                  Info.MapReader.ReadAsync(GameData).Subscribe(this, OnMapResourceCompleted, OnFaulted),
+                  new ThreadDelegateOperation<GameMap>(() => Info.MapReader.Read(GameData)).Subscribe(this, OnMapResourceCompleted, OnFaulted),
                   TimeManager.Create(Info.Time, starter).Subscribe(this, OnTimeCompleted, OnFaulted),
               };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(this, OnBuildingDataCompleted, OnFaulted);
         }
 
-        void OnMapResourceCompleted(IAsyncOperation<MapResource> operation)
+        void OnMapResourceCompleted(IAsyncOperation<GameMap> operation)
         {
             const string prefix = "[地图]";
             Map = operation.Result;
-            Debug.Log(prefix + InitializationCompletedStr + " 总共有 " + Map.Data.Count + " 个节点;");
+            Debug.Log(prefix + InitializationCompletedStr + " 总共有 " + Map.Map.Count + " 个节点;");
         }
 
         void OnTimeCompleted(IAsyncOperation<TimeManager> operation)

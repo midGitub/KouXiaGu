@@ -19,24 +19,4 @@ namespace KouXiaGu.World
 
         }
     }
-
-    /// <summary>
-    /// 提供初始化的世界信息;
-    /// </summary>
-    [Serializable]
-    public class WorldInfo
-    {
-
-        public WorldTimeInfo Time;
-        public ArchiveFile Archive;
-        public MapResourceReader MapReader;
-
-        /// <summary>
-        /// 人口每日增长比例;
-        /// </summary>
-        [Obsolete]
-        public float ProportionOfDailyGrowth { get; set; }
-
-    }
-
 }

@@ -51,7 +51,7 @@ namespace KouXiaGu.World.Map
     {
         public const string fileExtension = ".map";
 
-        public PredefinedMapProtoReader() 
+        public PredefinedMapProtoReader()
             : base(fileExtension)
         {
         }

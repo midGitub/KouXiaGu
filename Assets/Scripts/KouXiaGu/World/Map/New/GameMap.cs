@@ -80,6 +80,7 @@ namespace KouXiaGu.World.Map
 
         public void Write(ArchiveFile file)
         {
+            throw new NotImplementedException();
         }
     }
 }

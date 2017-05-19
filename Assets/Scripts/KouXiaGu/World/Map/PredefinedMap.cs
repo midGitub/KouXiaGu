@@ -31,13 +31,13 @@ namespace KouXiaGu.World.Map
 
         public bool IsReadOnly
         {
-            get { return Data.IsReadOnly; }
-            private set { Data.IsReadOnly = value; }
+            get { throw new NotImplementedException(); }
+            private set { throw new NotImplementedException(); }
         }
 
         public PredefinedMap()
         {
-            Data = new ObservableDictionary<CubicHexCoord, MapNode>(true);
+            //Data = new ObservableDictionary<CubicHexCoord, MapNode>();
             Road = new MapRoad();
             Town = new MapTown();
             Enable();

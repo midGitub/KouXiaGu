@@ -77,9 +77,9 @@ namespace KouXiaGu.Terrain3D
             get { return ChunkInfo.ChunkGrid; }
         }
 
-        IDictionary<CubicHexCoord, MapNode> mapData
+        IReadOnlyDictionary<CubicHexCoord, MapNode> mapData
         {
-            get { return worldData.Map.Data; }
+            get { return worldData.Map.ReadOnlyMap; }
         }
 
         IDictionary<int, BuildingResource> resources
