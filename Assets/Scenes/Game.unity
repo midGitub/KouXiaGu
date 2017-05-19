@@ -938,6 +938,10 @@ Prefab:
       propertyPath: m_ReflectionProbeUsage
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3300000, guid: baa227e947579154992a9bb50077561d, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: baa227e947579154992a9bb50077561d, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: baa227e947579154992a9bb50077561d, type: 3}
   m_IsPrefabParent: 0

@@ -38,9 +38,10 @@ namespace KouXiaGu.Terrain3D.Wall
             if (isEditMode = EditorGUILayout.BeginToggleGroup("IsEditMode", isEditMode))
             {
                 spacing = EditorGUILayout.FloatField("Spacing", spacing);
+
                 if (GUILayout.Button("InitializeOrUpdate"))
                 {
-                    instance.Build(spacing);
+                    instance.BuildOrUpdate(spacing);
                 }
 
                 if (isInitialized)

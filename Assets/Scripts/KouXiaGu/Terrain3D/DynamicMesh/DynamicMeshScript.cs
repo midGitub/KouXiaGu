@@ -42,7 +42,16 @@ namespace KouXiaGu.Terrain3D.Wall
         void Awake()
         {
             meshFilter = GetComponent<MeshFilter>();
-            meshData = manager.Find(dynamicMeshName);
+            ReadPredefinedDynamicMesh();
+        }
+
+        /// <summary>
+        /// 读取并设置预定义的网格信息;
+        /// </summary>
+        [ContextMenu("ReadPredefinedDynamicMesh")]
+        public DynamicMeshData ReadPredefinedDynamicMesh()
+        {
+            return meshData = manager.Find(dynamicMeshName);
         }
 
         /// <summary>
@@ -63,7 +72,7 @@ namespace KouXiaGu.Terrain3D.Wall
         {
             Mesh mesh = meshFilter.mesh;
             Vector3[] vertices = mesh.vertices;
-            Transformation(spline1, ref vertices);
+            Transformation(spline, ref vertices);
             mesh.vertices = vertices;
             mesh.RecalculateNormals();
         }
@@ -99,34 +108,34 @@ namespace KouXiaGu.Terrain3D.Wall
                 new Vector3(2, 0, 2)
             );
 
-
-        [ContextMenu("Test")]
-        void Test()
+        [ContextMenu("Test1")]
+        void Test1()
         {
             Transformation(spline1);
         }
 
-        [ContextMenu("Test_Angle")]
-        void Test_Angle()
+        [ContextMenu("Test2")]
+        void Test2()
         {
-            var meshFilter = GetComponent<MeshFilter>();
-            Mesh mesh = meshFilter.mesh;
-            Vector3[] vertices = mesh.vertices;
-            meshData.TransformSection(0, 0.195f, ref vertices);
-            mesh.vertices = vertices;
+            Transformation(spline2);
+        }
+
+        [ContextMenu("Test3")]
+        void Test3()
+        {
+            Transformation(spline3);
         }
 
         /// <summary>
         /// 构建节点记录;
         /// </summary>
-        public void Build(float spacing)
+        public void BuildOrUpdate(float spacing)
         {
             Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
             Vector3[] vertices = mesh.vertices;
             JointInfo jointInfo = new JointInfo(vertices, spacing);
             meshData = new DynamicMeshData(jointInfo, vertices);
             manager.AddOrUpdate(dynamicMeshName, meshData);
-            Debug.Log("Build:" + DateTime.Now);
         }
 
 #endregion
