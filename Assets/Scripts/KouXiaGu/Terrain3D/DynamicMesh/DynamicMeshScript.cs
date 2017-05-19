@@ -32,6 +32,7 @@ namespace KouXiaGu.Terrain3D.Wall
         public string DynamicMeshName
         {
             get { return dynamicMeshName; }
+            set { dynamicMeshName = value; }
         }
 
         public DynamicMeshData MeshData
@@ -128,7 +129,7 @@ namespace KouXiaGu.Terrain3D.Wall
         }
 
         /// <summary>
-        /// 构建节点记录;
+        /// 构建节点记录,并且持久保存,若DynamicMeshManager为预制物体,需要重新保存预制物体;
         /// </summary>
         public void BuildOrUpdate(float spacing)
         {

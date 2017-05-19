@@ -19,8 +19,7 @@ namespace KouXiaGu.Terrain3D.Wall
 
         public DynamicMeshData(JointInfo joint, Vector3[] vertices)
         {
-            this.joint = joint;
-            pointCollection = Build(joint, vertices);
+            Build(joint, vertices);
         }
 
         [SerializeField]
@@ -45,11 +44,13 @@ namespace KouXiaGu.Terrain3D.Wall
         }
 
         /// <summary>
-        /// 根据节点信息生成点合集;
+        /// 设置新的节点信息,并且根据节点信息生成点合集;
         /// </summary>
-        WallVertice[] Build(JointInfo joint, Vector3[] vertices)
+        public void Build(JointInfo joint, Vector3[] vertices)
         {
-            WallVertice[] pointCollection = new WallVertice[vertices.Length];
+            this.joint = joint;
+            pointCollection = new WallVertice[vertices.Length];
+
             foreach (var section in joint.JointPoints)
             {
                 foreach (var childIndex in section.Children)
@@ -61,7 +62,6 @@ namespace KouXiaGu.Terrain3D.Wall
                     pointCollection[childIndex] = pointInfo;
                 }
             }
-            return pointCollection;
         }
 
         /// <summary>
@@ -176,6 +176,51 @@ namespace KouXiaGu.Terrain3D.Wall
                 position.y += info.LocalPosition.y;
                 position.z += Mathf.Cos(localAngle) * localRadius;
                 vertices[childIndex] = position;
+            }
+        }
+
+
+        /// <summary>
+        /// 转换为本地坐标的顶点;
+        /// </summary>
+        [Serializable]
+        public struct WallVertice
+        {
+            public WallVertice(Vector3 localPosition, float localAngle)
+            {
+                this.localPosition = localPosition;
+                this.localAngle = localAngle;
+            }
+
+            [SerializeField]
+            Vector3 localPosition;
+            [SerializeField]
+            float localAngle;
+
+            public float localRadius
+            {
+                get { return Mathf.Sqrt(localPosition.x * localPosition.x + localPosition.z * localPosition.z); }
+            }
+
+            /// <summary>
+            /// 相对于父节点的位置;
+            /// </summary>
+            public Vector3 LocalPosition
+            {
+                get { return localPosition; }
+            }
+
+            /// <summary>
+            /// 相对于父节点的角度;
+            /// </summary>
+            public float LocalAngle
+            {
+                get { return localAngle; }
+            }
+
+            public override string ToString()
+            {
+                return "[Position:" + localPosition + ",Angle:" + localAngle + "]";
             }
         }
     }

@@ -111,4 +111,52 @@ namespace KouXiaGu.Terrain3D.Wall
             public Vector3 Position { get; private set; }
         }
     }
+
+    /// <summary>
+    /// 关节点,存储对应节点;
+    /// </summary>
+    [Serializable]
+    public class JointPoint
+    {
+        JointPoint()
+        {
+        }
+
+        public JointPoint(JointPoint section)
+        {
+            position = section.position;
+            interpolatedValue = section.interpolatedValue;
+            children = new List<int>(section.children);
+        }
+
+        public JointPoint(Vector3 position, float interpolatedValue)
+        {
+            this.position = position;
+            this.interpolatedValue = interpolatedValue;
+            children = new List<int>();
+        }
+
+        [SerializeField]
+        Vector3 position;
+        [SerializeField]
+        float interpolatedValue;
+        [SerializeField]
+        List<int> children;
+
+        public Vector3 Position
+        {
+            get { return position; }
+        }
+
+        public float InterpolatedValue
+        {
+            get { return interpolatedValue; }
+        }
+
+        public List<int> Children
+        {
+            get { return children; }
+        }
+    }
+
 }
