@@ -1,27 +1,35 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using ProtoBuf;
 
 namespace KouXiaGu
 {
     
-    [ProtoContract]
-    public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>, IDictionary<TKey, TValue>
+    /// <summary>
+    /// 可观察的字典接口;
+    /// </summary>
+    public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
+        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
+        {
+            this.dictionary = dictionary;
+            observers = new ObserverLinkedList<IDictionaryObserver<TKey, TValue>>();
+        }
 
-        Dictionary<TKey, TValue> dictionary;
-        List<IDictionaryObserver<TKey, TValue>> observers;
-        bool isReadOnly = false;
+        public ObservableDictionary(IDictionary<TKey, TValue> dictionary, IObserverCollection<IDictionaryObserver<TKey, TValue>> observers)
+        {
+            this.dictionary = dictionary;
+            this.observers = observers;
+        }
+
+        readonly IDictionary<TKey, TValue> dictionary;
+        readonly IObserverCollection<IDictionaryObserver<TKey, TValue>> observers;
 
         public TValue this[TKey key]
         {
             get { return dictionary[key]; }
             set
             {
-                ReadOnlyCheck();
-
                 TValue original;
                 if (dictionary.TryGetValue(key, out original))
                 {
@@ -50,44 +58,24 @@ namespace KouXiaGu
             get { return dictionary.Values; }
         }
 
-        public bool IsReadOnly
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get { return isReadOnly; }
-            set { isReadOnly = value; }
+            get { return false; }
         }
 
-        public IEnumerable<IDictionaryObserver<TKey, TValue>> Observers
+        public IObserverCollection<IDictionaryObserver<TKey, TValue>> Observers
         {
             get { return observers; }
         }
 
-        public ObservableDictionary()
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
         {
-            this.dictionary = new Dictionary<TKey, TValue>();
-            this.observers = new List<IDictionaryObserver<TKey, TValue>>();
+            get { return dictionary.Keys; }
         }
 
-        public ObservableDictionary(bool isReadOnly) : this()
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
         {
-            IsReadOnly = isReadOnly;
-        }
-
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
-        {
-            this.dictionary = new Dictionary<TKey, TValue>(dictionary);
-            this.observers = new List<IDictionaryObserver<TKey, TValue>>();
-        }
-
-        public ObservableDictionary(int capacity)
-        {
-            this.dictionary = new Dictionary<TKey, TValue>(capacity);
-            this.observers = new List<IDictionaryObserver<TKey, TValue>>();
-        }
-
-        void ReadOnlyCheck()
-        {
-            if (IsReadOnly)
-                throw new ArgumentException();
+            get { return dictionary.Values; }
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
@@ -100,9 +88,7 @@ namespace KouXiaGu
         /// </summary>
         public void Add(TKey key, TValue value)
         {
-            ReadOnlyCheck();
-
-            this.dictionary.Add(key, value);
+            dictionary.Add(key, value);
             TrackAdd(key, value);
         }
 
@@ -113,8 +99,6 @@ namespace KouXiaGu
 
         public bool Remove(TKey key)
         {
-            ReadOnlyCheck();
-
             TValue original;
             if (dictionary.TryGetValue(key, out original))
             {
@@ -143,10 +127,11 @@ namespace KouXiaGu
             return dictionary.TryGetValue(key, out value);
         }
 
+        /// <summary>
+        /// 移除所有内容,并且逐一通知到观察者;
+        /// </summary>
         public void Clear()
         {
-            ReadOnlyCheck();
-
             foreach (var item in dictionary)
             {
                 TrackRemove(item.Key, item.Value);
@@ -156,7 +141,12 @@ namespace KouXiaGu
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            ((IDictionary<TKey, TValue>)this.dictionary).CopyTo(array, arrayIndex);
+            dictionary.CopyTo(array, arrayIndex);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -164,41 +154,15 @@ namespace KouXiaGu
             return dictionary.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return dictionary.GetEnumerator();
-        }
 
         public IDisposable Subscribe(IDictionaryObserver<TKey, TValue> observer)
         {
-            if (observer == null)
-                throw new ArgumentNullException("订阅者为null;");
-
-            if (!observers.Contains(observer))
-            {
-                observers.Add(observer);
-                var unsubscriber = new CollectionUnsubscriber<IDictionaryObserver<TKey, TValue>>(observers, observer);
-                return unsubscriber;
-            }
-            else
-            {
-                throw new ArgumentException("已经订阅;");
-            }
-        }
-
-        public bool Contains(IDictionaryObserver<TKey, TValue> observer)
-        {
-            return observers.Contains(observer);
-        }
-
-        IEnumerable<IDictionaryObserver<TKey, TValue>> EnumerateObservers()
-        {
-            return observers.ToArray();
+            return observers.Subscribe(observer);
         }
 
         void TrackAdd(TKey key, TValue newValue)
         {
-            foreach (var observer in EnumerateObservers())
+            foreach (var observer in observers.EnumerateObserver())
             {
                 observer.OnAdded(key, newValue);
             }
@@ -206,7 +170,7 @@ namespace KouXiaGu
 
         void TrackRemove(TKey key, TValue original)
         {
-            foreach (var observer in EnumerateObservers())
+            foreach (var observer in observers.EnumerateObserver())
             {
                 observer.OnRemoved(key, original);
             }
@@ -214,12 +178,10 @@ namespace KouXiaGu
 
         void TrackUpdate(TKey key, TValue original, TValue newValue)
         {
-            foreach (var observer in EnumerateObservers())
+            foreach (var observer in observers.EnumerateObserver())
             {
                 observer.OnUpdated(key, original, newValue);
             }
         }
-
     }
-
 }

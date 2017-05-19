@@ -19,10 +19,12 @@ namespace KouXiaGu.World.Map
         public GameMap(MapData data)
         {
             this.data = data;
+            observableMap = new ObservableDictionary<CubicHexCoord, MapNode>(data.Map);
             dataArchive = new DataArchive(data);
         }
 
         readonly MapData data;
+        readonly ObservableDictionary<CubicHexCoord, MapNode> observableMap;
         readonly DataArchive dataArchive;
 
         internal MapData Data

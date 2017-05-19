@@ -8,6 +8,14 @@ using System.Collections;
 namespace KouXiaGu.World.Map
 {
 
+    class ObservableMap<TKey, TValue> : IObservableDictionary<TKey, TValue>
+    {
+        public IDisposable Subscribe(IDictionaryObserver<TKey, TValue> observer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /// <summary>
     /// 记录地图变化;
     /// </summary>
@@ -21,6 +29,7 @@ namespace KouXiaGu.World.Map
 
         readonly MapData data;
         readonly HashSet<CubicHexCoord> changedPositions;
+        readonly IObserverCollection<IDictionaryObserver<CubicHexCoord, MapNode>> observers;
 
         IDictionary<CubicHexCoord, MapNode> map
         {
