@@ -11,7 +11,7 @@ namespace KouXiaGu.World.Map
     /// 节点建筑信息;
     /// </summary>
     [ProtoContract]
-    public struct BuildingNode
+    public struct BuildingNode : IEquatable<BuildingNode>
     {
         /// <summary>
         /// 编号,不存在建筑则为0;
@@ -23,13 +23,42 @@ namespace KouXiaGu.World.Map
         /// 建筑物类型编号;
         /// </summary>
         [ProtoMember(1)]
-        public int Type;
+        public int BuildingType;
 
         /// <summary>
         /// 建筑物旋转的角度;
         /// </summary>
         [ProtoMember(2)]
         public float Angle;
+
+        public bool Equals(BuildingNode other)
+        {
+            return ID == other.ID
+                && BuildingType == other.BuildingType
+                && Angle == other.Angle;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is BuildingNode))
+                return false;
+            return Equals((BuildingNode)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
+        }
+
+        public static bool operator ==(BuildingNode a, BuildingNode b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(BuildingNode a, BuildingNode b)
+        {
+            return !a.Equals(b);
+        }
     }
 
     public static class MapBuildingExtensions

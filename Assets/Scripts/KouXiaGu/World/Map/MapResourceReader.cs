@@ -102,7 +102,7 @@ namespace KouXiaGu.World.Map
 
                     Building = new BuildingNode()
                     {
-                        Type = Random(buildArray),
+                        BuildingType = Random(buildArray),
                         Angle = RandomAngle(),
                     },
                 };

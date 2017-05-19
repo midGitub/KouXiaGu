@@ -98,7 +98,7 @@ namespace KouXiaGu.Terrain3D
                 if (node.Building.Exist())
                 {
                     BuildingResource resource;
-                    int buildingType = node.Building.Type;
+                    int buildingType = node.Building.BuildingType;
                     if (resources.TryGetValue(buildingType, out resource))
                     {
                         ILandformBuilding building = resource.Building.BuildAt(position, node, landform, worldData);
