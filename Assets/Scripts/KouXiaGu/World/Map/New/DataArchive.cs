@@ -8,14 +8,6 @@ using System.Collections;
 namespace KouXiaGu.World.Map
 {
 
-    class ObservableMap<TKey, TValue> : IObservableDictionary<TKey, TValue>
-    {
-        public IDisposable Subscribe(IDictionaryObserver<TKey, TValue> observer)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     /// <summary>
     /// 记录地图变化;
     /// </summary>
