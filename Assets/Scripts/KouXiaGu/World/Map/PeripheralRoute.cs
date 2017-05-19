@@ -50,13 +50,14 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 获取到值最小的邻居或本身节点;
+        /// 获取到值最小的邻居的,若不存在邻居则返回其本身;
         /// </summary>
         /// <param name="target">目标点;</param>
         public static CubicHexCoord MinNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
         {
-            CubicHexCoord minPos = target;
-            uint minValue = targetValue;
+            CubicHexCoord minPos = default(CubicHexCoord);
+            uint minValue = uint.MaxValue;
+            bool isChanged = false;
 
             foreach (var neighbour in target.GetNeighbours())
             {
@@ -67,10 +68,11 @@ namespace KouXiaGu.World.Map
                     {
                         minPos = neighbour;
                         minValue = neighbourValue;
+                        isChanged = true;
                     }
                 }
             }
-            return minPos;
+            return isChanged ? minPos : target;
         }
 
         /// <summary>
@@ -79,8 +81,9 @@ namespace KouXiaGu.World.Map
         /// <param name="target">目标点;</param>
         public static CubicHexCoord MaxNeighbourAndSelf(CubicHexCoord target, uint targetValue, TryGetPeripheralValue tryGetValue)
         {
-            CubicHexCoord maxPos = target;
-            uint maxValue = targetValue;
+            CubicHexCoord maxPos = default(CubicHexCoord);
+            uint maxValue = 0;
+            bool isChanged = false;
 
             foreach (var neighbour in target.GetNeighbours())
             {
@@ -91,10 +94,11 @@ namespace KouXiaGu.World.Map
                     {
                         maxPos = neighbour;
                         maxValue = neighbourValue;
+                        isChanged = true;
                     }
                 }
             }
-            return maxPos;
+            return isChanged ? maxPos : target;
         }
     }
 }
