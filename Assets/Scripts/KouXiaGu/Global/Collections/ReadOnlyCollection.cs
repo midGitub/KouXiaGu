@@ -28,25 +28,31 @@ namespace KouXiaGu
         bool TryGetValue(TKey key, out TValue value);
     }
 
+
+    /// <summary>
+    /// 解决没有只读接口;
+    /// </summary>
     public static class ReadOnlyExtensions
     {
 
+
         /// <summary>
-        /// 转转换到只读接口;
+        /// 转换到只读接口;
         /// </summary>
         public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this ICollection<T> collection)
         {
-            return new _ReadOnlyCollection<T>(collection);
+            IReadOnlyCollection<T> readOnly = collection as IReadOnlyCollection<T>;
+            return readOnly == null ? new ReadOnlyCollection<T>(collection) : readOnly;
         }
 
-        class _ReadOnlyCollection<T> : IReadOnlyCollection<T>
+        class ReadOnlyCollection<T> : IReadOnlyCollection<T>
         {
-            public _ReadOnlyCollection(ICollection<T> collection)
+            public ReadOnlyCollection(ICollection<T> collection)
             {
                 this.collection = collection;
             }
 
-            ICollection<T> collection;
+            protected readonly ICollection<T> collection;
 
             public int Count
             {
@@ -64,22 +70,24 @@ namespace KouXiaGu
             }
         }
 
-
+        /// <summary>
+        /// 转换到只读接口;
+        /// </summary>
         public static IReadOnlyCollection<TResult> AsReadOnlyCollection<TSource, TResult>(this ICollection<TSource> collection, Func<TSource, TResult> selector)
         {
-            return new _ReadOnlyCollection<TSource, TResult>(collection, selector);
+            return new ReadOnlyCollection<TSource, TResult>(collection, selector);
         }
 
-        class _ReadOnlyCollection<TSource, TResult> : IReadOnlyCollection<TResult>
+        class ReadOnlyCollection<TSource, TResult> : IReadOnlyCollection<TResult>
         {
-            public _ReadOnlyCollection(ICollection<TSource> collection, Func<TSource, TResult> selector)
+            public ReadOnlyCollection(ICollection<TSource> collection, Func<TSource, TResult> selector)
             {
                 this.collection = collection;
                 this.selector = selector;
             }
 
-            readonly ICollection<TSource> collection;
-            readonly Func<TSource, TResult> selector;
+            protected readonly ICollection<TSource> collection;
+            protected readonly Func<TSource, TResult> selector;
 
             public int Count
             {
@@ -88,7 +96,7 @@ namespace KouXiaGu
 
             public IEnumerator<TResult> GetEnumerator()
             {
-                return collection.Cast<TResult>().GetEnumerator();
+                return collection.Select(selector).GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -97,17 +105,71 @@ namespace KouXiaGu
             }
         }
 
+
+
+
+        /// <summary>
+        /// 转换到只读接口;
+        /// </summary>
+        public static IReadOnlyList<T> AsReadOnlyList<T>(this IList<T> list)
+        {
+            IReadOnlyList<T> readOnlyList = list as IReadOnlyList<T>;
+            return list == null ? new ReadOnlyList<T>(list) : readOnlyList;
+        }
+
+        class ReadOnlyList<T> : ReadOnlyCollection<T>, IReadOnlyList<T>
+        {
+            public ReadOnlyList(IList<T> list) : base(list)
+            {
+                this.list = list;
+            }
+
+            readonly IList<T> list;
+
+            public T this[int index]
+            {
+                get { return list[index]; }
+            }
+        }
+
+        /// <summary>
+        /// 转换到只读接口;
+        /// </summary>
+        public static IReadOnlyList<TResult> AsReadOnlyLists<TSource, TResult>(this IList<TSource> collection, Func<TSource, TResult> selector)
+        {
+            return new ReadOnlyList<TSource, TResult>(collection, selector);
+        }
+
+        class ReadOnlyList<TSource, TResult> : ReadOnlyCollection<TSource, TResult>, IReadOnlyList<TResult>
+        {
+            public ReadOnlyList(IList<TSource> list, Func<TSource, TResult> selector) : base(list, selector)
+            {
+                this.list = list;
+            }
+
+            protected readonly IList<TSource> list;
+
+            public TResult this[int index]
+            {
+                get { return selector(list[index]); }
+            }
+        }
+
+
+
+
+
         /// <summary>
         /// 转换到只读接口;
         /// </summary>
         public static IReadOnlyDictionary<TKey, TValue> AsReadOnlyDictionary<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         {
-            return new _ReadOnlyDictionary<TKey, TValue>(dictionary);
+            return new ReadOnlyDictionary<TKey, TValue>(dictionary);
         }
 
-        class _ReadOnlyDictionary<TKey, TValue> : _ReadOnlyCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>
+        class ReadOnlyDictionary<TKey, TValue> : ReadOnlyCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>
         {
-            public _ReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
+            public ReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
                 : base(dictionary)
             {
                 this.dictionary = dictionary;
@@ -142,15 +204,17 @@ namespace KouXiaGu
 
         }
 
-
-        public static IReadOnlyDictionary<TKey, TResult> AsReadOnlyDictionary<TKey, TSource, TResult>(this IDictionary<TKey, TSource> collection, Func<TSource, TResult> selector)
+        /// <summary>
+        /// 转换到只读接口;
+        /// </summary>
+        public static IReadOnlyDictionary<TKey, TResult> AsReadOnlyDictionary<TKey, TSource, TResult>(this IDictionary<TKey, TSource> dictionary, Func<TSource, TResult> selector)
         {
-            return new _ReadOnlyDictionary<TKey, TSource, TResult>(collection, selector);
+            return new ReadOnlyDictionary<TKey, TSource, TResult>(dictionary, selector);
         }
 
-        class _ReadOnlyDictionary<TKey, TSource, TResult> : IReadOnlyDictionary<TKey, TResult>
+        class ReadOnlyDictionary<TKey, TSource, TResult> : IReadOnlyDictionary<TKey, TResult>
         {
-            public _ReadOnlyDictionary(IDictionary<TKey, TSource> dictionary, Func<TSource, TResult> selector)
+            public ReadOnlyDictionary(IDictionary<TKey, TSource> dictionary, Func<TSource, TResult> selector)
             {
                 if (dictionary == null)
                     throw new ArgumentNullException("dictionary");
