@@ -6,6 +6,7 @@ using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
 using UnityEngine;
+using KouXiaGu.Terrain3D.Wall;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -17,7 +18,7 @@ namespace KouXiaGu.Terrain3D
     class BakeRoad
     {
         [SerializeField]
-        RoadMesh prefab = null;
+        DynamicMeshScript prefab = null;
         [SerializeField, Range(4, 60)]
         public int segmentPoints = 16;
         [SerializeField, Range(0.01f, 2)]
@@ -126,17 +127,15 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        IEnumerable<Pack<RoadMesh, MeshRenderer>> CreateMesh(CubicHexCoord target)
+        IEnumerable<Pack<DynamicMeshScript, MeshRenderer>> CreateMesh(CubicHexCoord target)
         {
-            var paths = GetPeripheralRoutes(target);
-
-            foreach (var path in paths)
+            var routes = GetPeripheralRoutes(target);
+            foreach (var route in routes)
             {
-                Vector3[] pixelPath = ConvertPixel(path);
-
+                var spline = ConvertSpline(target, route);
                 var roadMesh = objectPool.Get();
-                roadMesh.Value1.SetPath(pixelPath, segmentPoints, roadWidth);
-
+                roadMesh.Value1.transform.position = target.GetTerrainPixel();
+                roadMesh.Value1.Transformation(spline);
                 yield return roadMesh;
             }
         }
@@ -163,16 +162,19 @@ namespace KouXiaGu.Terrain3D
             return PeripheralRoute.GetRoadRoutes(target, tryGetValue);
         }
 
-        Vector3[] ConvertPixel(CubicHexCoord[] path)
+        /// <summary>
+        /// 转换为坐标;
+        /// </summary>
+        ISpline ConvertSpline(CubicHexCoord target, CubicHexCoord[] route)
         {
-            Vector3[] newPath = new Vector3[path.Length];
-
-            for (int i = 0; i < path.Length; i++)
+            Vector3[] points = new Vector3[route.Length];
+            for (int i = 0; i < route.Length; i++)
             {
-                newPath[i] = path[i].GetTerrainPixel();
+                CubicHexCoord localPosition = route[i] - target;
+                points[i] = localPosition.GetTerrainPixel();
             }
-
-            return newPath;
+            CatmullRomSpline spline = new CatmullRomSpline(points[0], points[1], points[2], points[3]);
+            return spline;
         }
 
         RoadResource GetRoadResource(int roadID)
@@ -254,49 +256,49 @@ namespace KouXiaGu.Terrain3D
 
         struct Pack
         {
-            public Pack(RoadResource res, IEnumerable<Pack<RoadMesh, MeshRenderer>> rednerer)
+            public Pack(RoadResource res, IEnumerable<Pack<DynamicMeshScript, MeshRenderer>> rednerer)
             {
                 this.Res = res;
                 this.Packs = rednerer;
             }
 
             public RoadResource Res { get; private set; }
-            public IEnumerable<Pack<RoadMesh, MeshRenderer>> Packs { get; private set; }
+            public IEnumerable<Pack<DynamicMeshScript, MeshRenderer>> Packs { get; private set; }
         }
 
 
-        class RoadMeshPool : ObjectPool<Pack<RoadMesh, MeshRenderer>>
+        class RoadMeshPool : ObjectPool<Pack<DynamicMeshScript, MeshRenderer>>
         {
-            public RoadMeshPool(RoadMesh prefab, string parentName)
+            public RoadMeshPool(DynamicMeshScript prefab, string parentName)
             {
                 this.prefab = prefab;
                 this.objectParent = new GameObject(parentName).transform;
             }
 
-            readonly RoadMesh prefab;
+            readonly DynamicMeshScript prefab;
             readonly Transform objectParent;
 
-            public override Pack<RoadMesh, MeshRenderer> Instantiate()
+            public override Pack<DynamicMeshScript, MeshRenderer> Instantiate()
             {
                 var mesh = GameObject.Instantiate(prefab);
                 mesh.transform.SetParent(objectParent);
                 MeshRenderer renderer = mesh.GetComponent<MeshRenderer>();
-                return new Pack<RoadMesh, MeshRenderer>(mesh, renderer);
+                return new Pack<DynamicMeshScript, MeshRenderer>(mesh, renderer);
             }
 
-            public override void Destroy(Pack<RoadMesh, MeshRenderer> item)
+            public override void Destroy(Pack<DynamicMeshScript, MeshRenderer> item)
             {
                 var gameObject = item.Value1.gameObject;
                 GameObject.Destroy(gameObject);
             }
 
-            public override void ResetWhenEnterPool(Pack<RoadMesh, MeshRenderer> item)
+            public override void ResetWhenEnterPool(Pack<DynamicMeshScript, MeshRenderer> item)
             {
-                item.Value1.Reset();
+                //item.Value1.Reset();
                 item.Value1.gameObject.SetActive(false);
             }
 
-            public override void ResetWhenOutPool(Pack<RoadMesh, MeshRenderer> item)
+            public override void ResetWhenOutPool(Pack<DynamicMeshScript, MeshRenderer> item)
             {
                 item.Value1.gameObject.SetActive(true);
             }

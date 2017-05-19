@@ -108,48 +108,6 @@ NavMeshSettings:
     tileSize: 256
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &31404998
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4402234001476084, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-      propertyPath: m_RootOrder
-      value: 13
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 88997890f273c8042b64ac3a8e54622b, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &119999027
 GameObject:
   m_ObjectHideFlags: 0
@@ -1283,6 +1241,48 @@ Camera:
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
+--- !u!1001 &909809796
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777623326280924, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &931825162 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100000, guid: 2ae6a477aed85764dbfc6747e1af5d4b, type: 3}
@@ -2298,14 +2298,14 @@ MonoBehaviour:
     diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
     heightShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
   bakeRoad:
-    prefab: {fileID: 114417864028398758, guid: 9cd872427034fee489fcd671826c55e4, type: 2}
+    prefab: {fileID: 114079317866361212, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
     segmentPoints: 16
     roadWidth: 0.3
     diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
     heightShader: {fileID: 4800000, guid: 1f2f90526623fcc43b7dd38171b75795, type: 3}
   runtimeStopwatch:
     idleSeconds: 0.2
-  waitUpdate: 0
+  waitUpdate: 20
 --- !u!114 &1146917774
 MonoBehaviour:
   m_ObjectHideFlags: 0

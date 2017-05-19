@@ -11,8 +11,11 @@ using KouXiaGu.World.Map;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 道路动态网格;用于烘培;
+    /// </summary>
     [DisallowMultipleComponent]
-    public class RoadDynamicMesh : MonoBehaviour, ILandformBuilding
+    public class RoadDynamicMesh : MonoBehaviour
     {
         RoadDynamicMesh()
         {
@@ -23,16 +26,15 @@ namespace KouXiaGu.Terrain3D
         CubicHexCoord position;
         IWorldData worldData;
 
-        public ILandformBuilding BuildAt(CubicHexCoord target, MapNode node, Landform landform, IWorldData worldData)
+        public void BuildAt(CubicHexCoord target, MapNode node, Landform landform, IWorldData worldData)
         {
             Vector3 pixelPosition = target.GetTerrainPixel(0.8f);
-            Quaternion angle = Quaternion.identity;
-            GameObject instance = Instantiate(gameObject, pixelPosition, angle);
+            Quaternion rotation = Quaternion.identity;
+            GameObject instance = Instantiate(gameObject, pixelPosition, rotation);
             RoadDynamicMesh parent = instance.GetComponent<RoadDynamicMesh>();
             parent.position = target;
             parent.worldData = worldData;
-            Rebuild();
-            return parent;
+            parent.Rebuild();
         }
 
         public void Rebuild()

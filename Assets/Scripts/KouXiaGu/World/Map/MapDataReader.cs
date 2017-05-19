@@ -22,10 +22,12 @@ namespace KouXiaGu.World.Map
         public MapData Read(IGameData info)
         {
             int[] landformArray = info.Terrain.LandformInfos.Keys.ToArray();
+            int[] roadArray = info.Terrain.RoadInfos.Keys.ToArray();
             int[] buildArray = info.Terrain.BuildingInfos.Keys.ToArray();
             Dictionary<CubicHexCoord, MapNode> map = new Dictionary<CubicHexCoord, MapNode>();
             var points = CubicHexCoord.Range(CubicHexCoord.Self, MapSize);
 
+            IdentifierGenerator landform = new IdentifierGenerator();
             IdentifierGenerator road = new IdentifierGenerator();
             IdentifierGenerator building = new IdentifierGenerator();
 
@@ -35,8 +37,15 @@ namespace KouXiaGu.World.Map
                 {
                     Landform = new LandformNode()
                     {
+                        ID = landform.GetNewEffectiveID(),
                         LandformType = Random(landformArray),
                         Angle = RandomAngle(),
+                    },
+
+                    Road = new RoadNode()
+                    {
+                        ID = road.GetNewEffectiveID(),
+                        RoadType = Random(roadArray),
                     },
 
                     Building = new BuildingNode()
@@ -52,6 +61,7 @@ namespace KouXiaGu.World.Map
             MapData data = new MapData()
             {
                 Map = map,
+                Landform = landform,
                 Road = road,
                 Building = building,
             };

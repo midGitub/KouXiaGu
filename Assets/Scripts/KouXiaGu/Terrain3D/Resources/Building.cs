@@ -67,8 +67,11 @@ namespace KouXiaGu.Terrain3D
             foreach (BuildingInfo info in infos)
             {
                 BuildingResource resource;
-                TryRead(info, out resource);
-                Result.Add(info.ID, resource);
+                if (TryRead(info, out resource))
+                {
+                    Result.Add(info.ID, resource);
+
+                }
 
                 if (stopwatch.Await())
                 {
