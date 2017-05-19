@@ -16,34 +16,39 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 起始的有效ID;
         /// </summary>
-        internal const uint InitialID = 1;
+        public const uint InitialID = 0;
 
         public IdentifierGenerator() : this(InitialID)
         {
         }
 
-        public IdentifierGenerator(uint effectiveID)
+        public IdentifierGenerator(uint lastReturnedID)
         {
-            EffectiveID = effectiveID;
+            this.lastReturnedID = lastReturnedID;
         }
 
         public IdentifierGenerator(IdentifierGenerator item)
         {
-            EffectiveID = item.EffectiveID;
+            lastReturnedID = item.LastReturnedID;
         }
 
-        /// <summary>
-        /// 当前有效的ID;
-        /// </summary>
         [ProtoMember(1)]
-        public uint EffectiveID { get; private set; }
+        uint lastReturnedID;
+
+        /// <summary>
+        /// 最后返回的ID;
+        /// </summary>
+        public uint LastReturnedID
+        {
+            get { return lastReturnedID; }
+        }
 
         /// <summary>
         /// 获取到一个唯一的有效ID;
         /// </summary>
         public uint GetNewEffectiveID()
         {
-            return EffectiveID++;
+            return ++lastReturnedID;
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         internal void Reset()
         {
-            EffectiveID = InitialID;
+            lastReturnedID = InitialID;
         }
     }
 }
