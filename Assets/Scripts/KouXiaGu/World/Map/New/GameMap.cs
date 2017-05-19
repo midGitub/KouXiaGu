@@ -20,12 +20,12 @@ namespace KouXiaGu.World.Map
         {
             this.data = data;
             observableMap = new ObservableDictionary<CubicHexCoord, MapNode>(data.Map);
-            archive = new DataArchive(data, observableMap);
+            mapChangedRecorder = new MapChangedRecorder<CubicHexCoord, MapNode>(observableMap);
         }
-
+        
         readonly MapData data;
         readonly ObservableDictionary<CubicHexCoord, MapNode> observableMap;
-        readonly DataArchive archive;
+        readonly MapChangedRecorder<CubicHexCoord, MapNode> mapChangedRecorder;
 
         internal MapData Data
         {
@@ -47,74 +47,39 @@ namespace KouXiaGu.World.Map
             get { return observableMap; }
         }
 
-
         /// <summary>
-        /// 记录地图变化;
+        /// 获取到用于归档的数据;
         /// </summary>
-        class DataArchive : IDictionaryObserver<CubicHexCoord, MapNode>
+        public MapData GetArchivedData()
         {
-            public DataArchive(MapData data, IObservableDictionary<CubicHexCoord, MapNode> observableMap)
+            MapData archivedData = new MapData()
             {
-                this.data = data;
-                this.observableMap = observableMap;
-                changedPositions = new HashSet<CubicHexCoord>();
-                observableMap.Subscribe(this);
-            }
+                Map = mapChangedRecorder.GetChangedData(),
+            };
+            return archivedData;
+        }
+    }
 
-            readonly MapData data;
-            readonly IObservableDictionary<CubicHexCoord, MapNode> observableMap;
-            readonly HashSet<CubicHexCoord> changedPositions;
+    /// <summary>
+    /// 地图存档;
+    /// </summary>
+    class GameMapArchiver : IArchiver
+    {
+        public GameMapArchiver(GameMap data)
+        {
+            gameMap = data;
+        }
 
-            IDictionary<CubicHexCoord, MapNode> map
-            {
-                get { return data.Map; }
-            }
+        readonly GameMap gameMap;
+        MapData archivedData;
 
-            public ICollection<CubicHexCoord> ChangedPositions
-            {
-                get { return changedPositions; }
-            }
+        public void Prepare()
+        {
+            archivedData = gameMap.GetArchivedData();
+        }
 
-            void IDictionaryObserver<CubicHexCoord, MapNode>.OnAdded(CubicHexCoord key, MapNode newValue)
-            {
-                changedPositions.Add(key);
-            }
-
-            void IDictionaryObserver<CubicHexCoord, MapNode>.OnRemoved(CubicHexCoord key, MapNode originalValue)
-            {
-                changedPositions.Remove(key);
-            }
-
-            void IDictionaryObserver<CubicHexCoord, MapNode>.OnUpdated(CubicHexCoord key, MapNode originalValue, MapNode newValue)
-            {
-                return;
-            }
-
-            /// <summary>
-            /// 获取变化的到用于归档的数据;
-            /// </summary>
-            public MapData GetArchivedData()
-            {
-                MapData archivedData = new MapData()
-                {
-                    Map = GetChangedData(),
-                };
-                return archivedData;
-            }
-
-            /// <summary>
-            /// 获取到发生变化的节点结构;
-            /// </summary>
-            public Dictionary<CubicHexCoord, MapNode> GetChangedData()
-            {
-                Dictionary<CubicHexCoord, MapNode> changedData = new Dictionary<CubicHexCoord, MapNode>();
-                foreach (var position in changedPositions)
-                {
-                    MapNode node = map[position];
-                    changedData.Add(position, node);
-                }
-                return changedData;
-            }
+        public void Write(ArchiveFile file)
+        {
         }
     }
 }
