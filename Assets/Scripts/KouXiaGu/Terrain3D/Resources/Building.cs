@@ -24,19 +24,27 @@ namespace KouXiaGu.Terrain3D
     {
         public BuildingResource(TerrainBuildingInfo info, GameObject prefab)
         {
+            if (info == null)
+                throw new ArgumentNullException("info");
+            if (prefab == null)
+                throw new ArgumentNullException("prefab");
+
             Info = info;
             Prefab = prefab;
-            Building = Prefab == null ? null : Prefab.GetComponent<IBuildingPrefab>();
+            BuildingPrefab = Prefab.GetComponent<IBuildingPrefab>();
+
+            if (BuildingPrefab == null)
+                throw new ArgumentException("预制物体未挂载对应建筑接口;");
         }
 
         public TerrainBuildingInfo Info { get; private set; }
-        public GameObject Prefab { get; internal set; }
-        public IBuildingPrefab Building { get; internal set; }
+        public GameObject Prefab { get; private set; }
+        public IBuildingPrefab BuildingPrefab { get; private set; }
 
-        public bool IsLoadComplete
-        {
-            get { return Prefab != null && Building != null; }
-        }
+        //public bool IsLoadComplete
+        //{
+        //    get { return Prefab != null && BuildingPrefab != null; }
+        //}
 
         public void Dispose()
         {
@@ -86,15 +94,16 @@ namespace KouXiaGu.Terrain3D
         {
             TerrainBuildingInfo bInfo = info.Terrain;
             GameObject prefab = assetBundle.LoadAsset<GameObject>(bInfo.PrefabName);
-            item = new BuildingResource(bInfo, prefab);
 
-            if (item.IsLoadComplete)
+            try
             {
+                item = new BuildingResource(bInfo, prefab);
                 return true;
             }
-            else
+            catch (Exception ex)
             {
-                Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString());
+                Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString() + ",因为:" + ex);
+                item = default(BuildingResource);
                 return false;
             }
         }

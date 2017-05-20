@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
         void Rebuild();
 
         /// <summary>
-        /// 销毁这个实例;
+        /// 销毁这个建筑物;
         /// </summary>
         void Destroy();
     }
@@ -116,7 +116,7 @@ namespace KouXiaGu.Terrain3D
                     int buildingType = node.Building.BuildingType;
                     if (resources.TryGetValue(buildingType, out resource))
                     {
-                        IBuilding building = resource.Building.BuildAt(position, node, this);
+                        IBuilding building = resource.BuildingPrefab.BuildAt(position, node, this);
                         return building;
                     }
                     else

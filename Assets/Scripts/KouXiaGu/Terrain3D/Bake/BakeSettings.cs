@@ -49,7 +49,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        [XmlIgnore, SerializeField, Range(80, 500)]
+        [XmlIgnore, SerializeField, Range(40, 500)]
         float textureSize = 120;
 
         [XmlIgnore, SerializeField, Range(0.1f, 1)]

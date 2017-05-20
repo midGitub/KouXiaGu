@@ -15,6 +15,13 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class BuildingPrefab : MonoBehaviour, IBuildingPrefab
     {
+        static Transform _objectParent;
+
+        public static Transform objectParent
+        {
+            get { return _objectParent ?? (_objectParent = new GameObject("LandformBuildings").transform); }
+        }
+
         [SerializeField]
         Building prefab;
 
@@ -29,35 +36,17 @@ namespace KouXiaGu.Terrain3D
 
         public Building BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder)
         {
-            throw new NotImplementedException();
+            BuildingNode buildingNode = node.Building;
+            Vector3 position = coord.GetTerrainPixel();
+            Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
+            Building instance = Instantiate(prefab, position, angle, objectParent);
+            instance.Build(coord, node, builder);
+            return instance;
         }
 
         IBuilding IBuildingPrefab.BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder)
         {
-            throw new NotImplementedException();
-        }
-    }
-
-    /// <summary>
-    /// 建筑物实例;
-    /// </summary>
-    [DisallowMultipleComponent]
-    public abstract class Building : MonoBehaviour, IBuilding
-    {
-        CubicHexCoord coord;
-        BuildingBuilder builder;
-
-        public CubicHexCoord Coord
-        {
-            get { return coord; }
-
-        }
-
-        public abstract void Rebuild();
-
-        public virtual void Destroy()
-        {
-            Destroy(gameObject);
+            return BuildAt(coord, node, builder);
         }
     }
 }
