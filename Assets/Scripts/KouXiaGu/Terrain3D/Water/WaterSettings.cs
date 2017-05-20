@@ -9,8 +9,11 @@ using UnityStandardAssets.Water;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 水特效设置内容;
+    /// </summary>
     [Serializable]
-    public class WaterSettings
+    public struct WaterSettings
     {
         public Material DaytimeMaterial;
         public Material NighttimeMaterial;
@@ -22,7 +25,7 @@ namespace KouXiaGu.Terrain3D
     /// 可自定义的设置;
     /// </summary>
     [Serializable]
-    public class WaterCustomizableSettings
+    public struct WaterCustomizableSettings
     {
         public Water.WaterMode WaterMode;
     }

@@ -20,25 +20,47 @@ namespace KouXiaGu.Terrain3D
 
         public WaterManager()
         {
-            sceneChunks = new List<WaterChunk>();
+            sceneChunks = new List<SceneWatcher>();
         }
 
-        readonly List<WaterChunk> sceneChunks;
+        static readonly List<WaterWatcher> watchers = new List<WaterWatcher>();
+        readonly List<SceneWatcher> sceneChunks;
 
+        WaterSettings settings
+        {
+            get { return LandformSettings.Instance.WaterSettings; }
+        }
 
-        //WaterChunk CreateChunk()
+        public static ICollection<WaterWatcher> Watchers
+        {
+            get { return watchers; }
+        }
+
+        //SceneWatcher Create(WaterWatcher watcher)
         //{
-
+        //    WaterChunk chunk = GameObject.Instantiate(settings.PrefabChunk);
         //}
 
-        class Watcher
+        class SceneWatcher
         {
-            public Watcher()
+            public SceneWatcher(WaterChunk chunk, WaterWatcher watcher)
             {
+                this.chunk = chunk;
+                this.watcher = watcher;
             }
 
-            readonly WaterChunk chunkObject;
+            readonly WaterChunk chunk;
+            readonly WaterWatcher watcher;
+            
+            public WaterChunk Chunk
+            {
+                get { return chunk; }
+            }
 
+            public WaterWatcher Watcher
+            {
+                get { return watcher; }
+            }
         }
     }
 
