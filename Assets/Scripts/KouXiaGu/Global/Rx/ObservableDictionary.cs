@@ -25,24 +25,6 @@ namespace KouXiaGu
         readonly IDictionary<TKey, TValue> dictionary;
         readonly IObserverCollection<IDictionaryObserver<TKey, TValue>> observers;
 
-        public TValue this[TKey key]
-        {
-            get { return dictionary[key]; }
-            set
-            {
-                TValue original;
-                if (dictionary.TryGetValue(key, out original))
-                {
-                    dictionary[key] = value;
-                    TrackUpdate(key, original, value);
-                }
-                else
-                {
-                    throw new KeyNotFoundException();
-                }
-            }
-        }
-
         public int Count
         {
             get { return dictionary.Count; }
@@ -78,6 +60,37 @@ namespace KouXiaGu
             get { return dictionary.Values; }
         }
 
+        public TValue this[TKey key]
+        {
+            get { return dictionary[key]; }
+            set
+            {
+                TValue original;
+                if (dictionary.TryGetValue(key, out original))
+                {
+                    dictionary[key] = value;
+                    TrackUpdate(key, original, value);
+                }
+                else
+                {
+                    throw new KeyNotFoundException();
+                }
+            }
+        }
+
+        void TrackUpdate(TKey key, TValue original, TValue newValue)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnUpdated(key, original, newValue);
+            }
+        }
+
+        public IDisposable Subscribe(IDictionaryObserver<TKey, TValue> observer)
+        {
+            return observers.Subscribe(observer);
+        }
+
         public void Add(KeyValuePair<TKey, TValue> item)
         {
             Add(item.Key, item.Value);
@@ -90,6 +103,14 @@ namespace KouXiaGu
         {
             dictionary.Add(key, value);
             TrackAdd(key, value);
+        }
+
+        void TrackAdd(TKey key, TValue newValue)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnAdded(key, newValue);
+            }
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -111,6 +132,15 @@ namespace KouXiaGu
                 return false;
             }
         }
+
+        void TrackRemove(TKey key, TValue original)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnRemoved(key, original);
+            }
+        }
+
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
@@ -152,36 +182,6 @@ namespace KouXiaGu
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return dictionary.GetEnumerator();
-        }
-
-
-        public IDisposable Subscribe(IDictionaryObserver<TKey, TValue> observer)
-        {
-            return observers.Subscribe(observer);
-        }
-
-        void TrackAdd(TKey key, TValue newValue)
-        {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnAdded(key, newValue);
-            }
-        }
-
-        void TrackRemove(TKey key, TValue original)
-        {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnRemoved(key, original);
-            }
-        }
-
-        void TrackUpdate(TKey key, TValue original, TValue newValue)
-        {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnUpdated(key, original, newValue);
-            }
         }
     }
 }

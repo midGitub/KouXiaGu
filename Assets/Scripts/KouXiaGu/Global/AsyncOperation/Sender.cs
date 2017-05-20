@@ -63,14 +63,15 @@ namespace KouXiaGu
         public IDisposable Subscribe(T observer)
         {
             LinkedListNode<T> node;
-            if (currentNode == null)
-            {
-                node = observersCollection.AddLast(observer);
-            }
-            else
-            {
-                node = observersCollection.AddBefore(currentNode, observer);
-            }
+            node = observersCollection.AddFirst(observer);
+            //if (currentNode == null)
+            //{
+            //    node = observersCollection.AddLast(observer);
+            //}
+            //else
+            //{
+            //    node = observersCollection.AddBefore(currentNode, observer);
+            //}
             return new Unsubscriber(this, node);
         }
 
