@@ -74,21 +74,13 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        static readonly CubicHexCoord[] checkDirections = new CubicHexCoord[]
-            {
-                CubicHexCoord.DIR_North,
-                CubicHexCoord.DIR_Southeast,
-                CubicHexCoord.DIR_Southwest,
-            };
-
         readonly List<RectCoord> chunkCoordList = new List<RectCoord>();
 
         IEnumerable<RectCoord> GetBakeChunks(CubicHexCoord coord)
         {
             chunkCoordList.Clear();
-            foreach (var direction in checkDirections)
+            foreach (var checkCoord in coord.GetNeighbours())
             {
-                CubicHexCoord checkCoord = coord + direction;
                 var chunkCoords = ChunkInfo.GetBelongChunks(checkCoord);
 
                 foreach (var chunkCoord in chunkCoords)
