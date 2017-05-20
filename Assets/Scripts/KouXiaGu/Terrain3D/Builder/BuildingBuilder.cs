@@ -8,28 +8,6 @@ using UniRx;
 
 namespace KouXiaGu.Terrain3D
 {
-
-    ///// <summary>
-    ///// 建筑物创建接口,需要挂载在预制物体上;
-    ///// </summary>
-    //public interface ILandformBuilding
-    //{
-    //    /// <summary>
-    //    /// 将建筑物建立到新的位置(仅调用预制物体上的脚本);
-    //    /// </summary>
-    //    ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
-
-    //    /// <summary>
-    //    /// 重新构建建筑(当地形发生变化时调用);
-    //    /// </summary>
-    //    void Rebuild();
-
-    //    /// <summary>
-    //    /// 销毁这个实例;
-    //    /// </summary>
-    //    void Destroy();
-    //}
-
     /// <summary>
     /// 场景建筑物实例;
     /// </summary>
@@ -62,24 +40,36 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder 
     {
-        public BuildingBuilder(IWorldData worldData, LandformBuilder landform)
+        public BuildingBuilder(IWorldData worldData, Landform landform, LandformBuilder landformBuilder)
         {
-            this.world = worldData;
+            this.worldData = worldData;
+            this.landform = landform;
             requestDispatcher = SceneObject.GetObject<BuildingRequestDispatcher>();
-            landformObserver = new LandformObserver(this, landform.CompletedChunkSender);
+            landformObserver = new LandformObserver(this, landformBuilder.CompletedChunkSender);
             sceneBuildings = new Dictionary<CubicHexCoord, BuildingCreateRequest>();
             readOnlySceneBuildings = sceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<IBuilding>);
             sceneChunks = new HashSet<RectCoord>();
             readOnlySceneChunks = sceneChunks.AsReadOnlyCollection();
         }
 
-        readonly IWorldData world;
+        readonly IWorldData worldData;
+        readonly Landform landform;
         readonly RequestDispatcher requestDispatcher;
         readonly LandformObserver landformObserver;
         readonly Dictionary<CubicHexCoord, BuildingCreateRequest> sceneBuildings;
         readonly IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<IBuilding>> readOnlySceneBuildings;
         readonly HashSet<RectCoord> sceneChunks;
         readonly IReadOnlyCollection<RectCoord> readOnlySceneChunks;
+
+        public IWorldData WorldData
+        {
+            get { return worldData; }
+        }
+
+        public Landform Landform
+        {
+            get { return Landform; }
+        }
 
         /// <summary>
         /// 在场景中已经创建或者正在创建的建筑;
@@ -104,12 +94,12 @@ namespace KouXiaGu.Terrain3D
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> mapData
         {
-            get { return world.MapData.ReadOnlyMap; }
+            get { return worldData.MapData.ReadOnlyMap; }
         }
 
         IDictionary<int, BuildingResource> resources
         {
-            get { return world.GameData.Terrain.BuildingInfos; }
+            get { return worldData.GameData.Terrain.BuildingInfos; }
         }
 
         /// <summary>

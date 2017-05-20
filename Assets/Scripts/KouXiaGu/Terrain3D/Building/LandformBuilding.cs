@@ -18,12 +18,11 @@ namespace KouXiaGu.Terrain3D
         }
 
         public CubicHexCoord Position { get; private set; }
-        public Landform Landform { get; private set; }
-        public IWorldData WorldData { get; private set; }
+        public BuildingBuilder Builder { get; private set; }
 
-        protected GameObject Prefab
+        Landform landform
         {
-            get { return gameObject; }
+            get { return Builder.Landform; }
         }
 
         IBuilding IBuildingPrefab.BuildAt(CubicHexCoord position, MapNode node, BuildingBuilder builder)
@@ -31,11 +30,10 @@ namespace KouXiaGu.Terrain3D
             BuildingNode buildingNode = node.Building;
             Vector3 pixelPosition = position.GetTerrainPixel();
             Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
-            GameObject instance = Instantiate(Prefab, pixelPosition, angle);
+            GameObject instance = Instantiate(gameObject, pixelPosition, angle);
             LandformBuilding item = instance.GetComponent<LandformBuilding>();
             item.Position = position;
-            //item.Landform = world.l landform;
-            //item.WorldData = data;
+            item.Builder = builder;
             item.Rebuild();
             return item;
         }
@@ -48,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         public void Rebuild()
         {
             Vector3 position = transform.position;
-            position.y = Landform.GetHeight(transform.position);
+            position.y = landform.GetHeight(transform.position);
             transform.position = position;
         }
     }
