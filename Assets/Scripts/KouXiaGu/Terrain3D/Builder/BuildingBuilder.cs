@@ -15,12 +15,12 @@ namespace KouXiaGu.Terrain3D
     public interface ILandformBuilding
     {
         /// <summary>
-        /// 将建筑物建立到新的位置;
+        /// 将建筑物建立到新的位置(仅调用预制物体上的脚本);
         /// </summary>
         ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
 
         /// <summary>
-        /// 重新构建建筑(当地形发生变化时);
+        /// 重新构建建筑(当地形发生变化时调用);
         /// </summary>
         void Rebuild();
 
@@ -28,6 +28,33 @@ namespace KouXiaGu.Terrain3D
         /// 销毁这个实例;
         /// </summary>
         void Destroy();
+    }
+
+    /// <summary>
+    /// 场景建筑物实例;
+    /// </summary>
+    public interface IBuilding
+    {
+        /// <summary>
+        /// 重新构建建筑(当地形发生变化时调用);
+        /// </summary>
+        void Rebuild();
+
+        /// <summary>
+        /// 销毁这个实例;
+        /// </summary>
+        void Destroy();
+    }
+
+    /// <summary>
+    /// 建筑物预制;
+    /// </summary>
+    public interface IBuildingPrefab
+    {
+        /// <summary>
+        /// 将建筑物建立到新的位置;
+        /// </summary>
+        IBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
     }
 
     /// <summary>

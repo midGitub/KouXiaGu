@@ -67,7 +67,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 开始构建场景;
+        /// 开始初始化场景,返回值表示场景是否准备完毕;
         /// </summary>
         public IAsyncOperation StartBuildScene()
         {

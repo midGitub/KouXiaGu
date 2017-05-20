@@ -7,7 +7,9 @@ using System.Text;
 namespace KouXiaGu.World
 {
 
-
+    /// <summary>
+    /// 场景构建;
+    /// </summary>
     public class SceneInitializer : AsyncInitializer
     {
         public override string Prefix
