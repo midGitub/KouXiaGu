@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Xml.Serialization;
+using UnityStandardAssets.Water;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -11,25 +12,10 @@ namespace KouXiaGu.Terrain3D
     [Serializable]
     public class WaterSettings
     {
-        [SerializeField]
-        Material daytimeMaterial;
-        [SerializeField]
-        Material nighttimeMaterial;
-        [SerializeField]
-        WaterChunk prefabChunk;
-        [SerializeField]
-        WaterCustomizableSettings customizableSettings;
-
-        public Material DaytimeMaterial
-        {
-            get { return daytimeMaterial; }
-        }
-
-        public Material NighttimeMaterial
-        {
-            get { return nighttimeMaterial; }
-        }
-
+        public Material DaytimeMaterial;
+        public Material NighttimeMaterial;
+        public WaterChunk PrefabChunk;
+        public WaterCustomizableSettings CustomizableSettings;
     }
 
     /// <summary>
@@ -38,7 +24,7 @@ namespace KouXiaGu.Terrain3D
     [Serializable]
     public class WaterCustomizableSettings
     {
-
+        public Water.WaterMode WaterMode;
     }
 
     class WaterSettingsSerializer

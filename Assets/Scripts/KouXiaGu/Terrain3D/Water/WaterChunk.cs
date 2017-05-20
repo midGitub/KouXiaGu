@@ -37,6 +37,12 @@ namespace KouXiaGu.Terrain3D
             get { return LandformSettings.Instance.WaterSettings; }
         }
 
+        public float Size
+        {
+            get { return transform.localScale.x; }
+            set { transform.localScale = new Vector3(value, 1, value); }
+        }
+
         public WaterTypes WaterType
         {
             get { return waterType; }
