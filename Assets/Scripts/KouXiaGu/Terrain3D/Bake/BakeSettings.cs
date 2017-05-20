@@ -98,7 +98,7 @@ namespace KouXiaGu.Terrain3D
         public float TextureSize
         {
             get { return textureSize; }
-            set { textureSize = value; UpdataTextureSize(); }
+            set { textureSize = value; }
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace KouXiaGu.Terrain3D
         public float DiffuseMapRatios
         {
             get { return diffuseMapRatios; }
-            set { diffuseMapRatios = value; UpdataTextureSize(); }
+            set { diffuseMapRatios = value; }
         }
 
         /// <summary>
@@ -118,10 +118,12 @@ namespace KouXiaGu.Terrain3D
         public float HeightMapRatios
         {
             get { return heightMapRatios; }
-            set { heightMapRatios = value; UpdataTextureSize(); }
+            set { heightMapRatios = value; }
         }
 
-
+        /// <summary>
+        /// 更新数据,在每次设置完值后需要手动调用;
+        /// </summary>
         public void UpdataTextureSize()
         {
             int chunkWidth = (int)Math.Round(ChunkInfo.ChunkWidth * textureSize);

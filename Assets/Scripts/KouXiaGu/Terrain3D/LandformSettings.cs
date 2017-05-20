@@ -21,6 +21,8 @@ namespace KouXiaGu.Terrain3D
 
         [SerializeField]
         Shader landformShader;
+        [SerializeField]
+        BakeSettings bakeSettings;
         [SerializeField, Range(0, 64)]
         float tessellation = 16f;
         [SerializeField, Range(0, 5)]
@@ -43,6 +45,14 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
+        /// 烘培设置;
+        /// </summary>
+        public BakeSettings BakeSettings
+        {
+            get { return bakeSettings; }
+        }
+
+        /// <summary>
         /// 地形细分程度;
         /// </summary>
         public float Tessellation
@@ -60,6 +70,7 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
+            BakeSettings.UpdataTextureSize();
             SetTessellation(tessellation);
             SetDisplacement(displacement);
             SetGridLineMap(gridLineMap);

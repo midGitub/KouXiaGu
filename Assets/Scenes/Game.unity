@@ -2293,10 +2293,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bakeCamera:
     camera: {fileID: 881292060}
-    settings:
-      textureSize: 160
-      diffuseMapRatios: 1
-      heightMapRatios: 1
   bakeLandform:
     prefab: {fileID: 23541030008187398, guid: 4e810ba380f002243ab86965896b23df, type: 2}
     diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}

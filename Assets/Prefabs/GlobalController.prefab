@@ -1718,6 +1718,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   landformShader: {fileID: 4800000, guid: 31f92206529d9474db05c92df9ac2f47, type: 3}
+  bakeSettings:
+    textureSize: 120
+    diffuseMapRatios: 1
+    heightMapRatios: 1
   tessellation: 64
   displacement: 1.3
   gridLineMap: {fileID: 2800000, guid: a150c6ac3c4198d448d505080a6d8f1a, type: 3}

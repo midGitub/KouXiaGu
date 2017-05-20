@@ -21,9 +21,6 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         Camera camera;
 
-        [SerializeField]
-        BakeSettings settings;
-
         public Camera Camera
         {
             get { return camera; }
@@ -31,13 +28,12 @@ namespace KouXiaGu.Terrain3D
 
         public BakeSettings Settings
         {
-            get { return settings; }
+            get { return LandformSettings.Instance.BakeSettings; }
         }
 
         public void Initialize()
         {
             InitBakingCamera();
-            settings.UpdataTextureSize();
         }
 
         /// <summary>
