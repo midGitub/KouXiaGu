@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.World.Map;
-using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -12,9 +11,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 监视地图变化;
     /// </summary>
-    public class WorldMapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
+    public class MapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
     {
-        public WorldMapWatcher(LandformBuilder builder, IObservableDictionary<CubicHexCoord, MapNode> observable)
+        public MapWatcher(LandformBuilder builder, IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
             this.builder = builder;
             Subscribe(observable);

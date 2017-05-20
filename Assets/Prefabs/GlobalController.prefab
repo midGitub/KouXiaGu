@@ -1719,7 +1719,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   landformShader: {fileID: 4800000, guid: 31f92206529d9474db05c92df9ac2f47, type: 3}
   bakeSettings:
-    textureSize: 120
+    textureSize: 80
     diffuseMapRatios: 1
     heightMapRatios: 1
   tessellation: 64

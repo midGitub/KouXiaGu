@@ -461,9 +461,9 @@ GameObject:
   - component: {fileID: 232559848}
   - component: {fileID: 232559847}
   - component: {fileID: 232559845}
-  - component: {fileID: 232559849}
   - component: {fileID: 232559850}
   - component: {fileID: 232559846}
+  - component: {fileID: 232559849}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -545,7 +545,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 232559844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4913a6264c6b93449bdbc205df34176e, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d80cc738c9930a43b611517cde9e998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &232559850
