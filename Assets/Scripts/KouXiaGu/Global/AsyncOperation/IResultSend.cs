@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
 
-namespace KouXiaGu
-{
+//namespace KouXiaGu
+//{
 
-    public interface IResultSend<T>
-    {
-        IDisposable SubscribeResult(Action<T> action);
-    }
+//    public interface IResultSend<T>
+//    {
+//        IDisposable SubscribeResult(Action<T> action);
+//    }
 
-}
+//}
