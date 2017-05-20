@@ -16,6 +16,8 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         Material nighttimeMaterial;
         [SerializeField]
+        WaterChunk prefabChunk;
+        [SerializeField]
         WaterCustomizableSettings customizableSettings;
 
         public Material DaytimeMaterial
