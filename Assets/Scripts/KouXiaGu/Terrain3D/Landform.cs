@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.World;
-using KouXiaGu.World.Map;
-using KouXiaGu.Grids;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
@@ -39,7 +35,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        Landform(IWorldData worldData)
+        public Landform(IWorldData worldData)
         {
             LandformManager = new LandformManager(worldData);
             BuildingManager = new BuildingManager(worldData, this, LandformManager.Builder);
@@ -49,7 +45,6 @@ namespace KouXiaGu.Terrain3D
             Water.IsDisplay = true;
         }
 
-        public bool IsInitialized { get; private set; }
         public LandformManager LandformManager { get; private set; }
         public BuildingManager BuildingManager { get; private set; }
 

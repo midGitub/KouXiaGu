@@ -57,8 +57,6 @@ namespace KouXiaGu.Terrain3D
             ChunkCreateRequest request;
             if (!sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                //Chunk chunk = chunkPool.Get();
-                //chunk.Position = ChunkGrid.GetCenter(chunkCoord);
                 request = new ChunkCreateRequest(this, chunkCoord, targets);
                 AddBakeQueue(request);
                 sceneChunks.Add(chunkCoord, request);
