@@ -24,6 +24,10 @@ namespace KouXiaGu.World.Map
 
         [ProtoMember(3)]
         public BuildingNode Building;
+
+
+
+
     }
    
 }

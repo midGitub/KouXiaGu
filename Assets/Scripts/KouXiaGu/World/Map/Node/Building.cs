@@ -14,6 +14,11 @@ namespace KouXiaGu.World.Map
     public struct BuildingNode : IEquatable<BuildingNode>
     {
         /// <summary>
+        /// 不存在建筑时放置的标志;
+        /// </summary>
+        public const int EmptyMark = 0;
+
+        /// <summary>
         /// 编号,不存在建筑则为0;
         /// </summary>
         [ProtoMember(0)]
@@ -30,6 +35,44 @@ namespace KouXiaGu.World.Map
         /// </summary>
         [ProtoMember(2)]
         public float Angle;
+
+        /// <summary>
+        /// 是否存在建筑物?
+        /// </summary>
+        public bool Exist()
+        {
+            return ID != EmptyMark;
+        }
+
+        /// <summary>
+        /// 清除建筑信息;
+        /// </summary>
+        public BuildingNode Destroy()
+        {
+            return default(BuildingNode);
+        }
+
+        /// <summary>
+        /// 更新建筑信息;
+        /// </summary>
+        public BuildingNode Update(MapData data, int buildingType, float angle)
+        {
+            return Update(data.Building, buildingType, angle);
+        }
+
+        /// <summary>
+        /// 更新建筑信息;
+        /// </summary>
+        public BuildingNode Update(IdentifierGenerator buildingInfo, int buildingType, float angle)
+        {
+            if (!Exist())
+            {
+                ID = buildingInfo.GetNewEffectiveID();
+            }
+            BuildingType = buildingType;
+            Angle = angle;
+            return this;
+        }
 
         public bool Equals(BuildingNode other)
         {
@@ -60,51 +103,4 @@ namespace KouXiaGu.World.Map
             return !a.Equals(b);
         }
     }
-
-    public static class MapBuildingExtensions
-    {
-        /// <summary>
-        /// 不存在建筑时放置的标志;
-        /// </summary>
-        public const int EmptyMark = 0;
-
-        /// <summary>
-        /// 是否存在建筑物?
-        /// </summary>
-        public static bool Exist(this BuildingNode node)
-        {
-            return node.ID != EmptyMark;
-        }
-
-        /// <summary>
-        /// 清除建筑信息;
-        /// </summary>
-        public static BuildingNode Destroy(this BuildingNode node)
-        {
-            return default(BuildingNode);
-        }
-
-        /// <summary>
-        /// 更新建筑信息;
-        /// </summary>
-        public static BuildingNode Update(this BuildingNode node, MapData data, int buildingType, float angle)
-        {
-            return Update(node, data.Building, buildingType, angle);
-        }
-
-        /// <summary>
-        /// 更新建筑信息;
-        /// </summary>
-        public static BuildingNode Update(this BuildingNode node, IdentifierGenerator buildingInfo, int buildingType, float angle)
-        {
-            if (!node.Exist())
-            {
-                node.ID = buildingInfo.GetNewEffectiveID();
-            }
-            node.BuildingType = buildingType;
-            node.Angle = angle;
-            return node;
-        }
-    }
-
 }
