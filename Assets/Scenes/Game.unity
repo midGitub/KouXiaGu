@@ -2294,7 +2294,7 @@ MonoBehaviour:
   bakeCamera:
     camera: {fileID: 881292060}
     settings:
-      textureSize: 80
+      textureSize: 160
       diffuseMapRatios: 1
       heightMapRatios: 1
   bakeLandform:

@@ -68,7 +68,7 @@ namespace KouXiaGu.Terrain3D
 
         public Landform Landform
         {
-            get { return Landform; }
+            get { return landform; }
         }
 
         /// <summary>
