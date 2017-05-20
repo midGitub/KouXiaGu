@@ -13,9 +13,6 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public struct MapNode
     {
-        [ProtoMember(0)]
-        public int ID;
-
         [ProtoMember(1)]
         public LandformNode Landform;
 
@@ -24,8 +21,6 @@ namespace KouXiaGu.World.Map
 
         [ProtoMember(3)]
         public BuildingNode Building;
-
-
 
 
     }

@@ -14,6 +14,11 @@ namespace KouXiaGu.World.Map
     public struct LandformNode
     {
         /// <summary>
+        /// 不存在地形时放置的标志;
+        /// </summary>
+        public const int EmptyMark = 0;
+
+        /// <summary>
         /// 编号,不存在则为0;
         /// </summary>
         [ProtoMember(0)]
@@ -30,27 +35,19 @@ namespace KouXiaGu.World.Map
         /// </summary>
         [ProtoMember(2)]
         public float Angle;
-    }
-
-    public static class MapLandformExtensions
-    {
-        /// <summary>
-        /// 不存在地形时放置的标志;
-        /// </summary>
-        public const int EmptyMark = 0;
 
         /// <summary>
         /// 是否存在地形?
         /// </summary>
-        public static bool Exist(this LandformNode node)
+        public bool Exist()
         {
-            return node.ID != EmptyMark;
+            return ID != EmptyMark;
         }
 
         /// <summary>
         /// 清除地形信息;
         /// </summary>
-        public static LandformNode Destroy(this LandformNode node)
+        public LandformNode Destroy()
         {
             return default(LandformNode);
         }
@@ -58,24 +55,23 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 更新建筑信息;
         /// </summary>
-        public static LandformNode Update(this LandformNode node, MapData data, int landformType, float angle)
+        public LandformNode Update(MapData data, int landformType, float angle)
         {
-            return Update(node, data.Landform, landformType, angle);
+            return Update(data.Landform, landformType, angle);
         }
 
         /// <summary>
         /// 更新建筑信息;
         /// </summary>
-        public static LandformNode Update(this LandformNode node, IdentifierGenerator landformInfo, int landformType, float angle)
+        public LandformNode Update(IdentifierGenerator landformInfo, int landformType, float angle)
         {
-            if (!node.Exist())
+            if (!Exist())
             {
-                node.ID = landformInfo.GetNewEffectiveID();
+                ID = landformInfo.GetNewEffectiveID();
             }
-            node.LandformType = landformType;
-            node.Angle = angle;
-            return node;
+            LandformType = landformType;
+            Angle = angle;
+            return this;
         }
     }
-
 }
