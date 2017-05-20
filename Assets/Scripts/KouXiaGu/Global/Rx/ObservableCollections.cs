@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UniRx;
+using System.Collections.ObjectModel;
 
 namespace KouXiaGu
 {
@@ -26,12 +27,18 @@ namespace KouXiaGu
     /// </summary>
     public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
+        /// <summary>
+        /// 保存合集引用;
+        /// </summary>
         public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
         {
             this.dictionary = dictionary;
             observers = new ObserverLinkedList<IDictionaryObserver<TKey, TValue>>();
         }
 
+        /// <summary>
+        /// 保存合集引用;
+        /// </summary>
         public ObservableDictionary(IDictionary<TKey, TValue> dictionary, IObserverCollection<IDictionaryObserver<TKey, TValue>> observers)
         {
             this.dictionary = dictionary;
@@ -218,16 +225,22 @@ namespace KouXiaGu
     /// </summary>
     public class ObservableCollection<T> : ICollection<T>, IObservableCollection<T>
     {
+        /// <summary>
+        /// 保存合集引用;
+        /// </summary>
         public ObservableCollection(ICollection<T> collection)
         {
             this.collection = collection;
-            this.observers = new ObserverLinkedList<ICollectionObserver<T>>();
+            observers = new ObserverLinkedList<ICollectionObserver<T>>();
         }
 
+        /// <summary>
+        /// 保存合集引用;
+        /// </summary>
         public ObservableCollection(ICollection<T> collection, IObserverCollection<ICollectionObserver<T>> observerCollection)
         {
             this.collection = collection;
-            this.observers = observerCollection;
+            observers = observerCollection;
         }
 
         readonly ICollection<T> collection;
