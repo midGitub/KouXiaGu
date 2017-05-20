@@ -8,10 +8,11 @@ using UnityStandardAssets.Water;
 namespace KouXiaGu.Terrain3D
 {
 
+    [Obsolete]
     [DisallowMultipleComponent]
-    public class WaterManager : MonoBehaviour
+    public class OWaterManager : MonoBehaviour
     {
-        WaterManager()
+        OWaterManager()
         {
         }
 

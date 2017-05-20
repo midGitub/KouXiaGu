@@ -9,7 +9,7 @@ using UnityStandardAssets.Water;
 namespace KouXiaGu.Terrain3D
 {
 
-    [CustomEditor(typeof(WaterManager))]
+    [CustomEditor(typeof(OWaterManager))]
     [CanEditMultipleObjects]
     class WaterManagerEditor : Editor
     {
@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            var target = (WaterManager)this.target;
+            var target = (OWaterManager)this.target;
 
             target.IsDisplay = EditorGUILayout.Toggle("IsDisplay", target.IsDisplay);
             target.WaterMode = (Water.WaterMode)EditorGUILayout.EnumPopup("WaterMode", target.WaterMode);

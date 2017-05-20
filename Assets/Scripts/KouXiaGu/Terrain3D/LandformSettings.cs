@@ -23,6 +23,8 @@ namespace KouXiaGu.Terrain3D
         Shader landformShader;
         [SerializeField]
         BakeSettings bakeSettings;
+        [SerializeField]
+        WaterSettings waterSettings;
         [SerializeField, Range(0, 64)]
         float tessellation = 16f;
         [SerializeField, Range(0, 5)]
@@ -44,12 +46,14 @@ namespace KouXiaGu.Terrain3D
             get { return landformShader; }
         }
 
-        /// <summary>
-        /// 烘培设置;
-        /// </summary>
         public BakeSettings BakeSettings
         {
             get { return bakeSettings; }
+        }
+
+        public WaterSettings WaterSettings
+        {
+            get { return waterSettings; }
         }
 
         /// <summary>

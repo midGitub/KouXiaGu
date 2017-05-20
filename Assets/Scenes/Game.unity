@@ -1176,56 +1176,6 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 1
---- !u!1001 &871296079
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4287483618835038, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_RootOrder
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 1308883436855014, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_Name
-      value: Building_Test1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1308883436855014, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: fae849e2b92bf3e43a512fd9c43e6799, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &881292057
 GameObject:
   m_ObjectHideFlags: 0
@@ -2833,17 +2783,17 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
@@ -2859,6 +2809,11 @@ Prefab:
         type: 2}
       propertyPath: m_SizeDelta.x
       value: -23
+      objectReference: {fileID: 0}
+    - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b268a1f3b9d228b45bd5efd770c18be2, type: 2}

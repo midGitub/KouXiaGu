@@ -14,11 +14,11 @@ namespace KouXiaGu.Terrain3D
     class WaterWatcher : MonoBehaviour
     {
 
-        WaterManager waterManager;
+        OWaterManager waterManager;
 
         void Awake()
         {
-            waterManager = SceneObject.GetObject<WaterManager>();
+            waterManager = SceneObject.GetObject<OWaterManager>();
         }
 
         void Update()
