@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public BuildingManager(IWorldData worldData, Landform landform)
+        public BuildingManager(IWorldData worldData, LandformBuilder landform)
         {
             builder = new BuildingBuilder(worldData, landform);
         }

@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     [DisallowMultipleComponent]
-    public class LandformBuilding : MonoBehaviour, ILandformBuilding
+    public class LandformBuilding : MonoBehaviour, IBuildingPrefab, IBuilding
     {
         protected LandformBuilding()
         {
@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
             get { return gameObject; }
         }
 
-        ILandformBuilding ILandformBuilding.BuildAt(CubicHexCoord position, MapNode node, Landform landform, IWorldData data)
+        IBuilding IBuildingPrefab.BuildAt(CubicHexCoord position, MapNode node, BuildingBuilder builder)
         {
             BuildingNode buildingNode = node.Building;
             Vector3 pixelPosition = position.GetTerrainPixel();
@@ -34,13 +34,13 @@ namespace KouXiaGu.Terrain3D
             GameObject instance = Instantiate(Prefab, pixelPosition, angle);
             LandformBuilding item = instance.GetComponent<LandformBuilding>();
             item.Position = position;
-            item.Landform = landform;
-            item.WorldData = data;
+            //item.Landform = world.l landform;
+            //item.WorldData = data;
             item.Rebuild();
             return item;
         }
 
-        void ILandformBuilding.Destroy()
+        void IBuilding.Destroy()
         {
             Destroy(gameObject);
         }

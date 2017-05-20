@@ -26,12 +26,12 @@ namespace KouXiaGu.Terrain3D
         {
             Info = info;
             Prefab = prefab;
-            Building = Prefab == null ? null : Prefab.GetComponent<ILandformBuilding>();
+            Building = Prefab == null ? null : Prefab.GetComponent<IBuildingPrefab>();
         }
 
         public TerrainBuildingInfo Info { get; private set; }
         public GameObject Prefab { get; internal set; }
-        public ILandformBuilding Building { get; internal set; }
+        public IBuildingPrefab Building { get; internal set; }
 
         public bool IsLoadComplete
         {

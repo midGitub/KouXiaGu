@@ -9,26 +9,26 @@ using UniRx;
 namespace KouXiaGu.Terrain3D
 {
 
-    /// <summary>
-    /// 建筑物创建接口,需要挂载在预制物体上;
-    /// </summary>
-    public interface ILandformBuilding
-    {
-        /// <summary>
-        /// 将建筑物建立到新的位置(仅调用预制物体上的脚本);
-        /// </summary>
-        ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
+    ///// <summary>
+    ///// 建筑物创建接口,需要挂载在预制物体上;
+    ///// </summary>
+    //public interface ILandformBuilding
+    //{
+    //    /// <summary>
+    //    /// 将建筑物建立到新的位置(仅调用预制物体上的脚本);
+    //    /// </summary>
+    //    ILandformBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
 
-        /// <summary>
-        /// 重新构建建筑(当地形发生变化时调用);
-        /// </summary>
-        void Rebuild();
+    //    /// <summary>
+    //    /// 重新构建建筑(当地形发生变化时调用);
+    //    /// </summary>
+    //    void Rebuild();
 
-        /// <summary>
-        /// 销毁这个实例;
-        /// </summary>
-        void Destroy();
-    }
+    //    /// <summary>
+    //    /// 销毁这个实例;
+    //    /// </summary>
+    //    void Destroy();
+    //}
 
     /// <summary>
     /// 场景建筑物实例;
@@ -54,7 +54,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将建筑物建立到新的位置;
         /// </summary>
-        IBuilding BuildAt(CubicHexCoord coord, MapNode node, Landform landform, IWorldData data);
+        IBuilding BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder);
     }
 
     /// <summary>
@@ -62,31 +62,29 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder 
     {
-        public BuildingBuilder(IWorldData worldData, Landform landform)
+        public BuildingBuilder(IWorldData worldData, LandformBuilder landform)
         {
-            this.worldData = worldData;
-            this.landform = landform;
+            this.world = worldData;
             requestDispatcher = SceneObject.GetObject<BuildingRequestDispatcher>();
-            landformObserver = new LandformObserver(this, landform.LandformBuilder.CompletedChunkSender);
+            landformObserver = new LandformObserver(this, landform.CompletedChunkSender);
             sceneBuildings = new Dictionary<CubicHexCoord, BuildingCreateRequest>();
-            readOnlySceneBuildings = sceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<ILandformBuilding>);
+            readOnlySceneBuildings = sceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<IBuilding>);
             sceneChunks = new HashSet<RectCoord>();
             readOnlySceneChunks = sceneChunks.AsReadOnlyCollection();
         }
 
-        readonly IWorldData worldData;
-        readonly Landform landform;
+        readonly IWorldData world;
         readonly RequestDispatcher requestDispatcher;
         readonly LandformObserver landformObserver;
         readonly Dictionary<CubicHexCoord, BuildingCreateRequest> sceneBuildings;
-        readonly IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<ILandformBuilding>> readOnlySceneBuildings;
+        readonly IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<IBuilding>> readOnlySceneBuildings;
         readonly HashSet<RectCoord> sceneChunks;
         readonly IReadOnlyCollection<RectCoord> readOnlySceneChunks;
 
         /// <summary>
         /// 在场景中已经创建或者正在创建的建筑;
         /// </summary>
-        public IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<ILandformBuilding>> SceneBuildings
+        public IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<IBuilding>> SceneBuildings
         {
             get { return readOnlySceneBuildings; }
         }
@@ -106,18 +104,18 @@ namespace KouXiaGu.Terrain3D
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> mapData
         {
-            get { return worldData.MapData.ReadOnlyMap; }
+            get { return world.MapData.ReadOnlyMap; }
         }
 
         IDictionary<int, BuildingResource> resources
         {
-            get { return worldData.GameData.Terrain.BuildingInfos; }
+            get { return world.GameData.Terrain.BuildingInfos; }
         }
 
         /// <summary>
         /// 创建建筑物到该坐标,若不存在建筑物则返回 null;
         /// </summary>
-        ILandformBuilding Create(CubicHexCoord position)
+        IBuilding Create(CubicHexCoord position)
         {
             MapNode node;
             if (mapData.TryGetValue(position, out node))
@@ -128,7 +126,7 @@ namespace KouXiaGu.Terrain3D
                     int buildingType = node.Building.BuildingType;
                     if (resources.TryGetValue(buildingType, out resource))
                     {
-                        ILandformBuilding building = resource.Building.BuildAt(position, node, landform, worldData);
+                        IBuilding building = resource.Building.BuildAt(position, node, this);
                         return building;
                     }
                     else
@@ -246,7 +244,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 更新指定地点的建筑物,若不存在建筑物,则返回null;
         /// </summary>
-        public IAsyncOperation<ILandformBuilding> Update(CubicHexCoord position)
+        public IAsyncOperation<IBuilding> Update(CubicHexCoord position)
         {
             BuildingCreateRequest request;
             if (sceneBuildings.TryGetValue(position, out request))
@@ -264,7 +262,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        class BuildingCreateRequest : AsyncOperation<ILandformBuilding>, IRequest
+        class BuildingCreateRequest : AsyncOperation<IBuilding>, IRequest
         {
             public BuildingCreateRequest(BuildingBuilder builder, CubicHexCoord position)
             {

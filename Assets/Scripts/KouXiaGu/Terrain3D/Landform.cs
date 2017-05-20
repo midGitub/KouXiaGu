@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
         Landform(IWorldData worldData)
         {
             LandformManager = new LandformManager(worldData);
-            BuildingManager = new BuildingManager(worldData, this);
+            BuildingManager = new BuildingManager(worldData, LandformManager.Builder);
 
             MapWatcher = new WorldMapWatcher(LandformBuilder, worldData.MapData.ObservableMap);
             Water = SceneObject.GetObject<WaterManager>();
@@ -52,6 +52,7 @@ namespace KouXiaGu.Terrain3D
         public bool IsInitialized { get; private set; }
         public LandformManager LandformManager { get; private set; }
         public BuildingManager BuildingManager { get; private set; }
+
 
         public WorldMapWatcher MapWatcher { get; private set; }
         public WaterManager Water { get; private set; }
