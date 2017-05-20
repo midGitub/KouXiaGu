@@ -6,6 +6,10 @@ using UniRx;
 
 namespace KouXiaGu
 {
+
+    /// <summary>
+    /// 信息订阅;
+    /// </summary>
     class Sender<T> : IObservable<T>
     {
         public Sender()

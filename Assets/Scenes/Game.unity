@@ -2321,8 +2321,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1146917776}
   - component: {fileID: 1146917773}
-  - component: {fileID: 1146917775}
   - component: {fileID: 1146917774}
+  - component: {fileID: 1146917775}
   m_Layer: 0
   m_Name: Landform
   m_TagString: Untagged

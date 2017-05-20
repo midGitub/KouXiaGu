@@ -38,23 +38,29 @@ namespace KouXiaGu.World
             gameWorldInitializer = new AsyncInitializer(GameInitializer.Instance.GameDataInitialize);
         }
 
+        /// <summary>
+        /// 订阅到,若已经存在结果则返回Null,并且调用委托;
+        /// </summary>
         public IDisposable Subscribe(IObserver<IWorld> observer)
         {
             return gameWorldInitializer.Subscribe(observer);
         }
 
+        /// <summary>
+        /// 异步初始化结构;
+        /// </summary>
         class AsyncInitializer : AsyncOperation<IWorld>, IWorld, IObservable<IWorld>
         {
             public AsyncInitializer(IAsyncOperation<IGameData> gameDataInitializer)
             {
-                stateSender = new ResultSend<IWorld>(this);
+                stateSender = new AsyncResultSender<IWorld>(this);
                 worldDataInitialize = new DataInitializer();
                 componentInitializer = new ComponentInitializer();
                 sceneInitializer = new SceneInitializer();
                 gameDataInitializer.Subscribe(Name + "等待游戏数据初始化完毕;", Initialize, OnInitializeFaulted);
             }
 
-            readonly ResultSend<IWorld> stateSender;
+            readonly AsyncResultSender<IWorld> stateSender;
             readonly DataInitializer worldDataInitialize;
             readonly ComponentInitializer componentInitializer;
             readonly SceneInitializer sceneInitializer;
@@ -63,6 +69,9 @@ namespace KouXiaGu.World
             public IWorldData Data { get; private set; }
             public IWorldScene Component { get; private set; }
 
+            /// <summary>
+            /// 订阅到,若已经存在结果则返回Null,并且调用委托;
+            /// </summary>
             public IDisposable Subscribe(IObserver<IWorld> observer)
             {
                 return stateSender.Subscribe(observer);
@@ -113,38 +122,6 @@ namespace KouXiaGu.World
                 Debug.Log("游戏初始化失败!");
             }
 
-        }
-
-        class ResultSend<T> : Sender<T>
-            where T : class
-        {
-            public ResultSend(IAsyncOperation<T> asyncOperation)
-            {
-                this.asyncOperation = asyncOperation;
-            }
-
-            public IAsyncOperation<T> asyncOperation;
-
-            /// <summary>
-            /// 订阅到,若已经存在结果则返回Null,并且调用委托;
-            /// </summary>
-            public override IDisposable Subscribe(IObserver<T> observer)
-            {
-                if (asyncOperation.IsFaulted)
-                {
-                    observer.OnError(asyncOperation.Exception);
-                }
-                else if (asyncOperation.IsCompleted)
-                {
-                    observer.OnNext(asyncOperation.Result);
-                }
-                else
-                {
-                    return base.Subscribe(observer);
-                }
-                observer.OnCompleted();
-                return null;
-            }
         }
 
 
