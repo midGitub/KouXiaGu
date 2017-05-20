@@ -57,9 +57,9 @@ namespace KouXiaGu.Terrain3D
             ChunkCreateRequest request;
             if (!sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                Chunk chunk = chunkPool.Get();
-                chunk.Position = ChunkGrid.GetCenter(chunkCoord);
-                request = new ChunkCreateRequest(this, chunkCoord, chunk, targets);
+                //Chunk chunk = chunkPool.Get();
+                //chunk.Position = ChunkGrid.GetCenter(chunkCoord);
+                request = new ChunkCreateRequest(this, chunkCoord, targets);
                 AddBakeQueue(request);
                 sceneChunks.Add(chunkCoord, request);
             }
@@ -76,8 +76,8 @@ namespace KouXiaGu.Terrain3D
             {
                 if (request.IsBaking)
                 {
-                    request.IsCanceled = true;
-                    ChunkCreateRequest newRequest = new ChunkCreateRequest(this, chunkCoord, request.Chunk, targets);
+                    request.Destroy();
+                    ChunkCreateRequest newRequest = new ChunkCreateRequest(this, chunkCoord, targets);
                     AddBakeQueue(request);
                     sceneChunks[chunkCoord] = newRequest;
                 }
@@ -100,16 +100,29 @@ namespace KouXiaGu.Terrain3D
             baker.AddRequest(request);
         }
 
+        /// <summary>
+        /// 销毁指定块;
+        /// </summary>
         public void Destroy(RectCoord chunkCoord)
         {
             ChunkCreateRequest request;
             if (sceneChunks.TryGetValue(chunkCoord, out request))
             {
                 sceneChunks.Remove(chunkCoord);
-                chunkPool.Release(request.Chunk);
-                request.Chunk = null;
-                request.IsCanceled = true;
+                request.Destroy();
             }
+        }
+
+        /// <summary>
+        /// 销毁所有块;
+        /// </summary>
+        public void DestroyAll()
+        {
+            foreach (var sceneChunk in sceneChunks.Values)
+            {
+                sceneChunk.Destroy();
+            }
+            sceneChunks.Clear();
         }
 
         /// <summary>
@@ -130,32 +143,41 @@ namespace KouXiaGu.Terrain3D
 
         class ChunkCreateRequest : AsyncOperation<Chunk>, IBakeRequest
         {
-            ChunkCreateRequest()
+            public ChunkCreateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
             {
+                Parent = parent;
+                ChunkCoord = chunkCoord;
+                Chunk = chunkPool.Get();
+                Chunk.Position = parent.ChunkGrid.GetCenter(chunkCoord);
+                Targets = targets;
                 IsInQueue = false;
                 IsBaking = false;
                 IsCanceled = false;
             }
 
-            public ChunkCreateRequest(LandformBuilder parent, RectCoord chunkCoord, Chunk chunk, BakeTargets targets) : this()
-            {
-                Parent = parent;
-                ChunkCoord = chunkCoord;
-                Chunk = chunk;
-                Targets = targets;
-            }
-
             public LandformBuilder Parent { get; private set; }
-            public RectCoord ChunkCoord { get; set; }
+            public RectCoord ChunkCoord { get; private set; }
             public BakeTargets Targets { get; set; }
             public bool IsInQueue { get; private set; }
             public bool IsBaking { get; private set; }
-            public bool IsCanceled { get; set; }
+            public bool IsCanceled { get; private set; }
+
+            ChunkPool chunkPool
+            {
+                get { return Parent.chunkPool; }
+            }
 
             public Chunk Chunk
             {
                 get { return Result; }
-                set { Result = value; }
+                private set { Result = value; }
+            }
+
+            public void Destroy()
+            {
+                IsCanceled = true;
+                chunkPool.Release(Chunk);
+                Chunk = null;
             }
 
             /// <summary>

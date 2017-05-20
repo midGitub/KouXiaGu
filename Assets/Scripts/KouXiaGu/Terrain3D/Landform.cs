@@ -92,12 +92,22 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;
         /// </summary>
         public float GetHeight(Vector3 position)
         {
             return LandformBuilder.GetHeight(position);
+        }
+
+        /// <summary>
+        /// 重新创建所有;
+        /// </summary>
+        public void RebuildAll()
+        {
+            LandformBuilder.DestroyAll();
+            BuildingBuilder.DestroyAll();
         }
     }
 

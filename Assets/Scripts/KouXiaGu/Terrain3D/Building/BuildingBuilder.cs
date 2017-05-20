@@ -8,32 +8,6 @@ using UniRx;
 
 namespace KouXiaGu.Terrain3D
 {
-    /// <summary>
-    /// 场景建筑物实例;
-    /// </summary>
-    public interface IBuilding
-    {
-        /// <summary>
-        /// 重新构建建筑(当地形发生变化时调用);
-        /// </summary>
-        void Rebuild();
-
-        /// <summary>
-        /// 销毁这个建筑物;
-        /// </summary>
-        void Destroy();
-    }
-
-    /// <summary>
-    /// 建筑物预制;
-    /// </summary>
-    public interface IBuildingPrefab
-    {
-        /// <summary>
-        /// 将建筑物建立到新的位置;
-        /// </summary>
-        IBuilding BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder);
-    }
 
     /// <summary>
     /// 对场景建筑物进行构建;
@@ -229,6 +203,19 @@ namespace KouXiaGu.Terrain3D
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 同步的销毁所有建筑实例;
+        /// </summary>
+        public void DestroyAll()
+        {
+            foreach (var building in sceneBuildings.Values)
+            {
+                building.Destroy();
+            }
+            sceneBuildings.Clear();
+            sceneChunks.Clear();
         }
 
         /// <summary>
