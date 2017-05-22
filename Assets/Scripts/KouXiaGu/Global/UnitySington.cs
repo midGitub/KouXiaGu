@@ -22,7 +22,7 @@ namespace KouXiaGu
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    return FindOrCreate();
+                    return FindInEditor();
                 }
 #endif
                 return instance ?? FindOrCreate();
@@ -37,7 +37,30 @@ namespace KouXiaGu
             get { return instance != null; }
         }
 
-        static T FindOrCreate()
+        /// <summary>
+        /// 编辑模式下使用的模式;
+        /// </summary>
+        static T FindInEditor()
+        {
+            T instance;
+            var instances = GameObject.FindObjectsOfType<T>();
+            if (instances.Length == 0)
+            {
+                instance = CreateInstance();
+            }
+            else if (instances.Length == 1)
+            {
+                instance = instances[0];
+            }
+            else
+            {
+                instance = instances[0];
+                Debug.LogError(instances.ToLog("多个单例脚本存在于场景!"));
+            }
+            return instance;
+        }
+
+        internal static T FindOrCreate()
         {
             if (instance == null)
             {
@@ -50,7 +73,7 @@ namespace KouXiaGu
             return instance;
         }
 
-        static T CreateInstance()
+        internal static T CreateInstance()
         {
             var type = typeof(T);
             var gameObject = new GameObject(type.Name, type);
@@ -66,7 +89,6 @@ namespace KouXiaGu
             if (instance == null)
             {
                 var instances = GameObject.FindObjectsOfType<T>();
-
                 if (instances.Length == 0)
                 {
                     var type = typeof(T);
@@ -108,7 +130,7 @@ namespace KouXiaGu
             }
             if (Instance != null && Instance != instance)
             {
-                throw new ArgumentException("设置不同的单例;");
+                throw new ArgumentException("设置不同的单例;原本:" + (Instance as MonoBehaviour).name + ",请求:" + (instance as MonoBehaviour).name);
             }
             UnitySington<T>.instance = instance;
         }
@@ -119,7 +141,5 @@ namespace KouXiaGu
             var instances = GameObject.FindObjectsOfType<T>();
             Debug.Log(instances.ToLog("场景存在单例"));
         }
-
     }
-
 }

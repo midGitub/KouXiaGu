@@ -1727,6 +1727,7 @@ MonoBehaviour:
     NighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
     PrefabChunk: {fileID: 114291751743592606, guid: 2b5cad118603a2445b4982b89a79549b,
       type: 2}
+    SeaLevel: 0.23
     CustomizableSettings:
       WaterMode: 2
   tessellation: 64

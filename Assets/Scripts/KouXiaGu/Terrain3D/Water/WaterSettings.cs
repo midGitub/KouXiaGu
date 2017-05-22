@@ -18,6 +18,10 @@ namespace KouXiaGu.Terrain3D
         public Material DaytimeMaterial;
         public Material NighttimeMaterial;
         public WaterChunk PrefabChunk;
+        /// <summary>
+        /// 海平面高度;
+        /// </summary>
+        public float SeaLevel;
         public WaterCustomizableSettings CustomizableSettings;
     }
 

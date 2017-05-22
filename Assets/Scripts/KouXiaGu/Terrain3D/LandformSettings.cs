@@ -13,6 +13,7 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     class LandformSettings : UnitySington<LandformSettings>
     {
+
         LandformSettings()
         {
         }
@@ -74,6 +75,12 @@ namespace KouXiaGu.Terrain3D
 
         void Awake()
         {
+            SetInstance(this);
+            OnValidate();
+        }
+
+        void OnValidate()
+        {
             BakeSettings.UpdataTextureSize();
             SetTessellation(tessellation);
             SetDisplacement(displacement);
@@ -81,12 +88,6 @@ namespace KouXiaGu.Terrain3D
             SetGridLineColor(gridLineColor);
             SetIsDisplayGridLine(isDisplayGridLine);
         }
-
-        void OnValidate()
-        {
-            Awake();
-        }
-
 
         const string TessellationName = "_LandformTess";
 

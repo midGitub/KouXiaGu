@@ -13,6 +13,9 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class WaterWatcher : MonoBehaviour
     {
+        static ObservableCollection<WaterWatcher> watchers = new ObservableCollection<WaterWatcher>(new List<WaterWatcher>());
+
+
 
         WaterManager waterManager;
 
