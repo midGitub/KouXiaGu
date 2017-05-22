@@ -5,7 +5,10 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    [ExecuteInEditMode] // Make water live-update even when not in play mode
+    /// <summary>
+    /// 水特效;
+    /// </summary>
+    //[ExecuteInEditMode] //原本是允许在编辑器内运行,现在不允许了;
     public class Water : MonoBehaviour
     {
         public enum WaterMode
@@ -45,6 +48,10 @@ namespace KouXiaGu.Terrain3D
         private int m_OldRefractionTextureSize;
         private static bool s_InsideWater;
 
+        void Awake()
+        {
+            
+        }
 
         // This is called when it's known that the object will be rendered by some
         // camera. We render reflections / refractions and do other updates here.
