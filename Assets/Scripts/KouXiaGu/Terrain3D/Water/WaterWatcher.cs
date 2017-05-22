@@ -39,11 +39,12 @@ namespace KouXiaGu.Terrain3D
             {
                 chunk = Instantiate(settings.PrefabChunk);
             }
+            chunk.gameObject.SetActive(true);
         }
 
         void OnDisable()
         {
-            
+            chunk.gameObject.SetActive(false);
         }
     }
 
