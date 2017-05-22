@@ -75,6 +75,7 @@ namespace KouXiaGu.Terrain3D
         WaterChunk CreateWaterChunk()
         {
             var chunk = Instantiate(settings.PrefabChunk, ChunkParent);
+            chunk.name = name;
             return chunk;
         }
     }
