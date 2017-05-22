@@ -61,44 +61,8 @@ namespace KouXiaGu.Terrain3D
         internal BakeTextureInfo LandformDiffuseMap { get; private set; }
         internal BakeTextureInfo LandformHeightMap { get; private set; }
 
-        ///// <summary>
-        ///// 图片裁剪后的尺寸;
-        ///// </summary>
-        //[XmlIgnore]
-        //public int DiffuseTexWidth { get; private set; }
-        //[XmlIgnore]
-        //public int DiffuseTexHeight { get; private set; }
-        //[XmlIgnore]
-        //public int HeightMapWidth { get; private set; }
-        //[XmlIgnore]
-        //public int HeightMapHeight { get; private set; }
-
-        ///// <summary>
-        ///// 烘焙时的尺寸;
-        ///// </summary>
-        //[XmlIgnore]
-        //public int rDiffuseTexWidth { get; private set; }
-        //[XmlIgnore]
-        //public int rDiffuseTexHeight { get; private set; }
-        //[XmlIgnore]
-        //public int rHeightMapWidth { get; private set; }
-        //[XmlIgnore]
-        //public int rHeightMapHeight { get; private set; }
-
-        ///// <summary>
-        ///// 漫反射图裁剪区域;
-        ///// </summary>
-        //[XmlIgnore]
-        //public Rect DiffuseReadPixel { get; private set; }
-        ///// <summary>
-        ///// 高度图裁剪区域;
-        ///// </summary>
-        //[XmlIgnore]
-        //public Rect HeightReadPixel { get; private set; }
-
-
         /// <summary>
-        /// 贴图大小 推荐 80 ~ 500;
+        /// 贴图大小 推荐 40 ~ 300;
         /// </summary>
         [XmlElement("TextureSize")]
         public float TextureSize
@@ -108,20 +72,20 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 贴图分辨率百分比 0.1~1
+        /// 贴图比例;
         /// </summary>
         [XmlElement("DiffuseMapRatios")]
-        public float DiffuseMapRatios
+        public float LandformDiffuseMapRatios
         {
             get { return diffuseMapRatios; }
             set { diffuseMapRatios = value; }
         }
 
         /// <summary>
-        /// 贴图分辨率百分比 0.1~1
+        /// 贴图比例;
         /// </summary>
         [XmlElement("HeightMapRatios")]
-        public float HeightMapRatios
+        public float LandformHeightMapRatios
         {
             get { return heightMapRatios; }
             set { heightMapRatios = value; }
@@ -165,6 +129,13 @@ namespace KouXiaGu.Terrain3D
 
     class BakeTextureInfo
     {
+        public BakeTextureInfo(int width, int height, float ratios, float outlineScale)
+        {
+            width = (int)(width * ratios);
+            height = (int)(height + ratios);
+            Init(width, height, outlineScale);
+        }
+
         /// <summary>
         /// 构造;
         /// </summary>
@@ -172,6 +143,11 @@ namespace KouXiaGu.Terrain3D
         /// <param name="height">最终高度;</param>
         /// <param name="outlineScale">烘焙时的边框比例(需要裁剪的部分比例);</param>
         public BakeTextureInfo(int width, int height, float outlineScale)
+        {
+            Init(width, height, outlineScale);
+        }
+
+        void Init(int width, int height, float outlineScale)
         {
             Width = width;
             Height = height;
