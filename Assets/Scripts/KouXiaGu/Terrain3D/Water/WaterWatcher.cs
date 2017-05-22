@@ -13,15 +13,37 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class WaterWatcher : MonoBehaviour
     {
-        static ObservableCollection<WaterWatcher> watchers = new ObservableCollection<WaterWatcher>(new List<WaterWatcher>());
-
-
-
-        WaterManager waterManager;
-
-        void Awake()
+        static WaterWatcher()
         {
+            watchers = new List<WaterWatcher>();
+        }
 
+        static List<WaterWatcher> watchers;
+        WaterChunk chunk;
+
+        WaterSettings settings
+        {
+            get { return LandformSettings.Instance.WaterSettings; }
+        }
+
+        void Update()
+        {
+            Vector3 position = transform.position;
+            position.y = settings.SeaLevel;
+            chunk.transform.position = position;
+        }
+
+        void OnEnable()
+        {
+            if (chunk == null)
+            {
+                chunk = Instantiate(settings.PrefabChunk);
+            }
+        }
+
+        void OnDisable()
+        {
+            
         }
     }
 
