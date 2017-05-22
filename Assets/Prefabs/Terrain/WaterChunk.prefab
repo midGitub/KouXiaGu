@@ -92,7 +92,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b58633b6ab1d1524b985d3df46d5caa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waterMode: 2
   disablePixelLights: 1
   textureSize: 256
   clipPlaneOffset: 0.07
