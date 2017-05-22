@@ -7,7 +7,9 @@ using System.Text;
 namespace KouXiaGu
 {
 
-
+    /// <summary>
+    /// 合集;
+    /// </summary>
     public class Set<T> : ICollection<T>
     {
         public Set()
@@ -23,7 +25,7 @@ namespace KouXiaGu
         }
 
         readonly List<T> collection;
-        IEqualityComparer<T> comparer;
+        readonly IEqualityComparer<T> comparer;
 
         public IEqualityComparer<T> Comparer
         {
@@ -40,6 +42,9 @@ namespace KouXiaGu
             get { return false; }
         }
 
+        /// <summary>
+        /// 加入元素,若已经存在则返回异常;O(n)
+        /// </summary>
         public void Add(T item)
         {
             if (collection.Contains(item, comparer))
@@ -52,19 +57,25 @@ namespace KouXiaGu
             }
         }
 
+        /// <summary>
+        /// 移除元素;O(n)
+        /// </summary>
         public bool Remove(T item)
         {
             return collection.Remove(item);
         }
 
-        public void Clear()
-        {
-            collection.Clear();
-        }
-
+        /// <summary>
+        /// 确实是否存在此元素;O(n)
+        /// </summary>
         public bool Contains(T item)
         {
             return collection.Contains(item);
+        }
+
+        public void Clear()
+        {
+            collection.Clear();
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -74,12 +85,12 @@ namespace KouXiaGu
 
         public IEnumerator<T> GetEnumerator()
         {
-            return ((ICollection<T>)collection).GetEnumerator();
+            return collection.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((ICollection<T>)collection).GetEnumerator();
+            return GetEnumerator();
         }
     }
 
