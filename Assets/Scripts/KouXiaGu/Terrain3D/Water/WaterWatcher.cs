@@ -19,11 +19,33 @@ namespace KouXiaGu.Terrain3D
         }
 
         static List<WaterWatcher> watchers;
+        static Transform chunkParent;
         WaterChunk chunk;
 
         WaterSettings settings
         {
             get { return LandformSettings.Instance.WaterSettings; }
+        }
+
+        public static List<WaterWatcher> Watchers
+        {
+            get { return watchers; }
+        }
+
+        public static Transform ChunkParent
+        {
+            get { return chunkParent ?? (chunkParent = new GameObject("WaterChunks").transform); }
+        }
+
+        void Awake()
+        {
+            chunk = CreateWaterChunk();
+            watchers.Add(this);
+        }
+
+        void OnEnable()
+        {
+            chunk.gameObject.SetActive(true);
         }
 
         void Update()
@@ -33,19 +55,27 @@ namespace KouXiaGu.Terrain3D
             chunk.transform.position = position;
         }
 
-        void OnEnable()
-        {
-            if (chunk == null)
-            {
-                chunk = Instantiate(settings.PrefabChunk);
-            }
-            chunk.gameObject.SetActive(true);
-        }
-
         void OnDisable()
         {
-            chunk.gameObject.SetActive(false);
+            if (chunk != null)
+            {
+                chunk.gameObject.SetActive(false);
+            }
+        }
+
+        void OnDestroy()
+        {
+            watchers.Remove(this);
+            if (chunk != null)
+            {
+                GameObject.Destroy(chunk.gameObject);
+            }
+        }
+
+        WaterChunk CreateWaterChunk()
+        {
+            var chunk = Instantiate(settings.PrefabChunk, ChunkParent);
+            return chunk;
         }
     }
-
 }
