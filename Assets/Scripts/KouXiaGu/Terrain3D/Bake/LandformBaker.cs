@@ -115,7 +115,7 @@ namespace KouXiaGu.Terrain3D
 
         void Reset()
         {
-            bakeCamera.Settings.UpdataTextureSize();
+            bakeCamera.Settings.Updata();
         }
 
         IEnumerator BakeCoroutine()

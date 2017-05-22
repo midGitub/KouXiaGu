@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
             get { return camera; }
         }
 
-        public BakeSettings Settings
+        public QualitySettings Settings
         {
             get { return LandformSettings.Instance.BakeSettings; }
         }
@@ -41,9 +41,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void InitBakingCamera()
         {
-            camera.aspect = BakeSettings.CameraAspect;
-            camera.orthographicSize = BakeSettings.CameraSize;
-            camera.transform.rotation = BakeSettings.CameraRotation;
+            camera.aspect = QualitySettings.CameraAspect;
+            camera.orthographicSize = QualitySettings.CameraSize;
+            camera.transform.rotation = QualitySettings.CameraRotation;
             camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
             camera.backgroundColor = Color.black;
         }
@@ -53,7 +53,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public RenderTexture GetDiffuseTemporaryRender()
         {
-            return RenderTexture.GetTemporary(Settings.rDiffuseTexWidth, Settings.rDiffuseTexHeight);
+            BakeTextureInfo texInfo = Settings.LandformDiffuseMap;
+            return RenderTexture.GetTemporary(texInfo.BakeWidth, texInfo.BakeHeight);
         }
 
         /// <summary>
@@ -61,7 +62,8 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public RenderTexture GetHeightTemporaryRender()
         {
-            return RenderTexture.GetTemporary(Settings.rHeightMapWidth, Settings.rHeightMapHeight);
+            BakeTextureInfo texInfo = Settings.LandformHeightMap;
+            return RenderTexture.GetTemporary(texInfo.BakeWidth, texInfo.BakeHeight);
         }
 
         /// <summary>
@@ -144,9 +146,10 @@ namespace KouXiaGu.Terrain3D
             TextureFormat format = TextureFormat.RGB24,
             bool mipmap = false)
         {
+            BakeTextureInfo texInfo = Settings.LandformDiffuseMap;
             RenderTexture.active = rt;
-            Texture2D diffuseTex = new Texture2D(Settings.DiffuseTexWidth, Settings.DiffuseTexHeight, format, mipmap);
-            diffuseTex.ReadPixels(Settings.DiffuseReadPixel, 0, 0, false);
+            Texture2D diffuseTex = new Texture2D(texInfo.Width, texInfo.Height, format, mipmap);
+            diffuseTex.ReadPixels(texInfo.ClippingRect, 0, 0, false);
             diffuseTex.wrapMode = TextureWrapMode.Clamp;
             diffuseTex.Apply();
             return diffuseTex;
@@ -157,9 +160,10 @@ namespace KouXiaGu.Terrain3D
             TextureFormat format = TextureFormat.RGB24,
             bool mipmap = false)
         {
+            BakeTextureInfo texInfo = Settings.LandformHeightMap;
             RenderTexture.active = rt;
-            Texture2D heightMap = new Texture2D(Settings.HeightMapWidth, Settings.HeightMapHeight, format, mipmap);
-            heightMap.ReadPixels(Settings.HeightReadPixel, 0, 0, false);
+            Texture2D heightMap = new Texture2D(texInfo.Width, texInfo.Height, format, mipmap);
+            heightMap.ReadPixels(texInfo.ClippingRect, 0, 0, false);
             heightMap.wrapMode = TextureWrapMode.Clamp;
             heightMap.Apply();
             return heightMap;

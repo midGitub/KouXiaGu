@@ -470,7 +470,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &232559845
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2344,8 +2344,6 @@ MonoBehaviour:
     heightShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
   bakeRoad:
     prefab: {fileID: 114079317866361212, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
-    segmentPoints: 16
-    roadWidth: 0.3
     diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
     heightShader: {fileID: 4800000, guid: 1f2f90526623fcc43b7dd38171b75795, type: 3}
   runtimeStopwatch:
@@ -2822,7 +2820,7 @@ Prefab:
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}

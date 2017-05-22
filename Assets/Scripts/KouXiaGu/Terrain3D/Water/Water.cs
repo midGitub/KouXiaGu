@@ -92,10 +92,10 @@ namespace KouXiaGu.Terrain3D
             Vector3 normal = transform.up;
 
             // Optionally disable pixel lights for reflection/refraction
-            int oldPixelLightCount = QualitySettings.pixelLightCount;
+            int oldPixelLightCount = UnityEngine.QualitySettings.pixelLightCount;
             if (disablePixelLights)
             {
-                QualitySettings.pixelLightCount = 0;
+                UnityEngine.QualitySettings.pixelLightCount = 0;
             }
 
             UpdateCameraModes(cam, reflectionCamera);
@@ -159,7 +159,7 @@ namespace KouXiaGu.Terrain3D
             // Restore pixel light count
             if (disablePixelLights)
             {
-                QualitySettings.pixelLightCount = oldPixelLightCount;
+                UnityEngine.QualitySettings.pixelLightCount = oldPixelLightCount;
             }
 
             // Setup shader keywords based on water mode

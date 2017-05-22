@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         Shader landformShader;
         [SerializeField]
-        BakeSettings bakeSettings;
+        QualitySettings bakeSettings;
         [SerializeField]
         WaterSettings waterSettings;
         [SerializeField, Range(0, 64)]
@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
             get { return landformShader; }
         }
 
-        public BakeSettings BakeSettings
+        public QualitySettings BakeSettings
         {
             get { return bakeSettings; }
         }
@@ -81,7 +81,7 @@ namespace KouXiaGu.Terrain3D
 
         void OnValidate()
         {
-            BakeSettings.UpdataTextureSize();
+            BakeSettings.Updata();
             SetTessellation(tessellation);
             SetDisplacement(displacement);
             SetGridLineMap(gridLineMap);

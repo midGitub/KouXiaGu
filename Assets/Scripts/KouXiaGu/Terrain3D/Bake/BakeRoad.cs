@@ -19,10 +19,6 @@ namespace KouXiaGu.Terrain3D
     {
         [SerializeField]
         DynamicMeshScript prefab = null;
-        [SerializeField, Range(4, 60)]
-        public int segmentPoints = 16;
-        [SerializeField, Range(0.01f, 2)]
-        public float roadWidth = 0.07f;
         [SerializeField]
         Shader diffuseShader = null;
         [SerializeField]
