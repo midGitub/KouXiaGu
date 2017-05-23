@@ -22,10 +22,10 @@ namespace KouXiaGu
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    return FindInEditor();
+                    return Find();
                 }
 #endif
-                return instance ?? FindOrCreate();
+                return instance ?? (instance = FindOrCreate());
             }
         }
 
@@ -40,7 +40,7 @@ namespace KouXiaGu
         /// <summary>
         /// 编辑模式下使用的模式;
         /// </summary>
-        static T FindInEditor()
+        internal static T FindInEditor()
         {
             T instance;
             var instances = GameObject.FindObjectsOfType<T>();
@@ -60,15 +60,18 @@ namespace KouXiaGu
             return instance;
         }
 
+        internal static T Find()
+        {
+            T instance = GameObject.FindObjectOfType<T>();
+            return instance;
+        }
+
         internal static T FindOrCreate()
         {
+            T instance = Find();
             if (instance == null)
             {
-                instance = GameObject.FindObjectOfType<T>();
-                if (instance == null)
-                {
-                    instance = CreateInstance();
-                }
+                instance = CreateInstance();
             }
             return instance;
         }
