@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 水特效;
     /// </summary>
-    //[ExecuteInEditMode] //原本是允许在编辑器内运行,现在不允许了;
+    [ExecuteInEditMode]
     public class Water : MonoBehaviour
     {
         public enum WaterMode
