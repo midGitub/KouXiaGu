@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml.Serialization;
 using KouXiaGu.Collections;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.Navigation;
 
 namespace KouXiaGu.World
 {
@@ -17,6 +18,9 @@ namespace KouXiaGu.World
     {
         [XmlElement("Terrain")]
         public TerrainBuildingInfo Terrain { get; set; }
+
+        [XmlElement("Navigation")]
+        public NavigationBuildingInfo Navigation;
     }
 
     /// <summary>

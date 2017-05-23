@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Xml.Serialization;
+
+namespace KouXiaGu.Navigation
+{
+
+    [XmlType("Building")]
+    public class NavigationBuildingInfo
+    {
+        /// <summary>
+        /// 是否可行走?
+        /// </summary>
+        [XmlElement("IsWalkable")]
+        public bool IsWalkable;
+
+    }
+}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.Collections;
+using KouXiaGu.Navigation;
 
 namespace KouXiaGu.World
 {
@@ -14,7 +15,10 @@ namespace KouXiaGu.World
     public class LandformInfo : ElementInfo
     {
         [XmlElement("Terrain")]
-        public TerrainLandformInfo Terrain { get; set; }
+        public TerrainLandformInfo Terrain;
+
+        [XmlElement("Navigation")]
+        public NavigationLandformInfo Navigation;
     }
 
     /// <summary>
