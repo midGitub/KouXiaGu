@@ -10,23 +10,22 @@ namespace KouXiaGu.Collections
     /// </summary>
     public class BinaryHeap<T> : ICollection<T>, IEnumerable<T>
     {
-
         public BinaryHeap()
         {
-            this.Comparer = Comparer<T>.Default;
-            this.collection = CreateCollection();
+            Comparer = Comparer<T>.Default;
+            collection = CreateCollection();
         }
 
         public BinaryHeap(IComparer<T> comparer)
         {
-            this.Comparer = comparer;
-            this.collection = CreateCollection();
+            Comparer = comparer;
+            collection = CreateCollection();
         }
 
         public BinaryHeap(int capacity)
         {
-            this.Comparer = Comparer<T>.Default;
-            this.collection = CreateCollection();
+            Comparer = Comparer<T>.Default;
+            collection = CreateCollection();
         }
 
         /// <summary>
@@ -34,8 +33,8 @@ namespace KouXiaGu.Collections
         /// </summary>
         public BinaryHeap(BinaryHeap<T> other)
         {
-            this.Comparer = other.Comparer;
-            this.collection = new List<T>(other.collection);
+            Comparer = other.Comparer;
+            collection = new List<T>(other.collection);
         }
 
 
@@ -81,7 +80,7 @@ namespace KouXiaGu.Collections
 
         bool ICollection<T>.IsReadOnly
         {
-            get { return ((ICollection<T>)this.collection).IsReadOnly; }
+            get { return ((ICollection<T>)collection).IsReadOnly; }
         }
 
 
@@ -251,7 +250,5 @@ namespace KouXiaGu.Collections
         {
             return GetEnumerator();
         }
-
     }
-
 }

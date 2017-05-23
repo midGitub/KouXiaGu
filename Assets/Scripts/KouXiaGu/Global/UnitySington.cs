@@ -22,7 +22,7 @@ namespace KouXiaGu
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    return Find();
+                    return FindInEditor();
                 }
 #endif
                 return instance ?? (instance = FindOrCreate());
@@ -37,10 +37,16 @@ namespace KouXiaGu
             get { return instance != null; }
         }
 
+        internal static T FindInEditor()
+        {
+            Debug.LogWarning("在编辑模式下尝试访问单例");
+            return Find();
+        }
+
         /// <summary>
         /// 编辑模式下使用的模式;
         /// </summary>
-        internal static T FindInEditor()
+        internal static T FindAllInEditor()
         {
             T instance;
             var instances = GameObject.FindObjectsOfType<T>();
