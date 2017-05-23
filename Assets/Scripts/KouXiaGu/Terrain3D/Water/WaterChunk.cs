@@ -19,66 +19,13 @@ namespace KouXiaGu.Terrain3D
     [RequireComponent(typeof(MeshRenderer))]
     public class WaterChunk : Water
     {
-        public enum WaterTypes
-        {
-            DayTime,
-            NeightTime,
-        }
-
         [CustomUnityLayer("Unity标准资源指定的水特效层;")]
         public const string DefaultLayer = "Water";
-
-        [SerializeField]
-        WaterTypes waterType;
-        MeshRenderer meshRenderer;
-
-        WaterSettings settings
-        {
-            get { return LandformSettings.Instance.WaterSettings; }
-        }
 
         public float Size
         {
             get { return transform.localScale.x; }
             set { transform.localScale = new Vector3(value, 1, value); }
-        }
-
-        public WaterTypes WaterType
-        {
-            get { return waterType; }
-        }
-
-        void Awake()
-        {
-            meshRenderer = GetComponent<MeshRenderer>();
-            SetWaterTypes(waterType);
-        }
-
-        void OnValidate()
-        {
-            if (meshRenderer == null)
-            {
-                meshRenderer = GetComponent<MeshRenderer>();
-            }
-            SetWaterTypes(waterType);
-        }
-
-        public void SetWaterTypes(WaterTypes waterType)
-        {
-            Material material;
-            switch (waterType)
-            {
-                case WaterTypes.DayTime:
-                    material = settings.DaytimeMaterial;
-                    break;
-                case WaterTypes.NeightTime:
-                    material = settings.NighttimeMaterial;
-                    break;
-                default:
-                    throw new ArgumentException();
-            }
-            this.waterType = waterType;
-            meshRenderer.sharedMaterial = material;
         }
     }
 }

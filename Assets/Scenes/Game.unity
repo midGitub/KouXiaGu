@@ -2248,12 +2248,12 @@ MonoBehaviour:
     camera: {fileID: 881292060}
   bakeLandform:
     prefab: {fileID: 23541030008187398, guid: 4e810ba380f002243ab86965896b23df, type: 2}
-    diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
-    heightShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
+    diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
+    heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
   bakeRoad:
     prefab: {fileID: 114079317866361212, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
-    diffuseShader: {fileID: 4800000, guid: a389d9266c52373499d7d98909ef6036, type: 3}
-    heightShader: {fileID: 4800000, guid: 1f2f90526623fcc43b7dd38171b75795, type: 3}
+    diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
+    heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
   runtimeStopwatch:
     idleSeconds: 0.5
   waitUpdate: 0
@@ -2718,17 +2718,17 @@ Prefab:
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224138455122880628, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224822833124817184, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224001761512742760, guid: b268a1f3b9d228b45bd5efd770c18be2,
         type: 2}
