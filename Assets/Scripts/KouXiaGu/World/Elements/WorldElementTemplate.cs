@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.Collections;
+using KouXiaGu.Navigation;
 
 namespace KouXiaGu.World
 {
@@ -29,6 +30,7 @@ namespace KouXiaGu.World
                 HeightAdjustBlendTex = StrNone,
                 HeightAdjustTex = StrNone,
             },
+            Navigation = new NavigationRoadInfo(),
         };
 
         static readonly RoadInfo[] RoadTemplates = new RoadInfo[]
@@ -51,6 +53,7 @@ namespace KouXiaGu.World
                 HeightBlendTex = StrNone,
                 HeightTex = StrNone,
             },
+            Navigation = new NavigationLandformInfo(),
         };
 
         static readonly LandformInfo[] LandformTemplates = new LandformInfo[]
@@ -70,6 +73,7 @@ namespace KouXiaGu.World
             {
                 PrefabName = StrNone,
             },
+            Navigation = new NavigationBuildingInfo(),
         };
 
         static readonly BuildingInfo[] BuildingTemplates = new BuildingInfo[]

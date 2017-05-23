@@ -17,7 +17,7 @@ namespace KouXiaGu.World
     public class BuildingInfo : ElementInfo
     {
         [XmlElement("Terrain")]
-        public TerrainBuildingInfo Terrain { get; set; }
+        public TerrainBuildingInfo Terrain;
 
         [XmlElement("Navigation")]
         public NavigationBuildingInfo Navigation;

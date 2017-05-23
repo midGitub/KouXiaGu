@@ -8,7 +8,7 @@ namespace KouXiaGu.Navigation
 {
 
     [XmlType("Building")]
-    public class NavigationBuildingInfo
+    public struct NavigationBuildingInfo
     {
         /// <summary>
         /// 是否可行走?
@@ -21,5 +21,11 @@ namespace KouXiaGu.Navigation
         /// </summary>
         [XmlElement("Cost")]
         public int Cost;
+
+        /// <summary>
+        /// 移动速度影响;
+        /// </summary>
+        [XmlElement("MovementRates")]
+        public float MovementRates;
     }
 }
