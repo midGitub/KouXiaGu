@@ -11,7 +11,7 @@ namespace KouXiaGu.Navigation
 
     public class NavigationMap : INavigationMap<CubicHexCoord>
     {
-        public NavigationMap(IReadOnlyDictionary<CubicHexCoord, MapNode> map, TerrainResource resource)
+        public NavigationMap(IReadOnlyDictionary<CubicHexCoord, MapNode> map, NavigationResource resource)
         {
         }
 
