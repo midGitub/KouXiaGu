@@ -2,8 +2,6 @@
 using KouXiaGu.Grids;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.Navigation
 {
@@ -129,7 +127,7 @@ namespace KouXiaGu.Navigation
 #if UNITY_EDITOR_DUBUG
             Debug.Log("路线代价值:" + node.PathCost + "检索的点:" + (openPointsSet.Count + closePointsSet.Count));
 #endif
-            var wayPath = new WayPath<T>();
+            var wayPath = new WayPath<T>(Map, SearchRange);
             while (node != null)
             {
                 wayPath.AddFirst(node.Position);

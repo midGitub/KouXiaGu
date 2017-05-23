@@ -39,7 +39,7 @@ namespace KouXiaGu
 
         internal static T FindInEditor()
         {
-            Debug.LogWarning("在编辑模式下尝试访问单例");
+            Debug.LogWarning("在编辑模式下进行了单例访问;");
             return Find();
         }
 
