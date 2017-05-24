@@ -19,8 +19,7 @@ namespace KouXiaGu.Terrain3D.Wall
         {
         }
 
-        [SerializeField]
-        string dynamicMeshName = string.Empty;
+        public string dynamicMeshName = string.Empty;
         MeshFilter meshFilter;
         DynamicMeshData meshData;
 

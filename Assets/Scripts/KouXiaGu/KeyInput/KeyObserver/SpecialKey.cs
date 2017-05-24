@@ -11,7 +11,7 @@ namespace KouXiaGu.KeyInput
     /// 对回车 和 Esc 等按键的特殊监视方法;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class SpecialKey : GlobalSington<SpecialKey>
+    public sealed class SpecialKey : UnitySington<SpecialKey>
     {
 
         static readonly ResponseKeyStack escape = new ResponseKeyStack(KeyCode.Escape);

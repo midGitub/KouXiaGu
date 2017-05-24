@@ -36,22 +36,21 @@ namespace KouXiaGu.Terrain3D
 
         public WaterMode waterMode
         {
-            get { return LandformSettings.Instance.WaterSettings.CustomizableSettings.WaterMode; }
+            get { return LandformSettings.IsInitialized ? LandformSettings.Instance.WaterSettings.CustomizableSettings.WaterMode : WaterMode.Refractive; }
         }
 
         private Dictionary<Camera, Camera> m_ReflectionCameras = new Dictionary<Camera, Camera>(); // Camera -> Camera table
         private Dictionary<Camera, Camera> m_RefractionCameras = new Dictionary<Camera, Camera>(); // Camera -> Camera table
         private RenderTexture m_ReflectionTexture;
         private RenderTexture m_RefractionTexture;
+
+        /// <summary>
+        /// 支持的水样式;
+        /// </summary>
         private WaterMode m_HardwareWaterSupport = WaterMode.Refractive;
         private int m_OldReflectionTextureSize;
         private int m_OldRefractionTextureSize;
         private static bool s_InsideWater;
-
-        void Awake()
-        {
-            
-        }
 
         // This is called when it's known that the object will be rendered by some
         // camera. We render reflections / refractions and do other updates here.
@@ -59,8 +58,10 @@ namespace KouXiaGu.Terrain3D
         // camera will just work!
         public void OnWillRenderObject()
         {
-            if (!enabled || !GetComponent<Renderer>() || !GetComponent<Renderer>().sharedMaterial ||
-                !GetComponent<Renderer>().enabled)
+            Debug.Log("OnWillRenderObject");
+            Renderer renderer = GetComponent<Renderer>();
+            if (!enabled || !renderer || !renderer.sharedMaterial ||
+                !renderer.enabled)
             {
                 return;
             }

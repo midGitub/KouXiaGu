@@ -20,22 +20,16 @@ namespace KouXiaGu.Terrain3D
 
         #region 编辑器设置变量;
 
-        [SerializeField]
-        Shader landformShader;
-        [SerializeField]
-        QualitySettings bakeSettings;
-        [SerializeField]
-        WaterSettings waterSettings;
-        [SerializeField, Range(0, 64)]
-        float tessellation = 16f;
-        [SerializeField, Range(0, 5)]
-        float displacement = 1.3f;
-        [SerializeField]
-        Texture gridLineMap;
-        [SerializeField]
-        Color gridLineColor;
-        [SerializeField]
-        bool isDisplayGridLine = true;
+        public Shader landformShader;
+        public QualitySettings bakeSettings;
+        public WaterSettings waterSettings;
+        [Range(0, 64)]
+        public float tessellation = 16f;
+        [Range(0, 5)]
+        public float displacement = 1.3f;
+        public Texture gridLineMap;
+        public Color gridLineColor;
+        public bool isDisplayGridLine = true;
 
         #endregion
 
@@ -76,10 +70,10 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             SetInstance(this);
-            OnValidate();
+            _OnValidate();
         }
 
-        void OnValidate()
+        void _OnValidate()
         {
             BakeSettings.Updata();
             SetTessellation(tessellation);
