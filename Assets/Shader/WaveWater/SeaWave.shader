@@ -18,8 +18,10 @@ Shader "Water/SeaWave" {
 		_SpecColor ("SpecColor", color) = (1, 1, 1, 1)
 		_Range ("Range", vector) = (0.13, 1.53, 0.37, 0.78)
 	}
+
 	CGINCLUDE 
-	fixed4 LightingWaterLight(SurfaceOutput s, fixed3 lightDir, half3 viewDir, fixed atten) {
+	fixed4 LightingWaterLight(SurfaceOutput s, fixed3 lightDir, half3 viewDir, fixed atten) 
+	{
 		half3 halfVector = normalize(lightDir + viewDir);
 		float diffFactor = max(0, dot(lightDir, s.Normal)) * 0.8 + 0.2;
 		float nh = max(0, dot(halfVector, s.Normal));
@@ -30,6 +32,7 @@ Shader "Water/SeaWave" {
 		return c;
 	}
 	ENDCG
+
 	SubShader {
 		Tags { "RenderType"="Transparent" "Queue"="Transparent"}
 		LOD 200
