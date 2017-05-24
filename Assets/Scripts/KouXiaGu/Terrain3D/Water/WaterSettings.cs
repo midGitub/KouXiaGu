@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
     {
         public Material DaytimeMaterial;
         public Material NighttimeMaterial;
-        public WaterChunk PrefabChunk;
+        public GameObject Prefab;
         /// <summary>
         /// 海平面高度;
         /// </summary>

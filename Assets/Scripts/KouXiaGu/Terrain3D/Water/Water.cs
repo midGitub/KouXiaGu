@@ -58,7 +58,6 @@ namespace KouXiaGu.Terrain3D
         // camera will just work!
         public void OnWillRenderObject()
         {
-            Debug.Log("OnWillRenderObject");
             Renderer renderer = GetComponent<Renderer>();
             if (!enabled || !renderer || !renderer.sharedMaterial ||
                 !renderer.enabled)

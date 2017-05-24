@@ -3597,7 +3597,7 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
@@ -3926,8 +3926,7 @@ MonoBehaviour:
   waterSettings:
     DaytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
     NighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
-    PrefabChunk: {fileID: 114291751743592606, guid: 2b5cad118603a2445b4982b89a79549b,
-      type: 2}
+    Prefab: {fileID: 1641740505082490, guid: 2b5cad118603a2445b4982b89a79549b, type: 2}
     SeaLevel: 0.23
     CustomizableSettings:
       WaterMode: 2

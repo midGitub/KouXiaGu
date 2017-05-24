@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
 
         static List<WaterWatcher> watchers;
         static Transform chunkParent;
-        WaterChunk chunk;
+        GameObject chunk;
 
         WaterSettings settings
         {
@@ -72,9 +72,9 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        WaterChunk CreateWaterChunk()
+        GameObject CreateWaterChunk()
         {
-            var chunk = Instantiate(settings.PrefabChunk, ChunkParent);
+            var chunk = Instantiate(settings.Prefab, ChunkParent);
             chunk.name = name;
             return chunk;
         }
