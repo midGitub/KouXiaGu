@@ -10,9 +10,9 @@ namespace KouXiaGu.Navigation
     /// <summary>
     /// 影响导航的地图因素;
     /// </summary>
-    public class MapFactor : IPathfindFactor
+    public class LandformFactor : IPathfindFactor
     {
-        public MapFactor(IReadOnlyDictionary<CubicHexCoord, MapNode> map, NavigationResource resource)
+        public LandformFactor(IReadOnlyDictionary<CubicHexCoord, MapNode> map, NavigationResource resource)
         {
             if (map == null)
                 throw new ArgumentNullException("map");

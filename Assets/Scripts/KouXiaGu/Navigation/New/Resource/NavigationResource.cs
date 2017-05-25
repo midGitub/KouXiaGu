@@ -22,6 +22,7 @@ namespace KouXiaGu.Navigation
         readonly IReadOnlyDictionary<int, NavigationLandformInfo> landform;
         readonly IReadOnlyDictionary<int, NavigationRoadInfo> road;
         readonly IReadOnlyDictionary<int, NavigationBuildingInfo> building;
+        readonly LandformTagManager landformTagManager;
 
         public IReadOnlyDictionary<int, NavigationLandformInfo> Landform
         {
