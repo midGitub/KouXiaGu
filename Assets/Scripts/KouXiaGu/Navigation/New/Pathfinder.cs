@@ -157,7 +157,7 @@ namespace KouXiaGu.Navigation
                     }
                     else
                     {
-                        NavigationNode<T> info = Map.GetInfo(neighbor, Destination);
+                        NavigationNode<T> info = Map.GetNavigationNode(neighbor, Destination);
                         if (info.IsWalkable)
                         {
                             neighborNode = new PathNode(parent, info);

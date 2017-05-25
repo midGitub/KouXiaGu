@@ -10,6 +10,6 @@ namespace KouXiaGu.Navigation
     {
         bool IsWalkable(T position);
         IEnumerable<T> GetNeighbors(T position);
-        NavigationNode<T> GetInfo(T position, T destination);
+        NavigationNode<T> GetNavigationNode(T position, T destination);
     }
 }
