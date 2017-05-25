@@ -14,7 +14,7 @@ namespace KouXiaGu.Navigation
         /// 代价值加成;
         /// </summary>
         [XmlElement("RoadCost")]
-        public int RoadCost;
+        public int Cost;
 
         /// <summary>
         /// 移动速度影响;

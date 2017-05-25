@@ -70,10 +70,10 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             SetInstance(this);
-            _OnValidate();
+            OnValidate();
         }
 
-        void _OnValidate()
+        void OnValidate()
         {
             BakeSettings.Updata();
             SetTessellation(tessellation);

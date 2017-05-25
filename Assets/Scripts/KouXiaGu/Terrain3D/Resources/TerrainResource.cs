@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
             get { return ResourcePath.CombineAssetBundle(assetBundleName); }
         }
 
-        public IAsyncOperation Init(WorldElementResource elementInfos)
+        public IAsyncOperation Init(WorldResource elementInfos)
         {
             if (IsCompleted)
             {
@@ -53,19 +53,19 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        IEnumerator ReadAsync(WorldElementResource elementInfos)
+        IEnumerator ReadAsync(WorldResource elementInfos)
         {
             yield return ReadAssetBundle();
 
-            LandformResourceReader landformReader = new LandformResourceReader(stopwatch, assetBundle, elementInfos.LandformInfos.Values);
+            LandformResourceReader landformReader = new LandformResourceReader(stopwatch, assetBundle, elementInfos.Landform.Values);
             yield return landformReader.ReadAsync();
             LandformInfos = landformReader.Result;
 
-            RoadResourceReader roadReader = new RoadResourceReader(stopwatch, assetBundle, elementInfos.RoadInfos.Values);
+            RoadResourceReader roadReader = new RoadResourceReader(stopwatch, assetBundle, elementInfos.Road.Values);
             yield return roadReader.ReadAsync();
             RoadInfos = roadReader.Result;
 
-            BuildingResourceReader buildingReader = new BuildingResourceReader(stopwatch, assetBundle, elementInfos.BuildingInfos.Values);
+            BuildingResourceReader buildingReader = new BuildingResourceReader(stopwatch, assetBundle, elementInfos.Building.Values);
             yield return buildingReader.ReadAsync();
             BuildingInfos = buildingReader.Result;
 

@@ -8,16 +8,8 @@ namespace KouXiaGu.Navigation
 
     public interface INavigationMap<T>
     {
-        bool CanWalk(T position);
-        NodeInfo<T> GetInfo(T position, T destination);
+        bool IsWalkable(T position);
         IEnumerable<T> GetNeighbors(T position);
-    }
-
-    public struct NodeInfo<T>
-    {
-        public T Position;
-        public T Destination;
-        public bool IsWalkable;
-        public int Cost;
+        NavigationNode<T> GetInfo(T position, T destination);
     }
 }

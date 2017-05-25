@@ -13,19 +13,66 @@ namespace KouXiaGu.Navigation
     {
         public NavigationMap(IReadOnlyDictionary<CubicHexCoord, MapNode> map, NavigationResource resource)
         {
+            if (map == null)
+                throw new ArgumentNullException("map");
+            if (resource == null)
+                throw new ArgumentNullException("resource");
+
+            this.map = map;
+            this.resource = resource;
         }
 
-        public bool CanWalk(CubicHexCoord position)
+        readonly IReadOnlyDictionary<CubicHexCoord, MapNode> map;
+        readonly NavigationResource resource;
+
+        public bool IsWalkable(CubicHexCoord position)
         {
-            throw new NotImplementedException();
+            MapNode node;
+            if (map.TryGetValue(position, out node))
+            {
+                BuildingNode buildingNode = node.Building;
+                if (buildingNode.Exist())
+                {
+                    return IsWalkable(buildingNode);
+                }
+
+                LandformNode landformNode = node.Landform;
+                if (landformNode.Exist())
+                {
+                    return IsWalkable(landformNode);
+                }
+            }
+            return false;
         }
 
-        public NodeInfo<CubicHexCoord> GetInfo(CubicHexCoord position, CubicHexCoord destination)
+        public bool IsWalkable(BuildingNode node)
         {
-            throw new NotImplementedException();
+            int buildingType = node.BuildingType;
+            NavigationBuildingInfo buildingInfo;
+            if (resource.Building.TryGetValue(buildingType, out buildingInfo))
+            {
+                return buildingInfo.IsWalkable;
+            }
+            return false;
+        }
+
+        public bool IsWalkable(LandformNode node)
+        {
+            int landformType = node.LandformType;
+            NavigationLandformInfo landformInfo;
+            if (resource.Landform.TryGetValue(landformType, out landformInfo))
+            {
+                return landformInfo.IsWalkable;
+            }
+            return false;
         }
 
         public IEnumerable<CubicHexCoord> GetNeighbors(CubicHexCoord position)
+        {
+            return position.GetNeighbours().Select(item => item.Point);
+        }
+
+        public NavigationNode<CubicHexCoord> GetInfo(CubicHexCoord position, CubicHexCoord destination)
         {
             throw new NotImplementedException();
         }

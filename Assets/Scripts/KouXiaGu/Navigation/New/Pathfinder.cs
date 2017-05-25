@@ -88,7 +88,7 @@ namespace KouXiaGu.Navigation
             var neighbors = Map.GetNeighbors(position);
             foreach (var neighbor in neighbors)
             {
-                if (Map.CanWalk(neighbor))
+                if (Map.IsWalkable(neighbor))
                 {
                     return false;
                 }
@@ -157,7 +157,7 @@ namespace KouXiaGu.Navigation
                     }
                     else
                     {
-                        NodeInfo<T> info = Map.GetInfo(neighbor, Destination);
+                        NavigationNode<T> info = Map.GetInfo(neighbor, Destination);
                         if (info.IsWalkable)
                         {
                             neighborNode = new PathNode(parent, info);
@@ -192,7 +192,7 @@ namespace KouXiaGu.Navigation
                 NodeCost = 0;
             }
 
-            public PathNode(PathNode parent, NodeInfo<T> info)
+            public PathNode(PathNode parent, NavigationNode<T> info)
             {
                 Parent = parent;
                 Position = info.Position;

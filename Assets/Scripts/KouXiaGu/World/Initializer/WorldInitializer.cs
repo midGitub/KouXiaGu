@@ -135,10 +135,10 @@ namespace KouXiaGu.World
         [ContextMenu("检查")]
         void Test2()
         {
-            WorldElementResource item = WorldElementResource.Read();
+            WorldResource item = WorldResource.Read();
 
             RoadInfo info;
-            if (item.RoadInfos.TryGetValue(2, out info))
+            if (item.Road.TryGetValue(2, out info))
             {
                 Debug.Log((info.Terrain == null).ToString());
             }

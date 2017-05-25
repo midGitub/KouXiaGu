@@ -12,7 +12,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 预定义模版;
     /// </summary>
-    class WorldElementTemplate : WorldElementResource
+    class WorldElementTemplate : WorldResource
     {
 
         const string StrNone = "None";
@@ -100,9 +100,9 @@ namespace KouXiaGu.World
 
         public WorldElementTemplate() : this(true)
         {
-            AddDictionary(RoadInfos, RoadTemplates);
-            AddDictionary(LandformInfos, LandformTemplates);
-            AddDictionary(BuildingInfos, BuildingTemplates);
+            AddDictionary(Road, RoadTemplates);
+            AddDictionary(Landform, LandformTemplates);
+            AddDictionary(Building, BuildingTemplates);
             AddDictionary(ProductInfos, ProductTemplates);
         }
 

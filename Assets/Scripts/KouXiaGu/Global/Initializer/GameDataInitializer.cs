@@ -28,7 +28,7 @@ namespace KouXiaGu
         [SerializeField]
         TerrainResource terrain;
 
-        public WorldElementResource ElementInfo { get; private set; }
+        public WorldResource ElementInfo { get; private set; }
 
         public TerrainResource Terrain
         {
@@ -53,10 +53,10 @@ namespace KouXiaGu
 
         void Initialize0()
         {
-            WorldElementResource.ReadAsync().Subscribe(this, OnWorldResourceCompleted, OnFaulted);
+            WorldResource.ReadAsync().Subscribe(this, OnWorldResourceCompleted, OnFaulted);
         }
 
-        void OnWorldResourceCompleted(IAsyncOperation<WorldElementResource> operation)
+        void OnWorldResourceCompleted(IAsyncOperation<WorldResource> operation)
         {
             ElementInfo = operation.Result;
             string log = GetWorldResourceLog(ElementInfo);
@@ -64,13 +64,13 @@ namespace KouXiaGu
             Initialize1();
         }
 
-        string GetWorldResourceLog(WorldElementResource item)
+        string GetWorldResourceLog(WorldResource item)
         {
             string str =
                 "[基础资源]"
-               + "\nLandform:" + item.LandformInfos.Count
-               + "\nRoad:" + item.RoadInfos.Count
-               + "\nBuilding:" + item.BuildingInfos.Count
+               + "\nLandform:" + item.Landform.Count
+               + "\nRoad:" + item.Road.Count
+               + "\nBuilding:" + item.Building.Count
                + "\nProduct:" + item.ProductInfos.Count;
             return str;
         }
