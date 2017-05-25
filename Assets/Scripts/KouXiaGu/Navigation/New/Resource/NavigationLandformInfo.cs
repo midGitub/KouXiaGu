@@ -17,6 +17,12 @@ namespace KouXiaGu.Navigation
         public bool IsWalkable;
 
         /// <summary>
+        /// 地形标签;
+        /// </summary>
+        [XmlElement("Tag")]
+        public string Tag;
+
+        /// <summary>
         /// 经过这个地形的代价值;
         /// </summary>
         [XmlElement("Cost")]

@@ -11,21 +11,15 @@ namespace KouXiaGu.Navigation
     public struct NavigationBuildingInfo
     {
         /// <summary>
-        /// 是否可行走?
+        /// 是否影响导航?
         /// </summary>
-        [XmlElement("IsWalkable")]
-        public bool IsWalkable;
+        [XmlElement("IsInfluenceNavigation")]
+        public bool IsInfluenceNavigation;
 
         /// <summary>
-        /// 经过这个地形的代价值;
+        /// 导航信息;
         /// </summary>
-        [XmlElement("Cost")]
-        public int Cost;
-
-        /// <summary>
-        /// 移动速度影响;
-        /// </summary>
-        [XmlElement("MovementRates")]
-        public float MovementRates;
+        [XmlElement("Navigation")]
+        public NavigationLandformInfo Navigation;
     }
 }
