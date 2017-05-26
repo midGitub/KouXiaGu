@@ -135,7 +135,7 @@ namespace KouXiaGu.World
         [ContextMenu("检查")]
         void Test2()
         {
-            WorldResource item = WorldResource.Read();
+            BasicTerrainResource item = BasicTerrainResource.Read();
 
             RoadInfo info;
             if (item.Road.TryGetValue(2, out info))

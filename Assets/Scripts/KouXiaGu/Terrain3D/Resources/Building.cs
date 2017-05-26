@@ -1,4 +1,5 @@
-﻿using KouXiaGu.World;
+﻿using KouXiaGu.Resources;
+using KouXiaGu.World;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,11 +41,6 @@ namespace KouXiaGu.Terrain3D
         public TerrainBuildingInfo Info { get; private set; }
         public GameObject Prefab { get; private set; }
         public IBuildingPrefab BuildingPrefab { get; private set; }
-
-        //public bool IsLoadComplete
-        //{
-        //    get { return Prefab != null && BuildingPrefab != null; }
-        //}
 
         public void Dispose()
         {

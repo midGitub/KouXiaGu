@@ -16,7 +16,7 @@ namespace KouXiaGu.EditorTool
         [MenuItem("Assets/Build AssetBundles")]
         static void BuildAllAssetBundles()
         {
-            string directoryPath = ResourcePath.AssetBundleDirectoryPath;
+            string directoryPath = Resource.AssetBundleDirectoryPath;
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);

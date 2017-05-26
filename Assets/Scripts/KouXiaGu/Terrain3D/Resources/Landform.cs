@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using KouXiaGu.World;
 using UnityEngine;
 using KouXiaGu.Collections;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.Terrain3D
 {

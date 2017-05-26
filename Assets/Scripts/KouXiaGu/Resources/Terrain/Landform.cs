@@ -5,7 +5,7 @@ using KouXiaGu.Terrain3D;
 using KouXiaGu.Collections;
 using KouXiaGu.Navigation;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.Resources
 {
 
     /// <summary>

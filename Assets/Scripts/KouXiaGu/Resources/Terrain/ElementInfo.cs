@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.Resources
 {
 
     public abstract class ElementInfo

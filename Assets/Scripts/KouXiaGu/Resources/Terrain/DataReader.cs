@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.Resources
 {
 
     /// <summary>

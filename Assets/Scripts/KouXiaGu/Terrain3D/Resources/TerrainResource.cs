@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using KouXiaGu.World;
 using UnityEngine;
 using System.IO;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -22,10 +23,10 @@ namespace KouXiaGu.Terrain3D
 
         internal static string AssetBundleFilePath
         {
-            get { return ResourcePath.CombineAssetBundle(assetBundleName); }
+            get { return Resource.CombineAssetBundle(assetBundleName); }
         }
 
-        public IAsyncOperation Init(WorldResource elementInfos)
+        public IAsyncOperation Init(BasicTerrainResource elementInfos)
         {
             if (IsCompleted)
             {
@@ -53,7 +54,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        IEnumerator ReadAsync(WorldResource elementInfos)
+        IEnumerator ReadAsync(BasicTerrainResource elementInfos)
         {
             yield return ReadAssetBundle();
 

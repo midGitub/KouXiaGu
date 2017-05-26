@@ -22,12 +22,12 @@ namespace KouXiaGu.Globalization
 
         static string ConfigFilePath
         {
-            get { return ResourcePath.CombineConfiguration("Localization/Config.xml"); }
+            get { return Resource.CombineConfiguration("Localization/Config.xml"); }
         }
 
         static string PackDirectoryPath
         {
-            get { return ResourcePath.CombineConfiguration("Localization"); }
+            get { return Resource.CombineConfiguration("Localization"); }
         }
 
         static readonly LanguagePackReader packReader = new XmlLanguagePackReader();

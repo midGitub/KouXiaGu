@@ -57,6 +57,17 @@ namespace KouXiaGu
         }
 
         /// <summary>
+        /// 序列化为 自定义的 utf-8 格式;
+        /// </summary>
+        public static void SerializeXiaGu(this XmlSerializer serializer, object item, Stream stream)
+        {
+            using (XmlWriter xmlWriter = XmlWriter.Create(stream, xmlWriterSettings))
+            {
+                serializer.Serialize(xmlWriter, item, xmlSerializerNamespaces);
+            }
+        }
+
+        /// <summary>
         /// 反序列化;
         /// </summary>
         public static object DeserializeXiaGu(this XmlSerializer serializer, string filePath, FileMode fileMode = FileMode.Open)
@@ -67,6 +78,13 @@ namespace KouXiaGu
             }
         }
 
+        /// <summary>
+        /// 反序列化;
+        /// </summary>
+        public static object DeserializeXiaGu(this XmlSerializer serializer, Stream stream)
+        {
+            return serializer.Deserialize(stream);
+        }
     }
 
 }

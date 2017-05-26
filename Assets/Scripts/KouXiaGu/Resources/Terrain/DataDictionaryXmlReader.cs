@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml.Serialization;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.Resources
 {
 
     /// <summary>

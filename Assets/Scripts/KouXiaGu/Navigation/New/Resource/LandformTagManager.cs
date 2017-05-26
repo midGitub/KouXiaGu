@@ -1,4 +1,5 @@
-﻿using KouXiaGu.World;
+﻿using KouXiaGu.Resources;
+using KouXiaGu.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace KouXiaGu.Navigation
 
     public class LandformTagManager
     {
-        public LandformTagManager(WorldResource basicResource)
+        public LandformTagManager(BasicTerrainResource basicResource)
         {
             LnadformTagReader reader = new LnadformTagReader();
             List<string> tags = reader.Read();

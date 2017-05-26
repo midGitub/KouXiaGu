@@ -39,7 +39,7 @@ namespace KouXiaGu
         void Awake()
         {
             SetInstance(this);
-            ResourcePath.Initialize();
+            Resource.Initialize();
             Initialize(this);
         }
 

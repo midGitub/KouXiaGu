@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.Resources
 {
 
     /// <summary>
@@ -15,17 +15,21 @@ namespace KouXiaGu
     {
 
         static string assetBundleDirectoryPath = string.Empty;
-        static string configDirectoryPath = string.Empty;
 
         /// <summary>
         /// 存放 AssetBundle 的文件夹路径;
         /// </summary>
         public static string AssetBundleDirectoryPath
         {
-            get { return assetBundleDirectoryPath != string.Empty ? assetBundleDirectoryPath :
-                    (assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles")); }
+            get
+            {
+                return assetBundleDirectoryPath != string.Empty ? assetBundleDirectoryPath :
+                  (assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles"));
+            }
             private set { assetBundleDirectoryPath = value; }
         }
+
+        static string configDirectoryPath = string.Empty;
 
         /// <summary>
         /// 存放配置文件的文件夹路径;
@@ -44,23 +48,24 @@ namespace KouXiaGu
             AssetBundleDirectoryPath = AssetBundleDirectoryPath;
             ConfigDirectoryPath = ConfigDirectoryPath;
         }
-
-        /// <summary>
-        ///连结到 AssetBundle 文件的存放路径;
-        /// </summary>
-        public static string CombineAssetBundle(string assetBundleName)
-        {
-            return Path.Combine(AssetBundleDirectoryPath, assetBundleName);
-        }
-
-        /// <summary>
-        /// 连结到 配置 文件的存放路径;
-        /// </summary>
-        public static string CombineConfiguration(string path)
-        {
-            return Path.Combine(ConfigDirectoryPath, path);
-        }
-
     }
 
+    public abstract class FilePath : IFilePath
+    {
+        public abstract string FileName { get; }
+
+        public IEnumerable<string> FindFile()
+        {
+            yield return Path.Combine(Resource.ConfigDirectoryPath, FileName);
+        }
+    }
+
+
+    public interface IFilePath
+    {
+        /// <summary>
+        /// 获取到所有文件路径;
+        /// </summary>
+        IEnumerable<string> FindFile();
+    }
 }

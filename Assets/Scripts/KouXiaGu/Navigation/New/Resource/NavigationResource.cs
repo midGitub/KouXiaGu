@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.World;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.Navigation
 {
@@ -12,7 +13,7 @@ namespace KouXiaGu.Navigation
     /// </summary>
     public class NavigationResource
     {
-        public NavigationResource(WorldResource basicResource)
+        public NavigationResource(BasicTerrainResource basicResource)
         {
             landform = basicResource.Landform.AsReadOnlyDictionary(item => item.Navigation);
             road = basicResource.Road.AsReadOnlyDictionary(item => item.Navigation);

@@ -6,13 +6,13 @@ using KouXiaGu.Terrain3D;
 using KouXiaGu.Collections;
 using KouXiaGu.Navigation;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.Resources
 {
 
     /// <summary>
     /// 预定义模版;
     /// </summary>
-    class WorldElementTemplate : WorldResource
+    class WorldElementTemplate : BasicTerrainResource
     {
 
         const string StrNone = "None";
@@ -103,7 +103,6 @@ namespace KouXiaGu.World
             AddDictionary(Road, RoadTemplates);
             AddDictionary(Landform, LandformTemplates);
             AddDictionary(Building, BuildingTemplates);
-            AddDictionary(ProductInfos, ProductTemplates);
         }
 
         public WorldElementTemplate(bool changeFileName) : base()
@@ -122,19 +121,19 @@ namespace KouXiaGu.World
             dictionary.AddOrUpdate(items, item => item.ID);
         }
 
-        protected override void WriteToDirectory<T>(
-            DataReader<Dictionary<int, T>, IEnumerable<T>> reader,
-            Dictionary<int, T> dictionary,
-            string dirPath,
-            bool overlay)
-        {
-            IEnumerable<T> infos = dictionary.Values;
+        //protected override void WriteToDirectory<T>(
+        //    DataReader<Dictionary<int, T>, IEnumerable<T>> reader,
+        //    Dictionary<int, T> dictionary,
+        //    string dirPath,
+        //    bool overlay)
+        //{
+        //    IEnumerable<T> infos = dictionary.Values;
 
-            if (!overlay && reader.File.Exists(dirPath) && ChangeFileName)
-                reader.WriteToDirectory(infos, dirPath, "_Template_");
-            else
-                base.WriteToDirectory(reader, dictionary, dirPath, overlay);
-        }
+        //    if (!overlay && reader.File.Exists(dirPath) && ChangeFileName)
+        //        reader.WriteToDirectory(infos, dirPath, "_Template_");
+        //    else
+        //        base.WriteToDirectory(reader, dictionary, dirPath, overlay);
+        //}
 
     }
 
