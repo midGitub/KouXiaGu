@@ -5,6 +5,7 @@ using System.Text;
 using KouXiaGu.World.Map;
 using UniRx;
 using UnityEngine;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.World
 {
@@ -14,7 +15,7 @@ namespace KouXiaGu.World
     /// </summary>
     public class DataInitializer : AsyncInitializer<IWorldData>, IWorldData
     {
-        public IGameData GameData { get; private set; }
+        public BasicResource GameData { get; private set; }
         public WorldInfo Info { get; private set; }
         public TimeManager Time { get; private set; }
         public GameMap MapData { get; private set; }
@@ -24,7 +25,7 @@ namespace KouXiaGu.World
             get { return "场景数据"; }
         }
 
-        public IAsyncOperation<IWorldData> Start(IGameData gameData, WorldInfo info, IObservable<IWorld> starter)
+        public IAsyncOperation<IWorldData> Start(BasicResource gameData, WorldInfo info, IObservable<IWorld> starter)
         {
             StartInitialize();
             SetGameData(gameData);
@@ -33,7 +34,7 @@ namespace KouXiaGu.World
             return this;
         }
 
-        void SetGameData(IGameData gameData)
+        void SetGameData(BasicResource gameData)
         {
             if (gameData == null)
                 throw new ArgumentNullException("gameData");

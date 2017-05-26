@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using KouXiaGu.Collections;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.Globalization
 {
@@ -22,12 +23,12 @@ namespace KouXiaGu.Globalization
 
         static string ConfigFilePath
         {
-            get { return Resource.CombineConfiguration("Localization/Config.xml"); }
+            get { return Path.Combine(Resource.ConfigDirectoryPath, "Localization/Config.xml"); }
         }
 
         static string PackDirectoryPath
         {
-            get { return Resource.CombineConfiguration("Localization"); }
+            get { return Path.Combine(Resource.ConfigDirectoryPath, "Localization"); }
         }
 
         static readonly LanguagePackReader packReader = new XmlLanguagePackReader();

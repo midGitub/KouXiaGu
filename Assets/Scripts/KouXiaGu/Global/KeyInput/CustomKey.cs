@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Resources;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace KouXiaGu.KeyInput
 
         static string CustomKeyFilePath
         {
-            get { return Resource.CombineConfiguration(CustomKeyFileName); }
+            get { return Path.Combine(Resource.ConfigDirectoryPath, CustomKeyFileName); }
         }
 
         public abstract IEnumerable<CustomKey> ReadKeys(string filePath);
@@ -43,7 +44,7 @@ namespace KouXiaGu.KeyInput
 
         static string DefaultCustomKeyFilePath
         {
-            get { return Resource.CombineConfiguration(DefaultCustomKeyFileName); }
+            get { return Path.Combine(Resource.ConfigDirectoryPath, DefaultCustomKeyFileName); }
         }
 
         public DefaultCustomKeyReader(CustomKeyReader reader)

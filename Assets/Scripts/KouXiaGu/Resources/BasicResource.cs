@@ -6,6 +6,9 @@ using System.Text;
 namespace KouXiaGu.Resources
 {
 
+    /// <summary>
+    /// 游戏基本资源;
+    /// </summary>
     public class BasicResource
     {
         public BasicResource()

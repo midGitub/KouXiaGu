@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World.Map;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.World
 {
@@ -16,7 +17,7 @@ namespace KouXiaGu.World
 
     public interface IWorldData
     {
-        IGameData GameData { get; }
+        BasicResource GameData { get; }
         WorldInfo Info { get; }
         TimeManager Time { get; }
         GameMap MapData { get; }

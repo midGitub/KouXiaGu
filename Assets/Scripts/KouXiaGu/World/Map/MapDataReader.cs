@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.Grids;
+using KouXiaGu.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace KouXiaGu.World.Map
 
         public int MapSize { get; set; }
 
-        public MapData Read(IGameData info)
+        public MapData Read(BasicResource info)
         {
             int[] landformArray = info.Terrain.LandformInfos.Keys.ToArray();
             int[] roadArray = info.Terrain.RoadInfos.Keys.ToArray();

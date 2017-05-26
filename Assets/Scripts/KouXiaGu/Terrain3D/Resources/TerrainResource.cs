@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D
 
         internal static string AssetBundleFilePath
         {
-            get { return Resource.CombineAssetBundle(assetBundleName); }
+            get { return Path.Combine(Resource.AssetBundleDirectoryPath, assetBundleName); }
         }
 
         public IAsyncOperation Init(BasicTerrainResource elementInfos)

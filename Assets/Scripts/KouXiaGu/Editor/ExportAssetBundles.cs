@@ -6,6 +6,7 @@ namespace KouXiaGu.EditorTool
     using UnityEditor;
     using UnityEngine;
     using System.IO;
+    using KouXiaGu.Resources;
 
     /// <summary>
     /// 构造资源包;

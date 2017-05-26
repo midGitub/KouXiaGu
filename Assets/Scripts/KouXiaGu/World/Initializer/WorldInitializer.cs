@@ -3,6 +3,7 @@ using UnityEngine;
 using UniRx;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World.Map;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.World
 {
@@ -51,7 +52,7 @@ namespace KouXiaGu.World
         /// </summary>
         class AsyncInitializer : AsyncOperation<IWorld>, IWorld, IObservable<IWorld>
         {
-            public AsyncInitializer(IAsyncOperation<IGameData> gameDataInitializer)
+            public AsyncInitializer(IAsyncOperation<BasicResource> gameDataInitializer)
             {
                 stateSender = new AsyncResultSender<IWorld>(this);
                 worldDataInitialize = new DataInitializer();
@@ -64,7 +65,7 @@ namespace KouXiaGu.World
             readonly DataInitializer worldDataInitialize;
             readonly ComponentInitializer componentInitializer;
             readonly SceneInitializer sceneInitializer;
-            public IGameData GameData { get; private set; }
+            public BasicResource GameData { get; private set; }
             public WorldInfo Info { get; private set; }
             public IWorldData Data { get; private set; }
             public IWorldScene Component { get; private set; }
@@ -77,7 +78,7 @@ namespace KouXiaGu.World
                 return stateSender.Subscribe(observer);
             }
 
-            void Initialize(IAsyncOperation<IGameData> operation)
+            void Initialize(IAsyncOperation<BasicResource> operation)
             {
                 GameData = operation.Result;
                 WorldInfoReader.Subscribe(Name + "等待游戏世界信息读取完毕;", OnWorldInfoReadCompleted, OnInitializeFaulted);
@@ -125,24 +126,24 @@ namespace KouXiaGu.World
         }
 
 
-        [ContextMenu("输出模版文件")]
-        void Test()
-        {
-            WorldElementTemplate item = new WorldElementTemplate();
-            item.WriteToDirectory(GameFile.MainDirectory, false);
-        }
+        //[ContextMenu("输出模版文件")]
+        //void Test()
+        //{
+        //    WorldElementTemplate item = new WorldElementTemplate();
+        //    item.WriteToDirectory(GameFile.MainDirectory, false);
+        //}
 
-        [ContextMenu("检查")]
-        void Test2()
-        {
-            BasicTerrainResource item = BasicTerrainResource.Read();
+        //[ContextMenu("检查")]
+        //void Test2()
+        //{
+        //    BasicTerrainResource item = BasicTerrainResource.Read();
 
-            RoadInfo info;
-            if (item.Road.TryGetValue(2, out info))
-            {
-                Debug.Log((info.Terrain == null).ToString());
-            }
-        }
+        //    RoadInfo info;
+        //    if (item.Road.TryGetValue(2, out info))
+        //    {
+        //        Debug.Log((info.Terrain == null).ToString());
+        //    }
+        //}
 
     }
 

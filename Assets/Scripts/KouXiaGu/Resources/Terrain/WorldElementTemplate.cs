@@ -68,7 +68,6 @@ namespace KouXiaGu.Resources
         static readonly BuildingInfo BuildingTemplate = new BuildingInfo()
         {
             ID = 1,
-            Name = StrNone,
             Terrain = new TerrainBuildingInfo()
             {
                 PrefabName = StrNone,
@@ -102,7 +101,7 @@ namespace KouXiaGu.Resources
         {
             AddDictionary(Road, RoadTemplates);
             AddDictionary(Landform, LandformTemplates);
-            AddDictionary(Building, BuildingTemplates);
+            //AddDictionary(Building, BuildingTemplates);
         }
 
         public WorldElementTemplate(bool changeFileName) : base()

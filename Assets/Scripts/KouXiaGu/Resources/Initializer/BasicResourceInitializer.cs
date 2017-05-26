@@ -4,31 +4,19 @@ using KouXiaGu.World;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.Resources
 {
-
-    /// <summary>
-    /// 在游戏开始之前初始化的信息;
-    /// </summary>
-    public interface IGameData
-    {
-        TerrainResource Terrain { get; }
-    }
 
     /// <summary>
     /// 游戏数据,开始游戏前需要读取的资源;
     /// </summary>
     [Serializable]
-    public class GameDataInitializer : AsyncInitializer<IGameData>, IGameData
+    public class BasicResourceInitializer : AsyncInitializer<BasicResource>
     {
-        public GameDataInitializer()
-        {
-        }
-
         [SerializeField]
         TerrainResource terrain;
 
-        public BasicTerrainResource ElementInfo { get; private set; }
+        public BasicResource basicResource { get; private set; }
 
         public TerrainResource Terrain
         {
@@ -43,23 +31,20 @@ namespace KouXiaGu
         public void Start()
         {
             StartInitialize();
-            Initialize0();
+            Initialize();
         }
 
-        void InitializeCompleted(IList<IAsyncOperation> operations)
+        void Initialize()
         {
-            OnCompleted(operations, this);
+            BasicResourceSerializer reader = new BasicResourceSerializer();
+            ThreadDelegateOperation<BasicResource> operation = new ThreadDelegateOperation<BasicResource>(() => reader.Read());
+            operation.Subscribe(this, OnWorldResourceCompleted, OnFaulted);
         }
 
-        void Initialize0()
+        void OnWorldResourceCompleted(IAsyncOperation<BasicResource> operation)
         {
-            BasicTerrainResource.ReadAsync().Subscribe(this, OnWorldResourceCompleted, OnFaulted);
-        }
-
-        void OnWorldResourceCompleted(IAsyncOperation<BasicTerrainResource> operation)
-        {
-            ElementInfo = operation.Result;
-            string log = GetWorldResourceLog(ElementInfo);
+            basicResource = operation.Result;
+            string log = GetWorldResourceLog(basicResource.Terrain);
             Debug.Log(log);
             Initialize1();
         }
@@ -70,8 +55,7 @@ namespace KouXiaGu
                 "[基础资源]"
                + "\nLandform:" + item.Landform.Count
                + "\nRoad:" + item.Road.Count
-               + "\nBuilding:" + item.Building.Count
-               + "\nProduct:" + item.ProductInfos.Count;
+               + "\nBuilding:" + item.Building.Count;
             return str;
         }
 
@@ -79,11 +63,15 @@ namespace KouXiaGu
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
             {
-                    terrain.Init(ElementInfo).Subscribe(this, OnTerrainCompleted, OnFaulted),
+                    terrain.Init(basicResource.Terrain).Subscribe(this, OnTerrainCompleted, OnFaulted),
             };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(this, InitializeCompleted, OnFaulted);
         }
 
+        void InitializeCompleted(IList<IAsyncOperation> operations)
+        {
+            OnCompleted(operations, basicResource);
+        }
 
         void OnTerrainCompleted(IAsyncOperation operation)
         {

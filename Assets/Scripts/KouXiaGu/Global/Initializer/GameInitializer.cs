@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu
 {
@@ -16,19 +17,19 @@ namespace KouXiaGu
 
         ComponentInitializer componentInitialize = new ComponentInitializer();
         [SerializeField]
-        GameDataInitializer gameDataInitialize;
+        BasicResourceInitializer gameDataInitialize;
 
         public IAsyncOperation ComponentInitialize
         {
             get { return componentInitialize; }
         }
 
-        public IAsyncOperation<IGameData> GameDataInitialize
+        public IAsyncOperation<BasicResource> GameDataInitialize
         {
             get { return gameDataInitialize; }
         }
 
-        public IGameData GameData
+        public BasicResource GameData
         {
             get { return GameDataInitialize.Result; }
         }

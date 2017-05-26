@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace KouXiaGu.World.Map
 
     public interface IGameMapReader
     {
-        GameMap Read(IGameData info);
+        GameMap Read(BasicResource info);
     }
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace KouXiaGu.World.Map
 
         RandomMapDataCreater mapDataReader;
 
-        public GameMap Read(IGameData info)
+        public GameMap Read(BasicResource info)
         {
             MapData data = mapDataReader.Read(info);
             return new GameMap(data);
