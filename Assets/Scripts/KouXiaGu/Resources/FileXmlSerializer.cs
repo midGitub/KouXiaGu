@@ -66,7 +66,7 @@ namespace KouXiaGu.Resources
         public List<T> ReadAll()
         {
             List<T> completed = new List<T>();
-            IEnumerable<string> filePaths = File.FindFiles();
+            var filePaths = File.GetExistentPaths();
             foreach (var path in filePaths)
             {
                 try

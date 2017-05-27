@@ -9,6 +9,7 @@ namespace KouXiaGu.Resources
 
     public interface ISerializer<T> : IReader<T>, IWriter<T>
     {
+
     }
 
     public interface IReader<T>

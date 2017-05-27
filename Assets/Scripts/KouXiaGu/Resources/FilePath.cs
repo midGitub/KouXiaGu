@@ -10,15 +10,36 @@ namespace KouXiaGu.Resources
     public interface IFilePath
     {
         /// <summary>
-        /// 主要存放的文件路径;
+        /// 主要存放的文件路径,若需要输出的路径;
         /// </summary>
         string GetMainPath();
 
         /// <summary>
         /// 获取到所有文件路径;
         /// </summary>
-        IEnumerable<string> FindFiles();
+        IEnumerable<string> GetExistentPaths();
     }
+
+    ///// <summary>
+    ///// 文件路径基类;
+    ///// </summary>
+    //public abstract class FilePath
+    //{
+    //    /// <summary>
+    //    /// 获取到所有定义的目录;
+    //    /// </summary>
+    //    public abstract IEnumerable<string> GetPaths();
+
+    //    /// <summary>
+    //    /// 获取到所有存在的目录;
+    //    /// </summary>
+    //    public abstract IEnumerable<string> GetExistentPaths();
+
+    //    public static FilePath operator +(FilePath a, FilePath b)
+    //    {
+    //        return null;
+    //    }
+    //}
 
     /// <summary>
     /// 单个文件路径;
@@ -38,7 +59,7 @@ namespace KouXiaGu.Resources
             return Path.Combine(Resource.ConfigDirectoryPath, FileName);
         }
 
-        public virtual IEnumerable<string> FindFiles()
+        public virtual IEnumerable<string> GetExistentPaths()
         {
             string filePath = GetMainPath();
             if (File.Exists(filePath))
@@ -53,7 +74,7 @@ namespace KouXiaGu.Resources
     /// </summary>
     public abstract class MultipleFilePath : SingleFilePath, IFilePath
     {
-        public override IEnumerable<string> FindFiles()
+        public override IEnumerable<string> GetExistentPaths()
         {
             string fullPath = GetMainPath();
             string directory = Path.GetDirectoryName(fullPath);
