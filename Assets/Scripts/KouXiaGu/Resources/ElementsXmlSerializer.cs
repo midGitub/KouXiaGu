@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -16,10 +17,10 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 将数组序列化;
     /// </summary>
-    public class ElementXmlSerializer<T> : ICombiner<T[], Dictionary<int, T>>, IReader<Dictionary<int, T>>
+    public class ElementsXmlSerializer<T> : ICombiner<T[], Dictionary<int, T>>, ISerializer<Dictionary<int, T>>
         where T : IElement
     {
-        public ElementXmlSerializer(IFilePath file)
+        public ElementsXmlSerializer(IFilePath file)
         {
             fileSerializer = new FilesXmlSerializer<T[], Dictionary<int, T>>(file, this);
         }
@@ -29,6 +30,11 @@ namespace KouXiaGu.Resources
         public Dictionary<int, T> Read()
         {
             return fileSerializer.Read();
+        }
+
+        public void Write(Dictionary<int, T> item, FileMode fileMode)
+        {
+            fileSerializer.Write(item, fileMode);
         }
 
         public Dictionary<int, T> Combine(IEnumerable<T[]> itemArrays)
@@ -56,6 +62,12 @@ namespace KouXiaGu.Resources
                 Debug.LogWarning(ToString() + errorStr);
             }
             return completed;
+        }
+
+        public T[] Separate(Dictionary<int, T> item)
+        {
+            T[] itemArray = item.Values.ToArray();
+            return itemArray;
         }
     }
 }

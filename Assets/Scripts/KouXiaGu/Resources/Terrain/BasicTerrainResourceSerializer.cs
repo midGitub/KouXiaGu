@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace KouXiaGu.Resources
 {
 
-
-    public class BasicTerrainResourceSerializer : IReader<BasicTerrainResource>
+    public class BasicTerrainResourceSerializer : ISerializer<BasicTerrainResource>
     {
-        internal RoadInfoXmlSerializer RoadReader = new RoadInfoXmlSerializer();
-        internal LandformInfoXmlSerializer LandformReader = new LandformInfoXmlSerializer();
-        internal IReader<Dictionary<int, BuildingInfo>> BuildingReader = new BuildingXmlSerializer();
+        internal ISerializer<Dictionary<int, LandformInfo>> LandformReader = new LandformXmlSerializer();
+        internal ISerializer<Dictionary<int, RoadInfo>> RoadReader = new RoadXmlSerializer();
+        internal ISerializer<Dictionary<int, BuildingInfo>> BuildingReader = new BuildingXmlSerializer();
 
         public BasicTerrainResource Read()
         {
@@ -22,6 +22,13 @@ namespace KouXiaGu.Resources
                 Building = BuildingReader.Read(),
             };
             return item;
+        }
+
+        public void Write(BasicTerrainResource item, FileMode fileMode)
+        {
+            LandformReader.Write(item.Landform, fileMode);
+            RoadReader.Write(item.Road, fileMode);
+            BuildingReader.Write(item.Building, fileMode);
         }
     }
 }

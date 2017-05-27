@@ -34,13 +34,13 @@ namespace KouXiaGu.Resources
         }
     }
 
-    class BuildingXmlSerializer : ElementXmlSerializer<BuildingInfo>
+    class BuildingXmlSerializer : ElementsXmlSerializer<BuildingInfo>
     {
         public BuildingXmlSerializer() : base(new BuildingFile())
         {
         }
 
-        public BuildingXmlSerializer(MultipleFilePath file) : base(file)
+        public BuildingXmlSerializer(IFilePath file) : base(file)
         {
         }
     }

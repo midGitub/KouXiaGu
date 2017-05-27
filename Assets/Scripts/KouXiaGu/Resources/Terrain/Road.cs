@@ -12,40 +12,32 @@ namespace KouXiaGu.Resources
     /// 道路信息;
     /// </summary>
     [XmlType("Road")]
-    public class RoadInfo : ElementInfo
+    public struct RoadInfo : IElement
     {
+        [XmlAttribute("id")]
+        public int ID { get; set; }
+
         [XmlElement("Terrain")]
         public TerrainRoadInfo Terrain;
     }
 
-    public class RoadInfoFilePath : CustomFilePath
-    {
-        public RoadInfoFilePath(string fileExtension) : base(fileExtension)
-        {
-        }
 
+    class RoadFile : MultipleFilePath
+    {
         public override string FileName
         {
-            get { return "World/Road"; }
+            get { return "World/Road.xml"; }
         }
     }
 
-    /// <summary>
-    /// 道路信息读取;
-    /// </summary>
-    public class RoadInfoXmlSerializer : DataDictionaryXmlReader<RoadInfo>
+    class RoadXmlSerializer : ElementsXmlSerializer<RoadInfo>
     {
-        public RoadInfoXmlSerializer()
+        public RoadXmlSerializer() : base(new RoadFile())
         {
-            file = new RoadInfoFilePath(FileExtension);
         }
 
-        RoadInfoFilePath file;
-
-        public override CustomFilePath File
+        public RoadXmlSerializer(IFilePath file) : base(file)
         {
-            get { return file; }
         }
     }
-
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -23,7 +24,7 @@ namespace KouXiaGu.Resources
         /// <summary>
         /// 输出/保存到;
         /// </summary>
-        /// <param name="overlay">是否覆盖原文件?</param>
-        void Write(T item, bool overlay);
+        /// <param name="fileMode">文件读取方式;</param>
+        void Write(T item, FileMode fileMode);
     }
 }

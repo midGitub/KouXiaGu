@@ -10,7 +10,7 @@ namespace KouXiaGu.Resources
 {
 
 
-    public class FileXmlSerializer<T> : IReader<T>
+    public class FileXmlSerializer<T> : ISerializer<T>
     {
         public FileXmlSerializer(IFilePath file)
         {
@@ -39,7 +39,13 @@ namespace KouXiaGu.Resources
             Write(item, filePath);
         }
 
-        public void Write(T item, string filePath)
+        public void Write(T item, FileMode fileMode)
+        {
+            string filePath = File.GetMainPath();
+            serializer.SerializeXiaGu(filePath, item, fileMode);
+        }
+
+        public void Write(T item, string filePath, FileMode fileMode = FileMode.Create)
         {
             serializer.SerializeXiaGu(filePath, item);
         }
@@ -88,7 +94,13 @@ namespace KouXiaGu.Resources
             Write(item, filePath);
         }
 
-        public void Write(T item, string filePath)
+        public void Write(T item, FileMode fileMode)
+        {
+            string filePath = File.GetMainPath();
+            serializer.SerializeXiaGu(filePath, item, fileMode);
+        }
+
+        public void Write(T item, string filePath, FileMode fileMode = FileMode.Create)
         {
             serializer.SerializeXiaGu(filePath, item);
         }
@@ -105,7 +117,7 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 多个文件读取;
     /// </summary>
-    public class FilesXmlSerializer<T> : BasicFilesXmlSerializer<T>, IReader<T>
+    public class FilesXmlSerializer<T> : BasicFilesXmlSerializer<T>, ISerializer<T>
     {
         public FilesXmlSerializer(IFilePath multipleFile, ICombiner<T> combiner) : base(multipleFile)
         {
@@ -126,14 +138,15 @@ namespace KouXiaGu.Resources
     public interface ICombiner<TSource, TResult>
     {
         TResult Combine(IEnumerable<TSource> items);
+        TSource Separate(TResult item);
     }
 
     /// <summary>
-    /// 读取多个
+    /// 读取多个文件;
     /// </summary>
     /// <typeparam name="TSource">从文件读取到的内容;</typeparam>
     /// <typeparam name="TResult">转换后的内容;</typeparam>
-    public class FilesXmlSerializer<TSource, TResult> : BasicFilesXmlSerializer<TSource>, IReader<TResult>
+    public class FilesXmlSerializer<TSource, TResult> : BasicFilesXmlSerializer<TSource>, ISerializer<TResult>
     {
         public FilesXmlSerializer(IFilePath multipleFile, ICombiner<TSource, TResult> combiner) : base(multipleFile)
         {
@@ -147,6 +160,12 @@ namespace KouXiaGu.Resources
             List<TSource> items = ReadAll();
             TResult item = Combiner.Combine(items);
             return item;
+        }
+
+        public void Write(TResult item, FileMode fileMode)
+        {
+            TSource source = Combiner.Separate(item);
+            Write(source, fileMode);
         }
     }
 }
