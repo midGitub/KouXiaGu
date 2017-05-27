@@ -16,26 +16,19 @@ namespace KouXiaGu.Navigation
         public NavigationResource(BasicTerrainResource basicResource)
         {
             landform = basicResource.Landform.AsReadOnlyDictionary(item => item.Navigation);
-            road = basicResource.Road.AsReadOnlyDictionary(item => item.Navigation);
             building = basicResource.Building.AsReadOnlyDictionary(item => item.Navigation);
         }
 
-        readonly IReadOnlyDictionary<int, NavigationLandformInfo> landform;
-        readonly IReadOnlyDictionary<int, NavigationRoadInfo> road;
-        readonly IReadOnlyDictionary<int, NavigationBuildingInfo> building;
-        readonly LandformTagManager landformTagManager;
+        IReadOnlyDictionary<int, NavLandformInfo> landform;
+        IReadOnlyDictionary<int, NavBuildingInfo> building;
+        LandformTag landformTagInfo;
 
-        public IReadOnlyDictionary<int, NavigationLandformInfo> Landform
+        public IReadOnlyDictionary<int, NavLandformInfo> Landform
         {
             get { return landform; }
         }
 
-        public IReadOnlyDictionary<int, NavigationRoadInfo> Road
-        {
-            get { return road; }
-        }
-
-        public IReadOnlyDictionary<int, NavigationBuildingInfo> Building
+        public IReadOnlyDictionary<int, NavBuildingInfo> Building
         {
             get { return building; }
         }

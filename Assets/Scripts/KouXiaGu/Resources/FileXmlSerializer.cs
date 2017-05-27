@@ -9,21 +9,63 @@ using UnityEngine;
 namespace KouXiaGu.Resources
 {
 
-    public class FileXmlSerializer<T> : IReader<List<T>>
+    public class FileXmlSerializer<T>
     {
-        public FileXmlSerializer(IFilePath file)
+        public FileXmlSerializer(SingleFilePath file)
+        {
+            File = file;
+            serializer = new XmlSerializer(typeof(T));
+        }
+
+        public SingleFilePath File { get; private set; }
+        protected XmlSerializer serializer { get; private set; }
+
+        public T Read()
+        {
+            string filePath = File.GetFullPath();
+            return Read(filePath);
+        }
+
+        /// <summary>
+        /// 从文件读取到;
+        /// </summary>
+        public T Read(string filePath)
+        {
+            T item = (T)serializer.DeserializeXiaGu(filePath);
+            return item;
+        }
+
+        public void Write(T item)
+        {
+            string filePath = File.GetFullPath();
+            Write(item, filePath);
+        }
+
+        /// <summary>
+        /// 输出到文件;
+        /// </summary>
+        public void Write(T item, string filePath)
+        {
+            serializer.SerializeXiaGu(filePath, item);
+        }
+    }
+
+
+    public class FilesXmlSerializer<T> : IReader<List<T>>
+    {
+        public FilesXmlSerializer(MultipleFilePath file)
         {
             this.file = file;
             serializer = new XmlSerializer(typeof(T));
         }
 
-        protected IFilePath file;
+        protected MultipleFilePath file;
         XmlSerializer serializer;
 
         /// <summary>
         /// 读取到文件,若遇到异常则输出到日志;
         /// </summary>
-        List<T> IReader<List<T>>.Read()
+        public List<T> Read()
         {
             ICollection<FailureInfo> faulted;
             List<T> result = Read(file, out faulted);
@@ -59,12 +101,12 @@ namespace KouXiaGu.Resources
         /// <param name="filePath">文件路径接口</param>
         /// <param name="faulted">读取失败的文件,若不存在则为Null</param>
         /// <returns></returns>
-        public List<T> Read(IFilePath filePath, out ICollection<FailureInfo> faulted)
+        public List<T> Read(MultipleFilePath filePath, out ICollection<FailureInfo> faulted)
         {
             faulted = null;
             List<T> completed = new List<T>();
 
-            IEnumerable<string> filePaths = filePath.FindFile();
+            IEnumerable<string> filePaths = filePath.FindFiles();
             foreach (var path in filePaths)
             {
                 try

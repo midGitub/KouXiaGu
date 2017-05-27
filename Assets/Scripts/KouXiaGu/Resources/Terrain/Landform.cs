@@ -18,7 +18,7 @@ namespace KouXiaGu.Resources
         public TerrainLandformInfo Terrain;
 
         [XmlElement("Navigation")]
-        public NavigationLandformInfo Navigation;
+        public NavLandformInfo Navigation;
     }
 
     /// <summary>

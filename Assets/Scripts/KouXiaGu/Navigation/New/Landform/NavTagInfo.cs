@@ -7,20 +7,17 @@ using System.Xml.Serialization;
 namespace KouXiaGu.Navigation
 {
 
-    [XmlType("Landform")]
-    public struct NavigationLandformInfo
+    [XmlType("TagInfo")]
+    public struct NavTagInfo
     {
+        [XmlAttribute("name")]
+        public string Name;
+
         /// <summary>
         /// 是否可行走?
         /// </summary>
         [XmlElement("IsWalkable")]
         public bool IsWalkable;
-
-        /// <summary>
-        /// 地形标签;
-        /// </summary>
-        [XmlElement("Tag")]
-        public string Tag;
 
         /// <summary>
         /// 经过这个地形的代价值;

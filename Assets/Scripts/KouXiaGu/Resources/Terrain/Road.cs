@@ -16,9 +16,6 @@ namespace KouXiaGu.Resources
     {
         [XmlElement("Terrain")]
         public TerrainRoadInfo Terrain;
-
-        [XmlElement("Navigation")]
-        public NavigationRoadInfo Navigation;
     }
 
     public class RoadInfoFilePath : CustomFilePath

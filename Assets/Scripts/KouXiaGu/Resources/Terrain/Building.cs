@@ -23,10 +23,10 @@ namespace KouXiaGu.Resources
         public TerrainBuildingInfo Terrain { get; set; }
 
         [XmlElement("Navigation")]
-        public NavigationBuildingInfo Navigation { get; set; }
+        public NavBuildingInfo Navigation { get; set; }
     }
 
-    class BuildingFile : FilePath
+    class BuildingFile : MultipleFilePath
     {
         public override string FileName
         {
@@ -40,7 +40,7 @@ namespace KouXiaGu.Resources
         {
         }
 
-        public BuildingXmlSerializer(IFilePath file) : base(file)
+        public BuildingXmlSerializer(MultipleFilePath file) : base(file)
         {
         }
     }

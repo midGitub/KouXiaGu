@@ -8,7 +8,7 @@ namespace KouXiaGu.Navigation
 {
 
     [XmlType("Building")]
-    public struct NavigationBuildingInfo
+    public struct NavBuildingInfo
     {
         /// <summary>
         /// 是否影响导航?
@@ -20,6 +20,6 @@ namespace KouXiaGu.Navigation
         /// 导航信息;
         /// </summary>
         [XmlElement("Navigation")]
-        public NavigationLandformInfo Navigation;
+        public NavLandformInfo Navigation;
     }
 }

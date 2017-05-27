@@ -14,10 +14,10 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 将数组序列化;
     /// </summary>
-    public class ElementXmlSerializer<T> : FileXmlSerializer<T[]>, IReader<List<T>>, IReader<Dictionary<int, T>>
+    public class ElementXmlSerializer<T> : FilesXmlSerializer<T[]>, IReader<List<T>>, IReader<Dictionary<int, T>>
         where T : IElement
     {
-        public ElementXmlSerializer(IFilePath file) : base(file)
+        public ElementXmlSerializer(MultipleFilePath file) : base(file)
         {
         }
 

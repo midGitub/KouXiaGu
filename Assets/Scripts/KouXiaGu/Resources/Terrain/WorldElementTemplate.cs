@@ -30,7 +30,6 @@ namespace KouXiaGu.Resources
                 HeightAdjustBlendTex = StrNone,
                 HeightAdjustTex = StrNone,
             },
-            Navigation = new NavigationRoadInfo(),
         };
 
         static readonly RoadInfo[] RoadTemplates = new RoadInfo[]
@@ -53,7 +52,7 @@ namespace KouXiaGu.Resources
                 HeightBlendTex = StrNone,
                 HeightTex = StrNone,
             },
-            Navigation = new NavigationLandformInfo(),
+            Navigation = new NavLandformInfo(),
         };
 
         static readonly LandformInfo[] LandformTemplates = new LandformInfo[]
@@ -72,7 +71,7 @@ namespace KouXiaGu.Resources
             {
                 PrefabName = StrNone,
             },
-            Navigation = new NavigationBuildingInfo(),
+            Navigation = new NavBuildingInfo(),
         };
 
         static readonly BuildingInfo[] BuildingTemplates = new BuildingInfo[]

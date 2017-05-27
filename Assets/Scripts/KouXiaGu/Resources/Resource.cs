@@ -57,23 +57,4 @@ namespace KouXiaGu.Resources
             ConfigDirectoryPath = ConfigDirectoryPath;
         }
     }
-
-    public abstract class FilePath : IFilePath
-    {
-        public abstract string FileName { get; }
-
-        public IEnumerable<string> FindFile()
-        {
-            yield return Path.Combine(Resource.ConfigDirectoryPath, FileName);
-        }
-    }
-
-
-    public interface IFilePath
-    {
-        /// <summary>
-        /// 获取到所有文件路径;
-        /// </summary>
-        IEnumerable<string> FindFile();
-    }
 }
