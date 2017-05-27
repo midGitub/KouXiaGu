@@ -12,7 +12,7 @@ namespace KouXiaGu
     /// </summary>
     public class UnityCoroutine : UnityThreadBehaviour
     {
-        public UnityCoroutine(object sender, IEnumerator coroutine) : base(sender)
+        public UnityCoroutine(object message, IEnumerator coroutine) : base(message)
         {
             this.coroutine = new Coroutine(coroutine);
         }

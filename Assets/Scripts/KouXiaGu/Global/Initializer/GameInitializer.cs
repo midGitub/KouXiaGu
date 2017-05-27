@@ -16,8 +16,7 @@ namespace KouXiaGu
         }
 
         ComponentInitializer componentInitialize = new ComponentInitializer();
-        [SerializeField]
-        BasicResourceInitializer gameDataInitialize;
+        BasicResourceInitializer gameDataInitialize = new BasicResourceInitializer();
 
         public IAsyncOperation ComponentInitialize
         {
@@ -29,18 +28,12 @@ namespace KouXiaGu
             get { return gameDataInitialize; }
         }
 
-        public BasicResource GameData
-        {
-            get { return GameDataInitialize.Result; }
-        }
-
         /// <summary>
         /// 对内容进行初始化;
         /// </summary>
         void Awake()
         {
             SetInstance(this);
-            Resource.Initialize();
             Initialize(this);
         }
 
@@ -54,7 +47,5 @@ namespace KouXiaGu
         {
             gameDataInitialize.Start();
         }
-
     }
-
 }

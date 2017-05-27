@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -20,7 +21,7 @@ namespace KouXiaGu
             get
             {
 #if UNITY_EDITOR
-                if (!Application.isPlaying)
+                if (XiaGu.IsMainThread && !Application.isPlaying)
                 {
                     return FindInEditor();
                 }

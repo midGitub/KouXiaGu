@@ -9,9 +9,9 @@ namespace KouXiaGu.Resources
 
     public class BasicTerrainResourceSerializer : IReader<BasicTerrainResource>
     {
-        static RoadInfoXmlSerializer RoadReader = new RoadInfoXmlSerializer();
-        static LandformInfoXmlSerializer LandformReader = new LandformInfoXmlSerializer();
-        static IReader<Dictionary<int, BuildingInfo>> BuildingReader = new BuildingXmlSerializer();
+        internal RoadInfoXmlSerializer RoadReader = new RoadInfoXmlSerializer();
+        internal LandformInfoXmlSerializer LandformReader = new LandformInfoXmlSerializer();
+        internal IReader<Dictionary<int, BuildingInfo>> BuildingReader = new BuildingXmlSerializer();
 
         public BasicTerrainResource Read()
         {

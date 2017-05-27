@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,8 @@ namespace KouXiaGu
         {
             this.tag = Tag;
             DontDestroyOnLoad(gameObject);
+            XiaGu.Initialize();
+            Resource.Initialize();
         }
 
         public static GameObject GetGameObject()

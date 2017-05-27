@@ -14,6 +14,14 @@ namespace KouXiaGu.Resources
     public static class Resource
     {
 
+        static readonly Stopwatch globalStopwatch = new Stopwatch(0.8f);
+
+        public static Stopwatch GlobalStopwatch
+        {
+            get { return globalStopwatch; }
+        }
+
+
         static string assetBundleDirectoryPath = string.Empty;
 
         /// <summary>
