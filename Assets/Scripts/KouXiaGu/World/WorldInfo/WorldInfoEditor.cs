@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KouXiaGu.World.Map;
+using System.Threading;
+using KouXiaGu.Resources;
+using System.IO;
 
 namespace KouXiaGu.World
 {
@@ -47,5 +50,4 @@ namespace KouXiaGu.World
 
         }
     }
-
 }

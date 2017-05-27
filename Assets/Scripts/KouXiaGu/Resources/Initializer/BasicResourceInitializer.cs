@@ -18,11 +18,6 @@ namespace KouXiaGu.Resources
 
         public BasicResource basicResource { get; private set; }
 
-        public TerrainResource Terrain
-        {
-            get { return terrain; }
-        }
-
         public override string Prefix
         {
             get { return "游戏基础资源"; }
@@ -44,7 +39,7 @@ namespace KouXiaGu.Resources
         void OnWorldResourceCompleted(IAsyncOperation<BasicResource> operation)
         {
             basicResource = operation.Result;
-            string log = GetWorldResourceLog(basicResource.Terrain);
+            string log = GetWorldResourceLog(basicResource.BasicTerrain);
             Debug.Log(log);
             Initialize1();
         }
@@ -63,13 +58,14 @@ namespace KouXiaGu.Resources
         {
             IAsyncOperation[] missions = new IAsyncOperation[]
             {
-                    terrain.Init(basicResource.Terrain).Subscribe(this, OnTerrainCompleted, OnFaulted),
+                    terrain.Init(basicResource.BasicTerrain).Subscribe(this, OnTerrainCompleted, OnFaulted),
             };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(this, InitializeCompleted, OnFaulted);
         }
 
         void InitializeCompleted(IList<IAsyncOperation> operations)
         {
+            basicResource.Terrain = terrain;
             OnCompleted(operations, basicResource);
         }
 

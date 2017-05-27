@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 namespace KouXiaGu
@@ -86,32 +87,50 @@ namespace KouXiaGu
 
         void Update()
         {
-            onUpdate.Next();
+            lock (onUpdate)
+            {
+                onUpdate.Next();
+            }
         }
 
         void LateUpdate()
         {
-            onLateUpdate.Next();
+            lock (onLateUpdate)
+            {
+                onLateUpdate.Next();
+            }
         }
 
         void FixedUpdate()
         {
-            onFixedUpdate.Next();
+            lock (onFixedUpdate)
+            {
+                onFixedUpdate.Next();
+            }
         }
 
         public IDisposable SubscribeUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
-            return onUpdate.ObserverCollection.Subscribe(behaviour);
+            lock (onUpdate)
+            {
+                return onUpdate.ObserverCollection.Subscribe(behaviour);
+            }
         }
 
         public IDisposable SubscribeLateUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
-            return onLateUpdate.ObserverCollection.Subscribe(behaviour);
+            lock (onLateUpdate)
+            {
+                return onLateUpdate.ObserverCollection.Subscribe(behaviour);
+            }
         }
 
         public IDisposable SubscribeFixedUpdate(IUnityThreadBehaviour<Action> behaviour)
         {
-            return onFixedUpdate.ObserverCollection.Subscribe(behaviour);
+            lock (onFixedUpdate)
+            {
+                return onFixedUpdate.ObserverCollection.Subscribe(behaviour);
+            }
         }
 
 
@@ -131,7 +150,7 @@ namespace KouXiaGu
 
             protected void OnError(T item, Exception ex)
             {
-                Debug.LogError("UnityThreadDispatcher:" + item.ToString() + "\n" + ex);
+                Debug.LogError("UnityThreadDispatcher:" + item.ToString() + ",Exception:" + ex);
             }
 
         }
