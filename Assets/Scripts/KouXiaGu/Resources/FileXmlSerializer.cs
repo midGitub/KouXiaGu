@@ -9,26 +9,24 @@ using UnityEngine;
 namespace KouXiaGu.Resources
 {
 
-    public class FileXmlSerializer<T>
+
+    public class FileXmlSerializer<T> : IReader<T>
     {
-        public FileXmlSerializer(SingleFilePath file)
+        public FileXmlSerializer(IFilePath file)
         {
             File = file;
             serializer = new XmlSerializer(typeof(T));
         }
 
-        public SingleFilePath File { get; private set; }
+        public IFilePath File { get; private set; }
         protected XmlSerializer serializer { get; private set; }
 
-        public T Read()
+        public virtual T Read()
         {
-            string filePath = File.GetFullPath();
+            string filePath = File.GetMainPath();
             return Read(filePath);
         }
 
-        /// <summary>
-        /// 从文件读取到;
-        /// </summary>
         public T Read(string filePath)
         {
             T item = (T)serializer.DeserializeXiaGu(filePath);
@@ -37,13 +35,10 @@ namespace KouXiaGu.Resources
 
         public void Write(T item)
         {
-            string filePath = File.GetFullPath();
+            string filePath = File.GetMainPath();
             Write(item, filePath);
         }
 
-        /// <summary>
-        /// 输出到文件;
-        /// </summary>
         public void Write(T item, string filePath)
         {
             serializer.SerializeXiaGu(filePath, item);
@@ -51,62 +46,21 @@ namespace KouXiaGu.Resources
     }
 
 
-    public class FilesXmlSerializer<T> : IReader<List<T>>
+    public abstract class BasicFilesXmlSerializer<T>
     {
-        public FilesXmlSerializer(MultipleFilePath file)
+        public BasicFilesXmlSerializer(IFilePath file)
         {
-            this.file = file;
+            File = file;
             serializer = new XmlSerializer(typeof(T));
         }
 
-        protected MultipleFilePath file;
-        XmlSerializer serializer;
+        public IFilePath File { get; private set; }
+        protected XmlSerializer serializer { get; private set; }
 
-        /// <summary>
-        /// 读取到文件,若遇到异常则输出到日志;
-        /// </summary>
-        public List<T> Read()
+        public List<T> ReadAll()
         {
-            ICollection<FailureInfo> faulted;
-            List<T> result = Read(file, out faulted);
-            LogFaulted(faulted);
-            return result;
-        }
-
-        /// <summary>
-        /// 将异常输出到日志;
-        /// </summary>
-        protected void LogFaulted(ICollection<FailureInfo> faulted)
-        {
-            if (faulted != null)
-            {
-                string errorStr = faulted.ToLog("读取资源时出现异常;");
-                Debug.LogWarning(errorStr);
-            }
-        }
-
-        /// <summary>
-        /// 读取到所有;
-        /// </summary>
-        /// <param name="faulted">读取失败的文件,若不存在则为Null</param>
-        /// <returns></returns>
-        public List<T> Read(out ICollection<FailureInfo> faulted)
-        {
-            return Read(file, out faulted);
-        }
-
-        /// <summary>
-        /// 读取到所有;
-        /// </summary>
-        /// <param name="filePath">文件路径接口</param>
-        /// <param name="faulted">读取失败的文件,若不存在则为Null</param>
-        /// <returns></returns>
-        public List<T> Read(MultipleFilePath filePath, out ICollection<FailureInfo> faulted)
-        {
-            faulted = null;
             List<T> completed = new List<T>();
-
-            IEnumerable<string> filePaths = filePath.FindFiles();
+            IEnumerable<string> filePaths = File.FindFiles();
             foreach (var path in filePaths)
             {
                 try
@@ -116,49 +70,83 @@ namespace KouXiaGu.Resources
                 }
                 catch (Exception ex)
                 {
-                    if (faulted == null)
-                    {
-                        faulted = new List<FailureInfo>();
-                    }
-                    var failureInfo = new FailureInfo(path, ex);
-                    faulted.Add(failureInfo);
+                    Debug.LogError(ex);
                 }
             }
-
             return completed;
         }
 
-        /// <summary>
-        /// 读取到文件;
-        /// </summary>
         public T Read(string filePath)
         {
-            return (T)serializer.DeserializeXiaGu(filePath);
+            T item = (T)serializer.DeserializeXiaGu(filePath);
+            return item;
         }
 
-        /// <summary>
-        /// 输出到文件;
-        /// </summary>
+        public void Write(T item)
+        {
+            string filePath = File.GetMainPath();
+            Write(item, filePath);
+        }
+
         public void Write(T item, string filePath)
         {
             serializer.SerializeXiaGu(filePath, item);
         }
+    }
 
-        public struct FailureInfo
+    /// <summary>
+    /// 使多个相同类型结合方法;
+    /// </summary>
+    public interface ICombiner<T>
+    {
+        T Combine(IEnumerable<T> items);
+    }
+
+    /// <summary>
+    /// 多个文件读取;
+    /// </summary>
+    public class FilesXmlSerializer<T> : BasicFilesXmlSerializer<T>, IReader<T>
+    {
+        public FilesXmlSerializer(IFilePath multipleFile, ICombiner<T> combiner) : base(multipleFile)
         {
-            public FailureInfo(string path, Exception ex)
-            {
-                FilePath = path;
-                Exception = ex;
-            }
+            Combiner = combiner;
+        }
 
-            public string FilePath { get; private set; }
-            public Exception Exception { get; private set; }
+        public ICombiner<T> Combiner { get; private set; }
 
-            public override string ToString()
-            {
-                return "[FilePath:" + FilePath + ",Exception:" + Exception + "]";
-            }
+        public T Read()
+        {
+            List<T> items = ReadAll();
+            T item = Combiner.Combine(items);
+            return item;
+        }
+    }
+
+
+    public interface ICombiner<TSource, TResult>
+    {
+        TResult Combine(IEnumerable<TSource> items);
+    }
+
+    /// <summary>
+    /// 读取多个
+    /// </summary>
+    /// <typeparam name="TSource">从文件读取到的内容;</typeparam>
+    /// <typeparam name="TResult">转换后的内容;</typeparam>
+    public class FilesXmlSerializer<TSource, TResult> : BasicFilesXmlSerializer<TSource>, IReader<TResult>
+    {
+        public FilesXmlSerializer(IFilePath multipleFile, ICombiner<TSource, TResult> combiner) : base(multipleFile)
+        {
+            Combiner = combiner;
+        }
+
+        public ICombiner<TSource, TResult> Combiner { get; private set; }
+
+        public TResult Read()
+        {
+            List<TSource> items = ReadAll();
+            TResult item = Combiner.Combine(items);
+            return item;
         }
     }
 }

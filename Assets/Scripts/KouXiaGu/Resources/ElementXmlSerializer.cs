@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using UnityEngine;
 
 namespace KouXiaGu.Resources
 {
-
+    
     public interface IElement
     {
         int ID { get; }
@@ -14,37 +16,25 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 将数组序列化;
     /// </summary>
-    public class ElementXmlSerializer<T> : FilesXmlSerializer<T[]>, IReader<List<T>>, IReader<Dictionary<int, T>>
+    public class ElementXmlSerializer<T> : ICombiner<T[], Dictionary<int, T>>, IReader<Dictionary<int, T>>
         where T : IElement
     {
-        public ElementXmlSerializer(MultipleFilePath file) : base(file)
+        public ElementXmlSerializer(IFilePath file)
         {
+            fileSerializer = new FilesXmlSerializer<T[], Dictionary<int, T>>(file, this);
         }
 
-        /// <summary>
-        /// 读取到文件,若遇到异常则输出到日志;
-        /// </summary>
-        List<T> IReader<List<T>>.Read()
+        FilesXmlSerializer<T[], Dictionary<int, T>> fileSerializer;
+
+        public Dictionary<int, T> Read()
         {
-            IReader<List<T[]>> arrayReader = this;
-            List<T[]> items = arrayReader.Read();
-            List<T> completed = new List<T>();
-            foreach (var item in items)
-            {
-                completed.AddRange(item);
-            }
-            return completed;
+            return fileSerializer.Read();
         }
 
-        /// <summary>
-        /// 读取到文件,若遇到异常则输出到日志;
-        /// </summary>
-        Dictionary<int, T> IReader<Dictionary<int, T>>.Read()
+        public Dictionary<int, T> Combine(IEnumerable<T[]> itemArrays)
         {
-            IReader<List<T[]>> arrayReader = this;
-            List<T[]> itemArrays = arrayReader.Read();
             Dictionary<int, T> completed = new Dictionary<int, T>();
-            string errorStr = ToString();
+            string errorStr = string.Empty;
 
             foreach (T[] items in itemArrays)
             {
@@ -59,6 +49,11 @@ namespace KouXiaGu.Resources
                         completed.Add(item.ID, item);
                     }
                 }
+            }
+
+            if (errorStr != string.Empty)
+            {
+                Debug.LogWarning(ToString() + errorStr);
             }
             return completed;
         }
