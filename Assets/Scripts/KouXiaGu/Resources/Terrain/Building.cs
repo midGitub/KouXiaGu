@@ -28,9 +28,12 @@ namespace KouXiaGu.Resources
 
     class BuildingFile : MultipleFilePath
     {
+        [CustomFilePath("建筑资源描述文件;", true)]
+        public const string fileName = "World/Terrain/Building.xml";
+
         public override string FileName
         {
-            get { return "World/Building.xml"; }
+            get { return fileName; }
         }
     }
 

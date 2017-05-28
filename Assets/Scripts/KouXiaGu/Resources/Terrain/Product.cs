@@ -24,7 +24,7 @@ namespace KouXiaGu.Resources
 
         public override string FileName
         {
-            get { return "World/Product"; }
+            get { return "World/Terrain/Product"; }
         }
     }
 
