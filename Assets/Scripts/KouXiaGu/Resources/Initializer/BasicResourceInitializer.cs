@@ -35,7 +35,7 @@ namespace KouXiaGu.Resources
         void InitializeCompleted(IAsyncOperation<BasicResource> operation)
         {
             basicResource = operation.Result;
-            string log = LogResourceInfo(basicResource);
+            LogResourceInfo(basicResource);
             OnCompleted(basicResource);
         }
 
@@ -43,43 +43,12 @@ namespace KouXiaGu.Resources
         {
             string str =
                 "[基础资源]"
-               + "\nLandform:" + item.BasicTerrain.Landform.Count
-               + "\nRoad:" + item.BasicTerrain.Road.Count
-               + "\nBuilding:" + item.BasicTerrain.Building.Count;
+               + "\nLandform:" + item.Terrain.Landform.Count
+               + "\nRoad:" + item.Terrain.Road.Count
+               + "\nBuilding:" + item.Terrain.Building.Count;
 
             Debug.Log(str);
             return str;
         }
-
-        //void Initialize1()
-        //{
-        //    IAsyncOperation[] missions = new IAsyncOperation[]
-        //    {
-        //            terrain.Init(basicResource.BasicTerrain).Subscribe(this, OnTerrainCompleted, OnFaulted),
-        //    };
-        //    (missions as IEnumerable<IAsyncOperation>).Subscribe(this, InitializeCompleted, OnFaulted);
-        //}
-
-        //void InitializeCompleted(IList<IAsyncOperation> operations)
-        //{
-        //    OnCompleted(operations, basicResource);
-        //}
-
-        //void OnTerrainCompleted(IAsyncOperation operation)
-        //{
-        //    string log = GetTerrainResourceLog(terrain);
-        //    Debug.Log(log);
-        //}
-
-        //string GetTerrainResourceLog(TerrainResource item)
-        //{
-        //    string str =
-        //        "[地形资源]"
-        //       + "\nLandform:" + item.LandformInfos.Count
-        //       + "\nRoad:" + item.RoadInfos.Count;
-        //    return str;
-        //}
-
     }
-
 }

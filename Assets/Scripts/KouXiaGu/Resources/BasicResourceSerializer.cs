@@ -19,9 +19,9 @@ namespace KouXiaGu.Resources
         public BasicResource Read()
         {
             var item = new BasicResource();
-            item.BasicTerrain = BasicTerrainReader.Read();
-            item.Terrain = TerrainReader.Read(item.BasicTerrain);
-            item.Navigation = new NavigationResource(item.BasicTerrain);
+            BasicTerrainResource basicTerrain = BasicTerrainReader.Read();
+            item.Terrain = TerrainReader.Read(basicTerrain);
+            item.Navigation = new NavigationResource(basicTerrain);
             return item;
         }
     }

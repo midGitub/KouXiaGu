@@ -22,9 +22,9 @@ namespace KouXiaGu.World.Map
 
         public MapData Read(BasicResource info)
         {
-            int[] landformArray = info.Terrain.LandformInfos.Keys.ToArray();
-            int[] roadArray = info.Terrain.RoadInfos.Keys.ToArray();
-            int[] buildArray = info.Terrain.BuildingInfos.Keys.ToArray();
+            int[] landformArray = info.Terrain.Landform.Keys.ToArray();
+            int[] roadArray = info.Terrain.Road.Keys.ToArray();
+            int[] buildArray = info.Terrain.Building.Keys.ToArray();
             Dictionary<CubicHexCoord, MapNode> map = new Dictionary<CubicHexCoord, MapNode>();
             var points = CubicHexCoord.Range(CubicHexCoord.Self, MapSize);
 

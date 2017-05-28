@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D
 
         IDictionary<int, BuildingResource> resources
         {
-            get { return worldData.GameData.Terrain.BuildingInfos; }
+            get { return worldData.GameData.Terrain.Building; }
         }
 
         /// <summary>

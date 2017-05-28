@@ -20,27 +20,6 @@ namespace KouXiaGu.Resources
         IEnumerable<string> GetExistentPaths();
     }
 
-    ///// <summary>
-    ///// 文件路径基类;
-    ///// </summary>
-    //public abstract class FilePath
-    //{
-    //    /// <summary>
-    //    /// 获取到所有定义的目录;
-    //    /// </summary>
-    //    public abstract IEnumerable<string> GetPaths();
-
-    //    /// <summary>
-    //    /// 获取到所有存在的目录;
-    //    /// </summary>
-    //    public abstract IEnumerable<string> GetExistentPaths();
-
-    //    public static FilePath operator +(FilePath a, FilePath b)
-    //    {
-    //        return null;
-    //    }
-    //}
-
     /// <summary>
     /// 单个文件路径;
     /// </summary>
@@ -87,4 +66,43 @@ namespace KouXiaGu.Resources
             return paths;
         }
     }
+
+    /// <summary>
+    /// 转换模版文件路径;
+    /// </summary>
+    public class TemplateFilePath : IFilePath
+    {
+        public TemplateFilePath(IFilePath filePath)
+        {
+            File = filePath;
+        }
+
+        const string TemplatePrefix = "_Template_";
+        public IFilePath File { get; private set; }
+
+        public string GetMainPath()
+        {
+            string path = File.GetMainPath();
+            path = ChangePath(path);
+            return path;
+        }
+
+        public IEnumerable<string> GetExistentPaths()
+        {
+            IEnumerable<string> paths = File.GetExistentPaths();
+            foreach (var path in paths)
+            {
+                yield return ChangePath(path);
+            }
+        }
+
+        string ChangePath(string path)
+        {
+            string fileName = Path.GetFileName(path);
+            string directoryName = Path.GetDirectoryName(path);
+            path = directoryName + TemplatePrefix + fileName;
+            return path;
+        }
+    }
+
 }

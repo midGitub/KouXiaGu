@@ -44,15 +44,15 @@ namespace KouXiaGu.Terrain3D
 
             LandformResourceReader landformReader = new LandformResourceReader(stopwatch, assetBundle, basicResource.Landform.Values);
             yield return landformReader.ReadAsync();
-            resource.LandformInfos = landformReader.Result;
+            resource.Landform = landformReader.Result;
 
             RoadResourceReader roadReader = new RoadResourceReader(stopwatch, assetBundle, basicResource.Road.Values);
             yield return roadReader.ReadAsync();
-            resource.RoadInfos = roadReader.Result;
+            resource.Road = roadReader.Result;
 
             BuildingResourceReader buildingReader = new BuildingResourceReader(stopwatch, assetBundle, basicResource.Building.Values);
             yield return buildingReader.ReadAsync();
-            resource.BuildingInfos = buildingReader.Result;
+            resource.Building = buildingReader.Result;
 
             OnCompleted();
         }
@@ -93,9 +93,9 @@ namespace KouXiaGu.Terrain3D
 
         //public Stopwatch stopwatch;
         //AssetBundle assetBundle;
-        public Dictionary<int, LandformResource> LandformInfos { get; internal set; }
-        public Dictionary<int, RoadResource> RoadInfos { get; internal set; }
-        public Dictionary<int, BuildingResource> BuildingInfos { get; internal set; }
+        public Dictionary<int, LandformResource> Landform { get; internal set; }
+        public Dictionary<int, RoadResource> Road { get; internal set; }
+        public Dictionary<int, BuildingResource> Building { get; internal set; }
         //IDisposable resourceReaderDisposer;
 
         //internal static string AssetBundleFilePath

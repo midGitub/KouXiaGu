@@ -41,7 +41,7 @@ namespace KouXiaGu.Terrain3D
 
         IDictionary<int, RoadResource> roadResources
         {
-            get { return worldData.GameData.Terrain.RoadInfos; }
+            get { return worldData.GameData.Terrain.Road; }
         }
 
         public void Initialise()
