@@ -13,15 +13,12 @@ namespace KouXiaGu.Resources
     /// </summary>
     public class BasicResourceSerializer : IReader<BasicResource>
     {
-        internal BasicTerrainResourceSerializer BasicTerrainReader = new BasicTerrainResourceSerializer();
-        internal TerrainResourceReader TerrainReader = new TerrainResourceReader();
+        TerrainResourcesReader TerrainReader = new TerrainResourcesReader();
 
         public BasicResource Read()
         {
             var item = new BasicResource();
-            BasicTerrainResource basicTerrain = BasicTerrainReader.Read();
-            item.Terrain = TerrainReader.Read(basicTerrain);
-            item.Navigation = new NavigationResource(basicTerrain);
+            item.Terrain = TerrainReader.Read();
             return item;
         }
     }

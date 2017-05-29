@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KouXiaGu.Navigation
+namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
@@ -11,23 +11,22 @@ namespace KouXiaGu.Navigation
     /// </summary>
     public class LandformTag
     {
-        public LandformTag(BasicTerrainResource basicResource)
+        public LandformTag(string[] tags)
         {
-            var reader = new LnadformTagSerializer();
-            tags = reader.Read();
+            this.tags = tags;
         }
 
-        readonly NavTagInfo[] tags;
+        readonly string[] tags;
 
-        public IList<NavTagInfo> Tags
+        public string[] Tags
         {
             get { return tags; }
         }
 
-        int TagsToMask(IList<string> definedTags, string tags)
+        public int TagsToMask(string tags)
         {
             IEnumerable<string> enumerateTags = EnumerateTags(tags);
-            return TagsToMask(definedTags, enumerateTags);
+            return TagsToMask(enumerateTags);
         }
 
         static readonly char[] tagSeparator = new char[]
@@ -42,12 +41,12 @@ namespace KouXiaGu.Navigation
             return tagArray.Select(item => item.Trim());
         }
 
-        int TagsToMask(IList<string> definedTags, IEnumerable<string> tags)
+        public int TagsToMask(IEnumerable<string> enumerateTags)
         {
             int mask = 0;
-            foreach (var tag in tags)
+            foreach (var tag in enumerateTags)
             {
-                int index = definedTags.IndexOf(tag);
+                int index = tags.FindIndex(tag);
                 if (index != -1)
                 {
                     mask |= 1 << index;

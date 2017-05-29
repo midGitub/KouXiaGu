@@ -1,83 +1,86 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using KouXiaGu.Terrain3D;
-using KouXiaGu.Collections;
-using KouXiaGu.Navigation;
+﻿//using System.Xml.Serialization;
+//using KouXiaGu.Terrain3D;
+//using KouXiaGu.Navigation;
 
-namespace KouXiaGu.Resources
-{
+//namespace KouXiaGu.Resources
+//{
 
-    /// <summary>
-    /// 地形信息;
-    /// </summary>
-    [XmlType("Landform")]
-    public struct LandformInfo : IElement
-    {
-        [XmlAttribute("id")]
-        public int ID { get; set; }
+//    /// <summary>
+//    /// 地形信息;
+//    /// </summary>
+//    [XmlType("Landform")]
+//    public class LandformInfo : IElement
+//    {
+//        [XmlAttribute("id")]
+//        public int ID { get; set; }
 
-        [XmlElement("Terrain")]
-        public TerrainLandformInfo Terrain { get; set; }
+//        [XmlAttribute("tag")]
+//        public string Tags { get; set; }
 
-        [XmlElement("Navigation")]
-        public NavLandformInfo Navigation { get; set; }
-    }
+//        [XmlElement("Terrain")]
+//        public TerrainLandformInfo TerrainInfo { get; set; }
 
-    class LandformFile : MultipleFilePath
-    {
-        [CustomFilePath("地形资源描述文件;", true)]
-        public const string fileName = "World/Terrain/Landform.xml";
+//        [XmlIgnore]
+//        public int TagsMask { get; set; }
 
-        public override string FileName
-        {
-            get { return fileName; }
-        }
-    }
+//        [XmlIgnore]
+//        public LandformResource Terrain { get; set; }
+//    }
 
-    class LandformXmlSerializer : ElementsXmlSerializer<LandformInfo>
-    {
-        public LandformXmlSerializer() : base(new LandformFile())
-        {
-        }
+//    class LandformFile : MultipleFilePath
+//    {
+//        [CustomFilePath("地形资源描述文件;", true)]
+//        public const string fileName = "World/Terrain/Landform.xml";
 
-        public LandformXmlSerializer(IFilePath file) : base(file)
-        {
-        }
-    }
+//        public override string FileName
+//        {
+//            get { return fileName; }
+//        }
+//    }
 
-    ///// <summary>
-    ///// 地形信息文件路径;
-    ///// </summary>
-    //public class LandformInfosFilePath : CustomFilePath
-    //{
-    //    public LandformInfosFilePath(string fileExtension) : base(fileExtension)
-    //    {
-    //    }
+//    class LandformXmlSerializer : ElementsXmlSerializer<LandformInfo>
+//    {
+//        public LandformXmlSerializer() : base(new LandformFile())
+//        {
+//        }
 
-    //    public override string FileName
-    //    {
-    //        get { return "World/Landform"; }
-    //    }
-    //}
+//        public LandformXmlSerializer(IFilePath file) : base(file)
+//        {
+//        }
+//    }
 
-    ///// <summary>
-    ///// 地形信息读取;
-    ///// </summary>
-    //public class LandformInfoXmlSerializer : DataDictionaryXmlReader<LandformInfo>
-    //{
-    //    public LandformInfoXmlSerializer()
-    //    {
-    //        file = new LandformInfosFilePath(FileExtension);
-    //    }
+//    ///// <summary>
+//    ///// 地形信息文件路径;
+//    ///// </summary>
+//    //public class LandformInfosFilePath : CustomFilePath
+//    //{
+//    //    public LandformInfosFilePath(string fileExtension) : base(fileExtension)
+//    //    {
+//    //    }
 
-    //    LandformInfosFilePath file;
+//    //    public override string FileName
+//    //    {
+//    //        get { return "World/Landform"; }
+//    //    }
+//    //}
 
-    //    public override CustomFilePath File
-    //    {
-    //        get { return file; }
-    //    }
+//    ///// <summary>
+//    ///// 地形信息读取;
+//    ///// </summary>
+//    //public class LandformInfoXmlSerializer : DataDictionaryXmlReader<LandformInfo>
+//    //{
+//    //    public LandformInfoXmlSerializer()
+//    //    {
+//    //        file = new LandformInfosFilePath(FileExtension);
+//    //    }
 
-    //}
+//    //    LandformInfosFilePath file;
 
-}
+//    //    public override CustomFilePath File
+//    //    {
+//    //        get { return file; }
+//    //    }
+
+//    //}
+
+//}

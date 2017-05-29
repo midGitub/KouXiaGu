@@ -1,15 +1,35 @@
 ﻿using KouXiaGu.Resources;
-using KouXiaGu.World;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
+using System.Linq;
 
 namespace KouXiaGu.Terrain3D
 {
+
+    /// <summary>
+    /// 地形信息;
+    /// </summary>
+    [XmlType("Building")]
+    public class BuildingInfo : IElement
+    {
+        [XmlAttribute("id")]
+        public int ID { get; set; }
+
+        [XmlAttribute("tag")]
+        public string Tags { get; set; }
+
+        [XmlElement("Terrain")]
+        public TerrainBuildingInfo TerrainInfo { get; set; }
+
+        [XmlIgnore]
+        public int TagsMask { get; set; }
+
+        [XmlIgnore]
+        public BuildingResource Terrain { get; set; }
+    }
 
     [XmlType("TerrainBuilding")]
     public class TerrainBuildingInfo
@@ -19,6 +39,28 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [XmlElement("PrefabName")]
         public string PrefabName { get; set; }
+    }
+
+    class BuildingInfoXmlSerializer : ElementsXmlSerializer<BuildingInfo>
+    {
+        public BuildingInfoXmlSerializer() : base(new BuildingFile())
+        {
+        }
+
+        public BuildingInfoXmlSerializer(IFilePath file) : base(file)
+        {
+        }
+    }
+
+    class BuildingFile : MultipleFilePath
+    {
+        [CustomFilePath("建筑资源描述文件;", true)]
+        public const string fileName = "World/Terrain/Building.xml";
+
+        public override string FileName
+        {
+            get { return fileName; }
+        }
     }
 
     public class BuildingResource : IDisposable
@@ -49,32 +91,23 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    public class BuildingResourceReader : AsyncOperation<Dictionary<int, BuildingResource>>
+    public class BuildingResourcesReader : AsyncOperation
     {
-        public BuildingResourceReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<BuildingInfo> infos)
+        public IEnumerator ReadAsync(ISegmented stopwatch, AssetBundle assetBundle, IDictionary<int, BuildingInfo> infoDictionary)
         {
-            this.stopwatch = stopwatch;
-            this.assetBundle = assetBundle;
-            this.infos = infos;
-        }
-
-        readonly ISegmented stopwatch;
-        readonly AssetBundle assetBundle;
-        readonly IEnumerable<BuildingInfo> infos;
-
-        /// <summary>
-        /// 在协程读取;
-        /// </summary>
-        public IEnumerator ReadAsync()
-        {
-            Result = new Dictionary<int, BuildingResource>();
-            foreach (BuildingInfo info in infos)
+            foreach (var info in infoDictionary.Values.ToArray())
             {
-                BuildingResource resource;
-                if (TryRead(info, out resource))
-                {
-                    Result.Add(info.ID, resource);
+                TerrainBuildingInfo bInfo = info.TerrainInfo;
+                GameObject prefab = assetBundle.LoadAsset<GameObject>(bInfo.PrefabName);
 
+                try
+                {
+                    info.Terrain = new BuildingResource(bInfo, prefab);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString() + ",因为:" + ex);
+                    infoDictionary.Remove(info.ID);
                 }
 
                 if (stopwatch.Await())
@@ -84,24 +117,6 @@ namespace KouXiaGu.Terrain3D
                 }
             }
             OnCompleted();
-        }
-
-        public bool TryRead(BuildingInfo info, out BuildingResource item)
-        {
-            TerrainBuildingInfo bInfo = info.Terrain;
-            GameObject prefab = assetBundle.LoadAsset<GameObject>(bInfo.PrefabName);
-
-            try
-            {
-                item = new BuildingResource(bInfo, prefab);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString() + ",因为:" + ex);
-                item = default(BuildingResource);
-                return false;
-            }
         }
     }
 }

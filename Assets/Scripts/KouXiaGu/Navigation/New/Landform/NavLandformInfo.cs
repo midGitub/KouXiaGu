@@ -12,15 +12,9 @@ namespace KouXiaGu.Navigation
     public struct NavLandformInfo
     {
         /// <summary>
-        /// 地形标签;
+        /// 地形标签,允许多个,以","分隔;
         /// </summary>
         [XmlAttribute("tag")]
-        public string Tag;
-    }
-
-    public struct NavLandform
-    {
-        public string Tag;
-        public int TagMask;
+        public string Tags;
     }
 }

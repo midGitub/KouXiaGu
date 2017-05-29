@@ -13,8 +13,6 @@ namespace KouXiaGu.Resources
     /// </summary>
     public class BasicResource
     {
-        //public BasicTerrainResource BasicTerrain { get; internal set; }
-        public TerrainResource Terrain { get; internal set; }
-        public NavigationResource Navigation { get; internal set; }
+        public TerrainResources Terrain { get; internal set; }
     }
 }

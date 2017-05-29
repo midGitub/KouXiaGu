@@ -6,9 +6,54 @@ using KouXiaGu.World;
 using UnityEngine;
 using KouXiaGu.Collections;
 using KouXiaGu.Resources;
+using System.Linq;
 
 namespace KouXiaGu.Terrain3D
 {
+
+    /// <summary>
+    /// 地形信息;
+    /// </summary>
+    [XmlType("Landform")]
+    public class LandformInfo : IElement
+    {
+        [XmlAttribute("id")]
+        public int ID { get; set; }
+
+        [XmlAttribute("tag")]
+        public string Tags { get; set; }
+
+        [XmlElement("Terrain")]
+        public TerrainLandformInfo TerrainInfo { get; set; }
+
+        [XmlIgnore]
+        public int TagsMask { get; set; }
+
+        [XmlIgnore]
+        public LandformResource Terrain { get; set; }
+    }
+
+    class LandformFile : MultipleFilePath
+    {
+        [CustomFilePath("地形资源描述文件;", true)]
+        public const string fileName = "World/Terrain/Landform.xml";
+
+        public override string FileName
+        {
+            get { return fileName; }
+        }
+    }
+
+    class LandformXmlSerializer : ElementsXmlSerializer<LandformInfo>
+    {
+        public LandformXmlSerializer() : base(new LandformFile())
+        {
+        }
+
+        public LandformXmlSerializer(IFilePath file) : base(file)
+        {
+        }
+    }
 
     /// <summary>
     /// 地貌信息;
@@ -109,28 +154,27 @@ namespace KouXiaGu.Terrain3D
 
     }
 
-    [Serializable]
-    public class LandformResourceReader : AsyncOperation<Dictionary<int, LandformResource>>
+    public class LandformResourcesReader : AsyncOperation
     {
-        public LandformResourceReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<LandformInfo> infos)
+        public IEnumerator ReadAsync(ISegmented stopwatch, AssetBundle assetBundle, IDictionary<int, LandformInfo> infoDictionary)
         {
-            this.stopwatch = stopwatch;
-            this.assetBundle = assetBundle;
-            this.infos = infos;
-        }
-
-        readonly ISegmented stopwatch;
-        readonly AssetBundle assetBundle;
-        readonly IEnumerable<LandformInfo> infos;
-
-        public IEnumerator ReadAsync()
-        {
-            Result = new Dictionary<int, LandformResource>();
-            foreach (var info in infos)
+            foreach (var info in infoDictionary.Values.ToArray())
             {
-                LandformResource resource;
-                TryRead(info, out resource);
-                Result.Add(info.ID, resource);
+                TerrainLandformInfo tInfo = info.TerrainInfo;
+
+                info.Terrain = new LandformResource(info)
+                {
+                    DiffuseTex = ReadTexture(assetBundle, tInfo.DiffuseTex),
+                    DiffuseBlendTex = ReadTexture(assetBundle, tInfo.DiffuseBlendTex),
+                    HeightTex = ReadTexture(assetBundle, tInfo.HeightTex),
+                    HeightBlendTex = ReadTexture(assetBundle, tInfo.HeightBlendTex),
+                };
+
+                if (!info.Terrain.IsLoadComplete)
+                {
+                    Debug.LogWarning("无法读取[TerrainLandform],Info:" + info.ToString());
+                    infoDictionary.Remove(info.ID);
+                }
 
                 if (stopwatch.Await())
                 {
@@ -141,97 +185,9 @@ namespace KouXiaGu.Terrain3D
             OnCompleted();
         }
 
-        bool TryRead(LandformInfo info, out LandformResource item)
-        {
-            TerrainLandformInfo tInfo = info.Terrain;
-            item = new LandformResource(info)
-            {
-                DiffuseTex = ReadTexture(tInfo.DiffuseTex),
-                DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
-                HeightTex = ReadTexture(tInfo.HeightTex),
-                HeightBlendTex = ReadTexture(tInfo.HeightBlendTex),
-            };
-
-            if (item.IsLoadComplete)
-            {
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning("无法读取[TerrainLandform],Info:" + info.ToString());
-                return false;
-            }
-        }
-
-        private Texture ReadTexture(string name)
+        private Texture ReadTexture(AssetBundle assetBundle, string name)
         {
             return assetBundle.LoadAsset<Texture>(name);
         }
     }
-
-    //[Obsolete]
-    //public class LandformReadRequest : AssetReadRequest<Dictionary<int, LandformResource>>
-    //{
-
-    //    public LandformReadRequest(AssetBundle assetBundle, ISegmented segmented, IEnumerable<LandformInfo> infos)
-    //        : base(assetBundle, segmented)
-    //    {
-    //        this.infos = infos;
-    //        dictionary = new Dictionary<int, LandformResource>();
-    //    }
-
-    //    public LandformReadRequest(AssetBundle assetBundle, ISegmented segmented, WorldElementResource elementInfo) 
-    //        : this(assetBundle, segmented, elementInfo.LandformInfos.Values)
-    //    {
-    //    }
-
-    //    IEnumerable<LandformInfo> infos;
-    //    Dictionary<int, LandformResource> dictionary;
-
-    //    protected override void OnFaulted(Exception ex)
-    //    {
-    //        base.OnFaulted(ex);
-    //        dictionary.Values.DisposeAll();
-    //        dictionary.Clear();
-    //    }
-
-    //    protected override IEnumerator Operate()
-    //    {
-    //        foreach (var info in infos)
-    //        {
-    //            LandformResource item;
-    //            if (TryReadAndReport(info, out item))
-    //                dictionary.AddOrUpdate(info.ID, item);
-    //            yield return null;
-    //        }
-    //        OnCompleted(dictionary);
-    //    }
-
-    //    /// <summary>
-    //    /// 尝试读取到,若无法读取则输出错误信息,并返回false;
-    //    /// </summary>
-    //    bool TryReadAndReport(LandformInfo info, out LandformResource item)
-    //    {
-    //        if (TryRead(info, out item))
-    //        {
-    //            return true;
-    //        }
-    //        Debug.LogWarning("无法读取[TerrainLandform],Info:" + info.ToString());
-    //        return false;
-    //    }
-
-    //    bool TryRead(LandformInfo info, out LandformResource item)
-    //    {
-    //        TerrainLandformInfo tInfo = info.Terrain;
-    //        item = new LandformResource(info)
-    //        {
-    //            DiffuseTex = ReadTexture(tInfo.DiffuseTex),
-    //            DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
-    //            HeightTex = ReadTexture(tInfo.HeightTex),
-    //            HeightBlendTex = ReadTexture(tInfo.HeightBlendTex),
-    //        };
-    //        return item.IsLoadComplete;
-    //    }
-    //}
-
 }

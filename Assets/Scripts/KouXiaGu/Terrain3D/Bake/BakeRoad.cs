@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.MapData.ReadOnlyMap; }
         }
 
-        IDictionary<int, RoadResource> roadResources
+        IReadOnlyDictionary<int, RoadResource> roadResources
         {
-            get { return worldData.GameData.Terrain.Road; }
+            get { return worldData.GameData.Terrain.RoadResources; }
         }
 
         public void Initialise()

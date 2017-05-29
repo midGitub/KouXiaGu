@@ -42,7 +42,7 @@ namespace KouXiaGu.Resources
         string LogResourceInfo(BasicResource item)
         {
             string str =
-                "[基础资源]"
+                "[地形资源]"
                + "\nLandform:" + item.Terrain.Landform.Count
                + "\nRoad:" + item.Terrain.Road.Count
                + "\nBuilding:" + item.Terrain.Building.Count;

@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.MapData.ReadOnlyMap; }
         }
 
-        IDictionary<int, LandformResource> landformResources
+        IReadOnlyDictionary<int, LandformResource> landformResources
         {
-            get { return worldData.GameData.Terrain.Landform; }
+            get { return worldData.GameData.Terrain.LandformResources; }
         }
 
         public void Initialize()

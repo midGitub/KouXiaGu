@@ -1,50 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
-using KouXiaGu.Collections;
-using KouXiaGu.Terrain3D;
-using KouXiaGu.Navigation;
+﻿//using System.Xml.Serialization;
+//using KouXiaGu.Terrain3D;
+//using KouXiaGu.Navigation;
 
-namespace KouXiaGu.Resources
-{
+//namespace KouXiaGu.Resources
+//{
 
-    /// <summary>
-    /// 地形信息;
-    /// </summary>
-    [XmlType("Building")]
-    public struct BuildingInfo : IElement
-    {
-        [XmlAttribute("id")]
-        public int ID { get; set; }
+//    /// <summary>
+//    /// 地形信息;
+//    /// </summary>
+//    [XmlType("Building")]
+//    public struct BuildingInfo : IElement
+//    {
+//        [XmlAttribute("id")]
+//        public int ID { get; set; }
 
-        [XmlElement("Terrain")]
-        public TerrainBuildingInfo Terrain { get; set; }
+//        [XmlAttribute("tag")]
+//        public string Tags { get; set; }
 
-        [XmlElement("Navigation")]
-        public NavBuildingInfo Navigation { get; set; }
-    }
+//        [XmlElement("Terrain")]
+//        public TerrainBuildingInfo TerrainInfo { get; set; }
 
-    class BuildingFile : MultipleFilePath
-    {
-        [CustomFilePath("建筑资源描述文件;", true)]
-        public const string fileName = "World/Terrain/Building.xml";
+//        [XmlIgnore]
+//        public int TagsMask { get; set; }
 
-        public override string FileName
-        {
-            get { return fileName; }
-        }
-    }
+//        [XmlIgnore]
+//        public BuildingResource Terrain { get; set; }
+//    }
 
-    class BuildingXmlSerializer : ElementsXmlSerializer<BuildingInfo>
-    {
-        public BuildingXmlSerializer() : base(new BuildingFile())
-        {
-        }
+//    class BuildingFile : MultipleFilePath
+//    {
+//        [CustomFilePath("建筑资源描述文件;", true)]
+//        public const string fileName = "World/Terrain/Building.xml";
 
-        public BuildingXmlSerializer(IFilePath file) : base(file)
-        {
-        }
-    }
-}
+//        public override string FileName
+//        {
+//            get { return fileName; }
+//        }
+//    }
+
+//    class BuildingXmlSerializer : ElementsXmlSerializer<BuildingInfo>
+//    {
+//        public BuildingXmlSerializer() : base(new BuildingFile())
+//        {
+//        }
+
+//        public BuildingXmlSerializer(IFilePath file) : base(file)
+//        {
+//        }
+//    }
+//}

@@ -27,8 +27,8 @@ namespace KouXiaGu.Terrain3D
         public float tessellation = 16f;
         [Range(0, 5)]
         public float displacement = 1.3f;
-        public Texture gridLineMap;
-        public Color gridLineColor;
+        public Texture gridLineMap = null;
+        public Color gridLineColor = Color.black;
         public bool isDisplayGridLine = true;
 
         #endregion

@@ -71,9 +71,9 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.MapData.ReadOnlyMap; }
         }
 
-        IDictionary<int, BuildingResource> resources
+        IReadOnlyDictionary<int, BuildingResource> resources
         {
-            get { return worldData.GameData.Terrain.Building; }
+            get { return worldData.GameData.Terrain.BuildingResources; }
         }
 
         /// <summary>

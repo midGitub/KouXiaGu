@@ -2,13 +2,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using KouXiaGu.Collections;
-using KouXiaGu.World;
 using UnityEngine;
 using KouXiaGu.Resources;
+using System.Linq;
 
 namespace KouXiaGu.Terrain3D
 {
+
+    /// <summary>
+    /// 道路信息;
+    /// </summary>
+    [XmlType("Road")]
+    public class RoadInfo : IElement
+    {
+        [XmlAttribute("id")]
+        public int ID { get; set; }
+
+        [XmlElement("Terrain")]
+        public TerrainRoadInfo TerrainInfo { get; set; }
+
+        [XmlIgnore]
+        public RoadResource Terrain { get; set; }
+    }
+
+    class RoadFile : MultipleFilePath
+    {
+        [CustomFilePath("道路资源描述文件;", true)]
+        public const string fileName = "World/Terrain/Road.xml";
+
+        public override string FileName
+        {
+            get { return fileName; }
+        }
+    }
+
+    class RoadXmlSerializer : ElementsXmlSerializer<RoadInfo>
+    {
+        public RoadXmlSerializer() : base(new RoadFile())
+        {
+        }
+
+        public RoadXmlSerializer(IFilePath file) : base(file)
+        {
+        }
+    }
 
     /// <summary>
     /// 道路资源定义;
@@ -106,38 +143,27 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-
-    /// <summary>
-    /// 道路资源读取;
-    /// </summary>
-    public class RoadResourceReader : AsyncOperation<Dictionary<int, RoadResource>>
+    public class RoadResourcesReader
     {
-        public RoadResourceReader(ISegmented stopwatch, AssetBundle assetBundle, IEnumerable<RoadInfo> infos) 
+        public IEnumerator ReadAsync(ISegmented stopwatch, AssetBundle assetBundle, IDictionary<int, RoadInfo> infoDictionary)
         {
-            this.stopwatch = stopwatch;
-            this.assetBundle = assetBundle;
-            this.infos = infos;
-        }
-
-        readonly ISegmented stopwatch;
-        readonly AssetBundle assetBundle;
-        readonly IEnumerable<RoadInfo> infos;
-
-        protected override void OnFaulted(Exception ex)
-        {
-            base.OnFaulted(ex);
-            Result.Values.DisposeAll();
-            Result.Clear();
-        }
-
-        public IEnumerator ReadAsync()
-        {
-            Result = new Dictionary<int, RoadResource>();
-            foreach (var info in infos)
+            foreach (var info in infoDictionary.Values.ToArray())
             {
-                RoadResource resource;
-                TryRead(info, out resource);
-                Result.Add(info.ID, resource);
+                TerrainRoadInfo bInfo = info.TerrainInfo;
+
+                info.Terrain = new RoadResource(info)
+                {
+                    DiffuseTex = ReadTexture(assetBundle, bInfo.DiffuseTex),
+                    DiffuseBlendTex = ReadTexture(assetBundle, bInfo.DiffuseBlendTex),
+                    HeightAdjustTex = ReadTexture(assetBundle, bInfo.HeightAdjustTex),
+                    HeightAdjustBlendTex = ReadTexture(assetBundle, bInfo.HeightAdjustTex),
+                };
+
+                if (!info.Terrain.IsLoadComplete)
+                {
+                    Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
+                    infoDictionary.Remove(info.ID);
+                }
 
                 if (stopwatch.Await())
                 {
@@ -145,35 +171,11 @@ namespace KouXiaGu.Terrain3D
                     stopwatch.Restart();
                 }
             }
-            OnCompleted();
         }
 
-        bool TryRead(RoadInfo info, out RoadResource item)
-        {
-            TerrainRoadInfo tInfo = info.Terrain;
-            item = new RoadResource(info)
-            {
-                DiffuseTex = ReadTexture(tInfo.DiffuseTex),
-                DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
-                HeightAdjustTex = ReadTexture(tInfo.HeightAdjustTex),
-                HeightAdjustBlendTex = ReadTexture(tInfo.HeightAdjustTex),
-            };
-
-            if (item.IsLoadComplete)
-            {
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
-                return false;
-            }
-        }
-
-        private Texture ReadTexture(string name)
+        private Texture ReadTexture(AssetBundle assetBundle, string name)
         {
             return assetBundle.LoadAsset<Texture>(name);
         }
     }
-
 }
