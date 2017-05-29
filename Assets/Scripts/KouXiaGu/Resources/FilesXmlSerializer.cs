@@ -18,7 +18,7 @@ namespace KouXiaGu.Resources
             serializer = new XmlSerializer(typeof(T));
         }
 
-        public IFilePath File { get; private set; }
+        public IFilePath File { get; set; }
         protected XmlSerializer serializer { get; private set; }
 
         public virtual T Read()
@@ -60,7 +60,7 @@ namespace KouXiaGu.Resources
             serializer = new XmlSerializer(typeof(T));
         }
 
-        public IFilePath File { get; private set; }
+        public IFilePath File { get; set; }
         protected XmlSerializer serializer { get; private set; }
 
         public List<T> ReadAll()
@@ -153,7 +153,7 @@ namespace KouXiaGu.Resources
             Combiner = combiner;
         }
 
-        public ICombiner<TSource, TResult> Combiner { get; private set; }
+        public ICombiner<TSource, TResult> Combiner { get; set; }
 
         public TResult Read()
         {

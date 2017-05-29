@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     class LandformTagFilePath : SingleFilePath
     {
         [CustomFilePath("地形标签定义;")]
-        public const string fileName = "World/Navigation/LnadformTags.xml";
+        public const string fileName = "World/Navigation/Tags.xml";
 
         public override string FileName
         {
@@ -32,17 +32,16 @@ namespace KouXiaGu.Terrain3D
         {
         }
 
-        //public override NavTagInfo[] Read()
-        //{
-        //    NavTagInfo[] tags = base.Read();
+        public override string[] Read()
+        {
+           var tags = base.Read();
 
-        //    if (tags.Length > 32)
-        //    {
-        //        Debug.LogWarning("定义地形标签大于32个,将会舍弃多余的标签;");
-        //    }
-
-        //    return tags;
-        //}
+            if (tags.Length > 32)
+            {
+                Debug.LogWarning("定义地形标签大于32个,将会舍弃多余的标签;");
+            }
+            return tags;
+        }
 
         //public List<string> oRead()
         //{

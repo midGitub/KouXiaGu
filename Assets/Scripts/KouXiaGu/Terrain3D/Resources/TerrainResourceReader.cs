@@ -13,9 +13,9 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class TerrainResourcesReader : IDisposable
     {
-        internal LandformXmlSerializer LandformFileSerializer = new LandformXmlSerializer();
+        internal LandformInfoXmlSerializer LandformFileSerializer = new LandformInfoXmlSerializer();
         internal BuildingInfoXmlSerializer BuildingFileSerializer = new BuildingInfoXmlSerializer();
-        internal RoadXmlSerializer RoadFileSerializer = new RoadXmlSerializer();
+        internal RoadInfoXmlSerializer RoadFileSerializer = new RoadInfoXmlSerializer();
 
         public TerrainResources Read()
         {
@@ -74,10 +74,10 @@ namespace KouXiaGu.Terrain3D
             assetBundle = bundleLoadRequest.assetBundle;
             if (assetBundle == null)
             {
-                isAssetBundleResourcesReadCompleted = true;
-                isAssetBundleResourcesReadFaulted = true;
                 faultedException = new FileNotFoundException("未找到地形资源包;");
                 resourceReaderDisposer.Dispose();
+                isAssetBundleResourcesReadCompleted = true;
+                isAssetBundleResourcesReadFaulted = true;
                 yield break;
             }
 
@@ -108,8 +108,8 @@ namespace KouXiaGu.Terrain3D
 
         void InitLandformTag(TerrainResources result)
         {
-            //string[] tags = LandformTagFileSerializer.Read();
-
+            string[] tags = LandformTagFileSerializer.Read();
+            result.Internal_tags = tags;
 
 
         }

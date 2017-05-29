@@ -9,7 +9,7 @@ namespace KouXiaGu.Resources
 
     public interface ISerializer<T> : IReader<T>, IWriter<T>
     {
-
+        IFilePath File { get; set; }
     }
 
     public interface IReader<T>

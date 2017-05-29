@@ -44,13 +44,13 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    class LandformXmlSerializer : ElementsXmlSerializer<LandformInfo>
+    class LandformInfoXmlSerializer : ElementsXmlSerializer<LandformInfo>
     {
-        public LandformXmlSerializer() : base(new LandformFile())
+        public LandformInfoXmlSerializer() : base(new LandformFile())
         {
         }
 
-        public LandformXmlSerializer(IFilePath file) : base(file)
+        public LandformInfoXmlSerializer(IFilePath file) : base(file)
         {
         }
     }

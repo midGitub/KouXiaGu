@@ -17,57 +17,49 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 将数组序列化;
     /// </summary>
-    public class ElementsXmlSerializer<T> : ICombiner<T[], Dictionary<int, T>>, ISerializer<Dictionary<int, T>>
+    public class ElementsXmlSerializer<T> : FilesXmlSerializer<T[], Dictionary<int, T>>
         where T : IElement
     {
-        public ElementsXmlSerializer(IFilePath file)
+        public ElementsXmlSerializer(IFilePath file) : base(file, defaultCombiner)
         {
-            fileSerializer = new FilesXmlSerializer<T[], Dictionary<int, T>>(file, this);
         }
 
-        FilesXmlSerializer<T[], Dictionary<int, T>> fileSerializer;
+        static readonly FileCombiner defaultCombiner = new FileCombiner();
 
-        public Dictionary<int, T> Read()
+        class FileCombiner : ICombiner<T[], Dictionary<int, T>>
         {
-            return fileSerializer.Read();
-        }
-
-        public void Write(Dictionary<int, T> item, FileMode fileMode)
-        {
-            fileSerializer.Write(item, fileMode);
-        }
-
-        public Dictionary<int, T> Combine(IEnumerable<T[]> itemArrays)
-        {
-            Dictionary<int, T> completed = new Dictionary<int, T>();
-            string errorStr = string.Empty;
-
-            foreach (T[] items in itemArrays)
+            public Dictionary<int, T> Combine(IEnumerable<T[]> itemArrays)
             {
-                foreach (var item in items)
+                Dictionary<int, T> completed = new Dictionary<int, T>();
+                string errorStr = string.Empty;
+
+                foreach (T[] items in itemArrays)
                 {
-                    if (completed.ContainsKey(item.ID))
+                    foreach (var item in items)
                     {
-                        errorStr += "\n相同的ID:" + item.ID;
-                    }
-                    else
-                    {
-                        completed.Add(item.ID, item);
+                        if (completed.ContainsKey(item.ID))
+                        {
+                            errorStr += "\n相同的ID:" + item.ID;
+                        }
+                        else
+                        {
+                            completed.Add(item.ID, item);
+                        }
                     }
                 }
+
+                if (errorStr != string.Empty)
+                {
+                    Debug.LogWarning(ToString() + errorStr);
+                }
+                return completed;
             }
 
-            if (errorStr != string.Empty)
+            public T[] Separate(Dictionary<int, T> item)
             {
-                Debug.LogWarning(ToString() + errorStr);
+                T[] itemArray = item.Values.ToArray();
+                return itemArray;
             }
-            return completed;
-        }
-
-        public T[] Separate(Dictionary<int, T> item)
-        {
-            T[] itemArray = item.Values.ToArray();
-            return itemArray;
         }
     }
 }

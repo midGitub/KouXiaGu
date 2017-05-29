@@ -66,43 +66,4 @@ namespace KouXiaGu.Resources
             return paths;
         }
     }
-
-    /// <summary>
-    /// 转换模版文件路径;
-    /// </summary>
-    public class TemplateFilePath : IFilePath
-    {
-        public TemplateFilePath(IFilePath filePath)
-        {
-            File = filePath;
-        }
-
-        const string TemplatePrefix = "_Template_";
-        public IFilePath File { get; private set; }
-
-        public string GetMainPath()
-        {
-            string path = File.GetMainPath();
-            path = ChangePath(path);
-            return path;
-        }
-
-        public IEnumerable<string> GetExistentPaths()
-        {
-            IEnumerable<string> paths = File.GetExistentPaths();
-            foreach (var path in paths)
-            {
-                yield return ChangePath(path);
-            }
-        }
-
-        string ChangePath(string path)
-        {
-            string fileName = Path.GetFileName(path);
-            string directoryName = Path.GetDirectoryName(path);
-            path = directoryName + TemplatePrefix + fileName;
-            return path;
-        }
-    }
-
 }

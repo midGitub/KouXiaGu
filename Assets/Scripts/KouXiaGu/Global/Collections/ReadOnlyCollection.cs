@@ -135,7 +135,7 @@ namespace KouXiaGu
         /// <summary>
         /// 转换到只读接口;
         /// </summary>
-        public static IReadOnlyList<TResult> AsReadOnlyLists<TSource, TResult>(this IList<TSource> collection, Func<TSource, TResult> selector)
+        public static IReadOnlyList<TResult> AsReadOnlyList<TSource, TResult>(this IList<TSource> collection, Func<TSource, TResult> selector)
         {
             return new ReadOnlyList<TSource, TResult>(collection, selector);
         }
