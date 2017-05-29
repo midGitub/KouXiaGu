@@ -74,8 +74,7 @@ namespace KouXiaGu.Terrain3D
             {
                 if (request.IsBaking)
                 {
-                    request.Destroy();
-                    ChunkCreateRequest newRequest = new ChunkCreateRequest(this, chunkCoord, targets);
+                    ChunkCreateRequest newRequest = new ChunkCreateRequest(request, targets);
                     AddBakeQueue(request);
                     sceneChunks[chunkCoord] = newRequest;
                 }
@@ -141,6 +140,21 @@ namespace KouXiaGu.Terrain3D
 
         class ChunkCreateRequest : AsyncOperation<Chunk>, IBakeRequest
         {
+            /// <summary>
+            /// 创建到一个新的请求,并且将旧请求设置为不可用;
+            /// </summary>
+            public ChunkCreateRequest(ChunkCreateRequest clone, BakeTargets targets)
+            {
+                clone.IsCanceled = true;
+                Parent = clone.Parent;
+                ChunkCoord = clone.ChunkCoord;
+                Chunk = clone.Chunk;
+                Targets |= targets;
+                IsInQueue = false;
+                IsBaking = false;
+                IsCanceled = false;
+            }
+
             public ChunkCreateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
             {
                 Parent = parent;
@@ -171,6 +185,9 @@ namespace KouXiaGu.Terrain3D
                 private set { Result = value; }
             }
 
+            /// <summary>
+            /// 销毁这个请求,并且销毁块资源;
+            /// </summary>
             public void Destroy()
             {
                 IsCanceled = true;

@@ -8,10 +8,10 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    class LandformTagFilePath : SingleFilePath
+    public class LandformTagFilePath : SingleFilePath
     {
         [CustomFilePath("地形标签定义;")]
-        public const string fileName = "World/Navigation/Tags.xml";
+        public const string fileName = "World/Terrain/Tags.xml";
 
         public override string FileName
         {
@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形标签读取;
     /// </summary>
-    class LandformTagXmlSerializer : FileXmlSerializer<string[]>
+    public class LandformTagXmlSerializer : FileXmlSerializer<string[]>
     {
         public LandformTagXmlSerializer() : base(new LandformTagFilePath())
         {

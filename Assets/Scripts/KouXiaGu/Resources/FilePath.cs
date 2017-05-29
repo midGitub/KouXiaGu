@@ -49,7 +49,8 @@ namespace KouXiaGu.Resources
     }
 
     /// <summary>
-    /// 表示存在多个文件,以编号区分;
+    /// 表示存在多个文件,搜索路径下"定义文件名 + 零个或多个字符 + 拓展名",
+    /// 所以定义的时候要确保目录下不存在其它类型,相同命名方式的其它文件;
     /// </summary>
     public abstract class MultipleFilePath : SingleFilePath, IFilePath
     {

@@ -108,9 +108,9 @@ namespace KouXiaGu.Grids
             CubicHexCoord southwest = SouthwestAdge(center);
             CubicHexCoord northeast = NorthEastAdge(center);
 
-            for (short x = southwest.X; x <= northeast.X; x++)
+            for (var x = southwest.X; x <= northeast.X; x++)
             {
-                for (short y = southwest.Y; y <= northeast.Y; y++)
+                for (var y = southwest.Y; y <= northeast.Y; y++)
                 {
                     yield return new RectCoord(x, y);
                 }

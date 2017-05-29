@@ -1,10 +1,9 @@
-﻿using System;
+﻿
+#if UNITY_EDITOR
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Resources;
 using System.IO;
-using UnityEngine;
 using UnityEditor;
 
 namespace KouXiaGu.Terrain3D
@@ -83,3 +82,5 @@ namespace KouXiaGu.Terrain3D
         }
     }
 }
+
+#endif

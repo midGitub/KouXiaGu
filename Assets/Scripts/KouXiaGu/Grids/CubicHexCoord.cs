@@ -44,7 +44,7 @@ namespace KouXiaGu.Grids
     /// 所有有效坐标都满足 X + Y + Z = 0;
     /// </summary>
     [ProtoContract, Serializable]
-    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<CubicHexCoord, HexDirections>
+    public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<CubicHexCoord>, IGrid<CubicHexCoord, HexDirections>
     {
 
         /// <summary>
@@ -81,89 +81,20 @@ namespace KouXiaGu.Grids
         public static readonly CubicHexCoord DIA_West = new CubicHexCoord(-2, 1, 1);
         public static readonly CubicHexCoord DIA_Northwest = new CubicHexCoord(-1, 2, -1);
 
-        /// <summary>
-        /// 方向偏移量;
-        /// </summary>
-        static Dictionary<int, CubicHexCoord> directionVectors = new Dictionary<int, CubicHexCoord>()
-        {
-            { (int)HexDirections.North, DIR_North },
-            { (int)HexDirections.Northeast, DIR_Northeast },
-            { (int)HexDirections.Southeast, DIR_Southeast },
-            { (int)HexDirections.South, DIR_South },
-            { (int)HexDirections.Southwest, DIR_Southwest },
-            { (int)HexDirections.Northwest, DIR_Northwest },
-            { (int)HexDirections.Self, Self },
-        };
-
-        /// <summary>
-        /// 相对方向映射;
-        /// </summary>
-        static Dictionary<int, int> oppositeDirection = new Dictionary<int, int>()
-        {
-            { (int)HexDirections.North, (int)HexDirections.South },
-            { (int)HexDirections.Northeast, (int)HexDirections.Southwest },
-            { (int)HexDirections.Southeast, (int)HexDirections.Northwest },
-            { (int)HexDirections.South, (int)HexDirections.North },
-            { (int)HexDirections.Southwest, (int)HexDirections.Northeast },
-            { (int)HexDirections.Northwest, (int)HexDirections.Southeast },
-            { (int)HexDirections.Self, (int)HexDirections.Self },
-        };
-
-        /// <summary>
-        /// 对角线偏移量;
-        /// </summary>
-        static Dictionary<int, CubicHexCoord> diagonalVectors = new Dictionary<int, CubicHexCoord>()
-        {
-            { (int)HexDiagonals.Northeast, DIA_Northeast },
-            { (int)HexDiagonals.East, DIA_East },
-            { (int)HexDiagonals.Southeast, DIA_Southeast },
-            { (int)HexDiagonals.Southwest, DIA_Southwest },
-            { (int)HexDiagonals.West, DIA_West },
-            { (int)HexDiagonals.Northwest, DIA_Northwest },
-            { (int)HexDiagonals.Self, Self },
-        };
-
-        /// <summary>
-        /// 按标记为从 高位到低位 循序排列的数组;不包含本身
-        /// </summary>
-        static readonly HexDirections[] DirectionsArray = new HexDirections[]
-        {
-            HexDirections.Northwest,
-            HexDirections.Southwest,
-            HexDirections.South,
-            HexDirections.Southeast,
-            HexDirections.Northeast,
-            HexDirections.North,
-        };
-
-        /// <summary>
-        /// 按标记为从 高位到低位 循序排列的数组;
-        /// </summary>
-        static readonly HexDirections[] DirectionsAndSelfArray = new HexDirections[]
-        {
-            HexDirections.Self,
-            HexDirections.Northwest,
-            HexDirections.Southwest,
-            HexDirections.South,
-            HexDirections.Southeast,
-            HexDirections.Northeast,
-            HexDirections.North,
-        };
-
         [ProtoMember(1), SerializeField]
-        short x;
+        int x;
         [ProtoMember(2), SerializeField]
-        short y;
+        int y;
         [SerializeField]
-        short z;
+        int z;
 
-        public short X
+        public int X
         {
             get { return x; }
             private set { x = value; }
         }
 
-        public short Y
+        public int Y
         {
             get { return y; }
             private set { y = value; }
@@ -172,7 +103,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// Z = - X - Y;
         /// </summary>
-        public short Z
+        public int Z
         {
             get { return z; }
             private set { z = value; }
@@ -200,6 +131,7 @@ namespace KouXiaGu.Grids
             this.z = (short)z;
         }
 
+        [Obsolete]
         public CubicHexCoord(float x, float y, float z)
         {
             int intQ = (short)(Math.Round(x));
@@ -226,9 +158,9 @@ namespace KouXiaGu.Grids
 
             OutOfRangeException((short)intQ, (short)intR, (short)intS);
 
-            this.x = (short)intQ;
-            this.y = (short)intR;
-            this.z = (short)intS;
+            this.x = intQ;
+            this.y = intR;
+            this.z = intS;
         }
 
         /// <summary>
@@ -237,14 +169,34 @@ namespace KouXiaGu.Grids
         [ProtoAfterDeserialization]
         void ProtoAfterDeserialization()
         {
-            this.z = (short)(-this.x - this.y);
+            z = (short)(-x - y);
         }
 
         public void SetValue(short x, short y)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = (short)(-x - y);
+            X = x;
+            Y = y;
+            Z = (short)(-x - y);
+        }
+
+        /// <summary>
+        /// 定义的值是否超出定义范围?
+        /// </summary>
+        public static bool IsOutOfRange(short x, short y, short z)
+        {
+            if ((x + y + z) != 0)
+                return false;
+            else
+                return true;
+        }
+
+        /// <summary>
+        /// 超出定义范围返回异常;
+        /// </summary>
+        public static void OutOfRangeException(int x, int y, int z)
+        {
+            if ((x + y + z) != 0)
+                throw new ArgumentOutOfRangeException("坐标必须满足 (x + y + z) == 0");
         }
 
         public override bool Equals(object obj)
@@ -256,13 +208,12 @@ namespace KouXiaGu.Grids
 
         public bool Equals(CubicHexCoord other)
         {
-            return other == this;
+            return X == other.X && Y == other.Y && Z == other.Z;
         }
 
         public override int GetHashCode()
         {
-            int hashCode = X << 16;
-            hashCode += short.MaxValue + Y;
+            int hashCode = x ^ y;
             return hashCode;
         }
 
@@ -297,13 +248,34 @@ namespace KouXiaGu.Grids
 
 
         /// <summary>
+        /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
+        /// </summary>
+        public static IEnumerable<HexDirections> Directions
+        {
+            get { return DirectionsArray; }
+        }
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组;不包含本身
+        /// </summary>
+        static readonly HexDirections[] DirectionsArray = new HexDirections[]
+        {
+            HexDirections.Northwest,
+            HexDirections.Southwest,
+            HexDirections.South,
+            HexDirections.Southeast,
+            HexDirections.Northeast,
+            HexDirections.North,
+        };
+
+        /// <summary>
         /// 获取到这个点周围的方向和坐标;从 HexDirection 高位标记开始返回;
         /// </summary>
         public IEnumerable<CoordPack<CubicHexCoord, HexDirections>> GetNeighbours()
         {
-            foreach (var direction in Directions)
+            foreach (var direction in DirectionsArray)
             {
-                CubicHexCoord point = this.GetDirection(direction);
+                CubicHexCoord point = GetDirection(direction);
                 yield return new CoordPack<CubicHexCoord, HexDirections>(point, direction);
             }
         }
@@ -315,10 +287,43 @@ namespace KouXiaGu.Grids
         {
             foreach (var direction in GetDirections(directions))
             {
-                CubicHexCoord point = this.GetDirection(direction);
+                CubicHexCoord point = GetDirection(direction);
                 yield return new CoordPack<CubicHexCoord, HexDirections>(point, direction);
             }
         }
+
+        IEnumerable<CubicHexCoord> IGrid<CubicHexCoord>.GetNeighbours()
+        {
+            return GetNeighbours().Select(coord => coord.Point);
+        }
+
+        IEnumerable<IGrid> IGrid.GetNeighbours()
+        {
+            return GetNeighbours().Select(coord => coord.Point).Cast<IGrid>();
+        }
+
+
+        /// <summary>
+        /// 获取到从 高位到低位 顺序返回的迭代结构;包括本身;
+        /// </summary>
+        public static IEnumerable<HexDirections> DirectionsAndSelf
+        {
+            get { return DirectionsAndSelfArray; }
+        }
+
+        /// <summary>
+        /// 按标记为从 高位到低位 循序排列的数组;
+        /// </summary>
+        static readonly HexDirections[] DirectionsAndSelfArray = new HexDirections[]
+        {
+            HexDirections.Self,
+            HexDirections.Northwest,
+            HexDirections.Southwest,
+            HexDirections.South,
+            HexDirections.Southeast,
+            HexDirections.Northeast,
+            HexDirections.North,
+        };
 
         /// <summary>
         /// 获取到目标点的邻居节点,但是也返回自己本身;
@@ -327,15 +332,14 @@ namespace KouXiaGu.Grids
         {
             foreach (var direction in DirectionsAndSelf)
             {
-                CubicHexCoord point = this.GetDirection(direction);
+                CubicHexCoord point = GetDirection(direction);
                 yield return new CoordPack<CubicHexCoord, HexDirections>(point, direction);
             }
         }
 
-
-        IEnumerable<IGrid> IGrid.GetNeighbours()
+        IEnumerable<CubicHexCoord> IGrid<CubicHexCoord>.GetNeighboursAndSelf()
         {
-            return GetNeighbours().Select(coord => coord.Point).Cast<IGrid>();
+            return GetNeighboursAndSelf().Select(coord => coord.Point);
         }
 
         IEnumerable<IGrid> IGrid.GetNeighboursAndSelf()
@@ -345,23 +349,18 @@ namespace KouXiaGu.Grids
 
 
         /// <summary>
-        /// 定义的值是否超出定义范围?
+        /// 获取到方向集表示的所有方向;
         /// </summary>
-        static bool IsOutOfRange(short x, short y, short z)
+        public static IEnumerable<HexDirections> GetDirections(HexDirections directions)
         {
-            if ((x + y + z) != 0)
-                return false;
-            else
-                return true;
-        }
-
-        /// <summary>
-        /// 超出定义范围返回异常;
-        /// </summary>
-        static void OutOfRangeException(short x, short y, short z)
-        {
-            if ((x + y + z) != 0)
-                throw new ArgumentOutOfRangeException("坐标必须满足 (x + y + z) == 0");
+            int mask = (int)directions;
+            for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
+            {
+                if ((intDirection & mask) != 0)
+                {
+                    yield return (HexDirections)intDirection;
+                }
+            }
         }
 
         /// <summary>
@@ -381,25 +380,23 @@ namespace KouXiaGu.Grids
         public static int ManhattanDistances(CubicHexCoord a, CubicHexCoord b)
         {
             CubicHexCoord hex = a - b;
-            return (int)((Math.Abs(hex.X) + Math.Abs(hex.Y) + Math.Abs(hex.Z)) / 2);
+            return (Math.Abs(hex.X) + Math.Abs(hex.Y) + Math.Abs(hex.Z)) / 2;
         }
 
 
         /// <summary>
-        /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
+        /// 方向偏移量;
         /// </summary>
-        public static IEnumerable<HexDirections> Directions
+        static readonly Dictionary<int, CubicHexCoord> directionVectors = new Dictionary<int, CubicHexCoord>()
         {
-            get { return DirectionsArray; }
-        }
-
-        /// <summary>
-        /// 获取到从 高位到低位 顺序返回的迭代结构;包括本身;
-        /// </summary>
-        public static IEnumerable<HexDirections> DirectionsAndSelf
-        {
-            get { return DirectionsAndSelfArray; }
-        }
+            { (int)HexDirections.North, DIR_North },
+            { (int)HexDirections.Northeast, DIR_Northeast },
+            { (int)HexDirections.Southeast, DIR_Southeast },
+            { (int)HexDirections.South, DIR_South },
+            { (int)HexDirections.Southwest, DIR_Southwest },
+            { (int)HexDirections.Northwest, DIR_Northwest },
+            { (int)HexDirections.Self, Self },
+        };
 
         /// <summary>
         /// 获取到方向偏移量;
@@ -417,14 +414,43 @@ namespace KouXiaGu.Grids
             return GetDirectionOffset(direction) * -1;
         }
 
+
+        /// <summary>
+        /// 相对方向映射;
+        /// </summary>
+        static readonly Dictionary<int, HexDirections> oppositeDirection = new Dictionary<int, HexDirections>()
+        {
+            { (int)HexDirections.North, HexDirections.South },
+            { (int)HexDirections.Northeast, HexDirections.Southwest },
+            { (int)HexDirections.Southeast, HexDirections.Northwest },
+            { (int)HexDirections.South, HexDirections.North },
+            { (int)HexDirections.Southwest, HexDirections.Northeast },
+            { (int)HexDirections.Northwest, HexDirections.Southeast },
+            { (int)HexDirections.Self, HexDirections.Self },
+        };
+
         /// <summary>
         /// 获取到这个方向的相反方向;
         /// </summary>
         public static HexDirections ToOppositeDirection(HexDirections direction)
         {
-            return (HexDirections)oppositeDirection[(int)direction];
+            return oppositeDirection[(int)direction];
         }
 
+
+        /// <summary>
+        /// 对角线偏移量;
+        /// </summary>
+        static readonly Dictionary<int, CubicHexCoord> diagonalVectors = new Dictionary<int, CubicHexCoord>()
+        {
+            { (int)HexDiagonals.Northeast, DIA_Northeast },
+            { (int)HexDiagonals.East, DIA_East },
+            { (int)HexDiagonals.Southeast, DIA_Southeast },
+            { (int)HexDiagonals.Southwest, DIA_Southwest },
+            { (int)HexDiagonals.West, DIA_West },
+            { (int)HexDiagonals.Northwest, DIA_Northwest },
+            { (int)HexDiagonals.Self, Self },
+        };
 
         /// <summary>
         /// 获取到对角线偏移量;
@@ -432,21 +458,6 @@ namespace KouXiaGu.Grids
         public static CubicHexCoord GetDiagonalOffset(HexDiagonals diagonal)
         {
             return diagonalVectors[(int)diagonal];
-        }
-
-        /// <summary>
-        /// 获取到方向集表示的所有方向;
-        /// </summary>
-        public static IEnumerable<HexDirections> GetDirections(HexDirections directions)
-        {
-            int mask = (int)directions;
-            for (int intDirection = minDirectionMark; intDirection <= maxDirectionMark; intDirection <<= 1)
-            {
-                if ((intDirection & mask) != 0)
-                {
-                    yield return (HexDirections)intDirection;
-                }
-            }
         }
 
 
@@ -527,12 +538,12 @@ namespace KouXiaGu.Grids
 
         public static bool operator ==(CubicHexCoord a, CubicHexCoord b)
         {
-            return a.X == b.X && a.Y == b.Y && a.Z == b.Z;
+            return a.Equals(b);
         }
 
         public static bool operator !=(CubicHexCoord a, CubicHexCoord b)
         {
-            return !(a == b);
+            return !a.Equals(b);
         }
 
         public static CubicHexCoord operator +(CubicHexCoord a, CubicHexCoord b)
@@ -554,8 +565,5 @@ namespace KouXiaGu.Grids
         {
             return new CubicHexCoord(a.X / k, a.Y / k, a.Z / k);
         }
-
     }
-
-
 }

@@ -40,7 +40,7 @@ namespace KouXiaGu.Terrain3D
             LandformManager = new LandformManager(worldData);
             BuildingManager = new BuildingManager(worldData, this, LandformManager.Builder);
             WaterManager = new WaterManager();
-            MapWatcher = new MapWatcher(LandformBuilder, worldData.MapData.ObservableMap);
+            MapWatcher = new MapWatcher(LandformBuilder, BuildingBuilder, worldData.MapData.ObservableMap);
         }
 
         public LandformManager LandformManager { get; private set; }

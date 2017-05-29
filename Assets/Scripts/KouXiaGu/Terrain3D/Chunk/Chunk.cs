@@ -108,7 +108,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 清除所有引用,备下次重复使用;
+        /// 销毁所有贴图,备下次重复使用;
         /// </summary>
         public void ResetData()
         {

@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.MapData.ReadOnlyMap; }
         }
 
-        IReadOnlyDictionary<int, RoadResource> roadResources
+        IDictionary<int, RoadInfo> infos
         {
-            get { return worldData.GameData.Terrain.RoadResources; }
+            get { return worldData.GameData.Terrain.Road; }
         }
 
         public void Initialise()
@@ -111,13 +111,24 @@ namespace KouXiaGu.Terrain3D
                 MapNode node;
                 if (map.TryGetValue(display, out node))
                 {
-                    var meshs = CreateMesh(display).ToArray();
-
-                    if (meshs.Length > 0)
+                    if (node.Road.Exist())
                     {
-                        RoadResource res = GetRoadResource(node.Road.RoadType);
-                        var pack = new Pack(res, meshs);
-                        sceneObjects.Add(pack);
+                        int roadType = node.Road.RoadType;
+                        RoadInfo info;
+                        if (infos.TryGetValue(roadType, out info))
+                        {
+                            RoadResource resource = info.Terrain;
+                            var meshs = CreateMesh(display).ToArray();
+                            if (meshs.Length > 0)
+                            {
+                                var pack = new Pack(resource, meshs);
+                                sceneObjects.Add(pack);
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning("未找到对应道路贴图,ID:[" + roadType + "];");
+                        }
                     }
                 }
             }
@@ -171,16 +182,6 @@ namespace KouXiaGu.Terrain3D
             }
             CatmullRomSpline spline = new CatmullRomSpline(points[0], points[1], points[2], points[3]);
             return spline;
-        }
-
-        RoadResource GetRoadResource(int roadID)
-        {
-            RoadResource res;
-            if (!roadResources.TryGetValue(roadID, out res))
-            {
-                Debug.LogWarning("未找到对应道路贴图,ID:[" + roadID + "];");
-            }
-            return res;
         }
 
 

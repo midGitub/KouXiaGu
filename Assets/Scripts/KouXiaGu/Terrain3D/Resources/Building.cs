@@ -25,10 +25,10 @@ namespace KouXiaGu.Terrain3D
         public TerrainBuildingInfo TerrainInfo { get; set; }
 
         [XmlIgnore]
-        public int TagsMask { get; set; }
+        public int TagsMask { get; internal set; }
 
         [XmlIgnore]
-        public BuildingResource Terrain { get; set; }
+        public BuildingResource Terrain { get; internal set; }
     }
 
     [XmlType("TerrainBuilding")]

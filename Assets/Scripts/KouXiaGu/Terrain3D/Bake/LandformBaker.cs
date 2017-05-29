@@ -126,34 +126,18 @@ namespace KouXiaGu.Terrain3D
                 {
                     yield return null;
                 }
-                if (runtimeStopwatch.Await())
-                {
-                    yield return null;
-                    runtimeStopwatch.Restart();
-                }
-
 
                 IBakeRequest bakeRequest = requestQueue.Dequeue();
-                ICoroutineState state = new CoroutineState(runtimeStopwatch, bakeRequest);
-
-                if (state.IsCanceled)
+                if (bakeRequest.IsCanceled)
                 {
                     goto _Complete_;
-                }
-                if (runtimeStopwatch.Await())
-                {
-                    yield return null;
-                    runtimeStopwatch.Restart();
                 }
 
                 bakeRequest.Operate();
                 BakeTargets targets = bakeRequest.Targets;
                 CubicHexCoord chunkCenter = bakeRequest.ChunkCoord.GetChunkHexCenter();
+                ICoroutineState state = new CoroutineState(runtimeStopwatch, bakeRequest);
 
-                if (state.IsCanceled)
-                {
-                    goto _Complete_;
-                }
                 if ((targets & BakeTargets.Landform) > 0)
                 {
                     yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter, state);
@@ -172,6 +156,12 @@ namespace KouXiaGu.Terrain3D
                 {
                     goto _Complete_;
                 }
+                if (runtimeStopwatch.Await())
+                {
+                    yield return null;
+                    runtimeStopwatch.Restart();
+                }
+
                 if ((targets & BakeTargets.Road) > 0)
                 {
                     yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter, state);

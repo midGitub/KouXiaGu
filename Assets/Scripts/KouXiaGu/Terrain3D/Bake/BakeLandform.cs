@@ -39,9 +39,9 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.MapData.ReadOnlyMap; }
         }
 
-        IReadOnlyDictionary<int, LandformResource> landformResources
+        IDictionary<int, LandformInfo> landformInfos
         {
-            get { return worldData.GameData.Terrain.LandformResources; }
+            get { return worldData.GameData.Terrain.Landform; }
         }
 
         public void Initialize()
@@ -132,58 +132,24 @@ namespace KouXiaGu.Terrain3D
         {
             foreach (var display in displays)
             {
-                float angle;
-                LandformResource info = GetLandformInfo(display, out angle);
-
-                if (info != null)
+                MapNode node;
+                if (worldMap.TryGetValue(display, out node))
                 {
-                    var mesh = CreateMeshRenderer(display, angle, -sceneObjects.Count);
-                    sceneObjects.Add(new Pack(info, mesh));
+                    float angle = node.Landform.Angle;
+                    LandformInfo info;
+                    int landformType = node.Landform.LandformType;
+                    if (landformInfos.TryGetValue(landformType, out info))
+                    {
+                        LandformResource resource = info.Terrain;
+                        var mesh = CreateMeshRenderer(display, angle, -sceneObjects.Count);
+                        sceneObjects.Add(new Pack(resource, mesh));
+                    }
+                    else
+                    {
+                        Debug.LogWarning("找不到对应的地形资源!ID:" + landformType);
+                    }
                 }
             }
-        }
-
-        /// <summary>
-        /// 获取到该点的地形贴图信息;
-        /// </summary>
-        LandformResource GetLandformInfo(CubicHexCoord pos, out float angle)
-        {
-            LandformResource info;
-            MapNode node;
-            if (worldMap.TryGetValue(pos, out node))
-            {
-                info = GetLandformResource(node);
-                angle = GetLandformAngle(node);
-            }
-            else
-            {
-                info = default(LandformResource);
-                angle = default(float);
-            }
-            return info;
-        }
-
-        float GetLandformAngle(MapNode node)
-        {
-            float angle = node.Landform.Angle;
-            return angle;
-        }
-
-        LandformResource GetLandformResource(MapNode node)
-        {
-            int landformID = node.Landform.LandformType;
-            LandformResource info = GetLandformResource(landformID);
-            return info;
-        }
-
-        LandformResource GetLandformResource(int landformID)
-        {
-            LandformResource info;
-            if (!landformResources.TryGetValue(landformID, out info))
-            {
-                Debug.LogWarning("未找到对应地形贴图,ID:[" + landformID + "];");
-            }
-            return info;
         }
 
         public MeshRenderer CreateMeshRenderer(CubicHexCoord coord, float angle, float y)

@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
         public TerrainRoadInfo TerrainInfo { get; set; }
 
         [XmlIgnore]
-        public RoadResource Terrain { get; set; }
+        public RoadResource Terrain { get; internal set; }
     }
 
     class RoadFile : MultipleFilePath

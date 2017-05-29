@@ -13,14 +13,16 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class MapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
     {
-        public MapWatcher(LandformBuilder builder, IObservableDictionary<CubicHexCoord, MapNode> observable)
+        public MapWatcher(LandformBuilder landformBuilder, BuildingBuilder buildingBuilder, IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
-            this.builder = builder;
+            this.landformBuilder = landformBuilder;
+            this.buildingBuilder = buildingBuilder;
             Subscribe(observable);
         }
 
         IDisposable unsubscriber;
-        readonly LandformBuilder builder;
+        readonly LandformBuilder landformBuilder;
+        readonly BuildingBuilder buildingBuilder;
 
         public void Subscribe(IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
@@ -41,12 +43,12 @@ namespace KouXiaGu.Terrain3D
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnAdded(CubicHexCoord key, MapNode newValue)
         {
-            UpdateChunks(key, BakeTargets.All);
+            UpdateLandformChunks(key, BakeTargets.All);
         }
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnRemoved(CubicHexCoord key, MapNode originalValue)
         {
-            UpdateChunks(key, BakeTargets.All);
+            UpdateLandformChunks(key, BakeTargets.All);
         }
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnUpdated(CubicHexCoord key, MapNode originalValue, MapNode newValue)
@@ -60,16 +62,16 @@ namespace KouXiaGu.Terrain3D
 
             if (targets != BakeTargets.None)
             {
-                UpdateChunks(key, targets);
+                UpdateLandformChunks(key, targets);
             }
         }
 
-        void UpdateChunks(CubicHexCoord coord, BakeTargets targets)
+        void UpdateLandformChunks(CubicHexCoord coord, BakeTargets targets)
         {
             var belongChunks = GetBakeChunks(coord);
             foreach (var belongChunk in belongChunks)
             {
-                builder.Update(belongChunk, targets);
+                landformBuilder.Update(belongChunk, targets);
             }
         }
 
@@ -90,7 +92,5 @@ namespace KouXiaGu.Terrain3D
             }
             return chunkCoordList;
         }
-
     }
-
 }

@@ -27,10 +27,10 @@ namespace KouXiaGu.Terrain3D
         public TerrainLandformInfo TerrainInfo { get; set; }
 
         [XmlIgnore]
-        public int TagsMask { get; set; }
+        public int TagsMask { get; internal set; }
 
         [XmlIgnore]
-        public LandformResource Terrain { get; set; }
+        public LandformResource Terrain { get; internal set; }
     }
 
     class LandformFile : MultipleFilePath

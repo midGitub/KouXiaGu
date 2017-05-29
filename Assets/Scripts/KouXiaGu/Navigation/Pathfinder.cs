@@ -10,6 +10,7 @@ namespace KouXiaGu.Navigation
     /// 寻路;
     /// </summary>
     public class Pathfinder<T>
+        where T: IGrid
     {
         public Pathfinder()
         {
@@ -30,7 +31,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 代价值获取;
         /// </summary>
-        public INavigationMap<T> Map { get; private set; }
+        public IWalker<T> Map { get; private set; }
 
         /// <summary>
         /// 起点;
@@ -50,7 +51,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 开始寻路;若无法找到目标点则返回异常;
         /// </summary>
-        public WayPath<T> Search(INavigationMap<T> map, T starting, T destination)
+        public WayPath<T> Search(IWalker<T> map, T starting, T destination)
         {
             return Search(map, UnlimitedRange<T>.Instance, starting, destination);
         }
@@ -58,7 +59,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 开始寻路;若无法找到目标点则返回异常;
         /// </summary>
-        public WayPath<T> Search(INavigationMap<T> map, IRange<T> searchRange, T starting, T destination)
+        public WayPath<T> Search(IWalker<T> map, IRange<T> searchRange, T starting, T destination)
         {
             if (map == null)
                 throw new ArgumentNullException("map");

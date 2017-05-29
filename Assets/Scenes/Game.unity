@@ -2755,7 +2755,7 @@ MonoBehaviour:
     diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
     heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
   runtimeStopwatch:
-    idleSeconds: 0.5
+    idleSeconds: 0.8
   waitUpdate: 0
 --- !u!114 &1146917774
 MonoBehaviour:
@@ -3985,7 +3985,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   landformShader: {fileID: 4800000, guid: 31f92206529d9474db05c92df9ac2f47, type: 3}
   bakeSettings:
-    textureSize: 80
+    textureSize: 60
     diffuseMapRatios: 1
     heightMapRatios: 1
   waterSettings:

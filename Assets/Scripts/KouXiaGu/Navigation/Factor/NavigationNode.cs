@@ -12,7 +12,7 @@ namespace KouXiaGu.Navigation
         public T Destination;
 
         /// <summary>
-        /// 是否可用?
+        /// 是否可行走?
         /// </summary>
         public bool IsWalkable;
 

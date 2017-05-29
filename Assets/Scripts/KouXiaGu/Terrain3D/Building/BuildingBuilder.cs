@@ -71,9 +71,9 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.MapData.ReadOnlyMap; }
         }
 
-        IReadOnlyDictionary<int, BuildingResource> resources
+        IDictionary<int, BuildingInfo> infos
         {
-            get { return worldData.GameData.Terrain.BuildingResources; }
+            get { return worldData.GameData.Terrain.Building; }
         }
 
         /// <summary>
@@ -86,10 +86,11 @@ namespace KouXiaGu.Terrain3D
             {
                 if (node.Building.Exist())
                 {
-                    BuildingResource resource;
+                    BuildingInfo info;
                     int buildingType = node.Building.BuildingType;
-                    if (resources.TryGetValue(buildingType, out resource))
+                    if (infos.TryGetValue(buildingType, out info))
                     {
+                        BuildingResource resource = info.Terrain;
                         IBuilding building = resource.BuildingPrefab.BuildAt(position, node, this);
                         return building;
                     }

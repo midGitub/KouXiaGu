@@ -8,13 +8,13 @@ namespace KouXiaGu.Navigation
     /// </summary>
     public class WayPath<T> : LinkedList<T>
     {
-        public WayPath(INavigationMap<T> map, IRange<T> searchRange)
+        public WayPath(IWalker<T> map, IRange<T> searchRange)
         {
             Map = map;
             SearchRange = searchRange;
         }
 
-        public INavigationMap<T> Map { get; private set; }
+        public IWalker<T> Map { get; private set; }
         public IRange<T> SearchRange { get; private set; }
 
         /// <summary>
