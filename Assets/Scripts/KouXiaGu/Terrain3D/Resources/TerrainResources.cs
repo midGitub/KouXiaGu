@@ -43,15 +43,7 @@ namespace KouXiaGu.Terrain3D
         public IReadOnlyDictionary<int, RoadResource> RoadResources { get; private set; }
 
 
-        string[] tags;
-        internal string[] Internal_tags
-        {
-            set {
-                tags = value;
-                Tags = value.AsReadOnlyList();
-            }
-        }
-        public IReadOnlyList<string> Tags { get; private set; }
+        public LandformTag Tags { get; internal set; }
 
     }
 }

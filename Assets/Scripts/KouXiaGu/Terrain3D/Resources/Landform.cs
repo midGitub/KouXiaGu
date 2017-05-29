@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
         [XmlAttribute("id")]
         public int ID { get; set; }
 
-        [XmlAttribute("tag")]
+        [XmlAttribute("tags")]
         public string Tags { get; set; }
 
         [XmlElement("Terrain")]

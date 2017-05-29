@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -13,18 +14,26 @@ namespace KouXiaGu.Terrain3D
     {
         public LandformTag(string[] tags)
         {
+            if (tags.Length > 32)
+            {
+                Debug.LogWarning("定义地形标签大于32个,将会舍弃多余的标签;");
+            }
+
             this.tags = tags;
+            Tags = tags.AsReadOnlyList();
         }
 
         readonly string[] tags;
 
-        public string[] Tags
-        {
-            get { return tags; }
-        }
+        public IReadOnlyList<string> Tags { get; private set; }
 
         public int TagsToMask(string tags)
         {
+            if (string.IsNullOrEmpty(tags))
+            {
+                return 0;
+            }
+
             IEnumerable<string> enumerateTags = EnumerateTags(tags);
             return TagsToMask(enumerateTags);
         }

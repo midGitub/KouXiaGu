@@ -9,16 +9,22 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 读取到所有地形资源;
+    /// 在非主线程初始化地形资源;
     /// </summary>
-    public class TerrainResourcesReader : IDisposable
+    public class TerrainResourcesFileReader : IDisposable
     {
+
         internal LandformInfoXmlSerializer LandformFileSerializer = new LandformInfoXmlSerializer();
         internal BuildingInfoXmlSerializer BuildingFileSerializer = new BuildingInfoXmlSerializer();
         internal RoadInfoXmlSerializer RoadFileSerializer = new RoadInfoXmlSerializer();
 
         public TerrainResources Read()
         {
+            if (XiaGu.IsMainThread)
+            {
+                throw new ArgumentException("只允许在非Unity线程调用;");
+            }
+
             TerrainResources Result = new TerrainResources()
             {
                 Landform = LandformFileSerializer.Read(),
@@ -26,8 +32,9 @@ namespace KouXiaGu.Terrain3D
                 Road = RoadFileSerializer.Read(),
             };
 
-            InitAssetBundleResources(Result);
+            StartUnityThreadReadResources(Result);
             InitLandformTag(Result);
+            WaitUnityThread();
             return Result;
         }
 
@@ -50,11 +57,21 @@ namespace KouXiaGu.Terrain3D
         {
             get { return Resource.GlobalStopwatch; }
         }
-       
-        void InitAssetBundleResources(TerrainResources result)
+        
+        /// <summary>
+        /// 开始在Unity线程读取到所有地形贴图资源;
+        /// </summary>
+        void StartUnityThreadReadResources(TerrainResources result)
         {
             UnityCoroutine coroutine = new UnityCoroutine("初始地形资源", ReadAssetBundleResources(result));
             resourceReaderDisposer = coroutine.SubscribeUpdate();
+        }
+
+        /// <summary>
+        /// 等待资源读取完毕;
+        /// </summary>
+        void WaitUnityThread()
+        {
             while (!isAssetBundleResourcesReadCompleted)
             {
             }
@@ -109,9 +126,18 @@ namespace KouXiaGu.Terrain3D
         void InitLandformTag(TerrainResources result)
         {
             string[] tags = LandformTagFileSerializer.Read();
-            result.Internal_tags = tags;
+            LandformTag tagConverter = new LandformTag(tags);
+            result.Tags = tagConverter;
 
+            foreach (var info in result.Landform.Values)
+            {
+                info.TagsMask = tagConverter.TagsToMask(info.Tags);
+            }
 
+            foreach (var info in result.Building.Values)
+            {
+                info.TagsMask = tagConverter.TagsToMask(info.Tags);
+            }
         }
     }
 }

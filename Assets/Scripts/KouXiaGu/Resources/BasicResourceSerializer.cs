@@ -13,7 +13,7 @@ namespace KouXiaGu.Resources
     /// </summary>
     public class BasicResourceSerializer : IReader<BasicResource>
     {
-        TerrainResourcesReader TerrainReader = new TerrainResourcesReader();
+        TerrainResourcesFileReader TerrainReader = new TerrainResourcesFileReader();
 
         public BasicResource Read()
         {

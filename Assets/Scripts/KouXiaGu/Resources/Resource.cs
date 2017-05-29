@@ -14,8 +14,11 @@ namespace KouXiaGu.Resources
     public static class Resource
     {
 
-        static readonly Stopwatch globalStopwatch = new Stopwatch(0.8f);
+        static readonly Stopwatch globalStopwatch = new Stopwatch(0.6f);
 
+        /// <summary>
+        /// 全局的主线程资源读取计时器;
+        /// </summary>
         public static Stopwatch GlobalStopwatch
         {
             get { return globalStopwatch; }
