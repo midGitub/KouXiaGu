@@ -71,6 +71,8 @@ namespace KouXiaGu.Navigation
             Starting = starting;
             Destination = destination;
 
+            if (starting.Equals(destination))
+                throw new ArgumentException("起点与终点为同一个位置;");
             if (SearchRange.IsOutRange(Destination))
                 throw new DestinationNotFoundException("目的地超出了最大搜索范围的定义;");
             if (IsTrapped(Starting))
@@ -125,9 +127,6 @@ namespace KouXiaGu.Navigation
         /// </summary>
         WayPath<T> PathNodeToWayPath(PathNode node)
         {
-#if UNITY_EDITOR_DUBUG
-            Debug.Log("路线代价值:" + node.PathCost + "检索的点:" + (openPointsSet.Count + closePointsSet.Count));
-#endif
             var wayPath = new WayPath<T>(Walker, SearchRange);
             while (node != null)
             {

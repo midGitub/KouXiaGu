@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using ProtoBuf;
 
 namespace KouXiaGu.Terrain3D.Wall
 {
@@ -10,7 +11,7 @@ namespace KouXiaGu.Terrain3D.Wall
     /// <summary>
     /// 存储网格原始数据,提供转换方法;
     /// </summary>
-    [Serializable]
+    [Serializable, ProtoContract]
     public class DynamicMeshData
     {
         DynamicMeshData()
@@ -22,9 +23,9 @@ namespace KouXiaGu.Terrain3D.Wall
             Build(joint, vertices);
         }
 
-        [SerializeField]
+        [SerializeField, ProtoMember(1)]
         JointInfo joint;
-        [SerializeField]
+        [SerializeField, ProtoMember(2)]
         WallVertice[] pointCollection;
 
         /// <summary>
@@ -33,14 +34,16 @@ namespace KouXiaGu.Terrain3D.Wall
         public JointInfo JointInfo
         {
             get { return joint; }
+            private set { joint = value; }
         }
 
         /// <summary>
         /// 对应节点位置,转换后的顶点坐标;
         /// </summary>
-        public IList<WallVertice> Points
+        public WallVertice[] Points
         {
             get { return pointCollection; }
+            private set{ pointCollection = value; }
         }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace KouXiaGu.Terrain3D.Wall
             foreach (var childIndex in section.Children)
             {
                 WallVertice info = Points[childIndex];
-                float localRadius = info.localRadius;
+                float localRadius = info.LocalRadius;
                 float localAngle = info.LocalAngle + angle;
                 Vector3 newPosition = position;
                 newPosition.x += Mathf.Sin(localAngle) * localRadius;
@@ -169,7 +172,7 @@ namespace KouXiaGu.Terrain3D.Wall
             foreach (var childIndex in section.Children)
             {
                 WallVertice info = Points[childIndex];
-                float localRadius = info.localRadius;
+                float localRadius = info.LocalRadius;
                 float localAngle = info.LocalAngle + angle;
                 Vector3 position = section.Position;
                 position.x += Mathf.Sin(localAngle) * localRadius;
@@ -183,7 +186,7 @@ namespace KouXiaGu.Terrain3D.Wall
         /// <summary>
         /// 转换为本地坐标的顶点;
         /// </summary>
-        [Serializable]
+        [Serializable, ProtoContract]
         public struct WallVertice
         {
             public WallVertice(Vector3 localPosition, float localAngle)
@@ -192,12 +195,12 @@ namespace KouXiaGu.Terrain3D.Wall
                 this.localAngle = localAngle;
             }
 
-            [SerializeField]
+            [SerializeField, ProtoMember(1)]
             Vector3 localPosition;
-            [SerializeField]
+            [SerializeField, ProtoMember(2)]
             float localAngle;
 
-            public float localRadius
+            public float LocalRadius
             {
                 get { return Mathf.Sqrt(localPosition.x * localPosition.x + localPosition.z * localPosition.z); }
             }
@@ -208,6 +211,7 @@ namespace KouXiaGu.Terrain3D.Wall
             public Vector3 LocalPosition
             {
                 get { return localPosition; }
+                private set { localPosition = value; }
             }
 
             /// <summary>
@@ -216,6 +220,7 @@ namespace KouXiaGu.Terrain3D.Wall
             public float LocalAngle
             {
                 get { return localAngle; }
+                private set { localAngle = value; }
             }
 
             public override string ToString()

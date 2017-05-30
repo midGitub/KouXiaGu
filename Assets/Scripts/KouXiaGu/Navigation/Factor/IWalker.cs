@@ -24,24 +24,9 @@ namespace KouXiaGu.Navigation
         /// <param name="destination">终点位置;</param>
         /// <returns></returns>
         int GetCost(T position, T target, T destination);
-
-        ///// <summary>
-        ///// 获取到导航点信息;
-        ///// </summary>
-        //[Obsolete]
-        //NavigationNode<T> GetNavigationNode(T position, T destination);
     }
 
     public interface IWalker<T> : IWalkableConfirmer<T>, ICostCalculator<T>
     {
-        ///// <summary>
-        ///// 该位置是否允许行走?
-        ///// </summary>
-        //bool IsWalkable(T position);
-
-        ///// <summary>
-        ///// 获取到导航点信息;
-        ///// </summary>
-        //NavigationNode<T> GetNavigationNode(T position, T destination);
     }
 }

@@ -4,10 +4,34 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KouXiaGu.Collections;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.Terrain3D.Wall
 {
 
+    public class DynamicMeshFilePath : SingleFilePath
+    {
+        public const string fileName = "World\\Terrain\\DynamicMesh.data";
+
+        public override string FileName
+        {
+            get { return fileName; }
+        }
+    }
+
+    class DynamicMeshSerializer : FileSerializer<Dictionary<string, DynamicMeshData>>
+    {
+        static readonly IFileSerializer<Dictionary<string, DynamicMeshData>> fileSerializer = new ProtoFileSerializer<Dictionary<string, DynamicMeshData>>();
+
+        public DynamicMeshSerializer(IFilePath file) : base(file, fileSerializer)
+        {
+        }
+    }
+
+
+    /// <summary>
+    /// 动态网格资源管理;
+    /// </summary>
     [DisallowMultipleComponent]
     public class DynamicMeshManager : UnitySington<DynamicMeshManager>
     {
@@ -32,6 +56,26 @@ namespace KouXiaGu.Terrain3D.Wall
             SetInstance(this);
             meshDataDictionary = ToDictionary(serializableDataList);
         }
+
+        /// <summary>
+        /// 从文件读取到动态网格信息;
+        /// </summary>
+        public void Read()
+        {
+
+        }
+
+        public void Write()
+        {
+
+        }
+
+
+
+
+
+
+
 
         Dictionary<string, DynamicMeshData> ToDictionary(List<SerializableDynamicMeshData> list)
         {

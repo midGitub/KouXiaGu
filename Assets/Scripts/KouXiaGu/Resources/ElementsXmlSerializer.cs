@@ -17,10 +17,10 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 将数组序列化;
     /// </summary>
-    public class ElementsXmlSerializer<T> : FilesXmlSerializer<T[], Dictionary<int, T>>
+    public class ElementsXmlSerializer<T> : FilesSerializer<T[], Dictionary<int, T>>
         where T : IElement
     {
-        public ElementsXmlSerializer(IFilePath file) : base(file, defaultCombiner)
+        public ElementsXmlSerializer(IFilePath file) : base(file, new XmlFileSerializer<T[]>(), defaultCombiner)
         {
         }
 

@@ -22,13 +22,11 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形标签读取;
     /// </summary>
-    public class LandformTagXmlSerializer : FileXmlSerializer<string[]>
+    public class LandformTagXmlSerializer : FileSerializer<string[]>
     {
-        public LandformTagXmlSerializer() : base(new LandformTagFilePath())
-        {
-        }
+        static readonly IFileSerializer<string[]> fileSerializer = new XmlFileSerializer<string[]>();
 
-        public LandformTagXmlSerializer(MultipleFilePath file) : base(file)
+        public LandformTagXmlSerializer() : base(new LandformTagFilePath(), fileSerializer)
         {
         }
     }

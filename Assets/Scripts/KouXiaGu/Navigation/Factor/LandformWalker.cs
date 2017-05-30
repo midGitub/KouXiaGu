@@ -43,6 +43,12 @@ namespace KouXiaGu.Navigation
         public int SetWalkableTags(string tags)
         {
             WalkableTagsMask = Resources.Tags.TagsToMask(tags);
+            return WalkableTagsMask;
+        }
+
+        public int SetUnwalkableTags(string tags)
+        {
+            UnwalkableTagsMask = Resources.Tags.TagsToMask(tags);
             return UnwalkableTagsMask;
         }
 

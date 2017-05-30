@@ -40,7 +40,7 @@ namespace KouXiaGu.Terrain3D.Wall
                 if (isInitialized)
                 {
                     displayPointSize = EditorGUILayout.FloatField("DisPlayPointSize", displayPointSize);
-                    EditorGUILayout.LabelField("VerticeCount:" + instance.MeshData.Points.Count);
+                    EditorGUILayout.LabelField("VerticeCount:" + instance.MeshData.Points.Length);
                     isEditJointPoint = EditorGUILayout.Toggle("IsEditJointPoint", isEditJointPoint);
                 }
 
