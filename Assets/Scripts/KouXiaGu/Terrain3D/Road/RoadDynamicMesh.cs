@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using KouXiaGu.Terrain3D.Wall;
+using KouXiaGu.Terrain3D.DynamicMesh;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;

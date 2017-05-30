@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using ProtoBuf;
 
-namespace KouXiaGu.Terrain3D.Wall
+namespace KouXiaGu.Terrain3D.DynamicMesh
 {
 
     /// <summary>
