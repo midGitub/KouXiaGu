@@ -78,5 +78,22 @@ namespace KouXiaGu.Terrain3D
             chunk.name = name;
             return chunk;
         }
+
+
+        [ContextMenu("123")]
+        public void Test()
+        {
+            unchecked
+            {
+                const int x = -1;
+                const int y = -1;
+                const int z = 1;
+
+                int hashCode = x << 21 & -0x7FE00000;
+                hashCode |= y << 10 & 0x1FFC00;
+                hashCode |= z & 0x3FF;
+                Debug.Log(hashCode);
+            }
+        }
     }
 }

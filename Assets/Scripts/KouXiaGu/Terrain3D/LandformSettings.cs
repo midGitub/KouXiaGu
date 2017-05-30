@@ -20,9 +20,9 @@ namespace KouXiaGu.Terrain3D
 
         #region 编辑器设置变量;
 
-        public Shader landformShader;
-        public QualitySettings bakeSettings;
-        public WaterSettings waterSettings;
+        public Shader landformShader = null;
+        public QualitySettings bakeSettings = null;
+        public WaterSettings waterSettings = default(WaterSettings);
         [Range(0, 64)]
         public float tessellation = 16f;
         [Range(0, 5)]

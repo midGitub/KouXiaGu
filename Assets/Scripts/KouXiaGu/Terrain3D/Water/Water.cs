@@ -216,11 +216,12 @@ namespace KouXiaGu.Terrain3D
         // old cards to make water texture scroll.
         void Update()
         {
-            if (!GetComponent<Renderer>())
+            Renderer renderer = GetComponent<Renderer>();
+            if (renderer == null)
             {
                 return;
             }
-            Material mat = GetComponent<Renderer>().sharedMaterial;
+            Material mat = renderer.sharedMaterial;
             if (!mat)
             {
                 return;

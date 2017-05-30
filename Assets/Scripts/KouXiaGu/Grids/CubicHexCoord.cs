@@ -46,6 +46,58 @@ namespace KouXiaGu.Grids
     [ProtoContract, Serializable]
     public struct CubicHexCoord : IEquatable<CubicHexCoord>, IGrid, IGrid<CubicHexCoord>, IGrid<CubicHexCoord, HexDirections>
     {
+        public CubicHexCoord(short x, short y, short z)
+        {
+            OutOfRangeException(x, y, z);
+
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public CubicHexCoord(short x, short y) : this()
+        {
+            SetValue(x, y);
+        }
+
+        public CubicHexCoord(int x, int y, int z)
+        {
+            OutOfRangeException((short)x, (short)y, (short)z);
+            this.x = (short)x;
+            this.y = (short)y;
+            this.z = (short)z;
+        }
+
+        public CubicHexCoord(float x, float y, float z)
+        {
+            int intX = (int)(Math.Round(x));
+            int intY = (int)(Math.Round(y));
+            int intZ = (int)(Math.Round(z));
+            double x_diff = Math.Abs(intX - x);
+            double y_diff = Math.Abs(intY - y);
+            double z_diff = Math.Abs(intZ - z);
+            if (x_diff > y_diff && x_diff > z_diff)
+            {
+                intX = -intY - intZ;
+            }
+            else
+            {
+                if (y_diff > z_diff)
+                {
+                    intY = -intX - intZ;
+                }
+                else
+                {
+                    intZ = -intX - intY;
+                }
+            }
+
+            OutOfRangeException(intX, intY, intZ);
+
+            this.x = intX;
+            this.y = intY;
+            this.z = intZ;
+        }
 
         /// <summary>
         /// 存在方向数,包括本身;
@@ -91,13 +143,11 @@ namespace KouXiaGu.Grids
         public int X
         {
             get { return x; }
-            private set { x = value; }
         }
 
         public int Y
         {
             get { return y; }
-            private set { y = value; }
         }
 
         /// <summary>
@@ -106,61 +156,42 @@ namespace KouXiaGu.Grids
         public int Z
         {
             get { return z; }
-            private set { z = value; }
         }
 
-        public CubicHexCoord(short x, short y, short z)
+        /// <summary>
+        /// 0 获取到 x, 1 获取到 y, 2 获取到 z, 其它 获取到异常;
+        /// </summary>
+        public int this[int index]
         {
-            OutOfRangeException(x, y, z);
-
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        public CubicHexCoord(short x, short y) : this()
-        {
-            SetValue(x, y);
-        }
-
-        public CubicHexCoord(int x, int y, int z)
-        {
-            OutOfRangeException((short)x, (short)y, (short)z);
-            this.x = (short)x;
-            this.y = (short)y;
-            this.z = (short)z;
-        }
-
-        [Obsolete]
-        public CubicHexCoord(float x, float y, float z)
-        {
-            int intQ = (short)(Math.Round(x));
-            int intR = (short)(Math.Round(y));
-            int intS = (short)(Math.Round(z));
-            double q_diff = Math.Abs(intQ - x);
-            double r_diff = Math.Abs(intR - y);
-            double s_diff = Math.Abs(intS - z);
-            if (q_diff > r_diff && q_diff > s_diff)
-            {
-                intQ = -intR - intS;
-            }
-            else
-            {
-                if (r_diff > s_diff)
+            get {
+                switch (index)
                 {
-                    intR = -intQ - intS;
-                }
-                else
-                {
-                    intS = -intQ - intR;
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    case 2:
+                        return z;
+                    default:
+                        throw new IndexOutOfRangeException();
                 }
             }
-
-            OutOfRangeException((short)intQ, (short)intR, (short)intS);
-
-            this.x = intQ;
-            this.y = intR;
-            this.z = intS;
+            set {
+                switch (index)
+                {
+                    case 0:
+                         x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    case 2:
+                        z = value;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
         }
 
         /// <summary>
@@ -174,9 +205,9 @@ namespace KouXiaGu.Grids
 
         public void SetValue(short x, short y)
         {
-            X = x;
-            Y = y;
-            Z = (short)(-x - y);
+            this.x = x;
+            this.y = y;
+            z = (short)(-x - y);
         }
 
         /// <summary>
@@ -213,9 +244,24 @@ namespace KouXiaGu.Grids
 
         public override int GetHashCode()
         {
-            int hashCode = x ^ y;
+            //int hashCode = x ^ y;
+
+            //在数值不大于10位的时候获得最好的性能;
+            int hashCode = x << 21 & -0x7FE00000;
+            hashCode |= y << 10 & 0x1FFC00;
+            hashCode |= z & 0x3FF;
             return hashCode;
         }
+
+        ///// <summary>
+        ///// 将哈希值转换成坐标;
+        ///// </summary>
+        //public static CubicHexCoord HashCodeToCoord(int hashCode)
+        //{
+        //    short x = (short)(hashCode >> 16);
+        //    short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
+        //    return new CubicHexCoord(x, y);
+        //}
 
         public override string ToString()
         {
@@ -364,17 +410,6 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
-        /// 将哈希值转换成坐标;
-        /// </summary>
-        public static CubicHexCoord HashCodeToCoord(int hashCode)
-        {
-            short x = (short)(hashCode >> 16);
-            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
-            return new CubicHexCoord(x, y);
-        }
-
-
-        /// <summary>
         /// 曼哈顿距离;
         /// </summary>
         public static int ManhattanDistances(CubicHexCoord a, CubicHexCoord b)
@@ -506,7 +541,7 @@ namespace KouXiaGu.Grids
             if (radius <= 0)
                 throw new ArgumentOutOfRangeException();
 
-            var cube = center + (CubicHexCoord.GetDirectionOffset(HexDirections.Northeast) * radius);
+            var cube = center + (GetDirectionOffset(HexDirections.Northeast) * radius);
 
             foreach (var direction in Directions)
             {

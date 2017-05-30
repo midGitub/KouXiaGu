@@ -35,11 +35,6 @@ namespace KouXiaGu.Terrain3D
             get { return watchers; }
         }
 
-        //SceneWatcher Create(WaterWatcher watcher)
-        //{
-        //    WaterChunk chunk = GameObject.Instantiate(settings.PrefabChunk);
-        //}
-
         class SceneWatcher
         {
             public SceneWatcher(WaterChunk chunk, WaterWatcher watcher)

@@ -10,7 +10,7 @@ namespace KouXiaGu.Navigation
     /// 寻路;
     /// </summary>
     public class Pathfinder<T>
-        where T: IGrid
+        where T: IGrid<T>
     {
         public Pathfinder()
         {
@@ -31,7 +31,7 @@ namespace KouXiaGu.Navigation
         /// <summary>
         /// 代价值获取;
         /// </summary>
-        public IWalker<T> Map { get; private set; }
+        public IWalker<T> Walker { get; private set; }
 
         /// <summary>
         /// 起点;
@@ -66,7 +66,7 @@ namespace KouXiaGu.Navigation
             if (searchRange == null)
                 throw new ArgumentNullException("searchRange");
 
-            Map = map;
+            Walker = map;
             SearchRange = searchRange;
             Starting = starting;
             Destination = destination;
@@ -86,10 +86,10 @@ namespace KouXiaGu.Navigation
         /// </summary>
         bool IsTrapped(T position)
         {
-            var neighbors = Map.GetNeighbors(position);
+            var neighbors = position.GetNeighbours();
             foreach (var neighbor in neighbors)
             {
-                if (Map.IsWalkable(neighbor))
+                if (Walker.IsWalkable(neighbor))
                 {
                     return false;
                 }
@@ -128,7 +128,7 @@ namespace KouXiaGu.Navigation
 #if UNITY_EDITOR_DUBUG
             Debug.Log("路线代价值:" + node.PathCost + "检索的点:" + (openPointsSet.Count + closePointsSet.Count));
 #endif
-            var wayPath = new WayPath<T>(Map, SearchRange);
+            var wayPath = new WayPath<T>(Walker, SearchRange);
             while (node != null)
             {
                 wayPath.AddFirst(node.Position);
@@ -142,7 +142,7 @@ namespace KouXiaGu.Navigation
         /// </summary>
         void OpenNeighbors(PathNode parent)
         {
-            var neighbors = Map.GetNeighbors(parent.Position);
+            var neighbors = parent.Position.GetNeighbours();
             foreach (var neighbor in neighbors)
             {
                 if (!closePointsSet.Contains(neighbor))
@@ -156,18 +156,15 @@ namespace KouXiaGu.Navigation
                     {
                         neighborNode.TryChangeParent(parent);
                     }
+                    else if (!Walker.IsWalkable(neighbor))
+                    {
+                        closePointsSet.Add(neighbor);
+                    }
                     else
                     {
-                        NavigationNode<T> info = Map.GetNavigationNode(neighbor, Destination);
-                        if (info.IsWalkable)
-                        {
-                            neighborNode = new PathNode(parent, info);
-                            openPointsSet.Add(neighborNode);
-                        }
-                        else
-                        {
-                            closePointsSet.Add(neighbor);
-                        }
+                        int cost = Walker.GetCost(parent.Position, neighbor, Destination);
+                        neighborNode = new PathNode(parent, neighbor, cost);
+                        openPointsSet.Add(neighborNode);
                     }
                 }
             }
@@ -193,11 +190,11 @@ namespace KouXiaGu.Navigation
                 NodeCost = 0;
             }
 
-            public PathNode(PathNode parent, NavigationNode<T> info)
+            public PathNode(PathNode parent, T position, int cost)
             {
                 Parent = parent;
-                Position = info.Position;
-                NodeCost = info.Cost;
+                Position = position;
+                NodeCost = cost;
             }
 
             /// <summary>
