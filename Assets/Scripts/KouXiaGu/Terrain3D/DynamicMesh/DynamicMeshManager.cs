@@ -9,9 +9,9 @@ using KouXiaGu.Resources;
 namespace KouXiaGu.Terrain3D.Wall
 {
 
-    public class DynamicMeshFilePath : SingleFilePath
+    public class DynamicMeshFilePath : MultipleFilePath
     {
-        public const string fileName = "World\\Terrain\\DynamicMesh.data";
+        public const string fileName = "World\\Terrain\\DynamicMesh\\Mesh.data";
 
         public override string FileName
         {
@@ -19,12 +19,27 @@ namespace KouXiaGu.Terrain3D.Wall
         }
     }
 
-    class DynamicMeshSerializer : FileSerializer<Dictionary<string, DynamicMeshData>>
+    class DynamicMeshSerializer : FilesReaderWriter<KeyValuePair<string, DynamicMeshData>, Dictionary<string, DynamicMeshData>>
     {
-        static readonly IFileSerializer<Dictionary<string, DynamicMeshData>> fileSerializer = new ProtoFileSerializer<Dictionary<string, DynamicMeshData>>();
+        static readonly IFileSerializer<KeyValuePair<string, DynamicMeshData>> fileSerializer = new ProtoFileSerializer<KeyValuePair<string, DynamicMeshData>>();
 
-        public DynamicMeshSerializer(IFilePath file) : base(file, fileSerializer)
+        static readonly ICombiner<KeyValuePair<string, DynamicMeshData>, Dictionary<string, DynamicMeshData>> combiner = new DataCombiner();
+
+        public DynamicMeshSerializer(IMultipleFilePath file) : base(file, fileSerializer, combiner)
         {
+        }
+
+        class DataCombiner : ICombiner<KeyValuePair<string, DynamicMeshData>, Dictionary<string, DynamicMeshData>>
+        {
+            public Dictionary<string, DynamicMeshData> Combine(IEnumerable<KeyValuePair<string, DynamicMeshData>> items)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<KeyValuePair<string, KeyValuePair<string, DynamicMeshData>>> Separate(Dictionary<string, DynamicMeshData> item)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 

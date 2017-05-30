@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形标签读取;
     /// </summary>
-    public class LandformTagXmlSerializer : FileSerializer<string[]>
+    public class LandformTagXmlSerializer : FileReaderWriter<string[]>
     {
         static readonly IFileSerializer<string[]> fileSerializer = new XmlFileSerializer<string[]>();
 

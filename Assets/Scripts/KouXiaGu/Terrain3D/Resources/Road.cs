@@ -36,13 +36,9 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    class RoadInfoXmlSerializer : ElementsXmlSerializer<RoadInfo>
+    class RoadInfoXmlSerializer : XmlElementsReaderWriter<RoadInfo>
     {
         public RoadInfoXmlSerializer() : base(new RoadFile())
-        {
-        }
-
-        public RoadInfoXmlSerializer(IFilePath file) : base(file)
         {
         }
     }

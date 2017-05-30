@@ -14,19 +14,20 @@ namespace KouXiaGu.Resources
         int ID { get; }
     }
 
-    /// <summary>
-    /// 将数组序列化;
-    /// </summary>
-    public class ElementsXmlSerializer<T> : FilesSerializer<T[], Dictionary<int, T>>
-        where T : IElement
+    public class ElementsReaderWriter<T> : FilesReaderWriter<T[], Dictionary<int, T>>
+         where T : IElement
     {
-        public ElementsXmlSerializer(IFilePath file) : base(file, new XmlFileSerializer<T[]>(), defaultCombiner)
+        public ElementsReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<T[]> serializer, ICombiner<T[], Dictionary<int, T>> combiner) : base(multipleFile, serializer, combiner)
         {
         }
 
-        static readonly FileCombiner defaultCombiner = new FileCombiner();
+        public ElementsReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<T[]> serializer) : base(multipleFile, serializer, defaultCombiner)
+        {
+        }
 
-        class FileCombiner : ICombiner<T[], Dictionary<int, T>>
+        static readonly DataCombiner defaultCombiner = new DataCombiner();
+
+        protected class DataCombiner : ICombiner<T[], Dictionary<int, T>>
         {
             public Dictionary<int, T> Combine(IEnumerable<T[]> itemArrays)
             {
@@ -55,11 +56,22 @@ namespace KouXiaGu.Resources
                 return completed;
             }
 
-            public T[] Separate(Dictionary<int, T> item)
+            IEnumerable<KeyValuePair<string, T[]>> ICombiner<T[], Dictionary<int, T>>.Separate(Dictionary<int, T> item)
             {
                 T[] itemArray = item.Values.ToArray();
-                return itemArray;
+                yield return new KeyValuePair<string, T[]>(string.Empty, itemArray);
             }
+        }
+    }
+
+    /// <summary>
+    /// 将数组序列化;
+    /// </summary>
+    public class XmlElementsReaderWriter<T> : ElementsReaderWriter<T>
+        where T : IElement
+    {
+        public XmlElementsReaderWriter(IMultipleFilePath file) : base(file, new XmlFileSerializer<T[]>())
+        {
         }
     }
 }

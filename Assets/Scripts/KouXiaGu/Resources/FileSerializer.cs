@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using UnityEngine;
-using ProtoBuf;
 
 namespace KouXiaGu.Resources
 {
 
+    /// <summary>
+    /// 从文件读取资源方式;
+    /// </summary>
     public interface IFileSerializer<T>
     {
         T Read(string filePath);
@@ -22,7 +22,7 @@ namespace KouXiaGu.Resources
         {
             using (Stream fStream = new FileStream(filePath, FileMode.Open))
             {
-                return Serializer.Deserialize<T>(fStream);
+                return ProtoBuf.Serializer.Deserialize<T>(fStream);
             }
         }
 
@@ -30,7 +30,7 @@ namespace KouXiaGu.Resources
         {
             using (Stream fStream = new FileStream(filePath, fileMode))
             {
-                Serializer.Serialize(fStream, item);
+                ProtoBuf.Serializer.Serialize(fStream, item);
             }
         }
     }
@@ -57,29 +57,59 @@ namespace KouXiaGu.Resources
     }
 
 
-
-    public class FileSerializer<T> : ISerializer<T>
+    public interface IReader<T>
     {
-        public FileSerializer(IFilePath file, IFileSerializer<T> serializer)
+        /// <summary>
+        /// 读取到文件,若遇到异常则输出到日志;
+        /// </summary>
+        T Read();
+    }
+
+    public interface IWriter<T>
+    {
+        /// <summary>
+        /// 输出/保存到;
+        /// </summary>
+        /// <param name="fileMode">文件读取方式;</param>
+        void Write(T item, FileMode fileMode);
+    }
+
+
+
+    public interface IFileReaderWriter<T> : IReader<T>, IWriter<T>
+    {
+        ISingleFilePath File { get; set; }
+    }
+
+    public class FileReaderWriter<T> : IFileReaderWriter<T>
+    {
+        public FileReaderWriter(ISingleFilePath file, IFileSerializer<T> serializer)
         {
             File = file;
             Serializer = serializer;
         }
 
-        public IFilePath File { get; set; }
+        public ISingleFilePath File { get; set; }
         public IFileSerializer<T> Serializer { get; set; }
 
         public virtual T Read()
         {
-            string filePath = File.GetMainPath();
+            string filePath = File.GetFullPath();
             return Serializer.Read(filePath);
         }
 
         public virtual void Write(T item, FileMode fileMode)
         {
-            string filePath = File.GetMainPath();
+            string filePath = File.GetFullPath();
             Serializer.Write(item, filePath, fileMode);
         }
+    }
+
+
+
+    public interface IFilesReaderWriter<T> : IReader<T>, IWriter<T>
+    {
+        IMultipleFilePath File { get; set; }
     }
 
     /// <summary>
@@ -88,21 +118,26 @@ namespace KouXiaGu.Resources
     public interface ICombiner<T>
     {
         T Combine(IEnumerable<T> items);
+        IEnumerable<KeyValuePair<string, T>> Separate(T item);
     }
 
     /// <summary>
     /// 多个文件读取;
     /// </summary>
-    public abstract class FilesSerializer<T> : FileSerializer<T>, ISerializer<T>
+    public abstract class FilesReaderWriter<T> : IFilesReaderWriter<T>
     {
-        public FilesSerializer(IFilePath multipleFile, IFileSerializer<T> serializer, ICombiner<T> combiner) : base(multipleFile, serializer)
+        public FilesReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<T> serializer, ICombiner<T> combiner)
         {
+            File = File;
+            Serializer = serializer;
             Combiner = combiner;
         }
 
-        public ICombiner<T> Combiner;
+        public IMultipleFilePath File { get; set; }
+        public IFileSerializer<T> Serializer { get; set; }
+        public ICombiner<T> Combiner { get; set; }
 
-        public override T Read()
+        public T Read()
         {
             List<T> items = ReadAll();
             T item = Combiner.Combine(items);
@@ -127,13 +162,24 @@ namespace KouXiaGu.Resources
             }
             return completed;
         }
+
+        public void Write(T item, FileMode fileMode)
+        {
+            IEnumerable<KeyValuePair<string, T>> pairs = Combiner.Separate(item);
+            foreach (var pair in pairs)
+            {
+                string path = File.CreateFilePath(pair.Key);
+                Serializer.Write(pair.Value, path, fileMode);
+            }
+        }
     }
+
 
 
     public interface ICombiner<TSource, TResult>
     {
         TResult Combine(IEnumerable<TSource> items);
-        TSource Separate(TResult item);
+        IEnumerable<KeyValuePair<string, TSource>> Separate(TResult item);
     }
 
     /// <summary>
@@ -141,16 +187,16 @@ namespace KouXiaGu.Resources
     /// </summary>
     /// <typeparam name="TSource">从文件读取到的内容;</typeparam>
     /// <typeparam name="TResult">转换后的内容;</typeparam>
-    public class FilesSerializer<TSource, TResult> : ISerializer<TResult>
+    public class FilesReaderWriter<TSource, TResult> : IFilesReaderWriter<TResult>
     {
-        public FilesSerializer(IFilePath multipleFile, IFileSerializer<TSource> serializer, ICombiner<TSource, TResult> combiner)
+        public FilesReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<TSource> serializer, ICombiner<TSource, TResult> combiner)
         {
             File = multipleFile;
             Serializer = serializer;
             Combiner = combiner;
         }
 
-        public IFilePath File { get; set; }
+        public IMultipleFilePath File { get; set; }
         public IFileSerializer<TSource> Serializer { get; set; }
         public ICombiner<TSource, TResult> Combiner { get; set; }
 
@@ -182,9 +228,12 @@ namespace KouXiaGu.Resources
 
         public void Write(TResult item, FileMode fileMode)
         {
-            TSource source = Combiner.Separate(item);
-            string filePath = File.GetMainPath();
-            Serializer.Write(source, filePath, fileMode);
+            IEnumerable<KeyValuePair<string, TSource>> pairs = Combiner.Separate(item);
+            foreach (var pair in pairs)
+            {
+                string path = File.CreateFilePath(pair.Key);
+                Serializer.Write(pair.Value, path, fileMode);
+            }
         }
     }
 }

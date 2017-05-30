@@ -41,13 +41,9 @@ namespace KouXiaGu.Terrain3D
         public string PrefabName { get; set; }
     }
 
-    class BuildingInfoXmlSerializer : ElementsXmlSerializer<BuildingInfo>
+    class BuildingInfoXmlSerializer : XmlElementsReaderWriter<BuildingInfo>
     {
         public BuildingInfoXmlSerializer() : base(new BuildingFile())
-        {
-        }
-
-        public BuildingInfoXmlSerializer(IFilePath file) : base(file)
         {
         }
     }
