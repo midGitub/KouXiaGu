@@ -74,8 +74,8 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static IWriter<T> ToTemplateWriter<T>(this IFileReaderWriter<T> serializer)
         {
-            ISingleFilePath originalFile = serializer.File;
-            serializer.File = new TemplateFilePath(originalFile);
+            ISingleFilePath originalFile = serializer.FilePath;
+            serializer.FilePath = new TemplateFilePath(originalFile);
             return serializer;
         }
 
@@ -84,8 +84,8 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static IWriter<T> ToTemplateWriter<T>(this IFilesReaderWriter<T> serializer)
         {
-            IMultipleFilePath originalFile = serializer.File;
-            serializer.File = new TemplateFilePaths(originalFile);
+            IMultipleFilePath originalFile = serializer.FilePath;
+            serializer.FilePath = new TemplateFilePaths(originalFile);
             return serializer;
         }
     }

@@ -56,10 +56,10 @@ namespace KouXiaGu.Resources
                 return completed;
             }
 
-            IEnumerable<KeyValuePair<string, T[]>> ICombiner<T[], Dictionary<int, T>>.Separate(Dictionary<int, T> item)
+            IEnumerable<WriteInfo<T[]>> ICombiner<T[], Dictionary<int, T>>.Separate(Dictionary<int, T> item)
             {
                 T[] itemArray = item.Values.ToArray();
-                yield return new KeyValuePair<string, T[]>(string.Empty, itemArray);
+                yield return new WriteInfo<T[]>(string.Empty, itemArray);
             }
         }
     }

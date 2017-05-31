@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.Collections;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,13 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
     /// <summary>
     /// 动态墙体节点信息;
     /// </summary>
-    [Serializable]
+    [Serializable, ProtoContract]
     public class JointInfo
     {
+        JointInfo()
+        {
+        }
+
         /// <summary>
         /// 根据定义间隔自动构建;
         /// </summary>
@@ -35,7 +40,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             sectionCollection = new List<JointPoint>(sections);
         }
 
-        [SerializeField]
+        [SerializeField, ProtoMember(1)]
         List<JointPoint> sectionCollection;
 
         public IList<JointPoint> JointPoints
@@ -123,7 +128,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
     /// <summary>
     /// 关节点,存储对应节点;
     /// </summary>
-    [Serializable]
+    [Serializable, ProtoContract]
     public class JointPoint
     {
         JointPoint()
@@ -144,11 +149,11 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             children = new List<int>();
         }
 
-        [SerializeField]
+        [SerializeField, ProtoMember(1)]
         Vector3 position;
-        [SerializeField]
+        [SerializeField, ProtoMember(2)]
         float interpolatedValue;
-        [SerializeField]
+        [SerializeField, ProtoMember(3)]
         List<int> children;
 
         public Vector3 Position

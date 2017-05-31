@@ -108,6 +108,46 @@ NavMeshSettings:
     tileSize: 256
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &119166966
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 119166967}
+  - component: {fileID: 119166968}
+  m_Layer: 0
+  m_Name: ProtoBuf
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &119166967
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119166966}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1187234277}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &119166968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119166966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c3539413a04454e8e0b2d9f20a1e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &119999027
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,7 +278,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &144552259
 MonoBehaviour:
@@ -252,201 +292,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d378e09e972b7994199d9c9e6db3cbcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializableDataList:
-  - Name: road
-    MeshData:
-      joint:
-        sectionCollection:
-        - position: {x: 0, y: 0, z: -0.5}
-          interpolatedValue: 0
-          children: 3400000035000000
-        - position: {x: 0, y: 0, z: -0.46153846}
-          interpolatedValue: 0.038461536
-          children: 3200000033000000
-        - position: {x: 0, y: 0, z: -0.42307693}
-          interpolatedValue: 0.07692307
-          children: 3000000031000000
-        - position: {x: 0, y: 0, z: -0.3846154}
-          interpolatedValue: 0.11538461
-          children: 2e0000002f000000
-        - position: {x: 0, y: 0, z: -0.34615383}
-          interpolatedValue: 0.15384617
-          children: 2c0000002d000000
-        - position: {x: 0, y: 0, z: -0.3076923}
-          interpolatedValue: 0.19230771
-          children: 2a0000002b000000
-        - position: {x: 0, y: 0, z: -0.26923075}
-          interpolatedValue: 0.23076925
-          children: 2800000029000000
-        - position: {x: 0, y: 0, z: -0.23076923}
-          interpolatedValue: 0.26923078
-          children: 2600000027000000
-        - position: {x: 0, y: 0, z: -0.1923077}
-          interpolatedValue: 0.3076923
-          children: 2400000025000000
-        - position: {x: 0, y: 0, z: -0.15384614}
-          interpolatedValue: 0.34615386
-          children: 2200000023000000
-        - position: {x: 0, y: 0, z: -0.115384616}
-          interpolatedValue: 0.3846154
-          children: 2000000021000000
-        - position: {x: 0, y: 0, z: -0.07692307}
-          interpolatedValue: 0.42307693
-          children: 1e0000001f000000
-        - position: {x: 0, y: 0, z: -0.038461536}
-          interpolatedValue: 0.46153846
-          children: 1c0000001d000000
-        - position: {x: 0, y: 0, z: 0}
-          interpolatedValue: 0.5
-          children: 1a0000001b000000
-        - position: {x: 0, y: 0, z: 0.038461536}
-          interpolatedValue: 0.53846157
-          children: 1800000019000000
-        - position: {x: 0, y: 0, z: 0.07692307}
-          interpolatedValue: 0.5769231
-          children: 1600000017000000
-        - position: {x: 0, y: 0, z: 0.115384616}
-          interpolatedValue: 0.61538464
-          children: 1400000015000000
-        - position: {x: 0, y: 0, z: 0.15384614}
-          interpolatedValue: 0.65384614
-          children: 1200000013000000
-        - position: {x: 0, y: 0, z: 0.1923077}
-          interpolatedValue: 0.6923077
-          children: 1000000011000000
-        - position: {x: 0, y: 0, z: 0.23076923}
-          interpolatedValue: 0.7307692
-          children: 0e0000000f000000
-        - position: {x: 0, y: 0, z: 0.26923075}
-          interpolatedValue: 0.7692307
-          children: 0c0000000d000000
-        - position: {x: 0, y: 0, z: 0.3076923}
-          interpolatedValue: 0.8076923
-          children: 0a0000000b000000
-        - position: {x: 0, y: 0, z: 0.34615383}
-          interpolatedValue: 0.84615386
-          children: 0800000009000000
-        - position: {x: 0, y: 0, z: 0.3846154}
-          interpolatedValue: 0.8846154
-          children: 0600000007000000
-        - position: {x: 0, y: 0, z: 0.42307693}
-          interpolatedValue: 0.9230769
-          children: 0400000005000000
-        - position: {x: 0, y: 0, z: 0.46153846}
-          interpolatedValue: 0.96153843
-          children: 0000000002000000
-        - position: {x: 0, y: 0, z: 0.5}
-          interpolatedValue: 1
-          children: 0100000003000000
-      pointCollection:
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
-      - localPosition: {x: -0.099999994, y: 0, z: 0}
-        localAngle: -1.5707964
-      - localPosition: {x: 0.099999994, y: 0, z: 0}
-        localAngle: 1.5707964
 --- !u!43 &166012579
 Mesh:
   m_ObjectHideFlags: 0
@@ -907,7 +752,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &261335513
 MonoBehaviour:
@@ -2975,6 +2820,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 119166967}
   - {fileID: 1890475354}
   - {fileID: 1732559464}
   - {fileID: 261335512}
@@ -3267,7 +3113,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1415930381
 GameObject:
@@ -3848,7 +3694,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1732559465
 MonoBehaviour:
@@ -3969,7 +3815,7 @@ Transform:
   m_LocalScale: {x: 0, y: 1, z: 0}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1890475355
 MonoBehaviour:
@@ -4032,7 +3878,7 @@ RectTransform:
   m_Children:
   - {fileID: 825846339}
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

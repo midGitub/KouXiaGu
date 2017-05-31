@@ -15,24 +15,18 @@ namespace KouXiaGu.Resources
         string GetFullPath();
     }
 
-    public interface IMultipleFilePath
-    {
-        /// <summary>
-        /// 获取到所有文件路径;
-        /// </summary>
-        IEnumerable<string> GetExistentPaths();
-
-        /// <summary>
-        /// 根据 name,返回一个唯一的路径;
-        /// </summary>
-        string CreateFilePath(string name);
-    }
-
     /// <summary>
     /// 单个文件路径;
     /// </summary>
     public abstract class SingleFilePath : ISingleFilePath
     {
+        public SingleFilePath()
+        {
+            string fullPath = GetFullPath();
+            string directoryName = Path.GetDirectoryName(fullPath);
+            Directory.CreateDirectory(directoryName);
+        }
+
         /// <summary>
         /// 文件的位于配置目录下的文件名;
         /// </summary>
@@ -56,12 +50,33 @@ namespace KouXiaGu.Resources
         }
     }
 
+
+    public interface IMultipleFilePath
+    {
+        /// <summary>
+        /// 获取到所有文件路径;
+        /// </summary>
+        IEnumerable<string> GetExistentPaths();
+
+        /// <summary>
+        /// 根据 name,返回一个唯一的路径;
+        /// </summary>
+        string CreateFilePath(string name);
+    }
+
     /// <summary>
     /// 表示存在多个文件,搜索路径下"定义文件名 + 零个或多个字符 + 拓展名",
     /// 所以定义的时候要确保目录下不存在其它类型,相同命名方式的其它文件;
     /// </summary>
     public abstract class MultipleFilePath : IMultipleFilePath
     {
+        public MultipleFilePath()
+        {
+            string fullPath = GetFullPath();
+            string directoryName = Path.GetDirectoryName(fullPath);
+            Directory.CreateDirectory(directoryName);
+        }
+
         /// <summary>
         /// 文件的位于配置目录下的文件名;
         /// </summary>

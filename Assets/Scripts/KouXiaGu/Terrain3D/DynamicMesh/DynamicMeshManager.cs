@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using KouXiaGu.Collections;
+using System.IO;
 
 namespace KouXiaGu.Terrain3D.DynamicMesh
 {
@@ -18,11 +17,13 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
         {
         }
 
-        /// <summary>
-        /// 用于存储网格数据;
-        /// </summary>
-        [SerializeField]
-        List<SerializableDynamicMeshData> serializableDataList;
+        static DynamicMeshReaderWriter _dynamicMeshSerializer;
+
+        static DynamicMeshReaderWriter dynamicMeshSerializer
+        {
+            get { return _dynamicMeshSerializer ?? (_dynamicMeshSerializer = new DynamicMeshReaderWriter()); }
+        }
+
         Dictionary<string, DynamicMeshData> meshDataDictionary;
         
         bool isReadFromDictionary
@@ -33,50 +34,56 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
         void Awake()
         {
             SetInstance(this);
-            meshDataDictionary = ToDictionary(serializableDataList);
+            ReadAll();
         }
 
         /// <summary>
-        /// 从文件读取到动态网格信息;
+        /// 从文件读取到所有网格信息;
         /// </summary>
-        public void Read()
+        [ContextMenu("Read")]
+        public void ReadAll()
         {
-
-        }
-
-        public void Write()
-        {
-
-        }
-
-
-
-
-
-
-
-
-        Dictionary<string, DynamicMeshData> ToDictionary(List<SerializableDynamicMeshData> list)
-        {
-            Dictionary<string, DynamicMeshData> dictionary = new Dictionary<string, DynamicMeshData>();
-            foreach (var item in list)
-            {
-                string name = item.Name;
-                DynamicMeshData meshData = item.MeshData;
-                dictionary.Add(name, meshData);
-            }
-            return dictionary;
+            meshDataDictionary = dynamicMeshSerializer.Read();
         }
 
         /// <summary>
-        /// 加入对应网格信息;
+        /// 输出所有网格信息到文件;
+        /// </summary>
+        [ContextMenu("Write")]
+        public void WriteAll()
+        {
+            dynamicMeshSerializer.Write(meshDataDictionary);
+        }
+
+        public DynamicMeshData Read(string name)
+        {
+            var data = dynamicMeshSerializer.Read(name);
+            if (data.Key != name)
+            {
+                throw new ArgumentException("文件命名与预定义网格名不同,读取失败;");
+            }
+            return data.Value;
+        }
+
+        /// <summary>
+        /// 将网格信息输出到文件;
+        /// </summary>
+        public void Write(string name, DynamicMeshData meshData, FileMode fileMode)
+        {
+            if (meshData == null)
+                throw new ArgumentNullException("meshData");
+
+            KeyValuePair<string, DynamicMeshData> data = new KeyValuePair<string, DynamicMeshData>(name, meshData);
+            dynamicMeshSerializer.Write(data, name, fileMode);
+        }
+
+        /// <summary>
+        /// 加入对应网格信息,若在编辑模式下则为输出到文件;
         /// </summary>
         public void Add(string name, DynamicMeshData meshData)
         {
             if (meshData == null)
-            {
-                throw new ArgumentNullException();
-            }
+                throw new ArgumentNullException("meshData");
 
             if (isReadFromDictionary)
             {
@@ -84,21 +91,15 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             }
             else
             {
-                if (FindIndexInEditor(name) >= 0)
+                try
+                {
+                    Write(name, meshData, FileMode.CreateNew);
+                }
+                catch (IOException)
                 {
                     throw new ArgumentException("已经存在相同名字的网格;");
                 }
-                SerializableDynamicMeshData serializableData = new SerializableDynamicMeshData(name, meshData);
-                serializableDataList.Add(serializableData);
             }
-        }
-
-        /// <summary>
-        /// 在可序列化链表内寻找;
-        /// </summary>
-        int FindIndexInEditor(string name)
-        {
-            return serializableDataList.FindIndex(item => item.Name == name);
         }
 
         /// <summary>
@@ -107,9 +108,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
         public void AddOrUpdate(string name, DynamicMeshData meshData)
         {
             if (meshData == null)
-            {
-                throw new ArgumentNullException();
-            }
+                throw new ArgumentNullException("meshData");
 
             if (isReadFromDictionary)
             {
@@ -117,16 +116,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             }
             else
             {
-                SerializableDynamicMeshData serializableData = new SerializableDynamicMeshData(name, meshData);
-                int index = FindIndexInEditor(name);
-                if (index >= 0)
-                {
-                    serializableDataList[index] = serializableData;
-                }
-                else
-                {
-                    serializableDataList.Add(serializableData);
-                }
+                Write(name, meshData, FileMode.Create);
             }
         }
 
@@ -141,16 +131,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             }
             else
             {
-                int index = FindIndexInEditor(name);
-                if (index >= 0)
-                {
-                    serializableDataList.RemoveAt(index);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return dynamicMeshSerializer.Delete(name);
             }
         }
 
@@ -165,7 +146,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             }
             else
             {
-                return FindIndexInEditor(name) >= 0;
+                return dynamicMeshSerializer.Exists(name);
             }
         }
 
@@ -180,25 +161,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             }
             else
             {
-                return FindInEditor(name);
-            }
-        }
-
-        /// <summary>
-        /// 在可序列化链表内寻找到对应网格数据,若不存在则返回异常;
-        /// </summary>
-        public DynamicMeshData FindInEditor(string name)
-        {
-            int index = FindIndexInEditor(name);
-            if (index >= 0)
-            {
-                var data = serializableDataList[index];
-                DynamicMeshData meshData = data.MeshData;
-                return meshData;
-            }
-            else
-            {
-                throw new KeyNotFoundException();
+                return dynamicMeshSerializer.Read(name).Value;
             }
         }
 
