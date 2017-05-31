@@ -34,7 +34,7 @@ namespace KouXiaGu.Initialization
 
         protected override void OnCompleteAll()
         {
-            SceneManager.LoadScene(nextSceneName);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
             Destroy(this);
         }
 

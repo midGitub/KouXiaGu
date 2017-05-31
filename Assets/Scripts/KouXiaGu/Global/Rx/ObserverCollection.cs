@@ -22,6 +22,7 @@ namespace KouXiaGu
 
         /// <summary>
         /// 迭代获取到观察者,并且在迭代过程中允许对删除合集元素,但是不允许嵌套;
+        /// 若在迭代时加入新元素,则不会出现在本次迭代;
         /// </summary>
         IEnumerable<T> EnumerateObserver();
 

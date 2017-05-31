@@ -22,7 +22,7 @@ namespace KouXiaGu.Initialization
         /// </summary>
         public void StartGame()
         {
-            SceneManager.LoadScene(gameScene);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(gameScene);
         }
 
 

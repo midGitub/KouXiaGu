@@ -11,77 +11,43 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class Landform
     {
-        /// <summary>
-        /// 初始化,并且在等待地形初始化完毕;
-        /// </summary>
-        public static IAsyncOperation<Landform> InitializeAsync(IWorldData worldData)
+        public Landform(IBasicData basicData, IWorldData worldData)
         {
-            return new AsyncInitializer(worldData);
-        }
-
-        class AsyncInitializer : AsyncOperation<Landform>
-        {
-            public AsyncInitializer(IWorldData worldData)
-            {
-                try
-                {
-                    Result = new Landform(worldData);
-                    OnCompleted(Result);
-                }
-                catch (Exception ex)
-                {
-                    OnFaulted(ex);
-                }
-            }
-        }
-
-        public Landform(IWorldData worldData)
-        {
-            LandformManager = new LandformManager(worldData);
-            BuildingManager = new BuildingManager(worldData, this, LandformManager.Builder);
+            LandformBuilder = new LandformBuilder(worldData);
+            BuildingBuilder = new BuildingBuilder(worldData, this, LandformBuilder);
             WaterManager = new WaterManager();
             MapWatcher = new MapWatcher(LandformBuilder, BuildingBuilder, worldData.MapData.ObservableMap);
         }
 
-        public LandformManager LandformManager { get; private set; }
-        public BuildingManager BuildingManager { get; private set; }
+        public LandformBuilder LandformBuilder { get; private set; }
+        public BuildingBuilder BuildingBuilder { get; private set; }
         public WaterManager WaterManager { get; private set; }
         public MapWatcher MapWatcher { get; private set; }
 
-        public LandformBuilder LandformBuilder
-        {
-            get { return LandformManager.Builder; }
-        }
+        ///// <summary>
+        ///// 开始初始化场景,返回值表示场景是否准备完毕;
+        ///// </summary>
+        //public IAsyncOperation StartBuildScene()
+        //{
+        //    return new SceneBuilder(this);
+        //}
 
-        public BuildingBuilder BuildingBuilder
-        {
-            get { return BuildingManager.Builder; }
-        }
+        //class SceneBuilder : AsyncOperation
+        //{
+        //    public SceneBuilder(Landform landform)
+        //    {
+        //        this.landform = landform;
+        //        landform.LandformManager.StartUpdate();
+        //        landform.BuildingManager.StartUpdate();
+        //    }
 
-        /// <summary>
-        /// 开始初始化场景,返回值表示场景是否准备完毕;
-        /// </summary>
-        public IAsyncOperation StartBuildScene()
-        {
-            return new SceneBuilder(this);
-        }
+        //    readonly Landform landform;
 
-        class SceneBuilder : AsyncOperation
-        {
-            public SceneBuilder(Landform landform)
-            {
-                this.landform = landform;
-                landform.LandformManager.StartUpdate();
-                landform.BuildingManager.StartUpdate();
-            }
-
-            readonly Landform landform;
-
-            public override bool IsCompleted
-            {
-                get { return landform.LandformBuilder.Baker.IsEmpty; }
-            }
-        }
+        //    public override bool IsCompleted
+        //    {
+        //        get { return landform.LandformBuilder.Baker.IsEmpty; }
+        //    }
+        //}
 
 
         /// <summary>

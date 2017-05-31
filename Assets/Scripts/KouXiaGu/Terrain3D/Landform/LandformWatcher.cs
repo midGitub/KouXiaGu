@@ -19,12 +19,12 @@ namespace KouXiaGu.Terrain3D
 
         void OnEnable()
         {
-            LandformManager.WatcherList.Add(this);
+            LandformUpdater.WatcherList.Add(this);
         }
 
         void OnDisable()
         {
-            LandformManager.WatcherList.Remove(this);
+            LandformUpdater.WatcherList.Remove(this);
         }
     }
 

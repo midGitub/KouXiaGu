@@ -66,6 +66,7 @@ namespace KouXiaGu
     /// <summary>
     /// 异步返回值订阅;
     /// </summary>
+    [Obsolete]
     class AsyncResultSender<T> : Sender<T>
     {
         public AsyncResultSender(IAsyncOperation<T> asyncOperation)

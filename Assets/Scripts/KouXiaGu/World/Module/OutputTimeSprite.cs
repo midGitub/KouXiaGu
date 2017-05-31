@@ -37,7 +37,7 @@ namespace KouXiaGu.World
 
         void IObserver<IWorld>.OnNext(IWorld world)
         {
-            world.Data.Time.Subscribe(this);
+            world.WorldData.Time.Subscribe(this);
         }
 
         void IObserver<DateTime>.OnNext(DateTime item)

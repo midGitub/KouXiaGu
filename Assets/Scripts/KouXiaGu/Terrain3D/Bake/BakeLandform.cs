@@ -41,7 +41,7 @@ namespace KouXiaGu.Terrain3D
 
         IDictionary<int, LandformInfo> landformInfos
         {
-            get { return worldData.GameData.Terrain.Landform; }
+            get { return worldData.BasicData.Terrain.Landform; }
         }
 
         public void Initialize()

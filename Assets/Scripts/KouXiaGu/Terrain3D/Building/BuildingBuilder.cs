@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         {
             this.worldData = worldData;
             this.landform = landform;
-            requestDispatcher = SceneObject.GetObject<BuildingRequestDispatcher>();
+            requestDispatcher = SceneObject.Find<BuildingRequestDispatcher>();
             landformObserver = new LandformObserver(this, landformBuilder.CompletedChunkSender);
             sceneBuildings = new Dictionary<CubicHexCoord, BuildingCreateRequest>();
             readOnlySceneBuildings = sceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<IBuilding>);
@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D
 
         IDictionary<int, BuildingInfo> infos
         {
-            get { return worldData.GameData.Terrain.Building; }
+            get { return worldData.BasicData.Terrain.Building; }
         }
 
         /// <summary>

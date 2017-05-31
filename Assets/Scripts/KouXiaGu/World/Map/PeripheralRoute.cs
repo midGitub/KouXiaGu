@@ -15,35 +15,27 @@ namespace KouXiaGu.World.Map
 
         public delegate bool TryGetPeripheralValue(CubicHexCoord position, out uint value);
 
-
-        [Obsolete]
-        public static IEnumerable<CubicHexCoord[]> GetWallRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        /// <summary>
-        /// 迭代获取到这个点通向周围的路径点,若不存在节点则不进行迭代;
-        /// </summary>
-        public static IEnumerable<CubicHexCoord[]> GetPeripheralRoutes(this IReadOnlyDictionary<CubicHexCoord, MapNode> map, CubicHexCoord target)
-        {
-            PeripheralRoute.TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
-            {
-                MapNode node;
-                if (map.TryGetValue(position, out node))
-                {
-                    if (node.Road.Exist())
-                    {
-                        value = node.Road.ID;
-                        return true;
-                    }
-                }
-                value = default(uint);
-                return false;
-            };
-            return PeripheralRoute.GetRoadRoutes(target, tryGetValue);
-        }
+        ///// <summary>
+        ///// 迭代获取到这个点通向周围的路径点,若不存在节点则不进行迭代;
+        ///// </summary>
+        //public static IEnumerable<CubicHexCoord[]> GetPeripheralRoutes(this IReadOnlyDictionary<CubicHexCoord, MapNode> map, CubicHexCoord target)
+        //{
+        //    TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
+        //    {
+        //        MapNode node;
+        //        if (map.TryGetValue(position, out node))
+        //        {
+        //            if (node.Road.Exist())
+        //            {
+        //                value = node.Road.ID;
+        //                return true;
+        //            }
+        //        }
+        //        value = default(uint);
+        //        return false;
+        //    };
+        //    return GetRoadRoutes(target, tryGetValue);
+        //}
 
         /// <summary>
         /// 迭代获取到这个点通往价值大于本身的邻居点的路径点,若不存在节点则不进行迭代;

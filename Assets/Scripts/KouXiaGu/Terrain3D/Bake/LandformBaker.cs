@@ -29,6 +29,7 @@ namespace KouXiaGu.Terrain3D
 
     public interface IBakeRequest : IRequest
     {
+        IWorldData WorldData { get; }
         RectCoord ChunkCoord { get; }
         ChunkTexture Textures { get; }
         BakeTargets Targets { get; }
@@ -41,12 +42,12 @@ namespace KouXiaGu.Terrain3D
     public sealed class LandformBaker : MonoBehaviour
     {
 
-        public static LandformBaker Initialize(IWorldData worldData)
-        {
-            var item = SceneObject.GetObject<LandformBaker>();
-            item.worldData = worldData;
-            return item;
-        }
+        //public static LandformBaker Initialize(IWorldData worldData)
+        //{
+        //    var item = SceneObject.GetObject<LandformBaker>();
+        //    item.worldData = worldData;
+        //    return item;
+        //}
 
         /// <summary>
         /// 透明的黑色颜色;
@@ -70,7 +71,6 @@ namespace KouXiaGu.Terrain3D
         BakeRoad bakeRoad = null;
         [SerializeField]
         Stopwatch runtimeStopwatch = new Stopwatch(0.2f);
-        IWorldData worldData;
         Coroutine bakeCoroutine;
         Queue<IBakeRequest> requestQueue;
 
@@ -140,7 +140,7 @@ namespace KouXiaGu.Terrain3D
 
                 if ((targets & BakeTargets.Landform) > 0)
                 {
-                    yield return bakeLandform.BakeCoroutine(bakeCamera, worldData, chunkCenter, state);
+                    yield return bakeLandform.BakeCoroutine(bakeCamera, bakeRequest.WorldData, chunkCenter, state);
 
                     if (!bakeRequest.IsCanceled)
                     {
@@ -164,7 +164,7 @@ namespace KouXiaGu.Terrain3D
 
                 if ((targets & BakeTargets.Road) > 0)
                 {
-                    yield return bakeRoad.BakeCoroutine(bakeCamera, worldData, chunkCenter, state);
+                    yield return bakeRoad.BakeCoroutine(bakeCamera, bakeRequest.WorldData, chunkCenter, state);
 
                     if (!bakeRequest.IsCanceled)
                     {

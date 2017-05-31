@@ -15,21 +15,18 @@ namespace KouXiaGu.Terrain3D
     {
         public LandformBuilder(IWorldData worldData)
         {
-            baker = LandformBaker.Initialize(worldData);
+            WorldData = worldData;
+            Baker = SceneObject.Find<LandformBaker>();
             chunkPool = new ChunkPool();
             sceneChunks = new Dictionary<RectCoord, ChunkCreateRequest>();
             completedChunkSender = new Sender<RectCoord>();
         }
 
-        readonly LandformBaker baker;
+        public IWorldData WorldData { get; private set; }
+        public LandformBaker Baker { get; private set; }
         readonly ChunkPool chunkPool;
         readonly Dictionary<RectCoord, ChunkCreateRequest> sceneChunks;
         readonly Sender<RectCoord> completedChunkSender;
-
-        public LandformBaker Baker
-        {
-            get { return baker; }
-        }
 
         public RectGrid ChunkGrid
         {
@@ -57,7 +54,7 @@ namespace KouXiaGu.Terrain3D
             ChunkCreateRequest request;
             if (!sceneChunks.TryGetValue(chunkCoord, out request))
             {
-                request = new ChunkCreateRequest(this, chunkCoord, targets);
+                request = new ChunkCreateRequest(this, WorldData, chunkCoord, targets);
                 AddBakeQueue(request);
                 sceneChunks.Add(chunkCoord, request);
             }
@@ -94,7 +91,7 @@ namespace KouXiaGu.Terrain3D
 
         void AddBakeQueue(ChunkCreateRequest request)
         {
-            baker.AddRequest(request);
+            Baker.AddRequest(request);
         }
 
         /// <summary>
@@ -147,6 +144,7 @@ namespace KouXiaGu.Terrain3D
             {
                 clone.IsCanceled = true;
                 Parent = clone.Parent;
+                WorldData = clone.WorldData;
                 ChunkCoord = clone.ChunkCoord;
                 Chunk = clone.Chunk;
                 Targets |= targets;
@@ -155,9 +153,10 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = false;
             }
 
-            public ChunkCreateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
+            public ChunkCreateRequest(LandformBuilder parent, IWorldData worldData, RectCoord chunkCoord, BakeTargets targets)
             {
                 Parent = parent;
+                WorldData = worldData;
                 ChunkCoord = chunkCoord;
                 Chunk = chunkPool.Get();
                 Chunk.Position = parent.ChunkGrid.GetCenter(chunkCoord);
@@ -168,6 +167,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             public LandformBuilder Parent { get; private set; }
+            public IWorldData WorldData { get; private set; }
             public RectCoord ChunkCoord { get; private set; }
             public BakeTargets Targets { get; set; }
             public bool IsInQueue { get; private set; }

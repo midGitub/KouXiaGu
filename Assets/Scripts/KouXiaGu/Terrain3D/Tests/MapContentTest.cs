@@ -26,18 +26,18 @@ namespace KouXiaGu.Terrain3D.Tests
 
         IDictionary<CubicHexCoord, MapNode> map
         {
-            get { return world.Data.MapData.Map; }
+            get { return world.WorldData.MapData.Map; }
         }
 
         MapData mapData
         {
-            get { return world.Data.MapData.Data; }
+            get { return world.WorldData.MapData.Data; }
         }
 
         void Awake()
         {
             enabled = false;
-            SceneObject.GetObject<WorldInitializer>().Subscribe(this);
+            SceneObject.Find<WorldInitializer>().Subscribe(this);
         }
 
         void IObserver<IWorld>.OnNext(IWorld value)

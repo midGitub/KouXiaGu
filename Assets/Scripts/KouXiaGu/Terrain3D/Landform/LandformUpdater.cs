@@ -11,9 +11,9 @@ namespace KouXiaGu.Terrain3D
     {
     }
 
-    public class LandformManager : ChunkWatcherUpdater
+    public class LandformUpdater : ChunkWatcherUpdater
     {
-        static LandformManager()
+        static LandformUpdater()
         {
             watcherList = new List<ILandformWatcher>();
         }
@@ -26,12 +26,19 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public LandformManager(IWorldData worldData)
+        public LandformUpdater(IWorld world, LandformBuilder builder)
         {
-            builder = new LandformBuilder(worldData);
+            this.world = world;
+            this.builder = builder;
         }
 
+        readonly IWorld world;
         readonly LandformBuilder builder;
+
+        public IWorld World
+        {
+            get { return world; }
+        }
 
         public LandformBuilder Builder
         {
