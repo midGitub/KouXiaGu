@@ -11,18 +11,29 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class Landform
     {
-        public Landform(IBasicData basicData, IWorldData worldData)
+        public Landform()
         {
-            LandformBuilder = new LandformBuilder(worldData);
-            BuildingBuilder = new BuildingBuilder(worldData, this, LandformBuilder);
-            WaterManager = new WaterManager();
-            MapWatcher = new MapWatcher(LandformBuilder, BuildingBuilder, worldData.MapData.ObservableMap);
+            Buildings = new SceneBuildingCollection();
         }
 
+        public Landform(IBasicData basicData, IWorldData worldData)
+        {
+            //LandformBuilder = new LandformBuilder(worldData);
+            //BuildingBuilder = new BuildingBuilder(worldData, this, LandformBuilder);
+            LandformUpdater = new LandformUpdater();
+            BuildingUpdater = new BuildingUpdater();
+            WaterManager = new WaterManager();
+            //MapWatcher = new MapWatcher(LandformBuilder, BuildingBuilder, worldData.MapData.ObservableMap);
+        }
+
+        public SceneBuildingCollection Buildings { get; private set; }
+
         public LandformBuilder LandformBuilder { get; private set; }
-        public BuildingBuilder BuildingBuilder { get; private set; }
+        public SceneBuildingCollection BuildingBuilder { get; private set; }
+        public LandformUpdater LandformUpdater { get; private set; }
+        public BuildingUpdater BuildingUpdater { get; private set; }
         public WaterManager WaterManager { get; private set; }
-        public MapWatcher MapWatcher { get; private set; }
+        //public MapWatcher MapWatcher { get; private set; }
 
         ///// <summary>
         ///// 开始初始化场景,返回值表示场景是否准备完毕;
@@ -58,14 +69,14 @@ namespace KouXiaGu.Terrain3D
             return LandformBuilder.GetHeight(position);
         }
 
-        /// <summary>
-        /// 重新创建所有;
-        /// </summary>
-        public void RebuildAll()
-        {
-            LandformBuilder.DestroyAll();
-            BuildingBuilder.DestroyAll();
-        }
+        ///// <summary>
+        ///// 重新创建所有;
+        ///// </summary>
+        //public void RebuildAll()
+        //{
+        //    LandformBuilder.DestroyAll();
+        //    BuildingBuilder.DestroyAll();
+        //}
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,10 +36,10 @@ namespace KouXiaGu.World
         /// </summary>
         public static IAsyncOperation<ICompleteWorld> WorldInitializer { get; private set; }
 
-        public void LoadScene(IBasicData basicData)
+        public void LoadScene(IAsyncOperation<BasicResource> basicResource, IReader<WorldInfo> infoReader)
         {
             SceneManager.LoadSceneAsync(SceneName);
-            WorldInitializer = WorldInitialization.CreateAsync(basicData);
+            WorldInitializer = WorldInitialization.CreateAsync(basicResource, infoReader);
         }
     }
 }

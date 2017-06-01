@@ -23,7 +23,7 @@ namespace KouXiaGu.World
 
         void Initialize(IBasicData basicData)
         {
-            MapData = basicData.Info.MapReader.Read(BasicData.BasicData);
+            MapData = basicData.WorldInfo.MapReader.Read(BasicData.BasicResource);
         }
     }
 }

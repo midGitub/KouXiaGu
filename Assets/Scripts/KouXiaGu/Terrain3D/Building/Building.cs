@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.Grids;
+using KouXiaGu.World;
 using KouXiaGu.World.Map;
 using System;
 using System.Collections.Generic;
@@ -14,31 +15,16 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class Building : MonoBehaviour, IBuilding
     {
-        CubicHexCoord coord;
-        BuildingBuilder builder;
-
-        public CubicHexCoord Coord
-        {
-            get { return coord; }
-        }
-
-        public BuildingBuilder Builder
-        {
-            get { return builder; }
-        }
-
-        protected Landform landform
-        {
-            get { return builder.Landform; }
-        }
+        public IWorld World { get; private set; }
+        public CubicHexCoord Coord { get; private set; }
 
         /// <summary>
         /// 初始化建筑;
         /// </summary>
-        public virtual void Build(CubicHexCoord coord, MapNode node, BuildingBuilder builder)
+        public virtual void Build(IWorld world, CubicHexCoord position)
         {
-            this.coord = coord;
-            this.builder = builder;
+            World = world;
+            Coord = position;
             Rebuild();
         }
 
@@ -48,7 +34,7 @@ namespace KouXiaGu.Terrain3D
         public virtual void Rebuild()
         {
             Vector3 position = transform.position;
-            position.y = landform.GetHeight(transform.position);
+            position.y = World.Components.Landform.GetHeight(transform.position);
             transform.position = position;
         }
 

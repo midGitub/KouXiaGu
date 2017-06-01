@@ -26,24 +26,12 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public LandformUpdater(IWorld world, LandformBuilder builder)
+        public LandformUpdater()
         {
-            this.world = world;
-            this.builder = builder;
         }
 
-        readonly IWorld world;
-        readonly LandformBuilder builder;
-
-        public IWorld World
-        {
-            get { return world; }
-        }
-
-        public LandformBuilder Builder
-        {
-            get { return builder; }
-        }
+        public IWorld World { get; private set; }
+        public LandformBuilder Builder { get; private set; }
 
         protected override object Sender
         {
@@ -57,17 +45,23 @@ namespace KouXiaGu.Terrain3D
 
         protected override IEnumerable<RectCoord> SceneCoords
         {
-            get { return builder.SceneCoords; }
+            get { return Builder.SceneCoords; }
+        }
+
+        public void StartUpdate(IWorld world)
+        {
+            World = world;
+            StartUpdate();
         }
 
         protected override void CreateAt(RectCoord coord)
         {
-            builder.Create(coord);
+            Builder.Create(coord);
         }
 
         protected override void DestroyAt(RectCoord coord)
         {
-            builder.Destroy(coord);
+            Builder.Destroy(coord);
         }
     }
 }

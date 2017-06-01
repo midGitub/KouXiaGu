@@ -6,6 +6,7 @@ using KouXiaGu.Grids;
 using KouXiaGu.World.Map;
 using UnityEngine;
 using KouXiaGu.Terrain3D.DynamicMesh;
+using KouXiaGu.World;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -28,11 +29,6 @@ namespace KouXiaGu.Terrain3D
             get { throw new NotImplementedException(); }
         }
 
-        public IBuilding BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// 迭代获取到这个点通向周围的路径点,若不存在节点则不进行迭代;
         /// </summary>
@@ -53,6 +49,11 @@ namespace KouXiaGu.Terrain3D
                 return false;
             };
             return PeripheralRoute.GetRoadRoutes(target, tryGetValue);
+        }
+
+        public IBuilding BuildAt(IWorld world, CubicHexCoord position, float angele)
+        {
+            throw new NotImplementedException();
         }
     }
 }

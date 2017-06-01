@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Resources;
+using System;
 using System.Threading;
 
 namespace KouXiaGu.World
@@ -7,35 +8,47 @@ namespace KouXiaGu.World
     /// <summary>
     /// 对游戏场景初始化,允许在非Unity线程初始化;
     /// </summary>
-    public class WorldInitialization : ICompleteWorld, IWorld
+    public class WorldInitialization : IBasicData, ICompleteWorld, IWorld
     {
-        public WorldInitialization(IBasicData basicData)
+        WorldInitialization(BasicResource basicResource, WorldInfo worldInfo)
         {
-            if (basicData == null)
-                throw new ArgumentNullException("basicData");
+            if (basicResource == null)
+                throw new ArgumentNullException("basicResource");
+            if (worldInfo == null)
+                throw new ArgumentNullException("worldInfo");
 
-            Initialize(basicData);
+            Initialize(basicResource, worldInfo);
         }
 
-        public IBasicData BasicData { get; private set; }
+        public BasicResource BasicResource { get; private set; }
+        public WorldInfo WorldInfo { get; private set; }
         public IWorldData WorldData { get; private set; }
         public IWorldComponents Components { get; private set; }
         public IWorldUpdater Updater { get; private set; }
 
-        void Initialize(IBasicData basicData)
+        IBasicData IWorld.BasicData
         {
-            BasicData = basicData;
-            WorldData = new WorldDataInitialization(BasicData);
-            Components = new WorldComponentInitialization(BasicData, WorldData);
+            get { return this; }
+        }
+
+        void Initialize(BasicResource basicResource, WorldInfo worldInfo)
+        {
+            BasicResource = basicResource;
+            WorldInfo = worldInfo;
+            WorldData = new WorldDataInitialization(this);
+            Components = new WorldComponentInitialization(this, WorldData);
             Updater = new WorldUpdaterInitialization(this);
         }
 
-        /// <summary>
-        /// 异步初始化资源;
-        /// </summary>
-        public static IAsyncOperation<ICompleteWorld> CreateAsync(IBasicData basicData)
+
+        public static IAsyncOperation<ICompleteWorld> CreateAsync(IAsyncOperation<BasicResource> basicResource, IReader<WorldInfo> infoReader)
         {
-            return new AsyncInitializer(basicData);
+            return new AsyncInitializer(basicResource, infoReader);
+        }
+
+        public static IAsyncOperation<ICompleteWorld> CreateAsync(BasicResource basicResource, WorldInfo worldInfo)
+        {
+            return new AsyncInitializer(basicResource, worldInfo);
         }
 
         /// <summary>
@@ -43,16 +56,39 @@ namespace KouXiaGu.World
         /// </summary>
         class AsyncInitializer : AsyncOperation<ICompleteWorld>
         {
-            public AsyncInitializer(IBasicData basicData)
+            public AsyncInitializer(BasicResource basicResource, WorldInfo worldInfo)
             {
-                ThreadPool.QueueUserWorkItem(_ => Initialize(basicData));
+                ThreadPool.QueueUserWorkItem(_ => Initialize(basicResource, worldInfo));
             }
 
-            void Initialize(IBasicData basicData)
+            public AsyncInitializer(IAsyncOperation<BasicResource> basicResource, IReader<WorldInfo> infoReader)
+            {
+                ThreadPool.QueueUserWorkItem(_ => Initialize(basicResource, infoReader));
+            }
+
+            void Initialize(IAsyncOperation<BasicResource> basicResource, IReader<WorldInfo> infoReader)
             {
                 try
                 {
-                    WorldInitialization item = new WorldInitialization(basicData);
+                    WorldInfo worldInfo = infoReader.Read();
+                    while (!basicResource.IsCompleted)
+                    {
+                    }
+                    BasicResource resource = basicResource.Result;
+                    WorldInitialization item = new WorldInitialization(resource, worldInfo);
+                    OnCompleted(item);
+                }
+                catch (Exception ex)
+                {
+                    OnFaulted(ex);
+                }
+            }
+
+            void Initialize(BasicResource basicResource, WorldInfo worldInfo)
+            {
+                try
+                {
+                    WorldInitialization item = new WorldInitialization(basicResource, worldInfo);
                     OnCompleted(item);
                 }
                 catch (Exception ex)

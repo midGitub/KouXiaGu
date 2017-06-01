@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
 
     public interface IBakeRequest : IRequest
     {
-        IWorldData WorldData { get; }
+        IWorld World { get; }
         RectCoord ChunkCoord { get; }
         ChunkTexture Textures { get; }
         BakeTargets Targets { get; }
@@ -140,7 +140,7 @@ namespace KouXiaGu.Terrain3D
 
                 if ((targets & BakeTargets.Landform) > 0)
                 {
-                    yield return bakeLandform.BakeCoroutine(bakeCamera, bakeRequest.WorldData, chunkCenter, state);
+                    yield return bakeLandform.BakeCoroutine(bakeCamera, bakeRequest.World, chunkCenter, state);
 
                     if (!bakeRequest.IsCanceled)
                     {
@@ -164,7 +164,7 @@ namespace KouXiaGu.Terrain3D
 
                 if ((targets & BakeTargets.Road) > 0)
                 {
-                    yield return bakeRoad.BakeCoroutine(bakeCamera, bakeRequest.WorldData, chunkCenter, state);
+                    yield return bakeRoad.BakeCoroutine(bakeCamera, bakeRequest.World, chunkCenter, state);
 
                     if (!bakeRequest.IsCanceled)
                     {

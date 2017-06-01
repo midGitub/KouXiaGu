@@ -13,7 +13,6 @@ namespace KouXiaGu.World
 
 
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(WorldInitializer))]
     public class WorldInfoEditor : MonoBehaviour
     {
 
@@ -21,33 +20,33 @@ namespace KouXiaGu.World
         public WorldTimeInfo Time;
         public ArchiveFile Archive;
 
-        void Awake()
-        {
-            WorldInitializer.WorldInfoReader = new WorldInfoReader(this);
-        }
+        //void Awake()
+        //{
+        //    WorldInitializer.WorldInfoReader = new WorldInfoReader(this);
+        //}
 
-        class WorldInfoReader : AsyncOperation<WorldInfo>
-        {
-            public WorldInfoReader(WorldInfoEditor info)
-            {
-                this.info = info;
-                Start();
-            }
+        //class WorldInfoReader : AsyncOperation<WorldInfo>
+        //{
+        //    public WorldInfoReader(WorldInfoEditor info)
+        //    {
+        //        this.info = info;
+        //        Start();
+        //    }
 
-            WorldInfoEditor info;
-            WorldInfo worldInfo;
+        //    WorldInfoEditor info;
+        //    WorldInfo worldInfo;
 
-            void Start()
-            {
-                worldInfo = new WorldInfo()
-                {
-                    Archive = info.Archive,
-                    Time = info.Time,
-                    MapReader = new RandomGameMapCreater(50),
-                };
-                OnCompleted(worldInfo);
-            }
+        //    void Start()
+        //    {
+        //        worldInfo = new WorldInfo()
+        //        {
+        //            Archive = info.Archive,
+        //            Time = info.Time,
+        //            MapReader = new RandomGameMapCreater(50),
+        //        };
+        //        OnCompleted(worldInfo);
+        //    }
 
-        }
+        //}
     }
 }

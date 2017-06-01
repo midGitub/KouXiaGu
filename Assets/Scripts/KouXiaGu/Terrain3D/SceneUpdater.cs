@@ -10,19 +10,15 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形更新处置;
     /// </summary>
-    public class SceneLandformUpdater : IDisposable
+    public class SceneUpdater
     {
-        LandformUpdater landformUpdater;
-        BuildingManager buildingUpdater;
-
-        public IAsyncOperation Start(IWorld world)
+        public SceneUpdater(IWorld world)
         {
-            throw new NotImplementedException();
+            BuildingBuilder = new BuildingBuilder(world);
+            LandformBuilder = new LandformBuilder(world);
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public BuildingBuilder BuildingBuilder { get; private set; }
+        public LandformBuilder LandformBuilder { get; private set; }
     }
 }

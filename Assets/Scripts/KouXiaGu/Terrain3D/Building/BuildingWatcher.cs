@@ -16,12 +16,12 @@ namespace KouXiaGu.Terrain3D
 
         void OnEnable()
         {
-            BuildingManager.WatcherList.Add(this);
+            BuildingUpdater.WatcherList.Add(this);
         }
 
         void OnDisable()
         {
-            BuildingManager.WatcherList.Remove(this);
+            BuildingUpdater.WatcherList.Remove(this);
         }
     }
 

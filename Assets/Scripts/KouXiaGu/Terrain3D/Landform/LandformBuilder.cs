@@ -13,16 +13,16 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class LandformBuilder
     {
-        public LandformBuilder(IWorldData worldData)
+        public LandformBuilder(IWorld world)
         {
-            WorldData = worldData;
+            WorldData = world;
             Baker = SceneObject.Find<LandformBaker>();
             chunkPool = new ChunkPool();
             sceneChunks = new Dictionary<RectCoord, ChunkCreateRequest>();
             completedChunkSender = new Sender<RectCoord>();
         }
 
-        public IWorldData WorldData { get; private set; }
+        public IWorld WorldData { get; private set; }
         public LandformBaker Baker { get; private set; }
         readonly ChunkPool chunkPool;
         readonly Dictionary<RectCoord, ChunkCreateRequest> sceneChunks;
@@ -144,7 +144,7 @@ namespace KouXiaGu.Terrain3D
             {
                 clone.IsCanceled = true;
                 Parent = clone.Parent;
-                WorldData = clone.WorldData;
+                World = clone.World;
                 ChunkCoord = clone.ChunkCoord;
                 Chunk = clone.Chunk;
                 Targets |= targets;
@@ -153,10 +153,10 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = false;
             }
 
-            public ChunkCreateRequest(LandformBuilder parent, IWorldData worldData, RectCoord chunkCoord, BakeTargets targets)
+            public ChunkCreateRequest(LandformBuilder parent, IWorld world, RectCoord chunkCoord, BakeTargets targets)
             {
                 Parent = parent;
-                WorldData = worldData;
+                World = world;
                 ChunkCoord = chunkCoord;
                 Chunk = chunkPool.Get();
                 Chunk.Position = parent.ChunkGrid.GetCenter(chunkCoord);
@@ -167,7 +167,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             public LandformBuilder Parent { get; private set; }
-            public IWorldData WorldData { get; private set; }
+            public IWorld World { get; private set; }
             public RectCoord ChunkCoord { get; private set; }
             public BakeTargets Targets { get; set; }
             public bool IsInQueue { get; private set; }

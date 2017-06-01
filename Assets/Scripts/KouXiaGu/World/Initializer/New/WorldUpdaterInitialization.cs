@@ -18,11 +18,11 @@ namespace KouXiaGu.World
             Initialize(world);
         }
 
-        public SceneLandformUpdater LandformUpdater { get; private set; }
+        public SceneUpdater LandformUpdater { get; private set; }
 
         void Initialize(IWorld world)
         {
-            LandformUpdater = new SceneLandformUpdater();
+            LandformUpdater = new SceneUpdater(world);
         }
     }
 }

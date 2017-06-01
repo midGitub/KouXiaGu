@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
+using KouXiaGu.World;
 using KouXiaGu.World.Map;
 using UnityEngine;
 
@@ -34,19 +35,18 @@ namespace KouXiaGu.Terrain3D
             set { prefab = value; }
         }
 
-        public Building BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder)
+        public Building BuildAt(IWorld world, CubicHexCoord position, float angele)
         {
-            BuildingNode buildingNode = node.Building;
-            Vector3 position = coord.GetTerrainPixel();
-            Quaternion angle = Quaternion.Euler(0, buildingNode.Angle, 0);
-            Building instance = Instantiate(prefab, position, angle, objectParent);
-            instance.Build(coord, node, builder);
+            Vector3 pixelPosition = position.GetTerrainPixel();
+            Quaternion angle = Quaternion.Euler(0, angele, 0);
+            Building instance = Instantiate(prefab, pixelPosition, angle, objectParent);
+            instance.Build(world, position);
             return instance;
         }
 
-        IBuilding IBuildingPrefab.BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder)
+        IBuilding IBuildingPrefab.BuildAt(IWorld world, CubicHexCoord position, float angele)
         {
-            return BuildAt(coord, node, builder);
+            return BuildAt(world, position, angele);
         }
     }
 }

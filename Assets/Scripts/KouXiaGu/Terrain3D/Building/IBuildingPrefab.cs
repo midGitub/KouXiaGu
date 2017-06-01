@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.World;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -16,6 +17,6 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 将建筑物建立到新的位置;
         /// </summary>
-        IBuilding BuildAt(CubicHexCoord coord, MapNode node, BuildingBuilder builder);
+        IBuilding BuildAt(IWorld world, CubicHexCoord position, float angele);
     }
 }

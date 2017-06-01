@@ -10,9 +10,9 @@ namespace KouXiaGu.Terrain3D
     {
     }
 
-    public class BuildingManager : ChunkWatcherUpdater
+    public class BuildingUpdater : ChunkWatcherUpdater
     {
-        static BuildingManager()
+        static BuildingUpdater()
         {
             watcherList = new List<IBuildingWatcher>();
         }
@@ -24,18 +24,11 @@ namespace KouXiaGu.Terrain3D
             get { return watcherList; }
         }
 
-
-        public BuildingManager(IWorldData worldData, Landform landform, LandformBuilder landformBuilder)
+        public BuildingUpdater()
         {
-            builder = new BuildingBuilder(worldData, landform, landformBuilder);
         }
 
-        readonly BuildingBuilder builder;
-
-        public BuildingBuilder Builder
-        {
-            get { return builder; }
-        }
+        public BuildingBuilder Builder { get; private set; }
 
         protected override object Sender
         {
@@ -49,17 +42,22 @@ namespace KouXiaGu.Terrain3D
 
         protected override IEnumerable<RectCoord> SceneCoords
         {
-            get { return builder.SceneChunks; }
+            get { return Builder.BuildingCollection.SceneChunks; }
+        }
+
+        public void StartUpdate(IWorld world)
+        {
+
         }
 
         protected override void CreateAt(RectCoord coord)
         {
-            builder.Create(coord);
+            Builder.Create(coord);
         }
 
         protected override void DestroyAt(RectCoord coord)
         {
-            builder.Destroy(coord);
+            Builder.Destroy(coord);
         }
     }
 }
