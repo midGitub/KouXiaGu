@@ -136,7 +136,7 @@ namespace KouXiaGu
         {
             if (instance == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("instance");
             }
             if (Instance != null && Instance != instance)
             {

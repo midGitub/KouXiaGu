@@ -67,26 +67,26 @@ namespace KouXiaGu.Terrain3D
             this.displays = ChunkPartitioner.GetLandform(chunkCenter);
 
             PrepareScene();
-            if (state.IsCanceled)
-            {
-                goto _End_;
-            }
             if (state.Await())
             {
                 yield return null;
                 state.Restart();
+            }
+            if (state.IsCanceled)
+            {
+                goto _End_;
             }
 
 
             BakeDiffuse();
-            if (state.IsCanceled)
-            {
-                goto _End_;
-            }
             if (state.Await())
             {
                 yield return null;
                 state.Restart();
+            }
+            if (state.IsCanceled)
+            {
+                goto _End_;
             }
 
 

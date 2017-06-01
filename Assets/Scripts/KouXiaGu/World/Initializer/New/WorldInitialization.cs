@@ -40,15 +40,9 @@ namespace KouXiaGu.World
             Updater = new WorldUpdaterInitialization(this);
         }
 
-
-        public static IAsyncOperation<ICompleteWorld> CreateAsync(IAsyncOperation<BasicResource> basicResource, IReader<WorldInfo> infoReader)
+        public static IAsyncOperation<ICompleteWorld> CreateAsync(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
         {
             return new AsyncInitializer(basicResource, infoReader);
-        }
-
-        public static IAsyncOperation<ICompleteWorld> CreateAsync(BasicResource basicResource, WorldInfo worldInfo)
-        {
-            return new AsyncInitializer(basicResource, worldInfo);
         }
 
         /// <summary>
@@ -56,39 +50,24 @@ namespace KouXiaGu.World
         /// </summary>
         class AsyncInitializer : AsyncOperation<ICompleteWorld>
         {
-            public AsyncInitializer(BasicResource basicResource, WorldInfo worldInfo)
-            {
-                ThreadPool.QueueUserWorkItem(_ => Initialize(basicResource, worldInfo));
-            }
-
-            public AsyncInitializer(IAsyncOperation<BasicResource> basicResource, IReader<WorldInfo> infoReader)
+            public AsyncInitializer(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
             {
                 ThreadPool.QueueUserWorkItem(_ => Initialize(basicResource, infoReader));
             }
 
-            void Initialize(IAsyncOperation<BasicResource> basicResource, IReader<WorldInfo> infoReader)
+            void Initialize(IAsyncOperation<BasicResource> resourceReader, IAsyncOperation<WorldInfo> infoReader)
             {
                 try
                 {
-                    WorldInfo worldInfo = infoReader.Read();
-                    while (!basicResource.IsCompleted)
+                    while (!infoReader.IsCompleted)
                     {
                     }
-                    BasicResource resource = basicResource.Result;
+                    while (!resourceReader.IsCompleted)
+                    {
+                    }
+                    BasicResource resource = resourceReader.Result;
+                    WorldInfo worldInfo = infoReader.Result;
                     WorldInitialization item = new WorldInitialization(resource, worldInfo);
-                    OnCompleted(item);
-                }
-                catch (Exception ex)
-                {
-                    OnFaulted(ex);
-                }
-            }
-
-            void Initialize(BasicResource basicResource, WorldInfo worldInfo)
-            {
-                try
-                {
-                    WorldInitialization item = new WorldInitialization(basicResource, worldInfo);
                     OnCompleted(item);
                 }
                 catch (Exception ex)

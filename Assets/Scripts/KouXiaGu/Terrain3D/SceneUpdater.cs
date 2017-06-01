@@ -14,11 +14,10 @@ namespace KouXiaGu.Terrain3D
     {
         public SceneUpdater(IWorld world)
         {
-            BuildingBuilder = new BuildingBuilder(world);
-            LandformBuilder = new LandformBuilder(world);
+            LandformBuilder = new LandformUpdater(world);
+            LandformBuilder.StartUpdate();
         }
 
-        public BuildingBuilder BuildingBuilder { get; private set; }
-        public LandformBuilder LandformBuilder { get; private set; }
+        public LandformUpdater LandformBuilder { get; private set; }
     }
 }

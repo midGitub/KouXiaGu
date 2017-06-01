@@ -39,16 +39,8 @@ namespace KouXiaGu.Terrain3D
     /// 地形烘培;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class LandformBaker : MonoBehaviour
+    public sealed class LandformBaker : SceneSington<LandformBaker>
     {
-
-        //public static LandformBaker Initialize(IWorldData worldData)
-        //{
-        //    var item = SceneObject.GetObject<LandformBaker>();
-        //    item.worldData = worldData;
-        //    return item;
-        //}
-
         /// <summary>
         /// 透明的黑色颜色;
         /// </summary>
@@ -84,8 +76,9 @@ namespace KouXiaGu.Terrain3D
             get { return RequestCount == 0; }
         }
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             bakeCamera.Initialize();
             bakeLandform.Initialize();
             bakeRoad.Initialise();

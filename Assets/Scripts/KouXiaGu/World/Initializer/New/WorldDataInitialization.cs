@@ -14,16 +14,16 @@ namespace KouXiaGu.World
             if (basicData == null)
                 throw new ArgumentNullException("basicData");
 
-            BasicData = basicData;
+            Initialize(basicData);
         }
 
-        public IBasicData BasicData { get; private set; }
         public GameMap MapData { get; private set; }
         public TimeManager Time { get; private set; }
 
         void Initialize(IBasicData basicData)
         {
-            MapData = basicData.WorldInfo.MapReader.Read(BasicData.BasicResource);
+            WorldInfo info = basicData.WorldInfo;
+            MapData = info.MapReader.Read(basicData.BasicResource);
         }
     }
 }

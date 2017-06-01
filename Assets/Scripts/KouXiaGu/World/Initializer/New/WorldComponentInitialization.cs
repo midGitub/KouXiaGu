@@ -24,7 +24,7 @@ namespace KouXiaGu.World
 
         void Initialize(IBasicData basicData, IWorldData worldData)
         {
-            Landform = new Landform(basicData, worldData);
+            Landform = new Landform();
         }
     }
 }

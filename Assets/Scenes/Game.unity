@@ -722,7 +722,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textObject: {fileID: 1415930384}
-  world: {fileID: 435868887}
 --- !u!1 &261335511
 GameObject:
   m_ObjectHideFlags: 0
@@ -904,8 +903,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 435868885}
-  - component: {fileID: 435868887}
   - component: {fileID: 435868886}
+  - component: {fileID: 435868887}
   m_Layer: 0
   m_Name: SceneController
   m_TagString: SceneController
@@ -957,7 +956,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 435868884}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25073589d955c2c45b5b34f4e4b470d1, type: 3}
+  m_Script: {fileID: 11500000, guid: da654896ebc323f469653098b03f25f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &560240578

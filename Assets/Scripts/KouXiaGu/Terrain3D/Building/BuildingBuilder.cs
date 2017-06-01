@@ -21,13 +21,13 @@ namespace KouXiaGu.Terrain3D
             SceneChunks = new HashSet<RectCoord>();
             SceneBuildings = new Dictionary<CubicHexCoord, BuildingBuilder.BuildingCreateRequest>();
             ReadOnlySceneChunks = SceneChunks.AsReadOnlyCollection();
-            ReadOnlySceneBuildings = SceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<IBuilding>);
+            ReadOnlySceneBuildings = SceneBuildings.AsReadOnlyDictionary(item => item as KouXiaGu.IAsyncOperation<IBuilding>);
         }
 
         public HashSet<RectCoord> SceneChunks { get; private set; }
         public Dictionary<CubicHexCoord, BuildingBuilder.BuildingCreateRequest> SceneBuildings { get; private set; }
         public IReadOnlyCollection<RectCoord> ReadOnlySceneChunks { get; private set; }
-        public IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<IBuilding>> ReadOnlySceneBuildings { get; private set; }
+        public IReadOnlyDictionary<CubicHexCoord, KouXiaGu.IAsyncOperation<IBuilding>> ReadOnlySceneBuildings { get; private set; }
 
         public RectGrid chunkGrid
         {
@@ -79,7 +79,7 @@ namespace KouXiaGu.Terrain3D
             World = world;
             BuildingCollection = world.Components.Landform.Buildings;
             requestDispatcher = SceneObject.Find<BuildingRequestDispatcher>();
-            landformObserver = new LandformObserver(this, world.Components.Landform.LandformBuilder.CompletedChunkSender);
+            //landformObserver = new LandformObserver(this, world.Components.Landform.LandformBuilder.CompletedChunkSender);
         }
 
         public IWorld World { get; private set; }

@@ -26,8 +26,10 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        public LandformUpdater()
+        public LandformUpdater(IWorld world)
         {
+            World = world;
+            Builder = new LandformBuilder(world);
         }
 
         public IWorld World { get; private set; }
@@ -45,13 +47,7 @@ namespace KouXiaGu.Terrain3D
 
         protected override IEnumerable<RectCoord> SceneCoords
         {
-            get { return Builder.SceneCoords; }
-        }
-
-        public void StartUpdate(IWorld world)
-        {
-            World = world;
-            StartUpdate();
+            get { return Builder.SceneChunks.Keys; }
         }
 
         protected override void CreateAt(RectCoord coord)

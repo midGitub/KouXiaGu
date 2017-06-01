@@ -8,6 +8,34 @@ using UniRx;
 namespace KouXiaGu.Terrain3D
 {
 
+    public class SceneLandformCollection : Dictionary<RectCoord, LandformBuilder.ChunkCreateRequest>
+    {
+        public SceneLandformCollection()
+        {
+            ReadOnlySceneChunks = this.AsReadOnlyDictionary(item => item as IAsyncOperation<Chunk>);
+        }
+
+        public IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> ReadOnlySceneChunks { get; private set; }
+
+        /// <summary>
+        /// 获取到高度,若不存在高度信息,则返回0;
+        /// </summary>
+        public float GetHeight(Vector3 position)
+        {
+            RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
+            IAsyncOperation<Chunk> chunk;
+            if (ReadOnlySceneChunks.TryGetValue(chunkCoord, out chunk))
+            {
+                if (chunk.IsCompleted && !chunk.IsFaulted)
+                {
+                    Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
+                    return chunk.Result.Renderer.GetHeight(uv);
+                }
+            }
+            return 0;
+        }
+    }
+
     /// <summary>
     /// 场景地形块管理;
     /// </summary>
@@ -15,27 +43,28 @@ namespace KouXiaGu.Terrain3D
     {
         public LandformBuilder(IWorld world)
         {
-            WorldData = world;
-            Baker = SceneObject.Find<LandformBaker>();
+            if (world == null)
+                throw new ArgumentNullException("world");
+
+            World = world;
+            SceneChunks = world.Components.Landform.LandformChunks;
             chunkPool = new ChunkPool();
-            sceneChunks = new Dictionary<RectCoord, ChunkCreateRequest>();
             completedChunkSender = new Sender<RectCoord>();
         }
 
-        public IWorld WorldData { get; private set; }
-        public LandformBaker Baker { get; private set; }
+        public IWorld World { get; private set; }
+        public SceneLandformCollection SceneChunks { get; private set; }
         readonly ChunkPool chunkPool;
-        readonly Dictionary<RectCoord, ChunkCreateRequest> sceneChunks;
         readonly Sender<RectCoord> completedChunkSender;
+
+        LandformBaker Baker
+        {
+            get { return LandformBaker.Instance; }
+        }
 
         public RectGrid ChunkGrid
         {
             get { return ChunkInfo.ChunkGrid; }
-        }
-
-        public IEnumerable<RectCoord> SceneCoords
-        {
-            get { return sceneChunks.Keys; }
         }
 
         /// <summary>
@@ -52,11 +81,11 @@ namespace KouXiaGu.Terrain3D
         public IAsyncOperation<Chunk> Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             ChunkCreateRequest request;
-            if (!sceneChunks.TryGetValue(chunkCoord, out request))
+            if (!SceneChunks.TryGetValue(chunkCoord, out request))
             {
-                request = new ChunkCreateRequest(this, WorldData, chunkCoord, targets);
+                request = new ChunkCreateRequest(this, World, chunkCoord, targets);
                 AddBakeQueue(request);
-                sceneChunks.Add(chunkCoord, request);
+                SceneChunks.Add(chunkCoord, request);
             }
             return request;
         }
@@ -67,13 +96,13 @@ namespace KouXiaGu.Terrain3D
         public IAsyncOperation<Chunk> Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             ChunkCreateRequest request;
-            if (sceneChunks.TryGetValue(chunkCoord, out request))
+            if (SceneChunks.TryGetValue(chunkCoord, out request))
             {
                 if (request.IsBaking)
                 {
                     ChunkCreateRequest newRequest = new ChunkCreateRequest(request, targets);
                     AddBakeQueue(request);
-                    sceneChunks[chunkCoord] = newRequest;
+                    SceneChunks[chunkCoord] = newRequest;
                 }
                 else if (request.IsInQueue)
                 {
@@ -100,9 +129,9 @@ namespace KouXiaGu.Terrain3D
         public void Destroy(RectCoord chunkCoord)
         {
             ChunkCreateRequest request;
-            if (sceneChunks.TryGetValue(chunkCoord, out request))
+            if (SceneChunks.TryGetValue(chunkCoord, out request))
             {
-                sceneChunks.Remove(chunkCoord);
+                SceneChunks.Remove(chunkCoord);
                 request.Destroy();
             }
         }
@@ -112,30 +141,14 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void DestroyAll()
         {
-            foreach (var sceneChunk in sceneChunks.Values)
+            foreach (var sceneChunk in SceneChunks.Values)
             {
                 sceneChunk.Destroy();
             }
-            sceneChunks.Clear();
+            SceneChunks.Clear();
         }
 
-        /// <summary>
-        /// 获取到高度,若不存在高度信息,则返回0;
-        /// </summary>
-        public float GetHeight(Vector3 position)
-        {
-            RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
-            ChunkCreateRequest chunk;
-            if (sceneChunks.TryGetValue(chunkCoord, out chunk))
-            {
-                Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
-                return chunk.Chunk.Renderer.GetHeight(uv);
-            }
-            return 0;
-        }
-
-
-        class ChunkCreateRequest : AsyncOperation<Chunk>, IBakeRequest
+        public class ChunkCreateRequest : AsyncOperation<Chunk>, IAsyncOperation<Chunk>, IBakeRequest
         {
             /// <summary>
             /// 创建到一个新的请求,并且将旧请求设置为不可用;
@@ -198,16 +211,12 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 重置状态信息;
             /// </summary>
-            public void Reset()
+            internal void Reset()
             {
-                if (IsInQueue)
-                {
-                    throw new ArgumentException();
-                }
-
                 IsInQueue = false;
                 IsBaking = false;
                 IsCanceled = false;
+                base.ResetState();
             }
 
             ChunkTexture IBakeRequest.Textures

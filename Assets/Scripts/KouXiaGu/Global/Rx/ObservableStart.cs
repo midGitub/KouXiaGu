@@ -69,7 +69,7 @@ namespace KouXiaGu
         {
             foreach (var observer in observerCollection.EnumerateObserver())
             {
-                observer.OnCompleted(Value);
+                observer.OnCompleted(value);
             }
             observerCollection.Clear();
 
@@ -81,7 +81,7 @@ namespace KouXiaGu
         {
             foreach (var observer in observerCollection.EnumerateObserver())
             {
-                observer.OnFailed(Ex);
+                observer.OnFailed(ex);
             }
             observerCollection.Clear();
 

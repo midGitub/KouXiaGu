@@ -43,7 +43,7 @@ namespace KouXiaGu.Terrain3D
         {
             if (updaterDisposer == null)
             {
-                SendDisplay();
+                //SendDisplay();
                 updaterDisposer = new UnityThreadBehaviour(this).SubscribeUpdate();
             }
         }
