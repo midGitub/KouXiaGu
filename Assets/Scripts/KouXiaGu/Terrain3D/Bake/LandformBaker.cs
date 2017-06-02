@@ -76,9 +76,9 @@ namespace KouXiaGu.Terrain3D
             get { return RequestCount == 0; }
         }
 
-        protected override void Awake()
+        void Awake()
         {
-            base.Awake();
+            SetInstance(this);
             bakeCamera.Initialize();
             bakeLandform.Initialize();
             bakeRoad.Initialise();

@@ -28,5 +28,14 @@ namespace KouXiaGu.World
             {
             }
         }
+
+        public void Dispose()
+        {
+            if (LandformUpdater != null)
+            {
+                LandformUpdater.Stop();
+                LandformUpdater = null;
+            }
+        }
     }
 }

@@ -24,6 +24,9 @@ namespace KouXiaGu
             get { return null; }
         }
 
+        /// <summary>
+        /// 若还需要继续则返回true,若已经结束则返回false;
+        /// </summary>
         public bool MoveNext()
         {
             if (coroutineStack.Count != 0)
@@ -61,12 +64,7 @@ namespace KouXiaGu
                     goto Start;
                 }
             }
-            return IsCompleted;
-        }
-
-        public void Cancele()
-        {
-            OnFaulted(new OperationCanceledException());
+            return !IsCompleted;
         }
 
         void IEnumerator.Reset()
@@ -74,5 +72,4 @@ namespace KouXiaGu
             throw new NotImplementedException();
         }
     }
-
 }

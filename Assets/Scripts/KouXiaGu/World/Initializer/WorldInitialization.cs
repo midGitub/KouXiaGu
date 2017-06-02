@@ -33,11 +33,19 @@ namespace KouXiaGu.World
 
         void Initialize(BasicResource basicResource, WorldInfo worldInfo)
         {
-            BasicResource = basicResource;
-            WorldInfo = worldInfo;
-            WorldData = new WorldDataInitialization(this);
-            Components = new WorldComponentInitialization(this, WorldData);
-            Updater = new WorldUpdaterInitialization(this);
+            try
+            {
+                BasicResource = basicResource;
+                WorldInfo = worldInfo;
+                WorldData = new WorldDataInitialization(this);
+                Components = new WorldComponentInitialization(this, WorldData);
+                Updater = new WorldUpdaterInitialization(this);
+            }
+            catch (Exception ex)
+            {
+                Dispose();
+                throw ex;
+            }
         }
 
         public static IAsyncOperation<IWorldComplete> CreateAsync(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
@@ -47,7 +55,11 @@ namespace KouXiaGu.World
 
         public void Dispose()
         {
-            Updater.LandformUpdater.Dispose();
+            if (Updater != null)
+            {
+                Updater.Dispose();
+                Updater = null;
+            }
         }
 
         /// <summary>

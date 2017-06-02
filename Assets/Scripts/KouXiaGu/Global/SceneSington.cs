@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,16 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// 场景单例,为了允许多线程访问;
+    /// 场景单例,允许多线程访问;
     /// </summary>
     [DisallowMultipleComponent]
-    public class SceneSington<T> : MonoBehaviour
+    public abstract class SceneSington<T> : MonoBehaviour
         where T : SceneSington<T>
     {
+
+        [CustomUnityTag]
+        public const string DefaultTagName = "SceneController";
+
         static T _instance;
 
         /// <summary>
@@ -21,7 +26,7 @@ namespace KouXiaGu
         /// </summary>
         public static T Instance
         {
-            get { return _instance; }
+            get { return _instance ?? Find_safe(); }
             private set { _instance = value; }
         }
 
@@ -31,6 +36,29 @@ namespace KouXiaGu
         public static bool IsInitialized
         {
             get { return _instance != null; }
+        }
+
+        static T Find_safe()
+        {
+            if (XiaGu.IsMainThread)
+            {
+                Find();
+            }
+            else
+            {
+                Operate operate = new Operate(Find);
+                UnityAsyncRequestDispatcher.Instance.AddQueue(operate);
+                while (!operate.IsCompleted)
+                {
+                }
+            }
+            return Instance;
+        }
+
+        static void Find()
+        {
+            GameObject sceneController = GameObject.FindWithTag(DefaultTagName);
+            Instance = sceneController.GetComponentInChildren<T>();
         }
 
         /// <summary>
@@ -50,11 +78,6 @@ namespace KouXiaGu
             {
                 Instance = instance;
             }
-        }
-
-        protected virtual void Awake()
-        {
-            SetInstance((T)this);
         }
 
         protected virtual void OnDestroy()

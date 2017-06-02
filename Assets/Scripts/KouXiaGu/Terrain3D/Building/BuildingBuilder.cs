@@ -271,6 +271,9 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+        /// <summary>
+        /// 建筑创建请求;
+        /// </summary>
         public class BuildingCreateRequest : AsyncOperation<IBuilding>, IRequest
         {
             public BuildingCreateRequest(BuildingBuilder builder, CubicHexCoord position)

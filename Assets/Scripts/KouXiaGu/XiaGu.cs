@@ -11,6 +11,9 @@ namespace KouXiaGu
     {
         static int mainThreadId;
 
+        /// <summary>
+        /// 是否在Unity主线程?
+        /// </summary>
         public static bool IsMainThread
         {
             get { return Thread.CurrentThread.ManagedThreadId == mainThreadId; }

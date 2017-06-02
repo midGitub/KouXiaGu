@@ -52,7 +52,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 场景更新组件;
     /// </summary>
-    public interface IWorldUpdater
+    public interface IWorldUpdater : IDisposable
     {
         SceneUpdater LandformUpdater { get; }
     }

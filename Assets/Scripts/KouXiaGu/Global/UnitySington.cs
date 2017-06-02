@@ -6,7 +6,7 @@ namespace KouXiaGu
 {
 
     /// <summary>
-    /// Unity单例;
+    /// Unity单例,允许多线程访问;
     /// </summary>
     public abstract class UnitySington<T> : MonoBehaviour
         where T : UnitySington<T>
