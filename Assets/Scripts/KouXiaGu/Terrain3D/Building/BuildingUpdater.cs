@@ -6,48 +6,33 @@ using System.Linq;
 
 namespace KouXiaGu.Terrain3D
 {
-    public interface IBuildingWatcher : IChunkWatcher
+    public interface IBuildingWatcher : IChunkWatcher<RectCoord>
     {
     }
 
-    public class BuildingUpdater : ChunkWatcherUpdater
+    public class BuildingUpdater : ChunkUpdater<RectCoord>
     {
         static BuildingUpdater()
         {
-            watcherList = new List<IBuildingWatcher>();
+            WatcherList = new List<IBuildingWatcher>();
         }
 
-        static readonly List<IBuildingWatcher> watcherList;
-
-        public static List<IBuildingWatcher> WatcherList
+        public BuildingUpdater(BuildingBuilder builder)
         {
-            get { return watcherList; }
-        }
-
-        public BuildingUpdater()
-        {
+            Builder = builder;
         }
 
         public BuildingBuilder Builder { get; private set; }
+        public static List<IBuildingWatcher> WatcherList { get; private set; }
 
-        protected override object Sender
+        protected override IEnumerable<IChunkWatcher<RectCoord>> Watchers
         {
-            get { return "场景的建筑块创建和销毁管理"; }
-        }
-
-        protected override IEnumerable<IChunkWatcher> Watchers
-        {
-            get { return watcherList.Cast<IChunkWatcher>(); }
+            get { return WatcherList.Cast<IChunkWatcher<RectCoord>>(); }
         }
 
         protected override IEnumerable<RectCoord> SceneCoords
         {
             get { return Builder.BuildingCollection.SceneChunks; }
-        }
-
-        public void StartUpdate(IWorld world)
-        {
-
         }
 
         protected override void CreateAt(RectCoord coord)

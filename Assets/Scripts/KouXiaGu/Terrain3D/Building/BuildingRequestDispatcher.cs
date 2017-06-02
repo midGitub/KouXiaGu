@@ -13,6 +13,19 @@ namespace KouXiaGu.Terrain3D
         BuildingRequestDispatcher()
         {
         }
+
+        public static BuildingRequestDispatcher Instance { get; private set; }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            Instance = this;
+        }
+
+        void OnDestroy()
+        {
+            Instance = null;
+        }
     }
 
 }

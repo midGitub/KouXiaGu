@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.World.Map;
+using KouXiaGu.World;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -13,16 +14,16 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class MapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
     {
-        public MapWatcher(LandformBuilder landformBuilder, BuildingBuilder buildingBuilder, IObservableDictionary<CubicHexCoord, MapNode> observable)
+        public MapWatcher(LandformBuilder landformUpdater, BuildingUpdater buildingUpdater, IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
-            this.landformBuilder = landformBuilder;
-            this.buildingBuilder = buildingBuilder;
+            this.landformUpdater = landformUpdater;
+            this.buildingUpdater = buildingUpdater;
             Subscribe(observable);
         }
 
         IDisposable unsubscriber;
-        readonly LandformBuilder landformBuilder;
-        readonly BuildingBuilder buildingBuilder;
+        readonly LandformBuilder landformUpdater;
+        readonly BuildingUpdater buildingUpdater;
 
         public void Subscribe(IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
@@ -71,7 +72,7 @@ namespace KouXiaGu.Terrain3D
             var belongChunks = GetBakeChunks(coord);
             foreach (var belongChunk in belongChunks)
             {
-                landformBuilder.Update(belongChunk, targets);
+                landformUpdater.Update(belongChunk, targets);
             }
         }
 

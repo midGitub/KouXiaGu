@@ -40,13 +40,13 @@ namespace KouXiaGu
             get { return requestQueue.Count; }
         }
 
-        void Awake()
+        protected virtual void Awake()
         {
             requestQueue = new Queue<IRequest>();
             createrCoroutine = new Coroutine(Coroutine());
         }
 
-        void Update()
+        protected virtual void Update()
         {
             createrCoroutine.MoveNext();
         }

@@ -23,6 +23,10 @@ namespace KouXiaGu.World
         void Initialize(IWorld world)
         {
             LandformUpdater = new SceneUpdater(world);
+            LandformUpdater.Start();
+            while (!LandformUpdater.IsCompleted)
+            {
+            }
         }
     }
 }

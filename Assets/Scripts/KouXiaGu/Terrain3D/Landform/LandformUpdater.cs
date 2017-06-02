@@ -7,47 +7,38 @@ using KouXiaGu.World;
 namespace KouXiaGu.Terrain3D
 {
 
-    public interface ILandformWatcher : IChunkWatcher
+    public interface ILandformWatcher : IChunkWatcher<RectCoord>
     {
     }
 
-    public class LandformUpdater : ChunkWatcherUpdater
+    public class LandformUpdater : ChunkUpdater<RectCoord>
     {
         static LandformUpdater()
         {
-            watcherList = new List<ILandformWatcher>();
+            WatcherList = new List<ILandformWatcher>();
         }
 
-        static readonly List<ILandformWatcher> watcherList;
-
-        public static List<ILandformWatcher> WatcherList
+        public LandformUpdater(LandformBuilder builder)
         {
-            get { return watcherList; }
+            Builder = builder;
         }
 
+        internal LandformBuilder Builder { get; private set; }
+        public static List<ILandformWatcher> WatcherList { get; private set; }
 
-        public LandformUpdater(IWorld world)
+        public bool IsCompleted
         {
-            World = world;
-            Builder = new LandformBuilder(world);
-        }
-
-        public IWorld World { get; private set; }
-        public LandformBuilder Builder { get; private set; }
-
-        protected override object Sender
-        {
-            get { return "场景的地形块创建和销毁管理"; }
-        }
-
-        protected override IEnumerable<IChunkWatcher> Watchers
-        {
-            get { return watcherList.Cast<IChunkWatcher>(); }
+            get { return Builder.RequestCount <= 0; }
         }
 
         protected override IEnumerable<RectCoord> SceneCoords
         {
             get { return Builder.SceneChunks.Keys; }
+        }
+
+        protected override IEnumerable<IChunkWatcher<RectCoord>> Watchers
+        {
+            get { return WatcherList.OfType<IChunkWatcher<RectCoord>>(); }
         }
 
         protected override void CreateAt(RectCoord coord)

@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D.Tests
     /// 将鼠标所指向地图节点的内容输出为文本;
     /// </summary>
     [DisallowMultipleComponent]
-    class MapContentTest : MonoBehaviour, IStateObserver<ICompleteWorld>
+    class MapContentTest : MonoBehaviour, IStateObserver<IWorldComplete>
     {
 
         [SerializeField]
@@ -40,13 +40,13 @@ namespace KouXiaGu.Terrain3D.Tests
             WorldSceneManager.OnWorldInitializeComplted.Subscribe(this);
         }
 
-        void IStateObserver<ICompleteWorld>.OnCompleted(ICompleteWorld item)
+        void IStateObserver<IWorldComplete>.OnCompleted(IWorldComplete item)
         {
             world = item;
             enabled = true;
         }
 
-        void IStateObserver<ICompleteWorld>.OnFailed(Exception ex)
+        void IStateObserver<IWorldComplete>.OnFailed(Exception ex)
         {
             return;
         }

@@ -28,7 +28,7 @@ namespace KouXiaGu.World
         IWorldComponents Components { get; }
     }
 
-    public interface ICompleteWorld : IWorld
+    public interface IWorldComplete : IWorld, IDisposable
     {
         IWorldUpdater Updater { get; }
     }
@@ -39,10 +39,6 @@ namespace KouXiaGu.World
     public interface IWorldData
     {
         GameMap MapData { get; }
-        //WorldTimeInfo TimeInfo { get; }
-
-        [Obsolete]
-        TimeManager Time { get; }
     }
 
     /// <summary>
@@ -59,6 +55,5 @@ namespace KouXiaGu.World
     public interface IWorldUpdater
     {
         SceneUpdater LandformUpdater { get; }
-        //TimeUpdater TimeUpdater { get; }
     }
 }

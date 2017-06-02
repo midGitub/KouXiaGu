@@ -679,8 +679,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayRadius:
-    x: 6
-    y: 6
+    x: 3
+    y: 3
 --- !u!1 &253871572
 GameObject:
   m_ObjectHideFlags: 0

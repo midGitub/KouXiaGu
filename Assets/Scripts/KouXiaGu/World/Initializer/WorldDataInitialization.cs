@@ -18,7 +18,6 @@ namespace KouXiaGu.World
         }
 
         public GameMap MapData { get; private set; }
-        public TimeManager Time { get; private set; }
 
         void Initialize(IBasicData basicData)
         {

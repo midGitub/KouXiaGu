@@ -23,10 +23,10 @@ namespace KouXiaGu.Terrain3D
         public float GetHeight(Vector3 position)
         {
             RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
-            IAsyncOperation<Chunk> chunk;
-            if (ReadOnlySceneChunks.TryGetValue(chunkCoord, out chunk))
+            LandformBuilder.ChunkCreateRequest chunk;
+            if (TryGetValue(chunkCoord, out chunk))
             {
-                if (chunk.IsCompleted && !chunk.IsFaulted)
+                if (chunk.Result != null)
                 {
                     Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
                     return chunk.Result.Renderer.GetHeight(uv);
@@ -56,6 +56,14 @@ namespace KouXiaGu.Terrain3D
         public SceneLandformCollection SceneChunks { get; private set; }
         readonly ChunkPool chunkPool;
         readonly Sender<RectCoord> completedChunkSender;
+
+        /// <summary>
+        /// 正在执行的请求总数;
+        /// </summary>
+        public int RequestCount
+        {
+            get { return Baker.RequestCount; }
+        }
 
         LandformBaker Baker
         {
@@ -171,8 +179,8 @@ namespace KouXiaGu.Terrain3D
                 Parent = parent;
                 World = world;
                 ChunkCoord = chunkCoord;
-                Chunk = chunkPool.Get();
-                Chunk.Position = parent.ChunkGrid.GetCenter(chunkCoord);
+                //Chunk = chunkPool.Get();
+                //Chunk.Position = parent.ChunkGrid.GetCenter(chunkCoord);
                 Targets = targets;
                 IsInQueue = false;
                 IsBaking = false;
@@ -204,8 +212,11 @@ namespace KouXiaGu.Terrain3D
             public void Destroy()
             {
                 IsCanceled = true;
-                chunkPool.Release(Chunk);
-                Chunk = null;
+                if (Chunk != null)
+                {
+                    chunkPool.Release(Chunk);
+                    Chunk = null;
+                }
             }
 
             /// <summary>
@@ -227,6 +238,11 @@ namespace KouXiaGu.Terrain3D
             void IRequest.Operate()
             {
                 IsBaking = true;
+                if (Chunk == null)
+                {
+                    Chunk = chunkPool.Get();
+                    Chunk.Position = Parent.ChunkGrid.GetCenter(ChunkCoord);
+                }
             }
 
             void IRequest.AddQueue()

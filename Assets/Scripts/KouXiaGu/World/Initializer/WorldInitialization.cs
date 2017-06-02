@@ -8,7 +8,7 @@ namespace KouXiaGu.World
     /// <summary>
     /// 对游戏场景初始化,允许在非Unity线程初始化;
     /// </summary>
-    public class WorldInitialization : IBasicData, ICompleteWorld, IWorld
+    public class WorldInitialization : IBasicData, IWorldComplete, IWorld
     {
         WorldInitialization(BasicResource basicResource, WorldInfo worldInfo)
         {
@@ -40,15 +40,20 @@ namespace KouXiaGu.World
             Updater = new WorldUpdaterInitialization(this);
         }
 
-        public static IAsyncOperation<ICompleteWorld> CreateAsync(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
+        public static IAsyncOperation<IWorldComplete> CreateAsync(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
         {
             return new AsyncInitializer(basicResource, infoReader);
+        }
+
+        public void Dispose()
+        {
+            Updater.LandformUpdater.Dispose();
         }
 
         /// <summary>
         /// 异步初始化结构;
         /// </summary>
-        class AsyncInitializer : AsyncOperation<ICompleteWorld>
+        class AsyncInitializer : AsyncOperation<IWorldComplete>
         {
             public AsyncInitializer(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
             {

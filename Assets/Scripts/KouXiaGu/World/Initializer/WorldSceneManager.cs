@@ -22,22 +22,22 @@ namespace KouXiaGu.World
 
         public const string SceneName = "Game";
 
-        static readonly ObservableStart<ICompleteWorld> onWorldInitializeComplted = new ObservableStart<ICompleteWorld>(new ObserverHashSet<IStateObserver<ICompleteWorld>>());
+        static readonly ObservableStart<IWorldComplete> onWorldInitializeComplted = new ObservableStart<IWorldComplete>(new ObserverHashSet<IStateObserver<IWorldComplete>>());
 
         /// <summary>
         /// 当世界初始化完毕时在Unity线程调用;
         /// </summary>
-        public static IObservableStart<ICompleteWorld> OnWorldInitializeComplted
+        public static IObservableStart<IWorldComplete> OnWorldInitializeComplted
         {
             get { return onWorldInitializeComplted; }
         }
 
-        static event Action<ICompleteWorld> onExitScene;
+        static event Action<IWorldComplete> onExitScene;
 
         /// <summary>
         /// 当退出场景时在Unity线程调用;
         /// </summary>
-        public event Action<ICompleteWorld> OnExitScene
+        public event Action<IWorldComplete> OnExitScene
         {
             add { onExitScene += value; }
             remove { onExitScene -= value; }
@@ -46,7 +46,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 世界异步初始化程序,若正在初始化 或者 初始化完毕则不为Null;
         /// </summary>
-        public static IAsyncOperation<ICompleteWorld> WorldInitializer { get; private set; }
+        public static IAsyncOperation<IWorldComplete> WorldInitializer { get; private set; }
         public static IAsyncOperation<BasicResource> BasicResource { get; private set; }
         public static IAsyncOperation<WorldInfo> InfoReader { get; private set; }
 
@@ -54,6 +54,11 @@ namespace KouXiaGu.World
         {
             get { return WorldInitializer != null && BasicResource != null && InfoReader != null; }
         }
+
+        /// <summary>
+        /// 场景是否激活?;
+        /// </summary>
+        public static bool IsActivated { get; private set; }
 
         /// <summary>
         /// 读取到场景;
@@ -103,6 +108,11 @@ namespace KouXiaGu.World
 
         #endregion
 
+        void Awake()
+        {
+            IsActivated = true;
+        }
+
         void Start()
         {
             if (WorldInitializer != null)
@@ -143,6 +153,16 @@ namespace KouXiaGu.World
                 onExitScene(WorldInitializer.Result);
                 WorldInitializer = null;
             }
+            if (!WorldInitializer.IsCompleted)
+            {
+                Debug.LogError("在未初始化完成时退出!");
+                return;
+            }
+            if (!WorldInitializer.IsFaulted)
+            {
+                WorldInitializer.Result.Dispose();
+            }
+            IsActivated = false;
         }
     }
 }
