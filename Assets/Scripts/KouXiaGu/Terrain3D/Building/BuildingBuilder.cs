@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using KouXiaGu.Concurrent;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
-using UniRx;
-using System.Linq;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using UniRx;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -19,13 +19,13 @@ namespace KouXiaGu.Terrain3D
         public SceneBuildingCollection()
         {
             SceneChunks = new HashSet<RectCoord>();
-            SceneBuildings = new Dictionary<CubicHexCoord, BuildingBuilder.BuildingCreateRequest>();
+            SceneBuildings = new Dictionary<CubicHexCoord, BuildingBuilder.CreateRequest>();
             ReadOnlySceneChunks = SceneChunks.AsReadOnlyCollection();
             ReadOnlySceneBuildings = SceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<IBuilding>);
         }
 
-        public HashSet<RectCoord> SceneChunks { get; private set; }
-        public Dictionary<CubicHexCoord, BuildingBuilder.BuildingCreateRequest> SceneBuildings { get; private set; }
+        internal HashSet<RectCoord> SceneChunks { get; private set; }
+        internal Dictionary<CubicHexCoord, BuildingBuilder.CreateRequest> SceneBuildings { get; private set; }
         public IReadOnlyCollection<RectCoord> ReadOnlySceneChunks { get; private set; }
         public IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<IBuilding>> ReadOnlySceneBuildings { get; private set; }
 
@@ -70,21 +70,21 @@ namespace KouXiaGu.Terrain3D
     }
 
     /// <summary>
-    /// 对场景建筑物进行构建;
+    /// 对场景建筑物进行构建,仅由地形更新器调用;
     /// </summary>
-    public class BuildingBuilder 
+    class BuildingBuilder 
     {
         public BuildingBuilder(IWorld world, LandformBuilder landformBuilder)
         {
             World = world;
             BuildingCollection = world.Components.Landform.Buildings;
-            requestDispatcher = BuildingRequestDispatcher.Instance;
+            RequestDispatcher = LandformUnityDispatcher.Instance;
             landformObserver = new LandformObserver(this, landformBuilder.CompletedChunkSender);
         }
 
         public IWorld World { get; private set; }
         public SceneBuildingCollection BuildingCollection { get; private set; }
-        readonly RequestDispatcher requestDispatcher;
+        public LandformUnityDispatcher RequestDispatcher { get; private set; }
         readonly LandformObserver landformObserver;
 
         HashSet<RectCoord> sceneChunks
@@ -92,7 +92,7 @@ namespace KouXiaGu.Terrain3D
             get { return BuildingCollection.SceneChunks; }
         }
 
-        Dictionary<CubicHexCoord, BuildingCreateRequest> sceneBuildings
+        Dictionary<CubicHexCoord, CreateRequest> sceneBuildings
         {
             get { return BuildingCollection.SceneBuildings; }
         }
@@ -108,33 +108,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 创建建筑物到该坐标,若不存在建筑物则返回 null;
-        /// </summary>
-         IBuilding Create(CubicHexCoord position)
-        {
-            MapNode node;
-            if (map.TryGetValue(position, out node))
-            {
-                if (node.Building.Exist())
-                {
-                    BuildingInfo info;
-                    int buildingType = node.Building.BuildingType;
-                    if (infos.TryGetValue(buildingType, out info))
-                    {
-                        BuildingResource resource = info.Terrain;
-                        IBuilding building = resource.BuildingPrefab.BuildAt(World, position, node.Building.Angle);
-                        return building;
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException("未找到对应的建筑物资源;BuildingType:" + buildingType);
-                    }
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// 创建对应块的建筑物;
         /// </summary>
         public void Create(RectCoord chunkCoord)
@@ -145,7 +118,7 @@ namespace KouXiaGu.Terrain3D
                 var overlayPoints = GetOverlayPoints(chunkCoord);
                 foreach (var point in overlayPoints)
                 {
-                    CreateAsync(point);
+                    CreateAt(point);
                 }
             }
         }
@@ -185,26 +158,74 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 异步创建,若已经存在创建,则返回之前的;
+        /// 创建到建筑,若已经存在建筑了,则返回Null;
         /// </summary>
-        BuildingCreateRequest CreateAsync(CubicHexCoord position)
+        CreateRequest CreateAt(CubicHexCoord position)
         {
-            BuildingCreateRequest request;
-            if (!sceneBuildings.TryGetValue(position, out request))
+            if (!sceneBuildings.ContainsKey(position))
             {
-                request = new BuildingCreateRequest(this, position);
-                AddQueue(request);
-                sceneBuildings.Add(position, request);
+                IBuildingPrefab prefab;
+                float angle;
+                if (TryGetBuildingInfo(position, out prefab, out angle))
+                {
+                    CreateRequest request = new CreateRequest(this, position, prefab, angle);
+                    sceneBuildings.Add(position, request);
+                    RequestDispatcher.AddQueue(request);
+                    return request;
+                }
             }
-            return request;
+            return null;
+        }
+
+        bool TryGetBuildingInfo(CubicHexCoord position, out IBuildingPrefab prefab, out float angle)
+        {
+            MapNode node;
+            if (map.TryGetValue(position, out node))
+            {
+                if (node.Building.Exist())
+                {
+                    BuildingInfo info;
+                    int buildingType = node.Building.BuildingType;
+                    if (infos.TryGetValue(buildingType, out info))
+                    {
+                        prefab = info.Terrain.BuildingPrefab;
+                        angle = node.Building.Angle;
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("未找到对应的建筑物资源;BuildingType:" + buildingType);
+                    }
+                }
+            }
+            prefab = default(IBuildingPrefab);
+            angle = default(float);
+            return false;
         }
 
         /// <summary>
-        /// 添加到处理队列中;
+        /// 更新指定地点的建筑物,若不存在建筑物,则返回null;
         /// </summary>
-        void AddQueue(IRequest request)
+        public IAsyncOperation<IBuilding> UpdateAt(CubicHexCoord position)
         {
-            requestDispatcher.AddQueue(request);
+            CreateRequest request;
+            if (sceneBuildings.TryGetValue(position, out request))
+            {
+                IBuildingPrefab prefab;
+                float angle;
+                if (TryGetBuildingInfo(position, out prefab, out angle))
+                {
+                    request.Prefab = prefab;
+                    request.Angle = angle;
+
+                    if (request.IsCompleted)
+                    {
+                        RequestDispatcher.AddQueue(request);
+                    }
+                    return request;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -218,19 +239,23 @@ namespace KouXiaGu.Terrain3D
                 var overlayPoints = GetOverlayPoints(chunkCoord);
                 foreach (var point in overlayPoints)
                 {
-                    Destroy(point);
+                    DestroyAt(point);
                 }
                 return true;
             }
             return false;
         }
 
-        bool Destroy(CubicHexCoord position)
+        bool DestroyAt(CubicHexCoord position)
         {
-            BuildingCreateRequest request;
+            CreateRequest request;
             if (sceneBuildings.TryGetValue(position, out request))
             {
-                request.Destroy();
+                if (request.IsCompleted && !request.IsFaulted)
+                {
+                    DestroyRequest destroyRequest = new DestroyRequest(request.Result);
+                    RequestDispatcher.AddQueue(destroyRequest);
+                }
                 sceneBuildings.Remove(position);
                 return true;
             }
@@ -238,126 +263,94 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 同步的销毁所有建筑实例;
+        /// 在Unity线程的,销毁所有建筑实例;
         /// </summary>
         public void DestroyAll()
         {
             foreach (var building in sceneBuildings.Values)
             {
-                building.Destroy();
+                building.Result.Destroy();
             }
             sceneBuildings.Clear();
             sceneChunks.Clear();
         }
 
         /// <summary>
-        /// 更新指定地点的建筑物,若不存在建筑物,则返回null;
+        /// 创建建筑;
         /// </summary>
-        public IAsyncOperation<IBuilding> Update(CubicHexCoord position)
+        internal class CreateRequest : AsyncOperation<IBuilding>, IAsyncRequest
         {
-            BuildingCreateRequest request;
-            if (sceneBuildings.TryGetValue(position, out request))
+            public CreateRequest(BuildingBuilder parent, CubicHexCoord position, IBuildingPrefab prefab, float angle)
             {
-                if (!request.IsInQueue)
+                Parent = parent;
+                Position = position;
+                Prefab = prefab;
+                Angle = angle;
+            }
+
+            public BuildingBuilder Parent { get; private set; }
+            public CubicHexCoord Position { get; private set; }
+            public IBuildingPrefab Prefab { get; internal set; }
+            public float Angle { get; internal set; }
+            public bool IsCanceled { get; private set; }
+
+            public IWorld World
+            {
+                get { return Parent.World; }
+            }
+
+            internal void Cancele()
+            {
+                IsCanceled = true;
+            }
+
+            IEnumerator IAsyncRequest.Operate()
+            {
+                if (!IsCanceled)
                 {
-                    request.Restart();
-                    AddQueue(request);
+                    try
+                    {
+                        if (Result != null)
+                        {
+                            Result.Destroy();
+                            Result = null;
+                        }
+
+                        IBuilding building = Prefab.BuildAt(World, Position, Angle);
+                        OnCompleted(building);
+                    }
+                    catch (Exception ex)
+                    {
+                        OnFaulted(ex);
+                    }
                 }
-                return request;
+                yield break;
             }
-            else
-            {
-                return null;
-            }
+
+            void IAsyncRequest.AddQueue() { }
+            void IAsyncRequest.OutQueue() { }
         }
 
         /// <summary>
-        /// 建筑创建请求;
+        /// 销毁建筑;
         /// </summary>
-        public class BuildingCreateRequest : AsyncOperation<IBuilding>, IRequest
+        class DestroyRequest : IAsyncRequest
         {
-            public BuildingCreateRequest(BuildingBuilder builder, CubicHexCoord position)
+            public DestroyRequest(IBuilding building)
             {
-                this.builder = builder;
-                this.position = position;
+                Building = building;
             }
 
-            readonly BuildingBuilder builder;
-            readonly CubicHexCoord position;
-            public bool IsInQueue { get; private set; }
-            public bool IsCanceled { get; set; }
+            public IBuilding Building { get; private set; }
 
-            public CubicHexCoord Position
+            IEnumerator IAsyncRequest.Operate()
             {
-                get { return position; }
+                Building.Destroy();
+                yield break;
             }
 
-            protected override void ResetState()
-            {
-                base.ResetState();
-                IsInQueue = false;
-                IsCanceled = false;
-            }
-
-            /// <summary>
-            /// 销毁这个请求;
-            /// </summary>
-            public void Destroy()
-            {
-                IsCanceled = true;
-                if (Result != null)
-                {
-                    Result.Destroy();
-                    Result = null;
-                }
-            }
-
-            /// <summary>
-            /// 重置所有,为重新进入队列做准备;
-            /// </summary>
-            public void Restart()
-            {
-                ResetState();
-                if (Result != null)
-                {
-                    Result.Destroy();
-                    Result = null;
-                }
-            }
-
-            void IRequest.Operate()
-            {
-                try
-                {
-                    var building = builder.Create(position);
-                    OnCompleted(building);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError(ex);
-                    OnFaulted(ex);
-                }
-            }
-
-            void IRequest.AddQueue()
-            {
-                if (IsInQueue)
-                {
-                    Debug.LogError("重复加入队列;");
-                }
-
-                IsInQueue = true;
-            }
-
-            void IRequest.OutQueue()
-            {
-                if (!IsInQueue)
-                {
-                    Debug.LogError("重复移除队列;");
-                }
-
-                IsInQueue = false;
-            }
+            void IAsyncRequest.AddQueue() { }
+            void IAsyncRequest.OutQueue() { }
         }
 
         /// <summary>
@@ -394,7 +387,7 @@ namespace KouXiaGu.Terrain3D
                 var overlayPoints = GetOverlayPoints(chunkCoord);
                 foreach (var point in overlayPoints)
                 {
-                    BuildingCreateRequest building;
+                    CreateRequest building;
                     if (parent.sceneBuildings.TryGetValue(point, out building))
                     {
                         if (building.IsCompleted)

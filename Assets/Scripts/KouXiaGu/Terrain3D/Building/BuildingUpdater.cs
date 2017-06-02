@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     {
     }
 
-    public class BuildingUpdater : ChunkUpdater<RectCoord>
+    class BuildingUpdater : ChunkUpdater<RectCoord>
     {
         static BuildingUpdater()
         {
@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
             Builder = builder;
         }
 
-        public BuildingBuilder Builder { get; private set; }
+        internal BuildingBuilder Builder { get; private set; }
         public static List<IBuildingWatcher> WatcherList { get; private set; }
 
         protected override IEnumerable<IChunkWatcher<RectCoord>> Watchers

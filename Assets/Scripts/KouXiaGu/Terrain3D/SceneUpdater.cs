@@ -25,11 +25,11 @@ namespace KouXiaGu.Terrain3D
 
         bool isUpdating;
         bool updateThreadRunning;
-        public LandformBuilder LandformBuilder { get; private set; }
-        public BuildingBuilder BuildingBuilder { get; private set; }
-        public LandformUpdater LandformUpdater { get; private set; }
-        public BuildingUpdater BuildingUpdater { get; private set; }
-        public MapWatcher MapWatcher { get; private set; }
+        internal LandformBuilder LandformBuilder { get; private set; }
+        internal BuildingBuilder BuildingBuilder { get; private set; }
+        internal LandformUpdater LandformUpdater { get; private set; }
+        internal BuildingUpdater BuildingUpdater { get; private set; }
+        internal MapWatcher MapWatcher { get; private set; }
 
         /// <summary>
         /// 在这个时刻场景是否构建完成?
@@ -63,7 +63,7 @@ namespace KouXiaGu.Terrain3D
                     LandformUpdater.Next();
                     BuildingUpdater.Next();
                     isUpdating = true;
-                    Thread.Sleep(1000);
+                    Thread.Sleep(200);
                 }
             }
             catch (Exception ex)

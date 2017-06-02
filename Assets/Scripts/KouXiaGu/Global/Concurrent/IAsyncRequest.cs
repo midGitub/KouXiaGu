@@ -17,4 +17,28 @@ namespace KouXiaGu.Concurrent
         IEnumerator Operate();
         void OutQueue();
     }
+
+
+    public abstract class AsyncRequest : IAsyncRequest
+    {
+        public bool IsInQueue { get; private set; }
+
+        public abstract IEnumerator Operate();
+
+        public virtual void AddQueue()
+        {
+            if (IsInQueue)
+                throw new ArgumentException("重复加入!");
+
+            IsInQueue = true;
+        }
+
+        public virtual void OutQueue()
+        {
+            if (IsInQueue)
+                throw new ArgumentException("时序错误;");
+
+            IsInQueue = false;
+        }
+    }
 }

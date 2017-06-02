@@ -19,9 +19,15 @@ namespace KouXiaGu
             get { return Thread.CurrentThread.ManagedThreadId == mainThreadId; }
         }
 
+        /// <summary>
+        /// 是否不在编辑器内运行;
+        /// </summary>
+        public static bool IsPlaying { get; private set; }
+
         internal static void Initialize()
         {
             mainThreadId = Thread.CurrentThread.ManagedThreadId;
+            IsPlaying = true;
         }
 
     }

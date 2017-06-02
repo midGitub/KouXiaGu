@@ -11,7 +11,11 @@ namespace KouXiaGu
     public abstract class UnitySington<T> : MonoBehaviour
         where T : UnitySington<T>
     {
-        static T instance;
+
+        [CustomUnityTag]
+        public const string DefaultTagName = "GlobalController";
+
+        static T _instance;
 
         /// <summary>
         /// 获取到单例,仅Unity线程访问;
@@ -26,7 +30,7 @@ namespace KouXiaGu
                     return FindInEditor();
                 }
 #endif
-                return instance ?? (instance = FindOrCreate());
+                return _instance ?? (_instance = FindOrCreate());
             }
         }
 
@@ -35,7 +39,7 @@ namespace KouXiaGu
         /// </summary>
         public static bool IsInitialized
         {
-            get { return instance != null; }
+            get { return _instance != null; }
         }
 
         internal static T FindInEditor()
@@ -96,23 +100,23 @@ namespace KouXiaGu
         [Obsolete]
         static T Initialize()
         {
-            if (instance == null)
+            if (_instance == null)
             {
                 var instances = GameObject.FindObjectsOfType<T>();
                 if (instances.Length == 0)
                 {
                     var type = typeof(T);
                     var gameObject = new GameObject(type.Name, type);
-                    instance = gameObject.GetComponent<T>();
+                    _instance = gameObject.GetComponent<T>();
                     Debug.Log("已创建单例;" + type.Name);
                 }
                 else if (instances.Length == 1)
                 {
-                    instance = instances[0];
+                    _instance = instances[0];
                 }
                 else
                 {
-                    instance = instances[0];
+                    _instance = instances[0];
                     string errorStr = "存在多个单例在场景!将销毁其它;";
 
                     for (int i = 1; i < instances.Length; i++)
@@ -125,7 +129,7 @@ namespace KouXiaGu
                     Debug.LogError(errorStr);
                 }
             }
-            return instance;
+            return _instance;
         }
 
 
@@ -142,7 +146,7 @@ namespace KouXiaGu
             {
                 throw new ArgumentException("设置不同的单例;原本:" + (Instance as MonoBehaviour).name + ",请求:" + (instance as MonoBehaviour).name);
             }
-            UnitySington<T>.instance = instance;
+            UnitySington<T>._instance = instance;
         }
 
         [ContextMenu("输出场景实例数目;")]

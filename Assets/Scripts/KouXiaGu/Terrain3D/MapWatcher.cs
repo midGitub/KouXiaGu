@@ -12,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 监视地图变化;
     /// </summary>
-    public class MapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
+    class MapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
     {
         public MapWatcher(LandformBuilder landformUpdater, BuildingUpdater buildingUpdater, IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
