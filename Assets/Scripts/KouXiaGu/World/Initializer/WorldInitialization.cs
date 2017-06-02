@@ -52,6 +52,11 @@ namespace KouXiaGu.World
         {
             public AsyncInitializer(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
             {
+                if (basicResource == null)
+                    throw new ArgumentNullException("basicResource");
+                if (infoReader == null)
+                    throw new ArgumentNullException("infoReader");
+
                 ThreadPool.QueueUserWorkItem(_ => Initialize(basicResource, infoReader));
             }
 
