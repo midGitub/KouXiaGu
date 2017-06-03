@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu.Terrain3D
 {

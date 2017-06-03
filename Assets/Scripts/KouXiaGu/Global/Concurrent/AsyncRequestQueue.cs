@@ -6,10 +6,16 @@ using UnityEngine;
 namespace KouXiaGu.Concurrent
 {
 
+    public interface IRequestDispatcher
+    {
+        int RequestCount { get; }
+        void Add(IAsyncRequest request);
+    }
+
     /// <summary>
     /// 异步请求合集;
     /// </summary>
-    public class AsyncRequestQueue
+    public class AsyncRequestQueue : IRequestDispatcher
     {
         public AsyncRequestQueue(ISegmented stopwatch)
         {

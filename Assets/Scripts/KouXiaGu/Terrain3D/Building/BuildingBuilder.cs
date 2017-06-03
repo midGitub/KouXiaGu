@@ -74,17 +74,17 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     class BuildingBuilder 
     {
-        public BuildingBuilder(IWorld world, LandformBuilder landformBuilder)
+        public BuildingBuilder(IWorld world, LandformBuilder landformBuilder, IRequestDispatcher requestDispatcher)
         {
             World = world;
             BuildingCollection = world.Components.Landform.Buildings;
-            RequestDispatcher = LandformUnityDispatcher.Instance;
+            RequestDispatcher = requestDispatcher;
             landformObserver = new LandformObserver(this, landformBuilder.CompletedChunkSender);
         }
 
         public IWorld World { get; private set; }
         public SceneBuildingCollection BuildingCollection { get; private set; }
-        public LandformUnityDispatcher RequestDispatcher { get; private set; }
+        public IRequestDispatcher RequestDispatcher { get; private set; }
         readonly LandformObserver landformObserver;
 
         HashSet<RectCoord> sceneChunks
@@ -170,7 +170,7 @@ namespace KouXiaGu.Terrain3D
                 {
                     CreateRequest request = new CreateRequest(this, position, prefab, angle);
                     sceneBuildings.Add(position, request);
-                    RequestDispatcher.AddQueue(request);
+                    RequestDispatcher.Add(request);
                     return request;
                 }
             }
@@ -220,7 +220,7 @@ namespace KouXiaGu.Terrain3D
 
                     if (request.IsCompleted)
                     {
-                        RequestDispatcher.AddQueue(request);
+                        RequestDispatcher.Add(request);
                     }
                     return request;
                 }
@@ -254,7 +254,7 @@ namespace KouXiaGu.Terrain3D
                 if (request.IsCompleted && !request.IsFaulted)
                 {
                     DestroyRequest destroyRequest = new DestroyRequest(request.Result);
-                    RequestDispatcher.AddQueue(destroyRequest);
+                    RequestDispatcher.Add(destroyRequest);
                 }
                 sceneBuildings.Remove(position);
                 return true;

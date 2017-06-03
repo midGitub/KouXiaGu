@@ -8,8 +8,11 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
+    /// <summary>
+    /// 处理地形在Unity线程执行的操作;
+    /// </summary>
     [DisallowMultipleComponent]
-    public sealed class LandformUnityDispatcher : SceneSington<LandformUnityDispatcher>
+    public sealed class LandformUnityDispatcher : SceneSington<LandformUnityDispatcher>, IRequestDispatcher
     {
         LandformUnityDispatcher()
         {
@@ -18,6 +21,11 @@ namespace KouXiaGu.Terrain3D
         [SerializeField]
         Stopwatch runtimeStopwatch = new Stopwatch(0.2f);
         AsyncRequestQueue requestQueue;
+
+        public int RequestCount
+        {
+            get { return requestQueue.RequestCount; }
+        }
 
         void Awake()
         {
@@ -30,7 +38,7 @@ namespace KouXiaGu.Terrain3D
             requestQueue.MoveNext();
         }
 
-        public void AddQueue(IAsyncRequest request)
+        public void Add(IAsyncRequest request)
         {
             requestQueue.Add(request);
         }

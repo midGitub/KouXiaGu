@@ -5,6 +5,7 @@ using System.Text;
 using KouXiaGu.World;
 using KouXiaGu.Grids;
 using System.Threading;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -16,18 +17,20 @@ namespace KouXiaGu.Terrain3D
     {
         public SceneUpdater(IWorld world)
         {
+            LandformDispatcher = LandformUnityDispatcher.Instance;
             LandformBuilder = new LandformBuilder(world);
             LandformUpdater = new LandformUpdater(LandformBuilder);
-            BuildingBuilder = new BuildingBuilder(world, LandformBuilder);
+            BuildingBuilder = new BuildingBuilder(world, LandformBuilder, LandformDispatcher);
             BuildingUpdater = new BuildingUpdater(BuildingBuilder);
             MapWatcher = new MapWatcher(LandformUpdater.Builder, BuildingUpdater, world.WorldData.MapData.ObservableMap);
         }
 
         bool isUpdating;
         bool updateThreadRunning;
+        internal IRequestDispatcher LandformDispatcher { get; private set; }
         internal LandformBuilder LandformBuilder { get; private set; }
-        internal BuildingBuilder BuildingBuilder { get; private set; }
         internal LandformUpdater LandformUpdater { get; private set; }
+        internal BuildingBuilder BuildingBuilder { get; private set; }
         internal BuildingUpdater BuildingUpdater { get; private set; }
         internal MapWatcher MapWatcher { get; private set; }
 

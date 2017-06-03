@@ -2903,7 +2903,7 @@ MonoBehaviour:
     WarningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
     ErrorColor: {r: 1, g: 0, b: 0, a: 1}
     SuccessfulColor: {r: 0, g: 1, b: 0, a: 1}
-  isShowUnityLog: 1
+  isShowUnityLog: 0
 --- !u!114 &1187234274
 MonoBehaviour:
   m_ObjectHideFlags: 0
