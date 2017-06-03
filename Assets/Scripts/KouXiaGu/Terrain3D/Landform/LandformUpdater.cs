@@ -39,12 +39,12 @@ namespace KouXiaGu.Terrain3D
 
         protected override void CreateAt(RectCoord coord)
         {
-            Builder.Create(coord);
+            Builder.CreateAsync(coord);
         }
 
         protected override void DestroyAt(RectCoord coord)
         {
-            Builder.Destroy(coord);
+            Builder.DestroyAsync(coord);
         }
     }
 }

@@ -72,7 +72,7 @@ namespace KouXiaGu.Terrain3D
             var belongChunks = GetBakeChunks(coord);
             foreach (var belongChunk in belongChunks)
             {
-                landformUpdater.Update(belongChunk, targets);
+                landformUpdater.UpdateAsync(belongChunk, targets);
             }
         }
 

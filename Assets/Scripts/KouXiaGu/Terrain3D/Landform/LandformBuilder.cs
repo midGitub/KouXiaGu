@@ -6,6 +6,7 @@ using UnityEngine;
 using UniRx;
 using KouXiaGu.Concurrent;
 using System.Collections;
+using System.Linq;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -77,17 +78,32 @@ namespace KouXiaGu.Terrain3D
             get { return completedChunkSender; }
         }
 
+        static BakeCamera bakeCamera
+        {
+            get { return LandformSettings.Instance.bakeCamera; }
+        }
+
+        static BakeLandform bakeLandform
+        {
+            get { return LandformSettings.Instance.bakeLandform; }
+        }
+
+        static BakeRoad bakeRoad
+        {
+            get { return LandformSettings.Instance.bakeRoad; }
+        }
+
         /// <summary>
-        /// 仅创建对应地形块,若已经存在则返回存在的元素;
+        /// 异步创建对应地形块,若已经存在则返回存在的元素;
         /// </summary>
-        public IAsyncOperation<Chunk> Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        public IAsyncOperation<Chunk> CreateAsync(RectCoord position, BakeTargets targets = BakeTargets.All)
         {
             CreateRequest request;
-            if (!SceneChunks.TryGetValue(chunkCoord, out request))
+            if (!SceneChunks.TryGetValue(position, out request))
             {
-                request = new CreateRequest(this, chunkCoord, targets);
+                request = new CreateRequest(this, position, targets);
                 requestDispatcher.Add(request);
-                SceneChunks.Add(chunkCoord, request);
+                SceneChunks.Add(position, request);
             }
             return request;
         }
@@ -95,7 +111,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 仅更新对应地形块,若不存在对应地形块,则返回Null;
         /// </summary>
-        public IAsyncOperation<Chunk> Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        public IAsyncOperation<Chunk> UpdateAsync(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             lock (unityThreadLock)
             {
@@ -121,7 +137,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 销毁指定块;
         /// </summary>
-        public void Destroy(RectCoord chunkCoord)
+        public void DestroyAsync(RectCoord chunkCoord)
         {
             CreateRequest request;
             if (SceneChunks.TryGetValue(chunkCoord, out request))
@@ -162,6 +178,13 @@ namespace KouXiaGu.Terrain3D
 
         internal class CreateRequest : AsyncOperation<Chunk>, IAsyncRequest, IState
         {
+            public CreateRequest(LandformBuilder parent, RectCoord chunkCoord, Chunk chunk)
+            {
+                Parent = parent;
+                ChunkCoord = chunkCoord;
+                OnCompleted(chunk);
+            }
+
             public CreateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
             {
                 Parent = parent;
@@ -190,21 +213,6 @@ namespace KouXiaGu.Terrain3D
                 get { return Parent.World; }
             }
 
-            BakeCamera bakeCamera
-            {
-                get { return LandformSettings.Instance.bakeCamera; }
-            }
-
-            BakeLandform bakeLandform
-            {
-                get { return LandformSettings.Instance.bakeLandform; }
-            }
-
-            BakeRoad bakeRoad
-            {
-                get { return LandformSettings.Instance.bakeRoad; }
-            }
-
             public void Cancele()
             {
                 IsCanceled = true;
@@ -220,7 +228,7 @@ namespace KouXiaGu.Terrain3D
             {
                 lock (Parent.unityThreadLock)
                 {
-                    if (IsCanceled)
+                    if (IsCanceled || IsCompleted)
                     {
                         return;
                     }
@@ -245,17 +253,13 @@ namespace KouXiaGu.Terrain3D
                 }
             }
 
-            void IAsyncRequest.AddQueue() { }
-        }
-
-        class UpdateRequest : CreateRequest
-        {
-            public UpdateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
-                : base(parent, chunkCoord, targets)
+            void IAsyncRequest.AddQueue()
             {
+                if (IsCompleted)
+                {
+                    Debug.LogError("将完成的请求加入到处理队列!");
+                }
             }
-
-
         }
 
         public class DestroyRequest : IAsyncRequest
@@ -263,6 +267,7 @@ namespace KouXiaGu.Terrain3D
             public DestroyRequest(LandformBuilder parent, RectCoord chunkCoord, Chunk chunk)
             {
                 this.parent = parent;
+                this.chunkCoord = chunkCoord;
                 this.chunk = chunk;
             }
 
