@@ -12,22 +12,12 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形渲染;
     /// </summary>
-    public class LandformRenderer : ChunkTexture
+    public class LandformRenderer
     {
-        public LandformRenderer()
-        {
-        }
-
         public LandformRenderer(MeshRenderer renderer)
         {
-            Init(renderer);
-            Apply();
-        }
-
-        public LandformRenderer(MeshRenderer renderer, ChunkTexture textures)
-            : base(textures)
-        {
-            Init(renderer);
+            renderer.sharedMaterial = material = new Material(LandformShader);
+            renderer.shadowCastingMode = shadowCastingMode;
             Apply();
         }
 
@@ -60,57 +50,123 @@ namespace KouXiaGu.Terrain3D
             remove { onHeightChanged -= value; }
         }
 
-        void Init(MeshRenderer renderer)
-        {
-            renderer.sharedMaterial = material = new Material(LandformShader);
-            renderer.shadowCastingMode = shadowCastingMode;
-        }
+        /// <summary>
+        /// 漫反射贴图;
+        /// </summary>
+        public Texture2D DiffuseMap { get; protected set; }
 
-        public override void SetDiffuseMap(Texture2D diffuseMap)
+        /// <summary>
+        /// 高度贴图;
+        /// </summary>
+        public Texture2D HeightMap { get; protected set; }
+
+        /// <summary>
+        /// 道路漫反射贴图;
+        /// </summary>
+        public Texture2D RoadDiffuseMap { get; protected set; }
+
+        /// <summary>
+        /// 道路高度贴图;
+        /// </summary>
+        public Texture2D RoadHeightMap { get; protected set; }
+
+        /// <summary>
+        /// 法线贴图;
+        /// </summary>
+        public Texture2D NormalMap { get; protected set; }
+
+        /// <summary>
+        /// 设置到贴图,并且销毁旧贴图;
+        /// </summary>
+        public void SetDiffuseMap(Texture2D diffuseMap)
         {
             if (DiffuseMap != diffuseMap)
             {
+                if (DiffuseMap != null)
+                {
+                    GameObject.Destroy(DiffuseMap);
+                }
                 material.SetTexture("_DiffuseMap", diffuseMap);
-                base.SetDiffuseMap(diffuseMap);
+                DiffuseMap = diffuseMap;
             }
         }
 
-        public override void SetHeightMap(Texture2D heightMap)
+        /// <summary>
+        /// 设置到贴图,并且销毁旧贴图;
+        /// </summary>
+        public void SetHeightMap(Texture2D heightMap)
         {
             if (HeightMap != heightMap)
             {
+                if (HeightMap != null)
+                {
+                    GameObject.Destroy(HeightMap);
+                }
                 material.SetTexture("_HeightMap", heightMap);
-                base.SetHeightMap(heightMap);
+                HeightMap = heightMap;
                 isHeightChanged = true;
             }
         }
 
-        public override void SetRoadDiffuseMap(Texture2D roadDiffuseMap)
+        /// <summary>
+        /// 设置到贴图,并且销毁旧贴图;
+        /// </summary>
+        public void SetRoadDiffuseMap(Texture2D roadDiffuseMap)
         {
             if (RoadDiffuseMap != roadDiffuseMap)
             {
+                if (RoadDiffuseMap != null)
+                {
+                    GameObject.Destroy(RoadDiffuseMap);
+                }
                 material.SetTexture("_RoadDiffuseMap", roadDiffuseMap);
-                base.SetRoadDiffuseMap(roadDiffuseMap);
+                RoadDiffuseMap = roadDiffuseMap;
             }
         }
 
-        public override void SetRoadHeightMap(Texture2D roadHeightMap)
+        /// <summary>
+        /// 设置到贴图,并且销毁旧贴图;
+        /// </summary>
+        public void SetRoadHeightMap(Texture2D roadHeightMap)
         {
             if (RoadHeightMap != roadHeightMap)
             {
+                if (RoadHeightMap != null)
+                {
+                    GameObject.Destroy(RoadHeightMap);
+                }
                 material.SetTexture("_RoadHeightMap", roadHeightMap);
-                base.SetRoadHeightMap(roadHeightMap);
+                RoadHeightMap = roadHeightMap;
                 isHeightChanged = true;
             }
         }
 
-        public override void SetNormalMap(Texture2D normalMap)
+        /// <summary>
+        /// 设置到贴图,并且销毁旧贴图;
+        /// </summary>
+        public void SetNormalMap(Texture2D normalMap)
         {
             if (NormalMap != normalMap)
             {
+                if (NormalMap != null)
+                {
+                    GameObject.Destroy(NormalMap);
+                }
                 material.SetTexture("_NormalMap", normalMap);
-                base.SetNormalMap(normalMap);
+                NormalMap = normalMap;
             }
+        }
+
+        /// <summary>
+        /// 销毁所有贴图;
+        /// </summary>
+        public virtual void Destroy()
+        {
+            SetDiffuseMap(null);
+            SetHeightMap(null);
+            SetRoadDiffuseMap(null);
+            SetRoadHeightMap(null);
+            SetNormalMap(null);
         }
 
         /// <summary>
@@ -133,7 +189,5 @@ namespace KouXiaGu.Terrain3D
             Color pixelColor = HeightMap.GetPixel(uv);
             return pixelColor.r * Displacement;
         }
-
     }
-
 }

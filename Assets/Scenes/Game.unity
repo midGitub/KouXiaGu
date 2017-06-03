@@ -278,7 +278,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &144552259
 MonoBehaviour:
@@ -838,7 +838,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &261335513
 MonoBehaviour:
@@ -1009,7 +1009,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 253871573}
-  - {fileID: 1146917776}
+  - {fileID: 1890475354}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1673,12 +1673,13 @@ GameObject:
   m_Component:
   - component: {fileID: 881292058}
   - component: {fileID: 881292060}
+  - component: {fileID: 881292059}
   m_Layer: 0
   m_Name: BakeCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &881292058
 Transform:
@@ -1688,11 +1689,26 @@ Transform:
   m_GameObject: {fileID: 881292057}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 1}
   m_Children: []
-  m_Father: {fileID: 1146917776}
+  m_Father: {fileID: 1890475354}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &881292059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 881292057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b5522cb40295c64499d710929dc1173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  qualitySettings:
+    textureSize: 60
+    diffuseMapRatios: 1
+    heightMapRatios: 1
 --- !u!20 &881292060
 Camera:
   m_ObjectHideFlags: 0
@@ -2692,74 +2708,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1146917772
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1146917776}
-  - component: {fileID: 1146917773}
-  - component: {fileID: 1146917775}
-  m_Layer: 0
-  m_Name: Landform
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
---- !u!114 &1146917773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1146917772}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0a58e8faadeeba4bbfa2ec25de051b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bakeCamera:
-    camera: {fileID: 881292060}
-  bakeLandform:
-    prefab: {fileID: 23541030008187398, guid: 4e810ba380f002243ab86965896b23df, type: 2}
-    diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
-    heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
-  bakeRoad:
-    prefab: {fileID: 114079317866361212, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
-    diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
-    heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
-  runtimeStopwatch:
-    idleSeconds: 0.3
-  waitUpdate: 0
---- !u!114 &1146917775
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1146917772}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e801b7d1cfe568548b31351916c6679f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runtimeStopwatch:
-    idleSeconds: 0.5
---- !u!4 &1146917776
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1146917772}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 881292058}
-  m_Father: {fileID: 435868885}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1182531476
 GameObject:
   m_ObjectHideFlags: 0
@@ -2952,7 +2900,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 119166967}
-  - {fileID: 1890475354}
   - {fileID: 1732559464}
   - {fileID: 261335512}
   - {fileID: 1921826345}
@@ -3244,7 +3191,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1415930381
 GameObject:
@@ -3825,7 +3772,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1732559465
 MonoBehaviour:
@@ -3927,6 +3874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1890475354}
   - component: {fileID: 1890475355}
+  - component: {fileID: 1890475356}
   m_Layer: 0
   m_Name: Landform
   m_TagString: Untagged
@@ -3941,11 +3889,12 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1890475353}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 1, z: 0}
-  m_Children: []
-  m_Father: {fileID: 1187234277}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 881292058}
+  m_Father: {fileID: 435868885}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1890475355
@@ -3961,10 +3910,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   landformShader: {fileID: 4800000, guid: 31f92206529d9474db05c92df9ac2f47, type: 3}
-  bakeSettings:
-    textureSize: 60
-    diffuseMapRatios: 1
-    heightMapRatios: 1
+  bakeCamera: {fileID: 881292059}
+  bakeLandform:
+    prefab: {fileID: 23541030008187398, guid: 4e810ba380f002243ab86965896b23df, type: 2}
+    diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
+    heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
+  bakeRoad:
+    prefab: {fileID: 114079317866361212, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
+    diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
+    heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
   waterSettings:
     DaytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
     NighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
@@ -3977,6 +3931,19 @@ MonoBehaviour:
   gridLineMap: {fileID: 2800000, guid: a150c6ac3c4198d448d505080a6d8f1a, type: 3}
   gridLineColor: {r: 0.19852942, g: 0.19852942, b: 0.19852942, a: 0}
   isDisplayGridLine: 1
+--- !u!114 &1890475356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1890475353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e801b7d1cfe568548b31351916c6679f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeStopwatch:
+    idleSeconds: 0.01
 --- !u!1 &1921826344
 GameObject:
   m_ObjectHideFlags: 0
@@ -4009,7 +3976,7 @@ RectTransform:
   m_Children:
   - {fileID: 825846339}
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

@@ -115,11 +115,6 @@ namespace KouXiaGu.Terrain3D
             Renderer.Destroy();
         }
 
-        public void Clear()
-        {
-            Renderer.Clear();
-        }
-
         /// <summary>
         /// 销毁Unity实例,并清除所有贴图资源;
         /// </summary>

@@ -11,28 +11,21 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 用于烘焙场景和品质控制;
     /// </summary>
-    [Serializable]
-    class BakeCamera
+    [RequireComponent(typeof(Camera))]
+    class BakeCamera : SceneSington<BakeCamera>
     {
         BakeCamera()
         {
         }
 
-        [SerializeField]
-        Camera camera;
+        public QualitySettings qualitySettings;
+        public Camera Camera { get; private set; }
 
-        public Camera Camera
+        void Awake()
         {
-            get { return camera; }
-        }
-
-        public QualitySettings Settings
-        {
-            get { return LandformSettings.Instance.BakeSettings; }
-        }
-
-        public void Initialize()
-        {
+            SetInstance(this);
+            qualitySettings.Updata();
+            Camera = GetComponent<Camera>();
             InitBakingCamera();
         }
 
@@ -41,11 +34,11 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void InitBakingCamera()
         {
-            camera.aspect = QualitySettings.CameraAspect;
-            camera.orthographicSize = QualitySettings.CameraSize;
-            camera.transform.rotation = QualitySettings.CameraRotation;
-            camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
-            camera.backgroundColor = Color.black;
+            Camera.aspect = QualitySettings.CameraAspect;
+            Camera.orthographicSize = QualitySettings.CameraSize;
+            Camera.transform.rotation = QualitySettings.CameraRotation;
+            Camera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
+            Camera.backgroundColor = Color.black;
         }
 
         /// <summary>
@@ -53,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public RenderTexture GetDiffuseTemporaryRender()
         {
-            BakeTextureInfo texInfo = Settings.LandformDiffuseMap;
+            BakeTextureInfo texInfo = qualitySettings.LandformDiffuseMap;
             return RenderTexture.GetTemporary(texInfo.BakeWidth, texInfo.BakeHeight);
         }
 
@@ -62,7 +55,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public RenderTexture GetHeightTemporaryRender()
         {
-            BakeTextureInfo texInfo = Settings.LandformHeightMap;
+            BakeTextureInfo texInfo = qualitySettings.LandformHeightMap;
             return RenderTexture.GetTemporary(texInfo.BakeWidth, texInfo.BakeHeight);
         }
 
@@ -146,7 +139,7 @@ namespace KouXiaGu.Terrain3D
             TextureFormat format = TextureFormat.RGB24,
             bool mipmap = false)
         {
-            BakeTextureInfo texInfo = Settings.LandformDiffuseMap;
+            BakeTextureInfo texInfo = qualitySettings.LandformDiffuseMap;
             RenderTexture.active = rt;
             Texture2D diffuseTex = new Texture2D(texInfo.Width, texInfo.Height, format, mipmap);
             diffuseTex.ReadPixels(texInfo.ClippingRect, 0, 0, false);
@@ -160,7 +153,7 @@ namespace KouXiaGu.Terrain3D
             TextureFormat format = TextureFormat.RGB24,
             bool mipmap = false)
         {
-            BakeTextureInfo texInfo = Settings.LandformHeightMap;
+            BakeTextureInfo texInfo = qualitySettings.LandformHeightMap;
             RenderTexture.active = rt;
             Texture2D heightMap = new Texture2D(texInfo.Width, texInfo.Height, format, mipmap);
             heightMap.ReadPixels(texInfo.ClippingRect, 0, 0, false);

@@ -86,6 +86,7 @@ namespace KouXiaGu.Terrain3D
         public SceneBuildingCollection BuildingCollection { get; private set; }
         public IRequestDispatcher RequestDispatcher { get; private set; }
         readonly LandformObserver landformObserver;
+        readonly object unityThreadLock = new object();
 
         HashSet<RectCoord> sceneChunks
         {
@@ -304,7 +305,7 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = true;
             }
 
-            IEnumerator IAsyncRequest.Operate()
+            void IAsyncRequest.Operate()
             {
                 if (!IsCanceled)
                 {
@@ -324,11 +325,9 @@ namespace KouXiaGu.Terrain3D
                         OnFaulted(ex);
                     }
                 }
-                yield break;
             }
 
             void IAsyncRequest.AddQueue() { }
-            void IAsyncRequest.OutQueue() { }
         }
 
         /// <summary>
@@ -343,14 +342,12 @@ namespace KouXiaGu.Terrain3D
 
             public IBuilding Building { get; private set; }
 
-            IEnumerator IAsyncRequest.Operate()
+            void IAsyncRequest.Operate()
             {
                 Building.Destroy();
-                yield break;
             }
 
             void IAsyncRequest.AddQueue() { }
-            void IAsyncRequest.OutQueue() { }
         }
 
         /// <summary>

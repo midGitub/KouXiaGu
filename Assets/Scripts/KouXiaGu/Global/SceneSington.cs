@@ -74,8 +74,12 @@ namespace KouXiaGu
         static T Find()
         {
             GameObject sceneController = GameObject.FindWithTag(DefaultTagName);
-            T instance = sceneController.GetComponentInChildren<T>();
-            return instance;
+            if (sceneController != null)
+            {
+                T instance = sceneController.GetComponentInChildren<T>();
+                return instance;
+            }
+            return null;
         }
 
         /// <summary>

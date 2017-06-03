@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         public SceneUpdater(IWorld world)
         {
             LandformDispatcher = LandformUnityDispatcher.Instance;
-            LandformBuilder = new LandformBuilder(world);
+            LandformBuilder = new LandformBuilder(world, LandformDispatcher);
             LandformUpdater = new LandformUpdater(LandformBuilder);
             BuildingBuilder = new BuildingBuilder(world, LandformBuilder, LandformDispatcher);
             BuildingUpdater = new BuildingUpdater(BuildingBuilder);
@@ -39,7 +39,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public override bool IsCompleted
         {
-            get { return isUpdating && LandformUpdater.IsCompleted; }
+            get { return isUpdating && LandformDispatcher.RequestCount < 3; }
         }
 
         public IAsyncOperation Start()

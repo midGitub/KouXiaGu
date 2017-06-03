@@ -4,17 +4,21 @@ using KouXiaGu.World;
 using KouXiaGu.Grids;
 using UnityEngine;
 using UniRx;
+using KouXiaGu.Concurrent;
+using System.Collections;
 
 namespace KouXiaGu.Terrain3D
 {
 
-    public class SceneLandformCollection : Dictionary<RectCoord, LandformBuilder.ChunkCreateRequest>
+    public class SceneLandformCollection
     {
         public SceneLandformCollection()
         {
-            ReadOnlySceneChunks = this.AsReadOnlyDictionary(item => item as IAsyncOperation<Chunk>);
+            SceneChunks = new Dictionary<RectCoord, LandformBuilder.CreateRequest>();
+            ReadOnlySceneChunks = SceneChunks.AsReadOnlyDictionary(item => item as IAsyncOperation<Chunk>);
         }
 
+        internal Dictionary<RectCoord, LandformBuilder.CreateRequest> SceneChunks { get; private set; }
         public IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> ReadOnlySceneChunks { get; private set; }
 
         /// <summary>
@@ -23,10 +27,10 @@ namespace KouXiaGu.Terrain3D
         public float GetHeight(Vector3 position)
         {
             RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
-            LandformBuilder.ChunkCreateRequest chunk;
-            if (TryGetValue(chunkCoord, out chunk))
+            LandformBuilder.CreateRequest chunk;
+            if (SceneChunks.TryGetValue(chunkCoord, out chunk))
             {
-                if (chunk.Result != null)
+                if (chunk.IsCompleted)
                 {
                     Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
                     return chunk.Result.Renderer.GetHeight(uv);
@@ -39,36 +43,26 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 场景地形块管理;
     /// </summary>
-    public class LandformBuilder
+    class LandformBuilder
     {
-        public LandformBuilder(IWorld world)
+        public LandformBuilder(IWorld world, IRequestDispatcher requestDispatcher)
         {
             if (world == null)
                 throw new ArgumentNullException("world");
 
             World = world;
-            SceneChunks = world.Components.Landform.LandformChunks;
+            this.requestDispatcher = requestDispatcher;
+            SceneChunks = world.Components.Landform.LandformChunks.SceneChunks;
             chunkPool = new ChunkPool();
             completedChunkSender = new Sender<RectCoord>();
         }
 
         public IWorld World { get; private set; }
-        public SceneLandformCollection SceneChunks { get; private set; }
+        public Dictionary<RectCoord, CreateRequest> SceneChunks { get; private set; }
+        IRequestDispatcher requestDispatcher;
+        readonly object unityThreadLock = new object();
         readonly ChunkPool chunkPool;
         readonly Sender<RectCoord> completedChunkSender;
-
-        /// <summary>
-        /// 正在执行的请求总数;
-        /// </summary>
-        public int RequestCount
-        {
-            get { return Baker.RequestCount; }
-        }
-
-        LandformBaker Baker
-        {
-            get { return LandformBaker.Instance; }
-        }
 
         public RectGrid ChunkGrid
         {
@@ -88,11 +82,11 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IAsyncOperation<Chunk> Create(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
-            ChunkCreateRequest request;
+            CreateRequest request;
             if (!SceneChunks.TryGetValue(chunkCoord, out request))
             {
-                request = new ChunkCreateRequest(this, World, chunkCoord, targets);
-                AddBakeQueue(request);
+                request = new CreateRequest(this, chunkCoord, targets);
+                requestDispatcher.Add(request);
                 SceneChunks.Add(chunkCoord, request);
             }
             return request;
@@ -103,32 +97,25 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IAsyncOperation<Chunk> Update(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
-            ChunkCreateRequest request;
-            if (SceneChunks.TryGetValue(chunkCoord, out request))
+            lock (unityThreadLock)
             {
-                if (request.IsBaking)
+                CreateRequest request;
+                if (SceneChunks.TryGetValue(chunkCoord, out request))
                 {
-                    ChunkCreateRequest newRequest = new ChunkCreateRequest(request, targets);
-                    AddBakeQueue(request);
-                    SceneChunks[chunkCoord] = newRequest;
+                    if (request.IsCompleted)
+                    {
+                        request.Reset();
+                        request.Targets = targets;
+                        requestDispatcher.Add(request);
+                    }
+                    else
+                    {
+                        request.Targets |= targets;
+                    }
+                    return request;
                 }
-                else if (request.IsInQueue)
-                {
-                    request.Targets |= targets;
-                }
-                else
-                {
-                    request.Reset();
-                    AddBakeQueue(request);
-                }
-                return request;
+                return null;
             }
-            return null;
-        }
-
-        void AddBakeQueue(ChunkCreateRequest request)
-        {
-            Baker.AddRequest(request);
         }
 
         /// <summary>
@@ -136,141 +123,166 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void Destroy(RectCoord chunkCoord)
         {
-            ChunkCreateRequest request;
+            CreateRequest request;
             if (SceneChunks.TryGetValue(chunkCoord, out request))
             {
                 SceneChunks.Remove(chunkCoord);
-                request.Destroy();
+                Destory(request);
+            }
+        }
+
+        void Destory(CreateRequest request)
+        {
+            lock (unityThreadLock)
+            {
+                if (request.IsCompleted)
+                {
+                    DestroyRequest destroyRequest = new DestroyRequest(this, request.ChunkCoord, request.Result);
+                    requestDispatcher.Add(destroyRequest);
+                }
+                else
+                {
+                    request.Cancele();
+                }
             }
         }
 
         /// <summary>
         /// 销毁所有块;
         /// </summary>
-        public void DestroyAll()
+        internal void DestroyAll()
         {
             foreach (var sceneChunk in SceneChunks.Values)
             {
-                sceneChunk.Destroy();
+                Destory(sceneChunk);
             }
             SceneChunks.Clear();
         }
 
-        public class ChunkCreateRequest : AsyncOperation<Chunk>, IAsyncOperation<Chunk>, IBakeRequest
-        {
-            /// <summary>
-            /// 创建到一个新的请求,并且将旧请求设置为不可用;
-            /// </summary>
-            public ChunkCreateRequest(ChunkCreateRequest clone, BakeTargets targets)
-            {
-                clone.IsCanceled = true;
-                Parent = clone.Parent;
-                World = clone.World;
-                ChunkCoord = clone.ChunkCoord;
-                Chunk = clone.Chunk;
-                Targets |= targets;
-                IsInQueue = false;
-                IsBaking = false;
-                IsCanceled = false;
-            }
 
-            public ChunkCreateRequest(LandformBuilder parent, IWorld world, RectCoord chunkCoord, BakeTargets targets)
+        internal class CreateRequest : AsyncOperation<Chunk>, IAsyncRequest, IState
+        {
+            public CreateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
             {
                 Parent = parent;
-                World = world;
                 ChunkCoord = chunkCoord;
-                //Chunk = chunkPool.Get();
-                //Chunk.Position = parent.ChunkGrid.GetCenter(chunkCoord);
                 Targets = targets;
-                IsInQueue = false;
-                IsBaking = false;
-                IsCanceled = false;
             }
 
             public LandformBuilder Parent { get; private set; }
-            public IWorld World { get; private set; }
             public RectCoord ChunkCoord { get; private set; }
-            public BakeTargets Targets { get; set; }
-            public bool IsInQueue { get; private set; }
-            public bool IsBaking { get; private set; }
+            public BakeTargets Targets { get; internal set; }
             public bool IsCanceled { get; private set; }
+
+            Chunk chunk
+            {
+                get { return result; }
+                set { result = value; }
+            }
 
             ChunkPool chunkPool
             {
                 get { return Parent.chunkPool; }
             }
 
-            public Chunk Chunk
+            IWorld world
             {
-                get { return Result; }
-                private set { Result = value; }
+                get { return Parent.World; }
             }
 
-            /// <summary>
-            /// 销毁这个请求,并且销毁块资源;
-            /// </summary>
-            public void Destroy()
+            BakeCamera bakeCamera
+            {
+                get { return LandformSettings.Instance.bakeCamera; }
+            }
+
+            BakeLandform bakeLandform
+            {
+                get { return LandformSettings.Instance.bakeLandform; }
+            }
+
+            BakeRoad bakeRoad
+            {
+                get { return LandformSettings.Instance.bakeRoad; }
+            }
+
+            public void Cancele()
             {
                 IsCanceled = true;
-                if (Chunk != null)
-                {
-                    chunkPool.Release(Chunk);
-                    Chunk = null;
-                }
             }
 
-            /// <summary>
-            /// 重置状态信息;
-            /// </summary>
-            internal void Reset()
+            public void Reset()
             {
-                IsInQueue = false;
-                IsBaking = false;
+                ResetState();
                 IsCanceled = false;
-                base.ResetState();
             }
 
-            ChunkTexture IBakeRequest.Textures
+            void IAsyncRequest.Operate()
             {
-                get { return Chunk.Renderer; }
-            }
-
-            void IRequest.Operate()
-            {
-                IsBaking = true;
-                if (Chunk == null)
+                lock (Parent.unityThreadLock)
                 {
-                    Chunk = chunkPool.Get();
-                    Chunk.Position = Parent.ChunkGrid.GetCenter(ChunkCoord);
-                }
-            }
-
-            void IRequest.AddQueue()
-            {
-                IsInQueue = true;
-            }
-
-            void IRequest.OutQueue()
-            {
-                try
-                {
-                    if (!IsCanceled)
+                    if (IsCanceled)
                     {
-                        Result.Renderer.Apply();
-                        OnCompleted(Chunk);
-                        Parent.completedChunkSender.Send(ChunkCoord);
+                        return;
                     }
-                }
-                catch (Exception ex)
-                {
-                    Parent.completedChunkSender.SendError(ex);
-                }
-                finally
-                {
-                    IsInQueue = false;
-                    IsBaking = false;
+                    if (chunk == null)
+                    {
+                        chunk = chunkPool.Get();
+                        chunk.Position = Parent.ChunkGrid.GetCenter(ChunkCoord);
+                    }
+                    CubicHexCoord chunkCenter = ChunkCoord.GetChunkHexCenter();
+
+                    if ((Targets & BakeTargets.Landform) > 0)
+                    {
+                        bakeLandform.BakeCoroutine(bakeCamera, world, chunkCenter, chunk.Renderer);
+                    }
+                    if ((Targets & BakeTargets.Road) > 0)
+                    {
+                        bakeRoad.BakeCoroutine(bakeCamera, world, chunkCenter, chunk.Renderer);
+                    }
+                    chunk.Renderer.Apply();
+                    OnCompleted();
+                    Parent.completedChunkSender.Send(ChunkCoord);
                 }
             }
+
+            void IAsyncRequest.AddQueue() { }
+        }
+
+        class UpdateRequest : CreateRequest
+        {
+            public UpdateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
+                : base(parent, chunkCoord, targets)
+            {
+            }
+
+
+        }
+
+        public class DestroyRequest : IAsyncRequest
+        {
+            public DestroyRequest(LandformBuilder parent, RectCoord chunkCoord, Chunk chunk)
+            {
+                this.parent = parent;
+                this.chunk = chunk;
+            }
+
+            LandformBuilder parent;
+            Chunk chunk;
+            RectCoord chunkCoord;
+
+            ChunkPool chunkPool
+            {
+                get { return parent.chunkPool; }
+            }
+
+            void IAsyncRequest.Operate()
+            {
+                chunkPool.Release(chunk);
+                chunk = null;
+                parent.completedChunkSender.Send(chunkCoord);
+            }
+
+            void IAsyncRequest.AddQueue() { }
         }
     }
 }

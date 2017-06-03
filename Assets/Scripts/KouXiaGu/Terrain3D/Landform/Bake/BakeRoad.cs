@@ -10,7 +10,6 @@ using KouXiaGu.Terrain3D.DynamicMesh;
 
 namespace KouXiaGu.Terrain3D
 {
-
     /// <summary>
     /// 地形道路烘培;
     /// </summary>
@@ -50,19 +49,7 @@ namespace KouXiaGu.Terrain3D
             objectPool = new RoadMeshPool(prefab, "BakeRoadMesh");
         }
 
-        /// <summary>
-        /// 释放所有该实例创建的 RenderTexture 类型的资源;
-        /// </summary>
-        public void Reset()
-        {
-            bakeCamera.ReleaseTemporary(DiffuseRT);
-            DiffuseRT = null;
-
-            bakeCamera.ReleaseTemporary(HeightRT);
-            HeightRT = null;
-        }
-
-        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, ICoroutineState state)
+        public void BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer result)
         {
             this.bakeCamera = bakeCamera;
             this.world = world;
@@ -70,38 +57,67 @@ namespace KouXiaGu.Terrain3D
             this.displays = ChunkPartitioner.GetRoad(chunkCenter);
 
             PrepareScene();
-            if (state.IsCanceled)
-            {
-                goto _End_;
-            }
-            if (state.Await())
-            {
-                yield return null;
-                state.Restart();
-            }
-
-
             BakeDiffuse();
-            if (state.IsCanceled)
-            {
-                goto _End_;
-            }
-            if (state.Await())
-            {
-                yield return null;
-                state.Restart();
-            }
-
-
             BakeHeight();
-            if (state.Await())
-            {
-                yield return null;
-                state.Restart();
-            }
 
-        _End_:
+            var diffuseMap = bakeCamera.GetDiffuseTexture(DiffuseRT, TextureFormat.ARGB32);
+            var heightMap = bakeCamera.GetHeightTexture(HeightRT);
+            result.SetRoadDiffuseMap(diffuseMap);
+            result.SetRoadHeightMap(heightMap);
+
             ClearScene();
+            Reset();
+        }
+
+        //public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer result, IState state)
+        //{
+        //    this.bakeCamera = bakeCamera;
+        //    this.world = world;
+        //    this.chunkCenter = chunkCenter;
+        //    this.displays = ChunkPartitioner.GetRoad(chunkCenter);
+
+        //    PrepareScene();
+        //    yield return null;
+        //    if (state.IsCanceled)
+        //    {
+        //        goto _End_;
+        //    }
+
+        //    BakeDiffuse();
+        //    yield return null;
+        //    if (state.IsCanceled)
+        //    {
+        //        goto _End_;
+        //    }
+
+
+        //    BakeHeight();
+        //    yield return null;
+        //    if (state.IsCanceled)
+        //    {
+        //        goto _End_;
+        //    }
+
+        //    var diffuseMap = bakeCamera.GetDiffuseTexture(DiffuseRT, TextureFormat.ARGB32);
+        //    var heightMap = bakeCamera.GetHeightTexture(HeightRT);
+        //    result.SetRoadDiffuseMap(diffuseMap);
+        //    result.SetRoadHeightMap(heightMap);
+
+        //    _End_:
+        //    ClearScene();
+        //    Reset();
+        //}
+
+        /// <summary>
+        /// 释放所有该实例创建的 RenderTexture 类型的资源;
+        /// </summary>
+        void Reset()
+        {
+            bakeCamera.ReleaseTemporary(DiffuseRT);
+            DiffuseRT = null;
+
+            bakeCamera.ReleaseTemporary(HeightRT);
+            HeightRT = null;
         }
 
         void PrepareScene()
@@ -205,7 +221,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             DiffuseRT = bakeCamera.GetDiffuseTemporaryRender();
-            bakeCamera.CameraRender(DiffuseRT, chunkCenter, LandformBaker.BlackTransparent);
+            bakeCamera.CameraRender(DiffuseRT, chunkCenter, LandformSettings.BlackTransparent);
         }
 
         void SetDiffuserMaterial(Pack pack)

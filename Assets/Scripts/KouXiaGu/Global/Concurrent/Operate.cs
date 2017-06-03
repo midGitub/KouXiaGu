@@ -19,7 +19,6 @@ namespace KouXiaGu.Concurrent
 
         readonly Action operate;
         public bool IsInQueue { get; private set; }
-        public bool IsOperating { get; private set; }
 
         void IAsyncRequest.AddQueue()
         {
@@ -29,11 +28,10 @@ namespace KouXiaGu.Concurrent
             IsInQueue = true;
         }
 
-        IEnumerator IAsyncRequest.Operate()
+        void IAsyncRequest.Operate()
         {
             try
             {
-                IsOperating = true;
                 operate();
                 OnCompleted();
             }
@@ -43,17 +41,8 @@ namespace KouXiaGu.Concurrent
             }
             finally
             {
-                IsOperating = false;
+                IsInQueue = true;
             }
-            yield break;
-        }
-
-        void IAsyncRequest.OutQueue()
-        {
-            if (IsInQueue)
-                throw new ArgumentException("时序错误;");
-
-            IsInQueue = false;
         }
     }
 }

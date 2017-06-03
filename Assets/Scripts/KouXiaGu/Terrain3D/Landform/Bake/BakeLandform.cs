@@ -33,6 +33,8 @@ namespace KouXiaGu.Terrain3D
         Material heightMaterial;
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
+        public Texture2D DiffuseTex { get; private set; }
+        public Texture2D HeightTex { get; private set; }
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> worldMap
         {
@@ -59,7 +61,7 @@ namespace KouXiaGu.Terrain3D
         /// <param name="world">世界数据</param>
         /// <param name="chunkCenter">地形块中心坐标;</param>
         /// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
-        public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, ICoroutineState state)
+        public void BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer textures)
         {
             this.bakeCamera = bakeCamera;
             this.world = world;
@@ -67,39 +69,61 @@ namespace KouXiaGu.Terrain3D
             this.displays = ChunkPartitioner.GetLandform(chunkCenter);
 
             PrepareScene();
-            if (state.Await())
-            {
-                yield return null;
-                state.Restart();
-            }
-            if (state.IsCanceled)
-            {
-                goto _End_;
-            }
-
-
             BakeDiffuse();
-            if (state.Await())
-            {
-                yield return null;
-                state.Restart();
-            }
-            if (state.IsCanceled)
-            {
-                goto _End_;
-            }
-
-
             BakeHeight();
-            if (state.Await())
-            {
-                yield return null;
-                state.Restart();
-            }
 
-        _End_:
+            var diffuseMap = bakeCamera.GetDiffuseTexture(DiffuseRT);
+            var heightMap = bakeCamera.GetHeightTexture(HeightRT);
+            textures.SetDiffuseMap(diffuseMap);
+            textures.SetHeightMap(heightMap);
+
             ClearScene();
+            Reset();
         }
+
+        ///// <summary>
+        ///// 获取到烘培协程;
+        ///// </summary>
+        ///// <param name="world">世界数据</param>
+        ///// <param name="chunkCenter">地形块中心坐标;</param>
+        ///// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
+        //public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer textures, IState state)
+        //{
+        //    this.bakeCamera = bakeCamera;
+        //    this.world = world;
+        //    this.chunkCenter = chunkCenter;
+        //    this.displays = ChunkPartitioner.GetLandform(chunkCenter);
+
+        //    PrepareScene();
+        //    yield return null;
+        //    if (state.IsCanceled)
+        //    {
+        //        goto _End_;
+        //    }
+
+        //    BakeDiffuse();
+        //    yield return null;
+        //    if (state.IsCanceled)
+        //    {
+        //        goto _End_;
+        //    }
+
+        //    BakeHeight();
+        //    yield return null;
+        //    if (state.IsCanceled)
+        //    {
+        //        goto _End_;
+        //    }
+
+        //    var diffuseMap = bakeCamera.GetDiffuseTexture(DiffuseRT);
+        //    var heightMap = bakeCamera.GetHeightTexture(HeightRT);
+        //    textures.SetDiffuseMap(diffuseMap);
+        //    textures.SetHeightMap(heightMap);
+
+        //    _End_:
+        //    ClearScene();
+        //    Reset();
+        //}
 
         /// <summary>
         /// 释放所有该实例创建的 RenderTexture 类型的资源;
@@ -169,7 +193,7 @@ namespace KouXiaGu.Terrain3D
             }
 
             DiffuseRT = bakeCamera.GetDiffuseTemporaryRender();
-            bakeCamera.CameraRender(DiffuseRT, chunkCenter, LandformBaker.BlackTransparent);
+            bakeCamera.CameraRender(DiffuseRT, chunkCenter, LandformSettings.BlackTransparent);
         }
 
         void SetDiffuserMaterial(Pack renderer)
@@ -218,7 +242,5 @@ namespace KouXiaGu.Terrain3D
             public LandformResource Res { get; private set; }
             public MeshRenderer Rednerer { get; private set; }
         }
-
     }
-
 }

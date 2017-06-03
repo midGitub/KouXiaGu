@@ -11,8 +11,17 @@ namespace KouXiaGu.Terrain3D
     /// 地形参数设置;
     /// </summary>
     [DisallowMultipleComponent]
-    class LandformSettings : UnitySington<LandformSettings>
+    class LandformSettings : SceneSington<LandformSettings>
     {
+        /// <summary>
+        /// 透明的黑色颜色;
+        /// </summary>
+        public static readonly Color BlackTransparent = new Color(0, 0, 0, 0);
+
+        /// <summary>
+        /// 地平线颜色;
+        /// </summary>
+        public static readonly Color Horizon = new Color(0.5f, 0.5f, 0.5f, 1);
 
         LandformSettings()
         {
@@ -21,7 +30,9 @@ namespace KouXiaGu.Terrain3D
         #region 编辑器设置变量;
 
         public Shader landformShader = null;
-        public QualitySettings bakeSettings = null;
+        public BakeCamera bakeCamera = null;
+        public BakeLandform bakeLandform = null;
+        public BakeRoad bakeRoad = null;
         public WaterSettings waterSettings = default(WaterSettings);
         [Range(0, 64)]
         public float tessellation = 16f;
@@ -41,9 +52,9 @@ namespace KouXiaGu.Terrain3D
             get { return landformShader; }
         }
 
-        public QualitySettings BakeSettings
+        public QualitySettings QualitySettings
         {
-            get { return bakeSettings; }
+            get { return bakeCamera.qualitySettings; }
         }
 
         public WaterSettings WaterSettings
@@ -70,12 +81,13 @@ namespace KouXiaGu.Terrain3D
         void Awake()
         {
             SetInstance(this);
+            bakeLandform.Initialize();
+            bakeRoad.Initialise();
             OnValidate();
         }
 
         void OnValidate()
         {
-            BakeSettings.Updata();
             SetTessellation(tessellation);
             SetDisplacement(displacement);
             SetGridLineMap(gridLineMap);

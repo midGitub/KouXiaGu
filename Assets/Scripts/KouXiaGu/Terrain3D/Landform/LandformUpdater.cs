@@ -19,18 +19,13 @@ namespace KouXiaGu.Terrain3D
             WatcherList = new List<ILandformWatcher>();
         }
 
-        public LandformUpdater(LandformBuilder builder)
+        internal LandformUpdater(LandformBuilder builder)
         {
             Builder = builder;
         }
 
         internal LandformBuilder Builder { get; private set; }
         public static List<ILandformWatcher> WatcherList { get; private set; }
-
-        public bool IsCompleted
-        {
-            get { return Builder.RequestCount <= 0; }
-        }
 
         protected override IEnumerable<RectCoord> SceneCoords
         {

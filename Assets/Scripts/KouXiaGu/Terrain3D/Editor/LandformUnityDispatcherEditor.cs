@@ -7,15 +7,15 @@ using UnityEditor;
 namespace KouXiaGu.Terrain3D
 {
 
-    [CustomEditor(typeof(LandformBaker))]
+    [CustomEditor(typeof(LandformUnityDispatcher))]
     [CanEditMultipleObjects]
-    public class LandformBakerEditor : Editor
+    public class LandformUnityDispatcherEditor : Editor
     {
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            var target = (LandformBaker)this.target;
+            var target = (LandformUnityDispatcher)this.target;
 
             EditorGUILayout.LabelField("RequestCount:" + target.RequestCount);
         }

@@ -68,23 +68,21 @@ namespace KouXiaGu.Concurrent
                 }
 
                 var request = requestQueue.Dequeue();
-                Coroutine requestCoroutine = new Coroutine(request.Operate());
 
-                while (requestCoroutine.MoveNext())
+                try
                 {
-                    if (stopwatch.Await())
-                    {
-                        yield return null;
-                        stopwatch.Restart();
-                    }
+                    request.Operate();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("[UnityAsyncRequestDispatcher]请求出现异常 : " + ex);
                 }
 
-                if (requestCoroutine.IsFaulted)
+                if (stopwatch.Await())
                 {
-                    Debug.LogError("[UnityAsyncRequestDispatcher]请求出现异常 : " + requestCoroutine.Exception);
+                    yield return null;
+                    stopwatch.Restart();
                 }
-
-                request.OutQueue();
             }
         }
     }
