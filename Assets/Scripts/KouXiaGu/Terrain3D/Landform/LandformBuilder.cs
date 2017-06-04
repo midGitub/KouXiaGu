@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
             LandformBuilder.CreateRequest chunk;
             if (SceneChunks.TryGetValue(chunkCoord, out chunk))
             {
-                if (chunk.IsCompleted)
+                if (chunk.Result != null)
                 {
                     Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
                     return chunk.Result.Renderer.GetHeight(uv);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KouXiaGu.Collections;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D.DynamicMesh
 {
@@ -72,42 +73,47 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
         {
             Mesh mesh = meshFilter.mesh;
             Vector3[] vertices = mesh.vertices;
-            Transformation(spline, ref vertices);
+            meshData.Transformation(spline, ref vertices);
             mesh.vertices = vertices;
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
         }
 
         /// <summary>
-        /// 转换到曲线路径;
+        /// 转换到曲线路径,并且指定起点和终点的旋转角度;
         /// </summary>
-        void Transformation(ISpline spline, ref Vector3[] vertices)
+        public void Transformation(ISpline spline, float start, float end)
         {
-            meshData.Transformation(spline, ref vertices);
+            Mesh mesh = meshFilter.mesh;
+            Vector3[] vertices = mesh.vertices;
+            meshData.Transformation(spline, start, end, ref vertices);
+            mesh.vertices = vertices;
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
         }
 
 
-#region Test
+        #region Test
 
         static readonly ISpline spline1 = new CatmullRomSpline(
-                new Vector3(-1, 0, 0),
-                new Vector3(0, 0, 1),
-                new Vector3(1, 0, 0),
-                new Vector3(2, 0, -1)
+                new CubicHexCoord(-1, 0, 1).GetTerrainPixel(),
+                new CubicHexCoord(0, 0, 0).GetTerrainPixel(),
+                new CubicHexCoord(1, -1, 0).GetTerrainPixel(),
+                new CubicHexCoord(2, -2, 0).GetTerrainPixel()
             );
 
         static readonly ISpline spline2 = new CatmullRomSpline(
-                new Vector3(0, 0, -1),
-                new Vector3(0, 0, 0),
-                new Vector3(0, 0, 1),
-                new Vector3(0, 0, 2)
+                new CubicHexCoord(0, -1, 1).GetTerrainPixel(),
+                new CubicHexCoord(0, 0, 0).GetTerrainPixel(),
+                new CubicHexCoord(0, 1, -1).GetTerrainPixel(),
+                new CubicHexCoord(0, 2, -2).GetTerrainPixel()
             );
 
         static readonly ISpline spline3 = new CatmullRomSpline(
-                new Vector3(-1, 0, -1),
-                new Vector3(0, 0, 0),
-                new Vector3(1, 0, 1),
-                new Vector3(2, 0, 2)
+                new CubicHexCoord(-1, 0, 1).GetTerrainPixel(),
+                new CubicHexCoord(0, 0, 0).GetTerrainPixel(),
+                new CubicHexCoord(1, 0, -1).GetTerrainPixel(),
+                new CubicHexCoord(2, 0, -2).GetTerrainPixel()
             );
 
         [ContextMenu("Test1")]
@@ -143,7 +149,22 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
         {
             manager.AddOrUpdate(dynamicMeshName, meshData);
         }
-#endregion
+
+        /// <summary>
+        /// 获取 from 到 to 的角度(忽略Y),单位弧度;原型:Mathf.Atan2();
+        /// </summary>
+        float AngleY(Vector3 from, Vector3 to)
+        {
+            return Mathf.Atan2((to.x - from.x), (to.z - from.z));
+        }
+
+        [ContextMenu("123")]
+        void Test123()
+        {
+            Debug.Log((int)(0.75 / (1 / (double)3)));
+        }
+
+        #endregion
     }
 
 }

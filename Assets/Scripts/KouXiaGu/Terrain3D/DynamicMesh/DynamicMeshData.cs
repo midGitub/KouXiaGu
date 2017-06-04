@@ -94,6 +94,48 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
         }
 
         /// <summary>
+        /// 转换到曲线路径,并且指定起点和终点的旋转角度;
+        /// </summary>
+        public void Transformation(ISpline spline, float start, float end, ref Vector3[] vertices)
+        {
+            IList<JointPoint> jointPoints = JointInfo.JointPoints;
+            int endIndex = jointPoints.Count - 1;
+
+            JointPoint section = jointPoints[0];
+            Vector3 position = spline.InterpolatedPoint(section.InterpolatedValue);
+
+            for (int i = 0; i < jointPoints.Count; i++)
+            {
+                JointPoint afterSection;
+                Vector3 afterPosition;
+                float angle;
+
+                if (i < endIndex)
+                {
+                    afterSection = jointPoints[i + 1];
+                    afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
+                    angle = AngleY(position, afterPosition);
+                }
+                else if (i == 0)
+                {
+                    afterSection = jointPoints[i + 1];
+                    afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
+                    angle = start;
+                }
+                else
+                {
+                    afterSection = jointPoints[i - 1];
+                    afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
+                    angle = end;
+                }
+
+                TransformSection(section, position, angle, ref vertices);
+                section = afterSection;
+                position = afterPosition;
+            }
+        }
+
+        /// <summary>
         /// 更改顶点坐标到曲线;
         /// </summary>
         public void Transformation(ISpline spline, ref Vector3[] vertices)
@@ -101,25 +143,62 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
             IList<JointPoint> jointPoints = JointInfo.JointPoints;
             int endIndex = jointPoints.Count - 1;
 
+            JointPoint section = jointPoints[0];
+            Vector3 position = spline.InterpolatedPoint(section.InterpolatedValue);
+
             for (int i = 0; i < jointPoints.Count; i++)
             {
-                Vector3 currentJointPoint = spline.InterpolatedPoint(jointPoints[i].InterpolatedValue);
-                Vector3 afterJointPoint;
+                JointPoint afterSection;
+                Vector3 afterPosition;
                 float angle;
 
                 if (i < endIndex)
                 {
-                    afterJointPoint = spline.InterpolatedPoint(jointPoints[i + 1].InterpolatedValue);
-                    angle = AngleY(currentJointPoint, afterJointPoint);
+                    afterSection = jointPoints[i + 1];
+                    afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
+                    angle = AngleY(position, afterPosition);
                 }
                 else
                 {
-                    afterJointPoint = spline.InterpolatedPoint(jointPoints[i - 1].InterpolatedValue);
-                    angle = AngleY(afterJointPoint, currentJointPoint);
+                    afterSection = jointPoints[i - 1];
+                    afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
+                    angle = AngleY(afterPosition, position);
                 }
-                TransformSection(i, currentJointPoint, angle, ref vertices);
+
+                TransformSection(section, position, angle, ref vertices);
+                section = afterSection;
+                position = afterPosition;
             }
         }
+
+        ///// <summary>
+        ///// 更改顶点坐标到曲线;
+        ///// </summary>
+        //public void Transformation(ISpline spline, ref Vector3[] vertices)
+        //{
+        //    IList<JointPoint> jointPoints = JointInfo.JointPoints;
+        //    int endIndex = jointPoints.Count - 1;
+
+        //    for (int i = 0; i < jointPoints.Count; i++)
+        //    {
+        //        JointPoint section = jointPoints[i];
+        //        Vector3 currentJointPoint = spline.InterpolatedPoint(section.InterpolatedValue);
+        //        Vector3 afterJointPoint;
+        //        float angle;
+
+        //        if (i < endIndex)
+        //        {
+        //            afterJointPoint = spline.InterpolatedPoint(jointPoints[i + 1].InterpolatedValue);
+        //            angle = AngleY(currentJointPoint, afterJointPoint);
+        //        }
+        //        else
+        //        {
+        //            afterJointPoint = spline.InterpolatedPoint(jointPoints[i - 1].InterpolatedValue);
+        //            angle = AngleY(afterJointPoint, currentJointPoint);
+        //        }
+        //        TransformSection(section, currentJointPoint, angle, ref vertices);
+        //    }
+        //}
 
         /// <summary>
         /// 更改单个节点的旋转角度;
@@ -128,9 +207,8 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
         /// <param name="position">更改后的位置;</param>
         /// <param name="angle">旋转角度,单位为弧度;</param>
         /// <param name="vertices">进行变化的顶点;</param>
-        public void TransformSection(int sectionIndex, Vector3 position, float angle, ref Vector3[] vertices)
+        void TransformSection(JointPoint section, Vector3 position, float angle, ref Vector3[] vertices)
         {
-            JointPoint section = JointInfo.JointPoints[sectionIndex];
             foreach (var childIndex in section.Children)
             {
                 WallVertice info = Points[childIndex];
@@ -143,6 +221,7 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
                 vertices[childIndex] = newPosition;
             }
         }
+
 
         /// <summary>
         /// 更改单个节点坐标;
