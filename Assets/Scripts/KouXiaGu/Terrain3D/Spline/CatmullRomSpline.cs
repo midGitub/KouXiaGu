@@ -11,14 +11,6 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class CatmullRomSpline : ISpline
     {
-        //public CatmullRomSpline(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
-        //{
-        //    this.p0 = p0;
-        //    this.p1 = p1;
-        //    this.p2 = p2;
-        //    this.p3 = p3;
-        //}
-
         public CatmullRomSpline(params Vector3[] points)
         {
             if (points.Length < 4)
@@ -29,14 +21,14 @@ namespace KouXiaGu.Terrain3D
             this.points = points;
         }
 
-        Vector3[] points;
-        //public Vector3 p0, p1, p2, p3;
+        readonly Vector3[] points;
 
         public Vector3 InterpolatedPoint(float t)
         {
             const float one = 1;
             int segmentCount = points.Length - 3;
-            int segmentIndex = MathI.Clamp((int)(t / (one / segmentCount)), 0, segmentCount - 1);
+            int segmentIndex = (int)(t / (one / segmentCount));
+            segmentIndex = MathI.Clamp(segmentIndex, 0, segmentCount - 1);
             float localT = t * segmentCount - segmentIndex;
 
             Vector3 p0 = points[segmentIndex];
@@ -46,15 +38,6 @@ namespace KouXiaGu.Terrain3D
 
             return InterpolatedPoint(p0, p1, p2, p3, localT);
         }
-
-        ///// <summary>
-        ///// 获取到插值;
-        ///// </summary>
-        //public Vector3 InterpolatedPoint(float t)
-        //{
-        //    return InterpolatedPoint(p0, p1, p2, p3, t);
-        //}
-
 
         /// <summary>
         /// 获取到插值;

@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D
             set { prefab = value; }
         }
 
-        public Building BuildAt(IWorld world, CubicHexCoord position, float angele)
+        public Building BuildAt(IWorld world, CubicHexCoord position, float angele, BuildingResource info)
         {
             Vector3 pixelPosition = position.GetTerrainPixel();
             Quaternion angle = Quaternion.Euler(0, angele, 0);
@@ -44,9 +44,9 @@ namespace KouXiaGu.Terrain3D
             return instance;
         }
 
-        IBuilding IBuildingPrefab.BuildAt(IWorld world, CubicHexCoord position, float angele)
+        IBuilding IBuildingPrefab.BuildAt(IWorld world, CubicHexCoord position, float angele, BuildingResource info)
         {
-            return BuildAt(world, position, angele);
+            return BuildAt(world, position, angele, info);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace KouXiaGu
 {
 
 
-    public static class CollectionExtensions
+    public static class CollectionHelper
     {
 
         /// <summary>
@@ -74,6 +74,29 @@ namespace KouXiaGu
                 }
             }
             return -1;
+        }
+
+        /// <summary>
+        /// 移除指定下标的元素,同 List 的 RemoveAt();
+        /// </summary>
+        public static void RemoveAt<T>(ref T[] array, int index)
+        {
+            Array.Copy(array, index + 1, array, index, array.Length - index - 1);
+            Array.Resize(ref array, array.Length - 1);
+        }
+
+        /// <summary>
+        /// 移除符合要求的第一个元素;
+        /// </summary>
+        public static bool Remove<T>(this IList<T> list, Func<T, bool> func)
+        {
+            int index = list.FindIndex(func);
+            if (index >= 0)
+            {
+                list.RemoveAt(index);
+                return true;
+            }
+            return false;
         }
     }
 }

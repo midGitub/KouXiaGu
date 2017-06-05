@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine;
 using System.Linq;
+using KouXiaGu.World;
+using KouXiaGu.Grids;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -79,6 +81,14 @@ namespace KouXiaGu.Terrain3D
         public TerrainBuildingInfo Info { get; private set; }
         public GameObject Prefab { get; private set; }
         public IBuildingPrefab BuildingPrefab { get; private set; }
+
+        /// <summary>
+        /// 创建一个实例到该位置;
+        /// </summary>
+        public IBuilding BuildAt(IWorld world, CubicHexCoord position, float angele)
+        {
+            return BuildingPrefab.BuildAt(world, position, angele, this);
+        }
 
         public void Dispose()
         {

@@ -12,13 +12,27 @@ namespace KouXiaGu
     /// </summary>
     public static class LogExtensions
     {
+        const string NullString = "Null";
 
         /// <summary>
         /// 输出所有元素内容;
         /// </summary>
         public static string ToLog<T>(this IEnumerable<T> enumerable)
         {
-            return ToLog(enumerable, enumerable.GetType().Name);
+            if (enumerable == null)
+            {
+                return "Count:" + NullString;
+            }
+            else
+            {
+                string log = string.Empty;
+                int index = 0;
+                foreach (var item in enumerable)
+                {
+                    log += "\n" + Log(index++, item);
+                }
+                return "Count:" + index + log;
+            }
         }
 
         /// <summary>
@@ -26,7 +40,20 @@ namespace KouXiaGu
         /// </summary>
         public static string ToLog<T>(this IEnumerable<T> enumerable, Func<T, string> getLog)
         {
-            return ToLog(enumerable, getLog, enumerable.GetType().Name);
+            if (enumerable == null)
+            {
+                return "Count:" + NullString;
+            }
+            else
+            {
+                string log = string.Empty;
+                int index = 0;
+                foreach (var item in enumerable)
+                {
+                    log += "\n" + Log(index++, item, getLog);
+                }
+                return "Count:" + index + log;
+            }
         }
 
         /// <summary>
@@ -34,37 +61,48 @@ namespace KouXiaGu
         /// </summary>
         public static string ToLog<T>(this IEnumerable<T> enumerable, string descr)
         {
-            string log = "";
-            int index = 0;
-            foreach (var item in enumerable)
+            if (enumerable == null)
             {
-                log += Log(index++, item);
+                return descr + ",Count:" + NullString;
             }
-            return descr + ",Count:" + index + log;
+            else
+            {
+                string log = string.Empty;
+                int index = 0;
+                foreach (var item in enumerable)
+                {
+                    log += "\n" + Log(index++, item);
+                }
+                return descr + ",Count:" + index + log;
+            }
         }
 
         public static string ToLog<T>(this IEnumerable<T> enumerable, Func<T, string> getLog, string descr)
         {
-            string log = "";
-            int index = 0;
-            foreach (var item in enumerable)
+            if (enumerable == null)
             {
-                log += Log(index++, item, getLog);
+                return NullString;
             }
-            return descr + ",Count:" + index + log;
+            else
+            {
+                string log = "";
+                int index = 0;
+                foreach (var item in enumerable)
+                {
+                    log += Log(index++, item, getLog);
+                }
+                return descr + ",Count:" + index + log;
+            }
         }
-
 
         public static string Log<T>(int index, T item)
         {
-            return string.Concat("\n", "[", index, "]", "{", item.ToString(), "}");
+            return "[" + index + "]" + "{" + item.ToString() + "}";
         }
 
         public static string Log<T>(int index, T item, Func<T, string> getLog)
         {
-            return string.Concat("\n", "[", index, "]", "{", getLog(item), "}");
+            return "[" + index + "]" + "{" + getLog(item) + "}";
         }
-
     }
-
 }

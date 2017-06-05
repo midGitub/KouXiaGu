@@ -10,6 +10,8 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public interface IBuilding
     {
+        //BuildingInfo Info { get; }
+
         /// <summary>
         /// 重新构建建筑(当地形发生变化时调用);
         /// </summary>

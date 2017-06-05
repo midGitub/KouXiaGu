@@ -34,28 +34,35 @@ namespace KouXiaGu.World.Map
 
             foreach (var point in points)
             {
-                MapNode node = new MapNode()
+                MapNode node = new MapNode();
+
+                node.Landform = new LandformNode()
                 {
-                    Landform = new LandformNode()
-                    {
-                        ID = landform.GetNewEffectiveID(),
-                        LandformType = Random(landformArray),
-                        Angle = RandomAngle(),
-                    },
+                    ID = landform.GetNewEffectiveID(),
+                    LandformType = Random(landformArray),
+                    Angle = RandomAngle(),
+                };
 
-                    //Road = new RoadNode()
-                    //{
-                    //    ID = road.GetNewEffectiveID(),
-                    //    RoadType = Random(roadArray),
-                    //},
-
-                    Building = new BuildingNode()
+                if (RandomBool())
+                {
+                    node.Road = new RoadNode()
                     {
-                        ID = building.GetNewEffectiveID(),
+                        ID = road.GetNewEffectiveID(),
+                        RoadType = Random(roadArray),
+                    };
+                }
+
+                if (RandomBool())
+                {
+                    BuildingNode buildingNode = new BuildingNode();
+                    buildingNode.Add(building, new BuildingItem()
+                    {
                         BuildingType = Random(buildArray),
                         Angle = RandomAngle(),
-                    },
-                };
+                    });
+                    node.Building = buildingNode;
+                }
+
                 map.Add(point, node);
             }
 
@@ -71,6 +78,12 @@ namespace KouXiaGu.World.Map
         }
 
         static readonly System.Random random = new System.Random();
+
+        bool RandomBool()
+        {
+            int i = random.Next(0, 2);
+            return i == 0;
+        }
 
         T Random<T>(T[] array)
         {

@@ -15,6 +15,7 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class Building : MonoBehaviour, IBuilding
     {
+        //public BuildingInfo Info { get; private set; }
         public IWorld World { get; private set; }
         public CubicHexCoord Coord { get; private set; }
 
