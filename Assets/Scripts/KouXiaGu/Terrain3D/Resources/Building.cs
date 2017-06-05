@@ -41,6 +41,12 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [XmlElement("PrefabName")]
         public string PrefabName { get; set; }
+
+        /// <summary>
+        /// 是否关联邻居节点?当此建筑进行创建或者销毁时,通知到所有邻居节点的相同建筑类型的实例;
+        /// </summary>
+        [XmlElement("AssociativeNeighbor")]
+        public bool AssociativeNeighbor { get; set; }
     }
 
     class BuildingInfoXmlSerializer : XmlElementsReaderWriter<BuildingInfo>
@@ -81,14 +87,6 @@ namespace KouXiaGu.Terrain3D
         public TerrainBuildingInfo Info { get; private set; }
         public GameObject Prefab { get; private set; }
         public IBuildingPrefab BuildingPrefab { get; private set; }
-
-        /// <summary>
-        /// 创建一个实例到该位置;
-        /// </summary>
-        public IBuilding BuildAt(IWorld world, CubicHexCoord position, float angele)
-        {
-            return BuildingPrefab.BuildAt(world, position, angele, this);
-        }
 
         public void Dispose()
         {

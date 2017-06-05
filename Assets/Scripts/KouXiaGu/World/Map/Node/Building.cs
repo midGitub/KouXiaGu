@@ -109,11 +109,18 @@ namespace KouXiaGu.World.Map
 
         bool Equals(List<BuildingItem> items, List<BuildingItem> other)
         {
-            foreach (var item in items)
+            if (items != other)
             {
-                if (!other.Contains(item))
+                if (items == null || other == null)
                 {
                     return false;
+                }
+                foreach (var item in items)
+                {
+                    if (!other.Contains(item))
+                    {
+                        return false;
+                    }
                 }
             }
             return true;

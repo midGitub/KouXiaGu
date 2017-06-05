@@ -1,4 +1,6 @@
-﻿using System;
+﻿using KouXiaGu.Grids;
+using KouXiaGu.World;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,12 +12,20 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public interface IBuilding
     {
-        //BuildingInfo Info { get; }
+        IWorld World { get; }
+        CubicHexCoord Position { get; }
+        float Angle { get; set; }
+        BuildingInfo Info { get; }
 
         /// <summary>
-        /// 重新构建建筑(当地形发生变化时调用);
+        /// 更新建筑高度信息;
         /// </summary>
-        void Rebuild();
+        void UpdateHeight();
+
+        /// <summary>
+        /// 当邻居节点内容发生变化时调用;
+        /// </summary>
+        void NeighborChanged(CubicHexCoord position);
 
         /// <summary>
         /// 销毁这个建筑物;

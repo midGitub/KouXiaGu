@@ -15,28 +15,43 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class Building : MonoBehaviour, IBuilding
     {
-        //public BuildingInfo Info { get; private set; }
         public IWorld World { get; private set; }
-        public CubicHexCoord Coord { get; private set; }
+        public CubicHexCoord Position { get; private set; }
+        public BuildingInfo Info { get; private set; }
+
+        public float Angle
+        {
+            get { return transform.rotation.eulerAngles.y; }
+            set { transform.rotation = Quaternion.Euler(0, value, 0); }
+        }
 
         /// <summary>
         /// 初始化建筑;
         /// </summary>
-        public virtual void Build(IWorld world, CubicHexCoord position)
+        public virtual void Build(IWorld world, CubicHexCoord position, BuildingInfo info)
         {
             World = world;
-            Coord = position;
-            Rebuild();
+            Position = position;
+            Info = info;
+            UpdateHeight();
         }
 
         /// <summary>
-        /// 重新构建建筑(当地形发生变化时调用);
+        /// 更新建筑高度;
         /// </summary>
-        public virtual void Rebuild()
+        public virtual void UpdateHeight()
         {
             Vector3 position = transform.position;
             position.y = World.Components.Landform.GetHeight(transform.position);
             transform.position = position;
+        }
+
+        /// <summary>
+        /// 当邻居发生变化时调用;
+        /// </summary>
+        public virtual void NeighborChanged(CubicHexCoord position)
+        {
+            Debug.Log(position + "NeighborChanged");
         }
 
         /// <summary>

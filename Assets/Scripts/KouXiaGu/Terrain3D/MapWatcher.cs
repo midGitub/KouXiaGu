@@ -14,16 +14,16 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     class MapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
     {
-        public MapWatcher(LandformBuilder landformUpdater, BuildingUpdater buildingUpdater, IObservableDictionary<CubicHexCoord, MapNode> observable)
+        public MapWatcher(LandformBuilder landformBuilder, BuildingBuilder buildingBuilder, IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
-            this.landformUpdater = landformUpdater;
-            this.buildingUpdater = buildingUpdater;
+            this.landformBuilder = landformBuilder;
+            this.buildingBuilder = buildingBuilder;
             Subscribe(observable);
         }
 
         IDisposable unsubscriber;
-        readonly LandformBuilder landformUpdater;
-        readonly BuildingUpdater buildingUpdater;
+        readonly LandformBuilder landformBuilder;
+        readonly BuildingBuilder buildingBuilder;
 
         public void Subscribe(IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
@@ -45,25 +45,34 @@ namespace KouXiaGu.Terrain3D
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnAdded(CubicHexCoord key, MapNode newValue)
         {
             UpdateLandformChunks(key, BakeTargets.All);
+            UpdateBuilding(key, newValue.Building);
         }
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnRemoved(CubicHexCoord key, MapNode originalValue)
         {
             UpdateLandformChunks(key, BakeTargets.All);
+            UpdateBuilding(key, default(BuildingNode));
         }
 
         void IDictionaryObserver<CubicHexCoord, MapNode>.OnUpdated(CubicHexCoord key, MapNode originalValue, MapNode newValue)
         {
             BakeTargets targets = BakeTargets.None;
-
+            if (originalValue.Landform != newValue.Landform)
+            {
+                targets |= BakeTargets.Landform;
+            }
             if (originalValue.Road != newValue.Road)
             {
                 targets |= BakeTargets.Road;
             }
-
             if (targets != BakeTargets.None)
             {
                 UpdateLandformChunks(key, targets);
+            }
+
+            if (originalValue.Building != newValue.Building)
+            {
+                UpdateBuilding(key, newValue.Building);
             }
         }
 
@@ -72,7 +81,7 @@ namespace KouXiaGu.Terrain3D
             var belongChunks = GetBakeChunks(coord);
             foreach (var belongChunk in belongChunks)
             {
-                landformUpdater.UpdateAsync(belongChunk, targets);
+                landformBuilder.UpdateAsync(belongChunk, targets);
             }
         }
 
@@ -92,6 +101,11 @@ namespace KouXiaGu.Terrain3D
                 }
             }
             return chunkCoordList;
+        }
+
+        void UpdateBuilding(CubicHexCoord position, BuildingNode node)
+        {
+            buildingBuilder.UpdateAt(position, node);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
             LandformUpdater = new LandformUpdater(LandformBuilder);
             BuildingBuilder = new BuildingBuilder(world, LandformBuilder, LandformDispatcher);
             BuildingUpdater = new BuildingUpdater(BuildingBuilder);
-            MapWatcher = new MapWatcher(LandformUpdater.Builder, BuildingUpdater, world.WorldData.MapData.ObservableMap);
+            MapWatcher = new MapWatcher(LandformUpdater.Builder, BuildingBuilder, world.WorldData.MapData.ObservableMap);
         }
 
         bool isUpdating;

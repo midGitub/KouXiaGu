@@ -11,7 +11,7 @@ namespace KouXiaGu.World.Map
     /// 节点地貌信息;
     /// </summary>
     [ProtoContract]
-    public struct LandformNode
+    public struct LandformNode : IEquatable<LandformNode>
     {
         /// <summary>
         /// 不存在地形时放置的标志;
@@ -72,6 +72,35 @@ namespace KouXiaGu.World.Map
             LandformType = landformType;
             Angle = angle;
             return this;
+        }
+
+        public bool Equals(LandformNode other)
+        {
+            return ID == other.ID &&
+                LandformType == other.LandformType &&
+                Angle == other.Angle;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is LandformNode))
+                return false;
+            return Equals((LandformNode)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return LandformType.GetHashCode();
+        }
+
+        public static bool operator ==(LandformNode a, LandformNode b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(LandformNode a, LandformNode b)
+        {
+            return !a.Equals(b);
         }
     }
 }

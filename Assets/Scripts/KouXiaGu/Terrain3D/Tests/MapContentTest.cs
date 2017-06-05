@@ -56,13 +56,30 @@ namespace KouXiaGu.Terrain3D.Tests
             textObject.text = TextUpdate();
 
             Vector3 mousePoint;
-            if (Input.GetKeyDown(KeyCode.Mouse0) && LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
+            if (LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
             {
-                OnMouse0Down(mousePoint);
-            }
-            else if (Input.GetKeyDown(KeyCode.Mouse1) && LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
-            {
-                OnMouse1Down(mousePoint);
+                if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+                {
+                    if (Input.GetKeyDown(KeyCode.B))
+                    {
+                        DestroyBuildingAt(mousePoint);
+                    }
+                }
+                else
+                {
+                    if (Input.GetKeyDown(KeyCode.Mouse0))
+                    {
+                        OnMouse0Down(mousePoint);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Mouse1))
+                    {
+                        OnMouse1Down(mousePoint);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.B))
+                    {
+                        BuildBuildingAt(mousePoint);
+                    }
+                }
             }
         }
 
@@ -79,6 +96,26 @@ namespace KouXiaGu.Terrain3D.Tests
             CubicHexCoord coord = mousePoint.GetTerrainCubic();
             MapNode node = map[coord];
             node.Road = node.Road.Destroy();
+            map[coord] = node;
+        }
+
+        void BuildBuildingAt(Vector3 mousePoint)
+        {
+            CubicHexCoord coord = mousePoint.GetTerrainCubic();
+            MapNode node = map[coord];
+            node.Building = node.Building.Add(mapData, new BuildingItem()
+            {
+                BuildingType = 1,
+                Angle = 0,
+            });
+            map[coord] = node;
+        }
+
+        void DestroyBuildingAt(Vector3 mousePoint)
+        {
+            CubicHexCoord coord = mousePoint.GetTerrainCubic();
+            MapNode node = map[coord];
+            node.Building = node.Building.Destroy();
             map[coord] = node;
         }
 

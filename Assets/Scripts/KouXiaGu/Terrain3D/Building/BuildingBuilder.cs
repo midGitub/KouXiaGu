@@ -103,6 +103,11 @@ namespace KouXiaGu.Terrain3D
             get { return World.WorldData.MapData.ReadOnlyMap; }
         }
 
+        IDictionary<int, BuildingInfo> infos
+        {
+            get { return World.BasicData.BasicResource.Terrain.Building; }
+        }
+
         /// <summary>
         /// 创建对应块的建筑物;
         /// </summary>
@@ -228,10 +233,10 @@ namespace KouXiaGu.Terrain3D
                 CreateRequest request;
                 if (sceneBuildings.TryGetValue(position, out request))
                 {
-                    if (request.IsCompleted && request.Result.Length != 0)
+                    if (request.IsCompleted && request.Result.Count != 0)
                     {
                         request.Cancele();
-                        DestroyRequest destroyRequest = new DestroyRequest(request.Result);
+                        DestroyRequest destroyRequest = new DestroyRequest(this, request.Result);
                         RequestDispatcher.Add(destroyRequest);
                     }
                     else
@@ -261,10 +266,144 @@ namespace KouXiaGu.Terrain3D
             sceneChunks.Clear();
         }
 
+
+
+        List<IBuilding> CreateBuilding_internal(CubicHexCoord position, IList<BuildingItem> buildingItems)
+        {
+            List<IBuilding> buildings = new List<IBuilding>();
+            foreach (var buildingItem in buildingItems)
+            {
+                IBuilding building = CreateBuilding_internal(position, buildingItem);
+                buildings.Add(building);
+            }
+            return buildings;
+        }
+
+        IBuilding CreateBuilding_internal(CubicHexCoord position, BuildingItem buildingItem)
+        {
+            BuildingInfo info;
+            if (infos.TryGetValue(buildingItem.BuildingType, out info))
+            {
+                IBuildingPrefab prefab = info.Terrain.BuildingPrefab;
+                IBuilding building = prefab.BuildAt(World, position, buildingItem.Angle, info);
+                return building;
+            }
+            else
+            {
+                Debug.LogWarning("未找到对应的建筑物资源;BuildingType:" + buildingItem.BuildingType);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 销毁这些建筑物,并且清空这个合集;
+        /// </summary>
+        void DestroyBuilding_internal(ICollection<IBuilding> buildings)
+        {
+            foreach (var building in buildings)
+            {
+                DestroyBuilding_internal(building);
+            }
+            buildings.Clear();
+        }
+
+        /// <summary>
+        /// 销毁这个建筑物实例;
+        /// </summary>
+        void DestroyBuilding_internal(IBuilding building)
+        {
+            building.Destroy();
+        }
+
+
+        /// <summary>
+        /// 更新已经创建的建筑物;
+        /// </summary>
+        List<IBuilding> UpdateBuilding_internal(CubicHexCoord position, IList<BuildingItem> buildingItems, IList<IBuilding> buildings)
+        {
+            List<IBuilding> newBuildings = new List<IBuilding>();
+            if (buildingItems != null)
+            {
+                for (int i = 0; i < buildingItems.Count; i++)
+                {
+                    BuildingItem buildingItem = buildingItems[i];
+                    int index = buildings.FindIndex(item => item.Info.ID == buildingItem.BuildingType);
+                    if (index >= 0)
+                    {
+                        IBuilding building = buildings[index];
+                        building.Angle = buildingItem.Angle;
+                        buildings.RemoveAt(index);
+                        newBuildings.Add(building);
+                    }
+                    else
+                    {
+                        IBuilding building = CreateBuilding_changed(position, buildingItem);
+                        newBuildings.Add(building);
+                    }
+                }
+            }
+            DestroyBuilding_changed(buildings);
+            return newBuildings;
+        }
+
+        IBuilding CreateBuilding_changed(CubicHexCoord position, BuildingItem buildingItem)
+        {
+            IBuilding building = CreateBuilding_internal(position, buildingItem);
+            if (building.Info.TerrainInfo.AssociativeNeighbor)
+            {
+                NotifyNeighbors(building.Position, building.Info.ID);
+            }
+            return building;
+        }
+
+        void DestroyBuilding_changed(ICollection<IBuilding> buildings)
+        {
+            foreach (var building in buildings)
+            {
+                DestroyBuilding_changed(building);
+            }
+            buildings.Clear();
+        }
+
+        void DestroyBuilding_changed(IBuilding building)
+        {
+            if (building.Info.TerrainInfo.AssociativeNeighbor)
+            {
+                NotifyNeighbors(building.Position, building.Info.ID);
+            }
+            DestroyBuilding_internal(building);
+        }
+
+        /// <summary>
+        /// 通知到邻居节点;
+        /// </summary>
+        void NotifyNeighbors(CubicHexCoord position, int buildingType)
+        {
+            foreach (var neighbor in position.GetNeighbours())
+            {
+                CreateRequest request;
+                if (sceneBuildings.TryGetValue(neighbor, out request))
+                {
+                    if (request.IsCompleted)
+                    {
+                        foreach (var building in request.Result)
+                        {
+                            if (building.Info.ID == buildingType)
+                            {
+                                building.NeighborChanged(position);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         /// <summary>
         /// 创建建筑;
         /// </summary>
-        internal class CreateRequest : AsyncOperation<IBuilding[]>, IAsyncRequest
+        internal class CreateRequest : AsyncOperation<List<IBuilding>>, IAsyncRequest
         {
             /// <summary>
             /// 创建一个空的建筑;
@@ -273,7 +412,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Parent = parent;
                 Position = position;
-                OnCompleted(new IBuilding[0]);
+                OnCompleted(new List<IBuilding>());
             }
 
             public CreateRequest(BuildingBuilder parent, CubicHexCoord position, BuildingNode node)
@@ -323,41 +462,35 @@ namespace KouXiaGu.Terrain3D
             {
                 lock (Parent.unityThreadLock)
                 {
-                    if (Result != null)
-                    {
-                        foreach (var building in Result)
-                        {
-                            building.Destroy();
-                        }
-                        Result = null;
-                    }
-                    if (IsCanceled)
-                    {
-                        return;
-                    }
-
                     try
                     {
-                        IBuilding[] buildings = new IBuilding[buildingItems.Count];
-                        for (int i = 0; i < buildingItems.Count; i++)
+                        if (IsCanceled)
                         {
-                            BuildingItem buildingItem = buildingItems[i];
-                            int buildingType = buildingItem.BuildingType;
-                            BuildingInfo info;
-                            if (infos.TryGetValue(buildingType, out info))
+                            if (Result != null)
                             {
-                                buildings[i] = info.Terrain.BuildAt(world, Position, buildingItem.Angle);
+                                Parent.DestroyBuilding_internal(Result);
+                                Result = null;
                             }
-                            else
-                            {
-                                Debug.LogWarning("未找到对应的建筑物资源;BuildingType:" + buildingType);
-                            }
+                            return;
                         }
-                        OnCompleted(buildings);
+
+                        if (Result == null)
+                        {
+                            List<IBuilding> buildings = new List<IBuilding>();
+                            buildings = Parent.CreateBuilding_internal(Position, buildingItems);
+                            OnCompleted(buildings);
+                        }
+                        else
+                        {
+                            List<IBuilding> buildings = Result;
+                            buildings = Parent.UpdateBuilding_internal(Position, buildingItems, buildings);
+                            OnCompleted(buildings);
+                        }
                     }
                     catch (Exception ex)
                     {
                         OnFaulted(ex);
+                        Debug.LogError(ex);
                     }
                     finally
                     {
@@ -377,18 +510,20 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         class DestroyRequest : IAsyncRequest
         {
-            public DestroyRequest(IEnumerable<IBuilding> buildings)
+            public DestroyRequest(BuildingBuilder parent, IEnumerable<IBuilding> buildings)
             {
+                Parent = parent;
                 Buildings = buildings;
             }
 
+            public BuildingBuilder Parent { get; private set; }
             public IEnumerable<IBuilding> Buildings { get; private set; }
 
             void IAsyncRequest.Operate()
             {
                 foreach (var building in Buildings)
                 {
-                    building.Destroy();
+                    Parent.DestroyBuilding_internal(building);
                 }
             }
 
@@ -436,7 +571,7 @@ namespace KouXiaGu.Terrain3D
                         {
                             foreach (var item in building.Result)
                             {
-                                item.Rebuild();
+                                item.UpdateHeight();
                             }
                         }
                     }
