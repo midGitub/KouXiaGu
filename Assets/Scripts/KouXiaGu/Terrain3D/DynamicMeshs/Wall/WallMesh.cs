@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
     /// 墙体建筑;
     /// </summary>
     [RequireComponent(typeof(DynamicMeshScript))]
-    public class WallDynamicMesh : Building, IBuilding
+    public class WallMesh : Building, IBuilding
     {
         DynamicMeshScript dynamicMesh;
         Vector3[] path;
@@ -35,11 +35,12 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
             Position = position;
             this.angle = angle;
             Info = info;
-            NeighborChanged(position);
 
             Vector3 pos = transform.position;
             pos.y = LandformSettings.Instance.WaterSettings.SeaLevel + 0.3f;
             transform.position = pos;
+
+            BuildWall();
         }
 
         public override void UpdateHeight()
@@ -48,6 +49,12 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
         }
 
         public override void NeighborChanged(CubicHexCoord position)
+        {
+            base.NeighborChanged(position);
+            BuildWall();
+        }
+
+        void BuildWall()
         {
             path = GetWallRoute(map, position, Info.ID);
             if (path != null)
@@ -116,7 +123,8 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
                 path[0] = min.Point.GetTerrainPixel();
                 path[1] = GetEdgeMidpoint(targetPixel, min.Direction);
                 path[2] = targetPixel;
-                path[3] = GetEdgeMidpoint(targetPixel, CubicHexCoord.GetOppositeDirection(min.Direction));
+                //path[3] = GetEdgeMidpoint(targetPixel, CubicHexCoord.GetOppositeDirection(min.Direction));
+                path[3] = target.GetOpposite(min.Direction).GetTerrainPixel();
                 return ConvertToLocalPath(targetPixel, path);
             }
             else

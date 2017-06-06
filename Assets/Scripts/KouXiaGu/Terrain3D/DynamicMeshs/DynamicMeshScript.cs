@@ -77,6 +77,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
             mesh.vertices = vertices;
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
+            mesh.RecalculateTangents();
         }
 
         /// <summary>

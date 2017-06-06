@@ -52,7 +52,7 @@ namespace KouXiaGu.World.Map
                     };
                 }
 
-                if (RandomBool())
+                if (false)
                 {
                     BuildingNode buildingNode = new BuildingNode();
                     buildingNode.Add(building, new BuildingItem()
