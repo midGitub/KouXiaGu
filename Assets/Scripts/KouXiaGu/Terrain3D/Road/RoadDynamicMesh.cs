@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using KouXiaGu.Terrain3D.DynamicMesh;
+using KouXiaGu.Terrain3D.DynamicMeshs;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
@@ -70,7 +70,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<CubicHexCoord[]> GetPeripheralRoutes(CubicHexCoord target, IReadOnlyDictionary<CubicHexCoord, MapNode> map)
         {
-            PeripheralRoute.TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
+            TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
             {
                 MapNode node;
                 if (map.TryGetValue(position, out node))

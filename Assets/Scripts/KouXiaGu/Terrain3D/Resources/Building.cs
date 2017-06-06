@@ -31,6 +31,11 @@ namespace KouXiaGu.Terrain3D
 
         [XmlIgnore]
         public BuildingResource Terrain { get; internal set; }
+
+        public override string ToString()
+        {
+            return "[ID:" + ID + ",Tags:" + Tags + "]";
+        }
     }
 
     [XmlType("TerrainBuilding")]

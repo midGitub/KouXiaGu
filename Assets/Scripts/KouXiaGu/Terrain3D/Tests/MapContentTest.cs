@@ -129,11 +129,14 @@ namespace KouXiaGu.Terrain3D.Tests
 
                 if (map.TryGetValue(coord, out node))
                 {
+                    LandformNode landformNode = node.Landform;
+                    RoadNode roadNode = node.Road;
+                    BuildingNode buildingNode = node.Building;
                     return
                         "坐标:" + coord.ToString()
-                        + "\nLandform:" + node.Landform.LandformType
-                        + "\nRoad:" + node.Road.RoadType + ",ID:" + node.Road.ID + ",ExistRoad:" + node.Road.Exist()
-                        + "\nBuilding:" + node.Building.Items.ToLog(string.Empty) + ",ExistBuilding:" + node.Building.Exist()
+                        + "\nLandform:" + landformNode.ID + ",Type:" + landformNode.LandformType + ",Exist:" + landformNode.Exist()
+                        + "\nRoad:" + roadNode.ID + ",Type:" + roadNode.RoadType + ",ExistRoad:" + roadNode.Exist()
+                        + "\nBuilding:" + buildingNode.ID + ",Types:" + node.Building.Items.ToLog() + ",ExistBuilding:" + node.Building.Exist()
                         + "\nTags:"
                         ;
                 }

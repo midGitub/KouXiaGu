@@ -13,26 +13,26 @@ namespace KouXiaGu.Collections
 
         public SortedList()
         {
-            this.Comparer = Comparer<T>.Default;
+            Comparer = Comparer<T>.Default;
             collection = new List<T>();
         }
 
         public SortedList(IComparer<T> comparer)
         {
-            this.Comparer = comparer;
+            Comparer = comparer;
             collection = new List<T>();
         }
 
         public SortedList(IEnumerable<T> items)
         {
-            this.Comparer = Comparer<T>.Default;
+            Comparer = Comparer<T>.Default;
             collection = new List<T>(items);
             collection.Sort(Comparer);
         }
 
         public SortedList(IEnumerable<T> items, IComparer<T> comparer)
         {
-            this.Comparer = comparer;
+            Comparer = comparer;
             collection = new List<T>(items);
             collection.Sort(Comparer);
         }
@@ -42,8 +42,8 @@ namespace KouXiaGu.Collections
         /// </summary>
         public SortedList(SortedList<T> other)
         {
-            this.collection = new List<T>(other.collection);
-            this.Comparer = other.Comparer;
+            collection = new List<T>(other.collection);
+            Comparer = other.Comparer;
         }
 
 
@@ -75,7 +75,7 @@ namespace KouXiaGu.Collections
 
         bool ICollection<T>.IsReadOnly
         {
-            get { return ((ICollection<T>)this.collection).IsReadOnly; }
+            get { return ((ICollection<T>)collection).IsReadOnly; }
         }
 
         /// <summary>

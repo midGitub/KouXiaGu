@@ -71,7 +71,10 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public BuildingNode Remove(int buildingType)
         {
-            items.Remove(item => item.BuildingType == buildingType);
+            if (items != null)
+            {
+                items.Remove(item => item.BuildingType == buildingType);
+            }
             return this;
         }
 
@@ -80,7 +83,14 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public bool Exist(int buildingType)
         {
-            return items.Contains(item => item.BuildingType == buildingType);
+            if (items == null)
+            {
+                return false;
+            }
+            else
+            {
+                return items.Contains(item => item.BuildingType == buildingType);
+            }
         }
 
         /// <summary>

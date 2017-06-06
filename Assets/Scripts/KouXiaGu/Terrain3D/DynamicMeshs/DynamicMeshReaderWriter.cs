@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KouXiaGu.Terrain3D.DynamicMesh
+namespace KouXiaGu.Terrain3D.DynamicMeshs
 {
 
     public class DynamicMeshFilePath : MultipleFilePath

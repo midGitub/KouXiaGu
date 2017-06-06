@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using ProtoBuf;
 
-namespace KouXiaGu.Terrain3D.DynamicMesh
+namespace KouXiaGu.Terrain3D.DynamicMeshs
 {
 
     /// <summary>
@@ -103,24 +103,20 @@ namespace KouXiaGu.Terrain3D.DynamicMesh
 
             JointPoint section = jointPoints[0];
             Vector3 position = spline.InterpolatedPoint(section.InterpolatedValue);
+            JointPoint afterSection = jointPoints[1];
+            Vector3 afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
+            float angle = start;
+            TransformSection(section, position, angle, ref vertices);
+            section = afterSection;
+            position = afterPosition;
 
-            for (int i = 0; i < jointPoints.Count; i++)
+            for (int i = 1; i < jointPoints.Count; i++)
             {
-                JointPoint afterSection;
-                Vector3 afterPosition;
-                float angle;
-
                 if (i < endIndex)
                 {
                     afterSection = jointPoints[i + 1];
                     afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
                     angle = AngleY(position, afterPosition);
-                }
-                else if (i == 0)
-                {
-                    afterSection = jointPoints[i + 1];
-                    afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
-                    angle = start;
                 }
                 else
                 {

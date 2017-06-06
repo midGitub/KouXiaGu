@@ -31,6 +31,11 @@ namespace KouXiaGu.Terrain3D
 
         [XmlIgnore]
         public LandformResource Terrain { get; internal set; }
+
+        public override string ToString()
+        {
+            return "[ID:" + ID + ",Tags:" + Tags + "]";
+        }
     }
 
     class LandformFile : MultipleFilePath

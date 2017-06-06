@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
-namespace KouXiaGu.Terrain3D.DynamicMesh
+namespace KouXiaGu.Terrain3D.DynamicMeshs
 {
 
     [CustomEditor(typeof(DynamicMeshScript))]

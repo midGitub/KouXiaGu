@@ -6,7 +6,7 @@ using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
 using UnityEngine;
-using KouXiaGu.Terrain3D.DynamicMesh;
+using KouXiaGu.Terrain3D.DynamicMeshs;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -168,7 +168,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<CubicHexCoord[]> GetPeripheralRoutes(CubicHexCoord target)
         {
-            PeripheralRoute.TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
+            TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
             {
                 MapNode node;
                 if (map.TryGetValue(position, out node))
@@ -196,7 +196,7 @@ namespace KouXiaGu.Terrain3D
                 CubicHexCoord localPosition = route[i] - target;
                 points[i] = localPosition.GetTerrainPixel();
             }
-            CatmullRomSpline spline = new CatmullRomSpline(points[0], points[1], points[2], points[3]);
+            CatmullRomSpline spline = new CatmullRomSpline(points);
             return spline;
         }
 

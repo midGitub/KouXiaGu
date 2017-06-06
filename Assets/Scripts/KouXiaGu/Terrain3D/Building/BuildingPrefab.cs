@@ -37,10 +37,8 @@ namespace KouXiaGu.Terrain3D
 
         public Building BuildAt(IWorld world, CubicHexCoord position, float angele, BuildingInfo info)
         {
-            Vector3 pixelPosition = position.GetTerrainPixel();
-            Quaternion angle = Quaternion.Euler(0, angele, 0);
-            Building instance = Instantiate(prefab, pixelPosition, angle, objectParent);
-            instance.Build(world, position, info);
+            Building instance = Instantiate(prefab, objectParent);
+            instance.Build(world, position, angele, info);
             return instance;
         }
 

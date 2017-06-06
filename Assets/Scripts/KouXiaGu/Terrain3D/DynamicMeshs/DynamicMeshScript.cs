@@ -6,7 +6,7 @@ using UnityEngine;
 using KouXiaGu.Collections;
 using KouXiaGu.Grids;
 
-namespace KouXiaGu.Terrain3D.DynamicMesh
+namespace KouXiaGu.Terrain3D.DynamicMeshs
 {
 
     /// <summary>

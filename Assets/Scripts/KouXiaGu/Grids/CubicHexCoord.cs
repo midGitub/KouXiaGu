@@ -159,7 +159,7 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
-        /// 0 获取到 x, 1 获取到 y, 2 获取到 z, 其它 获取到异常;
+        /// 0 获取到 x, 1 获取到 y, 2 获取到 z, 其它 返回异常;
         /// </summary>
         public int this[int index]
         {
@@ -279,7 +279,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到这个方向的反方向坐标;
         /// </summary>
-        public CubicHexCoord GetOppositeDirection(HexDirections direction)
+        public CubicHexCoord GetOpposite(HexDirections direction)
         {
             return this + GetOppositeDirectionOffset(direction);
         }
@@ -467,7 +467,7 @@ namespace KouXiaGu.Grids
         /// <summary>
         /// 获取到这个方向的相反方向;
         /// </summary>
-        public static HexDirections ToOppositeDirection(HexDirections direction)
+        public static HexDirections GetOppositeDirection(HexDirections direction)
         {
             return oppositeDirection[(int)direction];
         }

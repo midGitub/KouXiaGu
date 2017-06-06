@@ -15,23 +15,31 @@ namespace KouXiaGu.Terrain3D
     [DisallowMultipleComponent]
     public class Building : MonoBehaviour, IBuilding
     {
-        public IWorld World { get; private set; }
-        public CubicHexCoord Position { get; private set; }
-        public BuildingInfo Info { get; private set; }
+        protected float angle;
+        protected CubicHexCoord position;
+        public IWorld World { get; protected set; }
+        public BuildingInfo Info { get; protected set; }
+
+        public CubicHexCoord Position
+        {
+            get { return position; }
+            protected set { position = value; transform.position = value.GetTerrainPixel(); }
+        }
 
         public float Angle
         {
-            get { return transform.rotation.eulerAngles.y; }
-            set { transform.rotation = Quaternion.Euler(0, value, 0); }
+            get { return angle; }
+            set { angle = value; transform.rotation = Quaternion.Euler(0, value, 0); }
         }
 
         /// <summary>
         /// 初始化建筑;
         /// </summary>
-        public virtual void Build(IWorld world, CubicHexCoord position, BuildingInfo info)
+        public virtual void Build(IWorld world, CubicHexCoord position, float angle, BuildingInfo info)
         {
             World = world;
             Position = position;
+            Angle = angle;
             Info = info;
             UpdateHeight();
         }
