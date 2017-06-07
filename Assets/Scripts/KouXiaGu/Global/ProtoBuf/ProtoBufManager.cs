@@ -9,6 +9,9 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 添加自定义序列化方式;
+    /// </summary>
     [DisallowMultipleComponent]
     class ProtoBufManager : MonoBehaviour
     {

@@ -65,10 +65,10 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public Texture2D RoadDiffuseMap { get; protected set; }
 
-        /// <summary>
-        /// 道路高度贴图;
-        /// </summary>
-        public Texture2D RoadHeightMap { get; protected set; }
+        ///// <summary>
+        ///// 道路高度贴图;
+        ///// </summary>
+        //public Texture2D RoadHeightMap { get; protected set; }
 
         /// <summary>
         /// 法线贴图;
@@ -124,22 +124,22 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        /// <summary>
-        /// 设置到贴图,并且销毁旧贴图;
-        /// </summary>
-        public void SetRoadHeightMap(Texture2D roadHeightMap)
-        {
-            if (RoadHeightMap != roadHeightMap)
-            {
-                if (RoadHeightMap != null)
-                {
-                    GameObject.Destroy(RoadHeightMap);
-                }
-                material.SetTexture("_RoadHeightMap", roadHeightMap);
-                RoadHeightMap = roadHeightMap;
-                isHeightChanged = true;
-            }
-        }
+        ///// <summary>
+        ///// 设置到贴图,并且销毁旧贴图;
+        ///// </summary>
+        //public void SetRoadHeightMap(Texture2D roadHeightMap)
+        //{
+        //    if (RoadHeightMap != roadHeightMap)
+        //    {
+        //        if (RoadHeightMap != null)
+        //        {
+        //            GameObject.Destroy(RoadHeightMap);
+        //        }
+        //        material.SetTexture("_RoadHeightMap", roadHeightMap);
+        //        RoadHeightMap = roadHeightMap;
+        //        isHeightChanged = true;
+        //    }
+        //}
 
         /// <summary>
         /// 设置到贴图,并且销毁旧贴图;
@@ -165,7 +165,7 @@ namespace KouXiaGu.Terrain3D
             SetDiffuseMap(null);
             SetHeightMap(null);
             SetRoadDiffuseMap(null);
-            SetRoadHeightMap(null);
+            //SetRoadHeightMap(null);
             SetNormalMap(null);
         }
 

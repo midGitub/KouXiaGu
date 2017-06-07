@@ -24,7 +24,7 @@ namespace KouXiaGu.Terrain3D
 
         public int RequestCount
         {
-            get { return requestQueue.RequestCount; }
+            get { return requestQueue == null ? 0 : requestQueue.RequestCount; }
         }
 
         void Awake()

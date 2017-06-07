@@ -58,55 +58,13 @@ namespace KouXiaGu.Terrain3D
 
             PrepareScene();
             BakeDiffuse();
-            BakeHeight();
 
             var diffuseMap = bakeCamera.GetDiffuseTexture(DiffuseRT, TextureFormat.ARGB32);
-            var heightMap = bakeCamera.GetHeightTexture(HeightRT);
             result.SetRoadDiffuseMap(diffuseMap);
-            result.SetRoadHeightMap(heightMap);
 
             ClearScene();
             Reset();
         }
-
-        //public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer result, IState state)
-        //{
-        //    this.bakeCamera = bakeCamera;
-        //    this.world = world;
-        //    this.chunkCenter = chunkCenter;
-        //    this.displays = ChunkPartitioner.GetRoad(chunkCenter);
-
-        //    PrepareScene();
-        //    yield return null;
-        //    if (state.IsCanceled)
-        //    {
-        //        goto _End_;
-        //    }
-
-        //    BakeDiffuse();
-        //    yield return null;
-        //    if (state.IsCanceled)
-        //    {
-        //        goto _End_;
-        //    }
-
-
-        //    BakeHeight();
-        //    yield return null;
-        //    if (state.IsCanceled)
-        //    {
-        //        goto _End_;
-        //    }
-
-        //    var diffuseMap = bakeCamera.GetDiffuseTexture(DiffuseRT, TextureFormat.ARGB32);
-        //    var heightMap = bakeCamera.GetHeightTexture(HeightRT);
-        //    result.SetRoadDiffuseMap(diffuseMap);
-        //    result.SetRoadHeightMap(heightMap);
-
-        //    _End_:
-        //    ClearScene();
-        //    Reset();
-        //}
 
         /// <summary>
         /// 释放所有该实例创建的 RenderTexture 类型的资源;
@@ -182,7 +140,34 @@ namespace KouXiaGu.Terrain3D
                 value = default(uint);
                 return false;
             };
-            return PeripheralRoute.GetRoadRoutes(target, tryGetValue);
+            return GetRoadRoutes(target, tryGetValue);
+        }
+
+        /// <summary>
+        /// 迭代获取到这个点通往价值大于本身的邻居点的路径点,若不存在节点则不进行迭代;
+        /// </summary>
+        public static IEnumerable<CubicHexCoord[]> GetRoadRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
+        {
+            uint targetValue;
+            if (tryGetValue(target, out targetValue))
+            {
+                foreach (var neighbour in target.GetNeighbours())
+                {
+                    uint neighbourValue;
+                    if (tryGetValue(neighbour, out neighbourValue))
+                    {
+                        if (neighbourValue > targetValue)
+                        {
+                            CubicHexCoord[] route = new CubicHexCoord[4];
+                            route[0] = PeripheralRoute.MinNeighbourOrSelf(target, tryGetValue);
+                            route[1] = target;
+                            route[2] = neighbour.Point;
+                            route[3] = PeripheralRoute.MaxNeighbourOrSelf(neighbour, tryGetValue);
+                            yield return route;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -199,7 +184,6 @@ namespace KouXiaGu.Terrain3D
             CatmullRomSpline spline = new CatmullRomSpline(points);
             return spline;
         }
-
 
         void ClearScene()
         {
@@ -241,31 +225,31 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        void BakeHeight()
-        {
-            foreach (var meshRenderer in sceneObjects)
-            {
-                SetHeightMaterial(meshRenderer);
-            }
+        //void BakeHeight()
+        //{
+        //    foreach (var meshRenderer in sceneObjects)
+        //    {
+        //        SetHeightMaterial(meshRenderer);
+        //    }
 
-            HeightRT = bakeCamera.GetHeightTemporaryRender();
-            bakeCamera.CameraRender(HeightRT, chunkCenter);
-        }
+        //    HeightRT = bakeCamera.GetHeightTemporaryRender();
+        //    bakeCamera.CameraRender(HeightRT, chunkCenter);
+        //}
 
-        void SetHeightMaterial(Pack pack)
-        {
-            RoadResource res = pack.Res;
-            Material material = new Material(heightShader);
-            material.SetTexture("_MainTex", res.HeightAdjustTex);
+        //void SetHeightMaterial(Pack pack)
+        //{
+        //    RoadResource res = pack.Res;
+        //    Material material = new Material(heightShader);
+        //    material.SetTexture("_MainTex", res.HeightAdjustTex);
 
-            foreach (var item in pack.Packs)
-            {
-                if (item.Value2.sharedMaterial != null)
-                    GameObject.Destroy(item.Value2.sharedMaterial);
+        //    foreach (var item in pack.Packs)
+        //    {
+        //        if (item.Value2.sharedMaterial != null)
+        //            GameObject.Destroy(item.Value2.sharedMaterial);
 
-                item.Value2.sharedMaterial = material;
-            }
-        }
+        //        item.Value2.sharedMaterial = material;
+        //    }
+        //}
 
         struct Pack
         {
