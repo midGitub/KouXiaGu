@@ -59,7 +59,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public virtual void NeighborChanged(CubicHexCoord position)
         {
-            Debug.Log(position + "NeighborChanged");
+            Debug.Log(Position + " Neighbor:" + position + "had Changed;");
         }
 
         /// <summary>

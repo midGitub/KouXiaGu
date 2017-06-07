@@ -98,5 +98,25 @@ namespace KouXiaGu
             }
             return false;
         }
+
+        /// <summary>
+        /// 这两个合集是否拥有相同的内容?
+        /// </summary>
+        public static bool IsSameContent<T>(this IList<T> c1, IList<T> c2)
+        {
+            if (c1 == c2)
+                return true;
+            if (c1 == null || c2 == null)
+                return false;
+            if (c1.Count != c2.Count)
+                return false;
+
+            for (int i = 0; i < c1.Count; i++)
+            {
+                if (c1[i].Equals(c2[i]))
+                    return false;
+            }
+            return true;
+        }
     }
 }

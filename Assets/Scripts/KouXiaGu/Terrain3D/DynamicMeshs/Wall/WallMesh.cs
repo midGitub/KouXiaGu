@@ -56,12 +56,18 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
 
         void BuildWall()
         {
-            path = GetWallRoute(map, position, Info.ID);
-            if (path != null)
+            Vector3[] newPath = GetWallRoute(map, position, Info.ID);
+            if (newPath != null && !path.IsSameContent(newPath))
             {
-                ISpline spline = new CatmullRomSpline(path);
-                dynamicMesh.Transformation(spline, AngleY(path[0], path[2]), AngleY(path[2], path[path.Length - 1]));
+                BuildWall(newPath);
             }
+        }
+
+        void BuildWall(Vector3[] path)
+        {
+            ISpline spline = new CatmullRomSpline(path);
+            dynamicMesh.Transformation(spline, AngleY(path[0], path[2]), AngleY(path[2], path[path.Length - 1]));
+            this.path = path;
         }
 
         /// <summary>
@@ -119,62 +125,19 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
             {
                 CoordPack<CubicHexCoord, HexDirections> min = sortList[0];
                 Vector3 targetPixel = target.GetTerrainPixel();
-                Vector3[] path = new Vector3[4];
+                Vector3[] path = new Vector3[5];
                 path[0] = min.Point.GetTerrainPixel();
                 path[1] = GetEdgeMidpoint(targetPixel, min.Direction);
                 path[2] = targetPixel;
-                //path[3] = GetEdgeMidpoint(targetPixel, CubicHexCoord.GetOppositeDirection(min.Direction));
-                path[3] = target.GetOpposite(min.Direction).GetTerrainPixel();
+                HexDirections opposite = CubicHexCoord.GetOppositeDirection(min.Direction);
+                path[3] = GetEdgeMidpoint(targetPixel, opposite);
+                path[4] = target.GetDirection(opposite).GetTerrainPixel();
                 return ConvertToLocalPath(targetPixel, path);
             }
             else
             {
                 return null;
             }
-
-            //CoordPack<CubicHexCoord, HexDirections> min;
-            //CoordPack<CubicHexCoord, HexDirections> max;
-            //if (PeripheralRoute.TryGetMinNeighbour(target, tryGetValue, out min))
-            //{
-            //    if (PeripheralRoute.TryGetMaxNeighbour(target, tryGetValue, out max))
-            //    {
-            //        Vector3 targetPixel = target.GetTerrainPixel();
-            //        Vector3[] path = new Vector3[5];
-            //        path[0] = min.Point.GetTerrainPixel();
-            //        path[1] = GetEdgeMidpoint(targetPixel, min.Direction);
-            //        path[2] = targetPixel;
-            //        path[3] = GetEdgeMidpoint(targetPixel, max.Direction);
-            //        path[4] = max.Point.GetTerrainPixel();
-            //        return ConvertToLocalPath(targetPixel, path);
-            //    }
-            //    else
-            //    {
-            //        Vector3 targetPixel = target.GetTerrainPixel();
-            //        Vector3[] path = new Vector3[4];
-            //        path[0] = min.Point.GetTerrainPixel();
-            //        path[1] = GetEdgeMidpoint(targetPixel, min.Direction);
-            //        path[2] = targetPixel;
-            //        path[3] = GetEdgeMidpoint(targetPixel, CubicHexCoord.GetOppositeDirection(min.Direction));
-            //        return ConvertToLocalPath(targetPixel, path);
-            //    }
-            //}
-            //else
-            //{
-            //    if (PeripheralRoute.TryGetMaxNeighbour(target, tryGetValue, out max))
-            //    {
-            //        Vector3 targetPixel = target.GetTerrainPixel();
-            //        Vector3[] path = new Vector3[4];
-            //        path[0] = GetEdgeMidpoint(targetPixel, CubicHexCoord.GetOppositeDirection(max.Direction));
-            //        path[1] = targetPixel;
-            //        path[2] = GetEdgeMidpoint(targetPixel, max.Direction);
-            //        path[3] = max.Point.GetTerrainPixel();
-            //        return ConvertToLocalPath(targetPixel, path);
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-            //}
         }
 
         static readonly Dictionary<int, Vector3> edgeMidpointOffsets = new Dictionary<int, Vector3>()

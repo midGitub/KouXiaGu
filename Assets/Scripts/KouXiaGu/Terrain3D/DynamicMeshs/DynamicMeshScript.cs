@@ -52,7 +52,8 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
         [ContextMenu("读取预定义的网格")]
         public DynamicMeshData ReadPredefinedDynamicMesh()
         {
-            return meshData = manager.Find(dynamicMeshName);
+            meshData = manager.Find(dynamicMeshName);
+            return meshData;
         }
 
         /// <summary>

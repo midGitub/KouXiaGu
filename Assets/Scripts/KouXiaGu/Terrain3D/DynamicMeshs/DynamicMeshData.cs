@@ -98,6 +98,9 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
         /// </summary>
         public void Transformation(ISpline spline, float start, float end, ref Vector3[] vertices)
         {
+            if (pointCollection.Length != vertices.Length)
+                throw new ArgumentException("预定义网格和模型网格不符合;");
+
             IList<JointPoint> jointPoints = JointInfo.JointPoints;
             int endIndex = jointPoints.Count - 1;
 
@@ -136,6 +139,9 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
         /// </summary>
         public void Transformation(ISpline spline, ref Vector3[] vertices)
         {
+            if (pointCollection.Length != vertices.Length)
+                throw new ArgumentException("预定义网格和模型网格不符合;");
+
             IList<JointPoint> jointPoints = JointInfo.JointPoints;
             int endIndex = jointPoints.Count - 1;
 
@@ -166,35 +172,6 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
                 position = afterPosition;
             }
         }
-
-        ///// <summary>
-        ///// 更改顶点坐标到曲线;
-        ///// </summary>
-        //public void Transformation(ISpline spline, ref Vector3[] vertices)
-        //{
-        //    IList<JointPoint> jointPoints = JointInfo.JointPoints;
-        //    int endIndex = jointPoints.Count - 1;
-
-        //    for (int i = 0; i < jointPoints.Count; i++)
-        //    {
-        //        JointPoint section = jointPoints[i];
-        //        Vector3 currentJointPoint = spline.InterpolatedPoint(section.InterpolatedValue);
-        //        Vector3 afterJointPoint;
-        //        float angle;
-
-        //        if (i < endIndex)
-        //        {
-        //            afterJointPoint = spline.InterpolatedPoint(jointPoints[i + 1].InterpolatedValue);
-        //            angle = AngleY(currentJointPoint, afterJointPoint);
-        //        }
-        //        else
-        //        {
-        //            afterJointPoint = spline.InterpolatedPoint(jointPoints[i - 1].InterpolatedValue);
-        //            angle = AngleY(afterJointPoint, currentJointPoint);
-        //        }
-        //        TransformSection(section, currentJointPoint, angle, ref vertices);
-        //    }
-        //}
 
         /// <summary>
         /// 更改单个节点的旋转角度;

@@ -55,11 +55,7 @@ namespace KouXiaGu.World.Map
                 if (false)
                 {
                     BuildingNode buildingNode = new BuildingNode();
-                    buildingNode.Add(building, new BuildingItem()
-                    {
-                        BuildingType = Random(buildArray),
-                        Angle = RandomAngle(),
-                    });
+                    buildingNode.Update(building, Random(buildArray), RandomAngle());
                     node.Building = buildingNode;
                 }
 

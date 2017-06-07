@@ -25,56 +25,36 @@ namespace KouXiaGu.World.Map
         public uint ID { get; internal set; }
 
         [ProtoMember(1)]
-        List<BuildingItem> items;
+        public int BuildingType { get; internal set; }
+
+        [ProtoMember(2)]
+        public float Angle { get; internal set; }
 
         /// <summary>
-        /// 存在的建筑;
+        /// 添加建筑物;
         /// </summary>
-        internal List<BuildingItem> Items
+        public BuildingNode Update(MapData data, int buildingType, float angle)
         {
-            get { return items; }
-            set { items = value; }
-        }
+            if (data == null)
+                throw new ArgumentNullException("data");
 
-        /// <summary>
-        /// 存在的建筑;
-        /// </summary>
-        public IEnumerable<BuildingItem> BuildingItems
-        {
-            get { return Items; }
+            return Update(data.Building, buildingType, angle);
         }
 
         /// <summary>
         /// 添加建筑物;
         /// </summary>
-        public BuildingNode Add(MapData data, BuildingItem item)
+        public BuildingNode Update(IdentifierGenerator buildingInfo, int buildingType, float angle)
         {
-            return Add(data.Building, item);
-        }
+            if (buildingInfo == null)
+                throw new ArgumentNullException("buildingInfo");
 
-        /// <summary>
-        /// 添加建筑物;
-        /// </summary>
-        public BuildingNode Add(IdentifierGenerator buildingInfo, BuildingItem item)
-        {
-            if (Items == null)
+            if (!Exist())
             {
                 ID = buildingInfo.GetNewEffectiveID();
-                items = new List<BuildingItem>();
             }
-            items.Add(item);
-            return this;
-        }
-
-        /// <summary>
-        /// 移除建筑物;
-        /// </summary>
-        public BuildingNode Remove(int buildingType)
-        {
-            if (items != null)
-            {
-                items.Remove(item => item.BuildingType == buildingType);
-            }
+            BuildingType = buildingType;
+            Angle = angle;
             return this;
         }
 
@@ -83,14 +63,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public bool Exist(int buildingType)
         {
-            if (items == null)
-            {
-                return false;
-            }
-            else
-            {
-                return items.Contains(item => item.BuildingType == buildingType);
-            }
+            return BuildingType == buildingType;
         }
 
         /// <summary>
@@ -107,33 +80,16 @@ namespace KouXiaGu.World.Map
         public BuildingNode Destroy()
         {
             ID = 0;
-            items = null;
+            BuildingType = default(int);
+            Angle = default(float);
             return default(BuildingNode);
         }
 
         public bool Equals(BuildingNode other)
         {
-            return ID == other.ID
-                && Equals(items, other.items);
-        }
-
-        bool Equals(List<BuildingItem> items, List<BuildingItem> other)
-        {
-            if (items != other)
-            {
-                if (items == null || other == null)
-                {
-                    return false;
-                }
-                foreach (var item in items)
-                {
-                    if (!other.Contains(item))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            return ID == other.ID 
+                && BuildingType == other.BuildingType
+                && Angle == other.Angle;
         }
 
         public override bool Equals(object obj)
@@ -159,40 +115,40 @@ namespace KouXiaGu.World.Map
         }
     }
 
-    public struct BuildingItem : IEquatable<BuildingItem>
-    {
-        public BuildingItem(int buildingType, float angle)
-        {
-            BuildingType = buildingType;
-            Angle = angle;
-        }
+    //public struct BuildingItem : IEquatable<BuildingItem>
+    //{
+    //    public BuildingItem(int buildingType, float angle)
+    //    {
+    //        BuildingType = buildingType;
+    //        Angle = angle;
+    //    }
 
-        public int BuildingType { get; internal set; }
-        public float Angle { get; internal set; }
+    //    public int BuildingType { get; internal set; }
+    //    public float Angle { get; internal set; }
 
-        public bool Equals(BuildingItem other)
-        {
-            return BuildingType == other.BuildingType
-            && Angle == other.Angle;
-        }
+    //    public bool Equals(BuildingItem other)
+    //    {
+    //        return BuildingType == other.BuildingType
+    //        && Angle == other.Angle;
+    //    }
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is BuildingItem))
-            {
-                return false;
-            }
-            return Equals((BuildingItem)obj);
-        }
+    //    public override bool Equals(object obj)
+    //    {
+    //        if (!(obj is BuildingItem))
+    //        {
+    //            return false;
+    //        }
+    //        return Equals((BuildingItem)obj);
+    //    }
 
-        public override int GetHashCode()
-        {
-            return BuildingType.GetHashCode();
-        }
+    //    public override int GetHashCode()
+    //    {
+    //        return BuildingType.GetHashCode();
+    //    }
 
-        public override string ToString()
-        {
-            return "[BuildingType:" + BuildingType + ", Angle:" + Angle + "]";
-        }
-    }
+    //    public override string ToString()
+    //    {
+    //        return "[BuildingType:" + BuildingType + ", Angle:" + Angle + "]";
+    //    }
+    //}
 }

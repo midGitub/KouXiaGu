@@ -103,11 +103,7 @@ namespace KouXiaGu.Terrain3D.Tests
         {
             CubicHexCoord coord = mousePoint.GetTerrainCubic();
             MapNode node = map[coord];
-            node.Building = node.Building.Add(mapData, new BuildingItem()
-            {
-                BuildingType = 1,
-                Angle = 0,
-            });
+            node.Building = node.Building.Update(mapData, 1, 0);
             map[coord] = node;
         }
 
@@ -136,7 +132,7 @@ namespace KouXiaGu.Terrain3D.Tests
                         "坐标:" + coord.ToString()
                         + "\nLandform:" + landformNode.ID + ",Type:" + landformNode.LandformType + ",Exist:" + landformNode.Exist()
                         + "\nRoad:" + roadNode.ID + ",Type:" + roadNode.RoadType + ",ExistRoad:" + roadNode.Exist()
-                        + "\nBuilding:" + buildingNode.ID + ",Types:" + node.Building.Items.ToLog() + ",ExistBuilding:" + node.Building.Exist()
+                        + "\nBuilding:" + buildingNode.ID + ",Types:" + node.Building.BuildingType + ",ExistBuilding:" + node.Building.Exist()
                         + "\nTags:"
                         ;
                 }

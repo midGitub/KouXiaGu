@@ -84,13 +84,10 @@ namespace KouXiaGu.Navigation
             }
             if (node.Building.Exist())
             {
-                Terrain3D.BuildingInfo buildingInfo;
-                foreach (var building in node.Building.BuildingItems)
+                BuildingInfo buildingInfo;
+                if (Resources.Building.TryGetValue(node.Building.BuildingType, out buildingInfo))
                 {
-                    if (Resources.Building.TryGetValue(building.BuildingType, out buildingInfo))
-                    {
-                        mask |= buildingInfo.TagsMask;
-                    }
+                    mask |= buildingInfo.TagsMask;
                 }
             }
             return mask;

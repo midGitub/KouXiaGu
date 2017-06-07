@@ -197,12 +197,12 @@ namespace KouXiaGu.Terrain3D
             {
                 if (request.IsCompleted)
                 {
-                    request.ResetNode(node);
+                    request.UpdateNode(node);
                     RequestDispatcher.Add(request);
                 }
                 else
                 {
-                    request.ResetNode(node);
+                    request.UpdateNode(node);
                 }
             }
             return request;
@@ -233,7 +233,7 @@ namespace KouXiaGu.Terrain3D
                 CreateRequest request;
                 if (sceneBuildings.TryGetValue(position, out request))
                 {
-                    if (request.IsCompleted && request.Result.Count != 0)
+                    if (request.IsCompleted && request.Result != null)
                     {
                         request.Cancele();
                         DestroyRequest destroyRequest = new DestroyRequest(this, request.Result);
@@ -255,12 +255,9 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void DestroyAll()
         {
-            foreach (var buildings in sceneBuildings.Values)
+            foreach (var building in sceneBuildings.Values)
             {
-                foreach (var building in buildings.Result)
-                {
-                    building.Destroy();
-                }
+                building.Result.Destroy();
             }
             sceneBuildings.Clear();
             sceneChunks.Clear();
@@ -268,18 +265,7 @@ namespace KouXiaGu.Terrain3D
 
 
 
-        List<IBuilding> CreateBuilding_internal(CubicHexCoord position, IList<BuildingItem> buildingItems)
-        {
-            List<IBuilding> buildings = new List<IBuilding>();
-            foreach (var buildingItem in buildingItems)
-            {
-                IBuilding building = CreateBuilding_internal(position, buildingItem);
-                buildings.Add(building);
-            }
-            return buildings;
-        }
-
-        IBuilding CreateBuilding_internal(CubicHexCoord position, BuildingItem buildingItem)
+        IBuilding CreateBuilding_internal(CubicHexCoord position, BuildingNode buildingItem)
         {
             BuildingInfo info;
             if (infos.TryGetValue(buildingItem.BuildingType, out info))
@@ -296,18 +282,6 @@ namespace KouXiaGu.Terrain3D
         }
 
         /// <summary>
-        /// 销毁这些建筑物,并且清空这个合集;
-        /// </summary>
-        void DestroyBuilding_internal(ICollection<IBuilding> buildings)
-        {
-            foreach (var building in buildings)
-            {
-                DestroyBuilding_internal(building);
-            }
-            buildings.Clear();
-        }
-
-        /// <summary>
         /// 销毁这个建筑物实例;
         /// </summary>
         void DestroyBuilding_internal(IBuilding building)
@@ -319,34 +293,36 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 更新已经创建的建筑物;
         /// </summary>
-        List<IBuilding> UpdateBuilding_internal(CubicHexCoord position, IList<BuildingItem> buildingItems, IList<IBuilding> buildings)
+        IBuilding UpdateBuilding_internal(CubicHexCoord position, BuildingNode buildingNode, IBuilding building)
         {
-            List<IBuilding> newBuildings = new List<IBuilding>();
-            if (buildingItems != null)
+            if (buildingNode.Exist())
             {
-                for (int i = 0; i < buildingItems.Count; i++)
+                if (building == null)
                 {
-                    BuildingItem buildingItem = buildingItems[i];
-                    int index = buildings.FindIndex(item => item.Info.ID == buildingItem.BuildingType);
-                    if (index >= 0)
-                    {
-                        IBuilding building = buildings[index];
-                        building.Angle = buildingItem.Angle;
-                        buildings.RemoveAt(index);
-                        newBuildings.Add(building);
-                    }
-                    else
-                    {
-                        IBuilding building = CreateBuilding_changed(position, buildingItem);
-                        newBuildings.Add(building);
-                    }
+                    building = CreateBuilding_changed(position, buildingNode);
+                }
+                else if (buildingNode.BuildingType == building.Info.ID)
+                {
+                    building.Angle = buildingNode.Angle;
+                }
+                else
+                {
+                    DestroyBuilding_changed(building);
+                    building = CreateBuilding_changed(position, buildingNode);
                 }
             }
-            DestroyBuilding_changed(buildings);
-            return newBuildings;
+            else
+            {
+                if (building != null)
+                {
+                    DestroyBuilding_changed(building);
+                    building = null;
+                }
+            }
+            return building;
         }
 
-        IBuilding CreateBuilding_changed(CubicHexCoord position, BuildingItem buildingItem)
+        IBuilding CreateBuilding_changed(CubicHexCoord position, BuildingNode buildingItem)
         {
             IBuilding building = CreateBuilding_internal(position, buildingItem);
             if (building.Info.TerrainInfo.AssociativeNeighbor)
@@ -354,15 +330,6 @@ namespace KouXiaGu.Terrain3D
                 NotifyNeighbors(building.Position, building.Info.ID);
             }
             return building;
-        }
-
-        void DestroyBuilding_changed(ICollection<IBuilding> buildings)
-        {
-            foreach (var building in buildings)
-            {
-                DestroyBuilding_changed(building);
-            }
-            buildings.Clear();
         }
 
         void DestroyBuilding_changed(IBuilding building)
@@ -384,26 +351,22 @@ namespace KouXiaGu.Terrain3D
                 CreateRequest request;
                 if (sceneBuildings.TryGetValue(neighbor, out request))
                 {
-                    if (request.IsCompleted)
+                    if (request.IsCompleted && request.Result != null)
                     {
-                        foreach (var building in request.Result)
+                        IBuilding building = request.Result;
+                        if (building.Info.ID == buildingType)
                         {
-                            if (building.Info.ID == buildingType)
-                            {
-                                building.NeighborChanged(position);
-                                break;
-                            }
+                            building.NeighborChanged(position);
                         }
                     }
                 }
             }
         }
 
-
         /// <summary>
         /// 创建建筑;
         /// </summary>
-        internal class CreateRequest : AsyncOperation<List<IBuilding>>, IAsyncRequest
+        internal class CreateRequest : AsyncOperation<IBuilding>, IAsyncRequest
         {
             /// <summary>
             /// 创建一个空的建筑;
@@ -412,7 +375,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Parent = parent;
                 Position = position;
-                OnCompleted(new List<IBuilding>());
+                OnCompleted();
             }
 
             public CreateRequest(BuildingBuilder parent, CubicHexCoord position, BuildingNode node)
@@ -428,11 +391,6 @@ namespace KouXiaGu.Terrain3D
             public bool IsInQueue { get; private set; }
             public bool IsCanceled { get; private set; }
 
-            public List<BuildingItem> buildingItems
-            {
-                get { return Node.Items; }
-            }
-
             IWorld world
             {
                 get { return Parent.World; }
@@ -444,13 +402,14 @@ namespace KouXiaGu.Terrain3D
             }
 
             /// <summary>
-            /// 设置新的建筑信息,并且重置状态;
+            /// 设置新的建筑信息;
             /// </summary>
-            public void ResetNode(BuildingNode node)
+            public void UpdateNode(BuildingNode node)
             {
                 Node = node;
-                base.ResetState();
                 IsCanceled = false;
+                IsFaulted = false;
+                Exception = null;
             }
 
             internal void Cancele()
@@ -474,17 +433,16 @@ namespace KouXiaGu.Terrain3D
                             return;
                         }
 
-                        if (Result == null)
+                        if (!IsCompleted)
                         {
-                            List<IBuilding> buildings = new List<IBuilding>();
-                            buildings = Parent.CreateBuilding_internal(Position, buildingItems);
-                            OnCompleted(buildings);
+                            IBuilding building = Parent.CreateBuilding_internal(Position, Node);
+                            OnCompleted(building);
                         }
                         else
                         {
-                            List<IBuilding> buildings = Result;
-                            buildings = Parent.UpdateBuilding_internal(Position, buildingItems, buildings);
-                            OnCompleted(buildings);
+                            IBuilding building = Result;
+                            building = Parent.UpdateBuilding_internal(Position, Node, building);
+                            OnCompleted(building);
                         }
                     }
                     catch (Exception ex)
@@ -510,21 +468,18 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         class DestroyRequest : IAsyncRequest
         {
-            public DestroyRequest(BuildingBuilder parent, IEnumerable<IBuilding> buildings)
+            public DestroyRequest(BuildingBuilder parent, IBuilding building)
             {
                 Parent = parent;
-                Buildings = buildings;
+                Building = building;
             }
 
             public BuildingBuilder Parent { get; private set; }
-            public IEnumerable<IBuilding> Buildings { get; private set; }
+            public IBuilding Building { get; private set; }
 
             void IAsyncRequest.Operate()
             {
-                foreach (var building in Buildings)
-                {
-                    Parent.DestroyBuilding_internal(building);
-                }
+                Parent.DestroyBuilding_internal(Building);
             }
 
             void IAsyncRequest.AddQueue() { }
@@ -567,12 +522,9 @@ namespace KouXiaGu.Terrain3D
                     CreateRequest building;
                     if (parent.sceneBuildings.TryGetValue(point, out building))
                     {
-                        if (building.IsCompleted)
+                        if (building.IsCompleted && building.Result != null)
                         {
-                            foreach (var item in building.Result)
-                            {
-                                item.UpdateHeight();
-                            }
+                            building.Result.UpdateHeight();
                         }
                     }
                 }
