@@ -1,6 +1,7 @@
 ﻿using KouXiaGu.Resources;
 using System;
 using System.Threading;
+using UnityEngine;
 
 namespace KouXiaGu.World
 {
@@ -35,6 +36,7 @@ namespace KouXiaGu.World
         {
             try
             {
+                Debug.Log("开始初始化游戏;");
                 BasicResource = basicResource;
                 WorldInfo = worldInfo;
                 WorldData = new WorldDataInitialization(this);

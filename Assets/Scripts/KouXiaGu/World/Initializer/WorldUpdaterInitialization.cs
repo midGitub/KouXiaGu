@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
+using UnityEngine;
 
 namespace KouXiaGu.World
 {
@@ -22,6 +23,7 @@ namespace KouXiaGu.World
 
         void Initialize(IWorld world)
         {
+            Debug.Log("开始初始化场景更新器;");
             LandformUpdater = new SceneUpdater(world);
             var landformUpdaterOperation = LandformUpdater.Start();
             while (!landformUpdaterOperation.IsCompleted)
