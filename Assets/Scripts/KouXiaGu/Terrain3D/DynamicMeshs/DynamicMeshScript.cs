@@ -84,7 +84,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
         /// <summary>
         /// 转换到曲线路径,并且指定起点和终点的旋转角度;
         /// </summary>
-        public void Transformation(ISpline spline, float start, float end)
+        public void Transformation(ISpline spline, Vector3 start, Vector3 end)
         {
             Mesh mesh = meshFilter.mesh;
             Vector3[] vertices = mesh.vertices;
@@ -92,6 +92,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
             mesh.vertices = vertices;
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
+            mesh.RecalculateTangents();
         }
 
 

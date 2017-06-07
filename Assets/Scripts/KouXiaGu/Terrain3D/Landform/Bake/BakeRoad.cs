@@ -25,7 +25,7 @@ namespace KouXiaGu.Terrain3D
 
         List<Pack> sceneObjects;
         RoadMeshPool objectPool;
-
+        int roadObjectOrder;
         BakeCamera bakeCamera;
         IWorld world;
         CubicHexCoord chunkCenter;
@@ -113,10 +113,10 @@ namespace KouXiaGu.Terrain3D
             var routes = GetPeripheralRoutes(target);
             foreach (var route in routes)
             {
-                var spline = ConvertSpline(target, route);
                 var roadMesh = objectPool.Get();
-                roadMesh.Value1.transform.position = target.GetTerrainPixel();
-                roadMesh.Value1.Transformation(spline);
+                roadMesh.Value1.transform.position = target.GetTerrainPixel(--roadObjectOrder);
+                var spline = new CatmullRomSpline(route);
+                roadMesh.Value1.Transformation(spline, route[0], route[3]);
                 yield return roadMesh;
             }
         }
@@ -124,7 +124,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 迭代获取到这个点通向周围的路径点,若不存在节点则不进行迭代;
         /// </summary>
-        public IEnumerable<CubicHexCoord[]> GetPeripheralRoutes(CubicHexCoord target)
+        IEnumerable<Vector3[]> GetPeripheralRoutes(CubicHexCoord target)
         {
             TryGetPeripheralValue tryGetValue = delegate (CubicHexCoord position, out uint value)
             {
@@ -146,7 +146,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 迭代获取到这个点通往价值大于本身的邻居点的路径点,若不存在节点则不进行迭代;
         /// </summary>
-        public static IEnumerable<CubicHexCoord[]> GetRoadRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
+        static IEnumerable<Vector3[]> GetRoadRoutes(CubicHexCoord target, TryGetPeripheralValue tryGetValue)
         {
             uint targetValue;
             if (tryGetValue(target, out targetValue))
@@ -158,16 +158,26 @@ namespace KouXiaGu.Terrain3D
                     {
                         if (neighbourValue > targetValue)
                         {
-                            CubicHexCoord[] route = new CubicHexCoord[4];
-                            route[0] = PeripheralRoute.MinNeighbourOrSelf(target, tryGetValue);
-                            route[1] = target;
-                            route[2] = neighbour.Point;
-                            route[3] = PeripheralRoute.MaxNeighbourOrSelf(neighbour, tryGetValue);
-                            yield return route;
+                            Vector3 targetPixel = target.GetTerrainPixel();
+                            Vector3[] route = new Vector3[4];
+                            route[0] = PeripheralRoute.MinNeighbourOrSelf(target, tryGetValue).Point.GetTerrainPixel();
+                            route[1] = targetPixel;
+                            route[2] = neighbour.Point.GetTerrainPixel();
+                            route[3] = PeripheralRoute.MaxNeighbourOrSelf(neighbour, tryGetValue).Point.GetTerrainPixel();
+                            yield return ConvertLoaclPath(targetPixel, route);
                         }
                     }
                 }
             }
+        }
+
+        static Vector3[] ConvertLoaclPath(Vector3 target, Vector3[] route)
+        {
+            for (int i = 0; i < route.Length; i++)
+            {
+                route[i] -= target;
+            }
+            return route;
         }
 
         /// <summary>
@@ -195,6 +205,7 @@ namespace KouXiaGu.Terrain3D
                 }
             }
             sceneObjects.Clear();
+            roadObjectOrder = 0;
         }
 
         void BakeDiffuse()

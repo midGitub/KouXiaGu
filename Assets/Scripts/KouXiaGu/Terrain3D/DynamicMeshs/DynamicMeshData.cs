@@ -96,7 +96,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
         /// <summary>
         /// 转换到曲线路径,并且指定起点和终点的旋转角度;
         /// </summary>
-        public void Transformation(ISpline spline, float start, float end, ref Vector3[] vertices)
+        public void Transformation(ISpline spline, Vector3 start, Vector3 end, ref Vector3[] vertices)
         {
             if (pointCollection.Length != vertices.Length)
                 throw new ArgumentException("预定义网格和模型网格不符合;");
@@ -108,7 +108,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
             Vector3 position = spline.InterpolatedPoint(section.InterpolatedValue);
             JointPoint afterSection = jointPoints[1];
             Vector3 afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
-            float angle = start;
+            float angle = AngleY(start, position);
             TransformSection(section, position, angle, ref vertices);
             section = afterSection;
             position = afterPosition;
@@ -125,7 +125,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
                 {
                     afterSection = jointPoints[i - 1];
                     afterPosition = spline.InterpolatedPoint(afterSection.InterpolatedValue);
-                    angle = end;
+                    angle = AngleY(position, end);
                 }
 
                 TransformSection(section, position, angle, ref vertices);

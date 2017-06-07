@@ -66,7 +66,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
         void BuildWall(Vector3[] path)
         {
             ISpline spline = new CatmullRomSpline(path);
-            dynamicMesh.Transformation(spline, AngleY(path[0], path[2]), AngleY(path[2], path[path.Length - 1]));
+            dynamicMesh.Transformation(spline, path[0], path[path.Length - 1]);
             this.path = path;
         }
 
