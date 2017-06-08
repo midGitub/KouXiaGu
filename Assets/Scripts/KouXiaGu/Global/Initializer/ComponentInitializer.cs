@@ -32,9 +32,9 @@ namespace KouXiaGu
 
         void Initialize()
         {
+            CustomInput.ReadOrDefault();
             IAsyncOperation[] missions = new IAsyncOperation[]
                 {
-                    CustomInput.ReadOrDefaultAsync().Subscribe(this, OnCustomInputCompleted, OnFaulted),
                     Localization.InitializeAsync().Subscribe(this, OnLocalizationCompleted, OnFaulted),
                 };
             (missions as IEnumerable<IAsyncOperation>).Subscribe(this, OnCompleted, OnFaulted);

@@ -70,12 +70,12 @@ namespace KouXiaGu.XiaGuTools
 
         static void ReadFromFile()
         {
-            CustomInput.ReadOrDefaultAsync();
+            CustomInput.ReadOrDefault();
         }
 
         static void WirteToFile()
         {
-            CustomInput.WriteAsync();
+            CustomInput.Write();
         }
 
     }

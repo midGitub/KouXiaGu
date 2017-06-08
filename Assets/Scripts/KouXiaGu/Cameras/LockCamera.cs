@@ -90,22 +90,22 @@ namespace KouXiaGu.World
             bool isInput = false;
             axis = new Vector3();
 
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Up))
+            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_up))
             {
                 axis.z += movementSpeed * InputOnUpdate;
                 isInput = true;
             }
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Down))
+            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_down))
             {
                 axis.z -= movementSpeed * InputOnUpdate;
                 isInput = true;
             }
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Right))
+            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_right))
             {
                 axis.x += movementSpeed * InputOnUpdate;
                 isInput = true;
             }
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_Movement_Left))
+            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_left))
             {
                 axis.x -= movementSpeed * InputOnUpdate;
                 isInput = true;

@@ -66,7 +66,18 @@ namespace KouXiaGu.KeyInput
         /// <summary>
         /// 更新按键映射;
         /// </summary>
-        static void UpdateKey(IEnumerable<CustomKey> customKeys)
+        public static void UpdateKey(IEnumerable<KeyValuePair<int, KeyCode>> customKeys)
+        {
+            foreach (var key in customKeys)
+            {
+                keyMap[key.Key] = key.Value;
+            }
+        }
+
+        /// <summary>
+        /// 更新按键映射;
+        /// </summary>
+        public static void UpdateKey(IEnumerable<CustomKey> customKeys)
         {
             foreach (var key in customKeys)
             {
@@ -135,7 +146,6 @@ namespace KouXiaGu.KeyInput
 
         internal static readonly CustomKeyReader DefaultReader = new XmlCustomKeyReader();
 
-
         public static void ReadOrDefault()
         {
             ReadOrDefault(DefaultReader);
@@ -143,45 +153,19 @@ namespace KouXiaGu.KeyInput
 
         public static void ReadOrDefault(CustomKeyReader reader)
         {
-            IEnumerable<CustomKey> keys;
             try
             {
-                keys = reader.ReadKeys();
+                IEnumerable<CustomKey> keys = reader.ReadKeys();
+                UpdateKey(keys);
             }
-            catch
+            catch(Exception ex)
             {
-                Debug.LogWarning("读取定义按键失败,现在使用默认按键;");
-                keys = DefaultKey.DefaultKeys;
-            }
-            UpdateKey(keys);
-        }
+                Debug.LogWarning("读取定义按键失败,现在使用默认按键;" + ex);
+                IEnumerable<KeyValuePair<int, KeyCode>> keys = DefaultKeys.ReadOnlyKeys;
+                UpdateKey(keys);
 
-        public static IAsyncOperation ReadOrDefaultAsync()
-        {
-            return ReadOrDefaultAsync(DefaultReader);
-        }
-
-        public static IAsyncOperation ReadOrDefaultAsync(CustomKeyReader reader)
-        {
-            return new AsyncReadOrDefault(reader);
-        }
-
-        class AsyncReadOrDefault : ThreadOperation
-        {
-            public AsyncReadOrDefault(CustomKeyReader reader)
-            {
-                Reader = reader;
-                Start();
-            }
-
-            public CustomKeyReader Reader { get; private set; }
-
-            protected override void Operate()
-            {
-                ReadOrDefault(Reader);
             }
         }
-
 
         /// <summary>
         /// 从读取到所有按键信息,并且设置到按键;
@@ -201,33 +185,6 @@ namespace KouXiaGu.KeyInput
             UpdateKey(keys);
         }
 
-        public static IAsyncOperation ReadAsync()
-        {
-            return ReadAsync(DefaultReader);
-        }
-
-        public static IAsyncOperation ReadAsync(CustomKeyReader reader)
-        {
-            return new CustomInputAsyncReader(reader);
-        }
-
-        class CustomInputAsyncReader : ThreadOperation
-        {
-            public CustomInputAsyncReader(CustomKeyReader reader)
-            {
-                Reader = reader;
-                Start();
-            }
-
-            public CustomKeyReader Reader { get; private set; }
-
-            protected override void Operate()
-            {
-                Read(Reader);
-            }
-        }
-
-
         /// <summary>
         /// 将所有按键输出\保存;
         /// </summary>
@@ -244,33 +201,5 @@ namespace KouXiaGu.KeyInput
             CustomKey[] keys = GetKeys().ToArray();
             writer.WriteKeys(keys);
         }
-
-        public static IAsyncOperation WriteAsync()
-        {
-            return WriteAsync(DefaultReader);
-        }
-
-        public static IAsyncOperation WriteAsync(CustomKeyReader writer)
-        {
-            return new CustomInputAsyncWriter(writer);
-        }
-
-        class CustomInputAsyncWriter : ThreadOperation
-        {
-            public CustomInputAsyncWriter(CustomKeyReader writer)
-            {
-                Writer = writer;
-                Start();
-            }
-
-            public CustomKeyReader Writer { get; private set; }
-
-            protected override void Operate()
-            {
-                CustomInput.Write(Writer);
-            }
-        }
-
     }
-
 }
