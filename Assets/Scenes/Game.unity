@@ -750,7 +750,7 @@ GameObject:
   - component: {fileID: 435868885}
   - component: {fileID: 435868887}
   m_Layer: 0
-  m_Name: SceneController
+  m_Name: WorldSceneController
   m_TagString: SceneController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1202,7 +1202,7 @@ GameObject:
   - component: {fileID: 985083073}
   - component: {fileID: 985083072}
   m_Layer: 5
-  m_Name: Test_Canvas
+  m_Name: UI_MapEditor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -23,6 +23,7 @@ namespace KouXiaGu.Terrain3D
             BuildingBuilder = new BuildingBuilder(world, LandformBuilder, LandformDispatcher);
             BuildingUpdater = new BuildingUpdater(BuildingBuilder);
             MapWatcher = new MapWatcher(LandformUpdater.Builder, BuildingBuilder, world.WorldData.MapData.ObservableMap);
+            WaterManager = new WaterManager();
         }
 
         bool isUpdating;
@@ -33,6 +34,7 @@ namespace KouXiaGu.Terrain3D
         internal BuildingBuilder BuildingBuilder { get; private set; }
         internal BuildingUpdater BuildingUpdater { get; private set; }
         internal MapWatcher MapWatcher { get; private set; }
+        public WaterManager WaterManager { get; private set; }
 
         /// <summary>
         /// 在这个时刻场景是否构建完成?
