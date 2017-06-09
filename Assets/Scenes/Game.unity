@@ -2006,18 +2006,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1256517408}
+  isLockTarget: 0
   defaultTargetOffset: {x: 0, y: 9, z: -6}
   smoothTime: 0.2
   zoom: 0
-  maxZoom: 0.6
-  zoomRatio: 0.1
-  currentOffset: {x: 0, y: 0, z: 0}
+  maxZoom: 0.55
+  zoomRatio: 0.3
   movementRatio: 6
-  isEdgeMovement: 1
+  canEdgeMovement: 1
   edgeMovementRatio: 0.6
   cameraClamp: {x: -5, y: 5, z: -4, w: 3}
-  finalPosition: {x: 0, y: 0, z: 0}
-  currentVelocity: {x: 0, y: 0, z: 0}
 --- !u!1 &1650282043
 GameObject:
   m_ObjectHideFlags: 0

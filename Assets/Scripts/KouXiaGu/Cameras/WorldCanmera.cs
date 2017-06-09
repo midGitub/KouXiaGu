@@ -159,9 +159,9 @@ namespace KouXiaGu.Cameras
                 if (!isLockTarget)
                 {
                     ZoomRespond();
+                    CameraOffsetClamp(ref currentOffset);
                     MovementRespond(ref currentOffset);
                     EdgeMovementRespond(ref currentOffset);
-                    CameraOffsetClamp(ref currentOffset);
                     CameraRetrunRespond();
                 }
                 else
