@@ -95,44 +95,6 @@ namespace KouXiaGu
             return item;
         }
 
-
-
-        [Obsolete]
-        static T Initialize()
-        {
-            if (_instance == null)
-            {
-                var instances = GameObject.FindObjectsOfType<T>();
-                if (instances.Length == 0)
-                {
-                    var type = typeof(T);
-                    var gameObject = new GameObject(type.Name, type);
-                    _instance = gameObject.GetComponent<T>();
-                    Debug.Log("已创建单例;" + type.Name);
-                }
-                else if (instances.Length == 1)
-                {
-                    _instance = instances[0];
-                }
-                else
-                {
-                    _instance = instances[0];
-                    string errorStr = "存在多个单例在场景!将销毁其它;";
-
-                    for (int i = 1; i < instances.Length; i++)
-                    {
-                        var other = instances[i];
-                        errorStr += string.Format("\n[{0}]{1}", i, "销毁多余单例:" + other.name);
-                        GameObject.Destroy(other);
-                    }
-
-                    Debug.LogError(errorStr);
-                }
-            }
-            return _instance;
-        }
-
-
         /// <summary>
         /// 手动设置到单例,若出现错误则弹出异常;
         /// </summary>
@@ -146,7 +108,7 @@ namespace KouXiaGu
             {
                 throw new ArgumentException("设置不同的单例;原本:" + (Instance as MonoBehaviour).name + ",请求:" + (instance as MonoBehaviour).name);
             }
-            UnitySington<T>._instance = instance;
+            _instance = instance;
         }
 
         [ContextMenu("输出场景实例数目;")]
@@ -154,6 +116,11 @@ namespace KouXiaGu
         {
             var instances = GameObject.FindObjectsOfType<T>();
             Debug.Log(instances.ToLog("场景存在单例"));
+        }
+
+        protected virtual void OnDestroy()
+        {
+            _instance = null;
         }
     }
 }

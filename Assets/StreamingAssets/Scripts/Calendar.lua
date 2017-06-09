@@ -23,9 +23,10 @@
         -- bool IsLeapYear(int year);
 
         -- /// <summary>
-        -- /// 获取到枚举类型的月份表示;
+        -- /// 获取到实际表示月份;
         -- /// </summary>
-        -- MonthType GetMonthType(int year, int month, out bool isLeapMonth);
+        -- int GetMonth(int year, int month, out bool isLeapMonth);
+        
         
 --年月日时分秒 初始值都为 0;
 
@@ -63,28 +64,33 @@ _IsLeapYear = function(self, year)
 	return false
 end
 
+--获取到实际表示月份;
+GetMonth = function(self, year, month)
+    return month, false
+end
 
-local MonthType = CS.KouXiaGu.World.MonthType
+
+-- local MonthType = CS.KouXiaGu.World.MonthType
 
 --数值对应的月份;
-local MonthArray = {
-	MonthType.January,
-	MonthType.February,
-	MonthType.March,
-	MonthType.April,
-	MonthType.May,
-	MonthType.June,
-	MonthType.July,
-	MonthType.August,
-	MonthType.September,
-	MonthType.October,
-	MonthType.November,
-	MonthType.December,
-}
+-- local MonthArray = {
+	-- MonthType.January,
+	-- MonthType.February,
+	-- MonthType.March,
+	-- MonthType.April,
+	-- MonthType.May,
+	-- MonthType.June,
+	-- MonthType.July,
+	-- MonthType.August,
+	-- MonthType.September,
+	-- MonthType.October,
+	-- MonthType.November,
+	-- MonthType.December,
+-- }
 
 --获取到枚举类型的月份表示;
-_GetMonthType = function(self, year, month)
-	month = month + 1
-	print(month)
-	return MonthArray[month], false
-end
+-- _GetMonthType = function(self, year, month)
+	-- month = month + 1
+	-- print(month)
+	-- return MonthArray[month], false
+-- end

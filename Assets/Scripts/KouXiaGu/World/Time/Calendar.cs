@@ -34,9 +34,9 @@ namespace KouXiaGu.World
         bool IsLeapYear(int year);
 
         /// <summary>
-        /// 获取到枚举类型的月份表示;
+        /// 获取到实际表示月份;
         /// </summary>
-        MonthType GetMonthType(int year, int month, out bool isLeapMonth);
+        int GetMonth(int year, int month, out bool isLeapMonth);
     }
 
 
@@ -74,6 +74,22 @@ namespace KouXiaGu.World
             return year % 3 == 0;
         }
 
+        public int GetMonth(int year, int month, out bool isLeapMonth)
+        {
+            int leapMonth = GetLeapMonth(year);
+
+            if (leapMonth != 0 && month >= leapMonth)
+            {
+                isLeapMonth = leapMonth == month;
+                month--;
+                return month;
+            }
+
+            isLeapMonth = false;
+            return month;
+        }
+
+
         static readonly MonthType[] MonthsArray = new MonthType[]
             {
                 MonthType.January,
@@ -104,17 +120,15 @@ namespace KouXiaGu.World
             isLeapMonth = false;
             return MonthsArray[month];
         }
-
     }
 
 
-    public class CalendarFormLuaScript
+    class CalendarFormLuaScript
     {
-
         [CSharpCallLua]
         public delegate ICalendar CalendarReader();
 
-        internal const string luaScriptName = "Calendar.New";
+        public const string luaScriptName = "Calendar.New";
 
         /// <summary>
         /// 从Lua文件获取到日历信息;
@@ -245,6 +259,21 @@ namespace KouXiaGu.World
             const int LEAP_YEAR_INTERAVAL = 3;
 
             return year % LEAP_YEAR_INTERAVAL == 0;
+        }
+
+        public int GetMonth(int year, int month, out bool isLeapMonth)
+        {
+            int leapMonth = GetLeapMonth(year);
+
+            if (leapMonth != 0 && month >= leapMonth)
+            {
+                isLeapMonth = leapMonth == month;
+                month--;
+                return month;
+            }
+
+            isLeapMonth = false;
+            return month;
         }
 
 

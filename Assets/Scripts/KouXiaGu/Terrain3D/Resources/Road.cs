@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using KouXiaGu.Resources;
 using System.Linq;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -49,17 +50,17 @@ namespace KouXiaGu.Terrain3D
     [XmlType("TerrainRoad")]
     public class TerrainRoadInfo
     {
-        /// <summary>
-        /// 高度调整贴图名;
-        /// </summary>
-        [XmlElement("HeightAdjustTex")]
-        public string HeightAdjustTex;
+        ///// <summary>
+        ///// 高度调整贴图名;
+        ///// </summary>
+        //[XmlElement("HeightAdjustTex")]
+        //public string HeightAdjustTex;
 
-        /// <summary>
-        /// 高度调整的权重贴图;
-        /// </summary>
-        [XmlElement("HeightAdjustBlendTex")]
-        public string HeightAdjustBlendTex;
+        ///// <summary>
+        ///// 高度调整的权重贴图;
+        ///// </summary>
+        //[XmlElement("HeightAdjustBlendTex")]
+        //public string HeightAdjustBlendTex;
 
         /// <summary>
         /// 漫反射贴图名;
@@ -87,8 +88,6 @@ namespace KouXiaGu.Terrain3D
         public RoadInfo Info { get; internal set; }
         public Texture DiffuseTex { get; internal set; }
         public Texture DiffuseBlendTex { get; internal set; }
-        public Texture HeightAdjustTex { get; internal set; }
-        public Texture HeightAdjustBlendTex { get; internal set; }
 
         public bool IsEmpty
         {
@@ -96,9 +95,7 @@ namespace KouXiaGu.Terrain3D
             {
                 return
                     DiffuseTex == null &&
-                    DiffuseBlendTex == null &&
-                    HeightAdjustTex == null &&
-                    HeightAdjustBlendTex == null;
+                    DiffuseBlendTex == null;
             }
         }
 
@@ -108,9 +105,7 @@ namespace KouXiaGu.Terrain3D
             {
                 return
                     DiffuseTex != null &&
-                    DiffuseBlendTex != null &&
-                    HeightAdjustTex != null &&
-                    HeightAdjustBlendTex != null;
+                    DiffuseBlendTex != null;
             }
         }
 
@@ -121,12 +116,6 @@ namespace KouXiaGu.Terrain3D
 
             Destroy(DiffuseBlendTex);
             DiffuseBlendTex = null;
-
-            Destroy(HeightAdjustTex);
-            HeightAdjustTex = null;
-
-            Destroy(HeightAdjustBlendTex);
-            HeightAdjustBlendTex = null;
         }
 
         void Destroy(UnityEngine.Object item)
@@ -139,37 +128,41 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    public class RoadResourcesReader
+
+    public class RoadResourceReader : IAsyncRequest
     {
-        public IEnumerator ReadAsync(ISegmented stopwatch, AssetBundle assetBundle, IDictionary<int, RoadInfo> infoDictionary)
+        public RoadResourceReader(AssetBundle assetBundle, RoadInfo info)
         {
-            foreach (var info in infoDictionary.Values.ToArray())
+            this.assetBundle = assetBundle;
+            this.info = info;
+        }
+
+        AssetBundle assetBundle;
+        RoadInfo info;
+
+        void IAsyncRequest.AddQueue() { }
+
+        void IAsyncRequest.Operate()
+        {
+            TerrainRoadInfo bInfo = info.TerrainInfo;
+
+            var resource = new RoadResource(info)
             {
-                TerrainRoadInfo bInfo = info.TerrainInfo;
+                DiffuseTex = ReadTexture(bInfo.DiffuseTex),
+                DiffuseBlendTex = ReadTexture(bInfo.DiffuseBlendTex),
+            };
 
-                info.Terrain = new RoadResource(info)
-                {
-                    DiffuseTex = ReadTexture(assetBundle, bInfo.DiffuseTex),
-                    DiffuseBlendTex = ReadTexture(assetBundle, bInfo.DiffuseBlendTex),
-                    HeightAdjustTex = ReadTexture(assetBundle, bInfo.HeightAdjustTex),
-                    HeightAdjustBlendTex = ReadTexture(assetBundle, bInfo.HeightAdjustTex),
-                };
-
-                if (!info.Terrain.IsLoadComplete)
-                {
-                    Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
-                    infoDictionary.Remove(info.ID);
-                }
-
-                if (stopwatch.Await())
-                {
-                    yield return null;
-                    stopwatch.Restart();
-                }
+            if (resource.IsLoadComplete)
+            {
+                info.Terrain = resource;
+            }
+            else
+            {
+                Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
             }
         }
 
-        private Texture ReadTexture(AssetBundle assetBundle, string name)
+        Texture ReadTexture(string name)
         {
             return assetBundle.LoadAsset<Texture>(name);
         }

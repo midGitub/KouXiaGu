@@ -9,7 +9,7 @@ namespace KouXiaGu.World.Map
 
     public interface IGameMapReader
     {
-        GameMap Read(BasicResource info);
+        GameMap Read(IGameResource info);
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ namespace KouXiaGu.World.Map
 
         RandomMapDataCreater mapDataReader;
 
-        public GameMap Read(BasicResource info)
+        public GameMap Read(IGameResource info)
         {
             MapData data = mapDataReader.Read(info);
             return new GameMap(data);

@@ -14,7 +14,7 @@ namespace KouXiaGu.World
     /// </summary>
     public interface IBasicData
     {
-        BasicResource BasicResource { get; }
+        IGameResource BasicResource { get; }
         WorldInfo WorldInfo { get; }
     }
 
@@ -47,6 +47,7 @@ namespace KouXiaGu.World
     public interface IWorldComponents
     {
         Landform Landform { get; }
+        WorldTime Time { get; }
     }
 
     /// <summary>
@@ -55,5 +56,6 @@ namespace KouXiaGu.World
     public interface IWorldUpdater : IDisposable
     {
         SceneUpdater LandformUpdater { get; }
+        WorldTimeUpdater TimeUpdater { get; }
     }
 }

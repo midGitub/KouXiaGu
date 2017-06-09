@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Linq;
 using KouXiaGu.World;
 using KouXiaGu.Grids;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -100,32 +101,33 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    public class BuildingResourcesReader : AsyncOperation
+    public class BuildingResourceReader : IAsyncRequest
     {
-        public IEnumerator ReadAsync(ISegmented stopwatch, AssetBundle assetBundle, IDictionary<int, BuildingInfo> infoDictionary)
+        public BuildingResourceReader(AssetBundle assetBundle, BuildingInfo info)
         {
-            foreach (var info in infoDictionary.Values.ToArray())
+            this.assetBundle = assetBundle;
+            this.info = info;
+        }
+
+        AssetBundle assetBundle;
+        BuildingInfo info;
+
+        void IAsyncRequest.AddQueue() { }
+
+        void IAsyncRequest.Operate()
+        {
+            TerrainBuildingInfo tInfo = info.TerrainInfo;
+            GameObject prefab = assetBundle.LoadAsset<GameObject>(tInfo.PrefabName);
+
+            try
             {
-                TerrainBuildingInfo bInfo = info.TerrainInfo;
-                GameObject prefab = assetBundle.LoadAsset<GameObject>(bInfo.PrefabName);
-
-                try
-                {
-                    info.Terrain = new BuildingResource(bInfo, prefab);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString() + ",因为:" + ex);
-                    infoDictionary.Remove(info.ID);
-                }
-
-                if (stopwatch.Await())
-                {
-                    yield return null;
-                    stopwatch.Restart();
-                }
+                var resource = new BuildingResource(tInfo, prefab);
+                info.Terrain = resource;
             }
-            OnCompleted();
+            catch (Exception ex)
+            {
+                Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString() + ",因为:" + ex);
+            }
         }
     }
 }

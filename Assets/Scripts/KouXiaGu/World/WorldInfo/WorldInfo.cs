@@ -13,7 +13,6 @@ namespace KouXiaGu.World
     public class WorldInfo
     {
 
-        public WorldTimeInfo Time;
         public ArchiveFile Archive;
         public IGameMapReader MapReader;
 

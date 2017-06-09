@@ -60,27 +60,27 @@ namespace KouXiaGu.World.Map
         }
     }
 
-    /// <summary>
-    /// 地图存档;
-    /// </summary>
-    class GameMapArchiver : IArchiver
-    {
-        public GameMapArchiver(GameMap data)
-        {
-            gameMap = data;
-        }
+    ///// <summary>
+    ///// 地图存档;
+    ///// </summary>
+    //class GameMapArchiver : IArchiver
+    //{
+    //    public GameMapArchiver(GameMap data)
+    //    {
+    //        gameMap = data;
+    //    }
 
-        readonly GameMap gameMap;
-        MapData archivedData;
+    //    readonly GameMap gameMap;
+    //    MapData archivedData;
 
-        public void Prepare()
-        {
-            archivedData = gameMap.GetArchivedData();
-        }
+    //    public void Prepare()
+    //    {
+    //        archivedData = gameMap.GetArchivedData();
+    //    }
 
-        public void Write(ArchiveFile file)
-        {
-            throw new NotImplementedException();
-        }
-    }
+    //    public void Write(ArchiveFile file)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
 }

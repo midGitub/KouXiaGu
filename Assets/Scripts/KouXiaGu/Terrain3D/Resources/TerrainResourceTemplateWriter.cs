@@ -50,8 +50,6 @@ namespace KouXiaGu.Terrain3D
                 {
                     DiffuseBlendTex = "none",
                     DiffuseTex = "none",
-                    HeightAdjustBlendTex = "none",
-                    HeightAdjustTex = "none",
                 },
             } },
         };

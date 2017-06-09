@@ -11,7 +11,7 @@ namespace KouXiaGu.World
     /// </summary>
     public class WorldInitialization : IBasicData, IWorldComplete, IWorld
     {
-        WorldInitialization(BasicResource basicResource, WorldInfo worldInfo)
+        WorldInitialization(IGameResource basicResource, WorldInfo worldInfo)
         {
             if (basicResource == null)
                 throw new ArgumentNullException("basicResource");
@@ -21,7 +21,7 @@ namespace KouXiaGu.World
             Initialize(basicResource, worldInfo);
         }
 
-        public BasicResource BasicResource { get; private set; }
+        public IGameResource BasicResource { get; private set; }
         public WorldInfo WorldInfo { get; private set; }
         public IWorldData WorldData { get; private set; }
         public IWorldComponents Components { get; private set; }
@@ -32,11 +32,11 @@ namespace KouXiaGu.World
             get { return this; }
         }
 
-        void Initialize(BasicResource basicResource, WorldInfo worldInfo)
+        void Initialize(IGameResource basicResource, WorldInfo worldInfo)
         {
             try
             {
-                Debug.Log("开始初始化游戏;");
+                Debug.Log("开始初始化游戏场景;");
                 BasicResource = basicResource;
                 WorldInfo = worldInfo;
                 WorldData = new WorldDataInitialization(this);
@@ -50,7 +50,7 @@ namespace KouXiaGu.World
             }
         }
 
-        public static IAsyncOperation<IWorldComplete> CreateAsync(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
+        public static IAsyncOperation<IWorldComplete> CreateAsync(IAsyncOperation<IGameResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
         {
             return new AsyncInitializer(basicResource, infoReader);
         }
@@ -69,7 +69,7 @@ namespace KouXiaGu.World
         /// </summary>
         class AsyncInitializer : AsyncOperation<IWorldComplete>
         {
-            public AsyncInitializer(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
+            public AsyncInitializer(IAsyncOperation<IGameResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
             {
                 if (basicResource == null)
                     throw new ArgumentNullException("basicResource");
@@ -79,7 +79,7 @@ namespace KouXiaGu.World
                 ThreadPool.QueueUserWorkItem(_ => Initialize(basicResource, infoReader));
             }
 
-            void Initialize(IAsyncOperation<BasicResource> resourceReader, IAsyncOperation<WorldInfo> infoReader)
+            void Initialize(IAsyncOperation<IGameResource> resourceReader, IAsyncOperation<WorldInfo> infoReader)
             {
                 try
                 {
@@ -89,9 +89,9 @@ namespace KouXiaGu.World
                     while (!resourceReader.IsCompleted)
                     {
                     }
-                    BasicResource resource = resourceReader.Result;
-                    WorldInfo worldInfo = infoReader.Result;
-                    WorldInitialization item = new WorldInitialization(resource, worldInfo);
+                    var resource = resourceReader.Result;
+                    var worldInfo = infoReader.Result;
+                    var item = new WorldInitialization(resource, worldInfo);
                     OnCompleted(item);
                 }
                 catch (Exception ex)

@@ -7,6 +7,7 @@ using UnityEngine;
 using KouXiaGu.Collections;
 using KouXiaGu.Resources;
 using System.Linq;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu.Terrain3D
 {
@@ -155,38 +156,41 @@ namespace KouXiaGu.Terrain3D
 
     }
 
-    public class LandformResourcesReader : AsyncOperation
+    public class LandformResourceReader : IAsyncRequest
     {
-        public IEnumerator ReadAsync(ISegmented stopwatch, AssetBundle assetBundle, IDictionary<int, LandformInfo> infoDictionary)
+        public LandformResourceReader(AssetBundle assetBundle, LandformInfo info)
         {
-            foreach (var info in infoDictionary.Values.ToArray())
-            {
-                TerrainLandformInfo tInfo = info.TerrainInfo;
-
-                info.Terrain = new LandformResource(info)
-                {
-                    DiffuseTex = ReadTexture(assetBundle, tInfo.DiffuseTex),
-                    DiffuseBlendTex = ReadTexture(assetBundle, tInfo.DiffuseBlendTex),
-                    HeightTex = ReadTexture(assetBundle, tInfo.HeightTex),
-                    HeightBlendTex = ReadTexture(assetBundle, tInfo.HeightBlendTex),
-                };
-
-                if (!info.Terrain.IsLoadComplete)
-                {
-                    Debug.LogWarning("无法读取[TerrainLandform],Info:" + info.ToString());
-                    infoDictionary.Remove(info.ID);
-                }
-
-                if (stopwatch.Await())
-                {
-                    yield return null;
-                    stopwatch.Restart();
-                }
-            }
-            OnCompleted();
+            this.assetBundle = assetBundle;
+            this.info = info;
         }
 
-        private Texture ReadTexture(AssetBundle assetBundle, string name)
+        AssetBundle assetBundle;
+        LandformInfo info;
+
+        void IAsyncRequest.AddQueue() { }
+
+        void IAsyncRequest.Operate()
+        {
+            TerrainLandformInfo tInfo = info.TerrainInfo;
+            var resource = new LandformResource(info)
+            {
+                DiffuseTex = ReadTexture(tInfo.DiffuseTex),
+                DiffuseBlendTex = ReadTexture(tInfo.DiffuseBlendTex),
+                HeightTex = ReadTexture(tInfo.HeightTex),
+                HeightBlendTex = ReadTexture(tInfo.HeightBlendTex),
+            };
+
+            if (resource.IsLoadComplete)
+            {
+                info.Terrain = resource;
+            }
+            else
+            {
+                Debug.LogWarning("无法读取[TerrainLandform],Info:" + info.ToString());
+            }
+        }
+
+        Texture ReadTexture(string name)
         {
             return assetBundle.LoadAsset<Texture>(name);
         }

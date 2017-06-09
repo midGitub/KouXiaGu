@@ -323,7 +323,5 @@ namespace KouXiaGu.Globalization
             }
             throw new FileNotFoundException();
         }
-
     }
-
 }

@@ -22,11 +22,13 @@ namespace KouXiaGu.World
         }
 
         public Landform Landform { get; private set; }
+        public WorldTime Time { get; private set; }
 
         void Initialize(IBasicData basicData, IWorldData worldData)
         {
             Debug.Log("开始初始化游戏场景组件;");
             Landform = new Landform();
+            Time = new WorldTime(worldData);
         }
     }
 }

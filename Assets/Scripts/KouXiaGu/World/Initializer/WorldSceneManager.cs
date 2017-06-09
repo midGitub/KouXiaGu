@@ -47,7 +47,7 @@ namespace KouXiaGu.World
         /// 世界异步初始化程序,若正在初始化 或者 初始化完毕则不为Null;
         /// </summary>
         public static IAsyncOperation<IWorldComplete> WorldInitializer { get; private set; }
-        public static IAsyncOperation<BasicResource> BasicResource { get; private set; }
+        public static IAsyncOperation<IGameResource> BasicResource { get; private set; }
         public static IAsyncOperation<WorldInfo> InfoReader { get; private set; }
 
         public static bool IsInitialize
@@ -63,7 +63,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 读取到场景;
         /// </summary>
-        public static void LoadScene(IAsyncOperation<BasicResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
+        public static void LoadScene(IAsyncOperation<IGameResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
         {
             if (basicResource == null)
                 throw new ArgumentNullException("basicResource");
@@ -80,7 +80,6 @@ namespace KouXiaGu.World
 
         #region Editor
 
-        public WorldTimeInfo Time;
         public ArchiveFile Archive;
 
         class WorldInfoReader : AsyncOperation<WorldInfo>
@@ -99,7 +98,6 @@ namespace KouXiaGu.World
                 worldInfo = new WorldInfo()
                 {
                     Archive = info.Archive,
-                    Time = info.Time,
                     MapReader = new RandomGameMapCreater(50),
                 };
                 OnCompleted(worldInfo);

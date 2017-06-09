@@ -7,6 +7,9 @@ using XLua;
 namespace KouXiaGu.World
 {
 
+    /// <summary>
+    /// 月份;
+    /// </summary>
     [Flags]
     [LuaCallCSharp]
     public enum MonthType

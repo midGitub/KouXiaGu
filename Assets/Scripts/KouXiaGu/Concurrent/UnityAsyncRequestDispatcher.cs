@@ -10,29 +10,34 @@ namespace KouXiaGu.Concurrent
     /// <summary>
     /// 用于处理在Unity线程进行操作的异步请求;
     /// </summary>
-    public class UnityAsyncRequestDispatcher : UnitySington<UnityAsyncRequestDispatcher>
+    public sealed class UnityAsyncRequestDispatcher : UnitySington<UnityAsyncRequestDispatcher>
     {
-        protected UnityAsyncRequestDispatcher()
-        {
-        }
-
+        object asyncLock;
         [SerializeField]
         Stopwatch runtimeStopwatch = new Stopwatch(0.2f);
         AsyncRequestQueue requestQueue;
 
-        protected virtual void Awake()
+        void Awake()
         {
+            asyncLock = new object();
             requestQueue = new AsyncRequestQueue(runtimeStopwatch);
+            SetInstance(this);
         }
 
-        protected virtual void Update()
+        void Update()
         {
-            requestQueue.MoveNext();
+            lock (asyncLock)
+            {
+                requestQueue.MoveNext();
+            }
         }
 
         public void AddQueue(IAsyncRequest request)
         {
-            requestQueue.Add(request);
+            lock (asyncLock)
+            {
+                requestQueue.Add(request);
+            }
         }
     }
 }

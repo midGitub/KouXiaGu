@@ -20,7 +20,7 @@ namespace KouXiaGu.World.Map
 
         public int MapSize { get; set; }
 
-        public MapData Read(BasicResource info)
+        public MapData Read(IGameResource info)
         {
             int[] landformArray = info.Terrain.Landform.Keys.ToArray();
             int[] roadArray = info.Terrain.Road.Keys.ToArray();

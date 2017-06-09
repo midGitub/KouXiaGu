@@ -12,7 +12,6 @@ namespace KouXiaGu.World
     [Serializable, XmlType("DateTime"), ProtoContract]
     public struct DateTime : IEquatable<DateTime>, IComparable<DateTime>
     {
-
         static DateTime()
         {
             CurrentCalendar = new Calendar();
@@ -26,7 +25,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 当前使用的日历;
         /// </summary>
-        public static ICalendar CurrentCalendar { get; set; }
+        public static ICalendar CurrentCalendar { get; internal set; }
 
         /// <summary>
         /// 一年一月一日,默认的日历;
@@ -43,14 +42,14 @@ namespace KouXiaGu.World
 
         public DateTime(short year, byte month, byte day, byte hour, byte minute, byte second)
         {
-            this.ticks = 0;
+            ticks = 0;
 
-            this.Year = year;
-            this.Month = month;
-            this.Day = day;
-            this.Hour = hour;
-            this.Minute = minute;
-            this.Second = second;
+            Year = year;
+            Month = month;
+            Day = day;
+            Hour = hour;
+            Minute = minute;
+            Second = second;
         }
 
 
@@ -363,27 +362,10 @@ namespace KouXiaGu.World
         /// </summary>
         public bool IsMaxYear()
         {
-            bool isMaxYear = this.Ticks >= 0x7FFF000000000000;
+            bool isMaxYear = Ticks >= 0x7FFF000000000000;
             return isMaxYear;
         }
 
-
-        /// <summary>
-        /// 获取到月份枚举类型表示;
-        /// </summary>
-        public MonthType GetMonthType()
-        {
-            bool isLeapMonth;
-            return GetMonthType(out isLeapMonth);
-        }
-
-        /// <summary>
-        /// 获取到月份枚举类型表示;
-        /// </summary>
-        public MonthType GetMonthType(out bool isLeapMonth)
-        {
-            return CurrentCalendar.GetMonthType(Year, Month, out isLeapMonth);
-        }
 
         public bool IsLeapMonth()
         {
@@ -398,16 +380,16 @@ namespace KouXiaGu.World
 
         public int CompareTo(DateTime other)
         {
-            if (this.Ticks == other.Ticks)
+            if (Ticks == other.Ticks)
                 return 0;
 
-            long i = this.Ticks - other.Ticks;
+            long i = Ticks - other.Ticks;
             return i > 0 ? 1 : -1;
         }
 
         public bool Equals(DateTime other)
         {
-            return other.Ticks == this.Ticks;
+            return other.Ticks == Ticks;
         }
 
         public override bool Equals(object obj)
@@ -450,7 +432,5 @@ namespace KouXiaGu.World
         {
             return v1.Ticks < v2.Ticks;
         }
-
     }
-
 }
