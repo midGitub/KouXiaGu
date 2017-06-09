@@ -2010,9 +2010,12 @@ MonoBehaviour:
   smoothTime: 0.2
   zoom: 0
   maxZoom: 0.6
-  zoomRatio: 20
+  zoomRatio: 0.1
   currentOffset: {x: 0, y: 0, z: 0}
   movementRatio: 6
+  isEdgeMovement: 1
+  edgeMovementRatio: 0.6
+  cameraClamp: {x: -5, y: 5, z: -4, w: 3}
   finalPosition: {x: 0, y: 0, z: 0}
   currentVelocity: {x: 0, y: 0, z: 0}
 --- !u!1 &1650282043
