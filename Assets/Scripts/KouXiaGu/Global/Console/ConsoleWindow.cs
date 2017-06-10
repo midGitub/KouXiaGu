@@ -155,8 +155,9 @@ namespace KouXiaGu
             IsDisplayUnityLog = isDisplay;
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             RecoveryDefaultLogHandler();
         }
 

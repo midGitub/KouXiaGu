@@ -42,7 +42,7 @@ namespace KouXiaGu.Terrain3D
         internal BuildingInfoXmlSerializer BuildingFileSerializer = new BuildingInfoXmlSerializer();
         internal RoadInfoXmlSerializer RoadFileSerializer = new RoadInfoXmlSerializer();
 
-        public TerrainResources Read(ISign sign)
+        public TerrainResources Read(IOperationState state)
         {
             if (XiaGu.IsMainThread)
             {
@@ -53,7 +53,7 @@ namespace KouXiaGu.Terrain3D
             dispatcher.Add(assetBundleReader);
             while (!assetBundleReader.IsCompleted)
             {
-                if (sign.IsCanceled)
+                if (state.IsCanceled)
                     throw new OperationCanceledException();
             }
             AssetBundle assetBundle = assetBundleReader.Result;
@@ -81,7 +81,7 @@ namespace KouXiaGu.Terrain3D
 
             while (dispatcher.RequestCount != 0)
             {
-                if (sign.IsCanceled)
+                if (state.IsCanceled)
                     throw new OperationCanceledException();
             }
 

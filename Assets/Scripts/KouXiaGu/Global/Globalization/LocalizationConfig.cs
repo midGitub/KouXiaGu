@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using KouXiaGu.Resources;
 
 namespace KouXiaGu.Globalization
 {
@@ -11,44 +12,28 @@ namespace KouXiaGu.Globalization
     [XmlType("LocalizationConfig")]
     public class LocalizationConfig
     {
-        public static LocalizationConfig Current
-        {
-            get
-            {
-                return new LocalizationConfig()
-                {
-                    LocName = Localization.CurrentLanguage != null ? Localization.CurrentLanguage.LocName : "unknown",
-                };
-            }
-        }
-
-        public LocalizationConfig()
-        {
-        }
-
         [XmlElement("LocName")]
         public string LocName;
     }
 
-
-    public class XmlLocalizationConfigReader
+    class ConfigFilePath : SingleFilePath
     {
-        static readonly XmlSerializer serializer = new XmlSerializer(typeof(LocalizationConfig));
-
-        public LocalizationConfig Read(string filePath)
+        public override string FileName
         {
-            return (LocalizationConfig)serializer.DeserializeXiaGu(filePath);
-        }
-
-        public void Write(LocalizationConfig item, string filePath)
-        {
-            string directoryPath = Path.GetDirectoryName(filePath);
-
-            if (Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-
-            serializer.SerializeXiaGu(filePath, item);
+            get { return "Localization/Config.xml"; }
         }
     }
 
+    class ConfigReader : FileReaderWriter<LocalizationConfig>
+    {
+        static readonly IFileSerializer<LocalizationConfig> fileSerializer = new XmlFileSerializer<LocalizationConfig>();
+
+        public ConfigReader() : base(new ConfigFilePath(), fileSerializer)
+        {
+        }
+
+        public ConfigReader(ISingleFilePath file, IFileSerializer<LocalizationConfig> serializer) : base(file, serializer)
+        {
+        }
+    }
 }

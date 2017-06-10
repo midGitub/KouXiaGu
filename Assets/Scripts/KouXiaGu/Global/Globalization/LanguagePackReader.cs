@@ -300,7 +300,5 @@ namespace KouXiaGu.Globalization
 
             writer.WriteEndElement();
         }
-
     }
-
 }

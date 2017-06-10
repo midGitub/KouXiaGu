@@ -10,14 +10,14 @@ namespace KouXiaGu
     /// 负责对游戏资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameInitializer : UnitySington<GameInitializer>, ISign
+    public class GameInitializer : UnitySington<GameInitializer>, IOperationState
     {
         GameInitializer()
         {
         }
 
-        ComponentInitializer component;
-        BasicResourceInitializer resource;
+        static ComponentInitializer component = new ComponentInitializer();
+        static GameResourceInitializer resource = new GameResourceInitializer();
 
         public IAsyncOperation ComponentInitialize
         {
@@ -36,10 +36,7 @@ namespace KouXiaGu
             SetInstance(this);
             IsCanceled = false;
 
-            component = new ComponentInitializer();
-            component.Initialize();
-
-            resource = new BasicResourceInitializer();
+            component.InitializeAsync(this);
             resource.InitializeAsync(this);
         }
 

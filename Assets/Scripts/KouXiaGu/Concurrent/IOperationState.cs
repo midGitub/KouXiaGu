@@ -9,8 +9,11 @@ namespace KouXiaGu.Concurrent
     /// <summary>
     /// 操作标识;
     /// </summary>
-    public interface ISign
+    public interface IOperationState
     {
+        /// <summary>
+        /// 是否被取消了?
+        /// </summary>
         bool IsCanceled { get; }
     }
 

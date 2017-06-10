@@ -6,6 +6,7 @@ using KouXiaGu.Globalization;
 using KouXiaGu.KeyInput;
 using UnityEngine;
 using System.Threading;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu
 {
@@ -15,11 +16,29 @@ namespace KouXiaGu
     /// </summary>
     public class ComponentInitializer : AsyncOperation
     {
-        public void Initialize()
+        public bool IsInitialized { get; private set; }
+
+        public void InitializeAsync(IOperationState state)
         {
-            Debug.Log("开始初始化游戏组件;");
+            if (IsInitialized)
+                throw new ArgumentException("已经在初始化中;");
+
+            ThreadPool.QueueUserWorkItem(Initialize, state);
+        }
+
+        public void Initialize(object s)
+        {
+            if (IsInitialized)
+                throw new ArgumentException("已经在初始化中;");
+
+            IsInitialized = true;
+            IOperationState state = (IOperationState)s; 
+
             CustomInput.ReadOrDefault();
-            Localization.InitializeAsync();
+            OnCustomInputCompleted();
+
+            Localization.Initialize();
+            OnLocalizationCompleted();
         }
 
         void OnCustomInputCompleted()

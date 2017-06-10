@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using KouXiaGu.Collections;
 using KouXiaGu.Resources;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu.Globalization
 {
@@ -17,7 +18,7 @@ namespace KouXiaGu.Globalization
     {
         static Localization()
         {
-            IsInitializing = false;
+            IsInitialized = false;
             LanguageIndex = -1;
         }
 
@@ -31,14 +32,7 @@ namespace KouXiaGu.Globalization
             get { return Path.Combine(Resource.ConfigDirectoryPath, "Localization"); }
         }
 
-        static readonly LanguagePackReader packReader = new XmlLanguagePackReader();
-        static readonly XmlLocalizationConfigReader configReader = new XmlLocalizationConfigReader();
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();
-
-        /// <summary>
-        /// 是否正在读取/初始化?
-        /// </summary>
-        public static bool IsInitializing { get; private set; }
 
         /// <summary>
         /// 当前使用的语言;
@@ -109,7 +103,7 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 需要在Unity线程内调用,通知到所有观察者,文本内容发生变化;
+        /// 通知到所有观察者,文本内容发生变化,若在非Unity线程调用,则为延迟通知;
         /// </summary>
         public static void TrackAll()
         {
@@ -117,52 +111,63 @@ namespace KouXiaGu.Globalization
                 throw new ArgumentNullException("textDictionary");
 
             ITextObserver[] observerArray = textObservers.ToArray();
-            foreach (var observer in observerArray)
+
+            if (XiaGu.IsMainThread)
             {
-                TrackObserver(observer);
+                foreach (var observer in observerArray)
+                {
+                    TrackObserver(observer);
+                }
+            }
+            else
+            {
+                UnityAsyncRequestDispatcher dispatcher = UnityAsyncRequestDispatcher.Instance;
+                TrackAllRequest operation = new TrackAllRequest(observerArray, textDictionary);
+                dispatcher.AddQueue(operation);
+            }
+        }
+
+        class TrackAllRequest : IAsyncRequest
+        {
+            public TrackAllRequest(IEnumerable<ITextObserver> observers, IDictionary<string, string> textDictionary)
+            {
+                this.observers = observers;
+                this.textDictionary = textDictionary;
+            }
+
+            IEnumerable<ITextObserver> observers;
+            IDictionary<string, string> textDictionary;
+
+            void IAsyncRequest.AddQueue() { }
+
+            void IAsyncRequest.Operate()
+            {
+                foreach (var observer in observers)
+                {
+                    TrackObserver(observer);
+                }
             }
         }
 
 
-        static void OnStartInitialize()
-        {
-            if (IsInitializing)
-                throw new ArgumentException();
+        public static bool IsInitialized { get; private set; }
 
-            IsInitializing = true;
-        }
-
-        static void OnEndInitialize()
+        internal static void Initialize()
         {
-            IsInitializing = false;
-        }
+            if (IsInitialized)
+                throw new ArgumentException("已经初始化;");
 
-        /// <summary>
-        /// 同步的初始化;
-        /// </summary>
-        public static void Initialize()
-        {
-            OnStartInitialize();
-            Initialize_Read();
-            TrackAll();
-            OnEndInitialize();
-        }
-
-        /// <summary>
-        /// 初始化方法允许多线程部分;
-        /// </summary>
-        static void Initialize_Read()
-        {
-            var config = ReadConfig();
+            ConfigReader configReader = new ConfigReader();
+            var config = configReader.Read();
             var originalLanguages = Languages;
-            var originalLanguageIndex = LanguageIndex;
             var originalLanguagePack = LanguagePack;
-
+            var originalLanguageIndex = LanguageIndex;
             try
             {
                 Languages = SearchLanguagePacks();
                 LanguageIndex = FindIndex(Languages, config);
                 LanguagePack = ReadPack(Languages[LanguageIndex]);
+                TrackAll();
             }
             catch (Exception ex)
             {
@@ -174,101 +179,7 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 异步的初始化;
-        /// </summary>
-        public static IAsyncOperation InitializeAsync()
-        {
-            OnStartInitialize();
-            return new AsyncInitializer();
-        }
-
-        class AsyncInitializer : ThreadOperation
-        {
-            public AsyncInitializer()
-            {
-                this.SubscribeCompleted(this, OnCompleted);
-                Start();
-            }
-
-            protected override void Operate()
-            {
-                Initialize_Read();
-            }
-
-            void OnCompleted(AsyncInitializer item)
-            {
-                TrackAll();
-                OnEndInitialize();
-            }
-        }
-
-
-        /// <summary>
-        /// 设置到语言;传入语言下标;
-        /// </summary>
-        public static void SetLanguage(int languageIndex)
-        {
-            OnStartInitialize();
-            SetLanguage_Read(languageIndex);
-            TrackAll();
-            OnEndInitialize();
-        }
-
-        /// <summary>
-        /// 变更语言允许多线程部分;
-        /// </summary>
-        static void SetLanguage_Read(int languageIndex)
-        {
-            var originalLanguagePack = LanguagePack;
-            var originalLanguageIndex = LanguageIndex;
-            try
-            {
-                LanguagePack = ReadPack(Languages[languageIndex]);
-                LanguageIndex = languageIndex;
-            }
-            catch(Exception ex)
-            {
-                LanguagePack = originalLanguagePack;
-                LanguageIndex = originalLanguageIndex;
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 异步设置到语言;
-        /// </summary>
-        public static IAsyncOperation SetLanguageAsync(int languageIndex)
-        {
-            OnStartInitialize();
-            return new AsyncLanguageChanger(languageIndex);
-        }
-
-        class AsyncLanguageChanger : ThreadOperation
-        {
-            public AsyncLanguageChanger(int index)
-            {
-                this.index = index;
-                this.SubscribeCompleted(this, OnCompleted);
-                Start();
-            }
-
-            int index;
-
-            protected override void Operate()
-            {
-                SetLanguage_Read(index);
-            }
-
-            void OnCompleted(AsyncLanguageChanger item)
-            {
-                TrackAll();
-                OnEndInitialize();
-            }
-        }
-
-
-        /// <summary>
-        /// 获取到所有语言包文件;
+        /// 获取到所有语言文件;
         /// </summary>
         public static ReadOnlyCollection<LanguageFile> SearchLanguagePacks()
         {
@@ -276,7 +187,7 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 获取到所有语言包文件;
+        /// 获取到所有语言文件;
         /// </summary>
         public static ReadOnlyCollection<LanguageFile> SearchLanguagePacks(string dirPath)
         {
@@ -285,29 +196,6 @@ namespace KouXiaGu.Globalization
             var collection = new ReadOnlyCollection<LanguageFile>(packList);
             return collection;
         }
-
-
-        public static LanguagePack ReadPack(LanguageFile file)
-        {
-            return packReader.Read(file);
-        }
-
-        public static LanguageFile CreateAndWrite(LanguagePack pack, string filePath)
-        {
-            return packReader.CreateAndWrite(pack, filePath);
-        }
-
-        public static LocalizationConfig ReadConfig()
-        {
-            var config = configReader.Read(ConfigFilePath);
-            return config;
-        }
-
-        public static void WriteConfig(LocalizationConfig config, string filePath)
-        {
-            configReader.Write(config, filePath);
-        }
-
 
         /// <summary>
         /// 获取到对应的语言文件下标;
@@ -322,6 +210,39 @@ namespace KouXiaGu.Globalization
                     return i;
             }
             throw new FileNotFoundException();
+        }
+
+        static readonly LanguagePackReader packReader = new XmlLanguagePackReader();
+
+        public static LanguagePack ReadPack(LanguageFile file)
+        {
+            return packReader.Read(file);
+        }
+
+        public static LanguageFile CreateAndWrite(LanguagePack pack, string filePath)
+        {
+            return packReader.CreateAndWrite(pack, filePath);
+        }
+
+        /// <summary>
+        /// 设置到语言;传入语言下标;
+        /// </summary>
+        public static void SetLanguage(int languageIndex)
+        {
+            var originalLanguagePack = LanguagePack;
+            var originalLanguageIndex = LanguageIndex;
+            try
+            {
+                LanguagePack = ReadPack(Languages[languageIndex]);
+                LanguageIndex = languageIndex;
+                TrackAll();
+            }
+            catch (Exception ex)
+            {
+                LanguagePack = originalLanguagePack;
+                LanguageIndex = originalLanguageIndex;
+                throw ex;
+            }
         }
     }
 }
