@@ -158,8 +158,9 @@ GameObject:
   m_Component:
   - component: {fileID: 119999029}
   - component: {fileID: 119999028}
+  - component: {fileID: 119999030}
   m_Layer: 0
-  m_Name: ShadowLight
+  m_Name: Sunlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -211,9 +212,119 @@ Transform:
   m_LocalPosition: {x: 0, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 2054985094}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 49.349003, y: 0, z: 0}
+--- !u!114 &119999030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119999027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f5a372201f4dab43bcc919d69c666cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  globalLights: {fileID: 1667887973}
+  sunLight: {fileID: 119999028}
+  lightStyles:
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
 --- !u!1 &133959809
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +473,7 @@ Transform:
   - {fileID: 205360673}
   - {fileID: 222396412}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &222396411
 GameObject:
@@ -727,6 +838,7 @@ Transform:
   m_Children:
   - {fileID: 1890475354}
   - {fileID: 1637962200}
+  - {fileID: 2054985094}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1154,9 +1266,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   qualitySettings:
-    textureSize: 60
+    textureSize: 40
     diffuseMapRatios: 1
-    heightMapRatios: 1
+    heightMapRatios: 0.5
 --- !u!20 &881292060
 Camera:
   m_ObjectHideFlags: 0
@@ -2150,7 +2262,7 @@ MonoBehaviour:
   zoomRatio: 0.3
   movementRatio: 6
   canEdgeMovement: 1
-  edgeMovementRatio: 0.6
+  edgeMovementRatio: 0.3
   cameraClamp: {x: -5, y: 5, z: -4, w: 3}
 --- !u!1 &1637962199
 GameObject:
@@ -2192,7 +2304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4a78eaa0e6f154894f3f8d3673167b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HourLength: 60
+  MinuteLength: 10
   TimeScale: 1
 --- !u!1 &1650282043
 GameObject:
@@ -2281,7 +2393,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1667887971}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2289,8 +2401,8 @@ Transform:
   - {fileID: 1850785677}
   - {fileID: 1650282045}
   - {fileID: 272644896}
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 2054985094}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1667887973
 MonoBehaviour:
@@ -2303,6 +2415,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28887bd4f09ca0c4d94631dc5d58c21a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lights:
+  - {fileID: 417931508}
+  - {fileID: 1850785676}
+  - {fileID: 1650282044}
 --- !u!1 &1732559463
 GameObject:
   m_ObjectHideFlags: 0
@@ -2543,7 +2659,6 @@ MonoBehaviour:
   bakeRoad:
     prefab: {fileID: 114079317866361212, guid: 5555035dd027245478fd6a70bbc49521, type: 2}
     diffuseShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
-    heightShader: {fileID: 4800000, guid: ade15c8891ea09044966137c78dcdac0, type: 3}
   waterSettings:
     DaytimeMaterial: {fileID: 2100000, guid: 7350b65a6431f604a8496c39db1ac9c5, type: 2}
     NighttimeMaterial: {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
@@ -2807,6 +2922,147 @@ CanvasRenderer:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2001993095}
+--- !u!1 &2054985093
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 2054985094}
+  - component: {fileID: 2054985095}
+  m_Layer: 0
+  m_Name: Lighting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2054985094
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2054985093}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1667887972}
+  - {fileID: 119999029}
+  m_Father: {fileID: 435868885}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2054985095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2054985093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f5a372201f4dab43bcc919d69c666cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  globalLights: {fileID: 1667887973}
+  sunLight: {fileID: 119999028}
+  lightStyles:
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
+  - SunIntensity: 0
+    SunRotation: {x: 0, y: 0, z: 0}
+    GlobalIntensity: 0
+    Skybox: {fileID: 0}
 --- !u!1 &2055660885
 GameObject:
   m_ObjectHideFlags: 0

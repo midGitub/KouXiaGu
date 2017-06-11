@@ -23,7 +23,7 @@ namespace KouXiaGu.World
         WorldTime timeManager;
         TimeSettings settings;
         IDisposable updateCanceler;
-        float currenMinute;
+        int currenMinute;
 
         public bool IsTimeUpdating
         {
@@ -42,12 +42,12 @@ namespace KouXiaGu.World
 
         void Next()
         {
-            currenMinute += settings.TimeScale;
-            if (currenMinute >= settings.HourLength)
+            currenMinute++;
+            if (currenMinute >= settings.MinuteLength)
             {
-                currenMinute -= settings.HourLength;
+                currenMinute = 0;
                 DateTime time = timeManager.CurrentTime;
-                time = time.AddHour();
+                time = time.AddMinute();
                 timeManager.SetCurrentTime(time);
             }
         }

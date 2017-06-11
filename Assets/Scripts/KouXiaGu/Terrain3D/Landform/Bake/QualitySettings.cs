@@ -49,7 +49,7 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        [XmlIgnore, SerializeField, Range(40, 500)]
+        [XmlIgnore, SerializeField, Range(1, 300)]
         float textureSize = 120;
 
         [XmlIgnore, SerializeField, Range(0.1f, 1)]
@@ -99,30 +99,8 @@ namespace KouXiaGu.Terrain3D
             int chunkWidth = (int)Math.Round(ChunkInfo.ChunkWidth * textureSize);
             int chunkHeight = (int)Math.Round(ChunkInfo.ChunkHeight * textureSize);
 
-            //DiffuseTexWidth = (int)Math.Round(chunkWidth * diffuseMapRatios);
-            //DiffuseTexHeight = (int)Math.Round(chunkHeight * diffuseMapRatios);
-            //HeightMapWidth = (int)Math.Round(chunkWidth * heightMapRatios);
-            //HeightMapHeight = (int)Math.Round(chunkHeight * heightMapRatios);
-
-            //rDiffuseTexWidth = DiffuseTexWidth + (int)(DiffuseTexWidth * OutlineScale);
-            //rDiffuseTexHeight = DiffuseTexHeight + (int)(DiffuseTexHeight * OutlineScale);
-            //rHeightMapWidth = HeightMapWidth + (int)(HeightMapWidth * OutlineScale);
-            //rHeightMapHeight = HeightMapHeight + (int)(HeightMapHeight * OutlineScale);
-
-            //DiffuseReadPixel = new Rect(
-            //        (int)(DiffuseTexWidth * OutlineScale / 2),
-            //        (int)(DiffuseTexHeight * OutlineScale / 2),
-            //        DiffuseTexWidth,
-            //        DiffuseTexHeight);
-
-            //HeightReadPixel = new Rect(
-            //        (int)(HeightMapWidth * OutlineScale / 2),
-            //        (int)(HeightMapHeight * OutlineScale / 2),
-            //        HeightMapWidth,
-            //        HeightMapHeight);
-
-            LandformDiffuseMap = new BakeTextureInfo(chunkWidth, chunkHeight, OutlineScale);
-            LandformHeightMap = new BakeTextureInfo(chunkWidth, chunkHeight, OutlineScale);
+            LandformDiffuseMap = new BakeTextureInfo(chunkWidth, chunkHeight, diffuseMapRatios, OutlineScale);
+            LandformHeightMap = new BakeTextureInfo(chunkWidth, chunkHeight, heightMapRatios, OutlineScale);
         }
     }
 
@@ -132,7 +110,7 @@ namespace KouXiaGu.Terrain3D
         public BakeTextureInfo(int width, int height, float ratios, float outlineScale)
         {
             width = (int)(width * ratios);
-            height = (int)(height + ratios);
+            height = (int)(height * ratios);
             Init(width, height, outlineScale);
         }
 

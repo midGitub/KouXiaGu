@@ -88,9 +88,7 @@ namespace KouXiaGu.Terrain3D
         void UpdateDispaly(ICollection<TKey> dispalyCoords);
     }
 
-    /// <summary>
-    /// 线程安全的;
-    /// </summary>
+
     public abstract class ChunkUpdater<TKey>
     {
         public ChunkUpdater()
@@ -99,7 +97,6 @@ namespace KouXiaGu.Terrain3D
             destroyCoords = new List<TKey>();
         }
 
-        readonly object asyncLock = new object();
         readonly HashSet<TKey> dispalyCoords;
         readonly List<TKey> destroyCoords;
 

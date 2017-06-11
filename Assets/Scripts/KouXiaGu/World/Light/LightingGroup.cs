@@ -8,7 +8,7 @@ namespace KouXiaGu.World
 {
 
     [DisallowMultipleComponent]
-    public class GlobalLight : SceneSington<GlobalLight>
+    public class LightingGroup : SceneSington<LightingGroup>
     {
         [SerializeField]
         Light[] lights;

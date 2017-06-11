@@ -12,10 +12,10 @@ namespace KouXiaGu.World
     {
 
         /// <summary>
-        /// 小时长度;多少次 FixedUpdate 为一小时;
+        /// 分钟长度;多少次 FixedUpdate 为一分钟;
         /// </summary>
         [Range(1, 200)]
-        public float HourLength = 30;
+        public int MinuteLength = 10;
 
         /// <summary>
         /// 时间缩放比例,默认为1;
