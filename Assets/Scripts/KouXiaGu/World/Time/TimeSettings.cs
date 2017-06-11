@@ -14,7 +14,7 @@ namespace KouXiaGu.World
         /// <summary>
         /// 小时长度;多少次 FixedUpdate 为一小时;
         /// </summary>
-        [Range(1, 100)]
+        [Range(1, 200)]
         public float HourLength = 30;
 
         /// <summary>

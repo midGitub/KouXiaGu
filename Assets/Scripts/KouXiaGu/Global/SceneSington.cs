@@ -56,18 +56,18 @@ namespace KouXiaGu
                 {
                     if (XiaGu.IsMainThread)
                     {
-                        Instance = Find();
+                        _instance = Find();
                     }
                     else
                     {
-                        Operate operate = new Operate(() => Instance = Find());
+                        Operate operate = new Operate(() => _instance = Find());
                         UnityAsyncRequestDispatcher.Instance.AddQueue(operate);
                         while (!operate.IsCompleted)
                         {
                         }
                     }
                 }
-                return Instance;
+                return _instance;
             }
         }
 
@@ -108,7 +108,7 @@ namespace KouXiaGu
         {
             lock (asyncLock)
             {
-                if (Instance == null)
+                if (Instance != null && Instance != this)
                 {
                     Debug.LogError("场景单例不为即将销毁的;");
                 }

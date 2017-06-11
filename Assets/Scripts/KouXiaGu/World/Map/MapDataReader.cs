@@ -52,12 +52,12 @@ namespace KouXiaGu.World.Map
                     };
                 }
 
-                if (false)
-                {
-                    BuildingNode buildingNode = new BuildingNode();
-                    buildingNode.Update(building, Random(buildArray), RandomAngle());
-                    node.Building = buildingNode;
-                }
+                //if (RandomBool())
+                //{
+                //    BuildingNode buildingNode = new BuildingNode();
+                //    buildingNode.Update(building, Random(buildArray), RandomAngle());
+                //    node.Building = buildingNode;
+                //}
 
                 map.Add(point, node);
             }

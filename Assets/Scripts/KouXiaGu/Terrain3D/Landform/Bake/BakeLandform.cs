@@ -29,8 +29,6 @@ namespace KouXiaGu.Terrain3D
         IWorld world;
         CubicHexCoord chunkCenter;
         IEnumerable<CubicHexCoord> displays;
-        Material diffuseMaterial;
-        Material heightMaterial;
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
         public Texture2D DiffuseTex { get; private set; }
@@ -48,9 +46,6 @@ namespace KouXiaGu.Terrain3D
 
         public void Initialize()
         {
-            diffuseMaterial = new Material(diffuseShader);
-            heightMaterial = new Material(heightShader);
-            prefab.material = diffuseMaterial;
             sceneObjects = new List<Pack>();
             objectPool = new GameObjectPool<MeshRenderer>(prefab, "BakeLandformMesh");
         }
@@ -80,50 +75,6 @@ namespace KouXiaGu.Terrain3D
             ClearScene();
             Reset();
         }
-
-        ///// <summary>
-        ///// 获取到烘培协程;
-        ///// </summary>
-        ///// <param name="world">世界数据</param>
-        ///// <param name="chunkCenter">地形块中心坐标;</param>
-        ///// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
-        //public IEnumerator BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer textures, IState state)
-        //{
-        //    this.bakeCamera = bakeCamera;
-        //    this.world = world;
-        //    this.chunkCenter = chunkCenter;
-        //    this.displays = ChunkPartitioner.GetLandform(chunkCenter);
-
-        //    PrepareScene();
-        //    yield return null;
-        //    if (state.IsCanceled)
-        //    {
-        //        goto _End_;
-        //    }
-
-        //    BakeDiffuse();
-        //    yield return null;
-        //    if (state.IsCanceled)
-        //    {
-        //        goto _End_;
-        //    }
-
-        //    BakeHeight();
-        //    yield return null;
-        //    if (state.IsCanceled)
-        //    {
-        //        goto _End_;
-        //    }
-
-        //    var diffuseMap = bakeCamera.GetDiffuseTexture(DiffuseRT);
-        //    var heightMap = bakeCamera.GetHeightTexture(HeightRT);
-        //    textures.SetDiffuseMap(diffuseMap);
-        //    textures.SetHeightMap(heightMap);
-
-        //    _End_:
-        //    ClearScene();
-        //    Reset();
-        //}
 
         /// <summary>
         /// 释放所有该实例创建的 RenderTexture 类型的资源;
@@ -200,9 +151,9 @@ namespace KouXiaGu.Terrain3D
         {
             LandformResource res = renderer.Res;
 
-            var material = renderer.Rednerer.material;
-            //GameObject.Destroy(material);
-            //material = renderer.Rednerer.material = diffuseMaterial;
+            var material = renderer.Rednerer.sharedMaterial;
+            GameObject.Destroy(material);
+            material = renderer.Rednerer.sharedMaterial = new Material(diffuseShader);
 
             material.SetTexture("_MainTex", res.DiffuseTex);
             material.SetTexture("_BlendTex", res.DiffuseBlendTex);
@@ -223,9 +174,9 @@ namespace KouXiaGu.Terrain3D
         {
             LandformResource res = renderer.Res;
 
-            var material = renderer.Rednerer.material;
-            //GameObject.Destroy(material);
-            //material = renderer.Rednerer.material = heightMaterial;
+            var material = renderer.Rednerer.sharedMaterial;
+            GameObject.Destroy(material);
+            material = renderer.Rednerer.sharedMaterial = new Material(heightShader);
 
             material.SetTexture("_MainTex", res.HeightTex);
             material.SetTexture("_BlendTex", res.HeightBlendTex);

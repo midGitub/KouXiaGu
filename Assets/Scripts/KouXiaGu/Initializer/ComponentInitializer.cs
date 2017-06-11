@@ -32,7 +32,7 @@ namespace KouXiaGu
                 throw new ArgumentException("已经在初始化中;");
 
             IsInitialized = true;
-            IOperationState state = (IOperationState)s; 
+            //IOperationState state = (IOperationState)s; 
 
             CustomInput.ReadOrDefault();
             OnCustomInputCompleted();

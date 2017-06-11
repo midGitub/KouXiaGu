@@ -144,7 +144,7 @@ namespace KouXiaGu.Globalization
             {
                 foreach (var observer in observers)
                 {
-                    TrackObserver(observer);
+                    observer.UpdateTexts(textDictionary);
                 }
             }
         }

@@ -79,13 +79,12 @@ namespace KouXiaGu.Terrain3D
             World = world;
             BuildingCollection = world.Components.Landform.Buildings;
             RequestDispatcher = requestDispatcher;
-            landformObserver = new LandformObserver(this, landformBuilder.CompletedChunkSender);
+            new LandformObserver(this, landformBuilder.CompletedChunkSender);
         }
 
         public IWorld World { get; private set; }
         public SceneBuildingCollection BuildingCollection { get; private set; }
         public IRequestDispatcher RequestDispatcher { get; private set; }
-        readonly LandformObserver landformObserver;
         readonly object unityThreadLock = new object();
 
         HashSet<RectCoord> sceneChunks
@@ -488,7 +487,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 观察地形发生变化;
         /// </summary>
-        class LandformObserver : IObserver<RectCoord>
+        class LandformObserver : IObserver<RectCoord>, IDisposable
         {
             public LandformObserver(BuildingBuilder parent, IObservable<RectCoord> landformChanged)
             {
@@ -586,6 +585,11 @@ namespace KouXiaGu.Terrain3D
                     landformChangedDisposer.Dispose();
                     landformChangedDisposer = null;
                 }
+            }
+
+            void IDisposable.Dispose()
+            {
+                Unsubscribe();
             }
         }
     }

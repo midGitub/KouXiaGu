@@ -50,7 +50,7 @@ namespace KouXiaGu
         public static T SubscribeFaulted<T>(this T operation, object sender, Action<T> onFaulted)
             where T : IAsyncOperation
         {
-            var item = new FaultedSubscriber<T>(sender, operation, onFaulted);
+            new FaultedSubscriber<T>(sender, operation, onFaulted);
             return operation;
         }
 
@@ -92,7 +92,7 @@ namespace KouXiaGu
         public static T SubscribeCompleted<T>(this T operation, object sender, Action<T> onCompleted)
             where T : IAsyncOperation
         {
-            var item = new CompletedSubscriber<T>(sender, operation, onCompleted);
+            new CompletedSubscriber<T>(sender, operation, onCompleted);
             return operation;
         }
 
@@ -137,7 +137,7 @@ namespace KouXiaGu
             Action<IAsyncOperation<TReturn>, TReturn> onCompleted,
             Action<IAsyncOperation<TReturn>> onFaulted)
         {
-            var item = new ReturnSubscriber<TReturn>(sender, operation, onCompleted, onFaulted);
+            new ReturnSubscriber<TReturn>(sender, operation, onCompleted, onFaulted);
             return operation;
         }
 
@@ -182,7 +182,7 @@ namespace KouXiaGu
             Action<T> onCompleted, Action<T> onFaulted)
             where T : IAsyncOperation
         {
-            var item = new Subscriber<T>(sender, operation, onCompleted, onFaulted);
+            new Subscriber<T>(sender, operation, onCompleted, onFaulted);
             return operation;
         }
 

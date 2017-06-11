@@ -20,8 +20,6 @@ namespace KouXiaGu.Terrain3D
         DynamicMeshScript prefab = null;
         [SerializeField]
         Shader diffuseShader = null;
-        [SerializeField]
-        Shader heightShader = null;
 
         List<Pack> sceneObjects;
         RoadMeshPool objectPool;

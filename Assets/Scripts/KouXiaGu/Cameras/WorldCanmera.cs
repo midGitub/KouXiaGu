@@ -172,7 +172,7 @@ namespace KouXiaGu.Cameras
             }
 
             finalPosition = GetCameraPosition(targetPosition);
-            transform.position = Vector3.SmoothDamp(transform.position, finalPosition, ref currentVelocity, 0.3f);
+            transform.position = Vector3.SmoothDamp(transform.position, finalPosition, ref currentVelocity, smoothTime);
         }
 
         void OnValidate()

@@ -78,34 +78,6 @@ namespace KouXiaGu.World
             }
         }
 
-        #region Editor
-
-        public ArchiveFile Archive;
-
-        class WorldInfoReader : AsyncOperation<WorldInfo>
-        {
-            public WorldInfoReader(WorldSceneManager info)
-            {
-                this.info = info;
-                Start();
-            }
-
-            WorldSceneManager info;
-            WorldInfo worldInfo;
-
-            void Start()
-            {
-                worldInfo = new WorldInfo()
-                {
-                    Archive = info.Archive,
-                    MapReader = new RandomGameMapCreater(50),
-                };
-                OnCompleted(worldInfo);
-            }
-        }
-
-        #endregion
-
         void Awake()
         {
             IsActivated = true;
@@ -121,7 +93,7 @@ namespace KouXiaGu.World
             else if (BasicResource == null || InfoReader == null)
             {
                 BasicResource = GameInitializer.Instance.GameDataInitialize;
-                InfoReader = new WorldInfoReader(this);
+                InfoReader = new DefaultWorldInfo();
             }
             WorldInitializer = WorldInitialization.CreateAsync(BasicResource, InfoReader);
         }
