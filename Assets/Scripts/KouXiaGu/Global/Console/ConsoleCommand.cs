@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace KouXiaGu.Console
+namespace KouXiaGu
 {
 
     /// <summary>
@@ -183,19 +183,14 @@ namespace KouXiaGu.Console
     /// </summary>
     public class CommandItem : ICommandItem
     {
-        public CommandItem(int contentNumber, Action<string[]> action)
-            : this(contentNumber, action, string.Empty)
-        {
-        }
-
-        public CommandItem(int contentNumber, Action<string[]> action, string message)
+        public CommandItem(string key, Action<string[]> action, string message, params string[] parameterTypes)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
 
-            ParameterNumber = contentNumber;
             Action = action;
-            Message = message;
+            ParameterNumber = parameterTypes.Length;
+            Message = GameConsole.ConvertMassage(key, message, parameterTypes);
         }
 
         public int ParameterNumber { get; private set; }
@@ -216,7 +211,7 @@ namespace KouXiaGu.Console
     /// 控制台方法类标记;
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
-    sealed class ConsoleMethodsClassAttribute : Attribute
+    public sealed class ConsoleMethodsClassAttribute : Attribute
     {
     }
 
@@ -224,17 +219,22 @@ namespace KouXiaGu.Console
     /// 控制台方法命令,需要挂在"公共静态方法"上,传入参数都为字符串;
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-    class ConsoleMethodAttribute : Attribute
+    public class ConsoleMethodAttribute : Attribute
     {
-        public ConsoleMethodAttribute(string keyword)
-            : this(keyword, string.Empty)
+        public ConsoleMethodAttribute(string key)
+            : this(key, string.Empty)
         {
         }
 
-        public ConsoleMethodAttribute(string keyword, string message)
+        public ConsoleMethodAttribute(string key, string message)
+            : this(key, message, null)
         {
-            Key = keyword;
-            Message = message;
+        }
+
+        public ConsoleMethodAttribute(string key, string message, params string[] parameterTypes)
+        {
+            Key = key;
+            Message = GameConsole.ConvertMassage(key, message, parameterTypes);
         }
 
         public string Key { get; private set; }
@@ -242,7 +242,7 @@ namespace KouXiaGu.Console
     }
 
 
-    internal static class ConsoleMethodsReflection
+    public static class ConsoleMethodsReflection
     {
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace KouXiaGu.Console
             var types = assembly.GetTypes();
             foreach (var type in types)
             {
-                var attributes = type.GetCustomAttributes(typeof(ConsoleClassAttribute), false);
+                var attributes = type.GetCustomAttributes(typeof(KouXiaGu.ConsoleMethodsClassAttribute), false);
                 if (attributes.Length > 0)
                 {
                     SearchMethod(type, commandDictionary);

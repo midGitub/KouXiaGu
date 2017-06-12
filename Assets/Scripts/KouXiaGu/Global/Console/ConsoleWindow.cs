@@ -55,21 +55,21 @@ namespace KouXiaGu
     /// 运行状态日志输出窗口;
     /// </summary>
     [DisallowMultipleComponent]
-    [ConsoleClass]
+    [ConsoleMethodsClass]
     sealed class ConsoleWindow : UnitySington<ConsoleWindow>, ILogHandler
     {
 
         #region 控制台命令;
-        const string consoleDisplayUnityLog_KeyWord = "UnityLog";
+        const string consoleDisplayUnityLog_KeyWord = "unityLog";
 
-        [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "输出 是否在控制台窗口显示Unity.Debug的日志;")]
+        [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "显示是否在控制台窗口显示Unity.Debug的日志;")]
         public static void ConsoleDisplayUnityLog()
         {
             bool isDisplay = Instance.IsDisplayUnityLog;
             ConsoleDisplayUnityLog(isDisplay);
         }
 
-        [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "设置 是否在控制台窗口显示Unity.Debug的日志;")]
+        [ConsoleMethod(consoleDisplayUnityLog_KeyWord, "设置是否在控制台窗口显示Unity.Debug的日志;", "bool")]
         public static void ConsoleDisplayUnityLog(string isDisplayStr)
         {
             bool isDisplay = Convert.ToBoolean(isDisplayStr);
@@ -86,7 +86,7 @@ namespace KouXiaGu
         }
         #endregion
 
-        #region 
+        #region ILogHandler
 
         public static readonly ILogHandler defaultLogHandler = Debug.logger.logHandler;
 
@@ -96,7 +96,6 @@ namespace KouXiaGu
         }
 
         #endregion
-
 
         [SerializeField]
         ConsoleUI ui;
@@ -164,7 +163,6 @@ namespace KouXiaGu
         void OnValidate()
         {
             ui.OnValidate();
-            //SetDisplayUnityLog(IsDisplayUnityLog);
         }
 
         void LateUpdate()
@@ -189,9 +187,13 @@ namespace KouXiaGu
             {
                 try
                 {
-                    if (ui.InputText != string.Empty)
+                    string message = ui.InputText;
+                    if (message != string.Empty)
                     {
-                        Input.Operate(ui.InputText);
+                        if (!Input.Operate(message))
+                        {
+                            Output.LogError("Unknown:" + message);
+                        }
                         ResetInputContent();
                     }
                     else

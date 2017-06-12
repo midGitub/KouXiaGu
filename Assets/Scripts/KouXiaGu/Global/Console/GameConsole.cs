@@ -11,7 +11,7 @@ namespace KouXiaGu
     /// <summary>
     /// 控制台,区别于 Unity.Debug;
     /// </summary>
-    public sealed class GameConsole
+    public static class GameConsole
     {
         static ConsoleWindow logger
         {
@@ -28,6 +28,10 @@ namespace KouXiaGu
             get { return logger.Input; }
         }
 
+        internal static void Initialize()
+        {
+            ConsoleMethodsReflection.SearchMethod(input.methodMap);
+        }
 
         public static void Log(string message)
         {
@@ -96,15 +100,34 @@ namespace KouXiaGu
             LogSuccessful(message);
         }
 
-
         /// <summary>
         /// 输入操作;
         /// </summary>
-        public static void Operate(string message)
+        public static bool Operate(string message)
         {
-            input.Operate(message);
+            return input.Operate(message);
         }
 
-    }
 
+        /// <summary>
+        /// 转换预留消息;
+        /// </summary>
+        internal static string ConvertMassage(string key, string message, params string[] parameterTypes)
+        {
+            if (parameterTypes == null)
+            {
+                return "[" + key + "]" + message;
+            }
+            else
+            {
+                string str = "[" + key;
+                foreach (var parameter in parameterTypes)
+                {
+                    str += " " + parameter;
+                }
+                str += "]" + message;
+                return str;
+            }
+        }
+    }
 }

@@ -11,19 +11,21 @@ namespace KouXiaGu
     /// <summary>
     /// 控制台输入控制,通过反射获得所有 关键词 和其 重载的方法;
     /// </summary>
-    [ConsoleClass]
+    [ConsoleMethodsClass]
     public class ConsoleInput
     {
         const int DefaultMaxRecordNumber = 30;
 
         public ConsoleInput()
         {
-            methodMap = new ConsoleMethodReflection();
+            methodMap = new ConsoleCommand();
             inputContents = new List<string>();
             MaxRecordNumber = DefaultMaxRecordNumber;
+
+            methodMap.Add("help", new CommandItem("help", HelpMethod, "显示所有命令"));
         }
 
-        ConsoleMethodReflection methodMap;
+        internal ConsoleCommand methodMap;
 
         /// <summary>
         /// 记录输入内容;
@@ -41,34 +43,20 @@ namespace KouXiaGu
             get { return inputContents.Count; }
         }
 
-        internal IDictionary<string, MethodGroup> MethodMap
-        {
-            get { return methodMap; }
-        }
-
         public string FinalInputContent
         {
             get { return inputContents.Count == 0 ? string.Empty : inputContents[inputContents.Count - 1]; }
         }
 
-        public void Operate(string message)
+        public bool Operate(string message)
         {
             RecordInputContent(message);
-            object[] parameters;
-            string keyword = GetKeywrod(message, out parameters);
-            MethodItem method;
-
-            if (methodMap.TryGetMethod(keyword, parameters,out method))
-            {
-                GameConsole.Log(message);
-                method.Invoke(parameters);
-            }
-            else
-            {
-                GameConsole.LogWarning("未知命令:" + message);
-            }
+            return methodMap.Operate(message);
         }
 
+        /// <summary>
+        /// 记录这个消息;
+        /// </summary>
         void RecordInputContent(string message)
         {
             if (inputContents.Count >= MaxRecordNumber)
@@ -78,42 +66,44 @@ namespace KouXiaGu
             inputContents.Add(message);
         }
 
-        static readonly char[] separator = new char[]
+        /// <summary>
+        /// 控制台命令 help;
+        /// </summary>
+        void HelpMethod(string[] none)
+        {
+            foreach (var methodGroup in methodMap.CommandDictionary.Values)
             {
-                ' ',
-            };
-
-        string GetKeywrod(string message, out object[] parameters)
-        {
-            string[] wordArray = message.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-            string keyWord = wordArray[0];
-
-            int parameterCount = wordArray.Length - 1;
-            parameters = new string[parameterCount];
-            Array.Copy(wordArray, 1, parameters, 0, parameterCount);
-
-            return keyWord;
+                foreach (var method in methodGroup)
+                {
+                    if (method.Message != string.Empty)
+                    {
+                        GameConsole.Log(method.Message);
+                    }
+                }
+            }
         }
 
-        const string testPrefix = "Test:";
+    //#region 测试方法
 
-        [ConsoleMethod("test")]
-        public static void Test()
-        {
-            Debug.Log(testPrefix + "Null");
-        }
+    //    const string testPrefix = "Test:";
 
-        [ConsoleMethod("test")]
-        public static void Test(string str)
-        {
-            Debug.Log(testPrefix + str);
-        }
+    //    [ConsoleMethod("test")]
+    //    public static void Test()
+    //    {
+    //        Debug.Log(testPrefix + "Null");
+    //    }
 
-        [ConsoleMethod("test")]
-        public static void Test(string str0, string str1)
-        {
-            Debug.Log(testPrefix + str0 + "," + str1);
-        }
+    //    [ConsoleMethod("test")]
+    //    public static void Test(string str)
+    //    {
+    //        Debug.Log(testPrefix + str);
+    //    }
+
+    //    [ConsoleMethod("test")]
+    //    public static void Test(string str0, string str1)
+    //    {
+    //        Debug.Log(testPrefix + str0 + "," + str1);
+    //    }
+    //    #endregion
     }
-
 }
