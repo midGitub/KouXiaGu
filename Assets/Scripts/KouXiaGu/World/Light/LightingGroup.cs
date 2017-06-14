@@ -10,8 +10,21 @@ namespace KouXiaGu.World
     [DisallowMultipleComponent]
     public class LightingGroup : SceneSington<LightingGroup>
     {
+
         [SerializeField]
         Light[] lights;
+        [SerializeField]
+        float intensity;
+
+        public float Intensity
+        {
+            get { return intensity; }
+        }
+
+        void OnValidate()
+        {
+            SetIntensity(intensity);
+        }
 
         public void SetIntensity(float intensity)
         {
@@ -25,6 +38,10 @@ namespace KouXiaGu.World
         void FindChildLights()
         {
             lights = GetComponentsInChildren<Light>();
+            if (lights != null && lights.Length > 0)
+            {
+                intensity = lights[0].intensity;
+            }
         }
     }
 }

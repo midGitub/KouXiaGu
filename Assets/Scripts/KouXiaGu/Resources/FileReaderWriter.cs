@@ -6,13 +6,21 @@ using UnityEngine;
 
 namespace KouXiaGu.Resources
 {
-  
+    
     public interface IReader<T>
     {
         /// <summary>
-        /// 读取到文件,若遇到异常则输出到日志;
+        /// 读取到文件;
         /// </summary>
         T Read();
+    }
+
+    public interface IReader<TResult, T>
+    {
+        /// <summary>
+        /// 读取到文件;
+        /// </summary>
+        T Read(T t);
     }
 
     public interface IWriter<T>
@@ -20,7 +28,6 @@ namespace KouXiaGu.Resources
         /// <summary>
         /// 输出/保存到;
         /// </summary>
-        /// <param name="fileMode">文件读取方式;</param>
         void Write(T item, FileMode fileMode);
     }
 

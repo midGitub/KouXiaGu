@@ -134,7 +134,7 @@ namespace KouXiaGu.Terrain3D.Tests
                         + "\nRoad:" + roadNode.ID + ",Type:" + roadNode.RoadType + ",ExistRoad:" + roadNode.Exist()
                         + "\nBuilding:" + buildingNode.ID + ",Types:" + node.Building.BuildingType + ",ExistBuilding:" + node.Building.Exist()
                         + "\nTags:"
-                        ;
+                        + "\nTown:" + node.Town.TownID;
                 }
             }
             return "Empty Content";

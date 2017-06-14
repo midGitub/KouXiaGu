@@ -61,15 +61,5 @@ namespace KouXiaGu.Terrain3D
             mesh.uv = uv;
             mesh.RecalculateNormals();
         }
-
-        //void Start()
-        //{
-        //    hexMesh.vertices = vertices;
-        //    hexMesh.triangles = triangles;
-        //    hexMesh.uv = uv;
-        //    hexMesh.RecalculateNormals();
-        //}
-
     }
-
 }

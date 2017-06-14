@@ -22,13 +22,13 @@ namespace KouXiaGu.World.Map
         /// 道路的唯一编号;
         /// </summary>
         [ProtoMember(1)]
-        public uint ID;
+        public uint ID { get; internal set; }
 
         /// <summary>
         /// 道路类型;
         /// </summary>
         [ProtoMember(2)]
-        public int RoadType;
+        public int RoadType { get; internal set; }
 
         /// <summary>
         /// 返回是否存在道路;
