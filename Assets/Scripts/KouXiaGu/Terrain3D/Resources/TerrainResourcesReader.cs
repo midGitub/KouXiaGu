@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     {
         public WorldResources Read(GameResourceUnityDispatcher dispatcher, WorldResources resources, IOperationState state)
         {
-            if (XiaGu.IsMainThread)
+            if (XiaGu.IsUnityThread)
             {
                 throw new ArgumentException("只允许在非Unity线程调用;");
             }

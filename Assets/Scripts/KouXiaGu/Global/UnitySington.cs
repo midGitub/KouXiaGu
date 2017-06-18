@@ -25,7 +25,7 @@ namespace KouXiaGu
             get
             {
 #if UNITY_EDITOR
-                if (XiaGu.IsMainThread && !Application.isPlaying)
+                if (XiaGu.IsUnityThread && !Application.isPlaying)
                 {
                     return FindInEditor();
                 }

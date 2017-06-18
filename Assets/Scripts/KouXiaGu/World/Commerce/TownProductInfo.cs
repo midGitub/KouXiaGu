@@ -14,7 +14,7 @@ namespace KouXiaGu.World.Commerce
         /// <summary>
         /// 产品类型;
         /// </summary>
-        public ProductType ProductType { get; private set; }
+        public ProductInfo ProductType { get; private set; }
 
         /// <summary>
         /// 稀缺度;

@@ -112,7 +112,7 @@ namespace KouXiaGu.Globalization
 
             ITextObserver[] observerArray = textObservers.ToArray();
 
-            if (XiaGu.IsMainThread)
+            if (XiaGu.IsUnityThread)
             {
                 foreach (var observer in observerArray)
                 {

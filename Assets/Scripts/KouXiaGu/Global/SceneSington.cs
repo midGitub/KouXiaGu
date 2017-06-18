@@ -54,7 +54,7 @@ namespace KouXiaGu
             {
                 if (_instance == null)
                 {
-                    if (XiaGu.IsMainThread)
+                    if (XiaGu.IsUnityThread)
                     {
                         _instance = Find();
                     }
