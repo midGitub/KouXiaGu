@@ -11,8 +11,6 @@ namespace KouXiaGu.World.Commerce
     /// </summary>
     public class TownProductInfo
     {
-
-
         /// <summary>
         /// 产品类型;
         /// </summary>

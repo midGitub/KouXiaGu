@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.World.Resources
 {
 
     /// <summary>

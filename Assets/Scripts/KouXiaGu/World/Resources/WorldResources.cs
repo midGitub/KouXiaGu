@@ -1,10 +1,13 @@
-﻿using System;
+﻿using KouXiaGu.Terrain3D;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.World.Resources
 {
 
-    public class TerrainResources
+    public class WorldResources
     {
         public IDictionary<int, LandformInfo> Landform { get; internal set; }
         public IDictionary<int, BuildingInfo> Building { get; internal set; }

@@ -2,6 +2,7 @@
 using KouXiaGu.Grids;
 using KouXiaGu.World;
 using KouXiaGu.World.Map;
+using KouXiaGu.World.Resources;
 using System;
 using System.Collections;
 using System.Collections.Generic;

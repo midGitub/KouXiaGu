@@ -6,6 +6,7 @@ using UnityEngine;
 using KouXiaGu.Resources;
 using System.Threading;
 using KouXiaGu.Concurrent;
+using KouXiaGu.World.Resources;
 
 namespace KouXiaGu
 {
@@ -15,7 +16,7 @@ namespace KouXiaGu
     /// </summary>
     public interface IGameResource
     {
-        TerrainResources Terrain { get; }
+        WorldResources Terrain { get; }
     }
 
     /// <summary>
@@ -24,7 +25,7 @@ namespace KouXiaGu
     public class GameResourceInitializer : AsyncOperation<IGameResource>, IGameResource
     {
         public bool IsInitialized { get; private set; }
-        public TerrainResources Terrain { get; private set; }
+        public WorldResources Terrain { get; private set; }
 
         public void InitializeAsync(IOperationState state)
         {
@@ -42,14 +43,14 @@ namespace KouXiaGu
             IsInitialized = true;
             IOperationState state = (IOperationState)s;
 
-            TerrainResourcesFileReader terrainReader = new TerrainResourcesFileReader();
+            WorldResourcesReader terrainReader = new WorldResourcesReader();
             Terrain = terrainReader.Read(state);
             LogResourceInfo(Terrain);
 
             OnCompleted(this);
         }
 
-        string LogResourceInfo(TerrainResources terrain)
+        string LogResourceInfo(WorldResources terrain)
         {
             string str =
                 "[地形资源]"

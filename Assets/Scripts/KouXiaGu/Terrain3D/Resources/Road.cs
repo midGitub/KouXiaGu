@@ -6,43 +6,10 @@ using UnityEngine;
 using KouXiaGu.Resources;
 using System.Linq;
 using KouXiaGu.Concurrent;
+using KouXiaGu.World.Resources;
 
 namespace KouXiaGu.Terrain3D
 {
-
-    /// <summary>
-    /// 道路信息;
-    /// </summary>
-    [XmlType("Road")]
-    public class RoadInfo : IElement
-    {
-        [XmlAttribute("id")]
-        public int ID { get; set; }
-
-        [XmlElement("Terrain")]
-        public TerrainRoadInfo TerrainInfo { get; set; }
-
-        [XmlIgnore]
-        public RoadResource Terrain { get; internal set; }
-    }
-
-    class RoadFile : MultipleFilePath
-    {
-        [CustomFilePath("道路资源描述文件;", true)]
-        public const string fileName = "World/Terrain/Road.xml";
-
-        public override string FileName
-        {
-            get { return fileName; }
-        }
-    }
-
-    class RoadInfoXmlSerializer : XmlElementsReaderWriter<RoadInfo>
-    {
-        public RoadInfoXmlSerializer() : base(new RoadFile())
-        {
-        }
-    }
 
     /// <summary>
     /// 道路资源定义;
@@ -50,18 +17,6 @@ namespace KouXiaGu.Terrain3D
     [XmlType("TerrainRoad")]
     public class TerrainRoadInfo
     {
-        ///// <summary>
-        ///// 高度调整贴图名;
-        ///// </summary>
-        //[XmlElement("HeightAdjustTex")]
-        //public string HeightAdjustTex;
-
-        ///// <summary>
-        ///// 高度调整的权重贴图;
-        ///// </summary>
-        //[XmlElement("HeightAdjustBlendTex")]
-        //public string HeightAdjustBlendTex;
-
         /// <summary>
         /// 漫反射贴图名;
         /// </summary>

@@ -1,44 +1,11 @@
-﻿using KouXiaGu.Resources;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.Xml.Serialization;
 using UnityEngine;
-using System.Linq;
-using KouXiaGu.World;
-using KouXiaGu.Grids;
 using KouXiaGu.Concurrent;
+using KouXiaGu.World.Resources;
 
 namespace KouXiaGu.Terrain3D
 {
-
-    /// <summary>
-    /// 地形信息;
-    /// </summary>
-    [XmlType("Building")]
-    public class BuildingInfo : IElement
-    {
-        [XmlAttribute("id")]
-        public int ID { get; set; }
-
-        [XmlAttribute("tags")]
-        public string Tags { get; set; }
-
-        [XmlElement("Terrain")]
-        public TerrainBuildingInfo TerrainInfo { get; set; }
-
-        [XmlIgnore]
-        public int TagsMask { get; internal set; }
-
-        [XmlIgnore]
-        public BuildingResource Terrain { get; internal set; }
-
-        public override string ToString()
-        {
-            return "[ID:" + ID + ",Tags:" + Tags + "]";
-        }
-    }
-
     [XmlType("TerrainBuilding")]
     public class TerrainBuildingInfo
     {
@@ -53,24 +20,6 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         [XmlElement("AssociativeNeighbor")]
         public bool AssociativeNeighbor { get; set; }
-    }
-
-    class BuildingInfoXmlSerializer : XmlElementsReaderWriter<BuildingInfo>
-    {
-        public BuildingInfoXmlSerializer() : base(new BuildingFile())
-        {
-        }
-    }
-
-    class BuildingFile : MultipleFilePath
-    {
-        [CustomFilePath("建筑资源描述文件;", true)]
-        public const string fileName = "World/Terrain/Building.xml";
-
-        public override string FileName
-        {
-            get { return fileName; }
-        }
     }
 
     public class BuildingResource : IDisposable

@@ -7,6 +7,7 @@ using KouXiaGu.World;
 using KouXiaGu.World.Map;
 using UnityEngine;
 using KouXiaGu.Terrain3D.DynamicMeshs;
+using KouXiaGu.World.Resources;
 
 namespace KouXiaGu.Terrain3D
 {

@@ -1,5 +1,6 @@
 ﻿using KouXiaGu.Grids;
 using KouXiaGu.World;
+using KouXiaGu.World.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;

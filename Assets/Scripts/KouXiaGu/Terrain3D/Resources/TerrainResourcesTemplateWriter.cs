@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using KouXiaGu.Resources;
 using System.IO;
 using UnityEditor;
+using KouXiaGu.World.Resources;
 
 namespace KouXiaGu.Terrain3D
 {
 
-    public class TerrainResourceTemplateWriter
+    public class TerrainResourcesTemplateWriter
     {
 
         static readonly Dictionary<int, LandformInfo> templateLandformInfos = new Dictionary<int, LandformInfo>()

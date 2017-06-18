@@ -5,6 +5,7 @@ using System.Text;
 using KouXiaGu.Grids;
 using KouXiaGu.World.Map;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.World.Resources;
 
 namespace KouXiaGu.Navigation
 {
@@ -18,14 +19,14 @@ namespace KouXiaGu.Navigation
     /// </summary>
     public class LandformWalker : IWalkableConfirmer<CubicHexCoord>
     {
-        public LandformWalker(IReadOnlyDictionary<CubicHexCoord, MapNode> map, TerrainResources resources)
+        public LandformWalker(IReadOnlyDictionary<CubicHexCoord, MapNode> map, WorldResources resources)
         {
             Map = map;
             Resources = resources;
         }
 
         public IReadOnlyDictionary<CubicHexCoord, MapNode> Map { get; set; }
-        public TerrainResources Resources { get; set; }
+        public WorldResources Resources { get; set; }
 
         /// <summary>
         /// 不可行走到的标签,只要存在这些标签则不允许行走到,除非存在 WalkableTagsMask 定义的其它标签;

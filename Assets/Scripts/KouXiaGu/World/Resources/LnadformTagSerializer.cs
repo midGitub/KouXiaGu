@@ -5,7 +5,7 @@ using System.Text;
 using KouXiaGu.Resources;
 using UnityEngine;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.World.Resources
 {
 
     public class LandformTagFilePath : SingleFilePath
