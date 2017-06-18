@@ -24,6 +24,9 @@ namespace KouXiaGu.World.Map
         [ProtoMember(0)]
         public uint ID { get; internal set; }
 
+        /// <summary>
+        /// 建筑类型;
+        /// </summary>
         [ProtoMember(1)]
         public int BuildingType { get; internal set; }
 
@@ -114,41 +117,4 @@ namespace KouXiaGu.World.Map
             return !a.Equals(b);
         }
     }
-
-    //public struct BuildingItem : IEquatable<BuildingItem>
-    //{
-    //    public BuildingItem(int buildingType, float angle)
-    //    {
-    //        BuildingType = buildingType;
-    //        Angle = angle;
-    //    }
-
-    //    public int BuildingType { get; internal set; }
-    //    public float Angle { get; internal set; }
-
-    //    public bool Equals(BuildingItem other)
-    //    {
-    //        return BuildingType == other.BuildingType
-    //        && Angle == other.Angle;
-    //    }
-
-    //    public override bool Equals(object obj)
-    //    {
-    //        if (!(obj is BuildingItem))
-    //        {
-    //            return false;
-    //        }
-    //        return Equals((BuildingItem)obj);
-    //    }
-
-    //    public override int GetHashCode()
-    //    {
-    //        return BuildingType.GetHashCode();
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return "[BuildingType:" + BuildingType + ", Angle:" + Angle + "]";
-    //    }
-    //}
 }
