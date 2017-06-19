@@ -21,6 +21,7 @@ namespace KouXiaGu.World.Resources
         internal BuildingInfoXmlSerializer BuildingFileSerializer = new BuildingInfoXmlSerializer();
         internal RoadInfoXmlSerializer RoadFileSerializer = new RoadInfoXmlSerializer();
         internal TerrainResourcesReader TerrainResourcesReader = new TerrainResourcesReader();
+        internal LandformTagReader LandformTagReader = new LandformTagReader();
 
         public WorldResources Read(IOperationState state)
         {
@@ -36,6 +37,7 @@ namespace KouXiaGu.World.Resources
             };
 
             TerrainResourcesReader.Read(dispatcher, result, state);
+            LandformTagReader.Read(result, state);
             return result;
         }
     }

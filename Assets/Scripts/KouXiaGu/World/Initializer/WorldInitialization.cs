@@ -1,4 +1,5 @@
-﻿using KouXiaGu.Resources;
+﻿using KouXiaGu.Concurrent;
+using KouXiaGu.Resources;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -9,16 +10,10 @@ namespace KouXiaGu.World
     /// <summary>
     /// 对游戏场景初始化,允许在非Unity线程初始化;
     /// </summary>
-    public class WorldInitialization : IBasicData, IWorldComplete, IWorld
+    public class WorldInitialization : AsyncOperation<IWorldComplete>, IBasicData, IWorldComplete, IWorld
     {
-        WorldInitialization(IGameResource basicResource, WorldInfo worldInfo)
+        public WorldInitialization()
         {
-            if (basicResource == null)
-                throw new ArgumentNullException("basicResource");
-            if (worldInfo == null)
-                throw new ArgumentNullException("worldInfo");
-
-            Initialize(basicResource, worldInfo);
         }
 
         public IGameResource BasicResource { get; private set; }
@@ -32,72 +27,52 @@ namespace KouXiaGu.World
             get { return this; }
         }
 
-        void Initialize(IGameResource basicResource, WorldInfo worldInfo)
+        public void InitializeAsync(IAsyncOperation<IGameResource> resourceReader, IAsyncOperation<WorldInfo> infoReader, IOperationState state)
+        {
+            if (resourceReader == null)
+                throw new ArgumentNullException("resourceReader");
+            if (infoReader == null)
+                throw new ArgumentNullException("infoReader");
+
+            ThreadPool.QueueUserWorkItem(_ => Initialize(resourceReader, infoReader, state));
+        }
+
+        void Initialize(IAsyncOperation<IGameResource> resourceReader, IAsyncOperation<WorldInfo> infoReader, IOperationState state)
         {
             try
             {
+                while (!infoReader.IsCompleted)
+                {
+                    if (state.IsCanceled)
+                        throw new OperationCanceledException();
+                }
+                if (infoReader.IsFaulted)
+                {
+                    throw new InvalidOperationException("infoReader 出现异常!" + infoReader.Exception);
+                }
+
+                while (!resourceReader.IsCompleted)
+                {
+                    if (state.IsCanceled)
+                        throw new OperationCanceledException();
+                }
+                if (resourceReader.IsFaulted)
+                {
+                    throw new InvalidOperationException("resourceReader 出现异常!" + resourceReader.Exception);
+                }
+
                 Debug.Log("开始初始化游戏场景;");
-                BasicResource = basicResource;
-                WorldInfo = worldInfo;
+
+                BasicResource = resourceReader.Result;
+                WorldInfo = infoReader.Result;
                 WorldData = new WorldDataInitialization(this);
                 Components = new WorldComponentInitialization(this, WorldData);
-                Updater = new WorldUpdaterInitialization(this);
+                Updater = new WorldUpdaterInitialization(this, state);
+                OnCompleted(this);
             }
             catch (Exception ex)
             {
-                Dispose();
-                throw ex;
-            }
-        }
-
-        public static IAsyncOperation<IWorldComplete> CreateAsync(IAsyncOperation<IGameResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
-        {
-            return new AsyncInitializer(basicResource, infoReader);
-        }
-
-        public void Dispose()
-        {
-            if (Updater != null)
-            {
-                Updater.Dispose();
-                Updater = null;
-            }
-        }
-
-        /// <summary>
-        /// 异步初始化结构;
-        /// </summary>
-        class AsyncInitializer : AsyncOperation<IWorldComplete>
-        {
-            public AsyncInitializer(IAsyncOperation<IGameResource> basicResource, IAsyncOperation<WorldInfo> infoReader)
-            {
-                if (basicResource == null)
-                    throw new ArgumentNullException("basicResource");
-                if (infoReader == null)
-                    throw new ArgumentNullException("infoReader");
-
-                ThreadPool.QueueUserWorkItem(_ => Initialize(basicResource, infoReader));
-            }
-
-            void Initialize(IAsyncOperation<IGameResource> resourceReader, IAsyncOperation<WorldInfo> infoReader)
-            {
-                try
-                {
-                    while (!infoReader.IsCompleted)
-                    {
-                    }
-                    while (!resourceReader.IsCompleted)
-                    {
-                    }
-                    var resource = resourceReader.Result;
-                    var worldInfo = infoReader.Result;
-                    var item = new WorldInitialization(resource, worldInfo);
-                    OnCompleted(item);
-                }
-                catch (Exception ex)
-                {
-                    OnFaulted(ex);
-                }
+                OnFaulted(ex);
             }
         }
     }

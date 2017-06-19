@@ -32,22 +32,26 @@ namespace KouXiaGu
             if (IsInitialized)
                 throw new ArgumentException("已经在初始化中;");
 
-            ThreadPool.QueueUserWorkItem(Initialize, state);
+            ThreadPool.QueueUserWorkItem(Initialize_internal, state);
         }
 
-        public void Initialize(object s)
+        void Initialize_internal(object s)
         {
-            if (IsInitialized)
-                throw new ArgumentException("已经在初始化中;");
+            try
+            {
+                IsInitialized = true;
+                IOperationState state = (IOperationState)s;
 
-            IsInitialized = true;
-            IOperationState state = (IOperationState)s;
+                WorldResourcesReader terrainReader = new WorldResourcesReader();
+                Terrain = terrainReader.Read(state);
+                LogResourceInfo(Terrain);
 
-            WorldResourcesReader terrainReader = new WorldResourcesReader();
-            Terrain = terrainReader.Read(state);
-            LogResourceInfo(Terrain);
-
-            OnCompleted(this);
+                OnCompleted(this);
+            }
+            catch (Exception ex)
+            {
+                OnFaulted(ex);
+            }
         }
 
         string LogResourceInfo(WorldResources terrain)

@@ -28,7 +28,7 @@ namespace KouXiaGu.World
         IWorldComponents Components { get; }
     }
 
-    public interface IWorldComplete : IWorld, IDisposable
+    public interface IWorldComplete : IWorld
     {
         IWorldUpdater Updater { get; }
     }

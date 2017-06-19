@@ -1,18 +1,27 @@
-﻿using KouXiaGu.Resources;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using KouXiaGu.Resources;
 using UnityEngine;
+using System.Xml.Serialization;
 
 namespace KouXiaGu.World.Resources
 {
 
+    [XmlType("Tag")]
+    public class LandformTag
+    {
+        [XmlAttribute("name")]
+        public string Name { get; set; }
+    }
+
     /// <summary>
     /// 地形标签管理;
     /// </summary>
-    public class LandformTag
+    public class LandformTagConverter
     {
-        public LandformTag(string[] tags)
+        public LandformTagConverter(LandformTag[] tags)
         {
             if (tags.Length > 32)
             {
@@ -23,9 +32,9 @@ namespace KouXiaGu.World.Resources
             Tags = tags.AsReadOnlyList();
         }
 
-        readonly string[] tags;
+        readonly LandformTag[] tags;
 
-        public IReadOnlyList<string> Tags { get; private set; }
+        public IReadOnlyList<LandformTag> Tags { get; private set; }
 
         public int TagsToMask(string tags)
         {
@@ -55,13 +64,36 @@ namespace KouXiaGu.World.Resources
             int mask = 0;
             foreach (var tag in enumerateTags)
             {
-                int index = tags.FindIndex(tag);
+                int index = tags.FindIndex(item => item.Name == tag);
                 if (index != -1)
                 {
                     mask |= 1 << index;
                 }
             }
             return mask;
+        }
+    }
+
+    public class LandformTagFile : SingleFilePath
+    {
+        [CustomFilePath("地形标签定义;")]
+        public const string fileName = "World/Terrain/Tags.xml";
+
+        public override string FileName
+        {
+            get { return fileName; }
+        }
+    }
+
+    /// <summary>
+    /// 地形标签读取;
+    /// </summary>
+    public class LandformTagXmlSerializer : FileReaderWriter<LandformTag[]>
+    {
+        static readonly IFileSerializer<LandformTag[]> fileSerializer = new XmlFileSerializer<LandformTag[]>();
+
+        public LandformTagXmlSerializer() : base(new LandformTagFile(), fileSerializer)
+        {
         }
     }
 }

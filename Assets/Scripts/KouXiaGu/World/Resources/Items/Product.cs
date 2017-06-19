@@ -5,8 +5,9 @@ using System.Text;
 using UnityEngine;
 using System.Xml.Serialization;
 using KouXiaGu.Resources;
+using KouXiaGu.World.Commerce;
 
-namespace KouXiaGu.World.Commerce
+namespace KouXiaGu.World.Resources
 {
 
     [XmlType("Product")]
@@ -18,18 +19,25 @@ namespace KouXiaGu.World.Commerce
         [XmlElement("name")]
         public string Name { get; set; }
 
-        /// <summary>
-        /// 产品价值;
-        /// </summary>
-        [XmlElement("Worth")]
-        public int Worth { get; set; }
+        [XmlElement("Commerce")]
+        public CommerceProduct Commerce { get; set; }
+    }
 
+    class ProductFile : MultipleFilePath
+    {
+        [CustomFilePath("产品类型描述文件;", true)]
+        public const string fileName = "World/Data/Products.xml";
 
+        public override string FileName
+        {
+            get { return fileName; }
+        }
+    }
 
-        /// <summary>
-        /// 图标
-        /// </summary>
-        [XmlIgnore]
-        public Texture Icon { get; set; }
+    class ProductInfoXmlSerializer : XmlElementsReaderWriter<ProductInfo>
+    {
+        public ProductInfoXmlSerializer() : base(new ProductFile())
+        {
+        }
     }
 }

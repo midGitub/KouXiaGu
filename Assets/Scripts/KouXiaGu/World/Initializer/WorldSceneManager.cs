@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using KouXiaGu.Concurrent;
 
 namespace KouXiaGu.World
 {
@@ -14,7 +15,7 @@ namespace KouXiaGu.World
     /// 游戏场景控制类;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class WorldSceneManager : MonoBehaviour
+    public sealed class WorldSceneManager : MonoBehaviour, IOperationState
     {
         WorldSceneManager()
         {
@@ -60,6 +61,11 @@ namespace KouXiaGu.World
         /// </summary>
         public static bool IsActivated { get; private set; }
 
+        bool IOperationState.IsCanceled
+        {
+            get { return !IsActivated; }
+        }
+
         /// <summary>
         /// 读取到场景;
         /// </summary>
@@ -95,7 +101,9 @@ namespace KouXiaGu.World
                 BasicResource = GameInitializer.Instance.GameDataInitialize;
                 InfoReader = new DefaultWorldInfo();
             }
-            WorldInitializer = WorldInitialization.CreateAsync(BasicResource, InfoReader);
+            WorldInitialization initializer = new WorldInitialization();
+            initializer.InitializeAsync(BasicResource, InfoReader, this);
+            WorldInitializer = initializer;
         }
 
         void Update()
@@ -105,7 +113,7 @@ namespace KouXiaGu.World
                 if (WorldInitializer.IsFaulted)
                 {
                     onWorldInitializeComplted.OnFailed(WorldInitializer.Exception);
-                    Debug.Log("场景初始化失败;Exception : " + WorldInitializer.Exception);
+                    Debug.LogError("场景初始化失败;Exception : " + WorldInitializer.Exception);
                 }
                 else
                 {
@@ -127,10 +135,6 @@ namespace KouXiaGu.World
             {
                 Debug.LogError("在未初始化完成时退出!");
                 return;
-            }
-            if (!WorldInitializer.IsFaulted)
-            {
-                WorldInitializer.Result.Dispose();
             }
             IsActivated = false;
         }

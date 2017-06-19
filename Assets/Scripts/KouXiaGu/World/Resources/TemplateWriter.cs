@@ -1,16 +1,18 @@
 ﻿
 #if UNITY_EDITOR
 
-using System.Collections.Generic;
 using KouXiaGu.Resources;
+using KouXiaGu.Terrain3D;
+using KouXiaGu.World.Commerce;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
-using KouXiaGu.World.Resources;
 
-namespace KouXiaGu.Terrain3D
+namespace KouXiaGu.World.Resources
 {
 
-    public class TerrainResourcesTemplateWriter
+
+    class TemplateWriter
     {
 
         static readonly Dictionary<int, LandformInfo> templateLandformInfos = new Dictionary<int, LandformInfo>()
@@ -55,16 +57,45 @@ namespace KouXiaGu.Terrain3D
             } },
         };
 
-        static readonly string[] templateTags = new string[]
+        static readonly Dictionary<int, ProductInfo> templateProduct = new Dictionary<int, ProductInfo>()
+        {
+            {1, new ProductInfo()
             {
-                "Unknown1",
-                "Unknown2",
+                ID = 1,
+                Name = "Unknown",
+                Commerce = new CommerceProduct()
+                {
+                    Worth = 0,
+                }
+            }
+            }
+        };
+
+        static readonly Dictionary<int, TownInfo> templateTowns = new Dictionary<int, TownInfo>()
+        {
+            {1, new TownInfo()
+            {
+                ID = 1,
+                Name = "Unknown",
+                Description = "Unknown",
+            }
+            }
+        };
+
+        static readonly LandformTag[] templateTags = new LandformTag[]
+            {
+               new LandformTag()
+               {
+                   Name = "Unknown1"
+               }
             };
 
         static IWriter<Dictionary<int, LandformInfo>> LandformSerializer = new LandformInfoXmlSerializer().ToTemplateWriter();
         static IWriter<Dictionary<int, BuildingInfo>> BuildingSerializer = new BuildingInfoXmlSerializer().ToTemplateWriter();
         static IWriter<Dictionary<int, RoadInfo>> RoadSerializer = new RoadInfoXmlSerializer().ToTemplateWriter();
-        static IWriter<string[]> TagWriter = new LandformTagXmlSerializer().ToTemplateWriter();
+        static IWriter<Dictionary<int, ProductInfo>> ProductSerializer = new ProductInfoXmlSerializer().ToTemplateWriter();
+        static IWriter<Dictionary<int, TownInfo>> TownSerializer = new TownInfoXmlSerializer().ToTemplateWriter();
+        static IWriter<LandformTag[]> TagWriter = new LandformTagXmlSerializer().ToTemplateWriter();
 
         [MenuItem("Templates/WriteTerrainResourceTemplate")]
         public static void Write()
@@ -77,6 +108,8 @@ namespace KouXiaGu.Terrain3D
             LandformSerializer.Write(templateLandformInfos, fileMode);
             BuildingSerializer.Write(templateBuildingInfos, fileMode);
             RoadSerializer.Write(templateRoadInfos, fileMode);
+            ProductSerializer.Write(templateProduct, fileMode);
+            TownSerializer.Write(templateTowns, fileMode);
             TagWriter.Write(templateTags, fileMode);
         }
     }
