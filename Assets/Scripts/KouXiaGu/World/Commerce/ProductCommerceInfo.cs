@@ -11,12 +11,18 @@ namespace KouXiaGu.World.Commerce
     /// 产品信息;
     /// </summary>
     [XmlType("Commerce")]
-    public class CommerceProduct
+    public class ProductCommerceInfo
     {
         /// <summary>
-        /// 产品价值;
+        /// 价值;
         /// </summary>
         [XmlElement("Worth")]
         public int Worth { get; set; }
+
+        /// <summary>
+        /// 需求度;
+        /// </summary>
+        [XmlElement("Demand")]
+        public int Demand { get; set; }
     }
 }

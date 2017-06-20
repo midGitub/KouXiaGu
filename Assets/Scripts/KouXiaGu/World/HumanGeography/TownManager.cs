@@ -13,12 +13,12 @@ namespace KouXiaGu.World.HumanGeography
     {
         public TownManager()
         {
-            towns = new Dictionary<int, Town>();
+            towns = new Dictionary<int, TownRange>();
         }
 
-        readonly Dictionary<int, Town> towns;
+        readonly Dictionary<int, TownRange> towns;
 
-        public Town Create(IWorld world)
+        public TownRange Create(IWorld world)
         {
             throw new NotImplementedException();
         }

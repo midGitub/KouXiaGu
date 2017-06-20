@@ -41,6 +41,15 @@ namespace KouXiaGu.World.Resources
                 {
                     PrefabName = "none",
                 },
+                Commerce = new BuildingCommerceInfo()
+                {
+                    Worth = 1000,
+                    ProductionContents = new List<ProductionContent>()
+                    {
+                        new ProductionContent("春", new ProductProduction[]{ new ProductProduction(0, 10), new ProductProduction(1, 30)}),
+                        new ProductionContent("夏", new ProductProduction[]{ new ProductProduction(0, 30), new ProductProduction(1, 90)}),
+                    }
+                }
             } },
         };
 
@@ -62,11 +71,21 @@ namespace KouXiaGu.World.Resources
             {1, new ProductInfo()
             {
                 ID = 1,
-                Name = "Unknown",
-                Commerce = new CommerceProduct()
+                Name = "香蕉",
+                Commerce = new ProductCommerceInfo()
                 {
-                    Worth = 0,
+                    Worth = 10,
                 }
+            }
+            },
+            { 2, new ProductInfo()
+            {
+                ID = 2,
+                Name = "苹果",
+                Commerce = new ProductCommerceInfo()
+                {
+                    Worth = 15,
+                },
             }
             }
         };

@@ -64,7 +64,7 @@ namespace KouXiaGu.World.Map
 
             MapData data = new MapData()
             {
-                Map = map,
+                Data = map,
                 Landform = landform,
                 Road = road,
                 Building = building,

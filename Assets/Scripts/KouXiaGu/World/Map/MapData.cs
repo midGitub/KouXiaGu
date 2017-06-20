@@ -13,7 +13,7 @@ namespace KouXiaGu.World.Map
     public class MapData
     {
         [ProtoMember(0)]
-        public Dictionary<CubicHexCoord, MapNode> Map { get; set; }
+        public Dictionary<CubicHexCoord, MapNode> Data { get; set; }
 
         [ProtoMember(1)]
         public IdentifierGenerator Landform { get; set; }
@@ -23,5 +23,8 @@ namespace KouXiaGu.World.Map
 
         [ProtoMember(3)]
         public IdentifierGenerator Building { get; set; }
+
+        [ProtoMember(4)]
+        public TownCorePositions TownCorePositions { get; set; }
     }
 }

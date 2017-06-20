@@ -20,13 +20,13 @@ namespace KouXiaGu.World.Resources
         public string Name { get; set; }
 
         [XmlElement("Commerce")]
-        public CommerceProduct Commerce { get; set; }
+        public ProductCommerceInfo Commerce { get; set; }
     }
 
     class ProductFile : MultipleFilePath
     {
         [CustomFilePath("产品类型描述文件;", true)]
-        public const string fileName = "World/Data/Products.xml";
+        public const string fileName = "World/Resources/Products.xml";
 
         public override string FileName
         {

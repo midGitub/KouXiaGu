@@ -30,7 +30,7 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 销毁该点城镇信息;
         /// </summary>
-        public RoadNode Destroy()
+        public RoadNode Destroy(MapData map)
         {
             return default(RoadNode);
         }

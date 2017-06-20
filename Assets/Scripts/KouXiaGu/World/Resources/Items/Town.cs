@@ -26,8 +26,8 @@ namespace KouXiaGu.World.Resources
 
     class TownInfoFile : MultipleFilePath
     {
-        [CustomFilePath("产品类型描述文件;", true)]
-        public const string fileName = "World/Data/Towns.xml";
+        [CustomFilePath("城镇描述文件;", true)]
+        public const string fileName = "World/Resources/Towns.xml";
 
         public override string FileName
         {

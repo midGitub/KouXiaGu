@@ -1,5 +1,6 @@
 ﻿using KouXiaGu.Resources;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.World.Commerce;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,9 @@ namespace KouXiaGu.World.Resources
         [XmlElement("Terrain")]
         public TerrainBuildingInfo TerrainInfo { get; set; }
 
+        [XmlElement("Commerce")]
+        public BuildingCommerceInfo Commerce { get; set; }
+
         [XmlIgnore]
         public int TagsMask { get; internal set; }
 
@@ -46,7 +50,7 @@ namespace KouXiaGu.World.Resources
     class BuildingFile : MultipleFilePath
     {
         [CustomFilePath("建筑资源描述文件;", true)]
-        public const string fileName = "World/Terrain/Building.xml";
+        public const string fileName = "World/Resources/Building.xml";
 
         public override string FileName
         {

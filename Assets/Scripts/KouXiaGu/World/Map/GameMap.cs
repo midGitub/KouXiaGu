@@ -19,7 +19,7 @@ namespace KouXiaGu.World.Map
         public GameMap(MapData data)
         {
             this.data = data;
-            observableMap = new ObservableDictionary<CubicHexCoord, MapNode>(data.Map);
+            observableMap = new ObservableDictionary<CubicHexCoord, MapNode>(data.Data);
             mapChangedRecorder = new MapChangedRecorder<CubicHexCoord, MapNode>(observableMap);
         }
         
@@ -54,7 +54,7 @@ namespace KouXiaGu.World.Map
         {
             MapData archivedData = new MapData()
             {
-                Map = mapChangedRecorder.GetChangedData(),
+                Data = mapChangedRecorder.GetChangedData(),
             };
             return archivedData;
         }

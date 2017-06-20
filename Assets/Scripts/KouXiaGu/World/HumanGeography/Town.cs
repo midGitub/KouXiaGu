@@ -11,34 +11,19 @@ namespace KouXiaGu.World.HumanGeography
     /// <summary>
     /// 城镇基础信息;
     /// </summary>
-    public class Town
+    public class TownRange
     {
-        public Town(IReadOnlyDictionary<CubicHexCoord, MapNode> map, CubicHexCoord position)
+        public TownRange(int townID, MapData map)
         {
-            MapNode node;
-            if (map.TryGetValue(position, out node))
-            {
-                TownNode townNode = node.Town;
-                if (townNode.Exist())
-                {
-                    TownID = townNode.TownID;
-                    BreadthTraversal(map, position);
-                }
-                else
-                {
-                    throw new ArgumentException("该位置不存在城镇;" + position);
-                }
-            }
-            else
-            {
-                throw new ArgumentException("该位置不存在;" + position);
-            }
+            TownID = townID;
+            this.map = map;
+            TownCoverage = new HashSet<CubicHexCoord>();
+            NeighborTowns = new HashSet<int>();
+            Reacquire();
         }
 
-        /// <summary>
-        /// 城镇唯一ID;
-        /// </summary>
         public int TownID { get; private set; }
+        MapData map;
 
         /// <summary>
         /// 城镇范围;
@@ -51,9 +36,18 @@ namespace KouXiaGu.World.HumanGeography
         public HashSet<int> NeighborTowns { get; private set; }
 
         /// <summary>
+        /// 重新获取到城镇范围;
+        /// </summary>
+        public void Reacquire()
+        {
+            CubicHexCoord position = map.TownCorePositions[TownID];
+            BreadthTraversal(map.Data, position);
+        }
+
+        /// <summary>
         /// 广度遍历获取到城镇范围;
         /// </summary>
-        void BreadthTraversal(IReadOnlyDictionary<CubicHexCoord, MapNode> map, CubicHexCoord position)
+        void BreadthTraversal(IDictionary<CubicHexCoord, MapNode> map, CubicHexCoord position)
         {
             TownCoverage = new HashSet<CubicHexCoord>();
             NeighborTowns = new HashSet<int>();

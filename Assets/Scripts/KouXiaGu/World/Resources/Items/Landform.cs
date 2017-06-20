@@ -39,7 +39,7 @@ namespace KouXiaGu.World.Resources
     class LandformFile : MultipleFilePath
     {
         [CustomFilePath("地形资源描述文件;", true)]
-        public const string fileName = "World/Terrain/Landform.xml";
+        public const string fileName = "World/Resources/Landform.xml";
 
         public override string FileName
         {

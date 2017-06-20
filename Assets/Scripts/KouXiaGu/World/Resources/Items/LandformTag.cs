@@ -77,7 +77,7 @@ namespace KouXiaGu.World.Resources
     public class LandformTagFile : SingleFilePath
     {
         [CustomFilePath("地形标签定义;")]
-        public const string fileName = "World/Terrain/Tags.xml";
+        public const string fileName = "World/Resources/Tags.xml";
 
         public override string FileName
         {

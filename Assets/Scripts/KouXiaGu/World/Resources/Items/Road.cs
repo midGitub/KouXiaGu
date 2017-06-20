@@ -28,7 +28,7 @@ namespace KouXiaGu.World.Resources
     class RoadFile : MultipleFilePath
     {
         [CustomFilePath("道路资源描述文件;", true)]
-        public const string fileName = "World/Terrain/Road.xml";
+        public const string fileName = "World/Resources/Road.xml";
 
         public override string FileName
         {
