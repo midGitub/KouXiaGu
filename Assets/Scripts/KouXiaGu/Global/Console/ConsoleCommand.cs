@@ -105,6 +105,12 @@ namespace KouXiaGu
             if (index >= 0)
             {
                 ICommandItem commandItem = commandItems[index];
+
+                if (commandItem.IsDeveloperMethod && !XiaGu.IsDeveloperMode)
+                {
+                    return false;
+                }
+
                 commandItem.Operate(parameters);
                 return true;
             }
@@ -163,6 +169,11 @@ namespace KouXiaGu
     public interface ICommandItem
     {
         /// <summary>
+        /// 是否为开发模式方法?
+        /// </summary>
+        bool IsDeveloperMethod { get; }
+
+        /// <summary>
         /// 参数数量;
         /// </summary>
         int ParameterNumber { get; }
@@ -183,7 +194,7 @@ namespace KouXiaGu
     /// </summary>
     public class CommandItem : ICommandItem
     {
-        public CommandItem(string key, Action<string[]> action, string message, params string[] parameterTypes)
+        public CommandItem(string key, Action<string[]> action, string message, bool isDeveloperMethod, params string[] parameterTypes)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
@@ -191,11 +202,13 @@ namespace KouXiaGu
             Action = action;
             ParameterNumber = parameterTypes.Length;
             Message = GameConsole.ConvertMassage(key, message, parameterTypes);
+            IsDeveloperMethod = isDeveloperMethod;
         }
 
         public int ParameterNumber { get; private set; }
         public Action<string[]> Action { get; private set; }
         public string Message { get; private set; }
+        public bool IsDeveloperMethod { get; private set; }
 
         public void Operate(string[] parameters)
         {
@@ -239,6 +252,7 @@ namespace KouXiaGu
 
         public string Key { get; private set; }
         public string Message { get; private set; }
+        public bool IsDeveloperMethod { get; set; }
     }
 
 
@@ -282,7 +296,7 @@ namespace KouXiaGu
                 if (attributes.Length > 0)
                 {
                     var attribute = (ConsoleMethodAttribute)attributes[0];
-                    ReflectionCommandItem commandItem = new ReflectionCommandItem(method, attribute.Message);
+                    ReflectionCommandItem commandItem = new ReflectionCommandItem(method, attribute.Message, attribute.IsDeveloperMethod);
                     commandDictionary.Add(attribute.Key, commandItem);
                 }
             }
@@ -291,16 +305,18 @@ namespace KouXiaGu
 
     public class ReflectionCommandItem : ICommandItem
     {
-        public ReflectionCommandItem(MethodInfo methodInfo, string message)
+        public ReflectionCommandItem(MethodInfo methodInfo, string message, bool isDeveloperMethod)
         {
             MethodInfo = methodInfo;
             ParameterNumber = methodInfo.GetParameters().Length;
             Message = message;
+            IsDeveloperMethod = isDeveloperMethod;
         }
 
         public int ParameterNumber { get; private set; }
         public string Message { get; private set; }
         public MethodInfo MethodInfo { get; private set; }
+        public bool IsDeveloperMethod { get; private set; }
 
         public void Operate(string[] parameters)
         {

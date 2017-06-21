@@ -7,8 +7,15 @@ using System.Threading;
 
 namespace KouXiaGu
 {
+
+    [ConsoleMethodsClass]
     public static class XiaGu
     {
+        static XiaGu()
+        {
+            IsDeveloperMode = true;
+        }
+
         static int mainThreadId;
 
         /// <summary>
@@ -24,11 +31,28 @@ namespace KouXiaGu
         /// </summary>
         public static bool IsPlaying { get; private set; }
 
+        /// <summary>
+        /// 是否为开发者模式?
+        /// </summary>
+        public static bool IsDeveloperMode { get; set; }
+
         internal static void Initialize()
         {
             mainThreadId = Thread.CurrentThread.ManagedThreadId;
             IsPlaying = true;
         }
 
+        [ConsoleMethod("developer", "开发者模式开关", "bool")]
+        public static void Developer(string isDeveloperMode)
+        {
+            IsDeveloperMode = Convert.ToBoolean(isDeveloperMode);
+            Developer();
+        }
+
+        [ConsoleMethod("developer", "显示是否为开发者模式")]
+        public static void Developer()
+        {
+            GameConsole.LogSuccessful("DeveloperMode :" + IsDeveloperMode);
+        }
     }
 }

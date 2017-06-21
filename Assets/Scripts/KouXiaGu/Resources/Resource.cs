@@ -11,19 +11,9 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 对游戏资源文件路径进行定义,需要手动初始化;
     /// </summary>
+    [ConsoleMethodsClass]
     public static class Resource
     {
-
-        static readonly Stopwatch globalStopwatch = new Stopwatch(0.6f);
-
-        /// <summary>
-        /// 全局的主线程资源读取计时器;
-        /// </summary>
-        public static Stopwatch GlobalStopwatch
-        {
-            get { return globalStopwatch; }
-        }
-
 
         static string assetBundleDirectoryPath = string.Empty;
 
@@ -34,11 +24,11 @@ namespace KouXiaGu.Resources
         {
             get
             {
-                return assetBundleDirectoryPath != string.Empty ? assetBundleDirectoryPath :
-                  (assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles"));
+                return assetBundleDirectoryPath != string.Empty ? assetBundleDirectoryPath :(assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles"));
             }
             private set { assetBundleDirectoryPath = value; }
         }
+
 
         static string configDirectoryPath = string.Empty;
 
@@ -51,6 +41,28 @@ namespace KouXiaGu.Resources
             private set { configDirectoryPath = value; }
         }
 
+
+        static string archiveDirectoryPath = string.Empty;
+
+        /// <summary>
+        /// 存放存档的文件夹路径;
+        /// </summary>
+        public static string ArchiveDirectoryPath
+        {
+            get { return archiveDirectoryPath != string.Empty ? archiveDirectoryPath : (archiveDirectoryPath = Path.Combine(Application.persistentDataPath, "Saves")); }
+            private set { archiveDirectoryPath = value; }
+        }
+
+        [ConsoleMethod("log_resource_path_info", "显示所有资源路径;", IsDeveloperMethod = true)]
+        public static void LogInfoAll()
+        {
+            string str =
+                "AssetBundleDirectoryPath : " + AssetBundleDirectoryPath +
+                "\nConfigDirectoryPath : " + ConfigDirectoryPath +
+                "\nArchiveDirectoryPath : " + ArchiveDirectoryPath;
+            Debug.Log(str);
+        }
+
         /// <summary>
         /// 在游戏开始时初始化;
         /// </summary>
@@ -58,6 +70,7 @@ namespace KouXiaGu.Resources
         {
             AssetBundleDirectoryPath = AssetBundleDirectoryPath;
             ConfigDirectoryPath = ConfigDirectoryPath;
+            ArchiveDirectoryPath = ArchiveDirectoryPath;
         }
     }
 }

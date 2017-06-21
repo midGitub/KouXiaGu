@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World.Map;
-using KouXiaGu.Resources;
 
 namespace KouXiaGu.World
 {

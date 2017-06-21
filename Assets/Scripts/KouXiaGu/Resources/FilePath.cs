@@ -20,12 +20,19 @@ namespace KouXiaGu.Resources
     /// </summary>
     public abstract class SingleFilePath : ISingleFilePath
     {
-        public SingleFilePath()
+        public SingleFilePath() : this(Resource.ConfigDirectoryPath)
         {
+        }
+
+        public SingleFilePath(string directoryPath)
+        {
+            DirectoryPath = directoryPath;
             string fullPath = GetFullPath();
             string directoryName = Path.GetDirectoryName(fullPath);
             Directory.CreateDirectory(directoryName);
         }
+
+        public string DirectoryPath { get; set; }
 
         /// <summary>
         /// 文件的位于配置目录下的文件名;
@@ -37,16 +44,7 @@ namespace KouXiaGu.Resources
         /// </summary>
         public string GetFullPath()
         {
-            return Path.Combine(Resource.ConfigDirectoryPath, FileName);
-        }
-
-        public virtual IEnumerable<string> GetExistentPaths()
-        {
-            string filePath = GetFullPath();
-            if (File.Exists(filePath))
-            {
-                yield return filePath;
-            }
+            return Path.Combine(DirectoryPath, FileName);
         }
     }
 
@@ -56,12 +54,12 @@ namespace KouXiaGu.Resources
         /// <summary>
         /// 获取到所有文件路径;
         /// </summary>
-        IEnumerable<string> GetExistentPaths();
+        IEnumerable<string> GetExistentFilePaths();
 
         /// <summary>
         /// 根据 name,返回一个唯一的路径;
         /// </summary>
-        string CreateFilePath(string name);
+        string GetFilePath(string name);
     }
 
     /// <summary>
@@ -70,12 +68,19 @@ namespace KouXiaGu.Resources
     /// </summary>
     public abstract class MultipleFilePath : IMultipleFilePath
     {
-        public MultipleFilePath()
+        public MultipleFilePath() : this(Resource.ConfigDirectoryPath)
         {
+        }
+
+        public MultipleFilePath(string directoryPath)
+        {
+            DirectoryPath = directoryPath;
             string fullPath = GetFullPath();
             string directoryName = Path.GetDirectoryName(fullPath);
             Directory.CreateDirectory(directoryName);
         }
+
+        public string DirectoryPath { get; set; }
 
         /// <summary>
         /// 文件的位于配置目录下的文件名;
@@ -87,10 +92,13 @@ namespace KouXiaGu.Resources
         /// </summary>
         public string GetFullPath()
         {
-            return Path.Combine(Resource.ConfigDirectoryPath, FileName);
+            return Path.Combine(DirectoryPath, FileName);
         }
 
-        public IEnumerable<string> GetExistentPaths()
+        /// <summary>
+        /// 获取到所有文件路径;
+        /// </summary>
+        public IEnumerable<string> GetExistentFilePaths()
         {
             string fullPath = GetFullPath();
             string directory = Path.GetDirectoryName(fullPath);
@@ -101,7 +109,10 @@ namespace KouXiaGu.Resources
             return paths;
         }
 
-        public string CreateFilePath(string name)
+        /// <summary>
+        /// 根据 name,返回一个唯一的路径;
+        /// </summary>
+        public string GetFilePath(string name)
         {
             string fullPath = GetFullPath();
             if (string.IsNullOrEmpty(name))

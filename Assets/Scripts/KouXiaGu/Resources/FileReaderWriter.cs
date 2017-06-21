@@ -7,38 +7,7 @@ using UnityEngine;
 namespace KouXiaGu.Resources
 {
     
-    public interface IReader<T>
-    {
-        /// <summary>
-        /// 读取到文件;
-        /// </summary>
-        T Read();
-    }
-
-    public interface IReader<TResult, T>
-    {
-        /// <summary>
-        /// 读取到文件;
-        /// </summary>
-        T Read(T t);
-    }
-
-    public interface IWriter<T>
-    {
-        /// <summary>
-        /// 输出/保存到;
-        /// </summary>
-        void Write(T item, FileMode fileMode);
-    }
-
-
-
-    public interface IFileReaderWriter<T> : IReader<T>, IWriter<T>
-    {
-        ISingleFilePath FilePath { get; set; }
-    }
-
-    public class FileReaderWriter<T> : IFileReaderWriter<T>
+    public class FileReaderWriter<T> : IFileReaderWriter<T>, IReader<T>, IWriter<T>
     {
         public FileReaderWriter(ISingleFilePath file, IFileSerializer<T> serializer)
         {
@@ -62,12 +31,6 @@ namespace KouXiaGu.Resources
         }
     }
 
-
-
-    public interface IFilesReaderWriter<T> : IReader<T>, IWriter<T>
-    {
-        IMultipleFilePath FilePath { get; set; }
-    }
 
     public interface ICombiner<TSource, TResult>
     {
@@ -120,7 +83,7 @@ namespace KouXiaGu.Resources
         public List<TSource> ReadAll()
         {
             List<TSource> completed = new List<TSource>();
-            var filePaths = FilePath.GetExistentPaths();
+            var filePaths = FilePath.GetExistentFilePaths();
             foreach (var path in filePaths)
             {
                 try
@@ -141,7 +104,7 @@ namespace KouXiaGu.Resources
             IEnumerable<WriteInfo<TSource>> infos = Combiner.Separate(item);
             foreach (var info in infos)
             {
-                string path = FilePath.CreateFilePath(info.Name);
+                string path = FilePath.GetFilePath(info.Name);
                 Serializer.Write(info.Data, path, fileMode);
             }
         }
@@ -149,25 +112,25 @@ namespace KouXiaGu.Resources
 
         public TSource Read(string name)
         {
-            string path = FilePath.CreateFilePath(name);
+            string path = FilePath.GetFilePath(name);
             return Serializer.Read(path);
         }
 
         public void Write(TSource item, string name, FileMode fileMode = FileMode.Create)
         {
-            string path = FilePath.CreateFilePath(name);
+            string path = FilePath.GetFilePath(name);
             Serializer.Write(item, path, fileMode);
         }
 
         public bool Exists(string name)
         {
-            string path = FilePath.CreateFilePath(name);
+            string path = FilePath.GetFilePath(name);
             return System.IO.File.Exists(path);
         }
 
         public bool Delete(string name)
         {
-            string path = FilePath.CreateFilePath(name);
+            string path = FilePath.GetFilePath(name);
             if (System.IO.File.Exists(path))
             {
                 System.IO.File.Delete(path);

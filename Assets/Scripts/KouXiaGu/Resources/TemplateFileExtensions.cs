@@ -38,16 +38,16 @@ namespace KouXiaGu.Resources
 
         public IMultipleFilePath File { get; private set; }
 
-        public string CreateFilePath(string name)
+        public string GetFilePath(string name)
         {
-            string path = File.CreateFilePath(name);
+            string path = File.GetFilePath(name);
             path = TemplateFileExtensions.ChangePath(path);
             return path;
         }
 
-        public IEnumerable<string> GetExistentPaths()
+        public IEnumerable<string> GetExistentFilePaths()
         {
-            IEnumerable<string> paths = File.GetExistentPaths();
+            IEnumerable<string> paths = File.GetExistentFilePaths();
             return paths.Select(path => TemplateFileExtensions.ChangePath(path));
         }
     }

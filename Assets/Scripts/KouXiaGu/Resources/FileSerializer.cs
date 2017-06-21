@@ -19,6 +19,8 @@ namespace KouXiaGu.Resources
 
     public sealed class ProtoFileSerializer<T> : IFileSerializer<T>
     {
+        public static readonly ProtoFileSerializer<T> Default = new ProtoFileSerializer<T>();
+
         public T Read(string filePath)
         {
             using (Stream fStream = new FileStream(filePath, FileMode.Open))

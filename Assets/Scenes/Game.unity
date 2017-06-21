@@ -1512,7 +1512,6 @@ GameObject:
   - component: {fileID: 1187234277}
   - component: {fileID: 1187234276}
   - component: {fileID: 1187234275}
-  - component: {fileID: 1187234273}
   - component: {fileID: 1187234272}
   - component: {fileID: 1187234278}
   m_Layer: 0
@@ -1534,30 +1533,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b434fe4a9fea194469196cf4db2276be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1187234273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114682549348980832, guid: b268a1f3b9d228b45bd5efd770c18be2,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1187234271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 072f35b1082dcb94681d56b88e6793b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ui:
-    consoleWindows: {fileID: 1921826344}
-    OutputScrollRect: {fileID: 560240581}
-    OutputConsoleText: {fileID: 1200817955}
-    InputField: {fileID: 2001993096}
-    isDisplay: 1
-  outputStype:
-    NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    WarningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-    ErrorColor: {r: 1, g: 0, b: 0, a: 1}
-    SuccessfulColor: {r: 0, g: 1, b: 0, a: 1}
-  isShowUnityLog: 0
 --- !u!114 &1187234275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2271,7 +2246,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1625099628}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9097402fb2a1bd2419f9219c3b68b612, type: 3}
   m_Name: 
@@ -2704,7 +2679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   runtimeStopwatch:
-    idleSeconds: 0.01
+    idleSeconds: 0.1
 --- !u!1 &1921826344
 GameObject:
   m_ObjectHideFlags: 0
@@ -2717,6 +2692,7 @@ GameObject:
   - component: {fileID: 1921826348}
   - component: {fileID: 1921826347}
   - component: {fileID: 1921826346}
+  - component: {fileID: 1921826349}
   m_Layer: 5
   m_Name: ConsoleWindow
   m_TagString: Untagged
@@ -2804,6 +2780,29 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1921826349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1921826344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 072f35b1082dcb94681d56b88e6793b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ui:
+    consoleWindows: {fileID: 1921826344}
+    OutputScrollRect: {fileID: 560240581}
+    OutputConsoleText: {fileID: 1200817955}
+    InputField: {fileID: 2001993096}
+    isDisplay: 1
+  outputStype:
+    NormalColor: {r: 0, g: 0, b: 0, a: 1}
+    WarningColor: {r: 0.627451, g: 0.627451, b: 0, a: 1}
+    ErrorColor: {r: 0.627451, g: 0, b: 0, a: 1}
+    SuccessfulColor: {r: 0.004487461, g: 0.627451, b: 0.004487461, a: 1}
+  isShowUnityLog: 1
 --- !u!1 &2001993095
 GameObject:
   m_ObjectHideFlags: 0

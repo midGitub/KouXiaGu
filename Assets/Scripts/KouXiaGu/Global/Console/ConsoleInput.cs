@@ -22,7 +22,7 @@ namespace KouXiaGu
             inputContents = new List<string>();
             MaxRecordNumber = DefaultMaxRecordNumber;
 
-            methodMap.Add("help", new CommandItem("help", HelpMethod, "显示所有命令"));
+            methodMap.Add("help", new CommandItem("help", HelpMethod, "显示所有命令", false));
         }
 
         internal ConsoleCommand methodMap;
@@ -75,7 +75,7 @@ namespace KouXiaGu
             {
                 foreach (var method in methodGroup)
                 {
-                    if (method.Message != string.Empty)
+                    if (XiaGu.IsDeveloperMode || !method.IsDeveloperMethod)
                     {
                         GameConsole.Log(method.Message);
                     }
