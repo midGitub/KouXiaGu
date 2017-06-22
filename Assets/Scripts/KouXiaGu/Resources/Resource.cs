@@ -22,11 +22,8 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static string AssetBundleDirectoryPath
         {
-            get
-            {
-                return assetBundleDirectoryPath != string.Empty ? assetBundleDirectoryPath :(assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles"));
-            }
-            private set { assetBundleDirectoryPath = value; }
+            get { return assetBundleDirectoryPath; }
+            private set { assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles"); }
         }
 
 
@@ -37,8 +34,8 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static string ConfigDirectoryPath
         {
-            get { return configDirectoryPath != string.Empty ? configDirectoryPath : (configDirectoryPath = Application.streamingAssetsPath); }
-            private set { configDirectoryPath = value; }
+            get { return configDirectoryPath; }
+            private set { configDirectoryPath = Application.streamingAssetsPath; }
         }
 
 
@@ -49,19 +46,22 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static string ArchiveDirectoryPath
         {
-            get { return archiveDirectoryPath != string.Empty ? archiveDirectoryPath : (archiveDirectoryPath = Path.Combine(Application.persistentDataPath, "Saves")); }
-            private set { archiveDirectoryPath = value; }
+            get { return archiveDirectoryPath; }
+            private set { archiveDirectoryPath = Path.Combine(Application.persistentDataPath, "Saves"); }
         }
 
-        [ConsoleMethod("log_resource_path_info", "显示所有资源路径;", IsDeveloperMethod = true)]
-        public static void LogInfoAll()
+
+        /// <summary>
+        /// 用于测试使用的临时文件夹路径;
+        /// </summary>
+        static string tempDirectoryPath = string.Empty;
+
+        public static string TempDirectoryPath
         {
-            string str =
-                "AssetBundleDirectoryPath : " + AssetBundleDirectoryPath +
-                "\nConfigDirectoryPath : " + ConfigDirectoryPath +
-                "\nArchiveDirectoryPath : " + ArchiveDirectoryPath;
-            Debug.Log(str);
+            get { return tempDirectoryPath; }
+            private set { tempDirectoryPath = Path.Combine(Application.streamingAssetsPath, "Temps"); }
         }
+
 
         /// <summary>
         /// 在游戏开始时初始化;
@@ -71,6 +71,18 @@ namespace KouXiaGu.Resources
             AssetBundleDirectoryPath = AssetBundleDirectoryPath;
             ConfigDirectoryPath = ConfigDirectoryPath;
             ArchiveDirectoryPath = ArchiveDirectoryPath;
+            TempDirectoryPath = TempDirectoryPath;
+        }
+
+        [ConsoleMethod("log_resource_path_info", "显示所有资源路径;", IsDeveloperMethod = true)]
+        public static void LogInfoAll()
+        {
+            string str =
+                "AssetBundleDirectoryPath : " + AssetBundleDirectoryPath +
+                "\nConfigDirectoryPath : " + ConfigDirectoryPath +
+                "\nArchiveDirectoryPath : " + ArchiveDirectoryPath +
+                "\nTempDirectoryPath : " + TempDirectoryPath;
+            Debug.Log(str);
         }
     }
 }

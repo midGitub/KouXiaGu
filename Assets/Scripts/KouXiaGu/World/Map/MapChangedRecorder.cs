@@ -33,7 +33,7 @@ namespace KouXiaGu.World.Map
 
         void IDictionaryObserver<TKey, TVaule>.OnUpdated(TKey key, TVaule originalValue, TVaule newValue)
         {
-            return;
+            ChangedPositions.Add(key);
         }
 
         /// <summary>

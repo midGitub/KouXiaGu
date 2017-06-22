@@ -15,17 +15,17 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 游戏地图读取和保存;
     /// </summary>
-    sealed class MapDataSerializer : IGameMapReader
+    sealed class MapDataReader : IGameMapReader
     {
-        public MapDataSerializer() : this(null)
+        public MapDataReader() : this(null)
         {
         }
 
-        public MapDataSerializer(ISingleFilePath archivedFile) : this(new GameMapFile(), archivedFile, ProtoFileSerializer<MapData>.Default)
+        public MapDataReader(ISingleFilePath archivedFile) : this(new MapFile(), archivedFile, ProtoFileSerializer<MapData>.Default)
         {
         }
 
-        public MapDataSerializer(ISingleFilePath dataFile, ISingleFilePath archivedFile, IFileSerializer<MapData> serializer)
+        public MapDataReader(ISingleFilePath dataFile, ISingleFilePath archivedFile, IFileSerializer<MapData> serializer)
         {
             DataFile = dataFile;
             ArchivedFile = archivedFile;
@@ -48,7 +48,28 @@ namespace KouXiaGu.World.Map
         }
     }
 
-    class GameMapFile : SingleFilePath
+    sealed class MapDataWriter : IWriter<MapData>
+    {
+        public MapDataWriter(ISingleFilePath file) : this(file, ProtoFileSerializer<MapData>.Default)
+        {
+        }
+
+        public MapDataWriter(ISingleFilePath file, IFileSerializer<MapData> serializer)
+        {
+            File = file;
+            Serializer = serializer;
+        }
+
+        public ISingleFilePath File { get; private set; }
+        public IFileSerializer<MapData> Serializer { get; private set; }
+
+        public void Write(MapData item)
+        {
+            Serializer.Write(item, File.GetFullPath(), FileMode.Create);
+        }
+    }
+
+    class MapFile : SingleFilePath
     {
         public override string FileName
         {
@@ -56,9 +77,9 @@ namespace KouXiaGu.World.Map
         }
     }
 
-    class GameMapArchiveFile : SingleFilePath
+    class MapArchiveFile : SingleFilePath
     {
-        public GameMapArchiveFile(string archiveDirectory) : base(archiveDirectory)
+        public MapArchiveFile(string archiveDirectory) : base(archiveDirectory)
         {
         }
 

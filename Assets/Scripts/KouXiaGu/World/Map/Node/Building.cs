@@ -21,16 +21,16 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 编号,不存在建筑则为0;
         /// </summary>
-        [ProtoMember(0)]
+        [ProtoMember(1)]
         public uint ID { get; internal set; }
 
         /// <summary>
         /// 建筑类型;
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(2)]
         public int BuildingType { get; internal set; }
 
-        [ProtoMember(2)]
+        [ProtoMember(3)]
         public float Angle { get; internal set; }
 
         /// <summary>

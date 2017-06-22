@@ -19,7 +19,8 @@ namespace KouXiaGu.World
         {
             WorldInfo worldInfo = new WorldInfo()
             {
-                MapReader = new RandomGameMapCreater(50),
+                //MapReader = new RandomGameMapCreater(50),
+                MapReader = new MapDataReader(),
                 TimeInfo = new WorldTimeInfo()
                 {
                     CurrentTime = new DateTime(),

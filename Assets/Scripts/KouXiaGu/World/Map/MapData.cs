@@ -12,19 +12,19 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public class MapData
     {
-        [ProtoMember(0)]
+        [ProtoMember(1)]
         public Dictionary<CubicHexCoord, MapNode> Data { get; set; }
 
-        [ProtoMember(1)]
+        [ProtoMember(2)]
         public IdentifierGenerator Landform { get; set; }
 
-        [ProtoMember(2)]
+        [ProtoMember(3)]
         public IdentifierGenerator Road { get; set; }
 
-        [ProtoMember(3)]
+        [ProtoMember(4)]
         public IdentifierGenerator Building { get; set; }
 
-        [ProtoMember(4)]
+        [ProtoMember(5)]
         public TownCorePositions TownCorePositions { get; set; }
     }
 }

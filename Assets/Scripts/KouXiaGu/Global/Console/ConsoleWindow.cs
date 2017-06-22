@@ -204,7 +204,7 @@ namespace KouXiaGu
                 catch (Exception ex)
                 {
                     string errorStr = "命令出现异常:" + ex;
-                    GameConsole.LogError(errorStr);
+                    Debug.LogError(errorStr);
                 }
                 finally
                 {

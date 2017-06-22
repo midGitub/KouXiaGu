@@ -23,7 +23,7 @@ namespace KouXiaGu.World.Map
         [ProtoMember(1)]
         Dictionary<int, CubicHexCoord> townIDs;
 
-        [ProtoMember(0)]
+        [ProtoMember(2)]
         HashSet<CubicHexCoord> positions;
 
         public CubicHexCoord this[int townID]

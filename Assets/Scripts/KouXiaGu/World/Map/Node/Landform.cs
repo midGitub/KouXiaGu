@@ -21,19 +21,19 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 编号,不存在则为0;
         /// </summary>
-        [ProtoMember(0)]
+        [ProtoMember(1)]
         public uint ID;
 
         /// <summary>
         /// 地形类型;
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(2)]
         public int LandformType;
 
         /// <summary>
         /// 地形旋转角度;
         /// </summary>
-        [ProtoMember(2)]
+        [ProtoMember(3)]
         public float Angle;
 
         /// <summary>
