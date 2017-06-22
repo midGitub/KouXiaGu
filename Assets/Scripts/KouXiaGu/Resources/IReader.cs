@@ -19,12 +19,12 @@ namespace KouXiaGu.Resources
 
     public interface IWriter<T>
     {
-        void Write(T item, FileMode fileMode);
+        void Write(T item);
     }
 
     public interface IWriter<TSource, T>
     {
-        void Write(TSource source, T item, FileMode fileMode);
+        void Write(TSource source, T item);
     }
 
     public interface IFileReaderWriter<T> : IReader<T>, IWriter<T>

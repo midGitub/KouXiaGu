@@ -1,8 +1,12 @@
-﻿using KouXiaGu.Grids;
+﻿using KouXiaGu.Concurrent;
+using KouXiaGu.Grids;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Resources;
+using System.Threading;
+using System.IO;
 
 namespace KouXiaGu.World.Map
 {
@@ -18,28 +22,28 @@ namespace KouXiaGu.World.Map
 
         public GameMap(MapData data)
         {
-            this.data = data;
-            observableMap = new ObservableDictionary<CubicHexCoord, MapNode>(data.Data);
-            mapChangedRecorder = new MapChangedRecorder<CubicHexCoord, MapNode>(observableMap);
+            Init(data);
         }
-        
-        readonly MapData data;
-        readonly ObservableDictionary<CubicHexCoord, MapNode> observableMap;
-        readonly MapChangedRecorder<CubicHexCoord, MapNode> mapChangedRecorder;
 
-        internal MapData Data
+        public GameMap(MapData data, MapData archive)
         {
-            get { return data; }
+            Combine(data, archive);
+            Init(data);
         }
+
+        internal MapData data { get; private set; }
+        internal ObservableDictionary<CubicHexCoord, MapNode> observableMap { get; private set; }
+        internal ConcurrentDictionary<CubicHexCoord, MapNode> concurrentMap { get; private set; }
+        internal MapChangedRecorder<CubicHexCoord, MapNode> mapChangedRecorder { get; private set; }
 
         internal IDictionary<CubicHexCoord, MapNode> Map
         {
-            get { return observableMap; }
+            get { return concurrentMap; }
         }
 
         public IReadOnlyDictionary<CubicHexCoord, MapNode> ReadOnlyMap
         {
-            get { return observableMap; }
+            get { return concurrentMap; }
         }
 
         public IObservableDictionary<CubicHexCoord, MapNode> ObservableMap
@@ -48,15 +52,76 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 获取到用于归档的数据;
+        /// 地图读写锁;
         /// </summary>
-        public MapData GetArchivedData()
+        ReaderWriterLockSlim mapEditorLock
         {
-            MapData archivedData = new MapData()
+            get { return concurrentMap.EditorLock; }
+        }
+
+        void Init(MapData data)
+        {
+            this.data = data;
+            observableMap = new ObservableDictionary<CubicHexCoord, MapNode>(data.Data);
+            mapChangedRecorder = new MapChangedRecorder<CubicHexCoord, MapNode>(observableMap);
+            concurrentMap = new ConcurrentDictionary<CubicHexCoord, MapNode>(observableMap);
+        }
+
+        /// <summary>
+        /// 将存档内容合并;
+        /// </summary>
+        void Combine(MapData dest, MapData archive)
+        {
+            dest.Data.AddOrUpdate(archive.Data);
+            dest.Building = archive.Building;
+            dest.Landform = archive.Landform;
+            dest.Road = archive.Road;
+            dest.TownCorePositions = archive.TownCorePositions;
+        }
+
+        /// <summary>
+        /// 将地图保存;
+        /// </summary>
+        public void Write(IWriter<MapData> writer)
+        {
+            using (mapEditorLock.WriteLock())
             {
-                Data = mapChangedRecorder.GetChangedData(),
-            };
-            return archivedData;
+                writer.Write(data);
+            }
+        }
+
+        /// <summary>
+        /// 将地图存档保存;
+        /// </summary>
+        public void WriteArchivedData(IWriter<MapData> writer)
+        {
+            using (mapEditorLock.WriteLock())
+            {
+                MapData archivedData = new MapData()
+                {
+                    Data = GetChangedData(),
+                    Building = data.Building,
+                    Landform = data.Landform,
+                    Road = data.Road,
+                    TownCorePositions = data.TownCorePositions,
+                };
+                writer.Write(archivedData);
+            }
+        }
+
+        /// <summary>
+        /// 获取到发生变化的节点合集;
+        /// </summary>
+        Dictionary<CubicHexCoord, MapNode> GetChangedData()
+        {
+            Dictionary<CubicHexCoord, MapNode> map = data.Data;
+            var changedData = new Dictionary<CubicHexCoord, MapNode>();
+            foreach (var position in mapChangedRecorder.ChangedPositions)
+            {
+                var node = map[position];
+                changedData.Add(position, node);
+            }
+            return changedData;
         }
     }
 }

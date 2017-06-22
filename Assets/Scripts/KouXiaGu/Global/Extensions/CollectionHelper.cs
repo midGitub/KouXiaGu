@@ -118,5 +118,27 @@ namespace KouXiaGu
             }
             return true;
         }
+
+
+        /// <summary>
+        /// 将合集加入到dest,若出现相同的Key则替换;
+        /// </summary>
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dest, IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            foreach (var item in items)
+            {
+                TKey key = item.Key;
+                TValue value = item.Value;
+                if (dest.ContainsKey(key))
+                {
+                    dest[key] = value;
+                }
+                else
+                {
+                    dest.Add(item);
+                }
+            }
+        }
+
     }
 }

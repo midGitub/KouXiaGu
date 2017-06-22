@@ -10,31 +10,25 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 记录地图变化;
     /// </summary>
-    class MapChangedRecorder<TKey, TVaule> : IDictionaryObserver<TKey, TVaule>
+    class MapChangedRecorder<TKey, TVaule> : IDictionaryObserver<TKey, TVaule>, IDisposable
     {
-        public MapChangedRecorder(ObservableDictionary<TKey, TVaule> observableMap)
+        public MapChangedRecorder(IObservableDictionary<TKey, TVaule> observableMap)
         {
-            this.observableMap = observableMap;
-            changedPositions = new HashSet<TKey>();
-            observableMap.Subscribe(this);
+            ChangedPositions = new HashSet<TKey>();
+            unsubscriber = observableMap.Subscribe(this);
         }
 
-        readonly ObservableDictionary<TKey, TVaule> observableMap;
-        readonly HashSet<TKey> changedPositions;
-
-        public ICollection<TKey> ChangedPositions
-        {
-            get { return changedPositions; }
-        }
+        IDisposable unsubscriber;
+        public HashSet<TKey> ChangedPositions { get; private set; }
 
         void IDictionaryObserver<TKey, TVaule>.OnAdded(TKey key, TVaule newValue)
         {
-            changedPositions.Add(key);
+            ChangedPositions.Add(key);
         }
 
         void IDictionaryObserver<TKey, TVaule>.OnRemoved(TKey key, TVaule originalValue)
         {
-            changedPositions.Remove(key);
+            ChangedPositions.Remove(key);
         }
 
         void IDictionaryObserver<TKey, TVaule>.OnUpdated(TKey key, TVaule originalValue, TVaule newValue)
@@ -43,17 +37,16 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 获取到发生变化的节点结构;
+        /// 取消订阅;
         /// </summary>
-        public Dictionary<TKey, TVaule> GetChangedData()
+        public void Dispose()
         {
-            Dictionary<TKey, TVaule> changedData = new Dictionary<TKey, TVaule>();
-            foreach (var position in changedPositions)
+            if (unsubscriber != null)
             {
-                TVaule node = observableMap[position];
-                changedData.Add(position, node);
+                unsubscriber.Dispose();
+                unsubscriber = null;
             }
-            return changedData;
+            GC.SuppressFinalize(this);
         }
     }
 }

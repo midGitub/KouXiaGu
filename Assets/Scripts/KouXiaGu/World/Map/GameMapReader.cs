@@ -15,27 +15,36 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 游戏地图读取和保存;
     /// </summary>
-    class GameMapSerializer : FileReaderWriter<MapData>, IGameMapReader, IWriter<GameMap>
+    sealed class MapDataSerializer : IGameMapReader
     {
-        public GameMapSerializer() : base(new GameMapFile(), ProtoFileSerializer<MapData>.Default)
+        public MapDataSerializer() : this(null)
         {
         }
 
-        public GameMapSerializer(ISingleFilePath file, IFileSerializer<MapData> serializer) : base(file, serializer)
+        public MapDataSerializer(ISingleFilePath archivedFile) : this(new GameMapFile(), archivedFile, ProtoFileSerializer<MapData>.Default)
         {
         }
+
+        public MapDataSerializer(ISingleFilePath dataFile, ISingleFilePath archivedFile, IFileSerializer<MapData> serializer)
+        {
+            DataFile = dataFile;
+            ArchivedFile = archivedFile;
+            Serializer = serializer;
+        }
+
+        public ISingleFilePath DataFile { get; private set; }
+        public ISingleFilePath ArchivedFile { get; private set; }
+        public IFileSerializer<MapData> Serializer { get; private set; }
 
         public GameMap Read(IGameResource item)
         {
-            MapData mapData = Read();
-            GameMap gameMap = new GameMap(mapData);
-            return gameMap;
-        }
-
-        public void Write(GameMap item, FileMode fileMode)
-        {
-            MapData mapData = item.Data;
-            Write(mapData, fileMode);
+            MapData mapData = Serializer.Read(DataFile.GetFullPath());
+            if (ArchivedFile != null)
+            {
+                MapData archiveData = Serializer.Read(ArchivedFile.GetFullPath());
+                return new GameMap(mapData, archiveData);
+            }
+            return new GameMap(mapData);
         }
     }
 
@@ -47,10 +56,18 @@ namespace KouXiaGu.World.Map
         }
     }
 
-    class GameMapArchiveSerializer
+    class GameMapArchiveFile : SingleFilePath
     {
+        public GameMapArchiveFile(string archiveDirectory) : base(archiveDirectory)
+        {
+        }
 
+        public override string FileName
+        {
+            get { return "World/Map.data"; }
+        }
     }
+
 
 
     /// <summary>

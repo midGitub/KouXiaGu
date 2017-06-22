@@ -12,7 +12,7 @@ namespace KouXiaGu.World.HumanGeography
         public Town(int id, IWorld world)
         {
             ID = id;
-            Range = new TownRange(id, world.WorldData.MapData.Data);
+            Range = new TownRange(id, world.WorldData.MapData.data);
         }
 
         public int ID { get; private set; }

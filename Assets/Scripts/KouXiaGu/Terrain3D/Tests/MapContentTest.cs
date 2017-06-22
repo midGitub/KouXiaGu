@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D.Tests
 
         MapData mapData
         {
-            get { return world.WorldData.MapData.Data; }
+            get { return world.WorldData.MapData.data; }
         }
 
         void Awake()

@@ -43,7 +43,5 @@ namespace KouXiaGu.World
             get { return archiveDirectory; }
             private set { archiveDirectory = value; }
         }
-
     }
-
 }

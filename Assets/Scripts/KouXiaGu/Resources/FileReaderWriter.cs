@@ -24,7 +24,12 @@ namespace KouXiaGu.Resources
             return Serializer.Read(filePath);
         }
 
-        public virtual void Write(T item, FileMode fileMode = FileMode.Create)
+        public virtual void Write(T item)
+        {
+            Write(item, FileMode.Create);
+        }
+
+        public virtual void Write(T item, FileMode fileMode)
         {
             string filePath = FilePath.GetFullPath();
             Serializer.Write(item, filePath, fileMode);
@@ -97,6 +102,11 @@ namespace KouXiaGu.Resources
                 }
             }
             return completed;
+        }
+
+        public void Write(TResult item)
+        {
+            Write(item, FileMode.Create);
         }
 
         public void Write(TResult item, FileMode fileMode = FileMode.Create)

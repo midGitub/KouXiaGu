@@ -2679,7 +2679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   runtimeStopwatch:
-    idleSeconds: 0.1
+    idleSeconds: 0.05
 --- !u!1 &1921826344
 GameObject:
   m_ObjectHideFlags: 0

@@ -119,17 +119,12 @@ namespace KouXiaGu.World.Resources
         [MenuItem("Templates/WriteTerrainResourceTemplate")]
         public static void Write()
         {
-            Write(FileMode.Create);
-        }
-
-        public static void Write(FileMode fileMode)
-        {
-            LandformSerializer.Write(templateLandformInfos, fileMode);
-            BuildingSerializer.Write(templateBuildingInfos, fileMode);
-            RoadSerializer.Write(templateRoadInfos, fileMode);
-            ProductSerializer.Write(templateProduct, fileMode);
-            TownSerializer.Write(templateTowns, fileMode);
-            TagWriter.Write(templateTags, fileMode);
+            LandformSerializer.Write(templateLandformInfos);
+            BuildingSerializer.Write(templateBuildingInfos);
+            RoadSerializer.Write(templateRoadInfos);
+            ProductSerializer.Write(templateProduct);
+            TownSerializer.Write(templateTowns);
+            TagWriter.Write(templateTags);
         }
     }
 }
