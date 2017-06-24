@@ -23,7 +23,7 @@ namespace KouXiaGu.KeyInput
         [SerializeField]
         KeyCode key;
 
-        readonly LinkedList<IKeyResponse> observers = new LinkedList<IKeyResponse>();
+        readonly System.Collections.Generic.LinkedList<IKeyResponse> observers = new System.Collections.Generic.LinkedList<IKeyResponse>();
 
         public KeyCode Key
         {

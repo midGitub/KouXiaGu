@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Collections;
 
 namespace KouXiaGu.OperationRecord
 {
@@ -28,45 +29,48 @@ namespace KouXiaGu.OperationRecord
     public class OperationRecorder<T>
         where T : IVoidableOperation
     {
+        internal const int DefaultMaxRecord = 20;
+
+        public OperationRecorder() : this(DefaultMaxRecord)
+        {
+        }
+
         public OperationRecorder(int maxRecord)
         {
             if (maxRecord <= 0)
                 throw new ArgumentOutOfRangeException("maxRecord :" + maxRecord);
 
-            operationQueue = new T[maxRecord];
-            currentIndex = 0;
-            lastIndex = 0;
-            Count = 0;
+            MaxRecord = maxRecord;
+            operationQueue = new Collections.LinkedList<T>();
+            current = null;
         }
 
-        readonly T[] operationQueue;
-
-        /// <summary>
-        /// 指向第一条指令位置;
-        /// </summary>
-        int currentIndex;
-
-        /// <summary>
-        /// 指向最后一条指令位置;
-        /// </summary>
-        int lastIndex;
+        readonly Collections.LinkedList<T> operationQueue;
+        Collections.LinkedListNode<T> current;
+        public int MaxRecord { get; set; }
 
         /// <summary>
         /// 指令总数;
         /// </summary>
-        public int Count { get; private set; }
-
-        /// <summary>
-        /// 最大记录;
-        /// </summary>
-        public int MaxRecord
+        public int Count
         {
-            get { return operationQueue.Length; }
+            get { return operationQueue.Count; }
         }
 
-        public bool IsFull
+        /// <summary>
+        /// 最后执行的命令;
+        /// </summary>
+        public T Last
         {
-            get { return Count == MaxRecord; }
+            get { return current == null ? default(T) : current.Value; }
+        }
+
+        /// <summary>
+        /// 所有指令;
+        /// </summary>
+        public IEnumerable<T> Operations
+        {
+            get { return operationQueue; }
         }
 
         /// <summary>
@@ -77,66 +81,72 @@ namespace KouXiaGu.OperationRecord
             if (operation == null)
                 throw new ArgumentNullException("operation");
 
-            operationQueue[lastIndex] = operation;
-            lastIndex = MoveNext(lastIndex);
-            if (IsFull)
+            if (current == operationQueue.Last)
             {
-                currentIndex = MoveNext(currentIndex);
+                operationQueue.AddLast(operation);
+                if (Count > MaxRecord)
+                {
+                    int rem = Count - MaxRecord;
+                    var node = operationQueue.First;
+                    for (int i = 0; i < rem; i++)
+                    {
+                        node = node.Next;
+                    }
+                    operationQueue.RemoveBeforNodes(node);
+                }
+            }
+            else if (current == null)
+            {
+                operationQueue.Clear();
+                operationQueue.AddLast(operation);
             }
             else
             {
-                Count++;
+                operationQueue.RemoveAfterNodes(current);
+                operationQueue.AddLast(operation);
             }
-        }
-
-        /// <summary>
-        /// 将下标向后移动一个单位;
-        /// </summary>
-        int MoveNext(int index)
-        {
-            index++;
-            if (index >= operationQueue.Length)
-            {
-                index = 0;
-            }
-            return index;
-        }
-
-        /// <summary>
-        /// 将下标向前移动一个单位;
-        /// </summary>
-        int MovePrevious(int index)
-        {
-            index--;
-            if (index < 0)
-            {
-                index = operationQueue.Length - 1;
-            }
-            return index;
+            current = operationQueue.Last;
         }
 
         /// <summary>
         /// 执行撤销;
         /// </summary>
-        public void PerformUndo()
+        public bool PerformUndo()
         {
-
-
-            var operation = operationQueue[lastIndex];
-            if (operation == null)
+            if (current == null)
             {
-                return;
+                return false;
             }
+            var operation = current.Value;
             operation.Undo();
-            lastIndex = MovePrevious(lastIndex);
+            current = current.Previous;
+            return true;
         }
 
         /// <summary>
         /// 执行重做;
         /// </summary>
-        public void PerformRedo()
+        public bool PerformRedo()
         {
-            throw new NotImplementedException();
+            if (current == null)
+            {
+                if (operationQueue.First != null)
+                {
+                    current = operationQueue.First;
+                    current.Value.Redo();
+                    return true;
+                }
+            }
+            else
+            {
+                if (current.Next != null)
+                {
+                    current = current.Next;
+                    current.Value.Redo();
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -144,7 +154,8 @@ namespace KouXiaGu.OperationRecord
         /// </summary>
         public void Clear()
         {
-            throw new NotImplementedException();
+            operationQueue.Clear();
+            current = null;
         }
     }
 }

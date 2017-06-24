@@ -5,10 +5,50 @@ using System.Text;
 
 namespace KouXiaGu
 {
-
-
+    
+    /// <summary>
+    /// 合集拓展方法;
+    /// </summary>
     public static class CollectionHelper
     {
+
+        static void ValidateCollection<T>(IEnumerable<T> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+        }
+
+        static void ValidateNull(object item)
+        {
+            if (item == null)
+                throw new ArgumentNullException("item");
+        }
+
+
+        /// <summary>
+        /// 移除指定下标的元素,同 List 的 RemoveAt();
+        /// </summary>
+        public static void RemoveAt<T>(ref T[] array, int index)
+        {
+            Array.Copy(array, index + 1, array, index, array.Length - index - 1);
+            Array.Resize(ref array, array.Length - 1);
+        }
+
+        #region IList
+
+        /// <summary>
+        /// 移除符合要求的第一个元素;
+        /// </summary>
+        public static bool Remove<T>(this IList<T> list, Func<T, bool> func)
+        {
+            int index = list.FindIndex(func);
+            if (index >= 0)
+            {
+                list.RemoveAt(index);
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// 移除元素;
@@ -17,6 +57,8 @@ namespace KouXiaGu
         /// <param name="comparer">一个对值进行比较的相等比较器;</param>
         public static bool Remove<T>(IList<T> collection, T item, IEqualityComparer<T> comparer)
         {
+            ValidateCollection(collection);
+            ValidateNull(comparer);
             int index = FindIndex(collection, item, comparer);
             if (index >= 0)
             {
@@ -29,10 +71,20 @@ namespace KouXiaGu
         /// <summary>
         /// 获取到对应元素下标,若不存在则返回-1;
         /// </summary>
+        public static int FindIndex<T>(this IList<T> collection, T item)
+        {
+            return FindIndex(collection, item, EqualityComparer<T>.Default);
+        }
+
+        /// <summary>
+        /// 获取到对应元素下标,若不存在则返回-1;
+        /// </summary>
         /// <param name="item">要在序列中定位的值</param>
         /// <param name="comparer">一个对值进行比较的相等比较器;</param>
         public static int FindIndex<T>(this IList<T> collection, T item, IEqualityComparer<T> comparer)
         {
+            ValidateCollection(collection);
+            ValidateNull(comparer);
             for (int i = 0; i < collection.Count; i++)
             {
                 T original = collection[i];
@@ -49,6 +101,8 @@ namespace KouXiaGu
         /// </summary>
         public static int FindIndex<T>(this IList<T> collection, Func<T, bool> func)
         {
+            ValidateCollection(collection);
+            ValidateNull(func);
             for (int i = 0; i < collection.Count; i++)
             {
                 T original = collection[i];
@@ -58,45 +112,6 @@ namespace KouXiaGu
                 }
             }
             return -1;
-        }
-
-        /// <summary>
-        /// 获取到对应元素下标,若不存在则返回-1;
-        /// </summary>
-        public static int FindIndex<T>(this IList<T> collection, T item)
-        {
-            for (int i = 0; i < collection.Count; i++)
-            {
-                T original = collection[i];
-                if (item.Equals(original))
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        /// <summary>
-        /// 移除指定下标的元素,同 List 的 RemoveAt();
-        /// </summary>
-        public static void RemoveAt<T>(ref T[] array, int index)
-        {
-            Array.Copy(array, index + 1, array, index, array.Length - index - 1);
-            Array.Resize(ref array, array.Length - 1);
-        }
-
-        /// <summary>
-        /// 移除符合要求的第一个元素;
-        /// </summary>
-        public static bool Remove<T>(this IList<T> list, Func<T, bool> func)
-        {
-            int index = list.FindIndex(func);
-            if (index >= 0)
-            {
-                list.RemoveAt(index);
-                return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -119,6 +134,9 @@ namespace KouXiaGu
             return true;
         }
 
+        #endregion
+
+        #region IDictionary
 
         /// <summary>
         /// 将合集加入到dest,若出现相同的Key则替换;
@@ -139,6 +157,8 @@ namespace KouXiaGu
                 }
             }
         }
+
+        #endregion
 
     }
 }
