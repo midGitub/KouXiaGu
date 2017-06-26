@@ -54,19 +54,19 @@ namespace KouXiaGu.OperationRecord
             List<int> data = GetData();
             var recorder = new OperationRecorder<IVoidableOperation>();
 
-            var add4 = new ListAdd<int>(data, 4);
+            var add4 = data.VoidableAdd(4);
             Assert.AreEqual(4, data[4]);
             Assert.AreEqual(5, data.Count);
             recorder.Register(add4);
             Assert.AreEqual(1, recorder.Count);
 
-            var add5 = new ListAdd<int>(data, 5);
+            var add5 = data.VoidableAdd(5);
             Assert.AreEqual(5, data[5]);
             Assert.AreEqual(6, data.Count);
             recorder.Register(add5);
             Assert.AreEqual(2, recorder.Count);
 
-            var remove1 = new ListRemoveAt<int>(data, 1);
+            var remove1 = data.VoidableRemoveAt(1);
             Assert.AreEqual(0, data[0]);
             Assert.AreEqual(2, data[1]);
             Assert.AreEqual(3, data[2]);
@@ -100,7 +100,7 @@ namespace KouXiaGu.OperationRecord
             Assert.AreEqual(3, data[3]);
             Assert.AreEqual(4, data.Count);
 
-            var add9 = new ListAdd<int>(data, 9);
+            var add9 = data.VoidableAdd(9);
             Assert.AreEqual(5, data.Count);
             recorder.Register(add9);
             Assert.AreEqual(1, recorder.Count);

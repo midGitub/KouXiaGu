@@ -109,7 +109,7 @@ namespace KouXiaGu.OperationRecord
         }
 
         /// <summary>
-        /// 执行撤销;
+        /// 执行撤销,若撤销出现异常,则弹出异常,并且不进行指令移动;
         /// </summary>
         public bool PerformUndo()
         {
@@ -124,7 +124,7 @@ namespace KouXiaGu.OperationRecord
         }
 
         /// <summary>
-        /// 执行重做;
+        /// 执行重做,若出现异常则弹出异常,并且不进行指令移动;
         /// </summary>
         public bool PerformRedo()
         {
@@ -132,8 +132,9 @@ namespace KouXiaGu.OperationRecord
             {
                 if (operationQueue.First != null)
                 {
+                    var operation = operationQueue.First.Value;
+                    operation.Redo();
                     current = operationQueue.First;
-                    current.Value.Redo();
                     return true;
                 }
             }
@@ -141,8 +142,9 @@ namespace KouXiaGu.OperationRecord
             {
                 if (current.Next != null)
                 {
+                    var operation = current.Next.Value;
+                    operation.Redo();
                     current = current.Next;
-                    current.Value.Redo();
                     return true;
                 }
             }
