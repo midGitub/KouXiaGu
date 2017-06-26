@@ -9,26 +9,26 @@ namespace KouXiaGu.OperationRecord
 
     public static class DictionaryExtensions
     {
-        public static IVoidableOperation VoidableSetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static IVoidable VoidableSetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             var item = new DictionarySetValue<TKey, TValue>(dictionary, key, value);
             return item;
         }
 
-        public static IVoidableOperation VoidableAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static IVoidable VoidableAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             var item = new DictionaryAdd<TKey, TValue>(dictionary, key, value);
             return item;
         }
 
-        public static IVoidableOperation VoidableRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        public static IVoidable VoidableRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
             var item = new DictionaryRemove<TKey, TValue>(dictionary, key);
             return item;
         }
     }
 
-    sealed class DictionarySetValue<TKey, TValue> : SafeVoidableOperation
+    sealed class DictionarySetValue<TKey, TValue> : SafeVoidable
     {
         public DictionarySetValue(IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
@@ -56,7 +56,7 @@ namespace KouXiaGu.OperationRecord
         }
     }
 
-    sealed class DictionaryAdd<TKey, TValue> : SafeVoidableOperation
+    sealed class DictionaryAdd<TKey, TValue> : SafeVoidable
     {
         public DictionaryAdd(IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
@@ -84,7 +84,7 @@ namespace KouXiaGu.OperationRecord
         }
     }
 
-    sealed class DictionaryRemove<TKey, TValue> : SafeVoidableOperation
+    sealed class DictionaryRemove<TKey, TValue> : SafeVoidable
     {
         public DictionaryRemove(IDictionary<TKey, TValue> dictionary, TKey key)
         {

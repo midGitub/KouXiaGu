@@ -13,7 +13,7 @@ namespace KouXiaGu.OperationRecord
         [Test]
         public void MaxRecordTest()
         {
-            var recorder = new OperationRecorder<IVoidableOperation>(40);
+            var recorder = new Recorder<IVoidable>(40);
 
             for (int i = 0; i < 20; i++)
             {
@@ -34,7 +34,7 @@ namespace KouXiaGu.OperationRecord
             }
         }
 
-        class EmptyOperation : IVoidableOperation
+        class EmptyOperation : IVoidable
         {
             public EmptyOperation(int id)
             {
@@ -42,17 +42,17 @@ namespace KouXiaGu.OperationRecord
             }
 
             public int ID { get; private set; }
+            public bool IsUndo { get; private set; }
 
             public void Redo() { }
             public void Undo() { }
         }
 
-
         [Test]
         public void Test1()
         {
             List<int> data = GetData();
-            var recorder = new OperationRecorder<IVoidableOperation>();
+            var recorder = new Recorder<IVoidable>();
 
             var add4 = data.VoidableAdd(4);
             Assert.AreEqual(4, data[4]);
@@ -106,6 +106,41 @@ namespace KouXiaGu.OperationRecord
             Assert.AreEqual(1, recorder.Count);
         }
 
+        [Test]
+        public void GroupTest()
+        {
+            List<int> data = GetData();
+            var recorder = new Recorder<IVoidable>();
+
+            var group = new VoidableGroup<IVoidable>()
+            {
+                data.VoidableAdd(4),
+                data.VoidableAdd(5),
+                data.VoidableRemove(4),
+            };
+            recorder.Register(group);
+            Assert.AreEqual(0, data[0]);
+            Assert.AreEqual(1, data[1]);
+            Assert.AreEqual(2, data[2]);
+            Assert.AreEqual(3, data[3]);
+            Assert.AreEqual(5, data[4]);
+            Assert.AreEqual(5, data.Count);
+
+            recorder.PerformUndo();
+            Assert.AreEqual(0, data[0]);
+            Assert.AreEqual(1, data[1]);
+            Assert.AreEqual(2, data[2]);
+            Assert.AreEqual(3, data[3]);
+            Assert.AreEqual(4, data.Count);
+
+            recorder.PerformRedo();
+            Assert.AreEqual(0, data[0]);
+            Assert.AreEqual(1, data[1]);
+            Assert.AreEqual(2, data[2]);
+            Assert.AreEqual(3, data[3]);
+            Assert.AreEqual(5, data[4]);
+            Assert.AreEqual(5, data.Count);
+        }
 
         List<int> GetData()
         {

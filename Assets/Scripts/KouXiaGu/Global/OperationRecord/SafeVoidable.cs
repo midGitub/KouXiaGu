@@ -9,19 +9,22 @@ namespace KouXiaGu.OperationRecord
     /// <summary>
     /// 带撤销,重做检查的抽象类;
     /// </summary>
-    public abstract class SafeVoidableOperation : IVoidableOperation
+    public abstract class SafeVoidable : IVoidable
     {
-        bool isUndo;
+        /// <summary>
+        /// 是否已经被撤销;
+        /// </summary>
+        public bool IsUndo { get; private set; }
 
         public abstract void Redo();
         public abstract void Undo();
 
-        void IVoidableOperation.Redo()
+        void IVoidable.Redo()
         {
-            if (isUndo)
+            if (IsUndo)
             {
                 Redo();
-                isUndo = false;
+                IsUndo = false;
             }
             else
             {
@@ -29,16 +32,16 @@ namespace KouXiaGu.OperationRecord
             }
         }
 
-        void IVoidableOperation.Undo()
+        void IVoidable.Undo()
         {
-            if (isUndo)
+            if (IsUndo)
             {
                 throw new InvalidOperationException("已经进行了撤销操作;");
             }
             else
             {
                 Undo();
-                isUndo = true;
+                IsUndo = true;
             }
         }
     }

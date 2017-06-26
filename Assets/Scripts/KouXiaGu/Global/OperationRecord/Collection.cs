@@ -9,14 +9,14 @@ namespace KouXiaGu.OperationRecord
 
     public static class CollectionExtensions
     {
-        public static IVoidableOperation VoidableClear<T>(this ICollection<T> list)
+        public static IVoidable VoidableClear<T>(this ICollection<T> list)
         {
             var item = new CollectionClear<T>(list);
             return item;
         }
     }
 
-    sealed class CollectionClear<T> : SafeVoidableOperation
+    sealed class CollectionClear<T> : SafeVoidable
     {
         public CollectionClear(ICollection<T> collection)
         {

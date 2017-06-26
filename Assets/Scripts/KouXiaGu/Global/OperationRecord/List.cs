@@ -11,13 +11,13 @@ namespace KouXiaGu.OperationRecord
     /// </summary>
     public static class ListExtensions
     {
-        public static IVoidableOperation VoidableSetValue<T>(this IList<T> list, int index, T item)
+        public static IVoidable VoidableSetValue<T>(this IList<T> list, int index, T item)
         {
             var operation = new ListSetValue<T>(list, index, item);
             return operation;
         }
 
-        public static IVoidableOperation VoidableAdd<T>(this IList<T> list, T item)
+        public static IVoidable VoidableAdd<T>(this IList<T> list, T item)
         {
             ListAdd<T> add = new ListAdd<T>(list, item);
             return add;
@@ -26,26 +26,26 @@ namespace KouXiaGu.OperationRecord
         /// <summary>
         /// 移除指定元素,若未找到则返回异常 KeyNotFoundException;
         /// </summary>
-        public static IVoidableOperation VoidableRemove<T>(this IList<T> list, T item)
+        public static IVoidable VoidableRemove<T>(this IList<T> list, T item)
         {
             ListRemove<T> remove = new ListRemove<T>(list, item);
             return remove;
         }
 
-        public static IVoidableOperation VoidableRemoveAt<T>(this IList<T> list, int index)
+        public static IVoidable VoidableRemoveAt<T>(this IList<T> list, int index)
         {
             ListRemoveAt<T> removeAt = new ListRemoveAt<T>(list, index);
             return removeAt;
         }
 
-        public static IVoidableOperation VoidableInsert<T>(this IList<T> list, int index, T item)
+        public static IVoidable VoidableInsert<T>(this IList<T> list, int index, T item)
         {
             ListInsert<T> insert = new ListInsert<T>(list, index, item);
             return insert;
         }
     }
 
-    sealed class ListSetValue<T> : SafeVoidableOperation
+    sealed class ListSetValue<T> : SafeVoidable
     {
         public ListSetValue(IList<T> list, int index, T item)
         {
@@ -75,7 +75,7 @@ namespace KouXiaGu.OperationRecord
         }
     }
 
-    sealed class ListAdd<T> : SafeVoidableOperation
+    sealed class ListAdd<T> : SafeVoidable
     {
         public ListAdd(IList<T> list, T item)
         {
@@ -101,7 +101,7 @@ namespace KouXiaGu.OperationRecord
         }
     }
 
-    sealed class ListRemove<T> : SafeVoidableOperation
+    sealed class ListRemove<T> : SafeVoidable
     {
         public ListRemove(IList<T> list, T item)
         {
@@ -136,7 +136,7 @@ namespace KouXiaGu.OperationRecord
         }
     }
 
-    sealed class ListRemoveAt<T> : SafeVoidableOperation
+    sealed class ListRemoveAt<T> : SafeVoidable
     {
         public ListRemoveAt(IList<T> list, int index)
         {
@@ -164,7 +164,7 @@ namespace KouXiaGu.OperationRecord
         }
     }
 
-    sealed class ListInsert<T> : SafeVoidableOperation
+    sealed class ListInsert<T> : SafeVoidable
     {
         public ListInsert(IList<T> list, int index, T item)
         {

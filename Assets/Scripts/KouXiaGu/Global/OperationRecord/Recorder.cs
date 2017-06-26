@@ -7,35 +7,29 @@ using KouXiaGu.Collections;
 namespace KouXiaGu.OperationRecord
 {
 
-    /// <summary>
-    /// 可撤销的操作;
-    /// </summary>
-    public interface IVoidableOperation
+    public interface IRecorder<T>
+         where T : IVoidable
     {
-        /// <summary>
-        /// 重新执行命令;
-        /// </summary>
-        void Redo();
-
-        /// <summary>
-        /// 撤销这操作;
-        /// </summary>
-        void Undo();
+        IEnumerable<T> Operations { get; }
+        void Register(T operation);
+        bool PerformUndo();
+        bool PerformRedo();
+        void Clear();
     }
 
     /// <summary>
-    /// 操作记录;
+    /// 记录操作;
     /// </summary>
-    public class OperationRecorder<T>
-        where T : IVoidableOperation
+    public class Recorder<T> : IRecorder<T>
+        where T : IVoidable
     {
         internal const int DefaultMaxRecord = 20;
 
-        public OperationRecorder() : this(DefaultMaxRecord)
+        public Recorder() : this(DefaultMaxRecord)
         {
         }
 
-        public OperationRecorder(int maxRecord)
+        public Recorder(int maxRecord)
         {
             if (maxRecord <= 0)
                 throw new ArgumentOutOfRangeException("maxRecord :" + maxRecord);
