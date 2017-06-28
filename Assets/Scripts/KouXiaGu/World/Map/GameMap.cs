@@ -36,16 +36,25 @@ namespace KouXiaGu.World.Map
         internal ConcurrentDictionary<CubicHexCoord, MapNode> concurrentMap { get; private set; }
         internal MapChangedRecorder<CubicHexCoord, MapNode> mapChangedRecorder { get; private set; }
 
-        internal IDictionary<CubicHexCoord, MapNode> Map
+        /// <summary>
+        /// 提供修改的地图结构;
+        /// </summary>
+        public IDictionary<CubicHexCoord, MapNode> Map
         {
             get { return concurrentMap; }
         }
 
+        /// <summary>
+        /// 只读的地图结构;
+        /// </summary>
         public IReadOnlyDictionary<CubicHexCoord, MapNode> ReadOnlyMap
         {
             get { return concurrentMap; }
         }
 
+        /// <summary>
+        /// 订阅地图数据变化;
+        /// </summary>
         public IObservableDictionary<CubicHexCoord, MapNode> ObservableMap
         {
             get { return observableMap; }
@@ -122,6 +131,11 @@ namespace KouXiaGu.World.Map
                 changedData.Add(position, node);
             }
             return changedData;
+        }
+
+        public static implicit operator MapData(GameMap gameMap)
+        {
+            return gameMap.data;
         }
     }
 }

@@ -20,9 +20,14 @@ namespace KouXiaGu.OperationRecord
 
         static readonly LinkedList<IRecorder> recorderStack;
 
-        public static IRecorder Current
+        static IRecorder currentRecorder
         {
             get { return recorderStack.Last.Value; }
+        }
+
+        public static IRecorder DefaultRecorder
+        {
+            get { return recorderStack.First.Value; }
         }
 
         public static IDisposable AddLast(IRecorder recorder)
@@ -31,20 +36,14 @@ namespace KouXiaGu.OperationRecord
             return new LinkedListUnsubscriber<IRecorder>(recorderStack, node);
         }
 
-        /// <summary>
-        /// 执行撤销操作;
-        /// </summary>
         public static void PerformUndo()
         {
-            Current.PerformUndo();
+            currentRecorder.PerformUndo();
         }
 
-        /// <summary>
-        /// 执行重做操作;
-        /// </summary>
         public static void PerformRedo()
         {
-            Current.PerformRedo();
+            currentRecorder.PerformRedo();
         }
     }
 }

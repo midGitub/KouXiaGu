@@ -7,14 +7,6 @@ using KouXiaGu.Collections;
 namespace KouXiaGu.OperationRecord
 {
 
-    public interface IRecorder : IVoidable
-    {
-        IEnumerable<IVoidable> Operations { get; }
-        void Register(IVoidable operation);
-        void Clear();
-    }
-
-
     /// <summary>
     /// 记录操作;
     /// </summary>

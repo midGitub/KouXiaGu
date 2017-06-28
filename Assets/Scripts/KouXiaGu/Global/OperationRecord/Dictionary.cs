@@ -9,9 +9,9 @@ namespace KouXiaGu.OperationRecord
 
     public static class DictionaryExtensions
     {
-        public static IVoidable VoidableSetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static IVoidable VoidableSetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue)
         {
-            var item = new DictionarySetValue<TKey, TValue>(dictionary, key, value);
+            var item = new DictionarySetValue<TKey, TValue>(dictionary, key, newValue);
             return item;
         }
 
@@ -30,24 +30,24 @@ namespace KouXiaGu.OperationRecord
 
     sealed class DictionarySetValue<TKey, TValue> : SafeVoidable
     {
-        public DictionarySetValue(IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public DictionarySetValue(IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue)
         {
             this.dictionary = dictionary;
             this.key = key;
-            this.value = value;
+            this.newValue = newValue;
 
             original = dictionary[key];
-            dictionary[key] = value;
+            dictionary[key] = newValue;
         }
 
         readonly IDictionary<TKey, TValue> dictionary;
         readonly TKey key;
-        readonly TValue value;
+        readonly TValue newValue;
         readonly TValue original;
 
         public override void PerformRedo()
         {
-            dictionary[key] = value;
+            dictionary[key] = newValue;
         }
 
         public override void PerformUndo()
