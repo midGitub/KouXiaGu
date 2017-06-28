@@ -64,12 +64,12 @@ namespace KouXiaGu.OperationRecord
         readonly T item;
         readonly T original;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             list[index] = item;
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             list[index] = original;
         }
@@ -90,12 +90,12 @@ namespace KouXiaGu.OperationRecord
         readonly IList<T> list;
         readonly T item;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             list.Add(item);
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             list.RemoveAt(list.Count - 1);
         }
@@ -125,12 +125,12 @@ namespace KouXiaGu.OperationRecord
         readonly int index;
         readonly T item;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             list.RemoveAt(index);
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             list.Insert(index, item);
         }
@@ -153,12 +153,12 @@ namespace KouXiaGu.OperationRecord
         readonly int index;
         readonly T original;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             list.RemoveAt(index);
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             list.Insert(index, original);
         }
@@ -181,12 +181,12 @@ namespace KouXiaGu.OperationRecord
         readonly int index;
         readonly T item;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             list.Insert(index, item);
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             list.RemoveAt(index);
         }

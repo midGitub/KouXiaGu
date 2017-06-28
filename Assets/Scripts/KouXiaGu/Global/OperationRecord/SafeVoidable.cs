@@ -16,14 +16,14 @@ namespace KouXiaGu.OperationRecord
         /// </summary>
         public bool IsUndo { get; private set; }
 
-        public abstract void Redo();
-        public abstract void Undo();
+        public abstract void PerformRedo();
+        public abstract void PerformUndo();
 
-        void IVoidable.Redo()
+        void IVoidable.PerformRedo()
         {
             if (IsUndo)
             {
-                Redo();
+                PerformRedo();
                 IsUndo = false;
             }
             else
@@ -32,7 +32,7 @@ namespace KouXiaGu.OperationRecord
             }
         }
 
-        void IVoidable.Undo()
+        void IVoidable.PerformUndo()
         {
             if (IsUndo)
             {
@@ -40,7 +40,7 @@ namespace KouXiaGu.OperationRecord
             }
             else
             {
-                Undo();
+                PerformUndo();
                 IsUndo = true;
             }
         }

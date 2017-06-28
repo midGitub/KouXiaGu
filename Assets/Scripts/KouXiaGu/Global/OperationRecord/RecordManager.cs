@@ -25,7 +25,7 @@ namespace KouXiaGu.OperationRecord
             get { return recorderStack.Last.Value; }
         }
 
-        public static IDisposable AddRecorder(IRecorder recorder)
+        public static IDisposable AddLast(IRecorder recorder)
         {
             var node = recorderStack.AddLast(recorder);
             return new LinkedListUnsubscriber<IRecorder>(recorderStack, node);
@@ -34,19 +34,17 @@ namespace KouXiaGu.OperationRecord
         /// <summary>
         /// 执行撤销操作;
         /// </summary>
-        public static bool PerformUndo()
+        public static void PerformUndo()
         {
-            var recorder = recorderStack.Last.Value;
-            return recorder.PerformUndo();
+            Current.PerformUndo();
         }
 
         /// <summary>
         /// 执行重做操作;
         /// </summary>
-        public static bool PerformRedo()
+        public static void PerformRedo()
         {
-            var recorder = recorderStack.Last.Value;
-            return recorder.PerformRedo();
+            Current.PerformRedo();
         }
     }
 }

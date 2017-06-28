@@ -45,12 +45,12 @@ namespace KouXiaGu.OperationRecord
         readonly TValue value;
         readonly TValue original;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             dictionary[key] = value;
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             dictionary[key] = original;
         }
@@ -73,12 +73,12 @@ namespace KouXiaGu.OperationRecord
         readonly TKey key;
         readonly TValue value;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             dictionary.Add(key, value);
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             dictionary.Remove(key);
         }
@@ -101,12 +101,12 @@ namespace KouXiaGu.OperationRecord
         readonly TKey key;
         readonly TValue value;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             dictionary.Remove(key);
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             dictionary.Add(key, value);
         }

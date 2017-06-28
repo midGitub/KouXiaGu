@@ -41,21 +41,21 @@ namespace KouXiaGu.OperationRecord
             Operations.Add(item);
         }
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             for (int i = 0; i < Operations.Count; i++)
             {
                 var operation = Operations[i];
-                operation.Redo();
+                operation.PerformRedo();
             }
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             for (int i = Operations.Count - 1; i >= 0; i--)
             {
                 var operation = Operations[i];
-                operation.Undo();
+                operation.PerformUndo();
             }
         }
 

@@ -7,12 +7,10 @@ using KouXiaGu.Collections;
 namespace KouXiaGu.OperationRecord
 {
 
-    public interface IRecorder
+    public interface IRecorder : IVoidable
     {
         IEnumerable<IVoidable> Operations { get; }
         void Register(IVoidable operation);
-        bool PerformUndo();
-        bool PerformRedo();
         void Clear();
     }
 
@@ -20,7 +18,7 @@ namespace KouXiaGu.OperationRecord
     /// <summary>
     /// 记录操作;
     /// </summary>
-    public class Recorder<T> : IRecorder
+    public class Recorder<T> : IRecorder, IVoidable
         where T : class, IVoidable
     {
         internal const int DefaultMaxRecord = 20;
@@ -123,31 +121,29 @@ namespace KouXiaGu.OperationRecord
         /// <summary>
         /// 执行撤销,若撤销出现异常,则弹出异常,并且不进行指令移动;
         /// </summary>
-        public bool PerformUndo()
+        public void PerformUndo()
         {
             if (current == null)
             {
-                return false;
+                return;
             }
             var operation = current.Value;
-            operation.Undo();
+            operation.PerformUndo();
             current = current.Previous;
-            return true;
         }
 
         /// <summary>
         /// 执行重做,若出现异常则弹出异常,并且不进行指令移动;
         /// </summary>
-        public bool PerformRedo()
+        public void PerformRedo()
         {
             if (current == null)
             {
                 if (operationQueue.First != null)
                 {
                     var operation = operationQueue.First.Value;
-                    operation.Redo();
+                    operation.PerformRedo();
                     current = operationQueue.First;
-                    return true;
                 }
             }
             else
@@ -155,12 +151,10 @@ namespace KouXiaGu.OperationRecord
                 if (current.Next != null)
                 {
                     var operation = current.Next.Value;
-                    operation.Redo();
+                    operation.PerformRedo();
                     current = current.Next;
-                    return true;
                 }
             }
-            return false;
         }
 
         /// <summary>

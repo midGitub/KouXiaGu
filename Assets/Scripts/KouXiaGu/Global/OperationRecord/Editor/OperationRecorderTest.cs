@@ -44,8 +44,8 @@ namespace KouXiaGu.OperationRecord
             public int ID { get; private set; }
             public bool IsUndo { get; private set; }
 
-            public void Redo() { }
-            public void Undo() { }
+            public void PerformRedo() { }
+            public void PerformUndo() { }
         }
 
         [Test]

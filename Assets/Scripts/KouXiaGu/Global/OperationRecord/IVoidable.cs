@@ -12,18 +12,13 @@ namespace KouXiaGu.OperationRecord
     public interface IVoidable
     {
         /// <summary>
-        /// 是否已经被撤销;
-        /// </summary>
-        bool IsUndo { get; }
-
-        /// <summary>
         /// 重新执行命令;
         /// </summary>
-        void Redo();
+        void PerformRedo();
 
         /// <summary>
         /// 撤销这操作;
         /// </summary>
-        void Undo();
+        void PerformUndo();
     }
 }

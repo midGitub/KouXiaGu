@@ -29,12 +29,12 @@ namespace KouXiaGu.OperationRecord
         readonly ICollection<T> collection;
         readonly T[] original;
 
-        public override void Redo()
+        public override void PerformRedo()
         {
             collection.Clear();
         }
 
-        public override void Undo()
+        public override void PerformUndo()
         {
             foreach (var item in original)
             {
