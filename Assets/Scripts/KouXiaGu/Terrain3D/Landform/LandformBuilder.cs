@@ -55,7 +55,7 @@ namespace KouXiaGu.Terrain3D
             this.requestDispatcher = requestDispatcher;
             SceneChunks = world.Components.Landform.LandformChunks.SceneChunks;
             chunkPool = new ChunkPool();
-            completedChunkSender = new Sender<RectCoord>();
+            completedChunkSender = new Tracker<RectCoord>();
         }
 
         public IWorld World { get; private set; }
@@ -63,7 +63,7 @@ namespace KouXiaGu.Terrain3D
         IRequestDispatcher requestDispatcher;
         readonly object unityThreadLock = new object();
         readonly ChunkPool chunkPool;
-        readonly Sender<RectCoord> completedChunkSender;
+        readonly Tracker<RectCoord> completedChunkSender;
 
         public RectGrid ChunkGrid
         {

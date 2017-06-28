@@ -64,14 +64,6 @@ namespace KouXiaGu
         {
             LinkedListNode<T> node;
             node = observersCollection.AddFirst(observer);
-            //if (currentNode == null)
-            //{
-            //    node = observersCollection.AddLast(observer);
-            //}
-            //else
-            //{
-            //    node = observersCollection.AddBefore(currentNode, observer);
-            //}
             return new Unsubscriber(this, node);
         }
 

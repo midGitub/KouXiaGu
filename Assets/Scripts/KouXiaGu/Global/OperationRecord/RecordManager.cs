@@ -13,17 +13,30 @@ namespace KouXiaGu.OperationRecord
     {
         static RecordManager()
         {
-            recorderStack = new Stack<Recorder<IVoidable>>();
+            recorderStack = new LinkedList<IRecorder>();
+            var defaultRecorder = new Recorder<IVoidable>();
+            recorderStack.AddFirst(defaultRecorder);
         }
 
-        static readonly Stack<Recorder<IVoidable>> recorderStack;
+        static readonly LinkedList<IRecorder> recorderStack;
+
+        public static IRecorder Current
+        {
+            get { return recorderStack.Last.Value; }
+        }
+
+        public static IDisposable AddRecorder(IRecorder recorder)
+        {
+            var node = recorderStack.AddLast(recorder);
+            return new LinkedListUnsubscriber<IRecorder>(recorderStack, node);
+        }
 
         /// <summary>
         /// 执行撤销操作;
         /// </summary>
         public static bool PerformUndo()
         {
-            var recorder = recorderStack.Peek();
+            var recorder = recorderStack.Last.Value;
             return recorder.PerformUndo();
         }
 
@@ -32,7 +45,7 @@ namespace KouXiaGu.OperationRecord
         /// </summary>
         public static bool PerformRedo()
         {
-            var recorder = recorderStack.Peek();
+            var recorder = recorderStack.Last.Value;
             return recorder.PerformRedo();
         }
     }

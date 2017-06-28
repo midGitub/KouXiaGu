@@ -7,21 +7,21 @@ using KouXiaGu.Collections;
 namespace KouXiaGu.OperationRecord
 {
 
-    public interface IRecorder<T>
-         where T : IVoidable
+    public interface IRecorder
     {
-        IEnumerable<T> Operations { get; }
-        void Register(T operation);
+        IEnumerable<IVoidable> Operations { get; }
+        void Register(IVoidable operation);
         bool PerformUndo();
         bool PerformRedo();
         void Clear();
     }
 
+
     /// <summary>
     /// 记录操作;
     /// </summary>
-    public class Recorder<T> : IRecorder<T>
-        where T : IVoidable
+    public class Recorder<T> : IRecorder
+        where T : class, IVoidable
     {
         internal const int DefaultMaxRecord = 20;
 
@@ -35,12 +35,12 @@ namespace KouXiaGu.OperationRecord
                 throw new ArgumentOutOfRangeException("maxRecord :" + maxRecord);
 
             MaxRecord = maxRecord;
-            operationQueue = new Collections.LinkedList<T>();
+            operationQueue = new Collections.LinkedList<IVoidable>();
             current = null;
         }
 
-        readonly Collections.LinkedList<T> operationQueue;
-        Collections.LinkedListNode<T> current;
+        readonly Collections.LinkedList<IVoidable> operationQueue;
+        Collections.LinkedListNode<IVoidable> current;
         public int MaxRecord { get; set; }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace KouXiaGu.OperationRecord
         /// </summary>
         public T Last
         {
-            get { return current == null ? default(T) : current.Value; }
+            get { return current == null ? default(T) : current.Value as T; }
         }
 
         /// <summary>
@@ -64,7 +64,20 @@ namespace KouXiaGu.OperationRecord
         /// </summary>
         public IEnumerable<T> Operations
         {
+            get { return operationQueue.OfType<T>(); }
+        }
+
+        IEnumerable<IVoidable> IRecorder.Operations
+        {
             get { return operationQueue; }
+        }
+
+        void IRecorder.Register(IVoidable operation)
+        {
+            if (operation == null)
+                throw new ArgumentNullException("operation");
+
+            Register_internal(operation);
         }
 
         /// <summary>
@@ -75,6 +88,11 @@ namespace KouXiaGu.OperationRecord
             if (operation == null)
                 throw new ArgumentNullException("operation");
 
+            Register_internal(operation);
+        }
+
+        void Register_internal(IVoidable operation)
+        {
             if (current == operationQueue.Last)
             {
                 operationQueue.AddLast(operation);
