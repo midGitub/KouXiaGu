@@ -7,6 +7,44 @@ using System.Text;
 
 namespace KouXiaGu.World.Map
 {
+
+    [ProtoContract]
+    public struct NodeRoadInfo : IEquatable<NodeRoadInfo>
+    {
+        /// <summary>
+        /// 道路类型;
+        /// </summary>
+        [ProtoMember(1)]
+        public int RoadType { get; internal set; }
+
+        public bool Equals(NodeRoadInfo other)
+        {
+            return RoadType == other.RoadType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is NodeRoadInfo))
+                return false;
+            return Equals((NodeRoadInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return RoadType;
+        }
+
+        public static bool operator ==(NodeRoadInfo a, NodeRoadInfo b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(NodeRoadInfo a, NodeRoadInfo b)
+        {
+            return !a.Equals(b);
+        }
+    }
+
     /// <summary>
     /// 节点道路信息;
     /// </summary>
@@ -18,6 +56,14 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public const int EmptyMark = 0;
 
+        NodeRoadInfo info;
+
+        public NodeRoadInfo Info
+        {
+            get { return info; }
+            internal set { info = value; }
+        }
+
         /// <summary>
         /// 道路的唯一编号;
         /// </summary>
@@ -28,7 +74,11 @@ namespace KouXiaGu.World.Map
         /// 道路类型;
         /// </summary>
         [ProtoMember(2)]
-        public int RoadType { get; internal set; }
+        public int RoadType
+        {
+            get { return info.RoadType; }
+            internal set { info.RoadType = value; }
+        }
 
         /// <summary>
         /// 返回是否存在道路;

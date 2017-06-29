@@ -61,6 +61,14 @@ namespace KouXiaGu.World
         /// </summary>
         public static bool IsActivated { get; private set; }
 
+        /// <summary>
+        /// 若未完成初始化则为Null;
+        /// </summary>
+        public static IWorldComplete World
+        {
+            get { return WorldInitializer != null && WorldInitializer.IsCompleted ? WorldInitializer.Result : null; }
+        }
+
         bool IOperationState.IsCanceled
         {
             get { return !IsActivated; }

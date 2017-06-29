@@ -5,6 +5,7 @@ using System.Text;
 using KouXiaGu.Terrain3D;
 using UnityEngine;
 using KouXiaGu.Concurrent;
+using System.Threading;
 
 namespace KouXiaGu.World
 {
@@ -31,18 +32,15 @@ namespace KouXiaGu.World
             {
                 LandformUpdater = new SceneUpdater(world);
                 var landformUpdaterOperation = LandformUpdater.Start();
-                while (!landformUpdaterOperation.IsCompleted)
-                {
-                    if (state.IsCanceled)
-                        throw new OperationCanceledException();
-                }
+                WorldInitialization.Wait(landformUpdaterOperation, state);
 
                 TimeUpdater = new WorldTimeUpdater(world.Components.Time);
                 TimeUpdater.Start();
             }
-            finally
+            catch(Exception e)
             {
                 Dispose();
+                throw e;
             }
         }
 
@@ -53,6 +51,7 @@ namespace KouXiaGu.World
                 LandformUpdater.Stop();
                 LandformUpdater = null;
             }
+            GC.SuppressFinalize(this);
         }
     }
 }

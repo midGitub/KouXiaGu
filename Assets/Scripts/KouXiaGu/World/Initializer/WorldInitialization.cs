@@ -75,5 +75,21 @@ namespace KouXiaGu.World
                 OnFaulted(ex);
             }
         }
+
+        public static void Wait(IAsyncOperation async, IOperationState state)
+        {
+            while (!async.IsCompleted)
+            {
+                if (state.IsCanceled)
+                {
+                    throw new OperationCanceledException();
+                }
+                Thread.Sleep(50);
+            }
+            if (async.IsFaulted)
+            {
+                throw async.Exception;
+            }
+        }
     }
 }

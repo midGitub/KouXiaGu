@@ -16,7 +16,7 @@ namespace KouXiaGu.World.MapEditor
         /// <summary>
         /// 鼠标指向的位置更新,用于预览;
         /// </summary>
-        void PositionUpdate(CubicHexCoord position);
+        void OnPositionUpdate(CubicHexCoord position);
 
         /// <summary>
         /// 执行操作;

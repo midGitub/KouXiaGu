@@ -7,6 +7,49 @@ using System.Text;
 namespace KouXiaGu.World.Map
 {
 
+    [ProtoContract]
+    public struct NodeLandformInfo : IEquatable<NodeLandformInfo>
+    {
+        /// <summary>
+        /// 地形类型;
+        /// </summary>
+        [ProtoMember(1)]
+        public int LandformType { get; internal set; }
+
+        /// <summary>
+        /// 地形旋转角度;
+        /// </summary>
+        [ProtoMember(2)]
+        public float Angle { get; internal set; }
+
+        public bool Equals(NodeLandformInfo other)
+        {
+            return LandformType == other.LandformType && Angle == other.Angle;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is NodeLandformInfo))
+                return false;
+            return Equals((NodeLandformInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return LandformType;
+        }
+
+        public static bool operator ==(NodeLandformInfo a, NodeLandformInfo b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(NodeLandformInfo a, NodeLandformInfo b)
+        {
+            return !a.Equals(b);
+        }
+    }
+
     /// <summary>
     /// 节点地貌信息;
     /// </summary>
@@ -18,23 +61,38 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public const int EmptyMark = 0;
 
+        NodeLandformInfo info;
+
+        public NodeLandformInfo Info
+        {
+            get { return info; }
+        }
+
         /// <summary>
         /// 编号,不存在则为0;
         /// </summary>
         [ProtoMember(1)]
-        public uint ID;
+        public uint ID { get; internal set; }
 
         /// <summary>
         /// 地形类型;
         /// </summary>
         [ProtoMember(2)]
-        public int LandformType;
+        public int LandformType
+        {
+            get { return info.LandformType; }
+            internal set { info.LandformType = value; }
+        }
 
         /// <summary>
         /// 地形旋转角度;
         /// </summary>
         [ProtoMember(3)]
-        public float Angle;
+        public float Angle
+        {
+            get { return info.Angle; }
+            internal set { info.Angle = value; }
+        }
 
         /// <summary>
         /// 是否存在地形?

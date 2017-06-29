@@ -48,8 +48,8 @@ namespace KouXiaGu.Terrain3D
         {
             if (!updateThreadRunning)
             {
-                ThreadPool.QueueUserWorkItem(Next);
                 updateThreadRunning = true;
+                ThreadPool.QueueUserWorkItem(Next);
             }
             return this;
         }

@@ -12,26 +12,16 @@ namespace KouXiaGu.World.MapEditor
     /// <summary>
     /// 改变节点道路信息;
     /// </summary>
-    public class ChangeRoadOnly : IEditOperation
+    public class ChangeRoadOnly : EditNodeBase
     {
-        public ChangeRoadOnly(GameMap gameMap, int roadType)
+        public ChangeRoadOnly(GameMap gameMap, int roadType) : base(gameMap)
         {
-            this.Data = gameMap;
+            RoadType = roadType;
         }
 
-        public GameMap Data { get; private set; }
         public int RoadType { get; private set; }
 
-        IDictionary<CubicHexCoord, MapNode> map
-        {
-            get { return Data.Map; }
-        }
-
-        public void PositionUpdate(CubicHexCoord position)
-        {
-        }
-
-        public IVoidable Perform(CubicHexCoord position)
+        public override IVoidable Perform(CubicHexCoord position)
         {
             MapNode node;
             if (map.TryGetValue(position, out node))

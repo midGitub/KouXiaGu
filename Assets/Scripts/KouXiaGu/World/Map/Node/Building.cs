@@ -8,7 +8,53 @@ namespace KouXiaGu.World.Map
 {
 
     /// <summary>
-    /// 节点建筑信息;
+    /// 建筑节点信息;
+    /// </summary>
+    [ProtoContract]
+    public struct NodeBuildingInfo : IEquatable<NodeBuildingInfo>
+    {
+        /// <summary>
+        /// 建筑类型;
+        /// </summary>
+        [ProtoMember(1)]
+        public int BuildingType { get; set; }
+
+        /// <summary>
+        /// 建筑旋转角度;
+        /// </summary>
+        [ProtoMember(2)]
+        public float Angle { get; set; }
+
+        public bool Equals(NodeBuildingInfo other)
+        {
+            return BuildingType == other.BuildingType && Angle == other.Angle;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is NodeBuildingInfo))
+                return false;
+            return Equals((NodeBuildingInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return BuildingType.GetHashCode();
+        }
+
+        public static bool operator ==(NodeBuildingInfo a, NodeBuildingInfo b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(NodeBuildingInfo a, NodeBuildingInfo b)
+        {
+            return !a.Equals(b);
+        }
+    }
+
+    /// <summary>
+    /// 建筑节点;
     /// </summary>
     [ProtoContract]
     public struct BuildingNode : IEquatable<BuildingNode>
@@ -18,20 +64,33 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public const int EmptyMark = 0;
 
+        NodeBuildingInfo info;
+
+        public NodeBuildingInfo Info
+        {
+            get { return info; }
+            internal set{ info = value; }
+        }
+
         /// <summary>
         /// 编号,不存在建筑则为0;
         /// </summary>
         [ProtoMember(1)]
         public uint ID { get; internal set; }
 
-        /// <summary>
-        /// 建筑类型;
-        /// </summary>
         [ProtoMember(2)]
-        public int BuildingType { get; internal set; }
+        public int BuildingType
+        {
+            get { return info.BuildingType; }
+            internal set { info.BuildingType = value; }
+        }
 
         [ProtoMember(3)]
-        public float Angle { get; internal set; }
+        public float Angle
+        {
+            get { return info.Angle; }
+            internal set { info.Angle = value; }
+        }
 
         /// <summary>
         /// 添加建筑物;
@@ -47,7 +106,7 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 添加建筑物;
         /// </summary>
-        public BuildingNode Update(IdentifierGenerator buildingInfo, int buildingType, float angle)
+        internal BuildingNode Update(IdentifierGenerator buildingInfo, int buildingType, float angle)
         {
             if (buildingInfo == null)
                 throw new ArgumentNullException("buildingInfo");

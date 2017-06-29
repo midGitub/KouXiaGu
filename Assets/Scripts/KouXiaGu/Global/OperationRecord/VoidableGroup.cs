@@ -34,7 +34,7 @@ namespace KouXiaGu.OperationRecord
         public List<T> Operations { get; private set; }
 
         /// <summary>
-        /// 提供lambda表达式使用的方法;
+        /// 添加,提供lambda表达式使用的方法;
         /// </summary>
         public void Add(T item)
         {

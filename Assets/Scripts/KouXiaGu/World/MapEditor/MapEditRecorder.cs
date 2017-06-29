@@ -13,31 +13,18 @@ namespace KouXiaGu.World.MapEditor
     /// <summary>
     /// 地图编辑记录;
     /// </summary>
-    public class MapEditRecorder
+    public class MapEditRecorder : Recorder<IVoidable>
     {
-        const int MaxRecordCount = 50;
-
-        public MapEditRecorder() : this(MaxRecordCount)
+        public MapEditRecorder(int maxRecordCount) : base(maxRecordCount)
         {
-        }
-
-        public MapEditRecorder(int maxRecordCount)
-        {
-            record = new Recorder<IVoidable>(maxRecordCount);
             Current = null;
         }
 
-        readonly Recorder<IVoidable> record;
         public IEditOperation Current { get; private set; }
 
         public bool IsActivated
         {
             get { return Current != null; }
-        }
-
-        public IRecorder Recorder
-        {
-            get { return record; }
         }
 
         /// <summary>
@@ -46,7 +33,7 @@ namespace KouXiaGu.World.MapEditor
         public void SetOperationItem(IEditOperation newValue)
         {
             var operation = new SetEditOperation(this, Current, newValue);
-            Recorder.Register(operation);
+            Register(operation);
         }
 
         /// <summary>
@@ -57,7 +44,7 @@ namespace KouXiaGu.World.MapEditor
             if (IsActivated)
             {
                 var operation = current.Perform(position);
-                Recorder.Register(operation);
+                Register(operation);
             }
         }
 

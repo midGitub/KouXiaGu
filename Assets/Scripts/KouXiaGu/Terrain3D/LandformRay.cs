@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 地形射线;
+    /// 提供对地形的射线功能;
     /// </summary>
     public class LandformRay
     {
