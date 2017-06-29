@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Serialization;
 using KouXiaGu.Resources;
 
-namespace KouXiaGu.Globalization
+namespace KouXiaGu.OGlobalization
 {
 
     [XmlType("LocalizationConfig")]

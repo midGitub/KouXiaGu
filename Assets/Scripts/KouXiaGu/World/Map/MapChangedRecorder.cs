@@ -46,7 +46,6 @@ namespace KouXiaGu.World.Map
                 unsubscriber.Dispose();
                 unsubscriber = null;
             }
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using KouXiaGu.Globalization;
+using KouXiaGu.OGlobalization;
 using KouXiaGu.KeyInput;
 using UnityEngine;
 using System.Threading;

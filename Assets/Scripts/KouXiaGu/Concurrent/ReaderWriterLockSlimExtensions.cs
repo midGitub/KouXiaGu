@@ -36,7 +36,6 @@ namespace KouXiaGu.Concurrent
                     readerWriterLockSlim.ExitReadLock();
                     readerWriterLockSlim = null;
                 }
-                GC.SuppressFinalize(this);
             }
         }
 
@@ -63,7 +62,6 @@ namespace KouXiaGu.Concurrent
                     readerWriterLockSlim.ExitWriteLock();
                     readerWriterLockSlim = null;
                 }
-                GC.SuppressFinalize(this);
             }
         }
     }

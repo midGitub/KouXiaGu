@@ -33,7 +33,6 @@ namespace KouXiaGu
                 Collection.Remove(Observer);
                 Collection = null;
                 Observer = default(T);
-                GC.SuppressFinalize(this);
             }
         }
 

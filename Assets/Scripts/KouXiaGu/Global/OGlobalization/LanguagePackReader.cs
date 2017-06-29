@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.Globalization
+namespace KouXiaGu.OGlobalization
 {
 
     /// <summary>
@@ -140,7 +140,7 @@ namespace KouXiaGu.Globalization
             IgnoreProcessingInstructions = true,
         };
 
-        const string RootElementName = "LocalizationTexts";
+        const string RootElementName = "Language";
         const string LanguageNameAttributeName = "name";
         const string LanguageLocNameAttributeName = "locName";
 

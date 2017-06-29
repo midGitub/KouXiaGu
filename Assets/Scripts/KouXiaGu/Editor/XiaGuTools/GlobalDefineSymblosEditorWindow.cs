@@ -256,7 +256,7 @@ namespace KouXiaGu.XiaGuTools
             Directory.CreateDirectory(DirPath);
 
             DefineAndTag[] save = defineSymblos.Where(item => !item.IsEmpty).ToArray();
-            DefineAndTag.ArraySerializer.SerializeXiaGu(FilePath, save);
+            DefineAndTag.ArraySerializer.SerializeXiaGu(save, FilePath);
         }
 
     }

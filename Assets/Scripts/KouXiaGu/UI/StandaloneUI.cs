@@ -43,24 +43,24 @@ namespace KouXiaGu.UI
 
         Canvas canvas;
 
-        EscapeKeyObserver escapeKeyObserver;
-
-        EnterKeyObserver enterKeyObserver;
-
         protected Canvas Canvas
         {
             get { return canvas ?? (canvas = GetComponent<Canvas>()); }
         }
 
-        EscapeKeyObserver EscapeKeyObserver
-        {
-            get { return escapeKeyObserver ?? (escapeKeyObserver = new EscapeKeyObserver(OnEscapeKeyDown)); }
-        }
+        //EscapeKeyObserver escapeKeyObserver;
 
-        EnterKeyObserver EnterKeyObserver
-        {
-            get { return enterKeyObserver ?? (enterKeyObserver = new EnterKeyObserver(OnEnterKeyDown)); }
-        }
+        //EnterKeyObserver enterKeyObserver;
+
+        //EscapeKeyObserver EscapeKeyObserver
+        //{
+        //    get { return escapeKeyObserver ?? (escapeKeyObserver = new EscapeKeyObserver(OnEscapeKeyDown)); }
+        //}
+
+        //EnterKeyObserver EnterKeyObserver
+        //{
+        //    get { return enterKeyObserver ?? (enterKeyObserver = new EnterKeyObserver(OnEnterKeyDown)); }
+        //}
 
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace KouXiaGu.UI
 
         void Subscribe()
         {
-            EscapeKeyObserver.Subscribe();
-            EnterKeyObserver.Subscribe();
+            //EscapeKeyObserver.Subscribe();
+            //EnterKeyObserver.Subscribe();
         }
 
 
@@ -141,8 +141,8 @@ namespace KouXiaGu.UI
 
         void Unsubscribe()
         {
-            EscapeKeyObserver.Unsubscribe();
-            EnterKeyObserver.Unsubscribe();
+            //EscapeKeyObserver.Unsubscribe();
+            //EnterKeyObserver.Unsubscribe();
         }
 
 

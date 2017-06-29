@@ -51,7 +51,6 @@ namespace KouXiaGu.World
                 LandformUpdater.Stop();
                 LandformUpdater = null;
             }
-            GC.SuppressFinalize(this);
         }
     }
 }

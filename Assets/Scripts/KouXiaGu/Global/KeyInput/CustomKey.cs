@@ -103,7 +103,7 @@ namespace KouXiaGu.KeyInput
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
 
-            keyArraySerializer.SerializeXiaGu(filePath, keyArray, FileMode.Create);
+            keyArraySerializer.SerializeXiaGu(keyArray, filePath, FileMode.Create);
         }
 
     }

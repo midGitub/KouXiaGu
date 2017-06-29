@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using KouXiaGu.Globalization;
+using KouXiaGu.OGlobalization;
 using UnityEngine;
 using UnityEngine.UI;
 

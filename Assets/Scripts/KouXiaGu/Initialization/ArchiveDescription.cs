@@ -30,7 +30,7 @@ namespace KouXiaGu.Initialization
         public static void Write(string filePath, ArchiveDescription item)
         {
             filePath = Path.ChangeExtension(filePath, FILE_EXTENSION);
-            serializer.SerializeXiaGu(filePath, item);
+            serializer.SerializeXiaGu(item, filePath);
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.OperationRecord;
+using KouXiaGu.World;
 
 namespace KouXiaGu.Terrain3D.MapEditor
 {
@@ -25,7 +26,6 @@ namespace KouXiaGu.Terrain3D.MapEditor
         public Recorder<IVoidable> Recorder { get; private set; }
         IDisposable recordRegister;
         public IEditOperation Current { get; private set; }
-
 
         IWorldComplete world
         {
@@ -63,8 +63,20 @@ namespace KouXiaGu.Terrain3D.MapEditor
                     CubicHexCoord position = mousePoint.GetTerrainCubic();
                     if (Input.GetMouseButtonDown(0))
                     {
-                        Current.Perform(position);
+                        Perform(position);
                     }
+                }
+            }
+
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                if (Input.GetKeyDown(KeyCode.Z))
+                {
+                    Recorder.PerformUndo();
+                }
+                else if (Input.GetKeyDown(KeyCode.Y))
+                {
+                    Recorder.PerformRedo();
                 }
             }
         }

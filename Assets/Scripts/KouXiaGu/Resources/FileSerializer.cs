@@ -55,7 +55,7 @@ namespace KouXiaGu.Resources
 
         public void Write(T item, string filePath, FileMode fileMode)
         {
-            Serializer.SerializeXiaGu(filePath, item);
+            Serializer.SerializeXiaGu(item, filePath, fileMode);
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
-using KouXiaGu.Globalization;
+using KouXiaGu.OGlobalization;
 
 namespace KouXiaGu.UI
 {

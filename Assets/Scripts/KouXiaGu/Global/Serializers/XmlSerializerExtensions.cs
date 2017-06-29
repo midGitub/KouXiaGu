@@ -13,7 +13,8 @@ namespace KouXiaGu
 
         static readonly XmlQualifiedName[] namespaces = new XmlQualifiedName[]
           {
-                new XmlQualifiedName("XiaGu", "KouXiaGu"),
+                //new XmlQualifiedName("XiaGu", "KouXiaGu"),
+                new XmlQualifiedName(string.Empty, string.Empty),
           };
 
         static readonly XmlSerializerNamespaces xmlSerializerNamespaces = new XmlSerializerNamespaces(namespaces);
@@ -45,7 +46,7 @@ namespace KouXiaGu
         /// <summary>
         /// 序列化为 自定义的 utf-8 格式;
         /// </summary>
-        public static void SerializeXiaGu(this XmlSerializer serializer, string filePath, object item, FileMode fileMode = FileMode.Create)
+        public static void SerializeXiaGu(this XmlSerializer serializer, object item, string filePath, FileMode fileMode = FileMode.Create)
         {
             using (FileStream fStream = new FileStream(filePath, fileMode, FileAccess.Write))
             {
@@ -77,14 +78,5 @@ namespace KouXiaGu
                 return serializer.Deserialize(fStream);
             }
         }
-
-        /// <summary>
-        /// 反序列化;
-        /// </summary>
-        public static object DeserializeXiaGu(this XmlSerializer serializer, Stream stream)
-        {
-            return serializer.Deserialize(stream);
-        }
     }
-
 }

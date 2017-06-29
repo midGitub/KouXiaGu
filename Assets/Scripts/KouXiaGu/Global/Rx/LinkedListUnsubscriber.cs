@@ -35,7 +35,6 @@ namespace KouXiaGu
                 {
                     Observers = null;
                     Observer = null;
-                    GC.SuppressFinalize(this);
                 }
             }
         }

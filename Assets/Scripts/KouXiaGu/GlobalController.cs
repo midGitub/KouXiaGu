@@ -7,6 +7,9 @@ using UnityEngine;
 using System.Threading;
 using KouXiaGu.OperationRecord;
 using System.Reflection;
+using KouXiaGu.Globalization;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace KouXiaGu
 {
@@ -32,13 +35,18 @@ namespace KouXiaGu
         [ContextMenu("Test")]
         void Test()
         {
-            Type type = typeof(ListAdd<int>);
-            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            Debug.Log(methods.Length);
-            foreach (var method in methods)
+            LanguagePack pack = new LanguagePack("www", "en")
             {
-                Debug.Log(method.Name);
-            }
+                TextDictionary = new Dictionary<string, string>()
+                {
+                    { "1", "111" },
+                    { "2", "211" },
+                    { "3", "311" },
+                },
+            };
+
+            XmlSerializer serializer = new XmlSerializer(typeof(LanguagePack));
+            serializer.SerializeXiaGu(pack, Path.Combine(Application.streamingAssetsPath, "Localization/test.xml"));
         }
     }
 }
