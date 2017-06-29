@@ -7,7 +7,7 @@ using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.OperationRecord;
 
-namespace KouXiaGu.World.MapEditor
+namespace KouXiaGu.Terrain3D.MapEditor
 {
 
     /// <summary>
@@ -23,7 +23,9 @@ namespace KouXiaGu.World.MapEditor
         [SerializeField]
         int maxRecordCount = 30;
         public Recorder<IVoidable> Recorder { get; private set; }
+        IDisposable recordRegister;
         public IEditOperation Current { get; private set; }
+
 
         IWorldComplete world
         {
@@ -37,7 +39,13 @@ namespace KouXiaGu.World.MapEditor
 
         void OnEnable()
         {
-            RecordManager.AddLast(Recorder);
+            recordRegister = RecordManager.AddLast(Recorder);
+        }
+
+        void OnDisable()
+        {
+            recordRegister.Dispose();
+            recordRegister = null;
         }
 
         void Update()

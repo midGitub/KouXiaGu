@@ -6,7 +6,7 @@ using KouXiaGu.Grids;
 using KouXiaGu.OperationRecord;
 using KouXiaGu.World.Map;
 
-namespace KouXiaGu.World.MapEditor
+namespace KouXiaGu.Terrain3D.MapEditor
 {
 
     /// <summary>

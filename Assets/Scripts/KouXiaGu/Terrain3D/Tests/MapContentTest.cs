@@ -55,32 +55,32 @@ namespace KouXiaGu.Terrain3D.Tests
         {
             textObject.text = TextUpdate();
 
-            Vector3 mousePoint;
-            if (LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
-            {
-                if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
-                {
-                    if (Input.GetKeyDown(KeyCode.B))
-                    {
-                        DestroyBuildingAt(mousePoint);
-                    }
-                }
-                else
-                {
-                    if (Input.GetKeyDown(KeyCode.Mouse0))
-                    {
-                        OnMouse0Down(mousePoint);
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Mouse1))
-                    {
-                        OnMouse1Down(mousePoint);
-                    }
-                    else if (Input.GetKeyDown(KeyCode.B))
-                    {
-                        BuildBuildingAt(mousePoint);
-                    }
-                }
-            }
+            //Vector3 mousePoint;
+            //if (LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
+            //{
+            //    if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+            //    {
+            //        if (Input.GetKeyDown(KeyCode.B))
+            //        {
+            //            DestroyBuildingAt(mousePoint);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (Input.GetKeyDown(KeyCode.Mouse0))
+            //        {
+            //            OnMouse0Down(mousePoint);
+            //        }
+            //        else if (Input.GetKeyDown(KeyCode.Mouse1))
+            //        {
+            //            OnMouse1Down(mousePoint);
+            //        }
+            //        else if (Input.GetKeyDown(KeyCode.B))
+            //        {
+            //            BuildBuildingAt(mousePoint);
+            //        }
+            //    }
+            //}
         }
 
         void OnMouse0Down(Vector3 mousePoint)
