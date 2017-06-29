@@ -14,7 +14,7 @@ namespace KouXiaGu.World.Map
     public struct NodeBuildingInfo : IEquatable<NodeBuildingInfo>
     {
         /// <summary>
-        /// 建筑类型;
+        /// 建筑类型,0代表不存在;
         /// </summary>
         [ProtoMember(1)]
         public int BuildingType { get; set; }
@@ -24,6 +24,11 @@ namespace KouXiaGu.World.Map
         /// </summary>
         [ProtoMember(2)]
         public float Angle { get; set; }
+
+        public bool Exist()
+        {
+            return BuildingType != 0;
+        }
 
         public bool Equals(NodeBuildingInfo other)
         {
@@ -59,11 +64,6 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public struct BuildingNode : IEquatable<BuildingNode>
     {
-        /// <summary>
-        /// 不存在建筑时放置的标志;
-        /// </summary>
-        public const int EmptyMark = 0;
-
         NodeBuildingInfo info;
 
         public NodeBuildingInfo Info
@@ -92,9 +92,11 @@ namespace KouXiaGu.World.Map
             internal set { info.Angle = value; }
         }
 
-        /// <summary>
-        /// 添加建筑物;
-        /// </summary>
+        public BuildingNode Update(MapData data, NodeBuildingInfo info)
+        {
+            return Update(data, info.BuildingType, info.Angle);
+        }
+
         public BuildingNode Update(MapData data, int buildingType, float angle)
         {
             if (data == null)
@@ -103,9 +105,6 @@ namespace KouXiaGu.World.Map
             return Update(data.Building, buildingType, angle);
         }
 
-        /// <summary>
-        /// 添加建筑物;
-        /// </summary>
         internal BuildingNode Update(IdentifierGenerator buildingInfo, int buildingType, float angle)
         {
             if (buildingInfo == null)
@@ -121,19 +120,11 @@ namespace KouXiaGu.World.Map
         }
 
         /// <summary>
-        /// 是否存在该建筑物?
-        /// </summary>
-        public bool Exist(int buildingType)
-        {
-            return BuildingType == buildingType;
-        }
-
-        /// <summary>
         /// 是否存在建筑物?
         /// </summary>
         public bool Exist()
         {
-            return ID != EmptyMark;
+            return info.Exist();
         }
 
         /// <summary>
@@ -141,10 +132,10 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public BuildingNode Destroy()
         {
-            ID = 0;
+            ID = default(uint);
             BuildingType = default(int);
             Angle = default(float);
-            return default(BuildingNode);
+            return this;
         }
 
         public bool Equals(BuildingNode other)

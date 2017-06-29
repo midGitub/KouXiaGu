@@ -17,6 +17,11 @@ namespace KouXiaGu.World.Map
         [ProtoMember(1)]
         public int RoadType { get; internal set; }
 
+        public bool Exist()
+        {
+            return RoadType != 0;
+        }
+
         public bool Equals(NodeRoadInfo other)
         {
             return RoadType == other.RoadType;
@@ -51,11 +56,6 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public struct RoadNode : IEquatable<RoadNode>
     {
-        /// <summary>
-        /// 节点不存在道路时放置的标志;
-        /// </summary>
-        public const int EmptyMark = 0;
-
         NodeRoadInfo info;
 
         public NodeRoadInfo Info
@@ -80,20 +80,9 @@ namespace KouXiaGu.World.Map
             internal set { info.RoadType = value; }
         }
 
-        /// <summary>
-        /// 返回是否存在道路;
-        /// </summary>
-        public bool Exist()
+        public RoadNode Update(MapData data, NodeRoadInfo info)
         {
-            return ID != EmptyMark;
-        }
-
-        /// <summary>
-        /// 销毁该点道路信息;
-        /// </summary>
-        public RoadNode Destroy()
-        {
-            return default(RoadNode);
+            return Update(data, info.RoadType);
         }
 
         /// <summary>
@@ -101,6 +90,9 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public RoadNode Update(MapData data, int roadType)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             return Update(data.Road, roadType);
         }
 
@@ -109,11 +101,32 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public RoadNode Update(IdentifierGenerator roadInfo, int roadType)
         {
+            if (roadInfo == null)
+                throw new ArgumentNullException("roadInfo");
+
             if (!Exist())
             {
                 ID = roadInfo.GetNewEffectiveID();
             }
             RoadType = roadType;
+            return this;
+        }
+
+        /// <summary>
+        /// 返回是否存在道路;
+        /// </summary>
+        public bool Exist()
+        {
+            return info.Exist();
+        }
+
+        /// <summary>
+        /// 销毁该点道路信息;
+        /// </summary>
+        public RoadNode Destroy()
+        {
+            ID = default(uint);
+            RoadType = default(int);
             return this;
         }
 

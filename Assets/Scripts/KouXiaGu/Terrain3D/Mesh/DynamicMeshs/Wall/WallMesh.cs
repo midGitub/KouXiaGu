@@ -90,7 +90,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
                 if (map.TryGetValue(position, out node))
                 {
                     BuildingNode buildingNode = node.Building;
-                    if (buildingNode.Exist(buildingType))
+                    if (buildingNode.BuildingType == buildingType)
                     {
                         value = buildingNode.ID;
                         return true;

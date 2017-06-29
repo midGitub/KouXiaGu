@@ -14,13 +14,18 @@ namespace KouXiaGu.World.Map
         /// 地形类型;
         /// </summary>
         [ProtoMember(1)]
-        public int LandformType { get; internal set; }
+        public int LandformType { get; set; }
 
         /// <summary>
         /// 地形旋转角度;
         /// </summary>
         [ProtoMember(2)]
-        public float Angle { get; internal set; }
+        public float Angle { get; set; }
+
+        public bool Exist()
+        {
+            return LandformType != 0;
+        }
 
         public bool Equals(NodeLandformInfo other)
         {
@@ -56,11 +61,6 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public struct LandformNode : IEquatable<LandformNode>
     {
-        /// <summary>
-        /// 不存在地形时放置的标志;
-        /// </summary>
-        public const int EmptyMark = 0;
-
         NodeLandformInfo info;
 
         public NodeLandformInfo Info
@@ -94,12 +94,39 @@ namespace KouXiaGu.World.Map
             internal set { info.Angle = value; }
         }
 
+        public LandformNode Update(MapData data, NodeLandformInfo info)
+        {
+            return Update(data, info.LandformType, info.Angle);
+        }
+
+        public LandformNode Update(MapData data, int landformType, float angle)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            return Update(data.Landform, landformType, angle);
+        }
+
+        public LandformNode Update(IdentifierGenerator landformInfo, int landformType, float angle)
+        {
+            if (landformInfo == null)
+                throw new ArgumentNullException("landformInfo");
+
+            if (!Exist())
+            {
+                ID = landformInfo.GetNewEffectiveID();
+            }
+            LandformType = landformType;
+            Angle = angle;
+            return this;
+        }
+
         /// <summary>
         /// 是否存在地形?
         /// </summary>
         public bool Exist()
         {
-            return ID != EmptyMark;
+            return info.Exist();
         }
 
         /// <summary>
@@ -107,28 +134,9 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public LandformNode Destroy()
         {
-            return default(LandformNode);
-        }
-
-        /// <summary>
-        /// 更新建筑信息;
-        /// </summary>
-        public LandformNode Update(MapData data, int landformType, float angle)
-        {
-            return Update(data.Landform, landformType, angle);
-        }
-
-        /// <summary>
-        /// 更新建筑信息;
-        /// </summary>
-        public LandformNode Update(IdentifierGenerator landformInfo, int landformType, float angle)
-        {
-            if (!Exist())
-            {
-                ID = landformInfo.GetNewEffectiveID();
-            }
-            LandformType = landformType;
-            Angle = angle;
+            ID = default(uint);
+            LandformType = default(int);
+            Angle = default(int);
             return this;
         }
 

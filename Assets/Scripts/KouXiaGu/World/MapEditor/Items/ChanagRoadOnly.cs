@@ -12,7 +12,7 @@ namespace KouXiaGu.World.MapEditor
     /// <summary>
     /// 改变节点道路信息;
     /// </summary>
-    public class ChangeRoadOnly : EditNodeBase
+    public class ChangeRoadOnly : NodeEditBase
     {
         public ChangeRoadOnly(GameMap gameMap, int roadType) : base(gameMap)
         {

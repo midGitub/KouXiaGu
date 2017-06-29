@@ -10,9 +10,9 @@ namespace KouXiaGu.World.MapEditor
 {
 
 
-    public abstract class EditNodeBase : IEditOperation
+    public abstract class NodeEditBase : IEditOperation
     {
-        public EditNodeBase(GameMap data)
+        public NodeEditBase(GameMap data)
         {
             Data = data;
         }
