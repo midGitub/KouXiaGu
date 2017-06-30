@@ -12,36 +12,13 @@ namespace KouXiaGu.Globalization
     /// 语言包信息;
     /// </summary>
     [XmlType(LanguagePackXmlSerializer.RootName)]
-    public class LanguagePackHead
-    {
-        public LanguagePackHead()
-        {
-        }
-
-        public LanguagePackHead(string name, string locName)
-        {
-            Name = name;
-            LocName = locName;
-        }
-
-        [XmlAttribute(LanguagePackXmlSerializer.LanguageNameAttributeName)]
-        public string Name { get; internal set; }
-
-        [XmlAttribute(LanguagePackXmlSerializer.LanguageLocNameAttributeName)]
-        public string LocName { get; internal set; }
-    }
-
-    /// <summary>
-    /// 语言包信息;
-    /// </summary>
-    [XmlType(LanguagePackXmlSerializer.RootName)]
     public class LanguagePack : LanguagePackHead
     {
         public LanguagePack() : this(string.Empty, string.Empty)
         {
         }
 
-        public LanguagePack(LanguagePackHead head) : this(head.Name, head.LocName)
+        public LanguagePack(LanguagePackHead head) : this(head.Name, head.Language)
         {
         }
 

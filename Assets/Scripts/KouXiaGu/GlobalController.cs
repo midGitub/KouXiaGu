@@ -10,6 +10,7 @@ using System.Reflection;
 using KouXiaGu.Globalization;
 using System.Xml.Serialization;
 using System.IO;
+using System.Globalization;
 
 namespace KouXiaGu
 {
@@ -35,7 +36,7 @@ namespace KouXiaGu
         [ContextMenu("Test")]
         void Test()
         {
-            LanguagePack pack = new LanguagePack("www", "en")
+            LanguagePack pack = new LanguagePack("www", "Chinese")
             {
                 TextDictionary = new Dictionary<string, string>()
                 {
@@ -47,6 +48,7 @@ namespace KouXiaGu
 
             XmlSerializer serializer = new XmlSerializer(typeof(LanguagePack));
             serializer.SerializeXiaGu(pack, Path.Combine(Application.streamingAssetsPath, "Localization/test.xml"));
+            Debug.Log(Application.systemLanguage);
         }
     }
 }
