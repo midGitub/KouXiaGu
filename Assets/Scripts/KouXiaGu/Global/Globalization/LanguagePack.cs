@@ -73,5 +73,18 @@ namespace KouXiaGu.Globalization
             }
             return null;
         }
+
+        /// <summary>
+        /// 获取到对应的文本,若未找到则返回key;
+        /// </summary>
+        public string GetText(string key)
+        {
+            string text;
+            if (TextDictionary.TryGetValue(key, out text))
+            {
+                return text;
+            }
+            return key;
+        }
     }
 }
