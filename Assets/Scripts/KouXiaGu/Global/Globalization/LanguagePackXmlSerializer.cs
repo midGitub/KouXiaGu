@@ -10,6 +10,9 @@ using UnityEngine;
 namespace KouXiaGu.Globalization
 {
 
+    /// <summary>
+    /// 语言包序列化;
+    /// </summary>
     public class LanguagePackXmlSerializer
     {
         public LanguagePackXmlSerializer()

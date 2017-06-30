@@ -32,23 +32,31 @@ namespace KouXiaGu.Globalization
             get { return Pack.TextDictionary; }
         }
 
-
+        /// <summary>
+        /// 初始化默认;
+        /// </summary>
+        public static void Initialize()
+        {
+            Default = Create();
+        }
 
         public static Localization Create()
         {
             LanguagePackXmlSearcher searcher = new LanguagePackXmlSearcher();
-            var packs = searcher.Search();
-            return Create(packs);
+            var packs = searcher.EnumeratePacks().ToList();
+            var item = Create(packs);
+            LanguagePackStream.CloseAll(packs);
+            return item;
         }
 
-        public static Localization Create(IEnumerable<LanguagePackStream> packs)
+        public static Localization Create(ICollection<LanguagePackStream> packs)
         {
             ConfigReader configReader = new ConfigReader();
             var config = configReader.Read();
             return Create(packs, config);
         }
 
-        public static Localization Create(IEnumerable<LanguagePackStream> packs, LocalizationConfig config)
+        public static Localization Create(ICollection<LanguagePackStream> packs, LocalizationConfig config)
         {
             LanguagePackXmlSerializer serializer = new LanguagePackXmlSerializer();
             LanguagePackStream stream = config.Find(packs);

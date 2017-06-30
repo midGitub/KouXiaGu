@@ -22,7 +22,7 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 获取到指定语言文件,若未能找到合适的语言包则返回Null;
         /// </summary>
-        public T Find<T>(IEnumerable<T> packs)
+        public T Find<T>(ICollection<T> packs)
             where T : LanguagePackHead
         {
             if (packs == null)

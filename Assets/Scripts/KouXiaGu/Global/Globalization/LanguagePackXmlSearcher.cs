@@ -36,15 +36,15 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 搜索目录下的语言包文件;
         /// </summary>
-        public IEnumerable<LanguagePackStream> Search()
+        public IEnumerable<LanguagePackStream> EnumeratePacks()
         {
-            return Search(SearchDirectory, SearchPattern, SearchOption);
+            return EnumeratePacks(SearchDirectory, SearchPattern, SearchOption);
         }
 
         /// <summary>
         /// 搜索目录下的语言包文件;
         /// </summary>
-        public IEnumerable<LanguagePackStream> Search(string searchDirectory, string searchPattern, SearchOption searchOption)
+        public IEnumerable<LanguagePackStream> EnumeratePacks(string searchDirectory, string searchPattern, SearchOption searchOption)
         {
             var filePaths = Directory.GetFiles(searchDirectory, searchPattern, searchOption);
             LanguagePackStream pack;
