@@ -67,5 +67,10 @@ namespace KouXiaGu.Globalization
             }
             return packs;
         }
+
+        public static implicit operator Stream(LanguagePackStream pack)
+        {
+            return pack.Stream;
+        }
     }
 }

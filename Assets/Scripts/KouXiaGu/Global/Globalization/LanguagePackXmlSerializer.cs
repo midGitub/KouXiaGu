@@ -35,14 +35,6 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 反序列化;
         /// </summary>
-        public LanguagePack Deserialize(LanguagePackStream pack)
-        {
-            return Deserialize(pack.Stream);
-        }
-
-        /// <summary>
-        /// 反序列化;
-        /// </summary>
         public LanguagePack Deserialize(Stream stream)
         {
             return (LanguagePack)serializer.Deserialize(stream);

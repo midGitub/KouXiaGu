@@ -36,4 +36,19 @@ namespace KouXiaGu.Resources
     {
         IMultipleFilePath FilePath { get; set; }
     }
+
+    public static class ReadWriteExtensions
+    {
+        public static T ReadOrDefault<T>(this IReader<T> reader)
+        {
+            try
+            {
+                return reader.Read();
+            }
+            catch
+            {
+                return default(T);
+            }
+        }
+    }
 }

@@ -7,11 +7,21 @@ using System.Xml.Serialization;
 namespace KouXiaGu.Globalization
 {
 
+    public interface ILanguagePackHead
+    {
+        string Name { get; }
+
+        /// <summary>
+        /// 应该为小写;
+        /// </summary>
+        string Language { get; }
+    }
+
     /// <summary>
     /// 语言包信息;
     /// </summary>
     [XmlType(LanguagePackXmlSerializer.RootName)]
-    public class LanguagePackHead
+    public class LanguagePackHead : ILanguagePackHead
     {
         LanguagePackHead()
         {

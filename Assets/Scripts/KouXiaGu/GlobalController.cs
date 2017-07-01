@@ -32,6 +32,9 @@ namespace KouXiaGu
         [ContextMenu("Test")]
         void Test()
         {
+            //Localization.Initialize();
+            //Debug.Log(Localization.Pack.ToString());
+
             LanguagePack pack = new LanguagePack("www", "Chinese")
             {
                 TextDictionary = new Dictionary<string, string>()
@@ -48,13 +51,8 @@ namespace KouXiaGu
             using (Stream stream = file.LoadStream())
             {
                 serializer.Serialize(pack, stream);
-            }
-
-            LanguagePackXmlSearcher searcher = new LanguagePackXmlSearcher();
-            var packs = searcher.EnumeratePacks();
-
-            foreach (var packItem in packs)
-            {
+                stream.Seek(0, SeekOrigin.Begin);
+                var packItem = serializer.Deserialize(stream);
                 Debug.Log(packItem.ToString());
             }
         }

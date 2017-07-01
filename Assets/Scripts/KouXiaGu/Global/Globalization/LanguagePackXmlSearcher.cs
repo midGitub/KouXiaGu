@@ -47,8 +47,8 @@ namespace KouXiaGu.Globalization
         public IEnumerable<LanguagePackStream> EnumeratePacks(string searchDirectory, string searchPattern, SearchOption searchOption)
         {
             var filePaths = Directory.GetFiles(searchDirectory, searchPattern, searchOption);
-            LanguagePackStream pack;
-            FileStream fStream;
+            LanguagePackStream pack = null;
+            FileStream fStream = null;
 
             foreach (var filePath in filePaths)
             {
@@ -59,19 +59,20 @@ namespace KouXiaGu.Globalization
                 }
                 catch (Exception ex)
                 {
-                    pack = null;
-                    fStream = null;
                     Debug.LogWarning(ex);
                 }
 
                 if (pack != null)
                 {
+                    fStream.Seek(0, SeekOrigin.Begin);
                     yield return pack;
+                    pack = null;
                 }
                 else
                 {
                     fStream.Dispose();
                 }
+                fStream = null;
             }
         }
 

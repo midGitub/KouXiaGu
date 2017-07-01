@@ -23,7 +23,14 @@ namespace KouXiaGu
         /// </summary>
         public static bool IsUnityThread
         {
-            get { return Thread.CurrentThread.ManagedThreadId == mainThreadId; }
+            get
+            {
+#if UNITY_EDITOR
+                return !IsPlaying || Thread.CurrentThread.ManagedThreadId == mainThreadId;
+#else
+                return Thread.CurrentThread.ManagedThreadId == mainThreadId;
+#endif
+            }
         }
 
         /// <summary>
