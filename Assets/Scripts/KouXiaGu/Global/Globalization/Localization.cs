@@ -1,10 +1,10 @@
 ﻿using KouXiaGu.Concurrent;
+using KouXiaGu.Resources;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using KouXiaGu.Resources;
 
 namespace KouXiaGu.Globalization
 {
@@ -12,6 +12,7 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 本地化;
     /// </summary>
+    [ConsoleMethodsClass]
     public static class Localization
     {
         public static LanguagePack Pack { get; private set; }
@@ -33,6 +34,11 @@ namespace KouXiaGu.Globalization
         internal static IDictionary<string, string> TextDictionary
         {
             get { return Pack != null ? Pack.TextDictionary : null; }
+        }
+
+        public static int EntriesCount
+        {
+            get { return Pack != null ? Pack.TextDictionary.Count : 0; }
         }
 
         /// <summary>
@@ -68,7 +74,7 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 设置本地化文本(线程安全);
+        /// 设置并读取到本地化语言(线程安全);
         /// </summary>
         public static void SetLanguage(Stream stream)
         {
@@ -90,7 +96,7 @@ namespace KouXiaGu.Globalization
             ValidateThread();
 
             Pack = pack;
-            ObserverTracker();
+            ObserverTracker(pack);
         }
 
         /// <summary>
@@ -112,59 +118,45 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 将语言包推送到所有订阅者;
         /// </summary>
-        static void ObserverTracker()
+        static void ObserverTracker(LanguagePack pack)
         {
             foreach (var observer in observers)
             {
-                observer.OnLanguageUpdate(Pack);
+                try
+                {
+                    observer.OnLanguageUpdate(pack);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("在更新本地化文本时出现异常:" + ex);
+                }
             }
         }
 
         /// <summary>
-        /// 订阅到语言,需要在Unity线程调用;
+        /// 订阅到语言,若存在已经读取的语言包,则调用订阅者的OnLanguageUpdate(),否则在下次设置语言包时调用(需要在Unity线程调用);
+        /// 重复订阅返回异常,若调用OnLanguageUpdate()出现异常则直接弹出异常;
         /// </summary>
         public static IDisposable Subscribe(ILocalizationText observer)
         {
             ValidateThread();
-
             if (!observers.Add(observer))
             {
                 throw new ArgumentException("已经订阅到;");
             }
-            return new CollectionUnsubscriber<ILocalizationText>(observers, observer);
-        }
-
-        /// <summary>
-        /// 获取到对应文本,若不存在则返回key;
-        /// </summary>
-        public static string GetText(string key)
-        {
-            ValidateThread();
-
             if (Pack != null)
             {
-                string value;
-                if (Pack.TextDictionary.TryGetValue(key, out value))
+                try
                 {
-                    return value;
+                    observer.OnLanguageUpdate(Pack);
+                }
+                catch(Exception ex)
+                {
+                    observers.Remove(observer);
+                    throw ex;
                 }
             }
-            return key;
-        }
-
-        /// <summary>
-        /// 尝试获取到对应文本;
-        /// </summary>
-        public static bool TryGetText(string key, out string value)
-        {
-            ValidateThread();
-
-            if (Pack != null)
-            {
-                return Pack.TextDictionary.TryGetValue(key, out value);
-            }
-            value = string.Empty;
-            return false;
+            return new CollectionUnsubscriber<ILocalizationText>(observers, observer);
         }
 
         #region FindLanguagePack
@@ -232,8 +224,19 @@ namespace KouXiaGu.Globalization
         static T FindSystemLanguage<T>(IEnumerable<T> packs)
             where T : LanguagePackHead
         {
-            string language = Application.systemLanguage.ToString().ToLower();
+            string language = XiaGu.SystemLanguage.ToString().ToLower();
             return FindLanguage(packs, language);
+        }
+
+        #endregion
+
+
+        #region Console
+
+        [ConsoleMethod("localization_info", "输出本地化组件信息", IsDeveloperMethod = true)]
+        public static void LocalizationInfo()
+        {
+            Debug.Log("[Localization]语言:" + Language + ", 包名:" + LanguagePackName + " ,条目总数:" + EntriesCount + ";");
         }
 
         #endregion

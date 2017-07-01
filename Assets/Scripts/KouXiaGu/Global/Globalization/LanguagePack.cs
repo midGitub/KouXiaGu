@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -72,6 +69,27 @@ namespace KouXiaGu.Globalization
                 return array;
             }
             return null;
+        }
+
+        /// <summary>
+        /// 获取到对应文本,若不存在则返回key;
+        /// </summary>
+        public string GetText(string key)
+        {
+            string value;
+            if (TextDictionary.TryGetValue(key, out value))
+            {
+                return value;
+            }
+            return key;
+        }
+
+        /// <summary>
+        /// 尝试获取到对应文本;
+        /// </summary>
+        public bool TryGetText(string key, out string value)
+        {
+            return TextDictionary.TryGetValue(key, out value);
         }
 
         public override string ToString()

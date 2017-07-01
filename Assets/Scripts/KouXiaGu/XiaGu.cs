@@ -43,15 +43,16 @@ namespace KouXiaGu
         /// </summary>
         public static bool IsDeveloperMode { get; set; }
 
-        ///// <summary>
-        ///// 系统语言枚举;
-        ///// </summary>
-        //public static SystemLanguage SystemLanguage { get; private set; }
+        /// <summary>
+        /// 系统语言枚举;
+        /// </summary>
+        public static SystemLanguage SystemLanguage { get; private set; }
 
         internal static void Initialize()
         {
             mainThreadId = Thread.CurrentThread.ManagedThreadId;
             IsPlaying = true;
+            SystemLanguage = Application.systemLanguage;
         }
 
         [ConsoleMethod("developer", "开发者模式开关", "bool")]
