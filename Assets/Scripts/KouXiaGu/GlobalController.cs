@@ -2,15 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using System.Threading;
-using KouXiaGu.OperationRecord;
-using System.Reflection;
 using KouXiaGu.Globalization;
 using System.Xml.Serialization;
 using System.IO;
-using System.Globalization;
 
 namespace KouXiaGu
 {
@@ -46,9 +42,21 @@ namespace KouXiaGu
                 },
             };
 
-            XmlSerializer serializer = new XmlSerializer(typeof(LanguagePack));
-            serializer.SerializeXiaGu(pack, Path.Combine(Application.streamingAssetsPath, "Localization/test.xml"));
-            Debug.Log(Application.systemLanguage);
+            LanguagePackXmlSerializer serializer = new LanguagePackXmlSerializer();
+            LanguagePackFilePath file = new LanguagePackFilePath(pack);
+
+            using (Stream stream = file.LoadStream())
+            {
+                serializer.Serialize(pack, stream);
+            }
+
+            LanguagePackXmlSearcher searcher = new LanguagePackXmlSearcher();
+            var packs = searcher.EnumeratePacks();
+
+            foreach (var packItem in packs)
+            {
+                Debug.Log(packItem.ToString());
+            }
         }
     }
 }

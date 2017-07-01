@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Globalization
 {
 
-    public class LanguagePackStream : LanguagePack
+    public class LanguagePackStream : LanguagePackHead
     {
         public LanguagePackStream(string name, string locName, Stream stream) : base(name, locName)
         {
@@ -47,9 +47,9 @@ namespace KouXiaGu.Globalization
         /// <summary>
         /// 关闭所有,并且转换;
         /// </summary>
-        public static List<LanguagePack> CloseAndConvertAll(IEnumerable<LanguagePackStream> streams)
+        public static List<LanguagePackHead> CloseAndConvertAll(IEnumerable<LanguagePackStream> streams)
         {
-            List<LanguagePack> packs = new List<LanguagePack>();
+            var packs = new List<LanguagePackHead>();
             foreach (var stream in streams)
             {
                 try

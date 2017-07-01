@@ -22,9 +22,14 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static string AssetBundleDirectoryPath
         {
-            get { return assetBundleDirectoryPath; }
-            private set { assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles"); }
+            get { return string.IsNullOrEmpty(assetBundleDirectoryPath) ? GetAssetBundleDirectoryPath() : assetBundleDirectoryPath; }
         }
+
+        static string GetAssetBundleDirectoryPath()
+        {
+            return assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles");
+        }
+
 
 
         static string configDirectoryPath = string.Empty;
@@ -34,9 +39,14 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static string ConfigDirectoryPath
         {
-            get { return configDirectoryPath; }
-            private set { configDirectoryPath = Application.streamingAssetsPath; }
+            get { return string.IsNullOrEmpty(configDirectoryPath) ? GetConfigDirectoryPath() : configDirectoryPath; }
         }
+
+        static string GetConfigDirectoryPath()
+        {
+            return configDirectoryPath = Application.streamingAssetsPath;
+        }
+
 
 
         static string archiveDirectoryPath = string.Empty;
@@ -46,9 +56,14 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static string ArchiveDirectoryPath
         {
-            get { return archiveDirectoryPath; }
-            private set { archiveDirectoryPath = Path.Combine(Application.persistentDataPath, "Saves"); }
+            get { return string.IsNullOrEmpty(archiveDirectoryPath) ? GetArchiveDirectoryPath() : archiveDirectoryPath; }
         }
+
+        static string GetArchiveDirectoryPath()
+        {
+            return archiveDirectoryPath = Path.Combine(Application.persistentDataPath, "Saves");
+        }
+
 
 
         /// <summary>
@@ -58,9 +73,14 @@ namespace KouXiaGu.Resources
 
         public static string TempDirectoryPath
         {
-            get { return tempDirectoryPath; }
-            private set { tempDirectoryPath = Path.Combine(Application.streamingAssetsPath, "Temps"); }
+            get { return string.IsNullOrEmpty(tempDirectoryPath) ? GetTempDirectoryPath() : tempDirectoryPath; }
         }
+
+        static string GetTempDirectoryPath()
+        {
+            return tempDirectoryPath = Path.Combine(Application.streamingAssetsPath, "Temps");
+        }
+
 
 
         /// <summary>
@@ -68,10 +88,10 @@ namespace KouXiaGu.Resources
         /// </summary>
         public static void Initialize()
         {
-            AssetBundleDirectoryPath = AssetBundleDirectoryPath;
-            ConfigDirectoryPath = ConfigDirectoryPath;
-            ArchiveDirectoryPath = ArchiveDirectoryPath;
-            TempDirectoryPath = TempDirectoryPath;
+            GetAssetBundleDirectoryPath();
+            GetConfigDirectoryPath();
+            GetArchiveDirectoryPath();
+            GetTempDirectoryPath();
         }
 
         [ConsoleMethod("log_resource_path_info", "显示所有资源路径;", IsDeveloperMethod = true)]

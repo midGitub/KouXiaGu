@@ -55,7 +55,7 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
-        /// 订阅到语言;
+        /// 订阅到语言,需要在Unity线程调用;
         /// </summary>
         public static IDisposable Subscribe(ILocalizationText observer)
         {
@@ -73,7 +73,11 @@ namespace KouXiaGu.Globalization
         {
             if (Pack != null)
             {
-                return Pack.GetText(key);
+                string value;
+                if (Pack.TextDictionary.TryGetValue(key, out value))
+                {
+                    return value;
+                }
             }
             return key;
         }

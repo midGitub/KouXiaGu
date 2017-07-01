@@ -37,5 +37,10 @@ namespace KouXiaGu.Globalization
             get { return language; }
             internal set { language = value.ToLower(); }
         }
+
+        public override string ToString()
+        {
+            return "[Name:" + Name + ", Language:" + Language + "]";
+        }
     }
 }

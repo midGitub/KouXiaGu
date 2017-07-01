@@ -40,9 +40,9 @@ namespace KouXiaGu.Globalization
 
         Dictionary<string, string> ToDictionary(IEnumerable<KeyValuePair> keyValuePairs)
         {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
             if (keyValuePairs != null)
             {
-                Dictionary<string, string> dictionary = new Dictionary<string, string>();
                 foreach (var keyValuePair in keyValuePairs)
                 {
                     if (dictionary.ContainsKey(keyValuePair.Key))
@@ -56,7 +56,7 @@ namespace KouXiaGu.Globalization
                 }
                 return dictionary;
             }
-            return null;
+            return dictionary;
         }
 
         KeyValuePair[] ToArray(Dictionary<string, string> textDictionary)
@@ -74,17 +74,9 @@ namespace KouXiaGu.Globalization
             return null;
         }
 
-        /// <summary>
-        /// 获取到对应的文本,若未找到则返回key;
-        /// </summary>
-        public string GetText(string key)
+        public override string ToString()
         {
-            string text;
-            if (TextDictionary.TryGetValue(key, out text))
-            {
-                return text;
-            }
-            return key;
+            return "[Name:" + Name + ", Language:" + Language + ", TextItemCount:" + TextDictionary.Count + "]";
         }
     }
 }

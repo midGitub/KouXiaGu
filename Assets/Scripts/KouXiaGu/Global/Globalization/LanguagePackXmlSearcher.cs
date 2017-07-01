@@ -17,7 +17,7 @@ namespace KouXiaGu.Globalization
     {
         public LanguagePackXmlSearcher()
         {
-            SearchDirectory = Path.Combine(Resource.AssetBundleDirectoryPath, "Localization");
+            SearchDirectory = Path.Combine(Resource.ConfigDirectoryPath, "Localization");
             SearchPattern = "language_*.xml";
             SearchOption = SearchOption.AllDirectories;
         }

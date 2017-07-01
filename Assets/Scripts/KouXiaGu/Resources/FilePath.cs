@@ -27,9 +27,6 @@ namespace KouXiaGu.Resources
         public SingleFilePath(string directoryPath)
         {
             DirectoryPath = directoryPath;
-            string fullPath = GetFullPath();
-            string directoryName = Path.GetDirectoryName(fullPath);
-            Directory.CreateDirectory(directoryName);
         }
 
         public string DirectoryPath { get; set; }
@@ -42,9 +39,12 @@ namespace KouXiaGu.Resources
         /// <summary>
         /// 获取到文件路径;
         /// </summary>
-        public string GetFullPath()
+        public virtual string GetFullPath()
         {
-            return Path.Combine(DirectoryPath, FileName);
+            string fullPath = Path.Combine(DirectoryPath, FileName);
+            string directoryName = Path.GetDirectoryName(fullPath);
+            Directory.CreateDirectory(directoryName);
+            return fullPath;
         }
     }
 
