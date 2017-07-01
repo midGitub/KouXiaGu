@@ -1,7 +1,7 @@
-﻿using System;
+﻿using KouXiaGu.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.Globalization
 {
@@ -36,6 +36,8 @@ namespace KouXiaGu.Globalization
         {
             if (pack == null)
                 throw new ArgumentNullException("pack");
+            if (XiaGu.IsUnityThread)
+                throw new InvalidOperationException("仅允许在Unity线程调用;");
 
             Pack = pack;
             ObserverTracker();
@@ -95,7 +97,14 @@ namespace KouXiaGu.Globalization
         public static void Initialize()
         {
             var pack = Create();
-            SetLanguage(pack);
+            if (XiaGu.IsUnityThread)
+            {
+                SetLanguage(pack);
+            }
+            else
+            {
+                UnityAsyncRequestDispatcher.Instance.Add(() => SetLanguage(pack));
+            }
         }
 
         public static LanguagePack Create()

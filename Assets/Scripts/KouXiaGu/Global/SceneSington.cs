@@ -61,7 +61,7 @@ namespace KouXiaGu
                     else
                     {
                         Operate operate = new Operate(() => _instance = Find());
-                        UnityAsyncRequestDispatcher.Instance.AddQueue(operate);
+                        UnityAsyncRequestDispatcher.Instance.Add(operate);
                         while (!operate.IsCompleted)
                         {
                         }

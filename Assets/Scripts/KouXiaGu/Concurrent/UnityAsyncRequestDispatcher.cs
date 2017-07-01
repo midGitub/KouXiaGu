@@ -7,15 +7,21 @@ using UnityEngine;
 
 namespace KouXiaGu.Concurrent
 {
+
     /// <summary>
     /// 用于处理在Unity线程进行操作的异步请求;
     /// </summary>
-    public sealed class UnityAsyncRequestDispatcher : UnitySington<UnityAsyncRequestDispatcher>
+    public sealed class UnityAsyncRequestDispatcher : UnitySington<UnityAsyncRequestDispatcher>, IRequestDispatcher
     {
         object asyncLock;
         [SerializeField]
         Stopwatch runtimeStopwatch = new Stopwatch(0.2f);
         AsyncRequestQueue requestQueue;
+
+        public int RequestCount
+        {
+            get { return requestQueue.RequestCount; }
+        }
 
         void Awake()
         {
@@ -32,7 +38,7 @@ namespace KouXiaGu.Concurrent
             }
         }
 
-        public void AddQueue(IAsyncRequest request)
+        public void Add(IAsyncRequest request)
         {
             lock (asyncLock)
             {

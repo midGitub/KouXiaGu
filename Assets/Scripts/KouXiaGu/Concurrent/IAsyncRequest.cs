@@ -17,4 +17,36 @@ namespace KouXiaGu.Concurrent
         void Operate();
     }
 
+    public class AsyncRequest : IAsyncRequest
+    {
+        public AsyncRequest(Action action)
+        {
+            Action = action;
+        }
+
+        public bool IsInQueue { get; private set; }
+        public Action Action { get; private set; }
+
+        public void AddQueue()
+        {
+            IsInQueue = true;
+        }
+
+        public void Operate()
+        {
+            try
+            {
+                Action();
+            }
+            catch(Exception ex)
+            {
+                Debug.LogError(ex);
+            }
+            finally
+            {
+                IsInQueue = false;
+            }
+        }
+    }
+
 }

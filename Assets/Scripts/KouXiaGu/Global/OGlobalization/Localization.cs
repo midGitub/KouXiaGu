@@ -124,7 +124,7 @@ namespace KouXiaGu.OGlobalization
             {
                 UnityAsyncRequestDispatcher dispatcher = UnityAsyncRequestDispatcher.Instance;
                 TrackAllRequest operation = new TrackAllRequest(observerArray, textDictionary);
-                dispatcher.AddQueue(operation);
+                dispatcher.Add(operation);
             }
         }
 
