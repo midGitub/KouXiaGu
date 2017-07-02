@@ -35,20 +35,38 @@ namespace KouXiaGu
 
             IsInitialized = true;
 
-            CustomInput.ReadOrDefault();
-            OnCustomInputCompleted();
+            try
+            {
+                GameConsole.Initialize();
+                OnConsoleCompleted();
 
-            Localization.Initialize();
-            OnLocalizationCompleted();
+                Localization.Initialize();
+                OnLocalizationCompleted();
 
-            GameConsole.Initialize();
+                CustomInput.Initialize();
+                OnCustomInputCompleted();
+
+                OnCompleted();
+            }
+            catch (Exception ex)
+            {
+                OnFaulted(ex);
+            }
+        }
+
+        [Conditional("EDITOR_LOG")]
+        void OnConsoleCompleted()
+        {
+            const string prefix = "[控制台组件]";
+            string log = "初始化完成,开发者模式:" + XiaGu.IsDeveloperMode + " ,条目总数:";
+            UnityEngine.Debug.Log(prefix + log);
         }
 
         [Conditional("EDITOR_LOG")]
         void OnCustomInputCompleted()
         {
-            const string prefix = "[输入映射]";
-            var emptyKeys = CustomInput.GetEmptyKeys().ToList();
+            const string prefix = "[输入组件]";
+            var emptyKeys = CustomInput.KeyMap.GetEmptyKeys().ToList();
             if (emptyKeys.Count != 0)
             {
                 UnityEngine.Debug.LogWarning(prefix + "初始化成功;存在未定义的按键:" + emptyKeys.ToLog());
@@ -62,7 +80,7 @@ namespace KouXiaGu
         [Conditional("EDITOR_LOG")]
         void OnLocalizationCompleted()
         {
-            const string prefix = "[本地化]";
+            const string prefix = "[本地化组件]";
             string log = "初始化成功;条目总数:" + Localization.EntriesCount;
             UnityEngine.Debug.Log(prefix + log);
         }

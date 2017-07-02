@@ -14,25 +14,47 @@ namespace KouXiaGu.KeyInput
     /// </summary>
     public static class CustomInput
     {
-        static readonly KeyFunction[] functionArray = Enum.GetValues(typeof(KeyFunction)).
-            Cast<KeyFunction>().ToArray();
+        /// <summary>
+        /// 当前使用的按键映射;
+        /// </summary>
+        public static CustomKeyMap KeyMap { get; private set; }
 
-        public static IEnumerable<KeyFunction> FunctionKeys
+        /// <summary>
+        /// 初始化;
+        /// </summary>
+        public static void Initialize()
         {
-            get { return functionArray; }
+            var serializer = new CustomKeyMapXmlSerializer();
+            CustomKeyMap keyMap;
+            try
+            {
+                keyMap = serializer.Read();
+            }
+            catch(Exception ex)
+            {
+                Debug.LogWarning("未能读取自定义按键;" + ex);
+                keyMap = DefaultKeyMap.GetDefaultKeyMap();
+            }
+            SetKeyMap(keyMap);
         }
 
-        static readonly Dictionary<int, KeyCode> keyMap = 
-            functionArray.ToDictionary(function => new KeyValuePair<int, KeyCode>((int)function, KeyCode.None));
+        public static void SetKeyMap(CustomKeyMap keyMap)
+        {
+            KeyMap = keyMap;
+        }
 
 
         /// <summary>
         /// 获取到对应的 Unity.KeyCode;
         /// </summary>
-        public static KeyCode GetKey(KeyFunction function)
+        static KeyCode GetKey(KeyFunction function)
         {
-            KeyCode keycode = keyMap[(int)function];
-            return keycode;
+            if (KeyMap != null)
+            {
+                KeyCode keycode = KeyMap[(int)function];
+                return keycode;
+            }
+            return KeyCode.None;
         }
 
         /// <summary>
@@ -60,146 +82,6 @@ namespace KouXiaGu.KeyInput
         {
             KeyCode keycode = GetKey(function);
             return Input.GetKeyUp(keycode);
-        }
-
-
-        /// <summary>
-        /// 更新按键映射;
-        /// </summary>
-        public static void UpdateKey(IEnumerable<KeyValuePair<int, KeyCode>> customKeys)
-        {
-            foreach (var key in customKeys)
-            {
-                keyMap[key.Key] = key.Value;
-            }
-        }
-
-        /// <summary>
-        /// 更新按键映射;
-        /// </summary>
-        public static void UpdateKey(IEnumerable<CustomKey> customKeys)
-        {
-            foreach (var key in customKeys)
-            {
-                UpdateKey(key);
-            }
-        }
-
-        /// <summary>
-        /// 更新按键映射;
-        /// </summary>
-        public static void UpdateKey(CustomKey key)
-        {
-            UpdateKey(key.function, key.keyCode);
-        }
-
-        /// <summary>
-        /// 更新按键映射;
-        /// </summary>
-        public static void UpdateKey(KeyFunction function, KeyCode key)
-        {
-            keyMap[(int)function] = key;
-        }
-
-
-
-        /// <summary>
-        /// 获取到所有对应的按键信息;
-        /// </summary>
-        public static IEnumerable<CustomKey> GetKeys()
-        {
-            return keyMap.Select(pair => PairToCustomKey(pair));
-        }
-
-        static CustomKey PairToCustomKey(KeyValuePair<int, KeyCode> pair)
-        {
-            KeyFunction function = (KeyFunction)pair.Key;
-            KeyCode key = pair.Value;
-            return new CustomKey(function, key);
-        }
-
-        /// <summary>
-        /// 获取到所有按键值为空的功能键;
-        /// </summary>
-        public static IEnumerable<KeyFunction> GetEmptyKeys()
-        {
-            foreach (var key in keyMap)
-            {
-                if (key.Value == KeyCode.None)
-                {
-                    KeyFunction function = (KeyFunction)key.Key;
-                    yield return function;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 是为未设置 具体按键的 功能键;
-        /// </summary>
-        public static bool IsEmptyKey(KeyFunction function)
-        {
-            KeyCode keyCode = keyMap[(int)function];
-            return keyCode == KeyCode.None;
-        }
-
-
-
-        internal static readonly CustomKeyReader DefaultReader = new XmlCustomKeyReader();
-
-        public static void ReadOrDefault()
-        {
-            ReadOrDefault(DefaultReader);
-        }
-
-        public static void ReadOrDefault(CustomKeyReader reader)
-        {
-            try
-            {
-                IEnumerable<CustomKey> keys = reader.ReadKeys();
-                UpdateKey(keys);
-            }
-            catch(Exception ex)
-            {
-                Debug.LogWarning("读取定义按键失败,现在使用默认按键;" + ex);
-                IEnumerable<KeyValuePair<int, KeyCode>> keys = DefaultKeys.ReadOnlyKeys;
-                UpdateKey(keys);
-
-            }
-        }
-
-        /// <summary>
-        /// 从读取到所有按键信息,并且设置到按键;
-        /// </summary>
-        public static void Read()
-        {
-            Read(DefaultReader);
-        }
-
-        /// <summary>
-        /// 从读取到所有按键信息,并且设置到按键,若读取失败则使用默认按键;
-        /// </summary>
-        public static void Read(CustomKeyReader reader)
-        {
-            IEnumerable<CustomKey> keys;
-            keys = reader.ReadKeys();
-            UpdateKey(keys);
-        }
-
-        /// <summary>
-        /// 将所有按键输出\保存;
-        /// </summary>
-        public static void Write()
-        {
-            Write(DefaultReader);
-        }
-
-        /// <summary>
-        /// 将所有按键输出\保存;
-        /// </summary>
-        public static void Write(CustomKeyReader writer)
-        {
-            CustomKey[] keys = GetKeys().ToArray();
-            writer.WriteKeys(keys);
         }
     }
 }

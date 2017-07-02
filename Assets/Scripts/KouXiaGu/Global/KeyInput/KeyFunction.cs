@@ -8,8 +8,7 @@ namespace KouXiaGu.KeyInput
     /// </summary>
     public enum KeyFunction
     {
-        Camera_Rotate_Left,
-        Camera_Rotate_Right,
+        None = 0,
 
         Camera_movement_up,
         Camera_movement_down,
@@ -19,6 +18,4 @@ namespace KouXiaGu.KeyInput
 
         Console_DisplayOrHide,
     }
-
-
 }

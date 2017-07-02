@@ -40,6 +40,18 @@ namespace KouXiaGu
             resource.InitializeAsync(this);
         }
 
+        void Update()
+        {
+            if (ComponentInitialize.IsCompleted)
+            {
+                if (ComponentInitialize.IsFaulted)
+                {
+                    Debug.LogError("游戏初始化时遇到错误:" + ComponentInitialize.Exception);
+                }
+                enabled = false;
+            }
+        }
+
         protected override void OnDestroy()
         {
             base.OnDestroy();

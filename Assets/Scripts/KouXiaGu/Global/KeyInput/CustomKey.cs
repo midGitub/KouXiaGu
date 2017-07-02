@@ -1,8 +1,7 @@
-﻿using KouXiaGu.Resources;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -10,109 +9,10 @@ namespace KouXiaGu.KeyInput
 {
 
     /// <summary>
-    /// 按键读取;
-    /// </summary>
-    public abstract class CustomKeyReader
-    {
-        const string CustomKeyFileName = "Input\\Keyboard.xml";
-
-        static string CustomKeyFilePath
-        {
-            get { return Path.Combine(Resource.ConfigDirectoryPath, CustomKeyFileName); }
-        }
-
-        public abstract IEnumerable<CustomKey> ReadKeys(string filePath);
-        public abstract void WriteKeys(IEnumerable<CustomKey> keys, string filePath);
-
-        public virtual IEnumerable<CustomKey> ReadKeys()
-        {
-            return ReadKeys(CustomKeyFilePath);
-        }
-
-        public virtual void WriteKeys(IEnumerable<CustomKey> keys)
-        {
-            WriteKeys(keys, CustomKeyFilePath);
-        }
-    }
-
-    /// <summary>
-    /// 读取默认按键;
-    /// </summary>
-    public class DefaultCustomKeyReader : CustomKeyReader
-    {
-        const string DefaultCustomKeyFileName = "Input\\Default_Keyboard.xml";
-
-        static string DefaultCustomKeyFilePath
-        {
-            get { return Path.Combine(Resource.ConfigDirectoryPath, DefaultCustomKeyFileName); }
-        }
-
-        public DefaultCustomKeyReader(CustomKeyReader reader)
-        {
-            if (reader == null)
-                throw new ArgumentNullException("reader");
-
-            this.reader = reader;
-        }
-
-        CustomKeyReader reader;
-
-        public override IEnumerable<CustomKey> ReadKeys()
-        {
-            return ReadKeys(DefaultCustomKeyFilePath);
-        }
-
-        public override void WriteKeys(IEnumerable<CustomKey> keys)
-        {
-            WriteKeys(keys, DefaultCustomKeyFilePath);
-        }
-
-        public override IEnumerable<CustomKey> ReadKeys(string filePath)
-        {
-            return reader.ReadKeys(filePath);
-        }
-
-        public override void WriteKeys(IEnumerable<CustomKey> keys, string filePath)
-        {
-            reader.WriteKeys(keys, filePath);
-        }
-    }
-
-    /// <summary>
-    /// 读取Xml文件按键信息;
-    /// </summary>
-    public class XmlCustomKeyReader : CustomKeyReader
-    {
-        static readonly XmlSerializer keyArraySerializer = new XmlSerializer(typeof(CustomKey[]));
-
-        public XmlCustomKeyReader()
-        {
-        }
-
-        public override IEnumerable<CustomKey> ReadKeys(string filePath)
-        {
-            var customKeys = (CustomKey[])keyArraySerializer.DeserializeXiaGu(filePath);
-            return customKeys;
-        }
-
-        public override void WriteKeys(IEnumerable<CustomKey> keys, string filePath)
-        {
-            var keyArray = keys as CustomKey[] ?? keys.ToArray();
-            string directoryPath = Path.GetDirectoryName(filePath);
-
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-
-            keyArraySerializer.SerializeXiaGu(keyArray, filePath, FileMode.Create);
-        }
-
-    }
-
-    /// <summary>
     /// 自定义按键 和 UnityEngine.KeyCode 的映射;
     /// </summary>
     [XmlType("Key")]
-    public struct CustomKey : IEquatable<CustomKey>
+    public struct CustomKey : IEquatable<CustomKey>, IXmlSerializable
     {
         public CustomKey(KeyFunction function, KeyCode keyCode)
         {
@@ -135,8 +35,8 @@ namespace KouXiaGu.KeyInput
 
         public bool Equals(CustomKey other)
         {
-            return this.function == other.function &&
-                this.keyCode == other.keyCode;
+            return function == other.function &&
+                keyCode == other.keyCode;
         }
 
         public override int GetHashCode()
@@ -149,6 +49,43 @@ namespace KouXiaGu.KeyInput
             return "Function:" + function.ToString() + ";Key:" + keyCode.ToString();
         }
 
-    }
 
+        XmlSchema IXmlSerializable.GetSchema()
+        {
+            return null;
+        }
+
+        void IXmlSerializable.ReadXml(XmlReader reader)
+        {
+            string function = reader.GetAttribute("function");
+            string keyCode = reader.GetAttribute("key");
+            reader.Read();
+
+            try
+            {
+                this.function = (KeyFunction)Enum.Parse(typeof(KeyFunction), function, true);
+                this.keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), keyCode, true);
+            }
+            catch
+            {
+                Debug.LogWarning("未知功能键:" + function);
+            }
+        }
+
+        void IXmlSerializable.WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString("function", function.ToString());
+            writer.WriteAttributeString("key", keyCode.ToString());
+        }
+
+        public static implicit operator KeyValuePair<KeyFunction, KeyCode>(CustomKey custom)
+        {
+            return new KeyValuePair<KeyFunction, KeyCode>(custom.function, custom.keyCode);
+        }
+
+        public static implicit operator KeyValuePair<int, KeyCode>(CustomKey custom)
+        {
+            return new KeyValuePair<int, KeyCode>((int)custom.function, custom.keyCode);
+        }
+    }
 }
