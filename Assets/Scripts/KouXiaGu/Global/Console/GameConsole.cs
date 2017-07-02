@@ -28,6 +28,9 @@ namespace KouXiaGu
             get { return logger.Input; }
         }
 
+        /// <summary>
+        /// 初始化;
+        /// </summary>
         internal static void Initialize()
         {
             ConsoleMethodsReflection.SearchMethod(input.methodMap);

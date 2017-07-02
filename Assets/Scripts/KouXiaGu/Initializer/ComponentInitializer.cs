@@ -28,7 +28,7 @@ namespace KouXiaGu
             ThreadPool.QueueUserWorkItem(Initialize, state);
         }
 
-        public void Initialize(object s)
+        public void Initialize(object state)
         {
             if (IsInitialized)
                 throw new ArgumentException("已经在初始化中;");
@@ -81,7 +81,7 @@ namespace KouXiaGu
         void OnLocalizationCompleted()
         {
             const string prefix = "[本地化组件]";
-            string log = "初始化成功;条目总数:" + Localization.EntriesCount;
+            string log = "初始化成功;";
             UnityEngine.Debug.Log(prefix + log);
         }
     }
