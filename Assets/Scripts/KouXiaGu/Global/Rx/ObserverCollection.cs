@@ -27,6 +27,11 @@ namespace KouXiaGu
         IEnumerable<T> EnumerateObserver();
 
         /// <summary>
+        /// 确认是否存在此元素;
+        /// </summary>
+        bool Contains(T item);
+
+        /// <summary>
         /// 清除所有观察者;
         /// </summary>
         void Clear();
@@ -79,6 +84,11 @@ namespace KouXiaGu
                 currentNode = currentNode.Next;
                 yield return observer;
             }
+        }
+
+        public bool Contains(T item)
+        {
+            return observersCollection.Contains(item);
         }
 
         public void Clear()
@@ -188,6 +198,11 @@ namespace KouXiaGu
         {
             T[] observerArray = observersCollection.ToArray();
             return observerArray;
+        }
+
+        public bool Contains(T item)
+        {
+            return observersCollection.Contains(item);
         }
 
         public void Clear()

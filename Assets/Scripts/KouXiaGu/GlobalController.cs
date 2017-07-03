@@ -7,6 +7,7 @@ using System.Threading;
 using KouXiaGu.Globalization;
 using System.Xml.Serialization;
 using System.IO;
+using KouXiaGu.Diagnostics;
 
 namespace KouXiaGu
 {
@@ -32,29 +33,11 @@ namespace KouXiaGu
         [ContextMenu("Test")]
         void Test()
         {
-            Localization.Initialize();
-            Debug.Log(Localization.Pack.ToString());
-
-            //LanguagePack pack = new LanguagePack("www", "Chinese")
-            //{
-            //    TextDictionary = new Dictionary<string, string>()
-            //    {
-            //        { "1", "111" },
-            //        { "2", "211" },
-            //        { "3", "311" },
-            //    },
-            //};
-
-            //LanguagePackXmlSerializer serializer = new LanguagePackXmlSerializer();
-            //LanguagePackFilePath file = new LanguagePackFilePath(pack);
-
-            //using (Stream stream = file.LoadStream())
-            //{
-            //    serializer.Serialize(pack, stream);
-            //    stream.Seek(0, SeekOrigin.Begin);
-            //    var packItem = serializer.Deserialize(stream);
-            //    Debug.Log(packItem.ToString());
-            //}
+            LogRecorder recorder = new LogRecorder(10);
+            recorder.Log("今年过节不收礼,收礼只收脑白金;");
+            Debug.Log(recorder.GetText());
+            recorder.Log("又喝成长快了啦!");
+            Debug.Log(recorder.GetText());
         }
     }
 }

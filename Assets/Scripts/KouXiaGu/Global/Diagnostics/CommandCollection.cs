@@ -24,8 +24,6 @@ namespace KouXiaGu.Diagnostics
         /// </summary>
         internal IDictionary<string, CommandGroup> CommandDictionary { get; private set; }
 
-        static readonly char[] separator = new char[] { ' ' };
-
         /// <summary>
         /// 获取到对应的方法和应该传入的参数;
         /// </summary>
@@ -34,6 +32,8 @@ namespace KouXiaGu.Diagnostics
             string key;
             return Find(message, out key, out parameters);
         }
+
+        static readonly char[] separator = new char[] { ' ' };
 
         /// <summary>
         /// 获取到对应的方法和应该传入的参数;

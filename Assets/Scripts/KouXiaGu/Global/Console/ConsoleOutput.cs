@@ -103,11 +103,18 @@ namespace KouXiaGu
             LogError(message);
         }
 
+        //static readonly string[] separator = new string[] { "color" };
 
         void AddLog(string message)
         {
             if (Text.Length >= 10000)
                 Clear();
+
+            //string[] messages = message.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+            //foreach (var item in message)
+            //{
+            //    Text += item + Environment.NewLine;
+            //}
 
             Text += message + Environment.NewLine;
         }
