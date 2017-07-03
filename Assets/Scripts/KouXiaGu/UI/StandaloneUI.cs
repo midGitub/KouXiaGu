@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using KouXiaGu.KeyInput;
+using KouXiaGu.InputControl;
 using UnityEngine.Events;
 
 namespace KouXiaGu.UI

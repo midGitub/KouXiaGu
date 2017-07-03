@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using System.Xml.Serialization;
 
-namespace KouXiaGu.KeyInput
+namespace KouXiaGu.InputControl
 {
 
     /// <summary>
@@ -197,6 +197,42 @@ namespace KouXiaGu.KeyInput
                     yield return function;
                 }
             }
+        }
+
+        /// <summary>
+        /// 获取到对应的 Unity.KeyCode;
+        /// </summary>
+        KeyCode GetKey(KeyFunction function)
+        {
+            KeyCode keycode = keyMap[(int)function];
+            return keycode;
+        }
+
+        /// <summary>
+        /// 用户有按着 相关按键 时一直返回true;
+        /// </summary>
+        public bool GetKeyHold(KeyFunction function)
+        {
+            KeyCode keycode = GetKey(function);
+            return Input.GetKey(keycode);
+        }
+
+        /// <summary>
+        /// 用户开始按下 相关按键 关键帧时返回true。
+        /// </summary>
+        public bool GetKeyDown(KeyFunction function)
+        {
+            KeyCode keycode = GetKey(function);
+            return Input.GetKeyDown(keycode);
+        }
+
+        /// <summary>
+        /// 用户释放 相关按键 的关键帧时返回true。
+        /// </summary>
+        public bool GetKeyUp(KeyFunction function)
+        {
+            KeyCode keycode = GetKey(function);
+            return Input.GetKeyUp(keycode);
         }
     }
 }

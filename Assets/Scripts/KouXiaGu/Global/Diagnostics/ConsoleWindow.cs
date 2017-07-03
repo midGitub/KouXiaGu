@@ -24,6 +24,7 @@ namespace KouXiaGu.Diagnostics
         public InputField InputField = null;
         public RichTextStyleConverter StyleConverter = null;
         LogRecorder logRecorder;
+        Recorder<string> inputRecorder;
 
         void Awake()
         {
@@ -31,6 +32,8 @@ namespace KouXiaGu.Diagnostics
             logRecorder = new LogRecorder(StyleConverter);
             logRecorder.OnTextChanged += OnTextChanged;
             XiaGuConsole.Subscribe(logRecorder);
+
+            inputRecorder = new Recorder<string>();
         }
 
         void OnTextChanged(LogRecorder recorder)

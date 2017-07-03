@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KouXiaGu.KeyInput
+namespace KouXiaGu.InputControl
 {
 
     /// <summary>

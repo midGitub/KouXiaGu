@@ -1,4 +1,4 @@
-﻿using KouXiaGu.KeyInput;
+﻿using KouXiaGu.InputControl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -195,19 +195,19 @@ namespace KouXiaGu.Cameras
         /// </summary>
         void MovementRespond(ref Vector3 position)
         {
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_up))
+            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_up))
             {
                 position.z += movementRatio * Time.deltaTime;
             }
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_down))
+            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_down))
             {
                 position.z -= movementRatio * Time.deltaTime;
             }
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_left))
+            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_left))
             {
                 position.x -= movementRatio * Time.deltaTime;
             }
-            if (CustomInput.GetKeyHoldDown(KeyFunction.Camera_movement_right))
+            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_right))
             {
                 position.x += movementRatio * Time.deltaTime;
             }
@@ -269,7 +269,7 @@ namespace KouXiaGu.Cameras
         /// </summary>
         void CameraRetrunRespond()
         {
-            if (CustomInput.GetKeyDown(KeyFunction.Camera_return))
+            if (KeyInput.GetKeyDown(KeyFunction.Camera_return))
             {
                 CameraRetrun();
             }

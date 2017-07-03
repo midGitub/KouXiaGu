@@ -5,10 +5,11 @@
 using System;
 using System.Linq;
 using KouXiaGu.Globalization;
-using KouXiaGu.KeyInput;
+using KouXiaGu.InputControl;
 using System.Threading;
 using KouXiaGu.Concurrent;
 using System.Diagnostics;
+using KouXiaGu.Diagnostics;
 
 namespace KouXiaGu
 {
@@ -37,13 +38,16 @@ namespace KouXiaGu
 
             try
             {
+                XiaGuConsole.Initialize();
+                OnXiaGuConsoleCompleted();
+
                 GameConsole.Initialize();
                 OnConsoleCompleted();
 
                 Localization.Initialize();
                 OnLocalizationCompleted();
 
-                CustomInput.Initialize();
+                KeyInput.Initialize();
                 OnCustomInputCompleted();
 
                 OnCompleted();
@@ -52,6 +56,14 @@ namespace KouXiaGu
             {
                 OnFaulted(ex);
             }
+        }
+
+        [Conditional("EDITOR_LOG")]
+        void OnXiaGuConsoleCompleted()
+        {
+            const string prefix = "[虾蛄控制台组件]";
+            string log = "初始化完成,开发者模式:" + XiaGuConsole.IsDeveloperMode + " ,条目总数:" + XiaGuConsole.CommandCollection.Count;
+            UnityEngine.Debug.Log(prefix + log);
         }
 
         [Conditional("EDITOR_LOG")]
@@ -66,7 +78,7 @@ namespace KouXiaGu
         void OnCustomInputCompleted()
         {
             const string prefix = "[输入组件]";
-            var emptyKeys = CustomInput.KeyMap.GetEmptyKeys().ToList();
+            var emptyKeys = KeyInput.KeyMap.GetEmptyKeys().ToList();
             if (emptyKeys.Count != 0)
             {
                 UnityEngine.Debug.LogWarning(prefix + "初始化成功;存在未定义的按键:" + emptyKeys.ToLog());

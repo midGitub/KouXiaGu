@@ -6,18 +6,19 @@ using System.Xml.Serialization;
 using System.IO;
 using KouXiaGu.Collections;
 
-namespace KouXiaGu.KeyInput
+namespace KouXiaGu.InputControl
 {
 
     /// <summary>
     /// 对 UnityEngine.Input 进行包装,加入自定义按键;
     /// </summary>
-    public static class CustomInput
+    public static class KeyInput
     {
         /// <summary>
         /// 当前使用的按键映射;
         /// </summary>
         public static CustomKeyMap KeyMap { get; private set; }
+        public static OccupiedInput OccupiedInput { get; private set; }
 
         /// <summary>
         /// 初始化;
@@ -38,16 +39,18 @@ namespace KouXiaGu.KeyInput
             SetKeyMap(keyMap);
         }
 
+        /// <summary>
+        /// 更新按键映射;
+        /// </summary>
         public static void SetKeyMap(CustomKeyMap keyMap)
         {
             KeyMap = keyMap;
         }
 
-
         /// <summary>
         /// 获取到对应的 Unity.KeyCode;
         /// </summary>
-        static KeyCode GetKey(KeyFunction function)
+        public static KeyCode GetKey(KeyFunction function)
         {
             if (KeyMap != null)
             {
@@ -60,10 +63,9 @@ namespace KouXiaGu.KeyInput
         /// <summary>
         /// 用户有按着 相关按键 时一直返回true;
         /// </summary>
-        public static bool GetKeyHoldDown(KeyFunction function)
+        public static bool GetKeyHold(KeyFunction function)
         {
-            KeyCode keycode = GetKey(function);
-            return Input.GetKey(keycode);
+            return KeyMap != null && KeyMap.GetKeyHold(function);
         }
 
         /// <summary>
@@ -71,8 +73,7 @@ namespace KouXiaGu.KeyInput
         /// </summary>
         public static bool GetKeyDown(KeyFunction function)
         {
-            KeyCode keycode = GetKey(function);
-            return Input.GetKeyDown(keycode);
+            return KeyMap != null && KeyMap.GetKeyDown(function);
         }
 
         /// <summary>
@@ -80,8 +81,7 @@ namespace KouXiaGu.KeyInput
         /// </summary>
         public static bool GetKeyUp(KeyFunction function)
         {
-            KeyCode keycode = GetKey(function);
-            return Input.GetKeyUp(keycode);
+            return KeyMap != null && KeyMap.GetKeyUp(function);
         }
     }
 }

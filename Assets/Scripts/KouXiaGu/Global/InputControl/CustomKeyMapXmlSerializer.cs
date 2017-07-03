@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 
-namespace KouXiaGu.KeyInput
+namespace KouXiaGu.InputControl
 {
 
 

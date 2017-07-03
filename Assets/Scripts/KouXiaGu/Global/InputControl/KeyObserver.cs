@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.KeyInput
+namespace KouXiaGu.InputControl
 {
 
     public class KeyDownObserver : UnityThreadBehaviour
@@ -20,7 +20,7 @@ namespace KouXiaGu.KeyInput
 
         protected override void OnNext()
         {
-            if (CustomInput.GetKeyDown(Key))
+            if (KeyInput.GetKeyDown(Key))
             {
                 onKeyDown();
             }

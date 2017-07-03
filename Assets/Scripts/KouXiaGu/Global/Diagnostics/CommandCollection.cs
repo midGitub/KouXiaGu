@@ -24,6 +24,11 @@ namespace KouXiaGu.Diagnostics
         /// </summary>
         internal IDictionary<string, CommandGroup> CommandDictionary { get; private set; }
 
+        public int Count
+        {
+            get { return CommandDictionary.Count; }
+        }
+
         /// <summary>
         /// 获取到对应的方法和应该传入的参数;
         /// </summary>

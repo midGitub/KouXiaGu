@@ -1,5 +1,5 @@
 ﻿using System;
-using KouXiaGu.KeyInput;
+using KouXiaGu.InputControl;
 using UnityEngine;
 using UnityEngine.UI;
 
