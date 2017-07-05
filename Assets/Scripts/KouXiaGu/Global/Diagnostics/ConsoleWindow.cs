@@ -28,6 +28,11 @@ namespace KouXiaGu.Diagnostics
         Recorder<string> inputRecorder;
         IKeyInput keyInput;
 
+        public static bool IsDisplay
+        {
+            get { return Instance.gameObject.activeSelf; }
+        }
+
         void Awake()
         {
             SetInstance(this);
@@ -69,9 +74,9 @@ namespace KouXiaGu.Diagnostics
                     InputField.text = inputRecorder.GetNext();
                     InputField.MoveTextEnd(false);
                 }
-                if (keyInput.GetKeyDown(KeyCode.Escape))
+                if (keyInput.GetKeyDown(KeyCode.Escape) || keyInput.GetKeyDown(KeyCode.BackQuote)) 
                 {
-                    SetActive(false);
+                    SetDisplay(false);
                 }
             }
         }
@@ -90,7 +95,7 @@ namespace KouXiaGu.Diagnostics
             OutputTextObject.text = recorder.GetText();
         }
 
-        public static void SetActive(bool isActive)
+        public static void SetDisplay(bool isActive)
         {
             Instance.gameObject.SetActive(isActive);
         }
