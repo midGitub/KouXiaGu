@@ -8,15 +8,15 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 命令组;
     /// </summary>
-    public class CommandGroup : ICollection<ICommandItem>
+    public class ConsoleMethodGroup : ICollection<IConsoleMethod>
     {
-        public CommandGroup(string key)
+        public ConsoleMethodGroup(string key)
         {
             Key = key;
-            commandItems = new List<ICommandItem>();
+            commandItems = new List<IConsoleMethod>();
         }
 
-        readonly List<ICommandItem> commandItems;
+        readonly List<IConsoleMethod> commandItems;
         public string Key { get; private set; }
 
         public int Count
@@ -24,7 +24,7 @@ namespace KouXiaGu.Diagnostics
             get { return commandItems.Count; }
         }
 
-        bool ICollection<ICommandItem>.IsReadOnly
+        bool ICollection<IConsoleMethod>.IsReadOnly
         {
             get { return false; }
         }
@@ -53,18 +53,18 @@ namespace KouXiaGu.Diagnostics
         /// <summary>
         /// 获取到对应的方法;
         /// </summary>
-        public ICommandItem Find(string key, int parameterCount)
+        public IConsoleMethod Find(string key, int parameterCount)
         {
             int index = commandItems.FindIndex(item => item.ParameterNumber == parameterCount);
             if (index >= 0)
             {
-                ICommandItem item = commandItems[index];
+                IConsoleMethod item = commandItems[index];
                 return item;
             }
             return null;
         }
 
-        public void Add(ICommandItem item)
+        public void Add(IConsoleMethod item)
         {
             if (item == null)
                 throw new ArgumentNullException("item");
@@ -74,7 +74,7 @@ namespace KouXiaGu.Diagnostics
             commandItems.Add(item);
         }
 
-        public bool Remove(ICommandItem item)
+        public bool Remove(IConsoleMethod item)
         {
             return commandItems.Remove(item);
         }
@@ -84,7 +84,7 @@ namespace KouXiaGu.Diagnostics
             return commandItems.Contains(item => item.ParameterNumber == contentNumber);
         }
 
-        public bool Contains(ICommandItem item)
+        public bool Contains(IConsoleMethod item)
         {
             return commandItems.Contains(item);
         }
@@ -94,12 +94,12 @@ namespace KouXiaGu.Diagnostics
             commandItems.Clear();
         }
 
-        void ICollection<ICommandItem>.CopyTo(ICommandItem[] array, int arrayIndex)
+        void ICollection<IConsoleMethod>.CopyTo(IConsoleMethod[] array, int arrayIndex)
         {
             commandItems.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<ICommandItem> GetEnumerator()
+        public IEnumerator<IConsoleMethod> GetEnumerator()
         {
             return commandItems.GetEnumerator();
         }

@@ -15,12 +15,12 @@ namespace KouXiaGu.Diagnostics
     {
         static XiaGuConsole()
         {
-            CommandCollection = new CommandCollection();
+            CommandCollection = new ConsoleMethodCollection();
             loggerGroup = new ObservableLogger();
         }
 
         static readonly ObservableLogger loggerGroup;
-        public static CommandCollection CommandCollection { get; private set; }
+        public static ConsoleMethodCollection CommandCollection { get; private set; }
         public static bool IsSubscribeUnityDebug { get; private set; }
         static readonly ILogHandler defaultLogHandler = Debug.logger.logHandler;
 
@@ -37,7 +37,7 @@ namespace KouXiaGu.Diagnostics
         /// </summary>
         internal static void Initialize()
         {
-            ReflectionCommands.SearchMethod(CommandCollection);
+            ReflectionConsoleMethods.SearchMethod(CommandCollection);
         }
 
         /// <summary>
@@ -117,6 +117,31 @@ namespace KouXiaGu.Diagnostics
         {
             string message = string.Format(format, args);
             LogError(message);
+        }
+
+        /// <summary>
+        /// 执行对应操作;
+        /// </summary>
+        public static void Operate(string message)
+        {
+            try
+            {
+                string[] parameters;
+                var operater = CommandCollection.Find(message, out parameters);
+                if (operater == null || (operater.IsDeveloperMethod && !XiaGu.IsDeveloperMode))
+                {
+                    LogWarning("未知命令:" + message);
+                }
+                else
+                {
+                    operater.Operate(parameters);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                LogError("命令出现异常:" + ex);
+            }
         }
 
         /// <summary>

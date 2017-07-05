@@ -7,14 +7,14 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 控制台命令合集;
     /// </summary>
-    public class CommandCollection
+    public class ConsoleMethodCollection
     {
-        public CommandCollection()
+        public ConsoleMethodCollection()
         {
-            CommandDictionary = new Dictionary<string, CommandGroup>();
+            CommandDictionary = new Dictionary<string, ConsoleMethodGroup>();
         }
 
-        public CommandCollection(IDictionary<string, CommandGroup> commandDictionary)
+        public ConsoleMethodCollection(IDictionary<string, ConsoleMethodGroup> commandDictionary)
         {
             CommandDictionary = commandDictionary;
         }
@@ -22,7 +22,7 @@ namespace KouXiaGu.Diagnostics
         /// <summary>
         /// 命令合集;
         /// </summary>
-        internal IDictionary<string, CommandGroup> CommandDictionary { get; private set; }
+        internal IDictionary<string, ConsoleMethodGroup> CommandDictionary { get; private set; }
 
         public int Count
         {
@@ -32,7 +32,7 @@ namespace KouXiaGu.Diagnostics
         /// <summary>
         /// 获取到对应的方法和应该传入的参数;
         /// </summary>
-        public ICommandItem Find(string message, out string[] parameters)
+        public IConsoleMethod Find(string message, out string[] parameters)
         {
             string key;
             return Find(message, out key, out parameters);
@@ -43,11 +43,11 @@ namespace KouXiaGu.Diagnostics
         /// <summary>
         /// 获取到对应的方法和应该传入的参数;
         /// </summary>
-        public ICommandItem Find(string message, out string key, out string[] parameters)
+        public IConsoleMethod Find(string message, out string key, out string[] parameters)
         {
             string[] words = message.Split(separator, StringSplitOptions.RemoveEmptyEntries);
             key = words[0];
-            CommandGroup commandGroup;
+            ConsoleMethodGroup commandGroup;
 
             if (CommandDictionary.TryGetValue(key, out commandGroup))
             {
@@ -63,19 +63,19 @@ namespace KouXiaGu.Diagnostics
         /// <summary>
         /// 添加方法到,若已经存在则返回异常;
         /// </summary>
-        public void Add(string key, ICommandItem commandItem)
+        public void Add(string key, IConsoleMethod commandItem)
         {
             if (commandItem == null)
                 throw new ArgumentNullException("commandItem");
 
-            CommandGroup commandGroup;
+            ConsoleMethodGroup commandGroup;
             if (CommandDictionary.TryGetValue(key, out commandGroup))
             {
                 commandGroup.Add(commandItem);
             }
             else
             {
-                commandGroup = new CommandGroup(key);
+                commandGroup = new ConsoleMethodGroup(key);
                 commandGroup.Add(commandItem);
                 CommandDictionary.Add(key, commandGroup);
             }

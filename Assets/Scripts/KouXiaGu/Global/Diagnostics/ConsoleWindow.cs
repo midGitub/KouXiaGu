@@ -50,33 +50,14 @@ namespace KouXiaGu.Diagnostics
             {
                 if (keyInput.GetKeyDown(KeyCode.Return) || keyInput.GetKeyDown(KeyCode.KeypadEnter))
                 {
-                    try
+                    string message = InputField.text;
+                    if (message != string.Empty)
                     {
-                        string message = InputField.text;
-                        if (message != string.Empty)
-                        {
-                            inputRecorder.Add(message);
-                            string[] parameters;
-                            var operater = XiaGuConsole.CommandCollection.Find(message, out parameters);
-                            if (operater == null)
-                            {
-                                Debug.LogWarning("未知命令:" + message);
-                            }
-                            else
-                            {
-                                operater.Operate(parameters);
-                                InputField.text = string.Empty;
-                            }
-                        }
+                        inputRecorder.Add(message);
+                        XiaGuConsole.Operate(message);
+                        InputField.text = string.Empty;
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.LogError("命令出现异常:" + ex);
-                    }
-                    finally
-                    {
-                        InputField.ActivateInputField();
-                    }
+                    InputField.ActivateInputField();
                 }
                 if (keyInput.GetKeyDown(KeyCode.UpArrow))
                 {
@@ -87,6 +68,10 @@ namespace KouXiaGu.Diagnostics
                 {
                     InputField.text = inputRecorder.GetNext();
                     InputField.MoveTextEnd(false);
+                }
+                if (keyInput.GetKeyDown(KeyCode.Escape))
+                {
+                    SetActive(false);
                 }
             }
         }
@@ -103,6 +88,11 @@ namespace KouXiaGu.Diagnostics
         void OnTextChanged(LogRecorder recorder)
         {
             OutputTextObject.text = recorder.GetText();
+        }
+
+        public static void SetActive(bool isActive)
+        {
+            Instance.gameObject.SetActive(isActive);
         }
     }
 }

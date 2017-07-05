@@ -9,22 +9,22 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 通过反射获取到控制台方法条目;
     /// </summary>
-    public static class ReflectionCommands
+    public static class ReflectionConsoleMethods
     {
 
         /// <summary>
         /// 把程序集所有标记了特性的方法到合集;
         /// </summary>
-        public static void SearchMethod(CommandCollection commandDictionary)
+        public static void SearchMethod(ConsoleMethodCollection commandDictionary)
         {
-            Assembly assembly = typeof(ReflectionCommands).Assembly;
+            Assembly assembly = typeof(ReflectionConsoleMethods).Assembly;
             SearchMethod(assembly, commandDictionary);
         }
 
         /// <summary>
         /// 把程序集所有标记了特性的方法到合集;
         /// </summary>
-        public static void SearchMethod(Assembly assembly, CommandCollection commandDictionary)
+        public static void SearchMethod(Assembly assembly, ConsoleMethodCollection commandDictionary)
         {
             var types = assembly.GetTypes();
             foreach (var type in types)
@@ -40,7 +40,7 @@ namespace KouXiaGu.Diagnostics
         /// <summary>
         /// 把所有标记了的公共静态方法加入到合集;
         /// </summary>
-        static void SearchMethod(Type classType, CommandCollection commandDictionary)
+        static void SearchMethod(Type classType, ConsoleMethodCollection commandDictionary)
         {
             MethodInfo[] methods = classType.GetMethods(BindingFlags.Static | BindingFlags.Public);
             foreach (var method in methods)
@@ -49,7 +49,7 @@ namespace KouXiaGu.Diagnostics
                 if (attributes.Length > 0)
                 {
                     var attribute = (ConsoleMethodAttribute)attributes[0];
-                    ReflectionCommandItem commandItem = new ReflectionCommandItem(method, attribute.Message, attribute.IsDeveloperMethod);
+                    ReflectionConsoleMethod commandItem = new ReflectionConsoleMethod(method, attribute.Message, attribute.IsDeveloperMethod);
                     commandDictionary.Add(attribute.Key, commandItem);
                 }
             }
@@ -94,9 +94,9 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 反射获取的命令条目;
     /// </summary>
-    public class ReflectionCommandItem : ICommandItem
+    public class ReflectionConsoleMethod : IConsoleMethod
     {
-        public ReflectionCommandItem(MethodInfo methodInfo, string message, bool isDeveloperMethod)
+        public ReflectionConsoleMethod(MethodInfo methodInfo, string message, bool isDeveloperMethod)
         {
             MethodInfo = methodInfo;
             ParameterNumber = methodInfo.GetParameters().Length;

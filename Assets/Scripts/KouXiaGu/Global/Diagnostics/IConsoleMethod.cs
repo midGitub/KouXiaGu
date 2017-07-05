@@ -9,7 +9,7 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 命令条目接口;
     /// </summary>
-    public interface ICommandItem
+    public interface IConsoleMethod
     {
         /// <summary>
         /// 是否为开发模式的方法?

@@ -6,9 +6,9 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 委托类型的条目;
     /// </summary>
-    public class CommandItem : ICommandItem
+    public class ConsoleMethod : IConsoleMethod
     {
-        public CommandItem(string key, Action<string[]> action, string message, bool isDeveloperMethod, params string[] parameterTypes)
+        public ConsoleMethod(string key, Action<string[]> action, string message, bool isDeveloperMethod, params string[] parameterTypes)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
