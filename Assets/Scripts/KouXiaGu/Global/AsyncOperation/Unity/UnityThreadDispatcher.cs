@@ -80,6 +80,7 @@ namespace KouXiaGu
 
         void Awake()
         {
+            SetInstance(this);
             onUpdate = new ActionCollection();
             onFixedUpdate = new ActionCollection();
             onLateUpdate = new ActionCollection();

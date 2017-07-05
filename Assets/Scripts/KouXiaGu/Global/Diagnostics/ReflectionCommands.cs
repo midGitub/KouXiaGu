@@ -29,7 +29,7 @@ namespace KouXiaGu.Diagnostics
             var types = assembly.GetTypes();
             foreach (var type in types)
             {
-                var attributes = type.GetCustomAttributes(typeof(KouXiaGu.ConsoleMethodsClassAttribute), false);
+                var attributes = type.GetCustomAttributes(typeof(ConsoleMethodsClassAttribute), false);
                 if (attributes.Length > 0)
                 {
                     SearchMethod(type, commandDictionary);
@@ -83,7 +83,7 @@ namespace KouXiaGu.Diagnostics
         public ConsoleMethodAttribute(string key, string message, params string[] parameterTypes)
         {
             Key = key;
-            Message = GameConsole.ConvertMassage(key, message, parameterTypes);
+            Message = XiaGuConsole.ConvertMassage(key, message, parameterTypes);
         }
 
         public string Key { get; private set; }

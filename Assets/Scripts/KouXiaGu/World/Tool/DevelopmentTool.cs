@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.World.Map;
 using KouXiaGu.Resources;
+using KouXiaGu.Diagnostics;
 
 namespace KouXiaGu.World
 {
@@ -23,12 +24,12 @@ namespace KouXiaGu.World
                 var file = new MapFile();
                 MapDataWriter mapDataSerializer = new MapDataWriter(new MapFile());
                 world.WorldData.MapData.Write(mapDataSerializer);
-                GameConsole.LogSuccessful("已输出地图文件到 " + file.GetFullPath());
+                XiaGuConsole.Log("已输出地图文件到 " + file.GetFullPath());
                 return;
             }
             else
             {
-                GameConsole.LogError("游戏场景还未初始化完成;");
+                XiaGuConsole.LogError("游戏场景还未初始化完成;");
             }
         }
 
@@ -42,11 +43,11 @@ namespace KouXiaGu.World
                 var file = new MapArchiveFile(Resource.TempDirectoryPath);
                 MapDataWriter mapDataSerializer = new MapDataWriter(new MapArchiveFile(Resource.TempDirectoryPath));
                 world.WorldData.MapData.WriteArchivedData(mapDataSerializer);
-                GameConsole.LogSuccessful("已输出地图存档文件到 " + file.GetFullPath());
+                XiaGuConsole.Log("已输出地图存档文件到 " + file.GetFullPath());
             }
             else
             {
-                GameConsole.LogError("游戏场景还未初始化完成;");
+                XiaGuConsole.LogError("游戏场景还未初始化完成;");
             }
         }
     }

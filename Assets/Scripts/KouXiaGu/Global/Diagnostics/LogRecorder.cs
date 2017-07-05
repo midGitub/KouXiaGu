@@ -48,6 +48,11 @@ namespace KouXiaGu.Diagnostics
             remove { onTextChanged -= value; }
         }
 
+        public void AddText(string message)
+        {
+            StringBuilder.Append(message);
+        }
+
         public string GetText()
         {
             return StringBuilder.ToString();

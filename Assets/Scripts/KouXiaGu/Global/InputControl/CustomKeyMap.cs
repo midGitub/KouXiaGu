@@ -54,18 +54,6 @@ namespace KouXiaGu.InputControl
         }
 
         [XmlIgnore]
-        public IEnumerable<int> Keys
-        {
-            get { return keyMap.Keys; }
-        }
-
-        [XmlIgnore]
-        public IEnumerable<KeyCode> Values
-        {
-            get { return keyMap.Values; }
-        }
-
-        [XmlIgnore]
         public int Count
         {
             get { return keyMap.Count; }

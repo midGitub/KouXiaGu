@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using System.Xml.Serialization;
-using System.IO;
-using KouXiaGu.Collections;
 
 namespace KouXiaGu.InputControl
 {
@@ -14,6 +9,11 @@ namespace KouXiaGu.InputControl
     /// </summary>
     public static class KeyInput
     {
+        static KeyInput()
+        {
+            OccupiedInput = new OccupiedInput();
+        }
+
         /// <summary>
         /// 当前使用的按键映射;
         /// </summary>
@@ -48,7 +48,7 @@ namespace KouXiaGu.InputControl
         }
 
         /// <summary>
-        /// 获取到对应的 Unity.KeyCode;
+        /// 获取到对应的 Unity.KeyCode;98
         /// </summary>
         public static KeyCode GetKey(KeyFunction function)
         {

@@ -15,7 +15,7 @@ namespace KouXiaGu.Diagnostics
 
             Action = action;
             ParameterNumber = parameterTypes.Length;
-            Message = GameConsole.ConvertMassage(key, message, parameterTypes);
+            Message = XiaGuConsole.ConvertMassage(key, message, parameterTypes);
             IsDeveloperMethod = isDeveloperMethod;
         }
 

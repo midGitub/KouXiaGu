@@ -10,6 +10,7 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 包装 UnityEngine.Debug,并且支持命令条目;
     /// </summary>
+    [ConsoleMethodsClass]
     public static class XiaGuConsole
     {
         static XiaGuConsole()
@@ -116,6 +117,42 @@ namespace KouXiaGu.Diagnostics
         {
             string message = string.Format(format, args);
             LogError(message);
+        }
+
+        /// <summary>
+        /// 转换预留消息;
+        /// </summary>
+        internal static string ConvertMassage(string key, string message, params string[] parameterTypes)
+        {
+            if (parameterTypes == null)
+            {
+                return "[" + key + "]" + message;
+            }
+            else
+            {
+                string str = "[" + key;
+                foreach (var parameter in parameterTypes)
+                {
+                    str += " " + parameter;
+                }
+                str += "]" + message;
+                return str;
+            }
+        }
+
+        [ConsoleMethod("help", "显示帮助")]
+        public static void HelpLog()
+        {
+            foreach (var methodGroup in CommandCollection.CommandDictionary.Values)
+            {
+                foreach (var method in methodGroup)
+                {
+                    if (XiaGu.IsDeveloperMode || !method.IsDeveloperMethod)
+                    {
+                        Log(method.Message);
+                    }
+                }
+            }
         }
     }
 }

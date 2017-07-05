@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Threading;
+using KouXiaGu.Diagnostics;
 
 namespace KouXiaGu
 {
@@ -65,7 +66,7 @@ namespace KouXiaGu
         [ConsoleMethod("developer", "显示是否为开发者模式")]
         public static void Developer()
         {
-            GameConsole.LogSuccessful("DeveloperMode :" + IsDeveloperMode);
+            XiaGuConsole.Log("DeveloperMode :" + IsDeveloperMode);
         }
     }
 }

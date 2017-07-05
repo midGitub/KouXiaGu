@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace KouXiaGu.InputControl
 {
@@ -8,66 +9,95 @@ namespace KouXiaGu.InputControl
     {
         public OccupiedInput()
         {
-            subscriberStack = new LinkedList<object>();
+            subscriberStack = new LinkedList<Subscriber>();
         }
 
-        readonly LinkedList<object> subscriberStack;
+        readonly LinkedList<Subscriber> subscriberStack;
 
         public IKeyInput Subscribe(object observer)
         {
             if (observer == null)
                 throw new ArgumentNullException("observer");
-            if (subscriberStack.Contains(observer))
+            if (subscriberStack.Contains(item => item.Observer.Value == observer))
                 throw new ArgumentException("重复的订阅!");
 
-            var node = subscriberStack.AddLast(observer);
-            return new Subscriber(this, node);
+            return Add(observer);
         }
 
-        void Remove(LinkedListNode<object> observer)
+        Subscriber Add(object observer)
         {
-            subscriberStack.Remove(observer);
-        }
-
-        bool IsActivated(Subscriber subscriber)
-        {
-            if (subscriberStack.Last.Value == subscriber.Observer)
+            var lastnode = subscriberStack.Last;
+            if (lastnode != null)
             {
-                return true;
+                lastnode.Value.IsActivating = false;
             }
-            return false;
+
+            var subscriber = new Subscriber(this);
+            subscriber.Observer = subscriberStack.AddLast(subscriber);
+            subscriber.IsActivating = true;
+            return subscriber;
+        }
+
+        void Remove(LinkedListNode<Subscriber> node)
+        {
+            subscriberStack.Remove(node);
+            var lastNode = subscriberStack.Last;
+            if (lastNode != null)
+            {
+                lastNode.Value.IsActivating = true;
+            }
         }
 
         class Subscriber : IKeyInput, IDisposable
         {
-            public Subscriber(OccupiedInput parent, LinkedListNode<object> observer)
+            public Subscriber(OccupiedInput parent)
             {
                 Parent = parent;
-                Observer = observer;
                 IsDisposabled = false;
             }
 
             public OccupiedInput Parent { get; private set; }
-            public LinkedListNode<object> Observer { get; private set; }
+            public LinkedListNode<Subscriber> Observer { get; set; }
             public bool IsDisposabled { get; private set; }
+            public bool IsActivating { get; set; }
 
             public bool GetKeyDown(KeyFunction function)
             {
                 Validate();
-                return Parent.IsActivated(this) && KeyInput.GetKeyDown(function);
+                return IsActivating && KeyInput.GetKeyDown(function);
             }
 
             public bool GetKeyHold(KeyFunction function)
             {
                 Validate();
-                return Parent.IsActivated(this) && KeyInput.GetKeyHold(function);
+                return IsActivating && KeyInput.GetKeyHold(function);
             }
 
             public bool GetKeyUp(KeyFunction function)
             {
                 Validate();
-                return Parent.IsActivated(this) && KeyInput.GetKeyUp(function);
+                return IsActivating && KeyInput.GetKeyUp(function);
             }
+
+
+            public bool GetKeyHold(KeyCode keyCode)
+            {
+                Validate();
+                return IsActivating && Input.GetKey(keyCode);
+            }
+
+            public bool GetKeyDown(KeyCode keyCode)
+            {
+                Validate();
+                return IsActivating && Input.GetKeyDown(keyCode);
+            }
+
+            public bool GetKeyUp(KeyCode keyCode)
+            {
+                Validate();
+                return IsActivating && Input.GetKeyUp(keyCode);
+            }
+
 
             void Validate()
             {
@@ -82,6 +112,7 @@ namespace KouXiaGu.InputControl
                     Parent.Remove(Observer);
                     Parent = null;
                     Observer = null;
+                    IsActivating = false;
                     IsDisposabled = true;
                 }
             }

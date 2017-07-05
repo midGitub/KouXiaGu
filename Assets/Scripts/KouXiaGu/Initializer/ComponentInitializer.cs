@@ -41,9 +41,6 @@ namespace KouXiaGu
                 XiaGuConsole.Initialize();
                 OnXiaGuConsoleCompleted();
 
-                GameConsole.Initialize();
-                OnConsoleCompleted();
-
                 Localization.Initialize();
                 OnLocalizationCompleted();
 
@@ -63,14 +60,6 @@ namespace KouXiaGu
         {
             const string prefix = "[虾蛄控制台组件]";
             string log = "初始化完成,开发者模式:" + XiaGuConsole.IsDeveloperMode + " ,条目总数:" + XiaGuConsole.CommandCollection.Count;
-            UnityEngine.Debug.Log(prefix + log);
-        }
-
-        [Conditional("EDITOR_LOG")]
-        void OnConsoleCompleted()
-        {
-            const string prefix = "[控制台组件]";
-            string log = "初始化完成,开发者模式:" + XiaGu.IsDeveloperMode + " ,条目总数:";
             UnityEngine.Debug.Log(prefix + log);
         }
 

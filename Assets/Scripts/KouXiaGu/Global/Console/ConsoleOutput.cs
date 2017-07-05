@@ -1,152 +1,152 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using UnityEngine;
 
-namespace KouXiaGu
-{
+//namespace KouXiaGu
+//{
 
-    /// <summary>
-    /// 使用"RichText(富文本)"控制输出格式;
-    /// </summary>
-    [Serializable]
-    class ConsoleOutputTextStyle
-    {
-        public Color NormalColor = Color.black;
-        public Color WarningColor = Color.yellow;
-        public Color ErrorColor = Color.red;
-        public Color SuccessfulColor = Color.green;
+//    /// <summary>
+//    /// 使用"RichText(富文本)"控制输出格式;
+//    /// </summary>
+//    [Serializable]
+//    class ConsoleOutputTextStyle
+//    {
+//        public Color NormalColor = Color.black;
+//        public Color WarningColor = Color.yellow;
+//        public Color ErrorColor = Color.red;
+//        public Color SuccessfulColor = Color.green;
 
-        public string GetNormalLog(string message)
-        {
-            return SetColor(message, NormalColor);
-        }
+//        public string GetNormalLog(string message)
+//        {
+//            return SetColor(message, NormalColor);
+//        }
 
-        public string GetWarningLog(string message)
-        {
-            return SetColor(message, WarningColor);
-        }
+//        public string GetWarningLog(string message)
+//        {
+//            return SetColor(message, WarningColor);
+//        }
 
-        public string GetErrorLog(string message)
-        {
-            return SetColor(message, ErrorColor);
-        }
+//        public string GetErrorLog(string message)
+//        {
+//            return SetColor(message, ErrorColor);
+//        }
 
-        public string GetSuccessfulLog(string message)
-        {
-            return SetColor(message, SuccessfulColor);
-        }
+//        public string GetSuccessfulLog(string message)
+//        {
+//            return SetColor(message, SuccessfulColor);
+//        }
 
-        string SetColor(string message, Color color)
-        {
-            string col = color.ToHex();
-            message = "<color=" + col + ">" + message + "</color>";
-            return message;
-        }
-    }
+//        string SetColor(string message, Color color)
+//        {
+//            string col = color.ToHex();
+//            message = "<color=" + col + ">" + message + "</color>";
+//            return message;
+//        }
+//    }
 
-    /// <summary>
-    /// 控制台输出;
-    /// </summary>
-    class ConsoleOutput : ILogHandler
-    {
-        public ConsoleOutput(ConsoleOutputTextStyle style)
-        {
-            Text = string.Empty;
-            Style = style;
-        }
+//    /// <summary>
+//    /// 控制台输出;
+//    /// </summary>
+//    class ConsoleOutput : ILogHandler
+//    {
+//        public ConsoleOutput(ConsoleOutputTextStyle style)
+//        {
+//            Text = string.Empty;
+//            Style = style;
+//        }
 
-        public string Text { get; set; }
-        public ConsoleOutputTextStyle Style { get; private set; }
+//        public string Text { get; set; }
+//        public ConsoleOutputTextStyle Style { get; private set; }
 
-        public void Log(string message)
-        {
-            message = Style.GetNormalLog(message);
-            AddLog(message);
-        }
+//        public void Log(string message)
+//        {
+//            message = Style.GetNormalLog(message);
+//            AddLog(message);
+//        }
 
-        public void LogWarning(string message)
-        {
-            message = Style.GetWarningLog(message);
-            AddLog(message);
-        }
+//        public void LogWarning(string message)
+//        {
+//            message = Style.GetWarningLog(message);
+//            AddLog(message);
+//        }
 
-        public void LogError(string message)
-        {
-            message = Style.GetErrorLog(message);
-            AddLog(message);
-        }
+//        public void LogError(string message)
+//        {
+//            message = Style.GetErrorLog(message);
+//            AddLog(message);
+//        }
 
-        public void LogSuccessful(string message)
-        {
-            message = Style.GetSuccessfulLog(message);
-            AddLog(message);
-        }
+//        public void LogSuccessful(string message)
+//        {
+//            message = Style.GetSuccessfulLog(message);
+//            AddLog(message);
+//        }
 
 
-        public void Log(string format, params object[] args)
-        {
-            string message = string.Format(format, args);
-            Log(message);
-        }
+//        public void Log(string format, params object[] args)
+//        {
+//            string message = string.Format(format, args);
+//            Log(message);
+//        }
 
-        public void LogWarning(string format, params object[] args)
-        {
-            string message = string.Format(format, args);
-            LogWarning(message);
-        }
+//        public void LogWarning(string format, params object[] args)
+//        {
+//            string message = string.Format(format, args);
+//            LogWarning(message);
+//        }
 
-        public void LogError(string format, params object[] args)
-        {
-            string message = string.Format(format, args);
-            LogError(message);
-        }
+//        public void LogError(string format, params object[] args)
+//        {
+//            string message = string.Format(format, args);
+//            LogError(message);
+//        }
 
-        //static readonly string[] separator = new string[] { "color" };
+//        //static readonly string[] separator = new string[] { "color" };
 
-        void AddLog(string message)
-        {
-            if (Text.Length >= 10000)
-                Clear();
+//        void AddLog(string message)
+//        {
+//            if (Text.Length >= 10000)
+//                Clear();
 
-            //string[] messages = message.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-            //foreach (var item in message)
-            //{
-            //    Text += item + Environment.NewLine;
-            //}
+//            //string[] messages = message.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+//            //foreach (var item in message)
+//            //{
+//            //    Text += item + Environment.NewLine;
+//            //}
 
-            Text += message + Environment.NewLine;
-        }
+//            Text += message + Environment.NewLine;
+//        }
 
-        public void Clear()
-        {
-            Text = string.Empty;
-        }
+//        public void Clear()
+//        {
+//            Text = string.Empty;
+//        }
 
-        void ILogHandler.LogException(Exception exception, UnityEngine.Object context)
-        {
-            LogError(exception.Message);
-        }
+//        void ILogHandler.LogException(Exception exception, UnityEngine.Object context)
+//        {
+//            LogError(exception.Message);
+//        }
 
-        void ILogHandler.LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
-        {
-            switch (logType)
-            {
-                case LogType.Warning:
-                    this.LogWarning(format, args);
-                    break;
+//        void ILogHandler.LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
+//        {
+//            switch (logType)
+//            {
+//                case LogType.Warning:
+//                    this.LogWarning(format, args);
+//                    break;
 
-                case LogType.Error:
-                    this.LogError(format, args);
-                    break;
+//                case LogType.Error:
+//                    this.LogError(format, args);
+//                    break;
 
-                default:
-                    this.Log(format, args);
-                    break;
-            }
-        }
+//                default:
+//                    this.Log(format, args);
+//                    break;
+//            }
+//        }
 
-    }
+//    }
 
-}
+//}

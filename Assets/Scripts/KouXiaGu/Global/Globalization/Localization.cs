@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.Concurrent;
+using KouXiaGu.Diagnostics;
 using KouXiaGu.Resources;
 using System;
 using System.Collections.Generic;
