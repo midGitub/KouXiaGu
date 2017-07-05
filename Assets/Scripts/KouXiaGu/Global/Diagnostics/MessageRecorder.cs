@@ -27,7 +27,8 @@ namespace KouXiaGu.Diagnostics
             {
                 list.RemoveAfterNodes(current);
             }
-            current = list.AddLast(item);
+            list.AddLast(item);
+            current = null;
         }
 
         /// <summary>

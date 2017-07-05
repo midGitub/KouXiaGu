@@ -81,10 +81,12 @@ namespace KouXiaGu.Diagnostics
                 if (keyInput.GetKeyDown(KeyCode.UpArrow))
                 {
                     InputField.text = inputRecorder.GetPrevious();
+                    InputField.MoveTextEnd(false);
                 }
                 if (keyInput.GetKeyDown(KeyCode.DownArrow))
                 {
                     InputField.text = inputRecorder.GetNext();
+                    InputField.MoveTextEnd(false);
                 }
             }
         }
