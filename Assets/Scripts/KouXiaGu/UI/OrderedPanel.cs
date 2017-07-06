@@ -12,7 +12,7 @@ namespace KouXiaGu.UI
     /// 可排序的面板;
     /// </summary>
     [DisallowMultipleComponent]
-    public class OrderedPanel : MonoBehaviour, IPointerClickHandler
+    public class OrderedPanel : MonoBehaviour, IPointerDownHandler
     {
         OrderedPanel()
         {
@@ -28,15 +28,15 @@ namespace KouXiaGu.UI
             panel = GetComponent<RectTransform>();
         }
 
-        //void Update()
-        //{
-        //    if (Input.GetMouseButtonDown(0) && EventSystem.current.IsPointerOverGameObject())
-        //    {
-        //        Debug.Log("哒哒哒!");
-        //    }
-        //}
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+        {
+            ActivatePanel();
+        }
 
-        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+        /// <summary>
+        /// 将焦点设置到该面板上;
+        /// </summary>
+        public virtual void ActivatePanel()
         {
             panel.SetAsLastSibling();
         }

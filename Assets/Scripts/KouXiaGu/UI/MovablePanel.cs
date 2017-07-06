@@ -13,7 +13,7 @@ namespace KouXiaGu.UI
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
     [DisallowMultipleComponent]
-    public sealed class MovablePanel : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
+    public sealed class MovablePanel : MonoBehaviour, IPointerDownHandler, IDragHandler, IEndDragHandler
     {
         MovablePanel()
         {
@@ -48,15 +48,12 @@ namespace KouXiaGu.UI
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
-            if (eventData.pointerCurrentRaycast.gameObject == gameObject)
-            {
-                isDragging = true;
-            }
+            isDragging = true;
             originalPanelLocalPosition = panel.localPosition;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, eventData.position, eventData.pressEventCamera, out originalLocalPointerPosition);
         }
 
-        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             isDragging = false;
         }
