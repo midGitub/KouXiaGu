@@ -18,7 +18,7 @@ namespace KouXiaGu.InputControl
         {
             if (observer == null)
                 throw new ArgumentNullException("observer");
-            if (subscriberStack.Contains(item => item.Observer.Value == observer))
+            if (subscriberStack.Contains(item => item.Node.Value == observer))
                 throw new ArgumentException("重复的订阅!");
 
             return Add(observer);
@@ -33,7 +33,7 @@ namespace KouXiaGu.InputControl
             }
 
             var subscriber = new Subscriber(this);
-            subscriber.Observer = subscriberStack.AddLast(subscriber);
+            subscriber.Node = subscriberStack.AddLast(subscriber);
             subscriber.IsActivating = true;
             return subscriber;
         }
@@ -57,7 +57,7 @@ namespace KouXiaGu.InputControl
             }
 
             public OccupiedInput Parent { get; private set; }
-            public LinkedListNode<Subscriber> Observer { get; set; }
+            public LinkedListNode<Subscriber> Node { get; set; }
             public bool IsDisposabled { get; private set; }
             public bool IsActivating { get; set; }
 
@@ -109,9 +109,9 @@ namespace KouXiaGu.InputControl
             {
                 if (!IsDisposabled)
                 {
-                    Parent.Remove(Observer);
+                    Parent.Remove(Node);
                     Parent = null;
-                    Observer = null;
+                    Node = null;
                     IsActivating = false;
                     IsDisposabled = true;
                 }

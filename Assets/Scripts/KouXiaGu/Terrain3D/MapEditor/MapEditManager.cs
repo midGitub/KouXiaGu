@@ -7,6 +7,7 @@ using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.OperationRecord;
 using KouXiaGu.World;
+using UnityEngine.EventSystems;
 
 namespace KouXiaGu.Terrain3D.MapEditor
 {
@@ -58,7 +59,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
             if (world != null && Current != null)
             {
                 Vector3 mousePoint;
-                if (LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
+                if (LandformRay.Instance.TryGetMouseRayPoint(out mousePoint) && !EventSystem.current.IsPointerOverGameObject())
                 {
                     CubicHexCoord position = mousePoint.GetTerrainCubic();
                     if (Input.GetMouseButtonDown(0))

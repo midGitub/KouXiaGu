@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.InputControl;
+using KouXiaGu.UI;
 
 namespace KouXiaGu.Diagnostics
 {
@@ -12,6 +13,7 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 控制台UI;
     /// </summary>
+    [RequireComponent(typeof(OrderedPanel))]
     [DisallowMultipleComponent]
     sealed class ConsoleWindow : UnitySington<ConsoleWindow>
     {
@@ -27,26 +29,44 @@ namespace KouXiaGu.Diagnostics
         LogRecorder logRecorder;
         Recorder<string> inputRecorder;
         IKeyInput keyInput;
-
-        public static bool IsDisplay
-        {
-            get { return Instance.gameObject.activeSelf; }
-        }
+        OrderedPanel panel;
 
         void Awake()
         {
             SetInstance(this);
+
             logRecorder = new LogRecorder(StyleConverter);
             logRecorder.AddText(OutputTextObject.text);
             logRecorder.OnTextChanged += OnTextChanged;
             XiaGuConsole.Subscribe(logRecorder);
 
             inputRecorder = new Recorder<string>();
+
+            panel = GetComponent<OrderedPanel>();
+            panel.OnFocus += OnFocus;
         }
 
         void OnEnable()
         {
             keyInput = KeyInput.OccupiedInput.Subscribe(this);
+        }
+
+        void OnFocus()
+        {
+            if (keyInput != null)
+            {
+                keyInput.Dispose();
+            }
+            keyInput = KeyInput.OccupiedInput.Subscribe(this);
+        }
+
+        void OnDisable()
+        {
+            if (keyInput != null)
+            {
+                keyInput.Dispose();
+                keyInput = null;
+            }
         }
 
         void Update()
@@ -76,17 +96,8 @@ namespace KouXiaGu.Diagnostics
                 }
                 if (keyInput.GetKeyDown(KeyCode.Escape) || keyInput.GetKeyDown(KeyCode.BackQuote)) 
                 {
-                    SetDisplay(false);
+                    panel.HidePanel();
                 }
-            }
-        }
-
-        void OnDisable()
-        {
-            if (keyInput != null)
-            {
-                keyInput.Dispose();
-                keyInput = null;
             }
         }
 
@@ -95,9 +106,9 @@ namespace KouXiaGu.Diagnostics
             OutputTextObject.text = recorder.GetText();
         }
 
-        public static void SetDisplay(bool isActive)
+        public void Display()
         {
-            Instance.gameObject.SetActive(isActive);
+            panel.DisplayPanel();
         }
     }
 }
