@@ -59,8 +59,8 @@ namespace KouXiaGu.UI
             if (!IsDisplay)
             {
                 gameObject.SetActive(true);
-                ActivatePanel();
             }
+            ActivatePanel();
         }
 
         /// <summary>

@@ -29,7 +29,7 @@ namespace KouXiaGu.Diagnostics
         LogRecorder logRecorder;
         Recorder<string> inputRecorder;
         IKeyInput keyInput;
-        OrderedPanel panel;
+        public OrderedPanel Panel { get; private set; }
 
         void Awake()
         {
@@ -42,8 +42,8 @@ namespace KouXiaGu.Diagnostics
 
             inputRecorder = new Recorder<string>();
 
-            panel = GetComponent<OrderedPanel>();
-            panel.OnFocus += OnFocus;
+            Panel = GetComponent<OrderedPanel>();
+            Panel.OnFocus += OnFocus;
         }
 
         void OnEnable()
@@ -96,7 +96,7 @@ namespace KouXiaGu.Diagnostics
                 }
                 if (keyInput.GetKeyDown(KeyCode.Escape) || keyInput.GetKeyDown(KeyCode.BackQuote)) 
                 {
-                    panel.HidePanel();
+                    Panel.HidePanel();
                 }
             }
         }
@@ -104,11 +104,6 @@ namespace KouXiaGu.Diagnostics
         void OnTextChanged(LogRecorder recorder)
         {
             OutputTextObject.text = recorder.GetText();
-        }
-
-        public void Display()
-        {
-            panel.DisplayPanel();
         }
     }
 }
