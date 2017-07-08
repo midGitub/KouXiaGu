@@ -38,8 +38,8 @@ namespace KouXiaGu.Terrain3D
 
         void Normalize(ref RectCoord coord)
         {
-            coord.x = MathI.Clamp(coord.x, coord.x, short.MaxValue);
-            coord.y = MathI.Clamp(coord.y, coord.y, short.MaxValue);
+            coord.x = MathXiaGu.Clamp(coord.x, coord.x, short.MaxValue);
+            coord.y = MathXiaGu.Clamp(coord.y, coord.y, short.MaxValue);
         }
 
         public void UpdateDispaly(ICollection<RectCoord> dispalyCoords)

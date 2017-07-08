@@ -29,9 +29,30 @@ namespace KouXiaGu.UI
         /// </summary>
         public RectTransform parent;
 
+        public bool isMovable = true;
         Vector2 originalLocalPointerPosition;
         Vector3 originalPanelLocalPosition;
         bool isDragging;
+        RootCanvas rootCanvas;
+        IDisposable edgeAlignmentDisposer;
+
+        public bool IsMovable
+        {
+            get { return isMovable; }
+            set { isMovable = value; }
+        }
+
+        void OnEnable()
+        {
+            rootCanvas = GetComponentInParent<RootCanvas>();
+            edgeAlignmentDisposer = rootCanvas.EdgeAlignment.Subscribe(panel);
+        }
+
+        void OnDisable()
+        {
+            edgeAlignmentDisposer.Dispose();
+            edgeAlignmentDisposer = null;
+        }
 
         [ContextMenu("自动设置参数")]
         void InitParameter()
@@ -60,7 +81,7 @@ namespace KouXiaGu.UI
 
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            if (isDragging)
+            if (isDragging && isMovable)
             {
                 Vector2 localPointerPosition;
                 if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, eventData.position, eventData.pressEventCamera, out localPointerPosition))
@@ -68,6 +89,7 @@ namespace KouXiaGu.UI
                     Vector3 offsetToOriginal = localPointerPosition - originalLocalPointerPosition;
                     panel.localPosition = originalPanelLocalPosition + offsetToOriginal;
                 }
+                rootCanvas.EdgeAlignment.Clamp(panel);
                 ClampPanel();
             }
         }
@@ -75,10 +97,10 @@ namespace KouXiaGu.UI
         void ClampPanel()
         {
             Vector3 pos = panel.localPosition;
-            Vector3 minPosition = parent.rect.min - panel.rect.min;
-            Vector3 maxPosition = parent.rect.max - panel.rect.max;
-            pos.x = Mathf.Clamp(panel.localPosition.x, minPosition.x, maxPosition.x);
-            pos.y = Mathf.Clamp(panel.localPosition.y, minPosition.y, maxPosition.y);
+            Vector2 minPosition = parent.rect.min - panel.rect.min;
+            Vector2 maxPosition = parent.rect.max - panel.rect.max;
+            pos.x = Mathf.Clamp(pos.x, minPosition.x, maxPosition.x);
+            pos.y = Mathf.Clamp(pos.y, minPosition.y, maxPosition.y);
             panel.localPosition = pos;
         }
     }

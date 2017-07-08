@@ -18,7 +18,7 @@ namespace KouXiaGu
         {
             if (Input.GetKeyDown(KeyCode.BackQuote))
             {
-                ConsoleWindow.Instance.Panel.DisplayPanel();
+                ConsoleWindow.Instance.Panel.ChangeDisplay();
             }
         }
     }

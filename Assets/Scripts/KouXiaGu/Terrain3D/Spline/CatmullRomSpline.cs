@@ -28,7 +28,7 @@ namespace KouXiaGu.Terrain3D
             const float one = 1;
             int segmentCount = points.Length - 3;
             int segmentIndex = (int)(t / (one / segmentCount));
-            segmentIndex = MathI.Clamp(segmentIndex, 0, segmentCount - 1);
+            segmentIndex = MathXiaGu.Clamp(segmentIndex, 0, segmentCount - 1);
             float localT = t * segmentCount - segmentIndex;
 
             Vector3 p0 = points[segmentIndex];

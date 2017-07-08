@@ -75,7 +75,14 @@ namespace KouXiaGu.Diagnostics
             if (current == null)
             {
                 current = list.Last;
-                return current.Value;
+                if (current == null)
+                {
+                    return default(T);
+                }
+                else
+                {
+                    return current.Value;
+                }
             }
             if (current.Previous != null)
             {

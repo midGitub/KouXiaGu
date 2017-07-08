@@ -36,14 +36,14 @@ namespace KouXiaGu.Diagnostics
             SetInstance(this);
 
             logRecorder = new LogRecorder(StyleConverter);
-            logRecorder.AddText(OutputTextObject.text);
+            logRecorder.Append(OutputTextObject.text);
             logRecorder.OnTextChanged += OnTextChanged;
             XiaGuConsole.Subscribe(logRecorder);
 
             inputRecorder = new Recorder<string>();
 
             Panel = GetComponent<OrderedPanel>();
-            Panel.OnFocus += OnFocus;
+            Panel.OnFocus.AddListener(OnFocus);
         }
 
         void OnEnable()
@@ -94,7 +94,7 @@ namespace KouXiaGu.Diagnostics
                     InputField.text = inputRecorder.GetNext();
                     InputField.MoveTextEnd(false);
                 }
-                if (keyInput.GetKeyDown(KeyCode.Escape) || keyInput.GetKeyDown(KeyCode.BackQuote)) 
+                if (keyInput.GetKeyDown(KeyCode.Escape)) 
                 {
                     Panel.HidePanel();
                 }

@@ -160,5 +160,89 @@ namespace KouXiaGu
 
         #endregion
 
+        #region IEnumerable
+
+        /// <summary>
+        /// 区别于 Linq.Min();返回转换结果最小的元素;
+        /// </summary>
+        public static TSource MinSource<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> selector)
+        {
+            return MinSource(collection, selector, Comparer<T>.Default);
+        }
+
+        /// <summary>
+        /// 区别于 Linq.Min();返回转换结果最小的元素;
+        /// </summary>
+        public static TSource MinSource<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> selector, IComparer<T> comparer)
+        {
+            ValidateNull(collection);
+            ValidateNull(selector);
+            ValidateNull(comparer);
+
+            bool isFirst = true;
+            TSource minSource = default(TSource);
+            T min = default(T);
+            foreach (var item in collection)
+            {
+                if (isFirst)
+                {
+                    minSource = item;
+                    min = selector(item);
+                    isFirst = false;
+                    continue;
+                }
+
+                T value = selector(item);
+                if (comparer.Compare(min, value) > 0)
+                {
+                    minSource = item;
+                    min = value;
+                }
+            }
+            return minSource;
+        }
+
+
+        /// <summary>
+        /// 区别于 Linq.Min();返回转换结果最大的元素;
+        /// </summary>
+        public static TSource MaxSource<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> selector)
+        {
+            return MaxSource(collection, selector, Comparer<T>.Default);
+        }
+
+        /// <summary>
+        /// 区别于 Linq.Min();返回转换结果最大的元素;
+        /// </summary>
+        public static TSource MaxSource<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> selector, IComparer<T> comparer)
+        {
+            ValidateNull(collection);
+            ValidateNull(selector);
+            ValidateNull(comparer);
+
+            bool isFirst = true;
+            TSource source = default(TSource);
+            T max = default(T);
+            foreach (var item in collection)
+            {
+                if (isFirst)
+                {
+                    source = item;
+                    max = selector(item);
+                    isFirst = false;
+                    continue;
+                }
+
+                T value = selector(item);
+                if (comparer.Compare(max, value) < 0)
+                {
+                    source = item;
+                    max = value;
+                }
+            }
+            return source;
+        }
+
+        #endregion
     }
 }

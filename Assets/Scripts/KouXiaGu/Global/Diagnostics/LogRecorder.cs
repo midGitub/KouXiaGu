@@ -30,13 +30,15 @@ namespace KouXiaGu.Diagnostics
 
             MaxLength = maxLength;
             TextStyle = textStyle;
-            StringBuilder = new StringBuilder(maxLength + 100);
+            StringBuilder = new StringBuilder(maxLength);
+            LenghtMask = new LinkedList<int>();
         }
 
         static readonly int defaultMaxLength = 10000;
         public int MaxLength { get; private set; }
         public TextStyleConverter TextStyle { get; private set; }
         public StringBuilder StringBuilder { get; private set; }
+        public LinkedList<int> LenghtMask { get; private set; }
         Action<LogRecorder> onTextChanged;
 
         /// <summary>
@@ -48,11 +50,6 @@ namespace KouXiaGu.Diagnostics
             remove { onTextChanged -= value; }
         }
 
-        public void AddText(string message)
-        {
-            StringBuilder.Append(message);
-        }
-
         public string GetText()
         {
             return StringBuilder.ToString();
@@ -61,35 +58,48 @@ namespace KouXiaGu.Diagnostics
         public void Log(string message)
         {
             message = TextStyle.GetNormal(message);
-            AddMessage(message);
+            AppendLine(message);
         }
 
         public void LogError(string message)
         {
             message = TextStyle.GetError(message);
-            AddMessage(message);
+            AppendLine(message);
         }
 
         public void LogWarning(string message)
         {
             message = TextStyle.GetWarning(message);
-            AddMessage(message);
+            AppendLine(message);
         }
 
-        void AddMessage(string message)
+        void AppendLine(string message)
         {
-            StringBuilder.AppendLine(message);
+            message += Environment.NewLine;
+            Append(message);
+        }
 
-            if (StringBuilder.Length > MaxLength)
+        public void Append(string message)
+        {
+            while (StringBuilder.Length + message.Length > MaxLength)
             {
-                int length = StringBuilder.Length - MaxLength;
-                StringBuilder.Remove(0, length);
+                RemoveTopMessage();
             }
+
+            StringBuilder.Append(message);
+            LenghtMask.AddLast(message.Length);
 
             if (onTextChanged != null)
             {
                 onTextChanged(this);
             }
+        }
+
+        void RemoveTopMessage()
+        {
+            var node = LenghtMask.First;
+            StringBuilder.Remove(0, node.Value);
+            LenghtMask.Remove(node);
         }
     }
 }
