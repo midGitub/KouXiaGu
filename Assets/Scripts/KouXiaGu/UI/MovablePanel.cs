@@ -20,20 +20,29 @@ namespace KouXiaGu.UI
         }
 
         /// <summary>
+        /// 边界对齐组件;
+        /// </summary>
+        [SerializeField]
+        EdgeAlignment edgeAlignment = null;
+
+        /// <summary>
         /// 需要移动的目标;
         /// </summary>
-        public RectTransform panel;
+        [SerializeField]
+        RectTransform panel = null;
 
         /// <summary>
         /// 区域限制;
         /// </summary>
-        public RectTransform parent;
+        [SerializeField]
+        RectTransform parent = null;
 
-        public bool isMovable = true;
+        [SerializeField]
+        bool isMovable = true;
+
         Vector2 originalLocalPointerPosition;
         Vector3 originalPanelLocalPosition;
         bool isDragging;
-        RootCanvas rootCanvas;
         IDisposable edgeAlignmentDisposer;
 
         public bool IsMovable
@@ -44,14 +53,16 @@ namespace KouXiaGu.UI
 
         void OnEnable()
         {
-            rootCanvas = GetComponentInParent<RootCanvas>();
-            edgeAlignmentDisposer = rootCanvas.EdgeAlignment.Subscribe(panel);
+            edgeAlignmentDisposer = edgeAlignment.Subscribe(panel);
         }
 
         void OnDisable()
         {
-            edgeAlignmentDisposer.Dispose();
-            edgeAlignmentDisposer = null;
+            if (edgeAlignmentDisposer != null)
+            {
+                edgeAlignmentDisposer.Dispose();
+                edgeAlignmentDisposer = null;
+            }
         }
 
         [ContextMenu("自动设置参数")]
@@ -89,7 +100,12 @@ namespace KouXiaGu.UI
                     Vector3 offsetToOriginal = localPointerPosition - originalLocalPointerPosition;
                     panel.localPosition = originalPanelLocalPosition + offsetToOriginal;
                 }
-                rootCanvas.EdgeAlignment.Clamp(panel);
+
+                if (edgeAlignment != null)
+                {
+                    edgeAlignment.Clamp(panel);
+                }
+
                 ClampPanel();
             }
         }
@@ -102,6 +118,23 @@ namespace KouXiaGu.UI
             pos.x = Mathf.Clamp(pos.x, minPosition.x, maxPosition.x);
             pos.y = Mathf.Clamp(pos.y, minPosition.y, maxPosition.y);
             panel.localPosition = pos;
+        }
+
+        /// <summary>
+        /// 设置边界对齐模块;
+        /// </summary>
+        public void SetEdgeAlignment(EdgeAlignment edgeAlignment)
+        {
+            this.edgeAlignment = edgeAlignment;
+            if (edgeAlignmentDisposer != null)
+            {
+                edgeAlignmentDisposer.Dispose();
+                edgeAlignmentDisposer = null;
+            }
+            if (edgeAlignment != null)
+            {
+                edgeAlignmentDisposer = edgeAlignment.Subscribe(panel);
+            }
         }
     }
 }

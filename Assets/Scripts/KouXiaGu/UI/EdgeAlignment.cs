@@ -10,18 +10,26 @@ namespace KouXiaGu.UI
     /// <summary>
     /// 边缘对齐模块;
     /// </summary>
-    [Serializable]
-    public class EdgeAlignment
+    [DisallowMultipleComponent]
+    public sealed class EdgeAlignment : MonoBehaviour
     {
+        EdgeAlignment()
+        {
+        }
+
+        /// <summary>
+        /// 相吸距离;
+        /// </summary>
         [SerializeField]
-        Vector2 offset = new Vector2(10, 10);
+        Vector2 magnetism = new Vector2(10, 10);
+
         internal List<RectTransform> Elements { get; private set; }
         List<float> tempOffsetList;
 
-        public Vector2 Offset
+        public Vector2 Magnetism
         {
-            get { return offset; }
-            set { offset = value; }
+            get { return magnetism; }
+            set { magnetism = value; }
         }
 
         /// <summary>
@@ -32,9 +40,6 @@ namespace KouXiaGu.UI
             if (Elements == null)
             {
                 Elements = new List<RectTransform>();
-            }
-            if (tempOffsetList == null)
-            {
                 tempOffsetList = new List<float>();
             }
 
@@ -79,7 +84,7 @@ namespace KouXiaGu.UI
             }
             float min = tempOffsetList.MinSource(value => Math.Abs(value));
             tempOffsetList.Clear();
-            return IsClose(min, Offset.x) ? min : 0;
+            return IsClose(min, Magnetism.x) ? min : 0;
         }
 
         float OffsetY(RectTransform transform, IEnumerable<RectTransform> elements)
@@ -107,7 +112,7 @@ namespace KouXiaGu.UI
             }
             float min = tempOffsetList.MinSource(value => Math.Abs(value));
             tempOffsetList.Clear();
-            return IsClose(min, Offset.y) ? min : 0;
+            return IsClose(min, Magnetism.y) ? min : 0;
         }
 
         bool IsClose(float value, float offset)
