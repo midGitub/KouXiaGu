@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.World.Map;
+using KouXiaGu.World.TimeSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,14 @@ namespace KouXiaGu.World
         }
 
         public GameMap MapData { get; private set; }
+        public WorldTime Time { get; private set; }
 
         void Initialize(IBasicData basicData)
         {
             Debug.Log("开始初始化游戏场景数据");
             WorldInfo info = basicData.WorldInfo;
             MapData = info.MapReader.Read(basicData.BasicResource);
+            Time = info.TimeInfo.Read();
         }
     }
 }

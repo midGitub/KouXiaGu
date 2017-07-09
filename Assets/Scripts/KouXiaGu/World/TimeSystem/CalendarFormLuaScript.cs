@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using XLua;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.World.TimeSystem
 {
 
     class CalendarFormLuaScript

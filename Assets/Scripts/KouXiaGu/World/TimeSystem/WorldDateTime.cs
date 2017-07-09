@@ -3,44 +3,40 @@ using System.Xml.Serialization;
 using UnityEngine;
 using ProtoBuf;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.World.TimeSystem
 {
 
     /// <summary>
     /// 简化版的 System.DateTime,但是实现原理不同;
     /// </summary>
     [Serializable, XmlType("DateTime"), ProtoContract]
-    public struct DateTime : IEquatable<DateTime>, IComparable<DateTime>
+    public struct WorldDateTime : IEquatable<WorldDateTime>, IComparable<WorldDateTime>
     {
-        static DateTime()
+        static WorldDateTime()
         {
             CurrentCalendar = new Calendar();
         }
 
         /// <summary>
-        /// 一年一月一日零时零分零秒;
+        /// 一年一月一日,默认的日历;
         /// </summary>
-        internal const long DefaultTicks = 0x0;
+        public static WorldDateTime Default
+        {
+            get { return new WorldDateTime(0x0); }
+        }
 
         /// <summary>
         /// 当前使用的日历;
         /// </summary>
         public static ICalendar CurrentCalendar { get; internal set; }
 
-        /// <summary>
-        /// 一年一月一日,默认的日历;
-        /// </summary>
-        public static DateTime Default
-        {
-            get { return new DateTime(DefaultTicks); }
-        }
 
-        public DateTime(long ticks)
+        public WorldDateTime(long ticks)
         {
             this.ticks = ticks;
         }
 
-        public DateTime(short year, byte month, byte day, byte hour, byte minute, byte second)
+        public WorldDateTime(short year, byte month, byte day, byte hour, byte minute, byte second)
         {
             ticks = 0;
 
@@ -51,7 +47,6 @@ namespace KouXiaGu.World
             Minute = minute;
             Second = second;
         }
-
 
         [SerializeField, ProtoMember(1)]
         long ticks;
@@ -122,29 +117,31 @@ namespace KouXiaGu.World
             set { Ticks = (Ticks & -0xFF01) | ((long)value << 8); }
         }
 
-        
+
         const byte FirstSecondInMinute = 0;
         const byte SecondsInMinute = 60;
 
-        /// <summary>
-        /// 增加一秒钟;
-        /// </summary>
-        public DateTime AddSecond()
+        public WorldDateTime AddSecond()
         {
             Second++;
-
             if (Second >= SecondsInMinute)
             {
                 AddMinute();
-                ResetSecond();
+                Second = FirstSecondInMinute;
             }
-
             return this;
         }
 
-        void ResetSecond()
+        public WorldDateTime AddSeconds(int seconds)
         {
-            Second = FirstSecondInMinute;
+            if (seconds < 0)
+                throw new ArgumentOutOfRangeException();
+
+            seconds += Second;
+            int minutes = Math.DivRem(seconds, SecondsInMinute, out seconds);
+            AddMinutes(minutes);
+            Second = Convert.ToByte(seconds);
+            return this;
         }
 
 
@@ -154,25 +151,18 @@ namespace KouXiaGu.World
         /// <summary>
         /// 增加一分钟;
         /// </summary>
-        public DateTime AddMinute()
+        public WorldDateTime AddMinute()
         {
             Minute++;
-
             if (Minute >= MinutesInHour)
             {
                 AddHour();
-                ResetMinute();
+                Minute = FirstMinuteInHour;
             }
-
             return this;
         }
 
-        void ResetMinute()
-        {
-            Minute = FirstMinuteInHour;
-        }
-
-        public DateTime AddMinutes(int minutes)
+        public WorldDateTime AddMinutes(int minutes)
         {
             if (minutes < 0)
                 throw new ArgumentOutOfRangeException();
@@ -181,35 +171,25 @@ namespace KouXiaGu.World
             int hours = Math.DivRem(minutes, MinutesInHour, out minutes);
             AddHours(hours);
             Minute = Convert.ToByte(minutes);
-
             return this;
         }
+
 
         const byte FirstHourInDay = 0;
         const byte HoursInDay = 24;
 
-        /// <summary>
-        /// 增加一小时;
-        /// </summary>
-        public DateTime AddHour()
+        public WorldDateTime AddHour()
         {
             Hour++;
-
             if (Hour >= HoursInDay)
             {
                 AddDay();
-                ResetHour();
+                Hour = FirstHourInDay;
             }
-
             return this;
         }
 
-        void ResetHour()
-        {
-            Hour = FirstHourInDay;
-        }
-
-        public DateTime AddHours(int hours)
+        public WorldDateTime AddHours(int hours)
         {
             if (hours < 0)
                 throw new ArgumentOutOfRangeException();
@@ -218,125 +198,81 @@ namespace KouXiaGu.World
             int day = Math.DivRem(hours, HoursInDay, out hours);
             AddDays(day);
             Hour = Convert.ToByte(hours);
-
             return this;
         }
 
 
-        /// <summary>
-        /// 月份的第一天;
-        /// </summary>
         const byte FirstDayInMonth = 0;
 
-        /// <summary>
-        /// 增加一天;
-        /// </summary>
-        public DateTime AddDay()
+        public WorldDateTime AddDay()
         {
             Day++;
             int daysInMonth = GetDaysInMonth();
-
             if (Day >= daysInMonth)
             {
                 AddMonth();
-                ResetDay();
+                Day = FirstDayInMonth;
             }
-
             return this;
         }
 
-        void ResetDay()
-        {
-            Day = FirstDayInMonth;
-        }
-
-        /// <summary>
-        /// 增加天数;
-        /// </summary>
-        public DateTime AddDays(int days)
+        public WorldDateTime AddDays(int days)
         {
             if (days < 0)
                 throw new ArgumentOutOfRangeException();
 
             days += Day;
-
-            for (int daysInMonth = GetDaysInMonth();
-                days >= daysInMonth;
-                daysInMonth = GetDaysInMonth())
+            for (int daysInMonth = GetDaysInMonth(); days >= daysInMonth; daysInMonth = GetDaysInMonth())
             {
                 days -= daysInMonth;
                 AddMonth();
             }
-
             Day = Convert.ToByte(days);
             return this;
         }
 
-        public int GetDaysInMonth()
+        int GetDaysInMonth()
         {
             return CurrentCalendar.GetDaysInMonth(Year, Month);
         }
 
 
-        /// <summary>
-        /// 一年的第一个月;
-        /// </summary>
         const byte FirstMonthInYear = 0;
 
-        /// <summary>
-        /// 增加一个月;
-        /// </summary>
-        public DateTime AddMonth()
+        public WorldDateTime AddMonth()
         {
             Month++;
             int monthInYear = GetMonthsInYear();
-
             if (Month >= monthInYear)
             {
                 AddYear();
-                ResetMonth();
+                Month = FirstMonthInYear;
             }
-
             return this;
         }
 
-        void ResetMonth()
-        {
-            Month = FirstMonthInYear;
-        }
-
-        /// <summary>
-        /// 增加月数;
-        /// </summary>
-        public DateTime AddMonths(int months)
+        public WorldDateTime AddMonths(int months)
         {
             if (months < 0)
                 throw new ArgumentOutOfRangeException();
 
             months += Month;
-
-            for (int monthInYear = GetMonthsInYear();
-                months >= monthInYear;
-                monthInYear = GetMonthsInYear())
+            for (int monthInYear = GetMonthsInYear(); months >= monthInYear; monthInYear = GetMonthsInYear())
             {
                 months -= monthInYear;
                 AddYear();
             }
-
             Month = Convert.ToByte(months);
             return this;
         }
 
-        public int GetMonthsInYear()
+        int GetMonthsInYear()
         {
             return CurrentCalendar.GetMonthsInYear(Year);
         }
 
 
-        /// <summary>
-        /// 增加一年;
-        /// </summary>
-        public DateTime AddYear()
+        public WorldDateTime AddYear()
         {
             if (IsMaxYear())
                 return this;
@@ -345,10 +281,7 @@ namespace KouXiaGu.World
             return this;
         }
 
-        /// <summary>
-        /// 增加年数;
-        /// </summary>
-        public DateTime AddYears(short years)
+        public WorldDateTime AddYears(short years)
         {
             if (IsMaxYear())
                 return this;
@@ -366,19 +299,7 @@ namespace KouXiaGu.World
             return isMaxYear;
         }
 
-
-        public bool IsLeapMonth()
-        {
-            return CurrentCalendar.IsLeapMonth(Year, Month);
-        }
-
-        public bool IsLeapYear()
-        {
-            return CurrentCalendar.IsLeapYear(Year);
-        }
-
-
-        public int CompareTo(DateTime other)
+        public int CompareTo(WorldDateTime other)
         {
             if (Ticks == other.Ticks)
                 return 0;
@@ -387,17 +308,17 @@ namespace KouXiaGu.World
             return i > 0 ? 1 : -1;
         }
 
-        public bool Equals(DateTime other)
+        public bool Equals(WorldDateTime other)
         {
             return other.Ticks == Ticks;
         }
 
         public override bool Equals(object obj)
         {
-            if (!(obj is DateTime))
+            if (!(obj is WorldDateTime))
                 return false;
 
-            return Equals((DateTime)obj);
+            return Equals((WorldDateTime)obj);
         }
 
         public override int GetHashCode()
@@ -405,30 +326,35 @@ namespace KouXiaGu.World
             return unchecked((int)Ticks) ^ (int)(Ticks >> 32);
         }
 
+        public string ToTimeString()
+        {
+            return (Year + 1) + "/" + (Month + 1) + "/" + (Day + 1) + " " + (Hour) + ":" + (Minute) + ":" + (Second);
+        }
+
         public override string ToString()
         {
-            return 
+            return
                 "[Year:" + Year + ",Month:" + Month + ",Day:" + Day + ",Hour:" + Hour +
                 ",Minute:" + Minute + ",Second:" + Second + ",Ticks:" + Ticks + "]";
         }
 
 
-        public static bool operator ==(DateTime v1, DateTime v2)
+        public static bool operator ==(WorldDateTime v1, WorldDateTime v2)
         {
             return v1.Equals(v2);
         }
 
-        public static bool operator !=(DateTime v1, DateTime v2)
+        public static bool operator !=(WorldDateTime v1, WorldDateTime v2)
         {
             return !v1.Equals(v2);
         }
 
-        public static bool operator >(DateTime v1, DateTime v2)
+        public static bool operator >(WorldDateTime v1, WorldDateTime v2)
         {
             return v1.Ticks > v2.Ticks;
         }
 
-        public static bool operator <(DateTime v1, DateTime v2)
+        public static bool operator <(WorldDateTime v1, WorldDateTime v2)
         {
             return v1.Ticks < v2.Ticks;
         }

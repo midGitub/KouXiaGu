@@ -22,17 +22,11 @@ namespace KouXiaGu.Tests
 
         [SerializeField]
         Text textObject = null;
-        string originalText;
         IWorld world;
 
         IDictionary<CubicHexCoord, MapNode> map
         {
             get { return world.WorldData.MapData.Map; }
-        }
-
-        void Start()
-        {
-            originalText = textObject.text;
         }
 
         void Update()

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
 using UnityEngine;
+using KouXiaGu.World.TimeSystem;
 
 namespace KouXiaGu.World
 {
@@ -28,7 +29,6 @@ namespace KouXiaGu.World
         {
             Debug.Log("开始初始化游戏场景组件;");
             Landform = new Landform();
-            Time = new WorldTime(worldData);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World.Map;
+using KouXiaGu.World.TimeSystem;
 
 namespace KouXiaGu.World
 {
@@ -38,6 +39,7 @@ namespace KouXiaGu.World
     public interface IWorldData
     {
         GameMap MapData { get; }
+        WorldTime Time { get; }
     }
 
     /// <summary>
@@ -46,7 +48,6 @@ namespace KouXiaGu.World
     public interface IWorldComponents
     {
         Landform Landform { get; }
-        WorldTime Time { get; }
     }
 
     /// <summary>
@@ -55,6 +56,6 @@ namespace KouXiaGu.World
     public interface IWorldUpdater : IDisposable
     {
         SceneUpdater LandformUpdater { get; }
-        WorldTimeUpdater TimeUpdater { get; }
+        TimeUpdater TimeUpdater { get; }
     }
 }

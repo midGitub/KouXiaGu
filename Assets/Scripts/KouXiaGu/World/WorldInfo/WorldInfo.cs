@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Resources;
+using KouXiaGu.World.TimeSystem;
 
 namespace KouXiaGu.World
 {
@@ -12,6 +14,6 @@ namespace KouXiaGu.World
     public class WorldInfo
     {
         public IGameMapReader MapReader { get; set; }
-        public WorldTimeInfo TimeInfo { get; set; }
+        public IReader<WorldTime> TimeInfo { get; set; }
     }
 }

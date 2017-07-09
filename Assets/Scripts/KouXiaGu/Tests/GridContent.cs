@@ -21,13 +21,7 @@ namespace KouXiaGu.Tests
 
         [SerializeField]
         Text textObject;
-        string originalText;
         IWorld world;
-
-        void Start()
-        {
-            originalText = textObject.text;
-        }
 
         void Update()
         {

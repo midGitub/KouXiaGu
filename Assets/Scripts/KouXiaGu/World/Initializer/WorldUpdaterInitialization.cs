@@ -6,6 +6,7 @@ using KouXiaGu.Terrain3D;
 using UnityEngine;
 using KouXiaGu.Concurrent;
 using System.Threading;
+using KouXiaGu.World.TimeSystem;
 
 namespace KouXiaGu.World
 {
@@ -22,7 +23,7 @@ namespace KouXiaGu.World
         }
 
         public SceneUpdater LandformUpdater { get; private set; }
-        public WorldTimeUpdater TimeUpdater { get; private set; }
+        public TimeUpdater TimeUpdater { get; private set; }
 
         void Initialize(IWorld world, IOperationState state)
         {
@@ -34,8 +35,7 @@ namespace KouXiaGu.World
                 var landformUpdaterOperation = LandformUpdater.Start();
                 WorldInitialization.Wait(landformUpdaterOperation, state);
 
-                TimeUpdater = new WorldTimeUpdater(world.Components.Time);
-                TimeUpdater.Start();
+                TimeUpdater.Instance.IsTimeUpdating = true;
             }
             catch(Exception e)
             {

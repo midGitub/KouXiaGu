@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.World.TimeSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,7 @@ namespace KouXiaGu.World
 
         void Update()
         {
-            DateTime time = timeManager.CurrentTime;
+            WorldDateTime time = timeManager.CurrentTime;
             int hour = time.Hour;
             int minute = time.Minute;
             float t = minute / 59f;
@@ -83,7 +84,7 @@ namespace KouXiaGu.World
 
         void IStateObserver<IWorldComplete>.OnCompleted(IWorldComplete item)
         {
-            timeManager = item.Components.Time;
+            timeManager = item.WorldData.Time;
             enabled = true;
         }
 

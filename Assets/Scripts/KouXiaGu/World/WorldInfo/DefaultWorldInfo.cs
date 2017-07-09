@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.World.Map;
+using KouXiaGu.World.TimeSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,8 @@ namespace KouXiaGu.World
         {
             WorldInfo worldInfo = new WorldInfo()
             {
-                //MapReader = new RandomGameMapCreater(50),
                 MapReader = new MapDataReader(),
-                TimeInfo = new WorldTimeInfo()
-                {
-                    CurrentTime = new DateTime(),
-                },
+                TimeInfo = new WorldTimeInfo(),
             };
             OnCompleted(worldInfo);
         }
