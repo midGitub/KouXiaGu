@@ -81,6 +81,7 @@ namespace KouXiaGu.Terrain3D
         public AssetBundleUnload(AssetBundle assetBundle, bool unloadAllLoadedObjects)
         {
             this.assetBundle = assetBundle;
+            this.unloadAllLoadedObjects = unloadAllLoadedObjects;
         }
 
         AssetBundle assetBundle;

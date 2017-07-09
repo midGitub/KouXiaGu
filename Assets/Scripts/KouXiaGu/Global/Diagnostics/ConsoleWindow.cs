@@ -21,14 +21,14 @@ namespace KouXiaGu.Diagnostics
         {
         }
 
-        public GameObject consoleWindows = null;
+        LogRecorder logRecorder;
+        Recorder<string> inputRecorder;
+        IKeyInput keyInput;
+        bool isTextHasChanged = false;
         public ScrollRect OutputScrollRect = null;
         public Text OutputTextObject = null;
         public InputField InputField = null;
         public RichTextStyleConverter StyleConverter = null;
-        LogRecorder logRecorder;
-        Recorder<string> inputRecorder;
-        IKeyInput keyInput;
         public OrderedPanel Panel { get; private set; }
 
         void Awake()
@@ -69,8 +69,13 @@ namespace KouXiaGu.Diagnostics
             }
         }
 
-        void Update()
+        void LateUpdate()
         {
+            if (isTextHasChanged)
+            {
+                OutputScrollRect.verticalScrollbar.value = 0;
+                isTextHasChanged = false;
+            }
             if (keyInput.IsActivating)
             {
                 if (keyInput.GetKeyDown(KeyCode.Return) || keyInput.GetKeyDown(KeyCode.KeypadEnter))
@@ -104,6 +109,7 @@ namespace KouXiaGu.Diagnostics
         void OnTextChanged(LogRecorder recorder)
         {
             OutputTextObject.text = recorder.GetText();
+            isTextHasChanged = true;
         }
     }
 }

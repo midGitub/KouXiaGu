@@ -22,10 +22,12 @@ namespace KouXiaGu.UI
         /// </summary>
         [SerializeField]
         Vector2 magnetism = new Vector2(10, 10);
-
         internal List<RectTransform> Elements { get; private set; }
         List<float> tempOffsetList;
 
+        /// <summary>
+        /// 相吸距离;
+        /// </summary>
         public Vector2 Magnetism
         {
             get { return magnetism; }
@@ -42,7 +44,6 @@ namespace KouXiaGu.UI
                 Elements = new List<RectTransform>();
                 tempOffsetList = new List<float>();
             }
-
             Elements.Add(transform);
             Clamp(transform);
             return new CollectionUnsubscriber<RectTransform>(Elements, transform);
@@ -69,10 +70,8 @@ namespace KouXiaGu.UI
                 {
                     continue;
                 }
-
                 Rect rectElement = element.rect;
                 var elementPos = element.localPosition;
-
                 float xMinOffset1 = (elementPos.x + rectElement.xMin) - (pos.x + rect.xMin);
                 float xMinOffset2 = (elementPos.x + rectElement.xMax) - (pos.x + rect.xMin);
                 float xMaxOffset1 = (elementPos.x + rectElement.xMin) - (pos.x + rect.xMax);
@@ -97,10 +96,8 @@ namespace KouXiaGu.UI
                 {
                     continue;
                 }
-
                 Rect rectElement = element.rect;
                 var elementPos = element.localPosition;
-
                 float yMinOffset1 = (elementPos.y + rectElement.yMin) - (pos.y + rect.yMin);
                 float yMinOffset2 = (elementPos.y + rectElement.yMax) - (pos.y + rect.yMin);
                 float yMaxOffset1 = (elementPos.y + rectElement.yMin) - (pos.y + rect.yMax);
