@@ -18,6 +18,11 @@ namespace KouXiaGu.Diagnostics
         readonly LinkedList<T> list;
         LinkedListNode<T> current;
 
+        public int Count
+        {
+            get { return list.Count; }
+        }
+
         /// <summary>
         /// 添加内容到末尾;
         /// </summary>

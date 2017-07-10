@@ -23,7 +23,6 @@ namespace KouXiaGu.UI
         [SerializeField]
         Vector2 magnetism = new Vector2(10, 10);
         internal List<RectTransform> Elements { get; private set; }
-        List<float> tempOffsetList;
 
         /// <summary>
         /// 相吸距离;
@@ -42,7 +41,6 @@ namespace KouXiaGu.UI
             if (Elements == null)
             {
                 Elements = new List<RectTransform>();
-                tempOffsetList = new List<float>();
             }
             Elements.Add(transform);
             Clamp(transform);
@@ -64,6 +62,8 @@ namespace KouXiaGu.UI
         {
             Rect rect = transform.rect;
             Vector3 pos = transform.localPosition;
+            float min = Magnetism.x;
+            float value = default(float);
             foreach (var element in elements)
             {
                 if (element == transform)
@@ -76,20 +76,20 @@ namespace KouXiaGu.UI
                 float xMinOffset2 = (elementPos.x + rectElement.xMax) - (pos.x + rect.xMin);
                 float xMaxOffset1 = (elementPos.x + rectElement.xMin) - (pos.x + rect.xMax);
                 float xMaxOffset2 = (elementPos.x + rectElement.xMax) - (pos.x + rect.xMax);
-                tempOffsetList.Add(xMinOffset1);
-                tempOffsetList.Add(xMinOffset2);
-                tempOffsetList.Add(xMaxOffset1);
-                tempOffsetList.Add(xMaxOffset2);
+                Min(ref min, ref value, xMinOffset1);
+                Min(ref min, ref value, xMinOffset2);
+                Min(ref min, ref value, xMaxOffset1);
+                Min(ref min, ref value, xMaxOffset2);
             }
-            float min = tempOffsetList.MinSource(value => Math.Abs(value));
-            tempOffsetList.Clear();
-            return IsClose(min, Magnetism.x) ? min : 0;
+            return IsClose(min, Magnetism.x) ? value : 0;
         }
 
         float OffsetY(RectTransform transform, IEnumerable<RectTransform> elements)
         {
             Rect rect = transform.rect;
             Vector3 pos = transform.localPosition;
+            float min = Magnetism.y;
+            float value = default(float);
             foreach (var element in elements)
             {
                 if (element == transform)
@@ -102,19 +102,27 @@ namespace KouXiaGu.UI
                 float yMinOffset2 = (elementPos.y + rectElement.yMax) - (pos.y + rect.yMin);
                 float yMaxOffset1 = (elementPos.y + rectElement.yMin) - (pos.y + rect.yMax);
                 float yMaxOffset2 = (elementPos.y + rectElement.yMax) - (pos.y + rect.yMax);
-                tempOffsetList.Add(yMinOffset1);
-                tempOffsetList.Add(yMinOffset2);
-                tempOffsetList.Add(yMaxOffset1);
-                tempOffsetList.Add(yMaxOffset2);
+                Min(ref min, ref value, yMinOffset1);
+                Min(ref min, ref value, yMinOffset2);
+                Min(ref min, ref value, yMaxOffset1);
+                Min(ref min, ref value, yMaxOffset2);
             }
-            float min = tempOffsetList.MinSource(value => Math.Abs(value));
-            tempOffsetList.Clear();
-            return IsClose(min, Magnetism.y) ? min : 0;
+            return IsClose(min, Magnetism.y) ? value : 0;
+        }
+
+        void Min(ref float min, ref float originalValue, float value)
+        {
+            var absValue = Math.Abs(value);
+            if (min > absValue)
+            {
+                min = absValue;
+                originalValue = value;
+            }
         }
 
         bool IsClose(float value, float offset)
         {
-            return value <= offset && value >= -offset;
+            return value < offset && value > -offset;
         }
     }
 }
