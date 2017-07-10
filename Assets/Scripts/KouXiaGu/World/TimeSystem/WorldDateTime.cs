@@ -14,7 +14,7 @@ namespace KouXiaGu.World.TimeSystem
     {
         static WorldDateTime()
         {
-            CurrentCalendar = new Calendar();
+            CurrentCalendar = new ChineseCalendar();
         }
 
         /// <summary>
@@ -28,7 +28,15 @@ namespace KouXiaGu.World.TimeSystem
         /// <summary>
         /// 当前使用的日历;
         /// </summary>
-        public static ICalendar CurrentCalendar { get; internal set; }
+        public static ICalendar CurrentCalendar { get; private set; }
+
+        public static void SetCalendar(ICalendar calendar)
+        {
+            if (calendar == null)
+                throw new ArgumentNullException("calendar");
+
+            CurrentCalendar = calendar;
+        }
 
 
         public WorldDateTime(long ticks)
@@ -39,7 +47,6 @@ namespace KouXiaGu.World.TimeSystem
         public WorldDateTime(short year, byte month, byte day, byte hour, byte minute, byte second)
         {
             ticks = 0;
-
             Year = year;
             Month = month;
             Day = day;
@@ -47,6 +54,7 @@ namespace KouXiaGu.World.TimeSystem
             Minute = minute;
             Second = second;
         }
+
 
         [SerializeField, ProtoMember(1)]
         long ticks;
@@ -117,9 +125,14 @@ namespace KouXiaGu.World.TimeSystem
             set { Ticks = (Ticks & -0xFF01) | ((long)value << 8); }
         }
 
+        public ICalendar Calendar
+        {
+            get { return CurrentCalendar; }
+        }
 
-        const byte FirstSecondInMinute = 0;
-        const byte SecondsInMinute = 60;
+        internal const byte SecondsInMinute = 60;
+        internal const byte MinutesInHour = 60;
+        internal const byte HoursInDay = 24;
 
         public WorldDateTime AddSecond()
         {
@@ -127,7 +140,7 @@ namespace KouXiaGu.World.TimeSystem
             if (Second >= SecondsInMinute)
             {
                 AddMinute();
-                Second = FirstSecondInMinute;
+                Second = 0;
             }
             return this;
         }
@@ -144,20 +157,13 @@ namespace KouXiaGu.World.TimeSystem
             return this;
         }
 
-
-        const byte FirstMinuteInHour = 0;
-        const byte MinutesInHour = 60;
-
-        /// <summary>
-        /// 增加一分钟;
-        /// </summary>
         public WorldDateTime AddMinute()
         {
             Minute++;
             if (Minute >= MinutesInHour)
             {
                 AddHour();
-                Minute = FirstMinuteInHour;
+                Minute = 0;
             }
             return this;
         }
@@ -174,17 +180,13 @@ namespace KouXiaGu.World.TimeSystem
             return this;
         }
 
-
-        const byte FirstHourInDay = 0;
-        const byte HoursInDay = 24;
-
         public WorldDateTime AddHour()
         {
             Hour++;
             if (Hour >= HoursInDay)
             {
                 AddDay();
-                Hour = FirstHourInDay;
+                Hour = 0;
             }
             return this;
         }
@@ -201,9 +203,6 @@ namespace KouXiaGu.World.TimeSystem
             return this;
         }
 
-
-        const byte FirstDayInMonth = 0;
-
         public WorldDateTime AddDay()
         {
             Day++;
@@ -211,7 +210,7 @@ namespace KouXiaGu.World.TimeSystem
             if (Day >= daysInMonth)
             {
                 AddMonth();
-                Day = FirstDayInMonth;
+                Day = 0;
             }
             return this;
         }
@@ -236,9 +235,6 @@ namespace KouXiaGu.World.TimeSystem
             return CurrentCalendar.GetDaysInMonth(Year, Month);
         }
 
-
-        const byte FirstMonthInYear = 0;
-
         public WorldDateTime AddMonth()
         {
             Month++;
@@ -246,7 +242,7 @@ namespace KouXiaGu.World.TimeSystem
             if (Month >= monthInYear)
             {
                 AddYear();
-                Month = FirstMonthInYear;
+                Month = 0;
             }
             return this;
         }
@@ -270,7 +266,6 @@ namespace KouXiaGu.World.TimeSystem
         {
             return CurrentCalendar.GetMonthsInYear(Year);
         }
-
 
         public WorldDateTime AddYear()
         {
@@ -297,6 +292,26 @@ namespace KouXiaGu.World.TimeSystem
         {
             bool isMaxYear = Ticks >= 0x7FFF000000000000;
             return isMaxYear;
+        }
+
+        public bool IsLeapYear()
+        {
+            return Calendar.IsLeapYear(Year);
+        }
+
+        public bool IsLeapMonth()
+        {
+            return Calendar.IsLeapMonth(Year, Month);
+        }
+
+        public int GetChineseZodiac()
+        {
+            return Calendar.GetChineseZodiac(Year);
+        }
+
+        public int GetMonth(int year, int month, out bool isLeapMonth)
+        {
+            return Calendar.GetMonth(year, month, out isLeapMonth);
         }
 
         public int CompareTo(WorldDateTime other)

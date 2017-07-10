@@ -30,12 +30,14 @@ namespace KouXiaGu.World.TimeSystem
         /// </summary>
         bool IsLeapMonth(int year, int month);
 
-
+        /// <summary>
+        /// 获取到实际表示月份,0~11;
+        /// </summary>
+        int GetMonth(int year, int month, out bool isLeapMonth);
 
         /// <summary>
-        /// 获取到实际表示月份;
+        /// 获取到这一年的生肖,0~11;
         /// </summary>
-        [Obsolete]
-        int GetMonth(int year, int month, out bool isLeapMonth);
+        int GetChineseZodiac(int year);
     }
 }

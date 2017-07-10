@@ -80,14 +80,7 @@ namespace KouXiaGu.Diagnostics
             {
                 if (keyInput.GetKeyDown(KeyCode.Return) || keyInput.GetKeyDown(KeyCode.KeypadEnter))
                 {
-                    string message = InputField.text;
-                    if (message != string.Empty)
-                    {
-                        inputRecorder.Add(message);
-                        XiaGuConsole.Operate(message);
-                        InputField.text = string.Empty;
-                    }
-                    InputField.ActivateInputField();
+                    Operation();
                 }
                 if (keyInput.GetKeyDown(KeyCode.UpArrow))
                 {
@@ -110,6 +103,18 @@ namespace KouXiaGu.Diagnostics
                     Panel.HidePanel();
                 }
             }
+        }
+
+        public void Operation()
+        {
+            string message = InputField.text;
+            if (message != string.Empty)
+            {
+                inputRecorder.Add(message);
+                XiaGuConsole.Operate(message);
+                InputField.text = string.Empty;
+            }
+            InputField.ActivateInputField();
         }
 
         void OnTextChanged(LogRecorder recorder)

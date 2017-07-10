@@ -24,5 +24,4 @@ namespace KouXiaGu.World.TimeSystem
         Dog,
         Pig
     }
-
 }

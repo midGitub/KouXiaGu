@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using UnityEngine;
 using XLua;
 
-namespace KouXiaGu
+namespace KouXiaGu.Lua
 {
 
     /// <summary>
@@ -15,7 +11,6 @@ namespace KouXiaGu
     [DisallowMultipleComponent]
     public class LuaManager : MonoBehaviour
     {
-
         static readonly LuaEnv luaEnv = new LuaEnv();
 
         public static LuaEnv Luaenv
@@ -49,37 +44,5 @@ namespace KouXiaGu
                 lastGCTime = Time.time;
             }
         }
-
     }
-
-
-    public static class LuaExtensions
-    {
-
-        public static object[] DoFile(this LuaEnv luaEnv, string path)
-        {
-            using (StreamReader file = new StreamReader(path))
-            {
-                return luaEnv.DoString(file.ReadToEnd());
-            }
-        }
-
-        public static LuaFunction LoadFile(this LuaEnv luaEnv, string path)
-        {
-            using (StreamReader file = new StreamReader(path))
-            {
-                return luaEnv.LoadString(file.ReadToEnd());
-            }
-        }
-
-        public static T LoadFile<T>(this LuaEnv luaEnv, string path)
-        {
-            using (StreamReader file = new StreamReader(path))
-            {
-                return luaEnv.LoadString<T>(file.ReadToEnd());
-            }
-        }
-
-    }
-
 }

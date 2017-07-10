@@ -28,11 +28,6 @@ namespace KouXiaGu.World.TimeSystem
         public WorldDateTime CurrentTime { get; internal set; }
 
         /// <summary>
-        /// 当前的日历信息;
-        /// </summary>
-        public ICalendar Calendar { get; private set; }
-
-        /// <summary>
         /// 更新器;
         /// </summary>
         public TimeUpdater Updater { get; private set; }

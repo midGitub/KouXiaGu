@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.Terrain3D;
 using KouXiaGu.World.Map;
 using KouXiaGu.World.TimeSystem;

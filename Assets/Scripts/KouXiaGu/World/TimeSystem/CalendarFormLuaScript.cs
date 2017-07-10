@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Lua;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,22 +15,20 @@ namespace KouXiaGu.World.TimeSystem
         public const string luaScriptName = "Calendar.New";
 
         /// <summary>
-        /// 从Lua文件获取到日历信息;
+        /// 初始化
         /// </summary>
-        public static ICalendar Read()
+        public static void Initialize()
         {
-            const string errorString = "无法从Lua获取到日历信息;";
-
             LuaEnv luaenv = LuaManager.Luaenv;
             CalendarReader creater = luaenv.Global.GetInPath<CalendarReader>(luaScriptName);
-            if (creater == null)
-                throw new ArgumentException(errorString);
-
-            ICalendar calendar = creater();
-            if (calendar == null)
-                throw new ArgumentException(errorString);
-
-            return calendar;
+            if (creater != null)
+            {
+                ICalendar calendar = creater();
+                if (calendar != null)
+                {
+                    WorldDateTime.SetCalendar(calendar);
+                }
+            }
         }
     }
 }
