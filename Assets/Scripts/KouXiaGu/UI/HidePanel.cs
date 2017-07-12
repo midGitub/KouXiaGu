@@ -9,24 +9,24 @@ namespace KouXiaGu.UI
 {
 
     /// <summary>
-    /// 关闭 OrderedPanel 窗口;
+    /// 隐藏窗口;
     /// </summary>
     [DisallowMultipleComponent]
-    public class ClosePanel : MonoBehaviour, IPointerDownHandler
+    public class HidePanel : MonoBehaviour, IPointerDownHandler
     {
-        ClosePanel()
+        HidePanel()
         {
         }
 
-        OrderedPanel parent;
+        SelectablePanel parent;
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             if (parent == null)
             {
-                parent = GetComponentInParent<OrderedPanel>();
+                parent = GetComponentInParent<SelectablePanel>();
             }
-            parent.HidePanel();
+            parent.Hide();
         }
     }
 }

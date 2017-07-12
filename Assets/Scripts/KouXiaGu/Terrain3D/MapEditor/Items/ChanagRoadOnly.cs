@@ -12,9 +12,9 @@ namespace KouXiaGu.Terrain3D.MapEditor
     /// <summary>
     /// 改变节点道路信息;
     /// </summary>
-    public class ChangeRoadOnly : NodeEditBase
+    public class ChangeRoadOnly : NodeEditer
     {
-        public ChangeRoadOnly(GameMap gameMap, int roadType) : base(gameMap)
+        public ChangeRoadOnly(WorldMap gameMap, int roadType) : base(gameMap)
         {
             RoadType = roadType;
         }

@@ -19,7 +19,7 @@ namespace KouXiaGu.World
             Initialize(basicData);
         }
 
-        public GameMap MapData { get; private set; }
+        public WorldMap MapData { get; private set; }
         public WorldTime Time { get; private set; }
 
         void Initialize(IBasicData basicData)
@@ -27,7 +27,7 @@ namespace KouXiaGu.World
             Debug.Log("开始初始化游戏场景数据");
             WorldInfo info = basicData.WorldInfo;
             MapData = info.MapReader.Read(basicData.BasicResource);
-            Time = info.TimeInfo.Read();
+            Time = info.TimeReader.Read();
         }
     }
 }

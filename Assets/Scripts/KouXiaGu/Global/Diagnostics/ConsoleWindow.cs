@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.InputControl;
 using KouXiaGu.UI;
@@ -13,9 +9,9 @@ namespace KouXiaGu.Diagnostics
     /// <summary>
     /// 控制台UI;
     /// </summary>
-    [RequireComponent(typeof(OrderedPanel))]
+    [RequireComponent(typeof(SelectablePanel))]
     [DisallowMultipleComponent]
-    sealed class ConsoleWindow : UnitySington<ConsoleWindow>
+    sealed class ConsoleWindow : MonoBehaviour
     {
         ConsoleWindow()
         {
@@ -29,12 +25,15 @@ namespace KouXiaGu.Diagnostics
         public Text OutputTextObject = null;
         public InputField InputField = null;
         public RichTextStyleConverter StyleConverter = null;
-        public OrderedPanel Panel { get; private set; }
+        public SelectablePanel Panel { get; private set; }
+
+        public bool IsFocus
+        {
+            get { return Panel.IsFocus; }
+        }
 
         void Awake()
         {
-            SetInstance(this);
-
             logRecorder = new LogRecorder(StyleConverter);
             logRecorder.Append(OutputTextObject.text);
             logRecorder.OnTextChanged += OnTextChanged;
@@ -42,13 +41,9 @@ namespace KouXiaGu.Diagnostics
 
             inputRecorder = new Recorder<string>();
 
-            Panel = GetComponent<OrderedPanel>();
-            Panel.OnFocus.AddListener(OnFocus);
-        }
-
-        void OnEnable()
-        {
-            keyInput = KeyInput.OccupiedInput.Subscribe(this);
+            Panel = GetComponent<SelectablePanel>();
+            Panel.OnFocusEvent.AddListener(OnFocus);
+            Panel.OnBlurEvent.AddListener(OnBlur);
         }
 
         void OnFocus()
@@ -60,7 +55,7 @@ namespace KouXiaGu.Diagnostics
             keyInput = KeyInput.OccupiedInput.Subscribe(this);
         }
 
-        void OnDisable()
+        void OnBlur()
         {
             if (keyInput != null)
             {
@@ -76,7 +71,7 @@ namespace KouXiaGu.Diagnostics
                 OutputScrollRect.verticalScrollbar.value = 0;
                 isTextHasChanged = false;
             }
-            if (keyInput.IsActivating)
+            if (IsFocus)
             {
                 if (keyInput.GetKeyDown(KeyCode.Return) || keyInput.GetKeyDown(KeyCode.KeypadEnter))
                 {
@@ -98,9 +93,9 @@ namespace KouXiaGu.Diagnostics
                         InputField.MoveTextEnd(false);
                     }
                 }
-                if (keyInput.GetKeyDown(KeyCode.Escape)) 
+                if (keyInput.GetKeyDown(KeyCode.Escape))
                 {
-                    Panel.HidePanel();
+                    Panel.Hide();
                 }
             }
         }

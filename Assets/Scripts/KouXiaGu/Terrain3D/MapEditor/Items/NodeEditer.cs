@@ -10,14 +10,14 @@ namespace KouXiaGu.Terrain3D.MapEditor
 {
 
 
-    public abstract class NodeEditBase : IEditOperation
+    public abstract class NodeEditer : IEditOperation
     {
-        public NodeEditBase(GameMap data)
+        public NodeEditer(WorldMap data)
         {
             Data = data;
         }
 
-        public GameMap Data { get; private set; }
+        public WorldMap Data { get; private set; }
         public int Size { get; set; }
 
         protected IDictionary<CubicHexCoord, MapNode> map

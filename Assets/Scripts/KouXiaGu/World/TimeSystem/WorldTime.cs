@@ -17,22 +17,10 @@ namespace KouXiaGu.World.TimeSystem
             updateCanceler = Updater.Subscribe(this);
         }
 
-        /// <summary>
-        /// 游戏开始时间;
-        /// </summary>
-        public WorldDateTime StartTime { get; internal set; }
-
-        /// <summary>
-        /// 当前游戏时间;
-        /// </summary>
-        public WorldDateTime CurrentTime { get; internal set; }
-
-        /// <summary>
-        /// 更新器;
-        /// </summary>
-        public TimeUpdater Updater { get; private set; }
-
         IDisposable updateCanceler;
+        public WorldDateTime StartTime { get; internal set; }
+        public WorldDateTime CurrentTime { get; internal set; }
+        public TimeUpdater Updater { get; private set; }
         public bool IsPause { get; private set; }
 
         void ITimerUnit.AddUnit(int time)

@@ -35,7 +35,7 @@ namespace KouXiaGu.World
     /// </summary>
     public interface IWorldData
     {
-        GameMap MapData { get; }
+        WorldMap MapData { get; }
         WorldTime Time { get; }
     }
 

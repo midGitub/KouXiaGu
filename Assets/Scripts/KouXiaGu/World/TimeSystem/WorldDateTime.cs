@@ -30,7 +30,10 @@ namespace KouXiaGu.World.TimeSystem
         /// </summary>
         public static ICalendar CurrentCalendar { get; private set; }
 
-        public static void SetCalendar(ICalendar calendar)
+        /// <summary>
+        /// 提供设置自定义的日历;
+        /// </summary>
+        internal static void SetCalendar(ICalendar calendar)
         {
             if (calendar == null)
                 throw new ArgumentNullException("calendar");

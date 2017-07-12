@@ -8,7 +8,7 @@ using System.Globalization;
 namespace KouXiaGu.World.TimeSystem
 {
 
-    public class WorldTimeInfo : IReader<WorldTime>
+    public class WorldTimeReader : IReader<WorldTime>
     {
         public WorldDateTime Start { get; set; }
         public WorldDateTime Current { get; set; }

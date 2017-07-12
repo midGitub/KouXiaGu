@@ -26,13 +26,13 @@ namespace KouXiaGu.Terrain3D.MapEditor
 
     public class NodePrefabEdit : IEditOperation
     {
-        public NodePrefabEdit(GameMap data, NodesPrefab prefab)
+        public NodePrefabEdit(WorldMap data, NodesPrefab prefab)
         {
             Data = data;
             Prefab = prefab;
         }
 
-        public GameMap Data { get; private set; }
+        public WorldMap Data { get; private set; }
         public NodesPrefab Prefab { get; private set; }
 
         public void OnPositionUpdate(CubicHexCoord position)

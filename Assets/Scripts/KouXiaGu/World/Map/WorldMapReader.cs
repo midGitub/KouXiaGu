@@ -8,24 +8,20 @@ using System.IO;
 namespace KouXiaGu.World.Map
 {
 
-    public interface IGameMapReader : IReader<GameMap, IGameResource>
-    {
-    }
-
     /// <summary>
     /// 游戏地图读取和保存;
     /// </summary>
-    sealed class MapDataReader : IGameMapReader
+    sealed class WorldMapReader : IReader<WorldMap, IGameResource>
     {
-        public MapDataReader() : this(null)
+        public WorldMapReader() : this(null)
         {
         }
 
-        public MapDataReader(ISingleFilePath archivedFile) : this(new MapFile(), archivedFile, ProtoFileSerializer<MapData>.Default)
+        public WorldMapReader(ISingleFilePath archivedFile) : this(new MapFile(), archivedFile, ProtoFileSerializer<MapData>.Default)
         {
         }
 
-        public MapDataReader(ISingleFilePath dataFile, ISingleFilePath archivedFile, IFileSerializer<MapData> serializer)
+        public WorldMapReader(ISingleFilePath dataFile, ISingleFilePath archivedFile, IFileSerializer<MapData> serializer)
         {
             DataFile = dataFile;
             ArchivedFile = archivedFile;
@@ -36,15 +32,15 @@ namespace KouXiaGu.World.Map
         public ISingleFilePath ArchivedFile { get; private set; }
         public IFileSerializer<MapData> Serializer { get; private set; }
 
-        public GameMap Read(IGameResource item)
+        public WorldMap Read(IGameResource item)
         {
             MapData mapData = Serializer.Read(DataFile.GetFullPath());
             if (ArchivedFile != null)
             {
                 MapData archiveData = Serializer.Read(ArchivedFile.GetFullPath());
-                return new GameMap(mapData, archiveData);
+                return new WorldMap(mapData, archiveData);
             }
-            return new GameMap(mapData);
+            return new WorldMap(mapData);
         }
     }
 
@@ -94,7 +90,7 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 随机生成的地图获取;
     /// </summary>
-    class RandomGameMapCreater : IGameMapReader
+    class RandomGameMapCreater : IReader<WorldMap, IGameResource>
     {
         public RandomGameMapCreater(int mapSize)
         {
@@ -103,10 +99,10 @@ namespace KouXiaGu.World.Map
 
         RandomMapDataCreater mapDataReader;
 
-        public GameMap Read(IGameResource info)
+        public WorldMap Read(IGameResource info)
         {
             MapData data = mapDataReader.Read(info);
-            return new GameMap(data);
+            return new WorldMap(data);
         }
     }
 }

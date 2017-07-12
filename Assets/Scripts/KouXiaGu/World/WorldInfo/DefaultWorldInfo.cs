@@ -20,8 +20,8 @@ namespace KouXiaGu.World
         {
             WorldInfo worldInfo = new WorldInfo()
             {
-                MapReader = new MapDataReader(),
-                TimeInfo = new WorldTimeInfo(),
+                MapReader = new WorldMapReader(),
+                TimeReader = new WorldTimeReader(),
             };
             OnCompleted(worldInfo);
         }

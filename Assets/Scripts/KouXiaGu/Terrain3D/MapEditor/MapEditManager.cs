@@ -1,8 +1,4 @@
-﻿using KouXiaGu.Terrain3D;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.OperationRecord;
@@ -51,24 +47,19 @@ namespace KouXiaGu.Terrain3D.MapEditor
 
         void Update()
         {
-            if (world != null && Current == null)
-            {
-                SetCurrentOperation(new ChangeRoadOnly(world.WorldData.MapData, 1));
-            }
-
+            //if (world != null && Current == null)
+            //{
+            //    SetCurrentOperation(new ChangeRoadOnly(world.WorldData.MapData, 1));
+            //}
             if (world != null && Current != null)
             {
                 Vector3 mousePoint;
-                if (LandformRay.Instance.TryGetMouseRayPoint(out mousePoint) && !EventSystem.current.IsPointerOverGameObject())
+                if (Input.GetMouseButtonDown(0) && LandformRay.Instance.TryGetMouseRayPoint(out mousePoint) && !EventSystem.current.IsPointerOverGameObject())
                 {
                     CubicHexCoord position = mousePoint.GetTerrainCubic();
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        Perform(position);
-                    }
+                    Perform(position);
                 }
             }
-
             if (Input.GetKey(KeyCode.LeftControl))
             {
                 if (Input.GetKeyDown(KeyCode.Z))

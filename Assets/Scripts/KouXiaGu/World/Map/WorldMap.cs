@@ -14,18 +14,18 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 游戏运行状态使用的地图数据;
     /// </summary>
-    public class GameMap
+    public class WorldMap
     {
-        public GameMap() : this(new MapData())
+        public WorldMap() : this(new MapData())
         {
         }
 
-        public GameMap(MapData data)
+        public WorldMap(MapData data)
         {
             Init(data);
         }
 
-        public GameMap(MapData data, MapData archive)
+        public WorldMap(MapData data, MapData archive)
         {
             Combine(data, archive);
             Init(data);
@@ -133,7 +133,7 @@ namespace KouXiaGu.World.Map
             return changedData;
         }
 
-        public static implicit operator MapData(GameMap gameMap)
+        public static implicit operator MapData(WorldMap gameMap)
         {
             return gameMap.data;
         }

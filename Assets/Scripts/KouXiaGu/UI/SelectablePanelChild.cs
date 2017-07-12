@@ -8,21 +8,21 @@ namespace KouXiaGu.UI
     /// 用于子控件响应面板排列顺序;
     /// </summary>
     [DisallowMultipleComponent]
-    public class FocusPanelChild : MonoBehaviour, IPointerDownHandler
+    public sealed class SelectablePanelChild : MonoBehaviour, IPointerDownHandler
     {
-        FocusPanelChild()
+        SelectablePanelChild()
         {
         }
 
-        FocusPanel parent;
+        SelectablePanel parent;
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             if (parent == null)
             {
-                parent = GetComponentInParent<FocusPanel>();
+                parent = GetComponentInParent<SelectablePanel>();
             }
-            parent.SetOnFocus();
+            parent.OnFocus();
         }
     }
 }
