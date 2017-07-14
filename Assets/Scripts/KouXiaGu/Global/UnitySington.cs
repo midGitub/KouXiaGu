@@ -30,7 +30,7 @@ namespace KouXiaGu
                     return FindInEditor();
                 }
 #endif
-                return _instance ?? (_instance = FindOrCreate());
+                return _instance ?? (_instance = Find());
             }
         }
 
@@ -57,7 +57,7 @@ namespace KouXiaGu
             var instances = GameObject.FindObjectsOfType<T>();
             if (instances.Length == 0)
             {
-                instance = CreateInstance();
+                instance = null;
             }
             else if (instances.Length == 1)
             {
@@ -77,23 +77,23 @@ namespace KouXiaGu
             return instance;
         }
 
-        internal static T FindOrCreate()
-        {
-            T instance = Find();
-            if (instance == null)
-            {
-                instance = CreateInstance();
-            }
-            return instance;
-        }
+        //internal static T FindOrCreate()
+        //{
+        //    T instance = Find();
+        //    if (instance == null)
+        //    {
+        //        instance = CreateInstance();
+        //    }
+        //    return instance;
+        //}
 
-        internal static T CreateInstance()
-        {
-            var type = typeof(T);
-            var gameObject = new GameObject(type.Name, type);
-            T item = gameObject.GetComponent<T>();
-            return item;
-        }
+        //internal static T CreateInstance()
+        //{
+        //    var type = typeof(T);
+        //    var gameObject = new GameObject(type.Name, type);
+        //    T item = gameObject.GetComponent<T>();
+        //    return item;
+        //}
 
         /// <summary>
         /// 手动设置到单例,若出现错误则弹出异常;

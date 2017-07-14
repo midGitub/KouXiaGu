@@ -7,7 +7,6 @@ TagManager:
   - UICamera
   - GlobalController
   - SceneController
-  - ConsoleWindow
   layers:
   - Default
   - TransparentFX

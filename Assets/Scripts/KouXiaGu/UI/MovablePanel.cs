@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 namespace KouXiaGu.UI
@@ -13,7 +14,7 @@ namespace KouXiaGu.UI
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
     [DisallowMultipleComponent]
-    public sealed class MovablePanel : MonoBehaviour, IPointerDownHandler, IDragHandler, IEndDragHandler
+    public sealed class MovablePanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IDragHandler, IEndDragHandler
     {
         MovablePanel()
         {
@@ -43,7 +44,9 @@ namespace KouXiaGu.UI
         Vector2 originalLocalPointerPosition;
         Vector3 originalPanelLocalPosition;
         bool isDragging;
+        bool isPointerEnter;
         IDisposable edgeAlignmentDisposer;
+        IDisposable cursorMoveStyleDisposer;
 
         public bool IsMovable
         {
@@ -63,6 +66,11 @@ namespace KouXiaGu.UI
                 edgeAlignmentDisposer.Dispose();
                 edgeAlignmentDisposer = null;
             }
+            if (cursorMoveStyleDisposer != null && !isDragging)
+            {
+                cursorMoveStyleDisposer.Dispose();
+                cursorMoveStyleDisposer = null;
+            }
         }
 
         [ContextMenu("自动设置参数")]
@@ -78,6 +86,25 @@ namespace KouXiaGu.UI
             }
         }
 
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            isPointerEnter = true;
+            if (cursorMoveStyleDisposer == null)
+            {
+                cursorMoveStyleDisposer = CustomCursor.Instance.SetCursor(CursorType.Move);
+            }
+        }
+
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            isPointerEnter = false;
+            if (cursorMoveStyleDisposer != null && !isDragging)
+            {
+                cursorMoveStyleDisposer.Dispose();
+                cursorMoveStyleDisposer = null;
+            }
+        }
+
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             isDragging = true;
@@ -88,6 +115,11 @@ namespace KouXiaGu.UI
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             isDragging = false;
+            if (cursorMoveStyleDisposer != null && !isPointerEnter)
+            {
+                cursorMoveStyleDisposer.Dispose();
+                cursorMoveStyleDisposer = null;
+            }
         }
 
         void IDragHandler.OnDrag(PointerEventData eventData)

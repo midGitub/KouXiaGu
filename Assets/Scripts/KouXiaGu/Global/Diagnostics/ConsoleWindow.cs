@@ -11,7 +11,7 @@ namespace KouXiaGu.Diagnostics
     /// </summary>
     [RequireComponent(typeof(SelectablePanel))]
     [DisallowMultipleComponent]
-    sealed class ConsoleWindow : MonoBehaviour
+    sealed class ConsoleWindow : UnitySington<ConsoleWindow>
     {
         ConsoleWindow()
         {
@@ -34,6 +34,8 @@ namespace KouXiaGu.Diagnostics
 
         void Awake()
         {
+            SetInstance(this);
+
             logRecorder = new LogRecorder(StyleConverter);
             logRecorder.Append(OutputTextObject.text);
             logRecorder.OnTextChanged += OnTextChanged;

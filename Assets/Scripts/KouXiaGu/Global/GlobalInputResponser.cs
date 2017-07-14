@@ -18,6 +18,8 @@ namespace KouXiaGu
         {
             if (Input.GetKeyDown(KeyCode.BackQuote))
             {
+                ConsoleWindow.Instance.Panel.Display();
+
                 //GameObject gameObject = GameObject.FindGameObjectWithTag("ConsoleWindow");
                 //ConsoleWindow window = gameObject.GetComponent<ConsoleWindow>();
                 //window.Panel.DisplayPanel();
