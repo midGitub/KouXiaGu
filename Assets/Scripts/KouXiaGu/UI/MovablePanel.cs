@@ -43,10 +43,10 @@ namespace KouXiaGu.UI
 
         Vector2 originalLocalPointerPosition;
         Vector3 originalPanelLocalPosition;
-        bool isDragging;
-        bool isPointerEnter;
         IDisposable edgeAlignmentDisposer;
         IDisposable cursorMoveStyleDisposer;
+        public bool IsDragging { get; private set; }
+        public bool IsPointerEnter { get; private set; }
 
         public bool IsMovable
         {
@@ -66,7 +66,7 @@ namespace KouXiaGu.UI
                 edgeAlignmentDisposer.Dispose();
                 edgeAlignmentDisposer = null;
             }
-            if (cursorMoveStyleDisposer != null && !isDragging)
+            if (cursorMoveStyleDisposer != null && !IsDragging)
             {
                 cursorMoveStyleDisposer.Dispose();
                 cursorMoveStyleDisposer = null;
@@ -88,7 +88,7 @@ namespace KouXiaGu.UI
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            isPointerEnter = true;
+            IsPointerEnter = true;
             if (cursorMoveStyleDisposer == null)
             {
                 cursorMoveStyleDisposer = CustomCursor.Instance.SetCursor(CursorType.Move);
@@ -97,8 +97,8 @@ namespace KouXiaGu.UI
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            isPointerEnter = false;
-            if (cursorMoveStyleDisposer != null && !isDragging)
+            IsPointerEnter = false;
+            if (cursorMoveStyleDisposer != null && !IsDragging)
             {
                 cursorMoveStyleDisposer.Dispose();
                 cursorMoveStyleDisposer = null;
@@ -107,15 +107,15 @@ namespace KouXiaGu.UI
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
-            isDragging = true;
+            IsDragging = true;
             originalPanelLocalPosition = panel.localPosition;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, eventData.position, eventData.pressEventCamera, out originalLocalPointerPosition);
         }
 
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
-            isDragging = false;
-            if (cursorMoveStyleDisposer != null && !isPointerEnter)
+            IsDragging = false;
+            if (cursorMoveStyleDisposer != null && !IsPointerEnter)
             {
                 cursorMoveStyleDisposer.Dispose();
                 cursorMoveStyleDisposer = null;
@@ -124,7 +124,7 @@ namespace KouXiaGu.UI
 
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            if (isDragging && isMovable)
+            if (IsDragging && isMovable)
             {
                 Vector2 localPointerPosition;
                 if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, eventData.position, eventData.pressEventCamera, out localPointerPosition))

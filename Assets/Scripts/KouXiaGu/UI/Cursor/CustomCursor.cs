@@ -26,6 +26,11 @@ namespace KouXiaGu.UI
 
         LinkedList<CursorState> cursorStyleStack;
 
+        public int SubscriberCount
+        {
+            get { return cursorStyleStack == null ? 0 : cursorStyleStack.Count; }
+        }
+
         void Awake()
         {
             cursorStyleStack = new LinkedList<CursorState>();
