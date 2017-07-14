@@ -12,45 +12,27 @@ namespace KouXiaGu.Terrain3D.MapEditor
     /// 地图编辑管理;
     /// </summary>
     [DisallowMultipleComponent]
-    public class MapEditManager : MonoBehaviour
+    public class MapEditPanle : MonoBehaviour
     {
-        MapEditManager()
+        MapEditPanle()
         {
         }
 
-        [SerializeField]
-        int maxRecordCount = 30;
-        public Recorder<IVoidable> Recorder { get; private set; }
-        IDisposable recordRegister;
+
         public IEditOperation Current { get; private set; }
+
+        IRecorder Recorder
+        {
+            get { return RecordManager.DefaultRecorder; }
+        }
 
         IWorldComplete world
         {
             get { return WorldSceneManager.World; }
         }
 
-        void Awake()
-        {
-            Recorder = new Recorder<IVoidable>(maxRecordCount);
-        }
-
-        void OnEnable()
-        {
-            recordRegister = RecordManager.AddLast(Recorder);
-        }
-
-        void OnDisable()
-        {
-            recordRegister.Dispose();
-            recordRegister = null;
-        }
-
         void Update()
         {
-            //if (world != null && Current == null)
-            //{
-            //    SetCurrentOperation(new ChangeRoadOnly(world.WorldData.MapData, 1));
-            //}
             if (world != null && Current != null)
             {
                 Vector3 mousePoint;
@@ -60,17 +42,11 @@ namespace KouXiaGu.Terrain3D.MapEditor
                     Perform(position);
                 }
             }
-            if (Input.GetKey(KeyCode.LeftControl))
-            {
-                if (Input.GetKeyDown(KeyCode.Z))
-                {
-                    Recorder.PerformUndo();
-                }
-                else if (Input.GetKeyDown(KeyCode.Y))
-                {
-                    Recorder.PerformRedo();
-                }
-            }
+        }
+
+        public void CreateRoad()
+        {
+            SetCurrentOperation(new ChangeRoadOnly(world.WorldData.MapData, 1));
         }
 
         /// <summary>
@@ -93,7 +69,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
 
         sealed class SetEditOperation : SafeVoidable
         {
-            public SetEditOperation(MapEditManager parent, IEditOperation original, IEditOperation newValue)
+            public SetEditOperation(MapEditPanle parent, IEditOperation original, IEditOperation newValue)
             {
                 this.parent = parent;
                 this.original = original;
@@ -101,7 +77,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
                 parent.Current = newValue;
             }
 
-            readonly MapEditManager parent;
+            readonly MapEditPanle parent;
             readonly IEditOperation original;
             readonly IEditOperation newValue;
 

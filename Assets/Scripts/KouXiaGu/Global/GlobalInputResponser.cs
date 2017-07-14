@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using KouXiaGu.Diagnostics;
+using KouXiaGu.OperationRecord;
 
 namespace KouXiaGu
 {
@@ -19,10 +20,19 @@ namespace KouXiaGu
             if (Input.GetKeyDown(KeyCode.BackQuote))
             {
                 ConsoleWindow.Instance.Panel.Display();
+            }
 
-                //GameObject gameObject = GameObject.FindGameObjectWithTag("ConsoleWindow");
-                //ConsoleWindow window = gameObject.GetComponent<ConsoleWindow>();
-                //window.Panel.DisplayPanel();
+
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                if (Input.GetKeyDown(KeyCode.Z))
+                {
+                    RecordManager.PerformUndo();
+                }
+                if (Input.GetKeyDown(KeyCode.Y))
+                {
+                    RecordManager.PerformRedo();
+                }
             }
         }
     }
