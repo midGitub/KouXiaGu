@@ -22,27 +22,43 @@ namespace KouXiaGu.UI
 
         static readonly LinkedList<SelectablePanel> stack = new LinkedList<SelectablePanel>();
 
+        public static IEnumerable<SelectablePanel> Stack
+        {
+            get { return stack; }
+        }
+
+        /// <summary>
+        /// 是否为显示状态的?
+        /// </summary>
         [SerializeField]
         bool isDisplay = true;
+
         [SerializeField]
         UnityEvent onFocus = null;
         [SerializeField]
         UnityEvent onBlur = null;
         LinkedListNode<SelectablePanel> current;
 
+        public bool IsDisplay
+        {
+            get { return isDisplay; }
+        }
+
         public bool IsFocus
         {
             get { return current != null && stack.Last == current; }
         }
 
-        public UnityEvent OnFocusEvent
+        public event UnityAction OnFocusEvent
         {
-            get { return onFocus; }
+            add { onFocus.AddListener(value); }
+            remove { onFocus.RemoveListener(value); }
         }
 
-        public UnityEvent OnBlurEvent
+        public event UnityAction OnBlurEvent
         {
-            get { return onBlur; }
+            add { onBlur.AddListener(value); }
+            remove { onBlur.RemoveListener(value); }
         }
 
         void OnValidate()
@@ -88,20 +104,18 @@ namespace KouXiaGu.UI
         }
 
         /// <summary>
-        /// 当获得焦点时调用;
+        /// 使其获得焦点,获取成功则返回true,否则返回false;
         /// </summary>
-        public void OnFocus()
+        public bool OnFocus()
         {
             if (current == null)
             {
                 var last = stack.Last;
                 if (last != null)
                 {
-                    last.Value.OnBlur_internal();
+                    last.Value.onBlur.Invoke();
                 }
-                current = stack.AddLast(this);
-                (transform as RectTransform).SetAsLastSibling();
-                onFocus.Invoke();
+                OnFocus_internal();
             }
             else
             {
@@ -110,20 +124,26 @@ namespace KouXiaGu.UI
                     var last = stack.Last;
                     if (last != null)
                     {
-                        last.Value.OnBlur_internal();
+                        last.Value.onBlur.Invoke();
                     }
                     stack.Remove(current);
-                    current = stack.AddLast(this);
-                    (transform as RectTransform).SetAsLastSibling();
-                    onFocus.Invoke();
+                    OnFocus_internal();
                 }
             }
+            return true;
+        }
+
+        void OnFocus_internal()
+        {
+            current = stack.AddLast(this);
+            onFocus.Invoke();
+            (transform as RectTransform).SetAsLastSibling();
         }
 
         /// <summary>
-        /// 当失去焦点时调用;
+        /// 使其失去焦点;
         /// </summary>
-        void OnBlur()
+        public void OnBlur()
         {
             if (current != null)
             {
@@ -132,23 +152,23 @@ namespace KouXiaGu.UI
                     var newLast = stack.Last.Previous;
                     if (newLast != null)
                     {
-                        newLast.Value.OnFocus_internal();
+                        newLast.Value.onFocus.Invoke();
                     }
                 }
-                onBlur.Invoke();
-                stack.Remove(current);
-                current = null;
+                OnBlur_internal();
             }
-        }
-
-        void OnFocus_internal()
-        {
-            onFocus.Invoke();
         }
 
         void OnBlur_internal()
         {
+            stack.Remove(current);
+            current = null;
             onBlur.Invoke();
+        }
+
+        public override string ToString()
+        {
+            return "[Name:" + name + "]";
         }
     }
 }

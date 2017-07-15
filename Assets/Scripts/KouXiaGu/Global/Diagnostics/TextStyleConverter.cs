@@ -52,7 +52,7 @@ namespace KouXiaGu.Diagnostics
 
         string SetColor(string message, Color color)
         {
-            string col = color.ToHex();
+            string col = color.ColorToHex();
             message = "<color=" + col + ">" + message + "</color>";
             return message;
         }

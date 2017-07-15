@@ -44,8 +44,8 @@ namespace KouXiaGu.Diagnostics
             inputRecorder = new Recorder<string>();
 
             Panel = GetComponent<SelectablePanel>();
-            Panel.OnFocusEvent.AddListener(OnFocus);
-            Panel.OnBlurEvent.AddListener(OnBlur);
+            Panel.OnFocusEvent += OnFocus;
+            Panel.OnBlurEvent += OnBlur;
         }
 
         void OnFocus()

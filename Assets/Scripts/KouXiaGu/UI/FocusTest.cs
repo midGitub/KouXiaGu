@@ -19,8 +19,8 @@ namespace KouXiaGu.UI
         void Awake()
         {
             SelectablePanel panel = GetComponent<SelectablePanel>();
-            panel.OnFocusEvent.AddListener(OnFocus);
-            panel.OnBlurEvent.AddListener(OnBlur);
+            panel.OnFocusEvent += OnFocus;
+            panel.OnBlurEvent += OnBlur;
         }
 
         void OnFocus()

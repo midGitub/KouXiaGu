@@ -10,8 +10,19 @@ namespace KouXiaGu
     /// <summary>
     /// 十六位颜色表示拓展;
     /// </summary>
-    public static class HexColorExtensions
+    public static class ColorExtensions
     {
+
+        public static Color New(int r, int g, int b)
+        {
+            return new Color(ToColorSingle(r), ToColorSingle(g), ToColorSingle(b));
+        }
+
+        public static Color New(int r, int g, int b, int a)
+        {
+            return new Color(ToColorSingle(r), ToColorSingle(g), ToColorSingle(b), ToColorSingle(a));
+        }
+
 
         public static Color HexToColor(string hex)
         {
@@ -38,7 +49,7 @@ namespace KouXiaGu
         }
 
 
-        public static string ToHex(this Color color)
+        public static string ColorToHex(this Color color)
         {
             string str = "#";
             str += Int32ToHexString2(color.r.ToColorInt32());
@@ -105,7 +116,6 @@ namespace KouXiaGu
             var random = new System.Random(seed);
             return new Color(random.Sample(), random.Sample(), random.Sample(), alpha);
         }
-
     }
 
 }
