@@ -25,12 +25,24 @@ namespace KouXiaGu.Terrain3D.MapEditor
             get { return pointTogglePrefab; }
         }
 
-        [ContextMenu("test")]
+        [ContextMenu("test1")]
         void Test()
         {
             Create(new CubicHexCoord(0, 0, 0));
             Create(new CubicHexCoord(1, 0, -1));
             Create(new CubicHexCoord(2, 0, -2));
+        }
+
+        [ContextMenu("test2")]
+        void Test2()
+        {
+            var pos = new CubicHexCoord[]
+                {
+                    new CubicHexCoord(0, 0, 0),
+                    new CubicHexCoord(1, 0, -1),
+                    new CubicHexCoord(2, 0, -2),
+                };
+            Create(pos);
         }
     }
 }

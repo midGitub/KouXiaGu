@@ -30,7 +30,7 @@ namespace KouXiaGu.UI
         {
             if (Group != null)
             {
-                Group.RegisterToggle(this, Value);
+                Group.RegisterToggle(this);
             }
         }
 
