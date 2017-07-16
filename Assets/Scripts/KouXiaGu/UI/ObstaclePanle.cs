@@ -26,7 +26,7 @@ namespace KouXiaGu.UI
         [SerializeField]
         RayObstacle rayObstacleObject;
         [SerializeField]
-        SelectablePanelTile panelTile;
+        SelectablePanelTitle panelTile;
         SelectablePanel panel;
 
         void Awake()

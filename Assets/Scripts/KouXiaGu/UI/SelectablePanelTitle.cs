@@ -12,9 +12,9 @@ namespace KouXiaGu.UI
 
     [RequireComponent(typeof(Image))]
     [DisallowMultipleComponent]
-    public class SelectablePanelTile : MonoBehaviour, IPointerDownHandler
+    public class SelectablePanelTitle : MonoBehaviour, IPointerDownHandler
     {
-        SelectablePanelTile()
+        SelectablePanelTitle()
         {
         }
 
@@ -29,8 +29,15 @@ namespace KouXiaGu.UI
 
         void Awake()
         {
-            parent = GetComponentInParent<SelectablePanel>();
             imageObject = GetComponent<Image>();
+            parent = GetComponentInParent<SelectablePanel>();
+
+            if (parent == null)
+            {
+                Debug.LogWarning("父物体未挂载 SelectablePanel 脚本!");
+                return;
+            }
+
             parent.OnFocusEvent += OnFocus;
             parent.OnBlurEvent += OnBlur;
             ResetState();
