@@ -16,7 +16,7 @@ namespace KouXiaGu.UI
         protected abstract ItemList<T> parent { get; set; }
         public abstract T Value { get; set; }
 
-        protected virtual void Awake()
+        protected virtual void Start()
         {
             if (parent != null)
             {

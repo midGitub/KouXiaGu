@@ -35,7 +35,7 @@ namespace KouXiaGu.UI
             get { return transform; }
         }
 
-        public event Action<IEnumerable<T>> OnValueChanged
+        public event Action<IEnumerable<T>> OnSelectNodeChanged
         {
             add { onValueChanged += value; }
             remove { onValueChanged -= value; }

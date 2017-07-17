@@ -29,11 +29,6 @@ namespace KouXiaGu.Terrain3D.MapEditor
             get { return uiParent; }
         }
 
-        void Awake()
-        {
-            OnValueChanged += item => Debug.Log(item.ToLog());
-        }
-
         [ContextMenu("test1")]
         void Test()
         {

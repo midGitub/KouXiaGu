@@ -44,6 +44,3 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: StandaloneUI
-    uniqueID: 2168039817
-    locked: 0

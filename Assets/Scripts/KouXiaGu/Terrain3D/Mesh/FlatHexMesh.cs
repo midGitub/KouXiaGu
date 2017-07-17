@@ -7,7 +7,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 平顶的六边形网格结构;
     /// </summary>
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), ExecuteInEditMode, DisallowMultipleComponent]
+    [RequireComponent(typeof(MeshFilter)/*, typeof(Renderer)*/), ExecuteInEditMode, DisallowMultipleComponent]
     public sealed class FlatHexMesh : MonoBehaviour
     {
         FlatHexMesh() { }

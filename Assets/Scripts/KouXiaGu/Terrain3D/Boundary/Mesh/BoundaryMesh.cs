@@ -57,7 +57,8 @@ namespace KouXiaGu.Terrain3D
         List<Vector3> vertices;
         List<int> triangles;
         List<Vector2> uv;
-        Mesh mesh;
+        Mesh Mesh;
+        bool isUpdate;
 
         void Awake()
         {
@@ -67,14 +68,14 @@ namespace KouXiaGu.Terrain3D
             uv = new List<Vector2>();
 
             MeshFilter meshFilter = GetComponent<MeshFilter>();
-            meshFilter.mesh = mesh = new Mesh();
-            mesh.name = meshName;
+            meshFilter.mesh = Mesh = new Mesh();
+            Mesh.name = meshName;
         }
 
         [ContextMenu("Destroy Mesh")]
         void OnDestroy()
         {
-            DestroyImmediate(mesh);
+            DestroyImmediate(Mesh);
         }
 
         public bool Add(CubicHexCoord position)
@@ -107,6 +108,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         void Add_internal(CubicHexCoord position)
         {
+            isUpdate = true;
             Vector3 pixelPosition = position.GetTerrainPixel();
             foreach (var vertice in prefabVertices)
             {
@@ -156,6 +158,7 @@ namespace KouXiaGu.Terrain3D
 
         void Remove_internal(int index, CubicHexCoord position)
         {
+            isUpdate = true;
             for (int start = index * 6, loop = 0; loop < 6; loop++)
             {
                 vertices.RemoveAt(start);
@@ -167,14 +170,27 @@ namespace KouXiaGu.Terrain3D
 
         void UpdateMesh()
         {
-            mesh.Clear();
-            mesh.vertices = vertices.ToArray();
-            mesh.triangles = triangles.ToArray();
-            mesh.uv = uv.ToArray();
-            mesh.RecalculateBounds();
-            mesh.RecalculateNormals();
+            if (isUpdate)
+            {
+                Mesh.Clear();
+                Mesh.vertices = vertices.ToArray();
+                Mesh.triangles = triangles.ToArray();
+                Mesh.uv = uv.ToArray();
+                Mesh.RecalculateBounds();
+                Mesh.RecalculateNormals();
+                isUpdate = false;
+            }
         }
 
+        [ContextMenu("Clear")]
+        public void Clear()
+        {
+            points.Clear();
+            vertices.Clear();
+            triangles.Clear();
+            uv.Clear();
+            Mesh.Clear();
+        }
 
         [ContextMenu("TestAdd")]
         void TestAdd()

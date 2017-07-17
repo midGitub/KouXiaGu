@@ -39,9 +39,8 @@ namespace KouXiaGu.Terrain3D.MapEditor
             set { parentList = (SelectNodeList)value; }
         }
 
-        protected override void Awake()
+        void Awake()
         {
-            base.Awake();
             deleteButtom.onClick.AddListener(OnDeleteButtomClick);
         }
 
