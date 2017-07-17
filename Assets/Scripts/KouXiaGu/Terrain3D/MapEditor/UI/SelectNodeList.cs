@@ -1,9 +1,9 @@
-﻿using KouXiaGu.Grids;
-using KouXiaGu.UI;
+﻿using KouXiaGu.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KouXiaGu.Grids;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,18 +11,27 @@ namespace KouXiaGu.Terrain3D.MapEditor
 {
 
     [DisallowMultipleComponent]
-    public class PointToggleGroup : MultiselectToggleGroup<CubicHexCoord>
+    public class SelectNodeList : ItemList<CubicHexCoord>
     {
-        PointToggleGroup()
-        {
-        }
 
         [SerializeField]
-        PointToggle pointTogglePrefab;
+        SelectNodeItem prefab;
+        [SerializeField]
+        Transform uiParent;
 
-        protected override MultiselectToggle<CubicHexCoord> TogglePrefab
+        protected override UserInterfaceItem<CubicHexCoord> Prefab
         {
-            get { return pointTogglePrefab; }
+            get { return prefab; }
+        }
+
+        protected override Transform parent
+        {
+            get { return uiParent; }
+        }
+
+        void Awake()
+        {
+            OnValueChanged += item => Debug.Log(item.ToLog());
         }
 
         [ContextMenu("test1")]

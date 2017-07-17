@@ -20,6 +20,7 @@ namespace KouXiaGu.UI
         Toggle toggleObject;
         protected abstract MultiselectToggleGroup<T> Group { get; set; }
         public abstract T Value { get; protected set; }
+        IDisposable groupDisposer;
 
         public Toggle ToggleObject
         {
@@ -30,7 +31,7 @@ namespace KouXiaGu.UI
         {
             if (Group != null)
             {
-                Group.RegisterToggle(this);
+                groupDisposer = Group.RegisterToggle(this);
             }
         }
 
@@ -41,6 +42,15 @@ namespace KouXiaGu.UI
             var ins = Instantiate(this, parent);
             ins.ToggleObject.isOn = isSelect;
             return ins;
+        }
+
+        /// <summary>
+        /// 提供Group销毁;
+        /// </summary>
+        internal void Destroy_internal()
+        {
+            Destroy(gameObject);
+            groupDisposer = null;
         }
     }
 }

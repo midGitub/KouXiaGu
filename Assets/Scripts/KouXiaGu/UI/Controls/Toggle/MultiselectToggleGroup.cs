@@ -45,15 +45,10 @@ namespace KouXiaGu.UI
 
         protected abstract MultiselectToggle<T> TogglePrefab { get; }
 
-        void Awake()
-        {
-            onValueChanged += item => Debug.Log(item.ToLog());
-        }
-
         /// <summary>
         /// 使用预制创建;
         /// </summary>
-        public void Create(T value, bool isSelect = true)
+        public void Add(T value, bool isSelect = true)
         {
             if (TogglePrefab == null)
                 throw new ArgumentNullException("TogglePrefab");
@@ -64,7 +59,7 @@ namespace KouXiaGu.UI
         /// <summary>
         /// 使用预制创建;
         /// </summary>
-        public void Create(IEnumerable<T> values, bool isSelect = true)
+        public void Add(IEnumerable<T> values, bool isSelect = true)
         {
             if (TogglePrefab == null)
                 throw new ArgumentNullException("TogglePrefab");
@@ -73,6 +68,44 @@ namespace KouXiaGu.UI
             foreach (var value in values)
             {
                 TogglePrefab.PrefabCreate(value, this, transform, isSelect);
+            }
+            ignoreToggleEvent = false;
+            SendValueChangedEvent();
+        }
+
+        /// <summary>
+        /// 移除指定值;
+        /// </summary>
+        public bool Remove(T value)
+        {
+            int index = Toggles.FindIndex(item => item.Value.Equals(value));
+            if (index < 0)
+            {
+                return false;
+            }
+            MultiselectToggle<T> toggle = Toggles[index];
+            Toggles.RemoveAt(index);
+            toggle.Destroy_internal();
+            SendValueChangedEvent();
+            return true;
+        }
+
+        /// <summary>
+        /// 移除指定值;
+        /// </summary>
+        public void Remove(IEnumerable<T> values)
+        {
+            ignoreToggleEvent = true;
+            foreach (var value in values)
+            {
+                int index = Toggles.FindIndex(item => item.Value.Equals(value));
+                if (index < 0)
+                {
+                    continue;
+                }
+                MultiselectToggle<T> toggle = Toggles[index];
+                Toggles.RemoveAt(index);
+                toggle.Destroy_internal();
             }
             ignoreToggleEvent = false;
             SendValueChangedEvent();
@@ -102,9 +135,9 @@ namespace KouXiaGu.UI
 
         void SendValueChangedEvent()
         {
-            var values = SelectValueAll();
             if (onValueChanged != null)
             {
+                var values = SelectValueAll();
                 onValueChanged.Invoke(values);
             }
         }
