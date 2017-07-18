@@ -128,9 +128,6 @@ namespace KouXiaGu.Terrain3D
                 blurMap = buffer;
             }
 
-            //stencilMap.SavePNG(@"123", "stencilMap", System.IO.FileMode.Create);
-            //blurMap.SavePNG(@"123", "blurMap", System.IO.FileMode.Create);
-
             outlineMaterial.SetTexture("_StencilMap", stencilMap);
             outlineMaterial.SetTexture("_BlurMap", blurMap);
             outlineMaterial.SetColor("_OutlineColor", outlineColor);
