@@ -20,33 +20,61 @@ namespace KouXiaGu.Terrain3D.MapEditor
         }
 
         [CustomUnityLayer("用于显示选中的区域!")]
-        public const string stencilLayer = "SelectMapNode";
+        public const string StencilLayer = "SelectMapNode";
+        const string StencilCameraName = "SelectNodeStencilCamera";
 
         Camera mainCamera;
-        public Camera stencilCamera;
+        Camera stencilCamera;
         public Shader edgePreserveShader;
         [Range(1, 40)]
         public float outLineWidth = 10;
         [Range(0, 1)]
         public float transparency = 0;
+        public LayerMask cullingMask;
         Material edgePreserveMaterial;
         RenderTexture stencilMap;
 
         void Awake()
         {
             mainCamera = GetComponent<Camera>();
-            stencilCamera.cullingMask = LayerMask.GetMask(stencilLayer);
+            stencilCamera = CreateStencilCamera();
             edgePreserveMaterial = new Material(edgePreserveShader);
             edgePreserveMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
 
+        void OnDestroy()
+        {
+            Destroy(stencilCamera.gameObject);
+        }
+
+        Camera CreateStencilCamera()
+        {
+            var node = new GameObject(StencilCameraName, typeof(Camera)).transform;
+            node.parent = transform;
+            node.localPosition = Vector3.zero;
+            node.localRotation = Quaternion.identity;
+            node.localScale = Vector3.one;
+
+            Camera stencilCamera = node.GetComponent<Camera>();
+            stencilCamera.enabled = false;
+            stencilCamera.clearFlags = CameraClearFlags.SolidColor;
+            stencilCamera.backgroundColor = new Color(0, 0, 0, 0);
+            stencilCamera.cullingMask = cullingMask;
+            stencilCamera.renderingPath = RenderingPath.VertexLit;
+            stencilCamera.allowHDR = false;
+            stencilCamera.allowMSAA = false;
+            stencilCamera.useOcclusionCulling = false;
+            return stencilCamera;
+        }
+
         void OnPreRender()
         {
-            stencilMap = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
             stencilCamera.fieldOfView = mainCamera.fieldOfView;
             stencilCamera.orthographic = mainCamera.orthographic;
             stencilCamera.nearClipPlane = mainCamera.nearClipPlane;
             stencilCamera.farClipPlane = mainCamera.farClipPlane;
+
+            stencilMap = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
             stencilCamera.targetTexture = stencilMap;
             stencilCamera.Render();
             stencilCamera.targetTexture = null;
