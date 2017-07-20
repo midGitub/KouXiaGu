@@ -12,7 +12,6 @@ namespace KouXiaGu.Cameras
     /// </summary>
     [RequireComponent(typeof(Camera))]
     [DisallowMultipleComponent]
-    [ExecuteInEditMode]
     public sealed class CanmeraMonitoring : MonoBehaviour
     {
         CanmeraMonitoring()
@@ -25,6 +24,11 @@ namespace KouXiaGu.Cameras
         Camera thisCamera
         {
             get { return _thisCamera ?? (_thisCamera = GetComponent<Camera>()); }
+        }
+
+        void OnValidate()
+        {
+            OnPreRender();
         }
 
         [ContextMenu("Set")]

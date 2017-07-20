@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
         [SerializeField]
         SelectNodeList selectList;
         [SerializeField]
-        Toggle activateToggle;
+        Toggle activateMouseSelectToggle;
         SelectablePanel panel;
 
         void Awake()
@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
 
         void Update()
         {
-            if (activateToggle.isOn && panel.IsFocus)
+            if (activateMouseSelectToggle.isOn && panel.IsFocus)
             {
                 if (Input.GetKeyDown(KeyCode.Mouse0) && !EventSystem.current.IsPointerOverGameObject())
                 {

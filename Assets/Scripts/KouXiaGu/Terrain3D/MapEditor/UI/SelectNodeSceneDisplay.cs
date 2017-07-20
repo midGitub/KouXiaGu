@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using KouXiaGu.Grids;
 using UnityEngine;
-using UnityEngine.UI;
+using KouXiaGu.Terrain3D;
 
 namespace KouXiaGu.Terrain3D.MapEditor
 {
@@ -13,16 +13,16 @@ namespace KouXiaGu.Terrain3D.MapEditor
     /// 在场景中显示选中的坐标;
     /// </summary>
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(SelectNodeList))]
     public sealed class SelectNodeSceneDisplay : MonoBehaviour
     {
         SelectNodeSceneDisplay()
         {
         }
 
+        [SerializeField]
         SelectNodeList selectNodeList;
         [SerializeField]
-        BoundaryMesh mapBoundaryPrefab;
+        BoundaryMesh mapBoundaryMesh;
         [SerializeField]
         SelectNodeCameraEffect cameraEffect;
         [SerializeField]
@@ -31,65 +31,77 @@ namespace KouXiaGu.Terrain3D.MapEditor
         public bool IsDisplay
         {
             get { return isDisplay; }
-            set
-            {
-                isDisplay = value;
-                cameraEffect.enabled = value;
-            }
         }
 
         void Awake()
         {
-            selectNodeList = GetComponent<SelectNodeList>();
-            mapBoundaryPrefab.Add(selectNodeList);
             selectNodeList.OnSelectNodeChanged += OnSelectNodeChanged;
-        }
-
-        void OnValidate()
-        {
-            if (isDisplay)
-            {
-                Display_internal();
-            }
-            else
-            {
-                Hide_internal();
-            }
         }
 
         void OnEnable()
         {
             if (isDisplay)
             {
-                Display_internal();
+                Display();
             }
         }
 
         void OnDisable()
         {
-            Hide_internal();
+            Hide();
         }
 
-        void Display_internal()
+        public void SetDisplay(bool isDisplay)
+        {
+            if (isDisplay)
+            {
+                Display();
+            }
+            else
+            {
+                Hide();
+            }
+        }
+
+        public void Display()
         {
             if (cameraEffect != null)
             {
                 cameraEffect.enabled = true;
             }
+            if (mapBoundaryMesh != null)
+            {
+                mapBoundaryMesh.gameObject.SetActive(true);
+            }
+            if (!isDisplay)
+            {
+                mapBoundaryMesh.Clear();
+                mapBoundaryMesh.Add(selectNodeList);
+            }
+            isDisplay = true;
         }
 
-        void Hide_internal()
+        public void Hide()
         {
             if (cameraEffect != null)
             {
                 cameraEffect.enabled = false;
             }
+            if (mapBoundaryMesh != null)
+            {
+                mapBoundaryMesh.gameObject.SetActive(false);
+                mapBoundaryMesh.Clear();
+            }
+            isDisplay = false;
         }
 
         void OnSelectNodeChanged(IEnumerable<CubicHexCoord> positions)
         {
-            mapBoundaryPrefab.Clear();
-            mapBoundaryPrefab.Add(positions);
+            if (isDisplay)
+            {
+                mapBoundaryMesh.Clear();
+                mapBoundaryMesh.Add(positions);
+            }
         }
     }
 }
