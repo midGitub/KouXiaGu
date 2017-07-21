@@ -41,10 +41,6 @@ namespace KouXiaGu.Terrain3D
         public Texture gridLineMap = null;
         public Color gridLineColor = Color.black;
         public bool isDisplayGridLine = true;
-        /// <summary>
-        /// 海平面高度;
-        /// </summary>
-        public Transform seaLevelObject;
 
         #endregion
 

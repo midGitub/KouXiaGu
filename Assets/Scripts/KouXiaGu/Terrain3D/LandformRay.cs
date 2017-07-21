@@ -10,27 +10,43 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 提供对地形的射线功能;
     /// </summary>
-    public class LandformRay
+    public sealed class LandformRay : SceneSington<LandformRay>
     {
-        static readonly LandformRay instance = new LandformRay();
-
-        public static LandformRay Instance
+        LandformRay()
         {
-            get { return instance; }
         }
 
         [CustomUnityLayer("地形层")]
         public const string LayerName = "Landform";
         const float DefaultRayMaxDistance = 8000f;
 
-        public LandformRay()
+        [SerializeField]
+        LayerMask rayLayerMask;
+
+        public LayerMask RayLayerMask
         {
-            RayLayerMask = LayerMask.GetMask(LayerName);
-            RayLayer = LayerMask.NameToLayer(LayerName);
+            get { return rayLayerMask; }
         }
 
-        public int RayLayerMask { get; private set; }
-        public int RayLayer { get; private set; }
+        public int RayLayer
+        {
+            get { return LayerMask.NameToLayer(LayerName); }
+        }
+
+        void Awake()
+        {
+            SetInstance(this);
+        }
+
+        public bool Raycast(Ray ray, out RaycastHit raycastHit)
+        {
+            return Physics.Raycast(ray, out raycastHit, DefaultRayMaxDistance, RayLayerMask);
+        }
+
+        public bool Raycast(Vector3 origin, Vector3 direction, out RaycastHit raycastHit)
+        {
+            return Physics.Raycast(origin, direction,out raycastHit, DefaultRayMaxDistance, RayLayerMask);
+        }
 
         /// <summary>
         /// 获取到主摄像机的鼠标所指向的地形坐标,若无法获取到则返回默认值;
@@ -64,12 +80,5 @@ namespace KouXiaGu.Terrain3D
                 return false;
             }
         }
-
-        bool Raycast(Ray ray, out RaycastHit raycastHit)
-        {
-            return Physics.Raycast(ray, out raycastHit, DefaultRayMaxDistance, RayLayerMask, QueryTriggerInteraction.Collide);
-        }
-
     }
-
 }

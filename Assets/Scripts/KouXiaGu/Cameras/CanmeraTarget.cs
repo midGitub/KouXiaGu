@@ -28,7 +28,7 @@ namespace KouXiaGu.Cameras
             MovementRespond(ref finalPosition);
             Vector3 pos = transform.position;
             pos = Vector3.SmoothDamp(pos, finalPosition, ref currentVelocity, 0.1f);
-            pos.y = world.Components.Landform.GetHeight(pos);
+            pos = world.Components.Landform.Normalize(pos);
             transform.position = pos;
         }
 

@@ -59,27 +59,35 @@ namespace KouXiaGu.Terrain3D
         List<Vector2> uv;
         Mesh Mesh;
         bool isUpdate;
-
-        void Awake()
-        {
-            points = new List<CubicHexCoord>();
-            vertices = new List<Vector3>();
-            triangles = new List<int>();
-            uv = new List<Vector2>();
-
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
-            meshFilter.mesh = Mesh = new Mesh();
-            Mesh.name = meshName;
-        }
+        bool isInitialized;
 
         [ContextMenu("Destroy Mesh")]
         void OnDestroy()
         {
             DestroyImmediate(Mesh);
+            Mesh = null;
+        }
+
+        void Initialize()
+        {
+            if (!isInitialized)
+            {
+                points = new List<CubicHexCoord>();
+                vertices = new List<Vector3>();
+                triangles = new List<int>();
+                uv = new List<Vector2>();
+
+                MeshFilter meshFilter = GetComponent<MeshFilter>();
+                meshFilter.mesh = Mesh = new Mesh();
+                Mesh.name = meshName;
+
+                isInitialized = true;
+            }
         }
 
         public bool Add(CubicHexCoord position)
         {
+            Initialize();
             if (!points.Contains(position))
             {
                 points.Add(position);
@@ -92,6 +100,7 @@ namespace KouXiaGu.Terrain3D
 
         public void Add(IEnumerable<CubicHexCoord> positions)
         {
+            Initialize();
             foreach (var position in positions)
             {
                 if (!points.Contains(position))
@@ -131,6 +140,7 @@ namespace KouXiaGu.Terrain3D
 
         public bool Remove(CubicHexCoord position)
         {
+            Initialize();
             int index = points.FindIndex(position);
             if (index >= 0)
             {
@@ -144,6 +154,7 @@ namespace KouXiaGu.Terrain3D
 
         public void Remove(IEnumerable<CubicHexCoord> positions)
         {
+            Initialize();
             foreach (var position in positions)
             {
                 int index = points.FindIndex(position);
@@ -185,17 +196,19 @@ namespace KouXiaGu.Terrain3D
         [ContextMenu("Clear")]
         public void Clear()
         {
-            points.Clear();
-            vertices.Clear();
-            triangles.Clear();
-            uv.Clear();
-            Mesh.Clear();
+            if (isInitialized)
+            {
+                points.Clear();
+                vertices.Clear();
+                triangles.Clear();
+                uv.Clear();
+                Mesh.Clear();
+            }
         }
 
         [ContextMenu("TestAdd")]
         void TestAdd()
         {
-            Awake();
             Add(CubicHexCoord.Self);
             Add(CubicHexCoord.DIR_North);
             Add(CubicHexCoord.DIR_South);

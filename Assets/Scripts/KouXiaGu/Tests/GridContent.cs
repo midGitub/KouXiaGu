@@ -30,7 +30,7 @@ namespace KouXiaGu.Tests
 
         string GetLog(Vector3 mousePosition)
         {
-            LandformRay landformRay = new LandformRay();
+            LandformRay landformRay = LandformRay.Instance;
             Vector3 terrainPixel = landformRay.MouseRayPointOrDefault();
             CubicHexCoord cube = LandformConvert.Grid.GetCubic(terrainPixel);
             Vector3 cubePixel = LandformConvert.Grid.GetPixel(cube);

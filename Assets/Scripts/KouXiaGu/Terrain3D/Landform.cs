@@ -20,12 +20,29 @@ namespace KouXiaGu.Terrain3D
         internal SceneLandformCollection LandformChunks { get; private set; }
         internal SceneBuildingCollection Buildings { get; private set; }
 
+        ///// <summary>
+        ///// 获取到高度,若不存在高度信息,则返回0;
+        ///// </summary>
+        //public float GetHeight(Vector3 position)
+        //{
+        //    return LandformChunks.GetHeight(position);
+        //}
+
         /// <summary>
-        /// 获取到高度,若不存在高度信息,则返回0;
+        /// 使坐标贴与地面;
         /// </summary>
-        public float GetHeight(Vector3 position)
+        public Vector3 Normalize(Vector3 position)
         {
-            return LandformChunks.GetHeight(position);
+            position.y = 10;
+            RaycastHit raycastHit;
+            if (LandformRay.Instance.Raycast(position, Vector3.down, out raycastHit))
+            {
+                return raycastHit.point;
+            }
+            else
+            {
+                return position;
+            }
         }
     }
 }

@@ -51,7 +51,7 @@ namespace KouXiaGu.Terrain3D
         public virtual void UpdateHeight()
         {
             Vector3 position = transform.position;
-            position.y = World.Components.Landform.GetHeight(transform.position);
+            position = World.Components.Landform.Normalize(position);
             transform.position = position;
         }
 

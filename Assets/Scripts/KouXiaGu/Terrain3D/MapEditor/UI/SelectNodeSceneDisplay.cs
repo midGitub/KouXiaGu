@@ -48,7 +48,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
 
         void OnDisable()
         {
-            Hide();
+            Hide(isDisplay);
         }
 
         public void SetDisplay(bool isDisplay)
@@ -72,16 +72,17 @@ namespace KouXiaGu.Terrain3D.MapEditor
             if (mapBoundaryMesh != null)
             {
                 mapBoundaryMesh.gameObject.SetActive(true);
-            }
-            if (!isDisplay)
-            {
                 mapBoundaryMesh.Clear();
                 mapBoundaryMesh.Add(selectNodeList);
             }
             isDisplay = true;
         }
 
-        public void Hide()
+        /// <summary>
+        /// 隐藏显示;
+        /// </summary>
+        /// <param name="isDisplay">改变内部变量isDisplay</param>
+        public void Hide(bool isDisplay = false)
         {
             if (cameraEffect != null)
             {
@@ -92,7 +93,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
                 mapBoundaryMesh.gameObject.SetActive(false);
                 mapBoundaryMesh.Clear();
             }
-            isDisplay = false;
+            this.isDisplay = isDisplay;
         }
 
         void OnSelectNodeChanged(IEnumerable<CubicHexCoord> positions)
