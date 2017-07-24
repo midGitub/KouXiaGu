@@ -2422,7 +2422,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1254072873}
+      - m_Target: {fileID: 1465034481}
         m_MethodName: SetDisplay
         m_Mode: 0
         m_Arguments:
@@ -2519,9 +2519,9 @@ GameObject:
   m_Component:
   - component: {fileID: 417031743}
   - component: {fileID: 417031744}
-  - component: {fileID: 417031746}
+  - component: {fileID: 417031745}
   m_Layer: 0
-  m_Name: SelectNodeEditorPanel
+  m_Name: SelectNodeEditPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2569,7 +2569,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
---- !u!114 &417031746
+--- !u!114 &417031745
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -2577,9 +2577,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 417031742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17fbbd40d99c2224f95520b623ab76c4, type: 3}
+  m_Script: {fileID: 11500000, guid: 0892d2ea539ab244490c3d353865d908, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectNodeList: {fileID: 1465034479}
 --- !u!1 &417931507
 GameObject:
   m_ObjectHideFlags: 0
@@ -5828,7 +5829,6 @@ GameObject:
   - component: {fileID: 977497671}
   - component: {fileID: 977497673}
   - component: {fileID: 977497672}
-  - component: {fileID: 977497674}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -5890,19 +5890,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 1
---- !u!114 &977497674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 977497670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ef3c54b1103d484aa03ada9f8f30492, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: 114493995929854492, guid: 3960fd1fc65a223488370464ea35894d, type: 2}
-  uiParent: {fileID: 977497671}
 --- !u!1 &985083071
 GameObject:
   m_ObjectHideFlags: 0
@@ -7237,8 +7224,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1254072871}
-  - component: {fileID: 1254072872}
-  - component: {fileID: 1254072873}
   m_Layer: 5
   m_Name: ControlView
   m_TagString: Untagged
@@ -7267,34 +7252,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 5}
   m_SizeDelta: {x: 0, y: 55}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1254072872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1254072870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18c72ac9f6273524ab14445ab454bec0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectList: {fileID: 977497674}
-  activateMouseSelectToggle: {fileID: 2039908953}
---- !u!114 &1254072873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1254072870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddc79c5012b4b664ab7be51064bc2aa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectNodeList: {fileID: 977497674}
-  mapBoundaryMesh: {fileID: 1466577390}
-  cameraEffect: {fileID: 1625099635}
-  isDisplay: 1
 --- !u!1 &1256517404
 GameObject:
   m_ObjectHideFlags: 0
@@ -8705,6 +8662,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1465034477}
   - component: {fileID: 1465034478}
+  - component: {fileID: 1465034479}
+  - component: {fileID: 1465034480}
+  - component: {fileID: 1465034481}
   m_Layer: 5
   m_Name: NodeSelectPanel
   m_TagString: Untagged
@@ -8754,6 +8714,47 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+--- !u!114 &1465034479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465034476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ef3c54b1103d484aa03ada9f8f30492, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 114493995929854492, guid: 3960fd1fc65a223488370464ea35894d, type: 2}
+  uiParent: {fileID: 977497671}
+--- !u!114 &1465034480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465034476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18c72ac9f6273524ab14445ab454bec0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectList: {fileID: 1465034479}
+  activateMouseSelectToggle: {fileID: 2039908953}
+--- !u!114 &1465034481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465034476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddc79c5012b4b664ab7be51064bc2aa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectNodeList: {fileID: 1465034479}
+  mapBoundaryMesh: {fileID: 1466577390}
+  cameraEffect: {fileID: 1625099635}
+  isDisplay: 1
 --- !u!4 &1466577389 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4430371314450864, guid: 25a3e36633a0b714989bfba3dce24842,
@@ -9240,7 +9241,7 @@ Prefab:
         type: 2}
       propertyPath: parentList
       value: 
-      objectReference: {fileID: 977497674}
+      objectReference: {fileID: 0}
     - target: {fileID: 1247888502165824, guid: 3960fd1fc65a223488370464ea35894d, type: 2}
       propertyPath: m_IsActive
       value: 0
@@ -9325,7 +9326,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 977497674}
+      - m_Target: {fileID: 1465034479}
         m_MethodName: Clear
         m_Mode: 1
         m_Arguments:

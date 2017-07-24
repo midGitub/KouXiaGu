@@ -35,7 +35,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
 
         void Awake()
         {
-            selectNodeList.OnSelectNodeChanged += OnSelectNodeChanged;
+            selectNodeList.OnSelectValueChanged += OnSelectNodeChanged;
         }
 
         void OnEnable()

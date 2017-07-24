@@ -12,22 +12,19 @@ namespace KouXiaGu.UI
     /// <summary>
     /// 条目列表;
     /// </summary>
-    public abstract class ItemList<T> : MonoBehaviour, IEnumerable<T>
+    public abstract class ItemList<T> : MonoBehaviour, IEnumerable<T>, IObservableCollection<T>
     {
 
         List<UserInterfaceItem<T>> itemList;
-        Action<IEnumerable<T>> onValueChanged;
+        Action<IEnumerable<T>> onSelectValueChanged;
+        IObserverCollection<ICollectionObserver<T>> observers;
+        bool initialized;
 
         protected abstract UserInterfaceItem<T> Prefab { get; }
 
-        List<UserInterfaceItem<T>> list
-        {
-            get { return itemList ?? (itemList = new List<UserInterfaceItem<T>>()); }
-        }
-
         public int Count
         {
-            get { return list.Count; }
+            get { return itemList != null ? itemList.Count : 0; }
         }
 
         protected virtual Transform parent
@@ -35,18 +32,29 @@ namespace KouXiaGu.UI
             get { return transform; }
         }
 
-        public event Action<IEnumerable<T>> OnSelectNodeChanged
+        public event Action<IEnumerable<T>> OnSelectValueChanged
         {
-            add { onValueChanged += value; }
-            remove { onValueChanged -= value; }
+            add { onSelectValueChanged += value; }
+            remove { onSelectValueChanged -= value; }
         }
 
-        void SendValueChangde()
+        void Initialize()
         {
-            if (onValueChanged != null)
+            if (!initialized)
             {
-                onValueChanged.Invoke(this);
+                itemList = new List<UserInterfaceItem<T>>();
+                observers = new ObserverList<ICollectionObserver<T>>();
+                initialized = true;
             }
+        }
+
+        public IDisposable Subscribe(ICollectionObserver<T> observer)
+        {
+            Initialize();
+            if (observers.Contains(observer))
+                throw new ArgumentException();
+
+            return observers.Subscribe(observer);
         }
 
         public void Add(T value)
@@ -54,9 +62,11 @@ namespace KouXiaGu.UI
             if (Prefab == null)
                 throw new ArgumentNullException("Prefab");
 
+            Initialize();
             var uiItem = Prefab.Create(value, this, parent);
-            list.Add(uiItem);
-            SendValueChangde();
+            itemList.Add(uiItem);
+            SendAddEventToObserver(value);
+            SendValueChangdeEvent();
         }
 
         public void Add(IEnumerable<T> values)
@@ -64,21 +74,25 @@ namespace KouXiaGu.UI
             if (Prefab == null)
                 throw new ArgumentNullException("Prefab");
 
+            Initialize();
             foreach (var value in values)
             {
                 var uiItem = Prefab.Create(value, this, parent);
-                list.Add(uiItem);
+                itemList.Add(uiItem);
+                SendAddEventToObserver(value);
             }
-            SendValueChangde();
+            SendValueChangdeEvent();
         }
 
         public void Add(UserInterfaceItem<T> uiItem)
         {
-            if (!list.Contains(uiItem))
+            Initialize();
+            if (!itemList.Contains(uiItem))
             {
-                list.Add(uiItem);
+                itemList.Add(uiItem);
+                SendAddEventToObserver(uiItem.Value);
             }
-            SendValueChangde();
+            SendValueChangdeEvent();
         }
 
         public bool Remove(T item)
@@ -91,7 +105,8 @@ namespace KouXiaGu.UI
                     var uiItem = itemList[index];
                     itemList.RemoveAt(index);
                     Destroy(uiItem.gameObject);
-                    SendValueChangde();
+                    SendRemoveEventToObserver(item);
+                    SendValueChangdeEvent();
                     return true;
                 }
             }
@@ -107,7 +122,8 @@ namespace KouXiaGu.UI
                 {
                     itemList.RemoveAt(index);
                     Destroy(uiItem.gameObject);
-                    SendValueChangde();
+                    SendRemoveEventToObserver(uiItem.Value);
+                    SendValueChangdeEvent();
                     return true;
                 }
             }
@@ -137,17 +153,60 @@ namespace KouXiaGu.UI
 
         public void Clear()
         {
-            foreach (var uiItem in list)
+            if (itemList != null)
             {
-                Destroy(uiItem.gameObject);
+                foreach (var uiItem in itemList)
+                {
+                    Destroy(uiItem.gameObject);
+                }
+                itemList.Clear();
+                SendClearEventToObserver();
+                SendValueChangdeEvent();
             }
-            list.Clear();
-            SendValueChangde();
+        }
+
+        void SendAddEventToObserver(T item)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnAdded(item);
+            }
+        }
+
+        void SendRemoveEventToObserver(T item)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnRemoved(item);
+            }
+        }
+
+        void SendClearEventToObserver()
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnCleared();
+            }
+        }
+
+        void SendValueChangdeEvent()
+        {
+            if (onSelectValueChanged != null)
+            {
+                onSelectValueChanged.Invoke(this);
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return list.Select(item => item.Value).GetEnumerator();
+            if (itemList != null)
+            {
+                return itemList.Select(item => item.Value).GetEnumerator();
+            }
+            else
+            {
+                return EmptyEnumerable<T>.Default;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

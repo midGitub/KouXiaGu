@@ -22,7 +22,7 @@ namespace KouXiaGu.Diagnostics
         static readonly ObservableLogger loggerGroup;
         public static ConsoleMethodCollection CommandCollection { get; private set; }
         public static bool IsSubscribeUnityDebug { get; private set; }
-        static readonly ILogHandler defaultLogHandler = Debug.logger.logHandler;
+        static readonly ILogHandler defaultLogHandler = Debug.unityLogger.logHandler;
 
         /// <summary>
         /// 是否为开发者模式;
@@ -60,11 +60,11 @@ namespace KouXiaGu.Diagnostics
 
             if (isSubscribe)
             {
-                Debug.logger.logHandler = loggerGroup;
+                Debug.unityLogger.logHandler = loggerGroup;
             }
             else
             {
-                Debug.logger.logHandler = defaultLogHandler;
+                Debug.unityLogger.logHandler = defaultLogHandler;
             }
             IsSubscribeUnityDebug = isSubscribe;
         }

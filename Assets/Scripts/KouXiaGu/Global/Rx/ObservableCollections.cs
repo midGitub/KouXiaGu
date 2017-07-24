@@ -218,6 +218,7 @@ namespace KouXiaGu
     {
         void OnAdded(T item);
         void OnRemoved(T item);
+        void OnCleared();
     }
 
     /// <summary>
