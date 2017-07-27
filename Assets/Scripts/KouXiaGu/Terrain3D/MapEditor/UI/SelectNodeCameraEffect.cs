@@ -32,7 +32,6 @@ namespace KouXiaGu.Terrain3D.MapEditor
         public float transparency = 0;
         public LayerMask cullingMask;
         Material edgePreserveMaterial;
-        RenderTexture stencilMap;
 
         void Awake()
         {
@@ -67,30 +66,44 @@ namespace KouXiaGu.Terrain3D.MapEditor
             return stencilCamera;
         }
 
-        void OnPreRender()
+        //似乎在Unity2017.1版本在 OnPreRender() 内渲染不到正确的图像;
+
+        //void OnPreRender()
+        //{
+        //    stencilCamera.fieldOfView = mainCamera.fieldOfView;
+        //    stencilCamera.orthographic = mainCamera.orthographic;
+        //    stencilCamera.nearClipPlane = mainCamera.nearClipPlane;
+        //    stencilCamera.farClipPlane = mainCamera.farClipPlane;
+
+        //    stencilMap = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
+        //    stencilCamera.targetTexture = stencilMap;
+        //    stencilCamera.Render();
+        //    stencilCamera.targetTexture = null;
+        //}
+
+        //void OnPostRender()
+        //{
+        //    RenderTexture.ReleaseTemporary(stencilMap);
+        //}
+
+        void OnRenderImage(RenderTexture sourceTexture, RenderTexture destTexture)
         {
             stencilCamera.fieldOfView = mainCamera.fieldOfView;
             stencilCamera.orthographic = mainCamera.orthographic;
             stencilCamera.nearClipPlane = mainCamera.nearClipPlane;
             stencilCamera.farClipPlane = mainCamera.farClipPlane;
 
-            stencilMap = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
+            RenderTexture stencilMap = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
             stencilCamera.targetTexture = stencilMap;
             stencilCamera.Render();
             stencilCamera.targetTexture = null;
-        }
 
-        void OnPostRender()
-        {
-            RenderTexture.ReleaseTemporary(stencilMap);
-        }
-
-        void OnRenderImage(RenderTexture sourceTexture, RenderTexture destTexture)
-        {
             edgePreserveMaterial.SetTexture("_StencilMap", stencilMap);
             edgePreserveMaterial.SetFloat("_OutLineWidth", outLineWidth);
             edgePreserveMaterial.SetFloat("_Transparency", transparency);
             Graphics.Blit(sourceTexture, destTexture, edgePreserveMaterial);
+
+            RenderTexture.ReleaseTemporary(stencilMap);
         }
     }
 }

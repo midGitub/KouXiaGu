@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KouXiaGu.Terrain3D.MapEditor
 {
 
     [DisallowMultipleComponent]
-    public class NodeEditLandform : MonoBehaviour, INodeEditer
+    public class NodeEditLandform : MonoBehaviour
     {
         NodeEditLandform()
         {
         }
 
-        void INodeEditer.OnSelectNodeChanged(List<NodePair> data)
-        {
-            throw new NotImplementedException();
-        }
+        public InputField landfromID;
+        public InputField landfromName;
     }
 }

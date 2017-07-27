@@ -169,7 +169,14 @@ namespace KouXiaGu.UI
         {
             foreach (var observer in observers.EnumerateObserver())
             {
-                observer.OnAdded(item);
+                try
+                {
+                    observer.OnAdded(item);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex);
+                }
             }
         }
 
@@ -177,7 +184,14 @@ namespace KouXiaGu.UI
         {
             foreach (var observer in observers.EnumerateObserver())
             {
-                observer.OnRemoved(item);
+                try
+                {
+                    observer.OnRemoved(item);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex);
+                }
             }
         }
 
@@ -185,7 +199,14 @@ namespace KouXiaGu.UI
         {
             foreach (var observer in observers.EnumerateObserver())
             {
-                observer.OnCleared();
+                try
+                {
+                    observer.OnCleared();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex);
+                }
             }
         }
 
