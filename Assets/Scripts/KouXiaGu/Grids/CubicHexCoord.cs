@@ -533,6 +533,23 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
+        /// 按 螺旋 形状返回点;
+        /// </summary>
+        /// <param name="radius">需要大于0</param>
+        public static List<CubicHexCoord> Spiral(CubicHexCoord center, int radius)
+        {
+            if (radius <= 0)
+                throw new ArgumentOutOfRangeException();
+
+            List<CubicHexCoord> coords = new List<CubicHexCoord>();
+            for (int k = 1; k <= radius; k++)
+            {
+                coords.AddRange(Ring(center, k));
+            }
+            return coords;
+        }
+
+        /// <summary>
         ///  按 环状 返回点;
         /// </summary>
         /// <param name="radius">需要大于0</param>
@@ -551,23 +568,6 @@ namespace KouXiaGu.Grids
                     cube = cube.GetDirection(direction);
                 }
             }
-        }
-
-        /// <summary>
-        /// 按 螺旋 形状返回点;
-        /// </summary>
-        /// <param name="radius">需要大于0</param>
-        public static List<CubicHexCoord> Spiral(CubicHexCoord center, int radius)
-        {
-            if (radius <= 0)
-                throw new ArgumentOutOfRangeException();
-
-            List<CubicHexCoord> coords = new List<CubicHexCoord>();
-            for (int k = 1; k <= radius; k++)
-            {
-                coords.AddRange(Ring(center, k));
-            }
-            return coords;
         }
 
 

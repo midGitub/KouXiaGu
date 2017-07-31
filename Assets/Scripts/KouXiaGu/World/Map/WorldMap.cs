@@ -63,7 +63,7 @@ namespace KouXiaGu.World.Map
         /// <summary>
         /// 地图读写锁;
         /// </summary>
-        ReaderWriterLockSlim mapEditorLock
+        public ReaderWriterLockSlim MapEditorLock
         {
             get { return concurrentMap.EditorLock; }
         }
@@ -93,7 +93,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public void Write(IWriter<MapData> writer)
         {
-            using (mapEditorLock.WriteLock())
+            using (MapEditorLock.WriteLock())
             {
                 writer.Write(data);
             }
@@ -104,7 +104,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public void WriteArchivedData(IWriter<MapData> writer)
         {
-            using (mapEditorLock.WriteLock())
+            using (MapEditorLock.WriteLock())
             {
                 MapData archivedData = new MapData()
                 {

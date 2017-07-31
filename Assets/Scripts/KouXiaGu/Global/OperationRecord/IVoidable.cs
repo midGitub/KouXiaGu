@@ -21,4 +21,20 @@ namespace KouXiaGu.OperationRecord
         /// </summary>
         void PerformUndo();
     }
+
+    /// <summary>
+    /// 可撤销的;
+    /// </summary>
+    public interface IVoidable<T>
+    {
+        /// <summary>
+        /// 重新执行命令;
+        /// </summary>
+        void PerformRedo(T item);
+
+        /// <summary>
+        /// 撤销这操作;
+        /// </summary>
+        void PerformUndo(T item);
+    }
 }
