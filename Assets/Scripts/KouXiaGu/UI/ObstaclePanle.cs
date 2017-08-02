@@ -59,7 +59,7 @@ namespace KouXiaGu.UI
         {
             if (panelTile != null)
             {
-                panelTile.OnWarning();
+                panelTile.ApplyWarning();
             }
         }
     }

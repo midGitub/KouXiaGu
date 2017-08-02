@@ -478,14 +478,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 80dc53f377d120243b27f1df224035aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 55060390906da2642a205d7ba133f8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3482,14 +3482,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 80dc53f377d120243b27f1df224035aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 55060390906da2642a205d7ba133f8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4288,7 +4288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4339,8 +4339,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cb4e445be80ee3429c31fd2e4573ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
-  onBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+  style: 1
+  parent: {fileID: 417031744}
+  titleImageObject: {fileID: 363247187}
+  titleTextObject: {fileID: 569666021}
+  closeImageObject: {fileID: 1388191337}
+  selfStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
 --- !u!1 &372621324
 GameObject:
   m_ObjectHideFlags: 0
@@ -4466,8 +4473,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cb4e445be80ee3429c31fd2e4573ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
-  onBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+  style: 1
+  parent: {fileID: 1465034478}
+  titleImageObject: {fileID: 374954494}
+  titleTextObject: {fileID: 554861096}
+  closeImageObject: {fileID: 63049021}
+  selfStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
 --- !u!114 &374954492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4514,7 +4528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -10247,14 +10261,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 80dc53f377d120243b27f1df224035aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 55060390906da2642a205d7ba133f8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10979,14 +10993,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 80dc53f377d120243b27f1df224035aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 55060390906da2642a205d7ba133f8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -12646,6 +12660,7 @@ Transform:
   - {fileID: 1380499458}
   - {fileID: 628239113}
   - {fileID: 1234865096}
+  - {fileID: 1730581228}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -13090,8 +13105,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cb4e445be80ee3429c31fd2e4573ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
-  onBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+  style: 1
+  parent: {fileID: 72822123}
+  titleImageObject: {fileID: 1241915005}
+  titleTextObject: {fileID: 255817307}
+  closeImageObject: {fileID: 1004735891}
+  selfStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
 --- !u!114 &1241915004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13119,7 +13141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -14658,8 +14680,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cb4e445be80ee3429c31fd2e4573ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
-  onBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+  style: 1
+  parent: {fileID: 686406419}
+  titleImageObject: {fileID: 1373968561}
+  titleTextObject: {fileID: 1651783422}
+  closeImageObject: {fileID: 913307399}
+  selfStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
 --- !u!114 &1373968560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14687,7 +14716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -14829,14 +14858,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 80dc53f377d120243b27f1df224035aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 55060390906da2642a205d7ba133f8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14943,14 +14972,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 80dc53f377d120243b27f1df224035aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 55060390906da2642a205d7ba133f8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18267,7 +18296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -18314,8 +18343,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cb4e445be80ee3429c31fd2e4573ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
-  onBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+  style: 1
+  parent: {fileID: 799684201}
+  titleImageObject: {fileID: 1688715569}
+  titleTextObject: {fileID: 1441728176}
+  closeImageObject: {fileID: 306962590}
+  selfStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
 --- !u!1 &1720366825
 GameObject:
   m_ObjectHideFlags: 0
@@ -18375,14 +18411,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 80dc53f377d120243b27f1df224035aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 55060390906da2642a205d7ba133f8a6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18502,6 +18538,50 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
+--- !u!1 &1730581227
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1730581228}
+  - component: {fileID: 1730581229}
+  m_Layer: 0
+  m_Name: UIStyleManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1730581228
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1730581227}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1187234277}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1730581229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1730581227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ec3a72b377092b488fb653f772c394f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SelectablePanelTitleStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
 --- !u!1 &1731318390
 GameObject:
   m_ObjectHideFlags: 0
@@ -18879,7 +18959,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -18911,8 +18991,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cb4e445be80ee3429c31fd2e4573ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
-  onBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+  style: 1
+  parent: {fileID: 960833100}
+  titleImageObject: {fileID: 1804855963}
+  titleTextObject: {fileID: 559609941}
+  closeImageObject: {fileID: 1392296838}
+  selfStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &1813624416
 GameObject:
   m_ObjectHideFlags: 0
@@ -19975,8 +20062,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cb4e445be80ee3429c31fd2e4573ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
-  onBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+  style: 1
+  parent: {fileID: 2090691560}
+  titleImageObject: {fileID: 1926198181}
+  titleTextObject: {fileID: 1889660229}
+  closeImageObject: {fileID: 1720366828}
+  selfStyleInfo:
+    OnFocusColor: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+    OnBlurColor: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
+    CloseImageColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
 --- !u!114 &1926198180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20004,7 +20098,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9411765, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.9411765, g: 0.47058824, b: 0.47058824, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

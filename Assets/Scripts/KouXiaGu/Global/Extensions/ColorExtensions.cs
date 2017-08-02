@@ -66,12 +66,12 @@ namespace KouXiaGu
 
         static int ToColorInt32(this float f)
         {
-            return (int)(f * 255);
+            return (int)(f * 255f);
         }
 
         static float ToColorSingle(this int i)
         {
-            return i / 255;
+            return i / 255f;
         }
 
     }
