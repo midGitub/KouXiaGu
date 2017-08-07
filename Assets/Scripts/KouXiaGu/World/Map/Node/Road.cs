@@ -11,6 +11,11 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public struct NodeRoadInfo : IEquatable<NodeRoadInfo>
     {
+        public NodeRoadInfo(int type)
+        {
+            RoadType = type;
+        }
+
         /// <summary>
         /// 道路类型;
         /// </summary>

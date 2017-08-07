@@ -11,7 +11,7 @@ namespace KouXiaGu.World.Map.MapEdit
     /// <summary>
     /// 编辑的地图节点数据;
     /// </summary>
-    public struct EditMapNode
+    public class EditMapNode
     {
         public EditMapNode(CubicHexCoord position, MapNode value)
         {
@@ -22,6 +22,6 @@ namespace KouXiaGu.World.Map.MapEdit
 
         public CubicHexCoord Position { get; private set; }
         public MapNode Original { get; private set; }
-        public MapNode Value { get; set; }
+        public MapNode Value;
     }
 }

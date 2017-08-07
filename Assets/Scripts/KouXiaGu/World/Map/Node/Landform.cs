@@ -10,6 +10,12 @@ namespace KouXiaGu.World.Map
     [ProtoContract]
     public struct NodeLandformInfo : IEquatable<NodeLandformInfo>
     {
+        public NodeLandformInfo(int type, float angle)
+        {
+            LandformType = type;
+            Angle = angle;
+        }
+
         /// <summary>
         /// 地形类型;
         /// </summary>

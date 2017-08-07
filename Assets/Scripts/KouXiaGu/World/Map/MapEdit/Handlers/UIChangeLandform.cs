@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KouXiaGu.OperationRecord;
 using KouXiaGu.World.Resources;
 using KouXiaGu.Globalization;
@@ -11,12 +9,16 @@ using UnityEngine.UI;
 namespace KouXiaGu.World.Map.MapEdit
 {
 
+    /// <summary>
+    /// 改变地形类型;
+    /// </summary>
     [DisallowMultipleComponent]
     public class UIChangeLandform : UIMapEditHandler
     {
-        const string messageFormat = "Change landform to [{0}({1})]";
+        const string messageFormat = "Landform to [{0}({1})]";
         int LandformID;
         int tempLandformID;
+        public Slider angleSlider;
         public InputField idInputField;
         public InputField nameField;
         public Button applyButton;
@@ -65,7 +67,16 @@ namespace KouXiaGu.World.Map.MapEdit
 
         public override IVoidable Execute(IEnumerable<EditMapNode> nodes)
         {
-            throw new NotImplementedException();
+            IWorldComplete world = WorldSceneManager.World;
+            if (world != null)
+            {
+                MapData map = world.WorldData.MapData.data;
+                foreach (var node in nodes)
+                {
+                   node.Value.Landform = node.Value.Landform.Update(map, new NodeLandformInfo(LandformID, angleSlider.value));
+            }
+            }
+            return null;
         }
     }
 }
