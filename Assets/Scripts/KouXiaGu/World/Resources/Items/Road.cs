@@ -18,6 +18,9 @@ namespace KouXiaGu.World.Resources
         [XmlAttribute("id")]
         public int ID { get; set; }
 
+        [XmlAttribute("name")]
+        public string Name { get; set; }
+
         [XmlElement("Terrain")]
         public TerrainRoadInfo TerrainInfo { get; set; }
 

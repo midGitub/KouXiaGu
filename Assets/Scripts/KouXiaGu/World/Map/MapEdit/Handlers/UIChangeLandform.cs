@@ -15,7 +15,7 @@ namespace KouXiaGu.World.Map.MapEdit
     [DisallowMultipleComponent]
     public class UIChangeLandform : UIMapEditHandler
     {
-        const string messageFormat = "Landform to [{0}({1})]";
+        const string messageFormat = "Landform: [{0}({1})]";
         int LandformID;
         int tempLandformID;
         public Slider angleSlider;
