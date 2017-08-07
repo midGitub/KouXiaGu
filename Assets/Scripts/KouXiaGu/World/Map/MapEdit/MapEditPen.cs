@@ -17,7 +17,7 @@ namespace KouXiaGu.World.Map.MapEdit
     {
         MapEditPen()
         {
-            editPenHandlers = new List<IMapEditPenHandler>();
+            editPenHandlers = new List<IMapEditHandler>();
         }
 
         public MapEditPen(WorldMap map, IPointSizer pointSizer) : this()
@@ -26,11 +26,11 @@ namespace KouXiaGu.World.Map.MapEdit
             PointSizer = pointSizer;
         }
 
-        List<IMapEditPenHandler> editPenHandlers;
+        List<IMapEditHandler> editPenHandlers;
         public WorldMap Map { get; set; }
         public IPointSizer PointSizer { get; set; }
 
-        public bool Add(IMapEditPenHandler handler)
+        public bool Add(IMapEditHandler handler)
         {
             if (!Contains(handler))
             {
@@ -40,7 +40,7 @@ namespace KouXiaGu.World.Map.MapEdit
             return false;
         }
 
-        public bool Remove(IMapEditPenHandler handler)
+        public bool Remove(IMapEditHandler handler)
         {
             int index = editPenHandlers.FindIndex(item => item.Equals(handler));
             if (index >= 0)
@@ -51,7 +51,7 @@ namespace KouXiaGu.World.Map.MapEdit
             return false;
         }
 
-        public bool Contains(IMapEditPenHandler handler)
+        public bool Contains(IMapEditHandler handler)
         {
             return editPenHandlers.Contains(item => item.Equals(handler));
         }

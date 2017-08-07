@@ -66,9 +66,26 @@ namespace KouXiaGu.Globalization
         }
 
         /// <summary>
+        /// 转换为本地化语言,若无法转换则返回本身;
+        /// </summary>
+        public static string GetLocalizationText(string key)
+        {
+            var textDictionary = TextDictionary;
+            if (textDictionary != null)
+            {
+                string text;
+                if (textDictionary.TryGetValue(key, out text))
+                {
+                    return text;
+                }
+            }
+            return key;
+        }
+
+        /// <summary>
         /// Unity线程检查,若不为Unity线程这返回异常;
         /// </summary>
-        internal static void ValidateThread()
+        static void ValidateThread()
         {
             if (!XiaGu.IsUnityThread)
                 throw new InvalidOperationException("仅允许在Unity线程调用;");

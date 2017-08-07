@@ -10,12 +10,17 @@ namespace KouXiaGu.World.Map.MapEdit
     /// <summary>
     /// 地图编辑操作;
     /// </summary>
-    public interface IMapEditPenHandler : IEquatable<IMapEditPenHandler>
+    public interface IMapEditHandler
     {
         /// <summary>
         /// 预留信息;
         /// </summary>
-        string Massage { get; }
+        string GetMessage();
+
+        /// <summary>
+        /// 对比;
+        /// </summary>
+        bool Contrast(IMapEditHandler handler);
 
         /// <summary>
         /// 对所有节点执行操作,若不存在独立的撤销操作则返回Null;

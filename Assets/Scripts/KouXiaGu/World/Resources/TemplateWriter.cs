@@ -20,6 +20,7 @@ namespace KouXiaGu.World.Resources
             { 1, new LandformInfo()
             {
                 ID = 1,
+                Name = "none",
                 Tags = "none",
                 TerrainInfo = new TerrainLandformInfo()
                 {

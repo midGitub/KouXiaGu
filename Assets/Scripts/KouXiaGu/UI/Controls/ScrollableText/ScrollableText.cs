@@ -15,7 +15,7 @@ namespace KouXiaGu.UI
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
-    public sealed class ScrollableText : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public sealed class ScrollableText : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
     {
         ScrollableText()
         {
@@ -29,7 +29,7 @@ namespace KouXiaGu.UI
         [SerializeField]
         Text textObject;
         [SerializeField, Range(0.1f, 5)]
-        float speed = 0.5f;
+        float speed = 2f;
         [SerializeField, Range(0, 5)]
         float waitSecondsOfStart = 1;
         [SerializeField, Range(0, 5)]
@@ -76,19 +76,24 @@ namespace KouXiaGu.UI
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            if (IsNeedScroll() && scrollCoroutineHandle == null)
-            {
-                scrollCoroutineHandle = StartCoroutine(ScrollCoroutine());
-            }
+            StartScroll(true);
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            StopScroll();
+        }
+
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             if (scrollCoroutineHandle != null)
             {
                 StopCoroutine(scrollCoroutineHandle);
                 scrollCoroutineHandle = null;
-                ResetScroll();
+            }
+            else
+            {
+                StartScroll(false);
             }
         }
 
@@ -101,6 +106,42 @@ namespace KouXiaGu.UI
             return rectTransform.rect.width < textObject.rectTransform.rect.width;
         }
 
+        /// <summary>
+        /// 开始滚动显示;
+        /// </summary>
+        public void StartScroll(bool wait)
+        {
+            if (IsNeedScroll() && scrollCoroutineHandle == null)
+            {
+                scrollCoroutineHandle = StartCoroutine(ScrollCoroutine(wait));
+            }
+        }
+
+        /// <summary>
+        /// 停止滚动显示;
+        /// </summary>
+        public void StopScroll()
+        {
+            if (scrollCoroutineHandle != null)
+            {
+                StopCoroutine(scrollCoroutineHandle);
+                scrollCoroutineHandle = null;
+                ResetScroll();
+            }
+        }
+
+        /// <summary>
+        /// 暂停滚动显示;
+        /// </summary>
+        public void PauseScroll()
+        {
+            if (scrollCoroutineHandle != null)
+            {
+                StopCoroutine(scrollCoroutineHandle);
+                scrollCoroutineHandle = null;
+            }
+        }
+
         void ResetScroll()
         {
             Vector3 pos = textObject.rectTransform.localPosition;
@@ -108,21 +149,22 @@ namespace KouXiaGu.UI
             textObject.rectTransform.localPosition = pos;
         }
 
-        IEnumerator ScrollCoroutine()
+        IEnumerator ScrollCoroutine(bool wait)
         {
+            if (wait)
+            {
+                yield return new WaitForSecondsRealtime(waitSecondsOfStart);
+            }
             float to = rectTransform.rect.width - textObject.rectTransform.rect.width;
             while (true)
             {
                 Vector3 pos = textObject.rectTransform.localPosition;
-                if (pos.x == 0)
-                {
-                    yield return new WaitForSecondsRealtime(waitSecondsOfStart);
-                }
-                else if (pos.x == to)
+                if (pos.x == to)
                 {
                     yield return new WaitForSecondsRealtime(waitSecondsOfEnd);
                     pos.x = 0;
                     textObject.rectTransform.localPosition = pos;
+                    yield return new WaitForSecondsRealtime(waitSecondsOfStart);
                     continue;
                 }
                 pos.x = Mathf.MoveTowards(pos.x, to, speed);
