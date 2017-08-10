@@ -1,7 +1,10 @@
-﻿using KouXiaGu.OperationRecord;
+﻿using KouXiaGu.Concurrent;
+using KouXiaGu.Grids;
+using KouXiaGu.OperationRecord;
 using KouXiaGu.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace KouXiaGu.World.Map.MapEdit
@@ -18,64 +21,83 @@ namespace KouXiaGu.World.Map.MapEdit
         }
 
         [SerializeField]
-        Transform contentTransform;
-        [SerializeField]
-        UIMapEditHandlerTitle titlePrefab;
-        [SerializeField]
-        ContentSizeFitterEx contentSizeFitter;
-        List<UIMapEditHandlerTitle> handlerTitles;
-        MapEditPen mapEditer;
+        SelectablePanel panel;
+        List<UIMapEditHandlerView> handlerViews;
+        public IPointSizer PointSizer { get; set; }
+        public int CurrentViewIndex { get; private set; }
 
-        public int HandlerCount
+        public int ViewCount
         {
-            get { return handlerTitles.Count; }
+            get { return handlerViews.Count; }
         }
 
-        /// <summary>
-        /// 所有标题;
-        /// </summary>
-        internal IList<UIMapEditHandlerTitle> HandlerTitles
+        internal IList<UIMapEditHandlerView> HandlerViews
         {
-            get { return handlerTitles; }
+            get { return handlerViews; }
+        }
+
+        public UIMapEditHandlerView CurrentView
+        {
+            get { return handlerViews[CurrentViewIndex]; }
         }
 
         void Awake()
         {
-            handlerTitles = new List<UIMapEditHandlerTitle>();
-            //mapEditer = new MapEditPen()
-        }
+            handlerViews = new List<UIMapEditHandlerView>();
+            panel.OnFocusEvent += OnFocus;
+            panel.OnBlurEvent += OnBlur;
 
-        /// <summary>
-        /// 添加到;
-        /// </summary>
-        public UIMapEditHandlerTitle Create(UIMapEditHandler handlerPrefab)
-        {
-            if (Contains(handlerPrefab))
+            if (panel.IsFocus)
             {
-                throw new ArgumentException();
+                OnFocus();
             }
-            var title = Instantiate(titlePrefab, contentTransform);
-            var handler = Instantiate(handlerPrefab, contentTransform);
-            title.Initialize(this, handler, contentSizeFitter);
-            handler.Initialize(title);
-            handlerTitles.Add(title);
-            return title;
+            else
+            {
+                OnBlur();
+            }
         }
 
-        /// <summary>
-        /// 确认是否存在;
-        /// </summary>
-        public bool Contains(IMapEditHandler handler)
+        void OnFocus()
         {
-            return handlerTitles.Contains(item => item.EditHandler.Contrast(handler));
+            enabled = true;
+        }
+
+        void OnBlur()
+        {
+            enabled = false;
+        }
+
+        void Update()
+        {
+
         }
 
         /// <summary>
         /// 对所有节点执行操作;
         /// </summary>
-        public IVoidable Execute(IEnumerable<EditMapNode> nodes)
+        public IVoidable Execute()
         {
-            throw new NotImplementedException();
+            if (WorldSceneManager.World == null)
+                return null;
+
+            var map = WorldSceneManager.World.WorldData.MapData;
+            var selectedArea = GetSelectedArea(map, PointSizer.SelectedArea);
+            return CurrentView.Execute(map, selectedArea);
+        }
+
+        List<EditMapNode> GetSelectedArea(WorldMap map, IEnumerable<CubicHexCoord> points)
+        {
+            List<EditMapNode> selectedArea = new List<EditMapNode>();
+            foreach (var point in points)
+            {
+                MapNode node;
+                if (map.Map.TryGetValue(point, out node))
+                {
+                    var pair = new EditMapNode(point, node);
+                    selectedArea.Add(pair);
+                }
+            }
+            return selectedArea;
         }
     }
 }

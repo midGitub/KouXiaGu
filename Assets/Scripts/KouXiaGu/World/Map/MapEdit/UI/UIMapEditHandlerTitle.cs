@@ -14,7 +14,9 @@ namespace KouXiaGu.World.Map.MapEdit
     {
         [SerializeField]
         Text titleText;
-        UIMapEditPanle panle;
+        [SerializeField]
+        Toggle activationToggle;
+        UIMapEditHandlerView pater;
         UIMapEditHandler editHandler;
         ContentSizeFitterEx contentSizeFitter;
 
@@ -27,6 +29,14 @@ namespace KouXiaGu.World.Map.MapEdit
         }
 
         /// <summary>
+        /// 是否激活?
+        /// </summary>
+        public bool IsActivate
+        {
+            get { return activationToggle.isOn; }
+        }
+
+        /// <summary>
         /// 操作接口;
         /// </summary>
         public UIMapEditHandler EditHandler
@@ -34,9 +44,9 @@ namespace KouXiaGu.World.Map.MapEdit
             get { return editHandler; }
         }
 
-        public void Initialize(UIMapEditPanle panle, UIMapEditHandler editHandler, ContentSizeFitterEx contentSizeFitter)
+        public void Initialize(UIMapEditHandlerView pater, UIMapEditHandler editHandler, ContentSizeFitterEx contentSizeFitter)
         {
-            this.panle = panle;
+            this.pater = pater;
             this.editHandler = editHandler;
             this.contentSizeFitter = contentSizeFitter;
         }
@@ -142,7 +152,7 @@ namespace KouXiaGu.World.Map.MapEdit
         /// </summary>
         public void Destroy()
         {
-            panle.HandlerTitles.Remove(this);
+            pater.Remove(this);
             Destroy(gameObject);
             Destroy(editHandler.gameObject);
         }

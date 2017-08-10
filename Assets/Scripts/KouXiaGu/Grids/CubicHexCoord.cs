@@ -542,11 +542,28 @@ namespace KouXiaGu.Grids
                 throw new ArgumentOutOfRangeException();
 
             List<CubicHexCoord> coords = new List<CubicHexCoord>();
+            Spiral(center, radius, ref coords);
+            return coords;
+        }
+
+        /// <summary>
+        /// 按 螺旋 形状返回点;
+        /// </summary>
+        /// <param name="center">中心点</param>
+        /// <param name="radius">半径</param>
+        /// <param name="coords">保存坐标的合集</param>
+        /// <returns></returns>
+        public static void Spiral(CubicHexCoord center, int radius, ref List<CubicHexCoord> coords)
+        {
+            if (radius <= 0)
+                throw new ArgumentOutOfRangeException();
+            if (coords == null)
+                throw new ArgumentNullException();
+
             for (int k = 1; k <= radius; k++)
             {
                 coords.AddRange(Ring(center, k));
             }
-            return coords;
         }
 
         /// <summary>

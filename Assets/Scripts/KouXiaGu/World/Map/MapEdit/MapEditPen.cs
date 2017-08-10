@@ -63,8 +63,8 @@ namespace KouXiaGu.World.Map.MapEdit
         {
             using (Map.MapEditorLock.WriteLock())
             {
-                var points = PointSizer.GetSelectedArea().ToArray();
-                if (points.Length > 0)
+                var points = PointSizer.SelectedArea;
+                if (points.Count > 0)
                 {
                     var selectedArea = GetSelectedArea(points);
                     var voidableGroup = new VoidableGroup<IVoidable>();

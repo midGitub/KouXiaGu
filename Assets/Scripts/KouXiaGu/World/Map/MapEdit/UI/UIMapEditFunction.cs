@@ -14,15 +14,14 @@ namespace KouXiaGu.World.Map.MapEdit
         public UIMapEditHandler ChangeLandform;
         public UIMapEditHandler ChangeRoad;
 
-        [ContextMenu("AddChangeLandform")]
         public void AddChangeLandform()
         {
-            MapEditPanle.Create(ChangeLandform);
+            MapEditPanle.CurrentView.CreateAndAdd(ChangeLandform);
         }
 
         public void AddChangeRoad()
         {
-            MapEditPanle.Create(ChangeRoad);
+            MapEditPanle.CurrentView.CreateAndAdd(ChangeRoad);
         }
     }
 }

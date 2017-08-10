@@ -351,10 +351,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d42f1bf966d5524d9f265ab51d83ab7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panle: {fileID: 0}
   titleText: {fileID: 114336972897192418}
-  editHandler: {fileID: 0}
-  contentSizeFitter: {fileID: 0}
+  activationToggle: {fileID: 114170500594922146}
 --- !u!114 &114578799171413796
 MonoBehaviour:
   m_ObjectHideFlags: 1
