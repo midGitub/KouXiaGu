@@ -14,6 +14,9 @@ namespace KouXiaGu
         /// </summary>
         public static bool Contains<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
         {
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+
             foreach (var item in collection)
             {
                 if (predicate(item))
@@ -104,7 +107,5 @@ namespace KouXiaGu
                 item.Dispose();
             }
         }
-
     }
-
 }

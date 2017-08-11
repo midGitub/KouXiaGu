@@ -22,28 +22,17 @@ namespace KouXiaGu.World.Map.MapEdit
 
         [SerializeField]
         SelectablePanel panel;
-        List<UIMapEditHandlerView> handlerViews;
-        public IPointSizer PointSizer { get; set; }
-        public int CurrentViewIndex { get; private set; }
-
-        public int ViewCount
-        {
-            get { return handlerViews.Count; }
-        }
-
-        internal IList<UIMapEditHandlerView> HandlerViews
-        {
-            get { return handlerViews; }
-        }
+        UIMapEditHandlerView currentView;
+        public UIMapEditSizer PointSizer { get; set; }
 
         public UIMapEditHandlerView CurrentView
         {
-            get { return handlerViews[CurrentViewIndex]; }
+            get { return currentView; }
+            internal set { currentView = value; }
         }
 
         void Awake()
         {
-            handlerViews = new List<UIMapEditHandlerView>();
             panel.OnFocusEvent += OnFocus;
             panel.OnBlurEvent += OnBlur;
 

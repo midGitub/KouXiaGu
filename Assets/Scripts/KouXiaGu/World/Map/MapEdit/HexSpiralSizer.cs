@@ -7,39 +7,32 @@ using KouXiaGu.Grids;
 namespace KouXiaGu.World.Map.MapEdit
 {
 
-
-    public class HexSpiralSizer : IPointSizer
+    [Serializable]
+    public class HexSpiralSizer : PointSizer
     {
         public HexSpiralSizer()
         {
-            selectedPoints = new List<CubicHexCoord>();
-            readOnlySelectedPoints = selectedPoints.AsReadOnlyList();
+            selectedOffsets = new List<CubicHexCoord>();
+            readOnlySelectedOffsets = selectedOffsets.AsReadOnlyList();
         }
 
-        public HexSpiralSizer(CubicHexCoord centre, int size) : this()
+        public HexSpiralSizer(int size) : this()
         {
-            Centre = centre;
             Size = size;
         }
 
-        List<CubicHexCoord> selectedPoints;
-        readonly IReadOnlyList<CubicHexCoord> readOnlySelectedPoints;
+        List<CubicHexCoord> selectedOffsets;
+        readonly IReadOnlyList<CubicHexCoord> readOnlySelectedOffsets;
         public int Size { get; private set; }
-        public CubicHexCoord Centre { get; private set; }
 
         public IReadOnlyList<CubicHexCoord> SelectedArea
         {
-            get { return readOnlySelectedPoints; }
+            get { return readOnlySelectedOffsets; }
         }
 
-        public void SetCentre(CubicHexCoord centre)
+        public override IReadOnlyCollection<CubicHexCoord> SelectedOffsets
         {
-            if (Centre != centre)
-            {
-                Centre = centre;
-                selectedPoints.Clear();
-                CubicHexCoord.Spiral(Centre, Size, ref selectedPoints);
-            }
+            get { return readOnlySelectedOffsets; }
         }
 
         public void SetSize(int size)
@@ -47,8 +40,8 @@ namespace KouXiaGu.World.Map.MapEdit
             if (Size != size)
             {
                 Size = size;
-                selectedPoints.Clear();
-                CubicHexCoord.Spiral(Centre, Size, ref selectedPoints);
+                selectedOffsets.Clear();
+                CubicHexCoord.Spiral(CubicHexCoord.Self, Size, ref selectedOffsets);
             }
         }
     }

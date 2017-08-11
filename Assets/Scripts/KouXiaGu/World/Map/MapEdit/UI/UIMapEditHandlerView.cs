@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KouXiaGu.World.Map.MapEdit
 {
@@ -20,16 +21,28 @@ namespace KouXiaGu.World.Map.MapEdit
         }
 
         [SerializeField]
+        UIMapEditPanle panle;
+        [SerializeField]
         Transform contentTransform;
         [SerializeField]
         UIMapEditHandlerTitle titlePrefab;
         [SerializeField]
         ContentSizeFitterEx contentSizeFitter;
-        readonly List<UIMapEditHandlerTitle> handlerTitles;
+        List<UIMapEditHandlerTitle> handlerTitles;
 
         public int Count
         {
             get { return handlerTitles.Count; }
+        }
+
+        void Awake()
+        {
+            handlerTitles = new List<UIMapEditHandlerTitle>();
+        }
+
+        void OnEnable()
+        {
+            panle.CurrentView = this;
         }
 
         public UIMapEditHandlerTitle CreateAndAdd(UIMapEditHandler handlerPrefab)

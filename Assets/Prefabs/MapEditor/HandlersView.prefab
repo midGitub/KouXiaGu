@@ -294,6 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d1117df5425e0846a1517f1bf97a6e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panle: {fileID: 0}
   contentTransform: {fileID: 224022686103660802}
   titlePrefab: {fileID: 114504620014998436, guid: 74f55e65ba0559543b5b2d0d826fd8d9,
     type: 2}
