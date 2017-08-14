@@ -146,7 +146,7 @@ namespace KouXiaGu.World.Map.MapEdit
                 Map = map;
                 EditNodes = editNodes;
                 this.voidableGroup = voidableGroup;
-                PerformRedo();
+                Initialize();
             }
 
             public WorldMap Map { get; private set; }
@@ -156,6 +156,11 @@ namespace KouXiaGu.World.Map.MapEdit
             public override void PerformRedo()
             {
                 voidableGroup.PerformRedo();
+                Initialize();
+            }
+
+            void Initialize()
+            {
                 foreach (var editNode in EditNodes)
                 {
                     Map.Map[editNode.Position] = editNode.Value;
@@ -165,6 +170,11 @@ namespace KouXiaGu.World.Map.MapEdit
             public override void PerformUndo()
             {
                 voidableGroup.PerformUndo();
+                Recovery();
+            }
+
+            void Recovery()
+            {
                 foreach (var editNode in EditNodes)
                 {
                     Map.Map[editNode.Position] = editNode.Original;

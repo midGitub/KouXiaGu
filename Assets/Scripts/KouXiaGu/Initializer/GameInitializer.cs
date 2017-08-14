@@ -2,6 +2,7 @@
 using UnityEngine;
 using KouXiaGu.Resources;
 using KouXiaGu.Concurrent;
+using System.Collections;
 
 namespace KouXiaGu
 {
@@ -19,15 +20,20 @@ namespace KouXiaGu
         static ComponentInitializer component = new ComponentInitializer();
         static GameResourceInitializer resource = new GameResourceInitializer();
 
-        public IAsyncOperation ComponentInitialize
+        public static IAsyncOperation ComponentInitialize
         {
             get { return component; }
         }
 
-        public IAsyncOperation<IGameResource> GameDataInitialize
+        public static IAsyncOperation<IGameResource> GameDataInitialize
         {
             get { return resource; }
         }
+
+        /// <summary>
+        /// 若为初始化完毕则为null;
+        /// </summary>
+        public static IGameResource GameData { get; private set; }
 
         public bool IsCanceled { get; private set; }
 
@@ -38,17 +44,43 @@ namespace KouXiaGu
 
             component.InitializeAsync(this);
             resource.InitializeAsync(this);
+            StartCoroutine(WaitComponentInitialize());
+            StartCoroutine(WaitGameDataInitialize());
         }
 
-        void Update()
+        IEnumerator WaitComponentInitialize()
         {
-            if (ComponentInitialize.IsCompleted)
+            while (true)
             {
-                if (ComponentInitialize.IsFaulted)
+                if (ComponentInitialize.IsCompleted)
                 {
-                    Debug.LogError("游戏初始化时遇到错误:" + ComponentInitialize.Exception);
+                    if (ComponentInitialize.IsFaulted)
+                    {
+                        Debug.LogError("组件初始化时遇到错误:" + ComponentInitialize.Exception);
+                    }
+                    yield break;
                 }
-                enabled = false;
+                yield return null;
+            }
+        }
+
+        IEnumerator WaitGameDataInitialize()
+        {
+            while (true)
+            {
+                if (GameDataInitialize.IsCompleted)
+                {
+                    if (GameDataInitialize.IsFaulted)
+                    {
+                        Debug.LogError("资源初始化时遇到错误:" + GameDataInitialize.Exception);
+                    }
+                    else
+                    {
+                        GameData = GameDataInitialize.Result;
+                    }
+                    yield break;
+                }
+                yield return null;
             }
         }
 

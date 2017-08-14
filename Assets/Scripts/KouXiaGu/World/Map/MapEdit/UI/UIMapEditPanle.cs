@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace KouXiaGu.World.Map.MapEdit
 {
@@ -23,12 +24,18 @@ namespace KouXiaGu.World.Map.MapEdit
         [SerializeField]
         SelectablePanel panel;
         UIMapEditHandlerView currentView;
-        public UIMapEditSizer PointSizer { get; set; }
+        [SerializeField]
+        UIMapEditSizer pointSizer;
 
         public UIMapEditHandlerView CurrentView
         {
             get { return currentView; }
             internal set { currentView = value; }
+        }
+
+        public UIMapEditSizer CurrentSizer
+        {
+            get { return pointSizer; }
         }
 
         void Awake()
@@ -58,7 +65,10 @@ namespace KouXiaGu.World.Map.MapEdit
 
         void Update()
         {
-
+            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButton(0))
+            {
+                Execute();
+            }
         }
 
         /// <summary>
@@ -70,7 +80,7 @@ namespace KouXiaGu.World.Map.MapEdit
                 return null;
 
             var map = WorldSceneManager.World.WorldData.MapData;
-            var selectedArea = GetSelectedArea(map, PointSizer.SelectedArea);
+            var selectedArea = GetSelectedArea(map, pointSizer.SelectedArea);
             return CurrentView.Execute(map, selectedArea);
         }
 

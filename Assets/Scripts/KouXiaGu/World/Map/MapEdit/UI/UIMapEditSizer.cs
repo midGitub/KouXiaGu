@@ -9,6 +9,9 @@ using UnityEngine;
 namespace KouXiaGu.World.Map.MapEdit
 {
 
+    /// <summary>
+    /// 提供编辑的坐标;
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class UIMapEditSizer : MonoBehaviour
     {
@@ -24,7 +27,11 @@ namespace KouXiaGu.World.Map.MapEdit
 
         void Awake()
         {
-            selectedArea = new List<CubicHexCoord>();
+            selectedArea = new List<CubicHexCoord>()
+            {
+                new CubicHexCoord(0, 0, 0),
+                new CubicHexCoord(0, 1, -1),
+            };
             SelectedArea = selectedArea.AsReadOnlyCollection();
         }
 

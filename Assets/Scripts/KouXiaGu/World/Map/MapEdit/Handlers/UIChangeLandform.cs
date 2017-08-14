@@ -17,27 +17,19 @@ namespace KouXiaGu.World.Map.MapEdit
     {
         const string messageFormat = "Landform: [{0}({1})]";
         int LandformID;
-        int tempLandformID;
         public Slider angleSlider;
         public InputField idInputField;
         public InputField nameField;
-        public Button applyButton;
 
         void Awake()
         {
             idInputField.onEndEdit.AddListener(UpdateNameField);
-            applyButton.onClick.AddListener(OnApplyDown);
         }
 
         void UpdateNameField(string text)
         {
-            tempLandformID = Convert.ToInt32(text);
-            nameField.text = GetLandformName(tempLandformID);
-        }
-
-        void OnApplyDown()
-        {
-            LandformID = tempLandformID;
+            LandformID = Convert.ToInt32(text);
+            nameField.text = GetLandformName(LandformID);
             Title.SetMessage(GetMessage());
         }
 
@@ -48,9 +40,9 @@ namespace KouXiaGu.World.Map.MapEdit
 
         string GetLandformName(int id)
         {
-            if (GameInitializer.Instance.GameDataInitialize.IsCompleted)
+            if (GameInitializer.GameDataInitialize.IsCompleted)
             {
-                IGameResource resource = GameInitializer.Instance.GameDataInitialize.Result;
+                IGameResource resource = GameInitializer.GameDataInitialize.Result;
                 LandformInfo info;
                 if(resource.Terrain.Landform.TryGetValue(id, out info))
                 {
@@ -74,7 +66,7 @@ namespace KouXiaGu.World.Map.MapEdit
                 foreach (var node in nodes)
                 {
                    node.Value.Landform = node.Value.Landform.Update(map, new NodeLandformInfo(LandformID, angleSlider.value));
-            }
+                }
             }
             return null;
         }

@@ -33,15 +33,19 @@ namespace KouXiaGu.World.Map
 
         internal MapData data { get; private set; }
         internal ObservableDictionary<CubicHexCoord, MapNode> observableMap { get; private set; }
-        internal ConcurrentDictionary<CubicHexCoord, MapNode> concurrentMap { get; private set; }
         internal MapChangedRecorder<CubicHexCoord, MapNode> mapChangedRecorder { get; private set; }
+
+        /// <summary>
+        /// 地图读写锁,在编辑地图时选择上锁;
+        /// </summary>
+        public ReaderWriterLockSlim MapEditorLock { get; private set; }
 
         /// <summary>
         /// 提供修改的地图结构;
         /// </summary>
         public IDictionary<CubicHexCoord, MapNode> Map
         {
-            get { return concurrentMap; }
+            get { return observableMap; }
         }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace KouXiaGu.World.Map
         /// </summary>
         public IReadOnlyDictionary<CubicHexCoord, MapNode> ReadOnlyMap
         {
-            get { return concurrentMap; }
+            get { return observableMap; }
         }
 
         /// <summary>
@@ -60,20 +64,12 @@ namespace KouXiaGu.World.Map
             get { return observableMap; }
         }
 
-        /// <summary>
-        /// 地图读写锁;
-        /// </summary>
-        public ReaderWriterLockSlim MapEditorLock
-        {
-            get { return concurrentMap.EditorLock; }
-        }
-
         void Init(MapData data)
         {
             this.data = data;
             observableMap = new ObservableDictionary<CubicHexCoord, MapNode>(data.Data);
             mapChangedRecorder = new MapChangedRecorder<CubicHexCoord, MapNode>(observableMap);
-            concurrentMap = new ConcurrentDictionary<CubicHexCoord, MapNode>(observableMap);
+            MapEditorLock = new ReaderWriterLockSlim();
         }
 
         /// <summary>
