@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KouXiaGu.OperationRecord;
+using KouXiaGu.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using KouXiaGu.World.Resources;
@@ -28,7 +29,7 @@ namespace KouXiaGu.World.Map.MapEdit
 
         void Awake()
         {
-            idInputField.onEndEdit.AddListener(UpdateNameField);
+            idInputField.onEndEdit.AddListener(OnIdInputFieldValueChanged);
             roadExistToggle.onValueChanged.AddListener(OnRoadExistToggleValueChanged);
         }
 
@@ -53,42 +54,43 @@ namespace KouXiaGu.World.Map.MapEdit
 
         public void SetInfo(int roadType)
         {
+            idInputField.text = roadType.ToString();
+            SetInfo_internal(roadType);
+        }
+
+        void SetInfo_internal(int roadType)
+        {
             this.roadType = roadType;
+            nameField.text = GetRoadName(roadType);
+            Title.SetMessage(GetMessage(nameField.text));
+
             if (roadType == 0)
             {
-                roadExistToggle.isOn = false;
-                idInputField.text = roadType.ToString();
-                idInputField.interactable = false;
-                nameField.text = strUnknown;
-                Title.SetMessage(GetMessage(strUnknown));
+                roadExistToggle.SetValue(false);
             }
             else
             {
-                roadExistToggle.isOn = true;
-                idInputField.text = roadType.ToString();
-                idInputField.interactable = true;
-                nameField.text = GetRoadName(roadType);
-                Title.SetMessage(GetMessage(nameField.text));
+                roadExistToggle.SetValue(true);
             }
         }
 
-        void UpdateNameField(string text)
+        void OnIdInputFieldValueChanged(string text)
         {
             roadType = Convert.ToInt32(text);
-            SetInfo(roadType);
+            SetInfo_internal(roadType);
         }
 
         void OnRoadExistToggleValueChanged(bool isOn)
         {
             if (isOn)
             {
-                idInputField.text = roadType.ToString();
                 idInputField.interactable = true;
+                nameField.interactable = true;
             }
             else
             {
-                idInputField.text = 0.ToString();
                 idInputField.interactable = false;
+                nameField.interactable = false;
             }
             Title.SetMessage(GetMessage());
         }
@@ -125,16 +127,19 @@ namespace KouXiaGu.World.Map.MapEdit
 
         public override IVoidable Execute(IEnumerable<EditMapNode> nodes)
         {
-            IWorldComplete world = WorldSceneManager.World;
-            if (world != null)
+            if (roadExistToggle.isOn)
             {
-                if (world.BasicData.BasicResource.Terrain.Road.ContainsKey(roadType))
+                IWorldComplete world = WorldSceneManager.World;
+                if (world != null)
                 {
-                    MapData map = world.WorldData.MapData.data;
-                    var roadInfo = new NodeRoadInfo(roadType);
-                    foreach (var node in nodes)
+                    if (world.BasicData.BasicResource.Terrain.Road.ContainsKey(roadType))
                     {
-                        node.Value.Road = node.Value.Road.Update(map, roadInfo);
+                        MapData map = world.WorldData.MapData.data;
+                        var roadInfo = new NodeRoadInfo(roadType);
+                        foreach (var node in nodes)
+                        {
+                            node.Value.Road = node.Value.Road.Update(map, roadInfo);
+                        }
                     }
                 }
             }
