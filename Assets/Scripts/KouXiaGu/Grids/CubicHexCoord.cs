@@ -555,7 +555,7 @@ namespace KouXiaGu.Grids
         /// <returns></returns>
         public static void Spiral(CubicHexCoord center, int radius, ref List<CubicHexCoord> coords)
         {
-            if (radius <= 0)
+            if (radius < 0)
                 throw new ArgumentOutOfRangeException();
             if (coords == null)
                 throw new ArgumentNullException();

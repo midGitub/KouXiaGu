@@ -1,4 +1,5 @@
 ﻿using KouXiaGu.Grids;
+using KouXiaGu.Terrain3D;
 using KouXiaGu.UI;
 using System;
 using System.Collections.Generic;
@@ -21,23 +22,52 @@ namespace KouXiaGu.World.Map.MapEdit
 
         [SerializeField]
         SelectablePanel panel;
-        List<CubicHexCoord> selectedArea;
-        public IReadOnlyCollection<CubicHexCoord> SelectedArea { get; private set; }
-        public PointSizer PointSizer { get; private set; }
+        [SerializeField]
+        BoundaryMesh terrainBoundaryMesh;
+        List<CubicHexCoord> offsets;
+        public IReadOnlyCollection<CubicHexCoord> Offsets { get; private set; }
 
         void Awake()
         {
-            selectedArea = new List<CubicHexCoord>()
-            {
-                new CubicHexCoord(0, 0, 0),
-                new CubicHexCoord(0, 1, -1),
-            };
-            SelectedArea = selectedArea.AsReadOnlyCollection();
+            offsets = new List<CubicHexCoord>();
+            Offsets = offsets.AsReadOnlyCollection();
         }
 
-        public void SetPointSizer(PointSizer sizer)
+        /// <summary>
+        /// 由 UIMapEditPanle 调用;
+        /// </summary>
+        internal void OnUpdate(Vector3 position)
         {
-            PointSizer = sizer;
+            terrainBoundaryMesh.transform.localPosition = ToXZ(position);
+        }
+
+        Vector3 ToXZ(Vector3 pos)
+        {
+            CubicHexCoord v1 = pos.GetTerrainCubic();
+            pos = v1.GetTerrainPixel();
+            pos.y = 0;
+            return pos;
+        }
+
+        /// <summary>
+        /// 获取到选中的坐标;
+        /// </summary>
+        public IEnumerable<CubicHexCoord> EnumerateSelecteArea(CubicHexCoord pos)
+        {
+            foreach (var offset in offsets)
+            {
+                yield return offset + pos;
+            }
+        }
+
+        /// <summary>
+        /// 设置到选中坐标的偏移量;
+        /// </summary>
+        public void SetSelecteOffsets(IEnumerable<CubicHexCoord> selecteOffsets)
+        {
+            offsets.Clear();
+            offsets.AddRange(selecteOffsets);
+            terrainBoundaryMesh.UpdatePoints(selecteOffsets);
         }
     }
 }

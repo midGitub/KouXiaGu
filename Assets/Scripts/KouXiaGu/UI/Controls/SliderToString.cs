@@ -26,6 +26,11 @@ namespace KouXiaGu.UI
             sliderObject.onValueChanged.AddListener(OnSliderValueChanged);
         }
 
+        void Start()
+        {
+            OnSliderValueChanged(sliderObject.value);
+        }
+
         void OnSliderValueChanged(float value)
         {
             onValueChanged.Invoke(value.ToString());

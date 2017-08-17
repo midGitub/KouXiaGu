@@ -53,6 +53,7 @@ namespace KouXiaGu.Terrain3D
                 new Vector2(0, 0.5f),
             };
 
+        [SerializeField]
         List<CubicHexCoord> points;
         List<Vector3> vertices;
         List<int> triangles;
@@ -85,28 +86,47 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        public bool Add(CubicHexCoord position)
+        /// <summary>
+        /// 更新坐标;
+        /// </summary>
+        public void UpdatePoints(IEnumerable<CubicHexCoord> points)
         {
             Initialize();
-            if (!points.Contains(position))
+            ClearCollection();
+            foreach (var point in points)
             {
-                points.Add(position);
-                Add_internal(position);
+                Add_internal(point);
+            }
+            isUpdate = true;
+            UpdateMesh();
+        }
+
+        /// <summary>
+        /// 添加坐标;
+        /// </summary>
+        public bool AddPoint(CubicHexCoord point)
+        {
+            Initialize();
+            if (!points.Contains(point))
+            {
+                Add_internal(point);
                 UpdateMesh();
                 return true;
             }
             return false;
         }
 
-        public void Add(IEnumerable<CubicHexCoord> positions)
+        /// <summary>
+        /// 添加坐标;
+        /// </summary>
+        public void AddPoints(IEnumerable<CubicHexCoord> points)
         {
             Initialize();
-            foreach (var position in positions)
+            foreach (var point in points)
             {
-                if (!points.Contains(position))
+                if (!this.points.Contains(point))
                 {
-                    points.Add(position);
-                    Add_internal(position);
+                    Add_internal(point);
                 }
             }
             UpdateMesh();
@@ -115,10 +135,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 更新内部合集内容;
         /// </summary>
-        void Add_internal(CubicHexCoord position)
+        void Add_internal(CubicHexCoord point)
         {
             isUpdate = true;
-            Vector3 pixelPosition = position.GetTerrainPixel();
+            points.Add(point);
+
+            Vector3 pixelPosition = point.GetTerrainPixel();
             foreach (var vertice in prefabVertices)
             {
                 Vector3 current = pixelPosition + vertice;
@@ -144,7 +166,6 @@ namespace KouXiaGu.Terrain3D
             int index = points.FindIndex(position);
             if (index >= 0)
             {
-                points.RemoveAt(index);
                 Remove_internal(index, position);
                 UpdateMesh();
                 return true;
@@ -160,7 +181,6 @@ namespace KouXiaGu.Terrain3D
                 int index = points.FindIndex(position);
                 if (index >= 0)
                 {
-                    points.RemoveAt(index);
                     Remove_internal(index, position);
                 }
             }
@@ -170,6 +190,7 @@ namespace KouXiaGu.Terrain3D
         void Remove_internal(int index, CubicHexCoord position)
         {
             isUpdate = true;
+            points.RemoveAt(index);
             for (int start = index * 6, loop = 0; loop < 6; loop++)
             {
                 vertices.RemoveAt(start);
@@ -198,22 +219,30 @@ namespace KouXiaGu.Terrain3D
         {
             if (isInitialized)
             {
-                points.Clear();
-                vertices.Clear();
-                triangles.Clear();
-                uv.Clear();
+                ClearCollection();
                 Mesh.Clear();
             }
+        }
+
+        /// <summary>
+        /// 清空数据,但不清除网格;
+        /// </summary>
+        void ClearCollection()
+        {
+            points.Clear();
+            vertices.Clear();
+            triangles.Clear();
+            uv.Clear();
         }
 
         [ContextMenu("TestAdd")]
         void TestAdd()
         {
-            Add(CubicHexCoord.Self);
-            Add(CubicHexCoord.DIR_North);
-            Add(CubicHexCoord.DIR_South);
-            Add(CubicHexCoord.DIR_Northeast);
-            Add(CubicHexCoord.DIR_Northwest);
+            AddPoint(CubicHexCoord.Self);
+            AddPoint(CubicHexCoord.DIR_North);
+            AddPoint(CubicHexCoord.DIR_South);
+            AddPoint(CubicHexCoord.DIR_Northeast);
+            AddPoint(CubicHexCoord.DIR_Northwest);
         }
 
         [ContextMenu("TestRemove")]

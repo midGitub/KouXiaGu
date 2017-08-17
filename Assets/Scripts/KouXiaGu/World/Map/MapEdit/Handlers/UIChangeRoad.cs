@@ -12,11 +12,13 @@ using KouXiaGu.Globalization;
 namespace KouXiaGu.World.Map.MapEdit
 {
 
+    /// <summary>
+    /// 改变道路类型;
+    /// </summary>
     [DisallowMultipleComponent]
     public class UIChangeRoad : UIMapEditHandler
     {
         const string messageFormat = "Road: [{0}, {1}({2})]";
-        const string strUnknown = "Unknown";
         int roadType;
         public Toggle roadExistToggle;
         public InputField idInputField;
@@ -61,7 +63,7 @@ namespace KouXiaGu.World.Map.MapEdit
         void SetInfo_internal(int roadType)
         {
             this.roadType = roadType;
-            nameField.text = GetRoadName(roadType);
+            nameField.SetValue(GetRoadName(roadType));
             Title.SetMessage(GetMessage(nameField.text));
 
             if (roadType == 0)
@@ -127,19 +129,16 @@ namespace KouXiaGu.World.Map.MapEdit
 
         public override IVoidable Execute(IEnumerable<EditMapNode> nodes)
         {
-            if (roadExistToggle.isOn)
+            IWorldComplete world = WorldSceneManager.World;
+            if (world != null)
             {
-                IWorldComplete world = WorldSceneManager.World;
-                if (world != null)
+                if (world.BasicData.BasicResource.Terrain.Road.ContainsKey(roadType))
                 {
-                    if (world.BasicData.BasicResource.Terrain.Road.ContainsKey(roadType))
+                    MapData map = world.WorldData.MapData.data;
+                    var roadInfo = roadExistToggle.isOn ? new NodeRoadInfo(roadType) : new NodeRoadInfo(0);
+                    foreach (var node in nodes)
                     {
-                        MapData map = world.WorldData.MapData.data;
-                        var roadInfo = new NodeRoadInfo(roadType);
-                        foreach (var node in nodes)
-                        {
-                            node.Value.Road = node.Value.Road.Update(map, roadInfo);
-                        }
+                        node.Value.Road = node.Value.Road.Update(map, roadInfo);
                     }
                 }
             }

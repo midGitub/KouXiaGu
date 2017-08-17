@@ -5,6 +5,7 @@ using KouXiaGu.World.Resources;
 using KouXiaGu.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 namespace KouXiaGu.World.Map.MapEdit
 {
@@ -16,35 +17,70 @@ namespace KouXiaGu.World.Map.MapEdit
     public class UIChangeLandform : UIMapEditHandler
     {
         const string messageFormat = "Landform: [{0}({1})]";
-        int LandformID;
+        int landformType;
         public Slider angleSlider;
         public InputField idInputField;
         public InputField nameField;
 
         void Awake()
         {
-            idInputField.onEndEdit.AddListener(UpdateNameField);
+            idInputField.onEndEdit.AddListener(OnIdInputFieldValueChanged);
         }
 
-        void UpdateNameField(string text)
+        void Start()
         {
-            LandformID = Convert.ToInt32(text);
-            nameField.text = GetLandformName(LandformID);
-            Title.SetMessage(GetMessage());
+            var data = GameInitializer.GameData;
+            if (data != null)
+            {
+                var firset = data.Terrain.Landform.FirstOrDefault().Value;
+                if (firset != null)
+                {
+                    SetInfo(firset.ID);
+                }
+            }
+            else
+            {
+                SetInfo(0);
+            }
+        }
+
+        void OnIdInputFieldValueChanged(string text)
+        {
+            var landformType = Convert.ToInt32(text);
+            SetInfo_internal(landformType);
+        }
+
+        public void SetInfo(int landformType)
+        {
+            idInputField.text = landformType.ToString();
+            SetInfo_internal(landformType);
+        }
+
+        void SetInfo_internal(int landformType)
+        {
+            this.landformType = landformType;
+            nameField.text = GetLandformName(landformType);
+            Title.SetMessage(GetMessage(nameField.text));
         }
 
         public override string GetMessage()
         {
-            return string.Format(messageFormat, GetLandformName(LandformID), LandformID);
+            string name = GetLandformName(landformType);
+            return GetMessage(name);
+        }
+
+        string GetMessage(string landformName)
+        {
+            return string.Format(messageFormat, landformName, landformType);
         }
 
         string GetLandformName(int id)
         {
-            if (GameInitializer.GameDataInitialize.IsCompleted)
+            var resource = GameInitializer.GameData;
+            if (resource != null)
             {
-                IGameResource resource = GameInitializer.GameDataInitialize.Result;
                 LandformInfo info;
-                if(resource.Terrain.Landform.TryGetValue(id, out info))
+                if (resource.Terrain.Landform.TryGetValue(id, out info))
                 {
                     return Localization.GetLocalizationText(info.Name);
                 }
@@ -65,7 +101,7 @@ namespace KouXiaGu.World.Map.MapEdit
                 MapData map = world.WorldData.MapData.data;
                 foreach (var node in nodes)
                 {
-                   node.Value.Landform = node.Value.Landform.Update(map, new NodeLandformInfo(LandformID, angleSlider.value));
+                   node.Value.Landform = node.Value.Landform.Update(map, new NodeLandformInfo(landformType, angleSlider.value));
                 }
             }
             return null;

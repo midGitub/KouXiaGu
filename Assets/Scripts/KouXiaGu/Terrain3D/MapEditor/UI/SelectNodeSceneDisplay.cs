@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
             {
                 mapBoundaryMesh.gameObject.SetActive(true);
                 mapBoundaryMesh.Clear();
-                mapBoundaryMesh.Add(selectNodeList);
+                mapBoundaryMesh.AddPoints(selectNodeList);
             }
             isDisplay = true;
         }
@@ -101,7 +101,7 @@ namespace KouXiaGu.Terrain3D.MapEditor
             if (isDisplay)
             {
                 mapBoundaryMesh.Clear();
-                mapBoundaryMesh.Add(positions);
+                mapBoundaryMesh.AddPoints(positions);
             }
         }
     }

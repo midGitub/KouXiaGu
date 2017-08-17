@@ -21,28 +21,46 @@ namespace KouXiaGu.World.Map.MapEdit
         UIMapEditSizer editSizer;
         [SerializeField]
         Slider sizeSlider;
-        HexSpiralSizer hexSpiralSizer;
-
-        public PointSizer PointSizer
-        {
-            get { return hexSpiralSizer; }
-        }
+        [SerializeField]
+        List<CubicHexCoord> offsets;
+        public int Size { get; private set; }
 
         void Awake()
         {
-            hexSpiralSizer = new HexSpiralSizer();
-            sizeSlider.onValueChanged.AddListener(OnValueChanged);
+            offsets = new List<CubicHexCoord>();
+            Size = -1;
+            sizeSlider.onValueChanged.AddListener(SetSize);
         }
 
         void OnEnable()
         {
-            editSizer.SetPointSizer(PointSizer);
+            SetSize(sizeSlider.value);
         }
 
-        void OnValueChanged(float value)
+        public void SetSize(float value)
         {
             int size = Convert.ToInt32(value);
-            hexSpiralSizer.SetSize(size);
+            SetSize(size);
+        }
+
+        public void SetSize(int size)
+        {
+            if (Size != size)
+            {
+                Size = size;
+                offsets.Clear();
+                CubicHexCoord.Spiral(CubicHexCoord.Self, Size, ref offsets);
+                offsets.Add(CubicHexCoord.Self);
+                SendChanged();
+            }
+        }
+
+        void SendChanged()
+        {
+            if (enabled == true)
+            {
+                editSizer.SetSelecteOffsets(offsets);
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ namespace KouXiaGu.World.Map.MapEdit
     [DisallowMultipleComponent]
     public abstract class UIMapEditHandler : MonoBehaviour, IMapEditHandler
     {
+        protected const string strUnknown = "Unknown";
         UIMapEditHandlerTitle title;
 
         protected UIMapEditHandlerTitle Title

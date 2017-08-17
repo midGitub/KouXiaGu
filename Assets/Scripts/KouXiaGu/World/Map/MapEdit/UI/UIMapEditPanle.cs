@@ -1,6 +1,7 @@
 ﻿using KouXiaGu.Concurrent;
 using KouXiaGu.Grids;
 using KouXiaGu.OperationRecord;
+using KouXiaGu.Terrain3D;
 using KouXiaGu.UI;
 using System;
 using System.Collections.Generic;
@@ -65,22 +66,27 @@ namespace KouXiaGu.World.Map.MapEdit
 
         void Update()
         {
+            Vector3 mousePoint;
+            if (LandformRay.Instance.TryGetMouseRayPoint(out mousePoint))
+            {
+                pointSizer.OnUpdate(mousePoint);
+            }
             if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButton(0))
             {
-                Execute();
+                Execute(mousePoint.GetTerrainCubic());
             }
         }
 
         /// <summary>
         /// 对所有节点执行操作;
         /// </summary>
-        public IVoidable Execute()
+        public IVoidable Execute(CubicHexCoord center)
         {
             if (WorldSceneManager.World == null)
                 return null;
 
             var map = WorldSceneManager.World.WorldData.MapData;
-            var selectedArea = GetSelectedArea(map, pointSizer.SelectedArea);
+            var selectedArea = GetSelectedArea(map, pointSizer.EnumerateSelecteArea(center));
             return CurrentView.Execute(map, selectedArea);
         }
 
