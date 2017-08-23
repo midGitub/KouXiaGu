@@ -67,7 +67,8 @@ namespace KouXiaGu.Terrain3D
         TPoint Point { get; }
         TChunk Chunk { get; }
         ChunkState State { get; }
-        event Action<IChunkInfo<TPoint, TChunk>> OnChangedEvent;
+        void AddListener(Action<IChunkInfo<TPoint, TChunk>> listener);
+        void RemoveListener(Action<IChunkInfo<TPoint, TChunk>> listener);
     }
 
     /// <summary>
@@ -94,19 +95,24 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         protected abstract ChunkRequest CreateChunkRequest(ChunkInfo info);
 
+        public IChunkInfo<TPoint, TChunk> this[TPoint point]
+        {
+            get { return chunks[point]; }
+        }
+
         /// <summary>
         /// 创建块,若已经存在则返回实例,不存在则创建到;
         /// </summary>
         public IChunkInfo<TPoint, TChunk> Create(TPoint point)
         {
-            ChunkInfo state;
-            if (!chunks.TryGetValue(point, out state))
+            ChunkInfo info;
+            if (!chunks.TryGetValue(point, out info))
             {
-                state = new ChunkInfo(this, point);
-                chunks.Add(point, state);
+                info = new ChunkInfo(this, point);
+                chunks.Add(point, info);
             }
-            state.CreateChunk();
-            return state;
+            info.CreateChunk();
+            return info;
         }
 
         /// <summary>
@@ -114,11 +120,11 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IChunkInfo<TPoint, TChunk> Update(TPoint point)
         {
-            ChunkInfo state;
-            if (chunks.TryGetValue(point, out state))
+            ChunkInfo info;
+            if (chunks.TryGetValue(point, out info))
             {
-                state.UpdateChunk();
-                return state;
+                info.UpdateChunk();
+                return info;
             }
             return null;
         }
@@ -128,13 +134,21 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IChunkInfo<TPoint, TChunk> Destroy(TPoint point)
         {
-            ChunkInfo state;
-            if (chunks.TryGetValue(point, out state))
+            ChunkInfo info;
+            if (chunks.TryGetValue(point, out info))
             {
-                state.DestroyChunk();
-                return state;
+                info.DestroyChunk();
+                return info;
             }
             return null;
+        }
+
+        public bool TryGetValue(TPoint point, out IChunkInfo<TPoint, TChunk> chunkInfo)
+        {
+            ChunkInfo info;
+            bool find = chunks.TryGetValue(point, out info);
+            chunkInfo = info;
+            return find;
         }
 
         /// <summary>
@@ -184,16 +198,24 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             Action<IChunkInfo<TPoint, TChunk>> onChangedEvent;
 
-            /// <summary>
-            /// 当块发生变化时调用;
-            /// </summary>
-            public event Action<IChunkInfo<TPoint, TChunk>> OnChangedEvent
+            public void AddListener(Action<IChunkInfo<TPoint, TChunk>> listener)
             {
-                add { onChangedEvent += value; }
-                remove { onChangedEvent -= value; }
+                onChangedEvent += listener;
             }
 
-            internal void OnChunkDataChanged()
+            public void RemoveListener(Action<IChunkInfo<TPoint, TChunk>> listener)
+            {
+                onChangedEvent -= listener;
+                if (onChangedEvent == null)
+                {
+                    Parent.RemoveChunkInfo_internal(Point);
+                }
+            }
+
+            /// <summary>
+            /// 当块发生变化时手动调用;
+            /// </summary>
+            public void OnChunkDataChanged()
             {
                 if (onChangedEvent != null)
                 {
