@@ -24,20 +24,43 @@ namespace KouXiaGu.Terrain3D.Effects
 
         static readonly Collections.SortedList<TerrainAreaEffect> terrainAreaEffectItems;
 
-        /// <summary>
-        /// 渲染优先次序;
-        /// </summary>
-        [SerializeField]
-        int sortOrder = 0;
-        
         public static IReadOnlyList<TerrainAreaEffect> TerrainAreaEffectItems
         {
             get { return terrainAreaEffectItems; }
         }
 
+
+        /// <summary>
+        /// 渲染优先次序;
+        /// </summary>
+        [SerializeField]
+        int sortOrder = 0;
+        /// <summary>
+        /// 外部线框宽度;
+        /// </summary>
+        [SerializeField, Range(1, 40)]
+        float outLineWidth = 3;
+        /// <summary>
+        /// 内部透明度;
+        /// </summary>
+        [SerializeField, Range(0, 1)]
+        float internalTransparency = 0.1f;
+
         public int SortOrder
         {
             get { return sortOrder; }
+        }
+
+        public float OutLineWidth
+        {
+            get { return outLineWidth; }
+            set { outLineWidth = value; }
+        }
+
+        public float InternalTransparency
+        {
+            get { return internalTransparency; }
+            set { internalTransparency = value; }
         }
 
         void Awake()

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    [CustomEditor(typeof(Chunk))]
+    [CustomEditor(typeof(LandformChunk))]
     [CanEditMultipleObjects]
     class TerrainChunkEditor : Editor
     {
@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            var target = (Chunk)this.target;
+            var target = (LandformChunk)this.target;
 
             var texture = target.Renderer;
 

@@ -4,7 +4,6 @@ using KouXiaGu.World;
 using KouXiaGu.World.Map;
 using KouXiaGu.World.Resources;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -32,7 +31,7 @@ namespace KouXiaGu.Terrain3D
 
         public RectGrid chunkGrid
         {
-            get { return ChunkInfo.ChunkGrid; }
+            get { return LandformChunkInfo.ChunkGrid; }
         }
 
         /// <summary>
@@ -62,7 +61,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
         {
-            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            CubicHexCoord chunkCenter = LandformChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
             foreach (var item in buildingOverlay)
             {
                 yield return chunkCenter + item;
@@ -151,7 +150,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
         {
-            CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+            CubicHexCoord chunkCenter = LandformChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
             foreach (var item in buildingOverlay)
             {
                 yield return chunkCenter + item;
@@ -388,7 +387,7 @@ namespace KouXiaGu.Terrain3D
             public BuildingBuilder Parent { get; private set; }
             public CubicHexCoord Position { get; private set; }
             public BuildingNode Node { get; private set; }
-            public bool IsInQueue { get; private set; }
+            public bool InQueue { get; private set; }
             public bool IsCanceled { get; private set; }
 
             IWorld world
@@ -417,7 +416,7 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = true;
             }
 
-            void IAsyncRequest.Operate()
+            bool IAsyncRequest.Operate()
             {
                 lock (Parent.unityThreadLock)
                 {
@@ -430,7 +429,7 @@ namespace KouXiaGu.Terrain3D
                                 Parent.DestroyBuilding_internal(Result);
                                 Result = null;
                             }
-                            return;
+                            return false;
                         }
 
                         if (!IsCompleted)
@@ -452,14 +451,20 @@ namespace KouXiaGu.Terrain3D
                     }
                     finally
                     {
-                        IsInQueue = false;
+                        InQueue = false;
                     }
+                    return false;
                 }
             }
 
-            void IAsyncRequest.AddQueue()
+            void IAsyncRequest.OnAddQueue()
             {
-                IsInQueue = true;
+                InQueue = true;
+            }
+
+            void IAsyncRequest.OnQuitQueue()
+            {
+                InQueue = false;
             }
         }
 
@@ -477,12 +482,19 @@ namespace KouXiaGu.Terrain3D
             public BuildingBuilder Parent { get; private set; }
             public IBuilding Building { get; private set; }
 
-            void IAsyncRequest.Operate()
+            bool IAsyncRequest.Operate()
             {
                 Parent.DestroyBuilding_internal(Building);
+                return false;
             }
 
-            void IAsyncRequest.AddQueue() { }
+            void IAsyncRequest.OnAddQueue()
+            {
+            }
+
+            void IAsyncRequest.OnQuitQueue()
+            {
+            }
         }
 
         /// <summary>
@@ -569,7 +581,7 @@ namespace KouXiaGu.Terrain3D
             /// </summary>
             IEnumerable<CubicHexCoord> GetOverlayPoints(RectCoord chunkCoord)
             {
-                CubicHexCoord chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
+                CubicHexCoord chunkCenter = LandformChunkInfo.ChunkGrid.GetCenter(chunkCoord).GetTerrainCubic();
                 foreach (var item in buildingOverlay)
                 {
                     yield return chunkCenter + item;

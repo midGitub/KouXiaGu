@@ -114,13 +114,13 @@ namespace KouXiaGu.Resources
 
             readonly AssetBundles parent;
             readonly string name;
-            public bool IsInQueue { get; private set; }
+            public bool InQueue { get; private set; }
             public bool IsUnloading { get; private set; }
             public bool IsUnloadAllLoadedObjects { get; private set; }
 
             void AddRequestQueue()
             {
-                if (!IsInQueue)
+                if (!InQueue)
                 {
                     parent.dispatcher.Add(this);
                 }
@@ -156,22 +156,22 @@ namespace KouXiaGu.Resources
                 AddRequestQueue();
             }
 
-            void IAsyncRequest.AddQueue()
+            void IAsyncRequest.OnAddQueue()
             {
-                if (IsInQueue)
+                if (InQueue)
                 {
                     throw new ArgumentException("该请求已经加入了队列;");
                 }
-                IsInQueue = true;
+                InQueue = true;
             }
 
-            void IAsyncRequest.Operate()
+            bool IAsyncRequest.Operate()
             {
                 try
                 {
                     if (IsCompleted)
                     {
-                        return;
+                        return false;
                     }
                     if (IsUnloading)
                     {
@@ -193,10 +193,16 @@ namespace KouXiaGu.Resources
                         }
                     }
                 }
-                finally
+                catch(Exception ex)
                 {
-                    IsInQueue = false;
+                    OnFaulted(ex);
                 }
+                return false;
+            }
+
+            void IAsyncRequest.OnQuitQueue()
+            {
+                InQueue = false;
             }
         }
     }

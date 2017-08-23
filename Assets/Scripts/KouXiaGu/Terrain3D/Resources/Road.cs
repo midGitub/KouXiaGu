@@ -95,9 +95,15 @@ namespace KouXiaGu.Terrain3D
         AssetBundle assetBundle;
         RoadInfo info;
 
-        void IAsyncRequest.AddQueue() { }
+        void IAsyncRequest.OnAddQueue()
+        {
+        }
 
-        void IAsyncRequest.Operate()
+        void IAsyncRequest.OnQuitQueue()
+        {
+        }
+
+        bool IAsyncRequest.Operate()
         {
             TerrainRoadInfo bInfo = info.TerrainInfo;
 
@@ -115,6 +121,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Debug.LogWarning("无法读取[TerrainRoad],Info:" + info.ToString());
             }
+            return false;
         }
 
         Texture ReadTexture(string name)

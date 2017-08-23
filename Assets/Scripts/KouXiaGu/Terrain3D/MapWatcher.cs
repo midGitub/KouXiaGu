@@ -92,7 +92,7 @@ namespace KouXiaGu.Terrain3D
             chunkCoordList.Clear();
             foreach (var checkCoord in coord.GetNeighbours())
             {
-                var chunkCoords = ChunkInfo.GetBelongChunks(checkCoord);
+                var chunkCoords = LandformChunkInfo.GetBelongChunks(checkCoord);
 
                 foreach (var chunkCoord in chunkCoords)
                 {

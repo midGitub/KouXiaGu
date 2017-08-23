@@ -16,24 +16,24 @@ namespace KouXiaGu.Terrain3D
         public SceneLandformCollection()
         {
             SceneChunks = new Dictionary<RectCoord, LandformBuilder.CreateRequest>();
-            ReadOnlySceneChunks = SceneChunks.AsReadOnlyDictionary(item => item as IAsyncOperation<Chunk>);
+            ReadOnlySceneChunks = SceneChunks.AsReadOnlyDictionary(item => item as IAsyncOperation<LandformChunk>);
         }
 
         internal Dictionary<RectCoord, LandformBuilder.CreateRequest> SceneChunks { get; private set; }
-        public IReadOnlyDictionary<RectCoord, IAsyncOperation<Chunk>> ReadOnlySceneChunks { get; private set; }
+        public IReadOnlyDictionary<RectCoord, IAsyncOperation<LandformChunk>> ReadOnlySceneChunks { get; private set; }
 
         /// <summary>
         /// 获取到高度,若不存在高度信息,则返回0;
         /// </summary>
         public float GetHeight(Vector3 position)
         {
-            RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(position);
+            RectCoord chunkCoord = LandformChunkInfo.ChunkGrid.GetCoord(position);
             LandformBuilder.CreateRequest chunk;
             if (SceneChunks.TryGetValue(chunkCoord, out chunk))
             {
                 if (chunk.Result != null)
                 {
-                    Vector2 uv = ChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
+                    Vector2 uv = LandformChunkInfo.ChunkGrid.GetUV(chunkCoord, position);
                     return chunk.Result.Renderer.GetHeight(uv);
                 }
             }
@@ -54,7 +54,7 @@ namespace KouXiaGu.Terrain3D
             World = world;
             this.requestDispatcher = requestDispatcher;
             SceneChunks = world.Components.Landform.LandformChunks.SceneChunks;
-            chunkPool = new ChunkPool();
+            chunkPool = new LandformChunkPool();
             completedChunkSender = new Tracker<RectCoord>();
         }
 
@@ -62,12 +62,12 @@ namespace KouXiaGu.Terrain3D
         public Dictionary<RectCoord, CreateRequest> SceneChunks { get; private set; }
         IRequestDispatcher requestDispatcher;
         readonly object unityThreadLock = new object();
-        readonly ChunkPool chunkPool;
+        readonly LandformChunkPool chunkPool;
         readonly Tracker<RectCoord> completedChunkSender;
 
         public RectGrid ChunkGrid
         {
-            get { return ChunkInfo.ChunkGrid; }
+            get { return LandformChunkInfo.ChunkGrid; }
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 异步创建对应地形块,若已经存在则返回存在的元素;
         /// </summary>
-        public IAsyncOperation<Chunk> CreateAsync(RectCoord position, BakeTargets targets = BakeTargets.All)
+        public IAsyncOperation<LandformChunk> CreateAsync(RectCoord position, BakeTargets targets = BakeTargets.All)
         {
             CreateRequest request;
             if (!SceneChunks.TryGetValue(position, out request))
@@ -111,7 +111,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 仅更新对应地形块,若不存在对应地形块,则返回Null;
         /// </summary>
-        public IAsyncOperation<Chunk> UpdateAsync(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
+        public IAsyncOperation<LandformChunk> UpdateAsync(RectCoord chunkCoord, BakeTargets targets = BakeTargets.All)
         {
             lock (unityThreadLock)
             {
@@ -176,9 +176,9 @@ namespace KouXiaGu.Terrain3D
         }
 
 
-        internal class CreateRequest : AsyncOperation<Chunk>, IAsyncRequest, IState
+        internal class CreateRequest : AsyncOperation<LandformChunk>, IAsyncRequest, IState
         {
-            public CreateRequest(LandformBuilder parent, RectCoord chunkCoord, Chunk chunk)
+            public CreateRequest(LandformBuilder parent, RectCoord chunkCoord, LandformChunk chunk)
             {
                 Parent = parent;
                 ChunkCoord = chunkCoord;
@@ -197,13 +197,13 @@ namespace KouXiaGu.Terrain3D
             public BakeTargets Targets { get; internal set; }
             public bool IsCanceled { get; private set; }
 
-            Chunk chunk
+            LandformChunk chunk
             {
                 get { return result; }
                 set { result = value; }
             }
 
-            ChunkPool chunkPool
+            LandformChunkPool chunkPool
             {
                 get { return Parent.chunkPool; }
             }
@@ -224,13 +224,13 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = false;
             }
 
-            void IAsyncRequest.Operate()
+            bool IAsyncRequest.Operate()
             {
                 lock (Parent.unityThreadLock)
                 {
                     if (IsCanceled || IsCompleted)
                     {
-                        return;
+                        return false;
                     }
                     if (chunk == null)
                     {
@@ -250,21 +250,26 @@ namespace KouXiaGu.Terrain3D
                     chunk.Renderer.Apply();
                     OnCompleted();
                     Parent.completedChunkSender.Send(ChunkCoord);
+                    return false;
                 }
             }
 
-            void IAsyncRequest.AddQueue()
+            void IAsyncRequest.OnAddQueue()
             {
                 if (IsCompleted)
                 {
                     Debug.LogError("将完成的请求加入到处理队列!");
                 }
             }
+
+            void IAsyncRequest.OnQuitQueue()
+            {
+            }
         }
 
         public class DestroyRequest : IAsyncRequest
         {
-            public DestroyRequest(LandformBuilder parent, RectCoord chunkCoord, Chunk chunk)
+            public DestroyRequest(LandformBuilder parent, RectCoord chunkCoord, LandformChunk chunk)
             {
                 this.parent = parent;
                 this.chunkCoord = chunkCoord;
@@ -272,22 +277,29 @@ namespace KouXiaGu.Terrain3D
             }
 
             LandformBuilder parent;
-            Chunk chunk;
+            LandformChunk chunk;
             RectCoord chunkCoord;
 
-            ChunkPool chunkPool
+            LandformChunkPool chunkPool
             {
                 get { return parent.chunkPool; }
             }
 
-            void IAsyncRequest.Operate()
+            bool IAsyncRequest.Operate()
             {
                 chunkPool.Release(chunk);
                 chunk = null;
                 parent.completedChunkSender.Send(chunkCoord);
+                return false;
             }
 
-            void IAsyncRequest.AddQueue() { }
+            void IAsyncRequest.OnAddQueue()
+            {
+            }
+
+            void IAsyncRequest.OnQuitQueue()
+            {
+            }
         }
     }
 }

@@ -18,9 +18,9 @@ namespace KouXiaGu.World.Map.MapEdit
     {
         const string messageFormat = "Landform: [{0}({1})]";
         int landformType;
-        public Slider angleSlider;
         public InputField idInputField;
         public InputField nameField;
+        public AngleControl Angle;
 
         void Awake()
         {
@@ -101,10 +101,69 @@ namespace KouXiaGu.World.Map.MapEdit
                 MapData map = world.WorldData.MapData.data;
                 foreach (var node in nodes)
                 {
-                   node.Value.Landform = node.Value.Landform.Update(map, new NodeLandformInfo(landformType, angleSlider.value));
+                   node.Value.Landform = node.Value.Landform.Update(map, new NodeLandformInfo(landformType, Angle.GetAngle()));
                 }
             }
             return null;
+        }
+
+        [Serializable]
+        public class IDControl
+        {
+            int landformType;
+            public InputField idInputField;
+            public InputField nameField;
+
+            public void Initialize()
+            {
+
+            }
+
+            public int GetLandformType()
+            {
+                return landformType;
+            }
+        }
+
+        [Serializable]
+        public class AngleControl
+        {
+            public Slider angleSlider;
+            public InputField angleInputField;
+            public Toggle randomAngleToggle;
+
+            public void Initialize()
+            {
+                angleSlider.onValueChanged.AddListener(OnAngleSliderChanged);
+                angleInputField.onValueChanged.AddListener(OnAngleInputFieldChanged);
+            }
+
+            /// <summary>
+            /// 获取到角度;
+            /// </summary>
+            public float GetAngle()
+            {
+                if (randomAngleToggle.isOn)
+                {
+                    return RandomXiaGu.Angle();
+                }
+                else
+                {
+                    return angleSlider.value;
+                }
+            }
+
+            void OnAngleSliderChanged(float angle)
+            {
+                angleInputField.text = angle.ToString();
+                randomAngleToggle.isOn = false;
+            }
+
+            void OnAngleInputFieldChanged(string angleText)
+            {
+                float angle = Convert.ToSingle(angleText);
+                randomAngleToggle.isOn = false;
+            }
         }
     }
 }

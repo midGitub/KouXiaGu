@@ -9,9 +9,10 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形控制;
     /// </summary>
-    public class Landform
+    [Obsolete]
+    public class OLandform
     {
-        public Landform()
+        public OLandform()
         {
             LandformChunks = new SceneLandformCollection();
             Buildings = new SceneBuildingCollection();
@@ -19,14 +20,6 @@ namespace KouXiaGu.Terrain3D
 
         internal SceneLandformCollection LandformChunks { get; private set; }
         internal SceneBuildingCollection Buildings { get; private set; }
-
-        ///// <summary>
-        ///// 获取到高度,若不存在高度信息,则返回0;
-        ///// </summary>
-        //public float GetHeight(Vector3 position)
-        //{
-        //    return LandformChunks.GetHeight(position);
-        //}
 
         /// <summary>
         /// 使坐标贴与地面;

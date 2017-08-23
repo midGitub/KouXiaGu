@@ -9,32 +9,32 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形块池;
     /// </summary>
-    public class ChunkPool : ObjectPool<Chunk>
+    public class LandformChunkPool : ObjectPool<LandformChunk>
     {
         const int defaultMaxCapacity = 100;
 
-        public ChunkPool() : base(defaultMaxCapacity)
+        public LandformChunkPool() : base(defaultMaxCapacity)
         {
         }
 
-        public override Chunk Instantiate()
+        public override LandformChunk Instantiate()
         {
-            Chunk chunk = Chunk.Create();
+            LandformChunk chunk = LandformChunk.Create();
             return chunk;
         }
 
-        public override void ResetWhenOutPool(Chunk chunk)
+        public override void ResetWhenOutPool(LandformChunk chunk)
         {
             chunk.gameObject.SetActive(true);
         }
 
-        public override void ResetWhenEnterPool(Chunk chunk)
+        public override void ResetWhenEnterPool(LandformChunk chunk)
         {
             chunk.ResetData();
             chunk.gameObject.SetActive(false);
         }
 
-        public override void Destroy(Chunk chunk)
+        public override void Destroy(LandformChunk chunk)
         {
             chunk.Destroy();
         }

@@ -26,10 +26,6 @@ namespace KouXiaGu.Terrain3D.Effects
         Camera mainCamera;
         Camera stencilCamera;
         public Shader edgePreserveShader;
-        [Range(1, 40)]
-        public float outLineWidth = 10;
-        [Range(0, 1)]
-        public float transparency = 0;
         public LayerMask cullingMask;
         Material edgePreserveMaterial;
 
@@ -104,8 +100,8 @@ namespace KouXiaGu.Terrain3D.Effects
                     stencilCamera.targetTexture = null;
 
                     edgePreserveMaterial.SetTexture("_StencilMap", stencilMap);
-                    edgePreserveMaterial.SetFloat("_OutLineWidth", outLineWidth);
-                    edgePreserveMaterial.SetFloat("_Transparency", transparency);
+                    edgePreserveMaterial.SetFloat("_OutLineWidth", item.OutLineWidth);
+                    edgePreserveMaterial.SetFloat("_Transparency", item.InternalTransparency);
                     Graphics.Blit(sourceTexture, destTexture, edgePreserveMaterial);
                     Graphics.Blit(destTexture, sourceTexture);
 

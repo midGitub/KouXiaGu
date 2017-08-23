@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace KouXiaGu.World.Map.MapEdit
 {
@@ -27,6 +28,8 @@ namespace KouXiaGu.World.Map.MapEdit
         UIMapEditHandlerView currentView;
         [SerializeField]
         UIMapEditSizer pointSizer;
+        [SerializeField]
+        Toggle[] viewSwitchs;
 
         public UIMapEditHandlerView CurrentView
         {
@@ -71,9 +74,38 @@ namespace KouXiaGu.World.Map.MapEdit
             {
                 pointSizer.OnUpdate(mousePoint);
             }
-            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButton(0))
+            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
             {
                 Execute(mousePoint.GetTerrainCubic());
+            }
+            ViewSwitchKeyResponse();
+        }
+
+        void ViewSwitchKeyResponse()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                viewSwitchs[0].SetValue(true);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                viewSwitchs[1].SetValue(true);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                viewSwitchs[2].SetValue(true);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                viewSwitchs[3].SetValue(true);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                viewSwitchs[4].SetValue(true);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                viewSwitchs[5].SetValue(true);
             }
         }
 

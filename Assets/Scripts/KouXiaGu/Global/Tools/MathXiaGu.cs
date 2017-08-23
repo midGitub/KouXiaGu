@@ -11,8 +11,6 @@ namespace KouXiaGu
     /// </summary>
     public static class MathXiaGu
     {
-
-
         public static float Clamp01(float value)
         {
             value = value < 0 ? 0 : value;

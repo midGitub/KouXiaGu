@@ -139,14 +139,20 @@ namespace KouXiaGu.OGlobalization
             IEnumerable<ITextObserver> observers;
             IDictionary<string, string> textDictionary;
 
-            void IAsyncRequest.AddQueue() { }
+            void IAsyncRequest.OnAddQueue() { }
 
-            void IAsyncRequest.Operate()
+            bool IAsyncRequest.Operate()
             {
                 foreach (var observer in observers)
                 {
                     observer.UpdateTexts(textDictionary);
                 }
+                return false;
+            }
+
+            void IAsyncRequest.OnQuitQueue()
+            {
+                throw new NotImplementedException();
             }
         }
 

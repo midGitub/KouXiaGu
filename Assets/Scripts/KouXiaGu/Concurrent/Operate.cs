@@ -10,7 +10,7 @@ namespace KouXiaGu.Concurrent
     /// <summary>
     /// 表示一个异步操作;
     /// </summary>
-    public class Operate :AsyncOperation, IAsyncRequest
+    public class Operate : AsyncOperation, IAsyncRequest
     {
         public Operate(Action operate)
         {
@@ -18,17 +18,17 @@ namespace KouXiaGu.Concurrent
         }
 
         readonly Action operate;
-        public bool IsInQueue { get; private set; }
+        public bool InQueue { get; private set; }
 
-        void IAsyncRequest.AddQueue()
+        void IAsyncRequest.OnAddQueue()
         {
-            if (IsInQueue)
+            if (InQueue)
                 throw new ArgumentException("重复加入!");
 
-            IsInQueue = true;
+            InQueue = true;
         }
 
-        void IAsyncRequest.Operate()
+        bool IAsyncRequest.Operate()
         {
             try
             {
@@ -39,10 +39,12 @@ namespace KouXiaGu.Concurrent
             {
                 OnFaulted(ex);
             }
-            finally
-            {
-                IsInQueue = true;
-            }
+            return false;
+        }
+
+        void IAsyncRequest.OnQuitQueue()
+        {
+            InQueue = false;
         }
     }
 }

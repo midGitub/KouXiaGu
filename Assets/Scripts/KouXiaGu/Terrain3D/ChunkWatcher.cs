@@ -23,7 +23,7 @@ namespace KouXiaGu.Terrain3D
 
         RectGrid Grid
         {
-            get { return ChunkInfo.ChunkGrid; }
+            get { return LandformChunkInfo.ChunkGrid; }
         }
 
         void Update()

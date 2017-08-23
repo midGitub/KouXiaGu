@@ -17,7 +17,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
-    public sealed class Chunk : MonoBehaviour
+    public sealed class LandformChunk : MonoBehaviour
     {
 
         #region Static;
@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
                 typeof(MeshFilter),
                 typeof(MeshRenderer),
                 typeof(MeshCollider),
-                typeof(Chunk)
+                typeof(LandformChunk)
             };
 
         static Transform chunkObjectParent;
@@ -51,7 +51,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 使用默认名实例一个地形块;
         /// </summary>
-        public static Chunk Create()
+        public static LandformChunk Create()
         {
             return Create("TerrainChunk");
         }
@@ -59,23 +59,23 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 指定实例名创建一个地形块;
         /// </summary>
-        public static Chunk Create(string name)
+        public static LandformChunk Create(string name)
         {
             GameObject gameObject = new GameObject(name, ChunkScripts);
             gameObject.transform.SetParent(ChunkObjectParent);
-            Chunk chunk = gameObject.GetComponent<Chunk>();
+            LandformChunk chunk = gameObject.GetComponent<LandformChunk>();
             return chunk;
         }
 
         #endregion
 
 
-        Chunk()
+        LandformChunk()
         {
         }
 
         public bool IsInitialized { get; private set; }
-        public ChunkMesh Mesh { get; private set; }
+        public LandformMesh Mesh { get; private set; }
         public LandformRenderer Renderer { get; private set; }
         public LandformTrigger Trigger { get; private set; }
 
@@ -91,7 +91,7 @@ namespace KouXiaGu.Terrain3D
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshCollider = GetComponent<MeshCollider>();
 
-            Mesh = new ChunkMesh(meshFilter);
+            Mesh = new LandformMesh(meshFilter);
             Renderer = new LandformRenderer(meshRenderer);
             Trigger = new LandformTrigger(meshCollider, Renderer);
 

@@ -30,16 +30,16 @@ namespace KouXiaGu.Terrain3D
         {
             List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
-            float lengthX = ChunkInfo.ChunkWidth / sub_x;
-            float lengthZ = ChunkInfo.ChunkHeight / sub_z;
+            float lengthX = LandformChunkInfo.ChunkWidth / sub_x;
+            float lengthZ = LandformChunkInfo.ChunkHeight / sub_z;
 
             for (int z = 0; z <= sub_z; z++)
             {
                 for (int x = 0; x <= sub_x; x++)
                 {
                     Vector3 vertice = new Vector3(x * lengthX, 0, z * lengthZ);
-                    vertice.x -= ChunkInfo.ChunkHalfWidth;
-                    vertice.z -= ChunkInfo.ChunkHalfHeight;
+                    vertice.x -= LandformChunkInfo.ChunkHalfWidth;
+                    vertice.z -= LandformChunkInfo.ChunkHalfHeight;
 
                     Vector2 uv = new Vector2(x / (float)sub_x, z / (float)sub_z);
                     KeyValuePair<Vector3, Vector2> pair = new KeyValuePair<Vector3, Vector2>(vertice, uv);

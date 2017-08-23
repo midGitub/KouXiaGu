@@ -117,9 +117,15 @@ namespace KouXiaGu.Terrain3D
         AssetBundle assetBundle;
         LandformInfo info;
 
-        void IAsyncRequest.AddQueue() { }
+        void IAsyncRequest.OnAddQueue()
+        {
+        }
 
-        void IAsyncRequest.Operate()
+        void IAsyncRequest.OnQuitQueue()
+        {
+        }
+
+        bool IAsyncRequest.Operate()
         {
             TerrainLandformInfo tInfo = info.TerrainInfo;
             var resource = new LandformResource(info)
@@ -138,6 +144,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Debug.LogWarning("无法读取[TerrainLandform],Info:" + info.ToString());
             }
+            return false;
         }
 
         Texture ReadTexture(string name)

@@ -67,12 +67,19 @@ namespace KouXiaGu.Terrain3D
             get { return Path.Combine(Resource.AssetBundleDirectoryPath, assetBundleName); }
         }
 
-        void IAsyncRequest.AddQueue() { }
+        void IAsyncRequest.OnAddQueue()
+        {
+        }
 
-        void IAsyncRequest.Operate()
+        void IAsyncRequest.OnQuitQueue()
+        {
+        }
+
+        bool IAsyncRequest.Operate()
         {
             AssetBundle assetBundle = AssetBundle.LoadFromFile(AssetBundleFilePath);
             OnCompleted(assetBundle);
+            return false;
         }
     }
 
@@ -87,11 +94,18 @@ namespace KouXiaGu.Terrain3D
         AssetBundle assetBundle;
         bool unloadAllLoadedObjects;
 
-        void IAsyncRequest.AddQueue() { }
+        void IAsyncRequest.OnAddQueue()
+        {
+        }
 
-        void IAsyncRequest.Operate()
+        void IAsyncRequest.OnQuitQueue()
+        {
+        }
+
+        bool IAsyncRequest.Operate()
         {
             assetBundle.Unload(unloadAllLoadedObjects);
+            return false;
         }
     }
 }

@@ -35,12 +35,12 @@ namespace KouXiaGu.Tests
             CubicHexCoord cube = LandformConvert.Grid.GetCubic(terrainPixel);
             Vector3 cubePixel = LandformConvert.Grid.GetPixel(cube);
 
-            RectCoord chunkCoord = ChunkInfo.ChunkGrid.GetCoord(terrainPixel);
-            Vector3 chunkCenter = ChunkInfo.ChunkGrid.GetCenter(chunkCoord);
-            CubicHexCoord chunkHexCenter = ChunkInfo.GetChunkHexCenter(chunkCoord);
-            Vector2 chunkLocal = ChunkInfo.ChunkGrid.GetLocal(terrainPixel, out chunkCoord);
-            Vector2 chunkUV = ChunkInfo.ChunkGrid.GetUV(terrainPixel, out chunkCoord);
-            RectCoord[] belongChunks = ChunkInfo.GetBelongChunks(cube).ToArray();
+            RectCoord chunkCoord = LandformChunkInfo.ChunkGrid.GetCoord(terrainPixel);
+            Vector3 chunkCenter = LandformChunkInfo.ChunkGrid.GetCenter(chunkCoord);
+            CubicHexCoord chunkHexCenter = LandformChunkInfo.GetChunkHexCenter(chunkCoord);
+            Vector2 chunkLocal = LandformChunkInfo.ChunkGrid.GetLocal(terrainPixel, out chunkCoord);
+            Vector2 chunkUV = LandformChunkInfo.ChunkGrid.GetUV(terrainPixel, out chunkCoord);
+            RectCoord[] belongChunks = LandformChunkInfo.GetBelongChunks(cube).ToArray();
 
             string str = 
                 "视窗坐标 :" + mousePosition

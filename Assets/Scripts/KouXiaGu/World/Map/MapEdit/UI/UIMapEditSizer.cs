@@ -1,5 +1,6 @@
 ﻿using KouXiaGu.Grids;
 using KouXiaGu.Terrain3D;
+using KouXiaGu.Terrain3D.Effects;
 using KouXiaGu.UI;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace KouXiaGu.World.Map.MapEdit
         [SerializeField]
         SelectablePanel panel;
         [SerializeField]
+        TerrainAreaEffect terrainAreaEffect;
+        [SerializeField]
         BoundaryMesh terrainBoundaryMesh;
         List<CubicHexCoord> offsets;
         public IReadOnlyCollection<CubicHexCoord> Offsets { get; private set; }
@@ -31,6 +34,17 @@ namespace KouXiaGu.World.Map.MapEdit
         {
             offsets = new List<CubicHexCoord>();
             Offsets = offsets.AsReadOnlyCollection();
+            panel.OnBlurEvent += OnBlur;
+            panel.OnFocusEvent += OnFocus;
+
+            if (panel.IsFocus)
+            {
+                OnFocus();
+            }
+            else
+            {
+                OnBlur();
+            }
         }
 
         /// <summary>
@@ -39,6 +53,16 @@ namespace KouXiaGu.World.Map.MapEdit
         internal void OnUpdate(Vector3 position)
         {
             terrainBoundaryMesh.transform.localPosition = ToXZ(position);
+        }
+
+        void OnFocus()
+        {
+            terrainAreaEffect.enabled = true;
+        }
+
+        void OnBlur()
+        {
+            terrainAreaEffect.enabled = false;
         }
 
         Vector3 ToXZ(Vector3 pos)

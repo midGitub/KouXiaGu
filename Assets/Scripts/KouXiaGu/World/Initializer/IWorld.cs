@@ -44,7 +44,7 @@ namespace KouXiaGu.World
     /// </summary>
     public interface IWorldComponents
     {
-        Landform Landform { get; }
+        OLandform Landform { get; }
     }
 
     /// <summary>

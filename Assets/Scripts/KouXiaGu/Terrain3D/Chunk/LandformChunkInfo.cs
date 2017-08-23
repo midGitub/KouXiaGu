@@ -11,7 +11,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形块信息;
     /// </summary>
-    public static class ChunkInfo
+    public static class LandformChunkInfo
     {
         /// <summary>
         /// 地图节点所使用的六边形参数;

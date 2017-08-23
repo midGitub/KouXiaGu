@@ -39,16 +39,16 @@ namespace KouXiaGu.World.Map
                 node.Landform = new LandformNode()
                 {
                     ID = landform.GetNewEffectiveID(),
-                    LandformType = Random(landformArray),
-                    Angle = RandomAngle(),
+                    LandformType = RandomXiaGu.Get(landformArray),
+                    Angle = RandomXiaGu.Angle(),
                 };
 
-                if (RandomBool())
+                if (RandomXiaGu.Boolean())
                 {
                     node.Road = new RoadNode()
                     {
                         ID = road.GetNewEffectiveID(),
-                        RoadType = Random(roadArray),
+                        RoadType = RandomXiaGu.Get(roadArray),
                     };
                 }
 
@@ -71,25 +71,6 @@ namespace KouXiaGu.World.Map
             };
 
             return data;
-        }
-
-        static readonly System.Random random = new System.Random();
-
-        bool RandomBool()
-        {
-            int i = random.Next(0, 2);
-            return i == 0;
-        }
-
-        T Random<T>(T[] array)
-        {
-            int index = random.Next(0, array.Length);
-            return array[index];
-        }
-
-        int RandomAngle()
-        {
-            return random.Next(0, 360);
         }
     }
 }

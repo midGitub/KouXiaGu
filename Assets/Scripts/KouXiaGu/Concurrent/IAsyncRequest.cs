@@ -13,40 +13,40 @@ namespace KouXiaGu.Concurrent
     /// </summary>
     public interface IAsyncRequest
     {
-        void AddQueue();
-        void Operate();
+        /// <summary>
+        /// 当加入队列调用;
+        /// </summary>
+        void OnAddQueue();
+
+        /// <summary>
+        /// 返回true则继续调用,返回false则停止调用;
+        /// </summary>
+        bool Operate();
+
+        /// <summary>
+        /// 当退出队列调用;
+        /// </summary>
+        void OnQuitQueue();
     }
 
-    public class AsyncRequest : IAsyncRequest
+    /// <summary>
+    /// 可中断的异步操作;
+    /// </summary>
+    public interface IAsyncRequestRevocable : IAsyncRequest
     {
-        public AsyncRequest(Action action)
-        {
-            Action = action;
-        }
+        /// <summary>
+        /// 当前是否允许取消?
+        /// </summary>
+        bool IsRevocable { get; }
 
-        public bool IsInQueue { get; private set; }
-        public Action Action { get; private set; }
+        /// <summary>
+        /// 是否已经被取消?
+        /// </summary>
+        bool IsCancelled { get; }
 
-        public void AddQueue()
-        {
-            IsInQueue = true;
-        }
-
-        public void Operate()
-        {
-            try
-            {
-                Action();
-            }
-            catch(Exception ex)
-            {
-                Debug.LogError(ex);
-            }
-            finally
-            {
-                IsInQueue = false;
-            }
-        }
+        /// <summary>
+        /// 需要取消进行的操作;
+        /// </summary>
+        bool Cancel();
     }
-
 }

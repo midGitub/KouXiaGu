@@ -13,14 +13,14 @@ namespace KouXiaGu.Concurrent
     {
         public AsyncRequestQueue(ISegmented stopwatch)
         {
-            this.stopwatch = stopwatch;
+            Stopwatch = stopwatch;
             requestQueue = new Queue<IAsyncRequest>();
-            coroutine = new Coroutine(Coroutine());
+            coroutine = Coroutine();
         }
 
-        ISegmented stopwatch;
         Queue<IAsyncRequest> requestQueue;
-        Coroutine coroutine;
+        IEnumerator coroutine;
+        public ISegmented Stopwatch { get; private set; }
 
         public IEnumerable<IAsyncRequest> Requests
         {
@@ -36,20 +36,20 @@ namespace KouXiaGu.Concurrent
         }
 
         /// <summary>
-        /// 需要在对应Unity线程内调用;
-        /// </summary>
-        public void MoveNext()
-        {
-            coroutine.MoveNext();
-        }
-
-        /// <summary>
         /// 添加请求到;
         /// </summary>
         public void Add(IAsyncRequest request)
         {
-            request.AddQueue();
+            request.OnAddQueue();
             requestQueue.Enqueue(request);
+        }
+
+        /// <summary>
+        /// 在对应线程内调用;
+        /// </summary>
+        public void MoveNext()
+        {
+            coroutine.MoveNext();
         }
 
         IEnumerator Coroutine()
@@ -62,21 +62,41 @@ namespace KouXiaGu.Concurrent
                 }
 
                 var request = requestQueue.Dequeue();
+                bool needContinue;
 
-                try
+                do
                 {
-                    request.Operate();
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError("[UnityAsyncRequestDispatcher]请求出现异常 : " + ex);
-                }
+                    if (Stopwatch.Await())
+                    {
+                        yield return null;
+                        Stopwatch.Restart();
+                    }
 
-                if (stopwatch.Await())
-                {
-                    yield return null;
-                    stopwatch.Restart();
-                }
+                    try
+                    {
+                        needContinue = request.Operate();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError("[AsyncRequest]操作请求出现异常 : " + "<" + request.ToString() + ">" + ex);
+                        needContinue = false;
+                    }
+
+                } while (needContinue);
+
+                QuieQueue(request);
+            }
+        }
+
+        void QuieQueue(IAsyncRequest request)
+        {
+            try
+            {
+                request.OnQuitQueue();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("[AsyncRequest]请求退出时出现异常 : " + "<" + request.ToString() + ">" + ex);
             }
         }
     }

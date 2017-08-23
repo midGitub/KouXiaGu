@@ -11,15 +11,15 @@ namespace KouXiaGu.Terrain3D
     /// 地形网格;
     /// </summary>
     [SerializeField]
-    public class ChunkMesh
+    public class LandformMesh
     {
 
         #region Static
 
         const string meshName = "LandformChunkMesh";
 
-        static readonly float chunkHalfWidth = ChunkInfo.ChunkHalfWidth;
-        static readonly float chunkHalfHeight = ChunkInfo.ChunkHalfHeight;
+        static readonly float chunkHalfWidth = LandformChunkInfo.ChunkHalfWidth;
+        static readonly float chunkHalfHeight = LandformChunkInfo.ChunkHalfHeight;
 
         /// <summary>
         /// 网格生成的高度;
@@ -87,7 +87,7 @@ namespace KouXiaGu.Terrain3D
         #endregion
 
 
-        public ChunkMesh(MeshFilter meshFilter)
+        public LandformMesh(MeshFilter meshFilter)
         {
             MeshFilter = meshFilter;
             MeshFilter.sharedMesh = PublicMesh;

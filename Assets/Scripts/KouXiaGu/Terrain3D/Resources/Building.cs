@@ -61,9 +61,15 @@ namespace KouXiaGu.Terrain3D
         AssetBundle assetBundle;
         BuildingInfo info;
 
-        void IAsyncRequest.AddQueue() { }
+        void IAsyncRequest.OnAddQueue()
+        {
+        }
 
-        void IAsyncRequest.Operate()
+        void IAsyncRequest.OnQuitQueue()
+        {
+        }
+
+        bool IAsyncRequest.Operate()
         {
             TerrainBuildingInfo tInfo = info.TerrainInfo;
             GameObject prefab = assetBundle.LoadAsset<GameObject>(tInfo.PrefabName);
@@ -77,6 +83,7 @@ namespace KouXiaGu.Terrain3D
             {
                 Debug.LogWarning("无法读取[BuildingResourceReader],Info:" + info.ToString() + ",因为:" + ex);
             }
+            return false;
         }
     }
 }

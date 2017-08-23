@@ -15,7 +15,7 @@ namespace KouXiaGu.Concurrent
         /// </summary>
         public static void Add(this IRequestDispatcher dispatcher, Action action)
         {
-            dispatcher.Add(new AsyncRequest(action));
+            dispatcher.Add(new Operate(action));
         }
     }
 }
