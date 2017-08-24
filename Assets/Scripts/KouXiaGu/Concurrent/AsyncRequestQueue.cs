@@ -62,16 +62,15 @@ namespace KouXiaGu.Concurrent
                 }
 
                 var request = requestQueue.Dequeue();
-                bool needContinue;
+                bool needContinue = request.Prepare();
 
-                do
+                while (needContinue)
                 {
                     if (Stopwatch.Await())
                     {
                         yield return null;
                         Stopwatch.Restart();
                     }
-
                     try
                     {
                         needContinue = request.Operate();
@@ -81,9 +80,7 @@ namespace KouXiaGu.Concurrent
                         Debug.LogError("[AsyncRequest]操作请求出现异常 : " + "<" + request.ToString() + ">" + ex);
                         needContinue = false;
                     }
-
-                } while (needContinue);
-
+                }
                 QuieQueue(request);
             }
         }

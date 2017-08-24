@@ -28,6 +28,11 @@ namespace KouXiaGu.Concurrent
             InQueue = true;
         }
 
+        bool IAsyncRequest.Prepare()
+        {
+            return true;
+        }
+
         bool IAsyncRequest.Operate()
         {
             try

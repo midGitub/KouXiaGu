@@ -19,6 +19,11 @@ namespace KouXiaGu.Concurrent
         void OnAddQueue();
 
         /// <summary>
+        /// 在调用 Operate() 之前调用一次,若返回false则直接退出队列,返回true则允许调用 Operate();
+        /// </summary>
+        bool Prepare();
+
+        /// <summary>
         /// 返回true则继续调用,返回false则停止调用;
         /// </summary>
         bool Operate();
@@ -30,23 +35,63 @@ namespace KouXiaGu.Concurrent
     }
 
     /// <summary>
-    /// 可中断的异步操作;
+    /// 提供继承;
     /// </summary>
-    public interface IAsyncRequestRevocable : IAsyncRequest
+    public abstract class AsyncRequest : IAsyncRequest
     {
         /// <summary>
-        /// 当前是否允许取消?
+        /// 是否正在处置队列中?
         /// </summary>
-        bool IsRevocable { get; }
+        public bool InQueue { get; private set; }
 
         /// <summary>
-        /// 是否已经被取消?
+        /// 是否正在进行任何操作中?
         /// </summary>
-        bool IsCancelled { get; }
+        public bool IsBusy { get; private set; }
 
-        /// <summary>
-        /// 需要取消进行的操作;
-        /// </summary>
-        bool Cancel();
+
+        void IAsyncRequest.OnAddQueue()
+        {
+            InQueue = true;
+            IsBusy = false;
+            OnAddQueue();
+        }
+
+        bool IAsyncRequest.Prepare()
+        {
+            return Prepare();
+        }
+
+        bool IAsyncRequest.Operate()
+        {
+            IsBusy = true;
+            return Operate();
+        }
+
+        void IAsyncRequest.OnQuitQueue()
+        {
+            InQueue = false;
+            IsBusy = false;
+            OnQuitQueue();
+        }
+
+
+        protected virtual void OnAddQueue()
+        {
+        }
+
+        protected virtual bool Prepare()
+        {
+            return true;
+        }
+
+        protected virtual bool Operate()
+        {
+            return false;
+        }
+
+        protected virtual void OnQuitQueue()
+        {
+        }
     }
 }

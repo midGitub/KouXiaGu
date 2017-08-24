@@ -84,7 +84,7 @@ namespace KouXiaGu.Terrain3D
     }
 
 
-    public class RoadResourceReader : IAsyncRequest
+    public class RoadResourceReader : AsyncRequest
     {
         public RoadResourceReader(AssetBundle assetBundle, RoadInfo info)
         {
@@ -95,16 +95,9 @@ namespace KouXiaGu.Terrain3D
         AssetBundle assetBundle;
         RoadInfo info;
 
-        void IAsyncRequest.OnAddQueue()
+        protected override bool Operate()
         {
-        }
-
-        void IAsyncRequest.OnQuitQueue()
-        {
-        }
-
-        bool IAsyncRequest.Operate()
-        {
+            base.Operate();
             TerrainRoadInfo bInfo = info.TerrainInfo;
 
             var resource = new RoadResource(info)

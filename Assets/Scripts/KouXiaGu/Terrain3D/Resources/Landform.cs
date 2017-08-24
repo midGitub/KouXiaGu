@@ -106,7 +106,7 @@ namespace KouXiaGu.Terrain3D
 
     }
 
-    public class LandformResourceReader : IAsyncRequest
+    public class LandformResourceReader : AsyncRequest
     {
         public LandformResourceReader(AssetBundle assetBundle, LandformInfo info)
         {
@@ -117,16 +117,9 @@ namespace KouXiaGu.Terrain3D
         AssetBundle assetBundle;
         LandformInfo info;
 
-        void IAsyncRequest.OnAddQueue()
+        protected override bool Operate()
         {
-        }
-
-        void IAsyncRequest.OnQuitQueue()
-        {
-        }
-
-        bool IAsyncRequest.Operate()
-        {
+            base.Operate();
             TerrainLandformInfo tInfo = info.TerrainInfo;
             var resource = new LandformResource(info)
             {

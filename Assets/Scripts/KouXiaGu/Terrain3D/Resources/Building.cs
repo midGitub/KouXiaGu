@@ -50,7 +50,7 @@ namespace KouXiaGu.Terrain3D
         }
     }
 
-    public class BuildingResourceReader : IAsyncRequest
+    public class BuildingResourceReader : AsyncRequest
     {
         public BuildingResourceReader(AssetBundle assetBundle, BuildingInfo info)
         {
@@ -61,15 +61,7 @@ namespace KouXiaGu.Terrain3D
         AssetBundle assetBundle;
         BuildingInfo info;
 
-        void IAsyncRequest.OnAddQueue()
-        {
-        }
-
-        void IAsyncRequest.OnQuitQueue()
-        {
-        }
-
-        bool IAsyncRequest.Operate()
+        protected override bool Operate()
         {
             TerrainBuildingInfo tInfo = info.TerrainInfo;
             GameObject prefab = assetBundle.LoadAsset<GameObject>(tInfo.PrefabName);

@@ -36,7 +36,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 未创建;
         /// </summary>
-        Empty,
+        None,
 
         /// <summary>
         /// 正在创建中;
@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建完成;
         /// </summary>
-        Created,
+        Completed,
 
         /// <summary>
         /// 正在更新中;
@@ -54,7 +54,7 @@ namespace KouXiaGu.Terrain3D
         Updating,
 
         /// <summary>
-        /// 正在销毁;
+        /// 正在销毁中;
         /// </summary>
         Destroying,
     }
@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 块创建;
     /// </summary>
-    public abstract class ChunkBuilder<TPoint, TChunk>
+    public abstract class ChunkBuilder<TPoint, TChunk> : IEnumerable<IChunkInfo<TPoint, TChunk>>
          where TChunk : class
     {
         public ChunkBuilder(IRequestDispatcher requestDispatcher)
@@ -86,15 +86,18 @@ namespace KouXiaGu.Terrain3D
         readonly Dictionary<TPoint, ChunkInfo> chunks;
 
         /// <summary>
+        /// 当任何块变化事件;
+        /// </summary>
+        Action<IChunkInfo<TPoint, TChunk>> onAnyChunkValueChanged;
+
+        /// <summary>
         /// 请求处置器;
         /// </summary>
         public IRequestDispatcher RequestDispatcher { get; private set; }
 
         /// <summary>
-        /// 创建/提供一个块请求;
+        /// 获取到对应块信息,若不存在则返回异常 ArgumentException();
         /// </summary>
-        protected abstract ChunkRequest CreateChunkRequest(ChunkInfo info);
-
         public IChunkInfo<TPoint, TChunk> this[TPoint point]
         {
             get { return chunks[point]; }
@@ -103,7 +106,17 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建块,若已经存在则返回实例,不存在则创建到;
         /// </summary>
-        public IChunkInfo<TPoint, TChunk> Create(TPoint point)
+        public IChunkInfo<TPoint, TChunk> CreateChunk(TPoint point)
+        {
+            ChunkInfo info = GetOrCreate(point);
+            info.CreateChunk();
+            return info;
+        }
+
+        /// <summary>
+        /// 获取到块信息,若不存在则创建到;
+        /// </summary>
+        protected ChunkInfo GetOrCreate(TPoint point)
         {
             ChunkInfo info;
             if (!chunks.TryGetValue(point, out info))
@@ -111,14 +124,13 @@ namespace KouXiaGu.Terrain3D
                 info = new ChunkInfo(this, point);
                 chunks.Add(point, info);
             }
-            info.CreateChunk();
             return info;
         }
 
         /// <summary>
         /// 更新块,若不存在则返回null;
         /// </summary>
-        public IChunkInfo<TPoint, TChunk> Update(TPoint point)
+        public IChunkInfo<TPoint, TChunk> UpdateChunk(TPoint point)
         {
             ChunkInfo info;
             if (chunks.TryGetValue(point, out info))
@@ -132,7 +144,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 销毁块,若不存在则返回NULL;
         /// </summary>
-        public IChunkInfo<TPoint, TChunk> Destroy(TPoint point)
+        public IChunkInfo<TPoint, TChunk> DestroyChunk(TPoint point)
         {
             ChunkInfo info;
             if (chunks.TryGetValue(point, out info))
@@ -143,6 +155,54 @@ namespace KouXiaGu.Terrain3D
             return null;
         }
 
+        /// <summary>
+        /// 当块发生变化时调用;
+        /// </summary>
+        void OnAnyChunkValueChanged(IChunkInfo<TPoint, TChunk> info)
+        {
+            if (onAnyChunkValueChanged != null)
+            {
+                onAnyChunkValueChanged(info);
+            }
+        }
+
+        /// <summary>
+        /// 添加监视任何块变化;
+        /// </summary>
+        public void AddListener(Action<IChunkInfo<TPoint, TChunk>> listener)
+        {
+            onAnyChunkValueChanged += listener;
+        }
+
+        /// <summary>
+        /// 移除监视任何块变化;
+        /// </summary>
+        public void RemoveListener(Action<IChunkInfo<TPoint, TChunk>> listener)
+        {
+            onAnyChunkValueChanged -= listener;
+        }
+
+        /// <summary>
+        /// 添加监视某个块变化;
+        /// </summary>
+        public void AddListener(TPoint point, Action<IChunkInfo<TPoint, TChunk>> listener)
+        {
+            ChunkInfo info  = GetOrCreate(point);
+            info.AddListener(listener);
+        }
+
+        /// <summary>
+        /// 移除监视某个块变化;
+        /// </summary>
+        public void RemoveListener(TPoint point, Action<IChunkInfo<TPoint, TChunk>> listener)
+        {
+            ChunkInfo info = GetOrCreate(point);
+            info.RemoveListener(listener);
+        }
+
+        /// <summary>
+        /// 尝试获取到对应块信息;
+        /// </summary>
         public bool TryGetValue(TPoint point, out IChunkInfo<TPoint, TChunk> chunkInfo)
         {
             ChunkInfo info;
@@ -151,25 +211,33 @@ namespace KouXiaGu.Terrain3D
             return find;
         }
 
-        /// <summary>
-        /// 提供内部使用,移除对应块信息;
-        /// </summary>
-        bool RemoveChunkInfo_internal(TPoint point)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return chunks.Remove(point);
+            return GetEnumerator();
         }
+
+        public IEnumerator<IChunkInfo<TPoint, TChunk>> GetEnumerator()
+        {
+            return chunks.Values.Cast<IChunkInfo<TPoint, TChunk>>().GetEnumerator();
+        }
+
 
         /// <summary>
         /// 块状态信息;
         /// </summary>
-        protected class ChunkInfo : IChunkInfo<TPoint, TChunk>
+        protected class ChunkInfo : IChunkInfo<TPoint, TChunk>, IAsyncRequest
         {
             public ChunkInfo(ChunkBuilder<TPoint, TChunk> parent, TPoint point)
             {
                 Parent = parent;
                 Point = point;
-                State = ChunkState.Empty;
+                State = ChunkState.None;
             }
+
+            /// <summary>
+            /// 实例线程锁;
+            /// </summary>
+            protected readonly object AsyncLock = new object();
 
             public ChunkBuilder<TPoint, TChunk> Parent { get; private set; }
 
@@ -189,85 +257,251 @@ namespace KouXiaGu.Terrain3D
             public ChunkState State { get; private set; }
 
             /// <summary>
-            /// 块请求,若不存在则为Null;
+            /// 是否正在处置队列中?
             /// </summary>
-            ChunkRequest request;
+            public bool InQueue { get; private set; }
+
+            /// <summary>
+            /// 是否正在进行任何操作中?
+            /// </summary>
+            public bool IsBusy { get; private set; }
+
+            /// <summary>
+            /// 当前操作是否已被取消?仅在 IsBusy == true 的时候有效;
+            /// </summary>
+            protected bool IsCancelled { get; private set; }
 
             /// <summary>
             /// 当块发生变化时调用;
             /// </summary>
             Action<IChunkInfo<TPoint, TChunk>> onChangedEvent;
 
+            /// <summary>
+            /// 添加监视块变化;
+            /// </summary>
             public void AddListener(Action<IChunkInfo<TPoint, TChunk>> listener)
             {
                 onChangedEvent += listener;
             }
 
+            /// <summary>
+            /// 移除监视块变化;
+            /// </summary>
             public void RemoveListener(Action<IChunkInfo<TPoint, TChunk>> listener)
             {
                 onChangedEvent -= listener;
-                if (onChangedEvent == null)
+                TryRemoveFromParent();
+            }
+
+            /// <summary>
+            /// 从父实例合集中移除本身;若无法移除则返回false;
+            /// </summary>
+            bool TryRemoveFromParent()
+            {
+                if (onChangedEvent == null && State == ChunkState.None)
                 {
-                    Parent.RemoveChunkInfo_internal(Point);
+                    Parent.chunks.Remove(Point);
+                    return true;
                 }
+                return false;
             }
 
             /// <summary>
             /// 当块发生变化时手动调用;
             /// </summary>
-            public void OnChunkDataChanged()
+            protected void OnChunkDataChanged()
             {
                 if (onChangedEvent != null)
                 {
                     onChangedEvent(this);
                 }
+                Parent.OnAnyChunkValueChanged(this);
             }
 
+            /// <summary>
+            /// 创建块;若 正在进行其它操作中 则返回false;
+            /// </summary>
             public bool CreateChunk()
             {
-                ValidateChunkRequest();
-                if (request.SetRequestType(ChunkRequestType.Create))
+                lock (AsyncLock)
                 {
-                    State = ChunkState.Creating;
-                    return true;
+                    if (IsBusy)
+                    {
+                        if (State != ChunkState.Creating)
+                        {
+                            IsCancelled = true;
+                        }
+                        return false;
+                    }
+                    else if (State == ChunkState.Destroying)
+                    {
+                        State = ChunkState.None;
+                        return true;
+                    }
+                    else if (State == ChunkState.None)
+                    {
+                        State = ChunkState.Creating;
+                        TryAddDispatcherQueue();
+                        return true;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                return false;
             }
 
+            /// <summary>
+            /// 更新块内容;若 正在进行其它操作中 则返回false;
+            /// </summary>
             public bool UpdateChunk()
             {
-                ValidateChunkRequest();
-                if (request.SetRequestType(ChunkRequestType.Update))
+                lock (AsyncLock)
                 {
-                    State = ChunkState.Updating;
-                    return true;
+                    if (IsBusy)
+                    {
+                        if (State != ChunkState.Updating || State != ChunkState.Creating)
+                        {
+                            IsCancelled = true;
+                        }
+                        return false;
+                    }
+                    else if (State == ChunkState.Destroying)
+                    {
+                        State = ChunkState.Updating;
+                        return true;
+                    }
+                    else if (State == ChunkState.None || State == ChunkState.Completed)
+                    {
+                        State = ChunkState.Updating;
+                        TryAddDispatcherQueue();
+                        return true;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                return false;
             }
 
+            /// <summary>
+            /// 移除块内容;若 正在进行其它操作中 则返回false;
+            /// </summary>
             public bool DestroyChunk()
             {
-                ValidateChunkRequest();
-                if (request.SetRequestType(ChunkRequestType.Destroy))
+                lock (AsyncLock)
                 {
-                    State = ChunkState.Destroying;
-                    return true;
+                    if (IsBusy)
+                    {
+                        if (State != ChunkState.Destroying)
+                        {
+                            IsCancelled = true;
+                        }
+                        return false;
+                    }
+                    else if (State == ChunkState.Completed)
+                    {
+                        State = ChunkState.Destroying;
+                        TryAddDispatcherQueue();
+                        return true;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                return false;
             }
 
-            void ValidateChunkRequest()
+            /// <summary>
+            /// 取消当前操作;若 正在进行其它操作中 则返回false;
+            /// </summary>
+            public bool Cancel()
             {
-                if (request == null)
+                lock (AsyncLock)
                 {
-                    request = Parent.CreateChunkRequest(this);
+                    if (IsBusy)
+                    {
+                        IsCancelled = true;
+                        return true;
+                    }
+                    else if (State == ChunkState.Updating || State == ChunkState.Destroying)
+                    {
+                        State = ChunkState.Completed;
+                        return true;
+                    }
+                    else if (State == ChunkState.Creating)
+                    {
+                        State = ChunkState.None;
+                        return true;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// 检查添加到处置队列内;
+            /// </summary>
+            void TryAddDispatcherQueue()
+            {
+                if (!InQueue)
+                {
+                    Parent.RequestDispatcher.Add(this);
+                }
+            }
+
+            /// <summary>
+            /// 由处置器调用,提供子类重写,需要实现父类内容;
+            /// </summary>
+            public virtual void OnAddQueue()
+            {
+                lock (AsyncLock)
+                {
+                    InQueue = true;
+                    IsBusy = false;
+                    IsCancelled = false;
+                }
+            }
+
+            /// <summary>
+            /// 由处置器调用,提供子类重写,不需要实现父类内容;
+            /// </summary>
+            public virtual bool Prepare()
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// 由处置器调用,提供子类重写,需要实现父类内容;
+            /// </summary>
+            public virtual bool Operate()
+            {
+                lock (AsyncLock)
+                {
+                    IsBusy = true;
+                    return false;
+                }
+            }
+
+            /// <summary>
+            /// 由处置器调用,提供子类重写,需要实现父类内容;
+            /// </summary>
+            public virtual void OnQuitQueue()
+            {
+                lock (AsyncLock)
+                {
+                    InQueue = false;
+                    IsBusy = false;
+                    IsCancelled = false;
                 }
             }
 
             /// <summary>
             /// 设置块,若当前块不为空则返回异常 ArgumentException;
             /// </summary>
-            public void SetChunk(TChunk chunk)
+            protected void SetChunk(TChunk chunk)
             {
                 if (chunk == null)
                 {
@@ -278,166 +512,21 @@ namespace KouXiaGu.Terrain3D
                     throw new ArgumentException();
                 }
                 Chunk = chunk;
-                State = ChunkState.Created;
+                State = ChunkState.Completed;
             }
 
             /// <summary>
             /// 移除块,若块已经为空则返回异常 ArgumentException;
             /// </summary>
-            public void RemoveChunk()
+            protected void RemoveChunk()
             {
                 if (Chunk == null)
                 {
                     throw new ArgumentException();
                 }
                 Chunk = null;
-                State = ChunkState.Empty;
-
-                if (onChangedEvent == null)
-                {
-                    Parent.RemoveChunkInfo_internal(Point);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 请求类型;
-        /// </summary>
-        protected enum ChunkRequestType
-        {
-            None,
-            Create,
-            Update,
-            Destroy,
-        }
-
-        /// <summary>
-        /// 块请求;
-        /// </summary>
-        protected abstract class ChunkRequest : IAsyncRequest
-        {
-            public ChunkRequest(IRequestDispatcher requestDispatcher, ChunkInfo state)
-            {
-                RequestDispatcher = requestDispatcher;
-                Info = state;
-                RequestType = ChunkRequestType.None;
-            }
-
-            readonly object asyncLock = new object();
-
-            /// <summary>
-            /// 块状态信息;
-            /// </summary>
-            public ChunkInfo Info { get; private set; }
-
-            /// <summary>
-            /// 请求处置器;
-            /// </summary>
-            public IRequestDispatcher RequestDispatcher { get; private set; }
-
-            /// <summary>
-            /// 请求类型;
-            /// </summary>
-            public ChunkRequestType RequestType { get; private set; }
-
-            /// <summary>
-            /// 是否正在操作队列中?
-            /// </summary>
-            public bool InQueue { get; private set; }
-
-            /// <summary>
-            /// 当前操作是否已被取消?
-            /// </summary>
-            protected bool IsCancelled { get; private set; }
-
-            /// <summary>
-            /// 是否正在进行任何操作中?
-            /// </summary>
-            public bool IsBusy { get; private set; }
-
-            /// <summary>
-            /// 当前操作内容;
-            /// </summary>
-            IEnumerator currentCoroutine;
-
-            protected abstract IEnumerator CreateCoroutine();
-            protected abstract IEnumerator UpdateCoroutine();
-            protected abstract IEnumerator DestroyCoroutine();
-
-            /// <summary>
-            /// 设置请求类型;
-            /// </summary>
-            public bool SetRequestType(ChunkRequestType requestType)
-            {
-                lock (asyncLock)
-                {
-                    if (IsBusy)
-                    {
-                        if (requestType == ChunkRequestType.None)
-                        {
-                            IsCancelled = true;
-                        }
-                        return false;
-                    }
-
-                    RequestType = requestType;
-                    switch (requestType)
-                    {
-                        case ChunkRequestType.None:
-                            currentCoroutine = null;
-                            return true;
-
-                        case ChunkRequestType.Create:
-                            currentCoroutine = CreateCoroutine();
-                            break;
-
-                        case ChunkRequestType.Update:
-                            currentCoroutine = UpdateCoroutine();
-                            break;
-
-                        case ChunkRequestType.Destroy:
-                            currentCoroutine = DestroyCoroutine();
-                            break;
-
-                        default:
-                            throw new ArgumentException("requestType");
-                    }
-                    if (!InQueue)
-                    {
-                        RequestDispatcher.Add(this);
-                    }
-                    return true;
-                }
-            }
-
-            void IAsyncRequest.OnAddQueue()
-            {
-                lock (asyncLock)
-                {
-                    InQueue = true;
-                    IsBusy = false;
-                    IsCancelled = false;
-                }
-            }
-
-            bool IAsyncRequest.Operate()
-            {
-                lock (asyncLock)
-                {
-                    IsBusy = true;
-                    return currentCoroutine.MoveNext();
-                }
-            }
-
-            void IAsyncRequest.OnQuitQueue()
-            {
-                lock (asyncLock)
-                {
-                    InQueue = false;
-                    IsBusy = false;
-                    IsCancelled = false;
-                    RequestType = ChunkRequestType.None;
-                }
+                State = ChunkState.None;
+                TryRemoveFromParent();
             }
         }
     }

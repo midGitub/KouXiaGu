@@ -139,7 +139,14 @@ namespace KouXiaGu.OGlobalization
             IEnumerable<ITextObserver> observers;
             IDictionary<string, string> textDictionary;
 
-            void IAsyncRequest.OnAddQueue() { }
+            void IAsyncRequest.OnAddQueue()
+            {
+            }
+
+            bool IAsyncRequest.Prepare()
+            {
+                return true;
+            }
 
             bool IAsyncRequest.Operate()
             {
@@ -152,7 +159,6 @@ namespace KouXiaGu.OGlobalization
 
             void IAsyncRequest.OnQuitQueue()
             {
-                throw new NotImplementedException();
             }
         }
 

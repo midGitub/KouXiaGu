@@ -165,6 +165,11 @@ namespace KouXiaGu.Resources
                 InQueue = true;
             }
 
+            bool IAsyncRequest.Prepare()
+            {
+                return true;
+            }
+
             bool IAsyncRequest.Operate()
             {
                 try

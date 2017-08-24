@@ -224,6 +224,11 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = false;
             }
 
+            bool IAsyncRequest.Prepare()
+            {
+                return true;
+            }
+
             bool IAsyncRequest.Operate()
             {
                 lock (Parent.unityThreadLock)
@@ -295,6 +300,11 @@ namespace KouXiaGu.Terrain3D
 
             void IAsyncRequest.OnAddQueue()
             {
+            }
+
+            bool IAsyncRequest.Prepare()
+            {
+                return true;
             }
 
             void IAsyncRequest.OnQuitQueue()

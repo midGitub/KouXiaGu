@@ -416,6 +416,16 @@ namespace KouXiaGu.Terrain3D
                 IsCanceled = true;
             }
 
+            void IAsyncRequest.OnAddQueue()
+            {
+                InQueue = true;
+            }
+
+            bool IAsyncRequest.Prepare()
+            {
+                return true;
+            }
+
             bool IAsyncRequest.Operate()
             {
                 lock (Parent.unityThreadLock)
@@ -457,11 +467,6 @@ namespace KouXiaGu.Terrain3D
                 }
             }
 
-            void IAsyncRequest.OnAddQueue()
-            {
-                InQueue = true;
-            }
-
             void IAsyncRequest.OnQuitQueue()
             {
                 InQueue = false;
@@ -482,14 +487,19 @@ namespace KouXiaGu.Terrain3D
             public BuildingBuilder Parent { get; private set; }
             public IBuilding Building { get; private set; }
 
+            void IAsyncRequest.OnAddQueue()
+            {
+            }
+
+            bool IAsyncRequest.Prepare()
+            {
+                return true;
+            }
+
             bool IAsyncRequest.Operate()
             {
                 Parent.DestroyBuilding_internal(Building);
                 return false;
-            }
-
-            void IAsyncRequest.OnAddQueue()
-            {
             }
 
             void IAsyncRequest.OnQuitQueue()
