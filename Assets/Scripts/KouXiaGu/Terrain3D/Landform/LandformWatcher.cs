@@ -10,7 +10,7 @@ namespace KouXiaGu.Terrain3D
     /// 根据挂载物体所在位置创建附近地形;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformWatcher : ChunkWatcher, ILandformWatcher
+    public class LandformWatcher : OChunkWatcher, ILandformWatcher
     {
         LandformWatcher()
         {

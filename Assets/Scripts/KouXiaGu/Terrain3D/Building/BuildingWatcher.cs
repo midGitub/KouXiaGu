@@ -8,7 +8,7 @@ namespace KouXiaGu.Terrain3D
 {
 
     [DisallowMultipleComponent]
-    public class BuildingWatcher : ChunkWatcher, IBuildingWatcher
+    public class BuildingWatcher : OChunkWatcher, IBuildingWatcher
     {
         BuildingWatcher()
         {

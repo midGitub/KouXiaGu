@@ -318,6 +318,92 @@ namespace KouXiaGu.Grids
             return Range(southwest, northeast);
         }
 
+
+        /// <summary>
+        /// 按 螺旋 形状返回点;从外部开始顺时针返回;
+        /// </summary>
+        public static IEnumerable<RectCoord> Spiral_out(RectCoord center, int radius)
+        {
+            if (radius < 0)
+            {
+                throw new ArgumentOutOfRangeException("radius");
+            }
+            else
+            {
+                for (int c_radius = radius; c_radius >= 0; c_radius++)
+                {
+                    var coords = Ring(center, c_radius);
+                    foreach (var coord in coords)
+                    {
+                        yield return coord;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 按 螺旋 形状返回点;从内部开始顺时针返回;
+        /// </summary>
+        public static IEnumerable<RectCoord> Spiral_in(RectCoord center, int radius)
+        {
+            if (radius < 0)
+            {
+                throw new ArgumentOutOfRangeException("radius");
+            }
+            else
+            {
+                for (int c_radius = 0; c_radius <= radius; c_radius++)
+                {
+                    var coords = Ring(center, c_radius);
+                    foreach (var coord in coords)
+                    {
+                        yield return coord;
+                    }
+                }
+            }
+        }
+
+
+        static readonly RecDirections[] ringDirectionOrder = new RecDirections[]
+            {
+                RecDirections.East,
+                RecDirections.South,
+                RecDirections.South,
+                RecDirections.West,
+                RecDirections.West,
+                RecDirections.North,
+                RecDirections.North,
+                RecDirections.East,
+            };
+
+        /// <summary>
+        ///  按 环状 顺时针返回点;
+        /// </summary>
+        public static IEnumerable<RectCoord> Ring(RectCoord center, int radius)
+        {
+            if (radius < 0)
+            {
+                throw new ArgumentOutOfRangeException("radius");
+            }
+            else if (radius == 0)
+            {
+                yield return center;
+            }
+            else
+            {
+                var coord = center + (GetDirectionOffset(RecDirections.North) * radius);
+                foreach (var direction in ringDirectionOrder)
+                {
+                    for (int j = 0; j < radius; j++)
+                    {
+                        yield return coord;
+                        coord = coord.GetDirection(direction);
+                    }
+                }
+            }
+        }
+
+
         public static bool operator ==(RectCoord a, RectCoord b)
         {
             return  a.x == b.x && a.y == b.y;
@@ -342,31 +428,31 @@ namespace KouXiaGu.Grids
             return point1;
         }
 
-        public static RectCoord operator *(RectCoord point1, short n)
+        public static RectCoord operator *(RectCoord point1, int n)
         {
-            point1.x *= n;
-            point1.y *= n;
+            point1.x = (short)(point1.x * n);
+            point1.y = (short)(point1.y * n);
             return point1;
         }
 
-        public static RectCoord operator /(RectCoord point1, short n)
+        public static RectCoord operator /(RectCoord point1, int n)
         {
-            point1.x /= n;
-            point1.y /= n;
+            point1.x = (short)(point1.x / n);
+            point1.y = (short)(point1.y / n);
             return point1;
         }
 
-        public static RectCoord operator +(RectCoord point1, short n)
+        public static RectCoord operator +(RectCoord point1, int n)
         {
-            point1.x += n;
-            point1.y += n;
+            point1.x = (short)(point1.x + n);
+            point1.y = (short)(point1.y + n);
             return point1;
         }
 
-        public static RectCoord operator -(RectCoord point1, short n)
+        public static RectCoord operator -(RectCoord point1, int n)
         {
-            point1.x -= n;
-            point1.y -= n;
+            point1.x = (short)(point1.x - n);
+            point1.y = (short)(point1.y - n);
             return point1;
         }
 

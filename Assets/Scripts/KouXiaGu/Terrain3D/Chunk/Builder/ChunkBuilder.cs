@@ -3,44 +3,123 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using KouXiaGu.Grids;
+using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
-    public class ChunkGuider<TPoint>
+    /// <summary>
+    /// 矩形坐标显示;
+    /// </summary>
+    [Serializable]
+    public class RectChunkGuider : IChunkGuider<RectCoord>
     {
-        public ChunkGuider()
+        public RectChunkGuider()
         {
         }
 
         /// <summary>
         /// 获取到需要显示的坐标;
         /// </summary>
-        public IReadOnlyCollection<TPoint> GetPointsToDisplay()
+        public IReadOnlyCollection<RectCoord> GetPointsToDisplay()
         {
             throw new NotImplementedException();
         }
     }
 
-    public class ChunkUpdater<TPoint, TChunk>
+    /// <summary>
+    /// 显示合集\组;
+    /// </summary>
+    public class ChunkGuiderGroup<TPoint> : IChunkGuider<TPoint>
     {
-        public ChunkUpdater()
+        public ChunkGuiderGroup()
         {
+            chunkGuiderList = new List<IChunkGuider<TPoint>>();
+            pisplayPointSet = new HashSet<TPoint>();
         }
 
-        public ChunkBuilder<TPoint, TChunk> Bulder { get; private set; }
-        public ChunkGuider<TPoint> Guider { get; private set; }
+        List<IChunkGuider<TPoint>> chunkGuiderList;
+        HashSet<TPoint> pisplayPointSet;
+
+        public void Add(IChunkGuider<TPoint> guider)
+        {
+            if (!chunkGuiderList.Contains(guider))
+            {
+                chunkGuiderList.Add(guider);
+            }
+        }
+
+        public bool Remove(IChunkGuider<TPoint> guider)
+        {
+            return chunkGuiderList.Remove(guider);
+        }
+
+        public IReadOnlyCollection<TPoint> GetPointsToDisplay()
+        {
+            pisplayPointSet.Clear();
+            foreach(var chunkGuider in chunkGuiderList)
+            {
+                foreach (var display in chunkGuider.GetPointsToDisplay())
+                {
+                    pisplayPointSet.Add(display);
+                }
+            }
+            return pisplayPointSet;
+        }
+    }
+
+    /// <summary>
+    /// 显示坐标提供;
+    /// </summary>
+    public interface IChunkGuider<TPoint>
+    {
+        /// <summary>
+        /// 获取到需要显示的坐标;
+        /// </summary>
+        IReadOnlyCollection<TPoint> GetPointsToDisplay();
+    }
+
+    /// <summary>
+    /// 更新器;
+    /// </summary>
+    public class ChunkUpdater<TPoint, TChunk>
+    {
+        public ChunkUpdater(ChunkBuilder<TPoint, TChunk> builder, IChunkGuider<TPoint> guider)
+        {
+            Builder = builder;
+            Guider = guider;
+            needDestoryPoints = new List<TPoint>();
+        }
+
+        public ChunkBuilder<TPoint, TChunk> Builder { get; private set; }
+        public IChunkGuider<TPoint> Guider { get; private set; }
+        List<TPoint> needDestoryPoints;
 
         public void Update()
         {
-            var display = Guider.GetPointsToDisplay();
-            lock (Bulder.AsyncLock)
+            var needDisplayPoints = Guider.GetPointsToDisplay();
+            lock (Builder.AsyncLock)
             {
-                foreach (var chunk in Bulder)
+                foreach (var chunk in Builder)
                 {
+                    if (!needDisplayPoints.Contains(chunk.Point))
+                    {
+                        needDestoryPoints.Add(chunk.Point);
+                    }
+                }
 
+                foreach (var destoryPoint in needDestoryPoints)
+                {
+                    Builder.DestroyChunk(destoryPoint);
+                }
+
+                foreach (var createPoint in needDisplayPoints)
+                {
+                    Builder.CreateChunk(createPoint);
                 }
             }
+            needDestoryPoints.Clear();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using KouXiaGu.Resources;
+﻿using KouXiaGu.Grids;
+using KouXiaGu.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,14 +31,12 @@ namespace KouXiaGu
             Resource.Initialize();
         }
 
+        public int size = 1;
+
         [ContextMenu("Test")]
         void Test()
         {
-            LogRecorder recorder = new LogRecorder(10);
-            recorder.Log("今年过节不收礼,收礼只收脑白金;");
-            Debug.Log(recorder.GetText());
-            recorder.Log("又喝成长快了啦!");
-            Debug.Log(recorder.GetText());
+            Debug.Log(RectCoord.Ring(RectCoord.Self, size).ToLog());
         }
     }
 }

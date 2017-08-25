@@ -7,42 +7,43 @@ using System.Text;
 namespace KouXiaGu
 {
 
+    //public interface IReadOnlyCollection<T> : IEnumerable<T>, IEnumerable
+    //{
+    //    int Count { get; }
+    //}
 
-    public interface IReadOnlyCollection<T> : IEnumerable<T>, IEnumerable
-    {
-        int Count { get; }
-    }
+    //public interface IReadOnlyList<T> : IReadOnlyCollection<T>, IEnumerable<T>
+    //{
+    //    T this[int index] { get; }
+    //}
 
-    public interface IReadOnlyList<T> : IReadOnlyCollection<T>, IEnumerable<T>
-    {
-        T this[int index] { get; }
-    }
+    //public interface IReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>
+    //{
+    //    TValue this[TKey key] { get; }
+    //    IEnumerable<TKey> Keys { get; }
+    //    IEnumerable<TValue> Values { get; }
 
-    public interface IReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>
-    {
-        TValue this[TKey key] { get; }
-        IEnumerable<TKey> Keys { get; }
-        IEnumerable<TValue> Values { get; }
-
-        bool ContainsKey(TKey key);
-        bool TryGetValue(TKey key, out TValue value);
-    }
+    //    bool ContainsKey(TKey key);
+    //    bool TryGetValue(TKey key, out TValue value);
+    //}
 
 
     /// <summary>
-    /// 解决没有只读接口;
+    /// 解决在 .Net4.0 以下版本没有只读接口;
     /// </summary>
     public static class ReadOnlyExtensions
     {
-
-
         /// <summary>
         /// 转换到只读接口;
         /// </summary>
         public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this ICollection<T> collection)
         {
             IReadOnlyCollection<T> readOnly = collection as IReadOnlyCollection<T>;
-            return readOnly == null ? new ReadOnlyCollection<T>(collection) : readOnly;
+            if (readOnly == null)
+            {
+                readOnly = new ReadOnlyCollection<T>(collection);
+            }
+            return readOnly;
         }
 
         class ReadOnlyCollection<T> : IReadOnlyCollection<T>
@@ -113,8 +114,12 @@ namespace KouXiaGu
         /// </summary>
         public static IReadOnlyList<T> AsReadOnlyList<T>(this IList<T> list)
         {
-            IReadOnlyList<T> readOnlyList = list as IReadOnlyList<T>;
-            return list == null ? new ReadOnlyList<T>(list) : readOnlyList;
+            IReadOnlyList<T> readOnly = list as IReadOnlyList<T>;
+            if (readOnly == null)
+            {
+                readOnly = new ReadOnlyList<T>(list);
+            }
+            return readOnly;
         }
 
         class ReadOnlyList<T> : ReadOnlyCollection<T>, IReadOnlyList<T>
@@ -164,7 +169,12 @@ namespace KouXiaGu
         /// </summary>
         public static IReadOnlyDictionary<TKey, TValue> AsReadOnlyDictionary<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         {
-            return new ReadOnlyDictionary<TKey, TValue>(dictionary);
+            var readOnly = dictionary as IReadOnlyDictionary<TKey, TValue>;
+            if (readOnly == null)
+            {
+                readOnly = new ReadOnlyDictionary<TKey, TValue>(dictionary);
+            }
+            return readOnly;
         }
 
         class ReadOnlyDictionary<TKey, TValue> : ReadOnlyCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>
@@ -290,6 +300,5 @@ namespace KouXiaGu
                 }).GetEnumerator();
             }
         }
-
     }
 }

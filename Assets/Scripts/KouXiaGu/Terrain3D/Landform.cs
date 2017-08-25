@@ -9,7 +9,6 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 地形控制;
     /// </summary>
-    [Obsolete]
     public class OLandform
     {
         public OLandform()

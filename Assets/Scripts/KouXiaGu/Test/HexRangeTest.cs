@@ -56,7 +56,7 @@ namespace KouXiaGu.Test
         [ContextMenu("螺旋")]
         void Spiral()
         {
-            foreach (var point in CubicHexCoord.Spiral(CubicHexCoord.Self, radius))
+            foreach (var point in CubicHexCoord.Spiral_in(CubicHexCoord.Self, radius))
             {
                 Instantiate(point);
             }

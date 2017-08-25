@@ -8,9 +8,9 @@ using UnityEngine;
 namespace KouXiaGu.Terrain3D
 {
 
-    public abstract class ChunkWatcher : MonoBehaviour, IChunkWatcher<RectCoord>
+    public abstract class OChunkWatcher : MonoBehaviour, IChunkWatcher<RectCoord>
     {
-        protected ChunkWatcher()
+        protected OChunkWatcher()
         {
         }
 

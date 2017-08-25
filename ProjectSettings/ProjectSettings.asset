@@ -668,7 +668,7 @@ PlayerSettings:
     UNet: 1
     Unity_Ads: 0
   facebookSdkVersion: 7.9.1
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 3
   cloudProjectId: 7702dcf9-f589-47da-a1af-2a6d4b1c4131
   projectName: KouXiaGu
   organizationId: kouxiagu

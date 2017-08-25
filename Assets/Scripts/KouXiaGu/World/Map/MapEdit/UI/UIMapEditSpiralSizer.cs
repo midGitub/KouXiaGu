@@ -49,8 +49,7 @@ namespace KouXiaGu.World.Map.MapEdit
             {
                 Size = size;
                 offsets.Clear();
-                CubicHexCoord.Spiral(CubicHexCoord.Self, Size, ref offsets);
-                offsets.Add(CubicHexCoord.Self);
+                offsets.AddRange(CubicHexCoord.Spiral_in(CubicHexCoord.Self, Size));
                 SendChanged();
             }
         }

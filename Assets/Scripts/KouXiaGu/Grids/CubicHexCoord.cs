@@ -533,56 +533,82 @@ namespace KouXiaGu.Grids
         }
 
         /// <summary>
-        /// 按 螺旋 形状返回点;
+        /// 按 螺旋 形状返回点;从外部开始顺时针返回;
         /// </summary>
-        /// <param name="radius">需要大于0</param>
-        public static List<CubicHexCoord> Spiral(CubicHexCoord center, int radius)
-        {
-            if (radius <= 0)
-                throw new ArgumentOutOfRangeException();
-
-            List<CubicHexCoord> coords = new List<CubicHexCoord>();
-            Spiral(center, radius, ref coords);
-            return coords;
-        }
-
-        /// <summary>
-        /// 按 螺旋 形状返回点;
-        /// </summary>
-        /// <param name="center">中心点</param>
-        /// <param name="radius">半径</param>
-        /// <param name="coords">保存坐标的合集</param>
-        /// <returns></returns>
-        public static void Spiral(CubicHexCoord center, int radius, ref List<CubicHexCoord> coords)
+        public static IEnumerable<CubicHexCoord> Spiral_out(CubicHexCoord center, int radius)
         {
             if (radius < 0)
-                throw new ArgumentOutOfRangeException();
-            if (coords == null)
-                throw new ArgumentNullException();
-
-            for (int k = 1; k <= radius; k++)
             {
-                coords.AddRange(Ring(center, k));
+                throw new ArgumentOutOfRangeException("radius");
+            }
+            else
+            {
+                for (int c_radius = radius; c_radius >= 0; c_radius++)
+                {
+                    var coords = Ring(center, c_radius);
+                    foreach (var coord in coords)
+                    {
+                        yield return coord;
+                    }
+                }
             }
         }
 
         /// <summary>
-        ///  按 环状 返回点;
+        /// 按 螺旋 形状返回点;从内部开始顺时针返回;
         /// </summary>
-        /// <param name="radius">需要大于0</param>
+        public static IEnumerable<CubicHexCoord> Spiral_in(CubicHexCoord center, int radius)
+        {
+            if (radius < 0)
+            {
+                throw new ArgumentOutOfRangeException("radius");
+            }
+            else
+            {
+                for (int c_radius = 0; c_radius <= radius; c_radius++)
+                {
+                    var coords = Ring(center, c_radius);
+                    foreach (var coord in coords)
+                    {
+                        yield return coord;
+                    }
+                }
+            }
+        }
+
+        static readonly HexDirections[] ringDirectionOrder = new HexDirections[]
+            {
+                HexDirections.Southeast,
+                HexDirections.South,
+                HexDirections.Southwest,
+                HexDirections.Northwest,
+                HexDirections.North,
+                HexDirections.Northeast,
+            };
+
+        /// <summary>
+        ///  按 环状 顺时针返回点;
+        /// </summary>
         public static IEnumerable<CubicHexCoord> Ring(CubicHexCoord center, int radius)
         {
-            if (radius <= 0)
-                throw new ArgumentOutOfRangeException();
-
-            var cube = center + (GetDirectionOffset(HexDirections.Northeast) * radius);
-
-            foreach (var direction in Directions)
+            if (radius < 0)
             {
-                for (int j = 0; j < radius; j++)
+                throw new ArgumentOutOfRangeException("radius");
+            }
+            else if (radius == 0)
+            {
+                yield return center;
+            }
+            else
+            {
+                var cube = center + (GetDirectionOffset(HexDirections.North) * radius);
+                foreach (var direction in ringDirectionOrder)
                 {
-                    yield return cube;
-                    cube = cube.GetDirection(direction);
+                    for (int j = 0; j < radius; j++)
+                    {
+                        yield return cube;
+                        cube = cube.GetDirection(direction);
+                    }
                 }
             }
         }
