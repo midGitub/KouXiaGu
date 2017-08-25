@@ -3,29 +3,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using KouXiaGu.Grids;
 using UnityEngine;
 
 namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 矩形坐标显示;
+    /// 显示坐标提供;
     /// </summary>
-    [Serializable]
-    public class RectChunkGuider : IChunkGuider<RectCoord>
+    public interface IChunkGuider<TPoint>
     {
-        public RectChunkGuider()
-        {
-        }
-
         /// <summary>
         /// 获取到需要显示的坐标;
         /// </summary>
-        public IReadOnlyCollection<RectCoord> GetPointsToDisplay()
-        {
-            throw new NotImplementedException();
-        }
+        IReadOnlyCollection<TPoint> GetPointsToDisplay();
     }
 
     /// <summary>
@@ -70,17 +61,6 @@ namespace KouXiaGu.Terrain3D
     }
 
     /// <summary>
-    /// 显示坐标提供;
-    /// </summary>
-    public interface IChunkGuider<TPoint>
-    {
-        /// <summary>
-        /// 获取到需要显示的坐标;
-        /// </summary>
-        IReadOnlyCollection<TPoint> GetPointsToDisplay();
-    }
-
-    /// <summary>
     /// 更新器;
     /// </summary>
     public class ChunkUpdater<TPoint, TChunk>
@@ -88,17 +68,17 @@ namespace KouXiaGu.Terrain3D
         public ChunkUpdater(ChunkBuilder<TPoint, TChunk> builder, IChunkGuider<TPoint> guider)
         {
             Builder = builder;
-            Guider = guider;
+            GuiderGroup = guider;
             needDestoryPoints = new List<TPoint>();
         }
 
         public ChunkBuilder<TPoint, TChunk> Builder { get; private set; }
-        public IChunkGuider<TPoint> Guider { get; private set; }
+        public IChunkGuider<TPoint> GuiderGroup { get; private set; }
         List<TPoint> needDestoryPoints;
 
         public void Update()
         {
-            var needDisplayPoints = Guider.GetPointsToDisplay();
+            IReadOnlyCollection<TPoint> needDisplayPoints = GuiderGroup.GetPointsToDisplay();
             lock (Builder.AsyncLock)
             {
                 foreach (var chunk in Builder)
