@@ -11,7 +11,7 @@ namespace KouXiaGu.InputControl
     /// <summary>
     /// 自定义按键 和 UnityEngine.KeyCode 的映射;
     /// </summary>
-    [XmlType("Key")]
+    [XmlRoot("Key")]
     public struct CustomKey : IEquatable<CustomKey>, IXmlSerializable
     {
         public CustomKey(KeyFunction function, KeyCode keyCode)
@@ -21,10 +21,10 @@ namespace KouXiaGu.InputControl
         }
 
         [XmlAttribute("function")]
-        public KeyFunction function { get; private set; }
+        public KeyFunction function { get; set; }
 
         [XmlAttribute("key")]
-        public KeyCode keyCode { get; private set; }
+        public KeyCode keyCode { get; set; }
 
         public override bool Equals(object obj)
         {

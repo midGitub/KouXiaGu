@@ -3,30 +3,46 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KouXiaGu.Terrain3D
 {
 
     public class ChunkGuider<TPoint>
     {
-        /// <summary>
-        /// 获取到需要创建的坐标;
-        /// </summary>
-        public IEnumerable<TPoint> GetCreate()
+        public ChunkGuider()
         {
-            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 获取到需要销毁的坐标;
+        /// 获取到需要显示的坐标;
         /// </summary>
-        public IEnumerable<TPoint> GetDestroy()
+        public IReadOnlyCollection<TPoint> GetPointsToDisplay()
         {
             throw new NotImplementedException();
         }
     }
 
+    public class ChunkUpdater<TPoint, TChunk>
+    {
+        public ChunkUpdater()
+        {
+        }
+
+        public ChunkBuilder<TPoint, TChunk> Bulder { get; private set; }
+        public ChunkGuider<TPoint> Guider { get; private set; }
+
+        public void Update()
+        {
+            var display = Guider.GetPointsToDisplay();
+            lock (Bulder.AsyncLock)
+            {
+                foreach (var chunk in Bulder)
+                {
+
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// 块当前的状态;
@@ -75,7 +91,6 @@ namespace KouXiaGu.Terrain3D
     /// 块创建;
     /// </summary>
     public abstract class ChunkBuilder<TPoint, TChunk> : IEnumerable<IChunkInfo<TPoint, TChunk>>
-         where TChunk : class
     {
         public ChunkBuilder(IRequestDispatcher requestDispatcher)
         {
@@ -83,6 +98,22 @@ namespace KouXiaGu.Terrain3D
             RequestDispatcher = requestDispatcher;
         }
 
+        /// <summary>
+        /// 实例线程锁;
+        /// </summary>
+        protected readonly object asyncLock = new object();
+
+        /// <summary>
+        /// 实例线程锁;
+        /// </summary>
+        public object AsyncLock
+        {
+            get { return asyncLock; }
+        }
+
+        /// <summary>
+        /// 块信息合集;
+        /// </summary>
         readonly Dictionary<TPoint, ChunkInfo> chunks;
 
         /// <summary>
@@ -234,12 +265,15 @@ namespace KouXiaGu.Terrain3D
                 State = ChunkState.None;
             }
 
+            public ChunkBuilder<TPoint, TChunk> Parent { get; private set; }
+
             /// <summary>
             /// 实例线程锁;
             /// </summary>
-            protected readonly object AsyncLock = new object();
-
-            public ChunkBuilder<TPoint, TChunk> Parent { get; private set; }
+            protected object AsyncLock
+            {
+                get { return Parent.AsyncLock; }
+            }
 
             /// <summary>
             /// 块坐标;
@@ -524,7 +558,7 @@ namespace KouXiaGu.Terrain3D
                 {
                     throw new ArgumentException();
                 }
-                Chunk = null;
+                Chunk = default(TChunk);
                 State = ChunkState.None;
                 TryRemoveFromParent();
             }

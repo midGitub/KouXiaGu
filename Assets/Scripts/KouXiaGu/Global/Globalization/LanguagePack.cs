@@ -8,7 +8,8 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 语言包信息;
     /// </summary>
-    [XmlType(LanguagePackXmlSerializer.RootName)]
+    [XmlRoot(LanguagePackXmlSerializer.RootName)]
+    //[XmlType(LanguagePackXmlSerializer.RootName)]
     public class LanguagePack : LanguagePackHead
     {
         public LanguagePack() : this(string.Empty, string.Empty)
@@ -29,7 +30,7 @@ namespace KouXiaGu.Globalization
         public KeyValuePair[] Texts
         {
             get { return ToArray(TextDictionary); }
-            private set { TextDictionary = ToDictionary(value); }
+            set { TextDictionary = ToDictionary(value); }
         }
 
         [XmlIgnore]

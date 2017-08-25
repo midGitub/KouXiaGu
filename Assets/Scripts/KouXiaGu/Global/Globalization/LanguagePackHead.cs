@@ -20,7 +20,7 @@ namespace KouXiaGu.Globalization
     /// <summary>
     /// 语言包信息;
     /// </summary>
-    [XmlType(LanguagePackXmlSerializer.RootName)]
+    [XmlRoot(LanguagePackXmlSerializer.RootName)]
     public class LanguagePackHead : ILanguagePackHead
     {
         LanguagePackHead()
@@ -34,7 +34,7 @@ namespace KouXiaGu.Globalization
         }
 
         [XmlAttribute(LanguagePackXmlSerializer.LanguageNameAttributeName)]
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
         string language;
 
@@ -45,7 +45,7 @@ namespace KouXiaGu.Globalization
         public string Language
         {
             get { return language; }
-            internal set { language = value.ToLower(); }
+            set { language = value.ToLower(); }
         }
 
         public override string ToString()

@@ -10,7 +10,7 @@ namespace KouXiaGu.InputControl
     /// <summary>
     /// 按键映射;
     /// </summary>
-    [XmlType("KeyMap")]
+    [XmlRoot("KeyMap")]
     public class CustomKeyMap
     {
         /// <summary>
@@ -50,7 +50,7 @@ namespace KouXiaGu.InputControl
         public CustomKey[] _SerializableKeys
         {
             get { return ToArray(keyMap); }
-            private set { keyMap = ToDictionary(value); }
+            set { keyMap = ToDictionary(value); }
         }
 
         [XmlIgnore]

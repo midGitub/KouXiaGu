@@ -6,7 +6,7 @@ using UniRx;
 
 namespace KouXiaGu
 {
-    public interface IObservable<T> : UniRx.IObservable<T>
-    {
-    }
+    //public interface IObservable<T> : UniRx.IObservable<T>
+    //{
+    //}
 }
