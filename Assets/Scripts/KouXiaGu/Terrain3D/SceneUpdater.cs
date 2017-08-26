@@ -18,7 +18,7 @@ namespace KouXiaGu.Terrain3D
         public SceneUpdater(IWorld world)
         {
             LandformDispatcher = LandformUnityDispatcher.Instance;
-            LandformBuilder = new LandformBuilder(world, LandformDispatcher);
+            LandformBuilder = new OLandformBuilder(world, LandformDispatcher);
             LandformUpdater = new LandformUpdater(LandformBuilder);
             BuildingBuilder = new BuildingBuilder(world, LandformBuilder, LandformDispatcher);
             BuildingUpdater = new BuildingUpdater(BuildingBuilder);
@@ -29,7 +29,7 @@ namespace KouXiaGu.Terrain3D
         bool isUpdating;
         bool updateThreadRunning;
         internal IRequestDispatcher LandformDispatcher { get; private set; }
-        internal LandformBuilder LandformBuilder { get; private set; }
+        internal OLandformBuilder LandformBuilder { get; private set; }
         internal LandformUpdater LandformUpdater { get; private set; }
         internal BuildingBuilder BuildingBuilder { get; private set; }
         internal BuildingUpdater BuildingUpdater { get; private set; }

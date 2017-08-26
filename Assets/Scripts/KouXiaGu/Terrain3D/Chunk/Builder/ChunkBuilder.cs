@@ -545,50 +545,71 @@ namespace KouXiaGu.Terrain3D
                 }
             }
 
-            /// <summary>
-            /// 由处置器调用,提供子类重写,需要实现父类内容;
-            /// </summary>
-            public virtual void OnAddQueue()
+            void IAsyncRequest.OnAddQueue()
             {
                 lock (AsyncLock)
                 {
                     InQueue = true;
                     IsBusy = false;
                     IsCancelled = false;
+                    OnAddQueue();
+                }
+            }
+
+            protected virtual void OnAddQueue()
+            {
+            }
+
+            bool IAsyncRequest.Prepare()
+            {
+                lock (AsyncLock)
+                {
+                    return Prepare();
                 }
             }
 
             /// <summary>
-            /// 由处置器调用,提供子类重写,不需要实现父类内容;
+            /// 提供子类重写,不需要实现父类内容;
             /// </summary>
-            public virtual bool Prepare()
+            protected virtual bool Prepare()
             {
                 return true;
             }
 
-            /// <summary>
-            /// 由处置器调用,提供子类重写,需要实现父类内容;
-            /// </summary>
-            public virtual bool Operate()
+            bool IAsyncRequest.Operate()
             {
                 lock (AsyncLock)
                 {
                     IsBusy = true;
-                    return false;
+                    return Operate();
                 }
             }
 
             /// <summary>
-            /// 由处置器调用,提供子类重写,需要实现父类内容;
+            /// 提供子类重写,不需要实现父类内容;
             /// </summary>
-            public virtual void OnQuitQueue()
+            protected virtual bool Operate()
+            {
+                return false;
+            }
+
+            void IAsyncRequest.OnQuitQueue()
             {
                 lock (AsyncLock)
                 {
                     InQueue = false;
                     IsBusy = false;
                     IsCancelled = false;
+                    OnQuitQueue();
+                    if (State != ChunkState.Completed || State == ChunkState.None)
+                    {
+                        State = ChunkState.None;
+                    }
                 }
+            }
+
+            protected virtual void OnQuitQueue()
+            {
             }
 
             /// <summary>
@@ -620,6 +641,51 @@ namespace KouXiaGu.Terrain3D
                 Chunk = default(TChunk);
                 State = ChunkState.None;
                 TryRemoveFromParent();
+            }
+        }
+
+        protected abstract class ChunkInfo_Coroutine : ChunkInfo
+        {
+            public ChunkInfo_Coroutine(ChunkBuilder<TPoint, TChunk> parent, TPoint point) : base(parent, point)
+            {
+            }
+
+            IEnumerator currentCoroutine;
+
+            protected abstract IEnumerator CreateChunkCoroutine();
+            protected abstract IEnumerator UpdateChunkCoroutine();
+            protected abstract IEnumerator DestroyChunkCoroutine();
+
+            protected override bool Prepare()
+            {
+                switch (State)
+                {
+                    case ChunkState.Creating:
+                        currentCoroutine = CreateChunkCoroutine();
+                        break;
+
+                    case ChunkState.Updating:
+                        currentCoroutine = UpdateChunkCoroutine();
+                        break;
+
+                    case ChunkState.Destroying:
+                        currentCoroutine = DestroyChunkCoroutine();
+                        break;
+
+                    default:
+                        return false;
+                }
+                return true;
+            }
+
+            protected override bool Operate()
+            {
+                return currentCoroutine.MoveNext();
+            }
+
+            protected override void OnQuitQueue()
+            {
+                currentCoroutine = null;
             }
         }
     }

@@ -73,7 +73,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     class BuildingBuilder 
     {
-        public BuildingBuilder(IWorld world, LandformBuilder landformBuilder, IRequestDispatcher requestDispatcher)
+        public BuildingBuilder(IWorld world, OLandformBuilder landformBuilder, IRequestDispatcher requestDispatcher)
         {
             World = world;
             BuildingCollection = world.Components.Landform.Buildings;

@@ -14,11 +14,11 @@ namespace KouXiaGu.Terrain3D
     {
         public SceneLandformCollection()
         {
-            SceneChunks = new Dictionary<RectCoord, LandformBuilder.CreateRequest>();
+            SceneChunks = new Dictionary<RectCoord, OLandformBuilder.CreateRequest>();
             ReadOnlySceneChunks = SceneChunks.AsReadOnlyDictionary(item => item as IAsyncOperation<LandformChunk>);
         }
 
-        internal Dictionary<RectCoord, LandformBuilder.CreateRequest> SceneChunks { get; private set; }
+        internal Dictionary<RectCoord, OLandformBuilder.CreateRequest> SceneChunks { get; private set; }
         public IReadOnlyDictionary<RectCoord, IAsyncOperation<LandformChunk>> ReadOnlySceneChunks { get; private set; }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace KouXiaGu.Terrain3D
         public float GetHeight(Vector3 position)
         {
             RectCoord chunkCoord = LandformChunkInfo.ChunkGrid.GetCoord(position);
-            LandformBuilder.CreateRequest chunk;
+            OLandformBuilder.CreateRequest chunk;
             if (SceneChunks.TryGetValue(chunkCoord, out chunk))
             {
                 if (chunk.Result != null)
@@ -43,9 +43,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 场景地形块管理;
     /// </summary>
-    class LandformBuilder
+    class OLandformBuilder
     {
-        public LandformBuilder(IWorld world, IRequestDispatcher requestDispatcher)
+        public OLandformBuilder(IWorld world, IRequestDispatcher requestDispatcher)
         {
             if (world == null)
                 throw new ArgumentNullException("world");
@@ -177,21 +177,21 @@ namespace KouXiaGu.Terrain3D
 
         internal class CreateRequest : AsyncOperation<LandformChunk>, IAsyncRequest, IState
         {
-            public CreateRequest(LandformBuilder parent, RectCoord chunkCoord, LandformChunk chunk)
+            public CreateRequest(OLandformBuilder parent, RectCoord chunkCoord, LandformChunk chunk)
             {
                 Parent = parent;
                 ChunkCoord = chunkCoord;
                 OnCompleted(chunk);
             }
 
-            public CreateRequest(LandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
+            public CreateRequest(OLandformBuilder parent, RectCoord chunkCoord, BakeTargets targets)
             {
                 Parent = parent;
                 ChunkCoord = chunkCoord;
                 Targets = targets;
             }
 
-            public LandformBuilder Parent { get; private set; }
+            public OLandformBuilder Parent { get; private set; }
             public RectCoord ChunkCoord { get; private set; }
             public BakeTargets Targets { get; internal set; }
             public bool IsCanceled { get; private set; }
@@ -273,14 +273,14 @@ namespace KouXiaGu.Terrain3D
 
         public class DestroyRequest : IAsyncRequest
         {
-            public DestroyRequest(LandformBuilder parent, RectCoord chunkCoord, LandformChunk chunk)
+            public DestroyRequest(OLandformBuilder parent, RectCoord chunkCoord, LandformChunk chunk)
             {
                 this.parent = parent;
                 this.chunkCoord = chunkCoord;
                 this.chunk = chunk;
             }
 
-            LandformBuilder parent;
+            OLandformBuilder parent;
             LandformChunk chunk;
             RectCoord chunkCoord;
 

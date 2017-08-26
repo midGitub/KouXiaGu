@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     class MapWatcher : IDictionaryObserver<CubicHexCoord, MapNode>
     {
-        public MapWatcher(LandformBuilder landformBuilder, BuildingBuilder buildingBuilder, IObservableDictionary<CubicHexCoord, MapNode> observable)
+        public MapWatcher(OLandformBuilder landformBuilder, BuildingBuilder buildingBuilder, IObservableDictionary<CubicHexCoord, MapNode> observable)
         {
             this.landformBuilder = landformBuilder;
             this.buildingBuilder = buildingBuilder;
@@ -22,7 +22,7 @@ namespace KouXiaGu.Terrain3D
         }
 
         IDisposable unsubscriber;
-        readonly LandformBuilder landformBuilder;
+        readonly OLandformBuilder landformBuilder;
         readonly BuildingBuilder buildingBuilder;
 
         public void Subscribe(IObservableDictionary<CubicHexCoord, MapNode> observable)
