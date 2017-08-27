@@ -27,7 +27,7 @@ namespace KouXiaGu.Terrain3D
         GameObjectPool<MeshRenderer> objectPool;
 
         BakeCamera bakeCamera;
-        IWorld world;
+        IWorldData worldData;
         CubicHexCoord chunkCenter;
         IEnumerable<CubicHexCoord> displays;
         public RenderTexture DiffuseRT { get; private set; }
@@ -37,12 +37,12 @@ namespace KouXiaGu.Terrain3D
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> worldMap
         {
-            get { return world.WorldData.MapData.ReadOnlyMap; }
+            get { return worldData.MapData.ReadOnlyMap; }
         }
 
         IDictionary<int, LandformInfo> landformInfos
         {
-            get { return world.BasicData.BasicResource.Terrain.Landform; }
+            get { return worldData.BasicData.BasicResource.Terrain.Landform; }
         }
 
         public void Initialize()
@@ -57,10 +57,10 @@ namespace KouXiaGu.Terrain3D
         /// <param name="world">世界数据</param>
         /// <param name="chunkCenter">地形块中心坐标;</param>
         /// <param name="displays">地形块烘焙时,需要显示到场景的块坐标;</param>
-        public void BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer textures)
+        public void BakeCoroutine(BakeCamera bakeCamera, IWorldData world, CubicHexCoord chunkCenter, LandformRenderer textures)
         {
             this.bakeCamera = bakeCamera;
-            this.world = world;
+            this.worldData = world;
             this.chunkCenter = chunkCenter;
             this.displays = ChunkPartitioner.GetLandform(chunkCenter);
 

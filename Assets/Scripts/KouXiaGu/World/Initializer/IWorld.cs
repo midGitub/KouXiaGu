@@ -31,10 +31,11 @@ namespace KouXiaGu.World
     }
 
     /// <summary>
-    /// 游戏场景的数据,存档时进行保存的部分;
+    /// 游戏场景的数据;
     /// </summary>
     public interface IWorldData
     {
+        IBasicData BasicData { get; }
         WorldMap MapData { get; }
         WorldTime Time { get; }
     }

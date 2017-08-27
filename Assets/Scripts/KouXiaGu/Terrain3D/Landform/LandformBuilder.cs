@@ -245,11 +245,11 @@ namespace KouXiaGu.Terrain3D
 
                     if ((Targets & BakeTargets.Landform) > 0)
                     {
-                        bakeLandform.BakeCoroutine(bakeCamera, world, chunkCenter, chunk.Renderer);
+                        bakeLandform.BakeCoroutine(bakeCamera, world.WorldData, chunkCenter, chunk.Renderer);
                     }
                     if ((Targets & BakeTargets.Road) > 0)
                     {
-                        bakeRoad.BakeCoroutine(bakeCamera, world, chunkCenter, chunk.Renderer);
+                        bakeRoad.BakeCoroutine(bakeCamera, world.WorldData, chunkCenter, chunk.Renderer);
                     }
                     chunk.Renderer.Apply();
                     OnCompleted();

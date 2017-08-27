@@ -26,7 +26,7 @@ namespace KouXiaGu.Terrain3D
         RoadMeshPool objectPool;
         int roadObjectOrder;
         BakeCamera bakeCamera;
-        IWorld world;
+        IWorldData worldData;
         CubicHexCoord chunkCenter;
         IEnumerable<CubicHexCoord> displays;
         public RenderTexture DiffuseRT { get; private set; }
@@ -34,12 +34,12 @@ namespace KouXiaGu.Terrain3D
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> map
         {
-            get { return world.WorldData.MapData.ReadOnlyMap; }
+            get { return worldData.MapData.ReadOnlyMap; }
         }
 
         IDictionary<int, RoadInfo> infos
         {
-            get { return world.BasicData.BasicResource.Terrain.Road; }
+            get { return worldData.BasicData.BasicResource.Terrain.Road; }
         }
 
         public void Initialise()
@@ -48,10 +48,10 @@ namespace KouXiaGu.Terrain3D
             objectPool = new RoadMeshPool(prefab, "BakeRoadMesh");
         }
 
-        public void BakeCoroutine(BakeCamera bakeCamera, IWorld world, CubicHexCoord chunkCenter, LandformRenderer result)
+        public void BakeCoroutine(BakeCamera bakeCamera, IWorldData worldData, CubicHexCoord chunkCenter, LandformRenderer result)
         {
             this.bakeCamera = bakeCamera;
-            this.world = world;
+            this.worldData = worldData;
             this.chunkCenter = chunkCenter;
             this.displays = ChunkPartitioner.GetRoad(chunkCenter);
 

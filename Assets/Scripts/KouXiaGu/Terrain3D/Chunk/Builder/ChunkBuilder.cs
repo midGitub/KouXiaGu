@@ -91,12 +91,12 @@ namespace KouXiaGu.Terrain3D
 
                 foreach (var destoryPoint in needDestoryPoints)
                 {
-                    Builder.DestroyChunk(destoryPoint);
+                    Builder.Destroy(destoryPoint);
                 }
 
                 foreach (var createPoint in needDisplayPoints)
                 {
-                    Builder.CreateChunk(createPoint);
+                    Builder.Create(createPoint);
                 }
             }
             needDestoryPoints.Clear();
@@ -153,7 +153,7 @@ namespace KouXiaGu.Terrain3D
     {
         public ChunkBuilder(IRequestDispatcher requestDispatcher)
         {
-            chunks = new Dictionary<TPoint, ChunkInfo>();
+            chunks = new Dictionary<TPoint, ChunkData>();
             RequestDispatcher = requestDispatcher;
         }
 
@@ -173,7 +173,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 块信息合集;
         /// </summary>
-        readonly Dictionary<TPoint, ChunkInfo> chunks;
+        readonly Dictionary<TPoint, ChunkData> chunks;
 
         /// <summary>
         /// 当任何块变化事件;
@@ -196,9 +196,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 创建块,若已经存在则返回实例,不存在则创建到;
         /// </summary>
-        public IChunkInfo<TPoint, TChunk> CreateChunk(TPoint point)
+        public virtual IChunkInfo<TPoint, TChunk> Create(TPoint point)
         {
-            ChunkInfo info = GetOrCreate(point);
+            ChunkData info = GetOrCreate(point);
             info.CreateChunk();
             return info;
         }
@@ -206,12 +206,12 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 获取到块信息,若不存在则创建到;
         /// </summary>
-        protected ChunkInfo GetOrCreate(TPoint point)
+        protected ChunkData GetOrCreate(TPoint point)
         {
-            ChunkInfo info;
+            ChunkData info;
             if (!chunks.TryGetValue(point, out info))
             {
-                info = new ChunkInfo(this, point);
+                info = new ChunkData(this, point);
                 chunks.Add(point, info);
             }
             return info;
@@ -220,9 +220,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 更新块,若不存在则返回null;
         /// </summary>
-        public IChunkInfo<TPoint, TChunk> UpdateChunk(TPoint point)
+        public virtual IChunkInfo<TPoint, TChunk> Update(TPoint point)
         {
-            ChunkInfo info;
+            ChunkData info;
             if (chunks.TryGetValue(point, out info))
             {
                 info.UpdateChunk();
@@ -234,9 +234,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 销毁块,若不存在则返回NULL;
         /// </summary>
-        public IChunkInfo<TPoint, TChunk> DestroyChunk(TPoint point)
+        public virtual IChunkInfo<TPoint, TChunk> Destroy(TPoint point)
         {
-            ChunkInfo info;
+            ChunkData info;
             if (chunks.TryGetValue(point, out info))
             {
                 info.DestroyChunk();
@@ -277,7 +277,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void AddListener(TPoint point, Action<IChunkInfo<TPoint, TChunk>> listener)
         {
-            ChunkInfo info  = GetOrCreate(point);
+            ChunkData info  = GetOrCreate(point);
             info.AddListener(listener);
         }
 
@@ -286,7 +286,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public void RemoveListener(TPoint point, Action<IChunkInfo<TPoint, TChunk>> listener)
         {
-            ChunkInfo info = GetOrCreate(point);
+            ChunkData info = GetOrCreate(point);
             info.RemoveListener(listener);
         }
 
@@ -295,7 +295,7 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         public bool TryGetValue(TPoint point, out IChunkInfo<TPoint, TChunk> chunkInfo)
         {
-            ChunkInfo info;
+            ChunkData info;
             bool find = chunks.TryGetValue(point, out info);
             chunkInfo = info;
             return find;
@@ -315,9 +315,9 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 块状态信息;
         /// </summary>
-        protected class ChunkInfo : IChunkInfo<TPoint, TChunk>, IAsyncRequest
+        protected class ChunkData : IChunkInfo<TPoint, TChunk>, IAsyncRequest
         {
-            public ChunkInfo(ChunkBuilder<TPoint, TChunk> parent, TPoint point)
+            public ChunkData(ChunkBuilder<TPoint, TChunk> parent, TPoint point)
             {
                 Parent = parent;
                 Point = point;
@@ -414,7 +414,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 创建块;若 正在进行其它操作中 则返回false;
             /// </summary>
-            public bool CreateChunk()
+            public virtual bool CreateChunk()
             {
                 lock (AsyncLock)
                 {
@@ -447,7 +447,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 更新块内容;若 正在进行其它操作中 则返回false;
             /// </summary>
-            public bool UpdateChunk()
+            public virtual bool UpdateChunk()
             {
                 lock (AsyncLock)
                 {
@@ -480,7 +480,7 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 移除块内容;若 正在进行其它操作中 则返回false;
             /// </summary>
-            public bool DestroyChunk()
+            public virtual bool DestroyChunk()
             {
                 lock (AsyncLock)
                 {
@@ -644,7 +644,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        protected abstract class ChunkInfo_Coroutine : ChunkInfo
+        protected abstract class ChunkInfo_Coroutine : ChunkData
         {
             public ChunkInfo_Coroutine(ChunkBuilder<TPoint, TChunk> parent, TPoint point) : base(parent, point)
             {

@@ -25,20 +25,20 @@ namespace KouXiaGu.Terrain3D
         }
 
         [SerializeField]
-        Building prefab;
+        BuildingUnit prefab;
 
         /// <summary>
         /// 创建的预制物体;
         /// </summary>
-        public Building Prefab
+        public BuildingUnit Prefab
         {
             get { return prefab; }
             set { prefab = value; }
         }
 
-        public Building BuildAt(IWorld world, CubicHexCoord position, float angele, BuildingInfo info)
+        public BuildingUnit BuildAt(IWorld world, CubicHexCoord position, float angele, BuildingInfo info)
         {
-            Building instance = Instantiate(prefab, objectParent);
+            BuildingUnit instance = Instantiate(prefab, objectParent);
             instance.Build(world, position, angele, info);
             return instance;
         }

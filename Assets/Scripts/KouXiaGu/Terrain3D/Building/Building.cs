@@ -14,7 +14,7 @@ namespace KouXiaGu.Terrain3D
     /// 建筑物实例;
     /// </summary>
     [DisallowMultipleComponent]
-    public class Building : MonoBehaviour, IBuilding
+    public class BuildingUnit : MonoBehaviour, IBuilding
     {
         protected float angle;
         protected CubicHexCoord position;

@@ -17,12 +17,12 @@ namespace KouXiaGu.Terrain3D
             WatcherList = new List<IBuildingWatcher>();
         }
 
-        public BuildingUpdater(BuildingBuilder builder)
+        public BuildingUpdater(OBuildingBuilder builder)
         {
             Builder = builder;
         }
 
-        internal BuildingBuilder Builder { get; private set; }
+        internal OBuildingBuilder Builder { get; private set; }
         public static List<IBuildingWatcher> WatcherList { get; private set; }
 
         protected override IEnumerable<IChunkWatcher<RectCoord>> Watchers

@@ -38,7 +38,5 @@ namespace KouXiaGu.Terrain3D
         {
             chunk.Destroy();
         }
-
     }
-
 }

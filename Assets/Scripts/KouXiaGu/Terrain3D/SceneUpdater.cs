@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D
             LandformDispatcher = LandformUnityDispatcher.Instance;
             LandformBuilder = new OLandformBuilder(world, LandformDispatcher);
             LandformUpdater = new LandformUpdater(LandformBuilder);
-            BuildingBuilder = new BuildingBuilder(world, LandformBuilder, LandformDispatcher);
+            BuildingBuilder = new OBuildingBuilder(world, LandformBuilder, LandformDispatcher);
             BuildingUpdater = new BuildingUpdater(BuildingBuilder);
             MapWatcher = new MapWatcher(LandformUpdater.Builder, BuildingBuilder, world.WorldData.MapData.ObservableMap);
             WaterManager = new WaterManager();
@@ -31,7 +31,7 @@ namespace KouXiaGu.Terrain3D
         internal IRequestDispatcher LandformDispatcher { get; private set; }
         internal OLandformBuilder LandformBuilder { get; private set; }
         internal LandformUpdater LandformUpdater { get; private set; }
-        internal BuildingBuilder BuildingBuilder { get; private set; }
+        internal OBuildingBuilder BuildingBuilder { get; private set; }
         internal BuildingUpdater BuildingUpdater { get; private set; }
         internal MapWatcher MapWatcher { get; private set; }
         public WaterManager WaterManager { get; private set; }

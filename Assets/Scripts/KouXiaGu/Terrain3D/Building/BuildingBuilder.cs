@@ -18,13 +18,13 @@ namespace KouXiaGu.Terrain3D
         public SceneBuildingCollection()
         {
             SceneChunks = new HashSet<RectCoord>();
-            SceneBuildings = new Dictionary<CubicHexCoord, BuildingBuilder.CreateRequest>();
+            SceneBuildings = new Dictionary<CubicHexCoord, OBuildingBuilder.CreateRequest>();
             ReadOnlySceneChunks = SceneChunks.AsReadOnlyCollection();
             ReadOnlySceneBuildings = SceneBuildings.AsReadOnlyDictionary(item => item as IAsyncOperation<IBuilding>);
         }
 
         internal HashSet<RectCoord> SceneChunks { get; private set; }
-        internal Dictionary<CubicHexCoord, BuildingBuilder.CreateRequest> SceneBuildings { get; private set; }
+        internal Dictionary<CubicHexCoord, OBuildingBuilder.CreateRequest> SceneBuildings { get; private set; }
         public IReadOnlyCollection<RectCoord> ReadOnlySceneChunks { get; private set; }
         public IReadOnlyDictionary<CubicHexCoord, IAsyncOperation<IBuilding>> ReadOnlySceneBuildings { get; private set; }
 
@@ -71,9 +71,9 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 对场景建筑物进行构建,仅由地形更新器调用;
     /// </summary>
-    class BuildingBuilder 
+    class OBuildingBuilder 
     {
-        public BuildingBuilder(IWorld world, OLandformBuilder landformBuilder, IRequestDispatcher requestDispatcher)
+        public OBuildingBuilder(IWorld world, OLandformBuilder landformBuilder, IRequestDispatcher requestDispatcher)
         {
             World = world;
             BuildingCollection = world.Components.Landform.Buildings;
@@ -369,21 +369,21 @@ namespace KouXiaGu.Terrain3D
             /// <summary>
             /// 创建一个空的建筑;
             /// </summary>
-            public CreateRequest(BuildingBuilder parent, CubicHexCoord position)
+            public CreateRequest(OBuildingBuilder parent, CubicHexCoord position)
             {
                 Parent = parent;
                 Position = position;
                 OnCompleted();
             }
 
-            public CreateRequest(BuildingBuilder parent, CubicHexCoord position, BuildingNode node)
+            public CreateRequest(OBuildingBuilder parent, CubicHexCoord position, BuildingNode node)
             {
                 Parent = parent;
                 Position = position;
                 Node = node;
             }
 
-            public BuildingBuilder Parent { get; private set; }
+            public OBuildingBuilder Parent { get; private set; }
             public CubicHexCoord Position { get; private set; }
             public BuildingNode Node { get; private set; }
             public bool InQueue { get; private set; }
@@ -477,13 +477,13 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         class DestroyRequest : IAsyncRequest
         {
-            public DestroyRequest(BuildingBuilder parent, IBuilding building)
+            public DestroyRequest(OBuildingBuilder parent, IBuilding building)
             {
                 Parent = parent;
                 Building = building;
             }
 
-            public BuildingBuilder Parent { get; private set; }
+            public OBuildingBuilder Parent { get; private set; }
             public IBuilding Building { get; private set; }
 
             void IAsyncRequest.OnAddQueue()
@@ -511,13 +511,13 @@ namespace KouXiaGu.Terrain3D
         /// </summary>
         class LandformObserver : IObserver<RectCoord>, IDisposable
         {
-            public LandformObserver(BuildingBuilder parent, IObservable<RectCoord> landformChanged)
+            public LandformObserver(OBuildingBuilder parent, IObservable<RectCoord> landformChanged)
             {
                 this.parent = parent;
                 landformChangedDisposer = landformChanged.Subscribe(this);
             }
 
-            readonly BuildingBuilder parent;
+            readonly OBuildingBuilder parent;
             IDisposable landformChangedDisposer;
 
             public bool IsSubscribed

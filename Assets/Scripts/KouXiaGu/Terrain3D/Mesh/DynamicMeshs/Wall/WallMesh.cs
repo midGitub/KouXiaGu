@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
     /// 墙体建筑;
     /// </summary>
     [RequireComponent(typeof(DynamicMeshScript))]
-    public class WallMesh : Building, IBuilding
+    public class WallMesh : BuildingUnit, IBuilding
     {
         DynamicMeshScript dynamicMesh;
         Vector3[] path;
