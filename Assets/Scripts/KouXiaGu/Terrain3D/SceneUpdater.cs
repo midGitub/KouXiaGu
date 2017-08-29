@@ -19,7 +19,7 @@ namespace KouXiaGu.Terrain3D
         {
             LandformDispatcher = LandformUnityDispatcher.Instance;
             LandformBuilder = new OLandformBuilder(world, LandformDispatcher);
-            LandformUpdater = new LandformUpdater(LandformBuilder);
+            LandformUpdater = new OLandformUpdater(LandformBuilder);
             BuildingBuilder = new OBuildingBuilder(world, LandformBuilder, LandformDispatcher);
             BuildingUpdater = new BuildingUpdater(BuildingBuilder);
             MapWatcher = new MapWatcher(LandformUpdater.Builder, BuildingBuilder, world.WorldData.MapData.ObservableMap);
@@ -30,7 +30,7 @@ namespace KouXiaGu.Terrain3D
         bool updateThreadRunning;
         internal IRequestDispatcher LandformDispatcher { get; private set; }
         internal OLandformBuilder LandformBuilder { get; private set; }
-        internal LandformUpdater LandformUpdater { get; private set; }
+        internal OLandformUpdater LandformUpdater { get; private set; }
         internal OBuildingBuilder BuildingBuilder { get; private set; }
         internal BuildingUpdater BuildingUpdater { get; private set; }
         internal MapWatcher MapWatcher { get; private set; }

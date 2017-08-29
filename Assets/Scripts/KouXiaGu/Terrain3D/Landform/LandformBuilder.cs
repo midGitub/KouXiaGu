@@ -43,6 +43,7 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 场景地形块管理;
     /// </summary>
+    [Obsolete]
     class OLandformBuilder
     {
         public OLandformBuilder(IWorld world, IRequestDispatcher requestDispatcher)
@@ -52,7 +53,7 @@ namespace KouXiaGu.Terrain3D
 
             World = world;
             this.requestDispatcher = requestDispatcher;
-            SceneChunks = world.Components.Landform.LandformChunks.SceneChunks;
+            //SceneChunks = world.Components.Landform.LandformChunks.SceneChunks;
             chunkPool = new LandformChunkPool();
             completedChunkSender = new Tracker<RectCoord>();
         }

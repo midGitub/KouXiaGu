@@ -12,14 +12,14 @@ namespace KouXiaGu.Terrain3D
     {
     }
 
-    public class LandformUpdater : ChunkUpdater<RectCoord>
+    public class OLandformUpdater : ChunkUpdater<RectCoord>
     {
-        static LandformUpdater()
+        static OLandformUpdater()
         {
             WatcherList = new List<ILandformWatcher>();
         }
 
-        internal LandformUpdater(OLandformBuilder builder)
+        internal OLandformUpdater(OLandformBuilder builder)
         {
             Builder = builder;
         }

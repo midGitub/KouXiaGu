@@ -22,7 +22,7 @@ namespace KouXiaGu.World
     {
         IBasicData BasicData { get; }
         IWorldData WorldData { get; }
-        IWorldComponents Components { get; }
+        //IWorldComponents Components { get; }
     }
 
     public interface IWorldComplete : IWorld

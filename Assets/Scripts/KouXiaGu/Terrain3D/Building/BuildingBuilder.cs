@@ -71,12 +71,13 @@ namespace KouXiaGu.Terrain3D
     /// <summary>
     /// 对场景建筑物进行构建,仅由地形更新器调用;
     /// </summary>
+    [Obsolete]
     class OBuildingBuilder 
     {
         public OBuildingBuilder(IWorld world, OLandformBuilder landformBuilder, IRequestDispatcher requestDispatcher)
         {
             World = world;
-            BuildingCollection = world.Components.Landform.Buildings;
+            //BuildingCollection = world.Components.Landform.Buildings;
             RequestDispatcher = requestDispatcher;
             new LandformObserver(this, landformBuilder.CompletedChunkSender);
         }

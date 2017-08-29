@@ -9,71 +9,19 @@ namespace KouXiaGu.Terrain3D
 {
 
     /// <summary>
-    /// 显示坐标提供;
-    /// </summary>
-    public interface IChunkGuider<TPoint>
-    {
-        /// <summary>
-        /// 获取到需要显示的坐标;
-        /// </summary>
-        IReadOnlyCollection<TPoint> GetPointsToDisplay();
-    }
-
-    /// <summary>
-    /// 显示合集\组;
-    /// </summary>
-    public class ChunkGuiderGroup<TPoint> : IChunkGuider<TPoint>
-    {
-        public ChunkGuiderGroup()
-        {
-            chunkGuiderList = new List<IChunkGuider<TPoint>>();
-            pisplayPointSet = new HashSet<TPoint>();
-        }
-
-        List<IChunkGuider<TPoint>> chunkGuiderList;
-        HashSet<TPoint> pisplayPointSet;
-
-        public void Add(IChunkGuider<TPoint> guider)
-        {
-            if (!chunkGuiderList.Contains(guider))
-            {
-                chunkGuiderList.Add(guider);
-            }
-        }
-
-        public bool Remove(IChunkGuider<TPoint> guider)
-        {
-            return chunkGuiderList.Remove(guider);
-        }
-
-        public IReadOnlyCollection<TPoint> GetPointsToDisplay()
-        {
-            pisplayPointSet.Clear();
-            foreach(var chunkGuider in chunkGuiderList)
-            {
-                foreach (var display in chunkGuider.GetPointsToDisplay())
-                {
-                    pisplayPointSet.Add(display);
-                }
-            }
-            return pisplayPointSet;
-        }
-    }
-
-    /// <summary>
     /// 更新器;
     /// </summary>
     public class ChunkUpdater<TPoint, TChunk>
     {
-        public ChunkUpdater(ChunkBuilder<TPoint, TChunk> builder, IChunkGuider<TPoint> guider)
+        public ChunkUpdater(ChunkBuilder<TPoint, TChunk> builder, GuiderGroup<TPoint> guiderGroup)
         {
             Builder = builder;
-            GuiderGroup = guider;
+            GuiderGroup = guiderGroup;
             needDestoryPoints = new List<TPoint>();
         }
 
         public ChunkBuilder<TPoint, TChunk> Builder { get; private set; }
-        public IChunkGuider<TPoint> GuiderGroup { get; private set; }
+        public GuiderGroup<TPoint> GuiderGroup { get; private set; }
         List<TPoint> needDestoryPoints;
 
         public void Update()

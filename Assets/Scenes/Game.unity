@@ -5361,6 +5361,7 @@ GameObject:
   m_Component:
   - component: {fileID: 435868885}
   - component: {fileID: 435868887}
+  - component: {fileID: 435868886}
   m_Layer: 0
   m_Name: WorldSceneController
   m_TagString: SceneController
@@ -5384,6 +5385,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &435868886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 435868884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6eb2e743b9e0748a3bba43dc845a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &435868887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13708,7 +13720,6 @@ GameObject:
   - component: {fileID: 1256517408}
   - component: {fileID: 1256517407}
   - component: {fileID: 1256517405}
-  - component: {fileID: 1256517406}
   m_Layer: 11
   m_Name: Character
   m_TagString: Untagged
@@ -13748,20 +13759,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1256517406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1256517404}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95492605bdd31964dbfa17863e5d9a76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MovementDistance: 0.1
-  finalPosition: {x: 0, y: 0, z: 0}
-  currentVelocity: {x: 0, y: 0, z: 0}
 --- !u!33 &1256517407
 MeshFilter:
   m_ObjectHideFlags: 0
