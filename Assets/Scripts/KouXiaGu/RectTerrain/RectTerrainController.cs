@@ -12,9 +12,19 @@ namespace KouXiaGu.RectTerrain
     /// 矩形地图的地形;
     /// </summary>
     [DisallowMultipleComponent]
-    public class RectTerrainController : MonoBehaviour
+    public class RectTerrainController : SceneSington<RectTerrainController>
     {
+        RectTerrainController()
+        {
+        }
 
+        [SerializeField]
+        RectTerrainParameter parameter;
+
+        public RectTerrainParameter Parameter
+        {
+            get { return parameter; }
+        }
 
     }
 }

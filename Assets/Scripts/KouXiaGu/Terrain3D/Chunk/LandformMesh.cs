@@ -86,7 +86,6 @@ namespace KouXiaGu.Terrain3D
 
         #endregion
 
-
         public LandformMesh(MeshFilter meshFilter)
         {
             MeshFilter = meshFilter;
@@ -100,7 +99,5 @@ namespace KouXiaGu.Terrain3D
             PublicMesh = CreateMesh();
             MeshFilter.sharedMesh = PublicMesh;
         }
-
     }
-
 }

@@ -30,9 +30,19 @@ namespace KouXiaGu.RectTerrain
         public static readonly float ChunkWidth = RectTerrainInfo.NodeWidth * NumberOfNodesInWidth;
 
         /// <summary>
+        /// 一半地形块宽度;
+        /// </summary>
+        public static readonly float ChunkHalfWidth = ChunkWidth / 2;
+
+        /// <summary>
         /// 地形块高度;
         /// </summary>
         public static readonly float ChunkHeight = RectTerrainInfo.NodeHeight * NumberOfNodesInHeight;
+
+        /// <summary>
+        /// 一半地形块高度;
+        /// </summary>
+        public static readonly float ChunkHalfHeight = ChunkHeight / 2;
 
         /// <summary>
         /// 网格信息;

@@ -8,13 +8,14 @@ using UnityEngine;
 namespace KouXiaGu.RectTerrain
 {
 
-    /// <summary>
-    /// 地形块;
-    /// </summary>
+
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(LandformMesh), typeof(LandformRenderer))]
-    public class LandformChunk : MonoBehaviour
+    [RequireComponent(typeof(MeshRenderer))]
+    public class LandformRenderer : MonoBehaviour
     {
+        LandformRenderer()
+        {
+        }
 
 
     }
