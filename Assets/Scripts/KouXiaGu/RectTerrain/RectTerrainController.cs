@@ -26,5 +26,9 @@ namespace KouXiaGu.RectTerrain
             get { return parameter; }
         }
 
+        void OnValidate()
+        {
+            parameter.OnValidate();
+        }
     }
 }

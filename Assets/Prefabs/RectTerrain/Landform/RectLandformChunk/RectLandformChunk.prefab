@@ -21,8 +21,11 @@ GameObject:
   - component: {fileID: 4914503347357620}
   - component: {fileID: 33346793988094146}
   - component: {fileID: 23284028154578220}
+  - component: {fileID: 64607119657566788}
   - component: {fileID: 114196745868874144}
   - component: {fileID: 114615720809310698}
+  - component: {fileID: 114762791395725024}
+  - component: {fileID: 114615002630418646}
   m_Layer: 0
   m_Name: RectLandformChunk
   m_TagString: Untagged
@@ -50,7 +53,7 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1858302954689246}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 2
   m_ReceiveShadows: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -82,6 +85,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1858302954689246}
   m_Mesh: {fileID: 0}
+--- !u!64 &64607119657566788
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1858302954689246}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 0
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 0}
 --- !u!114 &114196745868874144
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -93,6 +110,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a9f8450a9b15c8498b55d21ab392cb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114615002630418646
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1858302954689246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae577c4758f23884784cb18e30120ca2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114615720809310698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -102,5 +130,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b5e048f08ecb394f9a84ba14748f3bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114762791395725024
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1858302954689246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da5cb24f0204208469b5cdce5cb9cb71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

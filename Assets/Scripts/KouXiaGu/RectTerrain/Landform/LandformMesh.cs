@@ -61,7 +61,7 @@ namespace KouXiaGu.RectTerrain
         MeshFilter meshFilter;
         static Mesh landformMesh;
 
-        void Start()
+        void Awake()
         {
             meshFilter = GetComponent<MeshFilter>();
             meshFilter.sharedMesh = GetPublicMesh();
