@@ -10,10 +10,10 @@ namespace KouXiaGu.RectTerrain
 
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(MeshCollider), typeof(LandformRenderer))]
-    public class LandformTrigger : MonoBehaviour
+    [RequireComponent(typeof(MeshCollider), typeof(LandformChunkRenderer))]
+    public class LandformChunkTrigger : MonoBehaviour
     {
-        LandformTrigger()
+        LandformChunkTrigger()
         {
         }
 
@@ -27,13 +27,13 @@ namespace KouXiaGu.RectTerrain
         static readonly int[] triangles = GetTriangles();
 
         MeshCollider meshCollider;
-        LandformRenderer landformRenderer;
+        LandformChunkRenderer landformRenderer;
         Mesh collisionMesh;
 
         void Awake()
         {
             meshCollider = GetComponent<MeshCollider>();
-            landformRenderer = GetComponent<LandformRenderer>();
+            landformRenderer = GetComponent<LandformChunkRenderer>();
             collisionMesh = meshCollider.sharedMesh = CreateMesh();
             landformRenderer.OnHeightChanged += UpdateMesh;
         }
@@ -51,7 +51,7 @@ namespace KouXiaGu.RectTerrain
             return collisionMesh;
         }
 
-        void UpdateMesh(LandformRenderer renderer)
+        void UpdateMesh(LandformChunkRenderer renderer)
         {
             if (collisionMesh == null)
             {
@@ -77,7 +77,7 @@ namespace KouXiaGu.RectTerrain
         Vector3[] GetVertices()
         {
             List<Vector3> vertices = new List<Vector3>();
-            foreach (var pair in LandformTrigger.vertices)
+            foreach (var pair in LandformChunkTrigger.vertices)
             {
                 Vector3 vertice = pair.Key;
                 vertice.y = landformRenderer.GetHeight(pair.Value);
@@ -94,16 +94,16 @@ namespace KouXiaGu.RectTerrain
         {
             List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
-            float lengthX = LandformChunkInfo.ChunkWidth / sub_x;
-            float lengthZ = LandformChunkInfo.ChunkHeight / sub_z;
+            float lengthX = LandformInfo.ChunkWidth / sub_x;
+            float lengthZ = LandformInfo.ChunkHeight / sub_z;
 
             for (int z = 0; z <= sub_z; z++)
             {
                 for (int x = 0; x <= sub_x; x++)
                 {
                     Vector3 vertice = new Vector3(x * lengthX, 0, z * lengthZ);
-                    vertice.x -= LandformChunkInfo.ChunkHalfWidth;
-                    vertice.z -= LandformChunkInfo.ChunkHalfHeight;
+                    vertice.x -= LandformInfo.ChunkHalfWidth;
+                    vertice.z -= LandformInfo.ChunkHalfHeight;
 
                     Vector2 uv = new Vector2(x / (float)sub_x, z / (float)sub_z);
                     KeyValuePair<Vector3, Vector2> pair = new KeyValuePair<Vector3, Vector2>(vertice, uv);

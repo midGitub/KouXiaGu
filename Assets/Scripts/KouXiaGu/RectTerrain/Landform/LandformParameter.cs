@@ -9,13 +9,23 @@ namespace KouXiaGu.RectTerrain
 {
 
     [Serializable]
-    public class RectTerrainParameter
+    public class LandformParameter
     {
 
         [SerializeField]
-        LandformChunk chunkPrefab;
+        LandformBakeCamera bakeCamera;
 
-        public LandformChunk ChunkPrefab
+        public LandformQuality Quality
+        {
+            get { return bakeCamera.Quality; }
+        }
+
+
+
+        [SerializeField]
+        LandformChunkRenderer chunkPrefab;
+
+        public LandformChunkRenderer ChunkPrefab
         {
             get { return chunkPrefab; }
         }
@@ -23,7 +33,7 @@ namespace KouXiaGu.RectTerrain
 
 
         [SerializeField, Range(0, 64)]
-        float tessellation = 16f;
+        float tessellation = 48f;
 
         /// <summary>
         /// 地形细分程度;
@@ -49,7 +59,7 @@ namespace KouXiaGu.RectTerrain
 
 
         [SerializeField, Range(0, 5)]
-        float displacement = 1.3f;
+        float displacement = 1.5f;
 
         /// <summary>
         /// 地形高度缩放;

@@ -32,8 +32,6 @@ namespace KouXiaGu.Terrain3D
         IEnumerable<CubicHexCoord> displays;
         public RenderTexture DiffuseRT { get; private set; }
         public RenderTexture HeightRT { get; private set; }
-        public Texture2D DiffuseTex { get; private set; }
-        public Texture2D HeightTex { get; private set; }
 
         IReadOnlyDictionary<CubicHexCoord, MapNode> worldMap
         {

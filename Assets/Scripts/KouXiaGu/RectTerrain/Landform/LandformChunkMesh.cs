@@ -11,16 +11,16 @@ namespace KouXiaGu.RectTerrain
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
-    public sealed class LandformMesh : MonoBehaviour
+    public sealed class LandformChunkMesh : MonoBehaviour
     {
-        LandformMesh()
+        LandformChunkMesh()
         {
         }
 
         const string meshName = "LandformChunkMesh";
 
-        static readonly float chunkHalfWidth = LandformChunkInfo.ChunkHalfWidth;
-        static readonly float chunkHalfHeight = LandformChunkInfo.ChunkHalfHeight;
+        static readonly float chunkHalfWidth = LandformInfo.ChunkHalfWidth;
+        static readonly float chunkHalfHeight = LandformInfo.ChunkHalfHeight;
 
         /// <summary>
         /// 网格生成的高度;

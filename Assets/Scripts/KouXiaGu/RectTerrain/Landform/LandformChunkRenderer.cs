@@ -12,14 +12,14 @@ namespace KouXiaGu.RectTerrain
 
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshRenderer))]
-    public sealed class LandformRenderer : MonoBehaviour
+    public sealed class LandformChunkRenderer : MonoBehaviour
     {
-        LandformRenderer()
+        LandformChunkRenderer()
         {
         }
 
         MeshRenderer meshRenderer;
-        event Action<LandformRenderer> onHeightChanged;
+        event Action<LandformChunkRenderer> onHeightChanged;
         bool isHeightChanged;
 
         Material material
@@ -45,7 +45,7 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 当地形块高度发生变化时调用;
         /// </summary>
-        public event Action<LandformRenderer> OnHeightChanged
+        public event Action<LandformChunkRenderer> OnHeightChanged
         {
             add { onHeightChanged += value; }
             remove { onHeightChanged -= value; }
@@ -135,7 +135,7 @@ namespace KouXiaGu.RectTerrain
                 return 0;
 
             Color pixelColor = HeightMap.GetPixel(uv);
-            return pixelColor.r * RectTerrainController.Instance.Parameter.Displacement;
+            return pixelColor.r * RectTerrainController.Instance.LandformParameter.Displacement;
         }
     }
 }

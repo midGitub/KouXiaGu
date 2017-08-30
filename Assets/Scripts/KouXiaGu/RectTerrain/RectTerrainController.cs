@@ -19,16 +19,18 @@ namespace KouXiaGu.RectTerrain
         }
 
         [SerializeField]
-        RectTerrainParameter parameter;
+        LandformParameter landformParameter;
+        [SerializeField]
+        LandformBaker landformBaker;
 
-        public RectTerrainParameter Parameter
+        public LandformParameter LandformParameter
         {
-            get { return parameter; }
+            get { return landformParameter; }
         }
 
         void OnValidate()
         {
-            parameter.OnValidate();
+            landformParameter.OnValidate();
         }
     }
 }

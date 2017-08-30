@@ -12,7 +12,7 @@ namespace KouXiaGu.RectTerrain
     /// <summary>
     /// 地形块信息;
     /// </summary>
-    public static class LandformChunkInfo 
+    public static class LandformInfo 
     {
         /// <summary>
         /// 宽度存在的地图节点数目;
@@ -52,9 +52,9 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 将地形块坐标转换成地形块中心点像素坐标;
         /// </summary>
-        public static Vector3 ToLandformChunkPixel(this RectCoord pos)
+        public static Vector3 ToLandformChunkPixel(this RectCoord chunkPos)
         {
-            return Grid.GetCenter(pos);
+            return Grid.GetCenter(chunkPos);
         }
 
         /// <summary>
@@ -63,6 +63,33 @@ namespace KouXiaGu.RectTerrain
         public static RectCoord ToLandformChunkRect(this Vector3 pos)
         {
             return Grid.GetCoord(pos);
+        }
+
+
+        static readonly RectCoord[] ChildOffsets = new RectCoord[]
+            {
+                new RectCoord(-1 , 1),
+                new RectCoord(0, 1), 
+                new RectCoord(1, 1),
+
+                new RectCoord(-1, 0),
+                new RectCoord(0, 0),
+                new RectCoord(1, 0),
+
+                new RectCoord(-1, -1),
+                new RectCoord(0, -1),
+                new RectCoord(1, -1),
+            };
+
+        /// <summary>
+        /// 获取到块的所有子节点;
+        /// </summary>
+        public static IEnumerable<RectCoord> GetChildren(RectCoord chunkPos)
+        {
+            foreach (var offset in ChildOffsets)
+            {
+                yield return offset + chunkPos;
+            }
         }
     }
 }
