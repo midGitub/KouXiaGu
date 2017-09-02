@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ArrayOfDefine>
   <Define tag="记录所有需要本地化的Key" defineSymblo="COLLECT_LACKED_KEYS" />
+  <Define tag="" defineSymblo="EDITOR_LOG" />
 </ArrayOfDefine>

@@ -2,10 +2,20 @@
 using System.Xml.Serialization;
 using UnityEngine;
 using KouXiaGu.Concurrent;
-using KouXiaGu.World.Resources;
 
 namespace KouXiaGu.RectTerrain
 {
+
+    [XmlRoot("TextureInfo")]
+    public class TextureInfo
+    {
+        [XmlElement("Name")]
+        public string Name { get; set; }
+
+        [XmlIgnore]
+        public Texture Texture { get; set; }
+    }
+
 
     /// <summary>
     /// 地貌资源信息;
@@ -17,26 +27,42 @@ namespace KouXiaGu.RectTerrain
         /// 高度调整贴图名;
         /// </summary>
         [XmlElement("HeightTex")]
-        public string HeightTex { get; set; }
+        public string HeightTexName { get; set; }
+
+        [XmlIgnore]
+        public Texture HeightTex { get; set; }
+
 
         /// <summary>
         /// 高度调整的权重贴图;
         /// </summary>
         [XmlElement("HeightBlendTex")]
-        public string HeightBlendTex { get; set; }
+        public string HeightBlendTexName { get; set; }
+
+        [XmlIgnore]
+        public Texture HeightBlendTex { get; set; }
+
 
         /// <summary>
         /// 漫反射贴图名;
         /// </summary>
         [XmlElement("DiffuseTex")]
-        public string DiffuseTex { get; set; }
+        public string DiffuseTexName { get; set; }
+
+        [XmlIgnore]
+        public Texture DiffuseTex { get; set; }
+
 
         /// <summary>
         /// 漫反射混合贴图名;
         /// </summary>
         [XmlElement("DiffuseBlendTex")]
-        public string DiffuseBlendTex { get; set; }
+        public string DiffuseBlendTexName { get; set; }
+
+        [XmlIgnore]
+        public Texture DiffuseBlendTex { get; set; }
     }
+
 
     /// <summary>
     /// 地貌贴图信息;
@@ -52,7 +78,7 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 是否为空?
         /// </summary>
-        public bool IsEmpty
+        public virtual bool IsEmpty
         {
             get
             {
@@ -67,7 +93,7 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 是否所有都不为空?
         /// </summary>
-        public bool IsComplete
+        public virtual bool IsComplete
         {
             get
             {
@@ -82,19 +108,28 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 销毁所有贴图;
         /// </summary>
-        public void Destroy()
+        public virtual void Destroy()
         {
-            if (!IsEmpty)
+            if (DiffuseTex != null)
             {
                 Destroy(DiffuseTex);
                 DiffuseTex = null;
+            }
 
+            if (DiffuseBlendTex != null)
+            {
                 Destroy(DiffuseBlendTex);
                 DiffuseBlendTex = null;
+            }
 
+            if (HeightTex != null)
+            {
                 Destroy(HeightTex);
                 HeightTex = null;
+            }
 
+            if (HeightBlendTex != null)
+            {
                 Destroy(HeightBlendTex);
                 HeightBlendTex = null;
             }
@@ -107,56 +142,6 @@ namespace KouXiaGu.RectTerrain
 #else
             GameObject.Destroy(item);
 #endif
-        }
-    }
-
-    /// <summary>
-    /// 地貌资源读取;
-    /// </summary>
-    public class LandformResourceAsyncReader : LandformResource, IAsyncRequest
-    {
-        public LandformResourceAsyncReader(AssetBundle assetBundle, LandformResourceInfo info)
-        {
-            this.assetBundle = assetBundle;
-            Info = info;
-        }
-
-        AssetBundle assetBundle;
-        public bool InQueue { get; private set; }
-
-        void IAsyncRequest.OnAddQueue()
-        {
-            InQueue = true;
-        }
-
-        void IAsyncRequest.OnQuitQueue()
-        {
-            InQueue = false;
-            assetBundle = null;
-        }
-
-        bool IAsyncRequest.Prepare()
-        {
-            return true;
-        }
-
-        bool IAsyncRequest.Operate()
-        {
-            DiffuseTex = ReadTexture(Info.DiffuseTex);
-            DiffuseBlendTex = ReadTexture(Info.DiffuseBlendTex);
-            HeightTex = ReadTexture(Info.HeightTex);
-            HeightBlendTex = ReadTexture(Info.HeightBlendTex);
-
-            if (!IsComplete)
-            {
-                Debug.LogWarning("无法读取[LandformResource],Info:" + ToString());
-            }
-            return false;
-        }
-
-        Texture ReadTexture(string name)
-        {
-            return assetBundle.LoadAsset<Texture>(name);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace KouXiaGu.Diagnostics
         public static ConsoleMethodCollection CommandCollection { get; private set; }
         public static bool IsSubscribeUnityDebug { get; private set; }
         static readonly ILogHandler defaultLogHandler = Debug.unityLogger.logHandler;
+        public static bool IsInitialized { get; private set; }
 
         /// <summary>
         /// 是否为开发者模式;
@@ -37,7 +38,11 @@ namespace KouXiaGu.Diagnostics
         /// </summary>
         internal static void Initialize()
         {
-            ReflectionConsoleMethods.SearchMethod(CommandCollection);
+            if (!IsInitialized)
+            {
+                ReflectionConsoleMethods.SearchMethod(CommandCollection);
+                IsInitialized = true;
+            }
         }
 
         /// <summary>

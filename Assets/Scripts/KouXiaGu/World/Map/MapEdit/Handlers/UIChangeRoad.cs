@@ -39,7 +39,7 @@ namespace KouXiaGu.World.Map.MapEdit
         {
             OnRoadExistToggleValueChanged(roadExistToggle.isOn);
 
-            var data = GameInitializer.GameData;
+            var data = OGameInitializer.GameData;
             if (data != null)
             {
                 var firset = data.Terrain.Road.FirstOrDefault().Value;
@@ -115,7 +115,7 @@ namespace KouXiaGu.World.Map.MapEdit
 
         public string GetRoadName(int roadType)
         {
-            var resource = GameInitializer.GameData;
+            var resource = OGameInitializer.GameData;
             if (resource != null)
             {
                 RoadInfo info;

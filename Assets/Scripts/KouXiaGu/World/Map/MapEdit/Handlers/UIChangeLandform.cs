@@ -29,7 +29,7 @@ namespace KouXiaGu.World.Map.MapEdit
 
         void Start()
         {
-            var data = GameInitializer.GameData;
+            var data = OGameInitializer.GameData;
             if (data != null)
             {
                 var firset = data.Terrain.Landform.FirstOrDefault().Value;
@@ -76,10 +76,10 @@ namespace KouXiaGu.World.Map.MapEdit
 
         string GetLandformName(int id)
         {
-            var resource = GameInitializer.GameData;
+            var resource = OGameInitializer.GameData;
             if (resource != null)
             {
-                LandformInfo info;
+                OLandformInfo info;
                 if (resource.Terrain.Landform.TryGetValue(id, out info))
                 {
                     return Localization.GetLocalizationText(info.Name);

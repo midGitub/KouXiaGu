@@ -1,93 +1,66 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
-using KouXiaGu.Resources;
-using KouXiaGu.Concurrent;
-using System.Collections;
 
 namespace KouXiaGu
 {
 
     /// <summary>
-    /// 负责对游戏资源初始化;
+    /// 负责游戏程序初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class GameInitializer : UnitySington<GameInitializer>, IOperationState
+    public sealed class GameInitializer : UnitySington<GameInitializer>
     {
         GameInitializer()
         {
         }
 
-        static ComponentInitializer component = new ComponentInitializer();
-        static GameResourceInitializer resource = new GameResourceInitializer();
-
-        public static IAsyncOperation ComponentInitialize
-        {
-            get { return component; }
-        }
-
-        public static IAsyncOperation<IGameResource> GameDataInitialize
-        {
-            get { return resource; }
-        }
-
-        /// <summary>
-        /// 若为初始化完毕则为null;
-        /// </summary>
-        public static IGameResource GameData { get; private set; }
-
-        public bool IsCanceled { get; private set; }
+        List<Task> tasks;
+        IInitializer[] initializers;
+        public bool IsCompleted { get; private set; }
+        public bool IsFaulted { get; private set; }
+        public AggregateException Exception { get; private set; }
 
         void Awake()
         {
-            SetInstance(this);
-            IsCanceled = false;
-
-            component.InitializeAsync(this);
-            resource.InitializeAsync(this);
-            StartCoroutine(WaitComponentInitialize());
-            StartCoroutine(WaitGameDataInitialize());
+            tasks = new List<Task>();
+            initializers = GetComponentsInChildren<IInitializer>();
         }
 
-        IEnumerator WaitComponentInitialize()
+        void Start()
         {
-            while (true)
+            StartInitialize();
+        }
+
+        async void StartInitialize()
+        {
+            if (IsCompleted)
             {
-                if (ComponentInitialize.IsCompleted)
-                {
-                    if (ComponentInitialize.IsFaulted)
-                    {
-                        Debug.LogError("组件初始化时遇到错误:" + ComponentInitialize.Exception);
-                    }
-                    yield break;
-                }
-                yield return null;
+                return;
             }
-        }
 
-        IEnumerator WaitGameDataInitialize()
-        {
-            while (true)
+            foreach (var initializer in initializers)
             {
-                if (GameDataInitialize.IsCompleted)
-                {
-                    if (GameDataInitialize.IsFaulted)
-                    {
-                        Debug.LogError("资源初始化时遇到错误:" + GameDataInitialize.Exception);
-                    }
-                    else
-                    {
-                        GameData = GameDataInitialize.Result;
-                    }
-                    yield break;
-                }
-                yield return null;
+                Task task = initializer.StartInitialize();
+                tasks.Add(task);
             }
-        }
+            Task whenAll = Task.WhenAll(tasks);
+            await whenAll;
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            IsCanceled = true;
+            if (whenAll.IsCompleted)
+            {
+                IsCompleted = true;
+                if (whenAll.IsFaulted)
+                {
+                    IsFaulted = true;
+                    Exception = whenAll.Exception;
+                    Debug.LogError("[游戏初始化]时遇到错误:" + whenAll.Exception);
+                }
+                Debug.Log("[游戏初始化]完成;");
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ namespace KouXiaGu.Globalization
     {
         public static LanguagePack Pack { get; private set; }
         readonly static HashSet<ILocalizationText> observers = new HashSet<ILocalizationText>();
+        public static bool IsInitialized { get; private set; }
 
         public static string Language
         {
@@ -47,21 +48,25 @@ namespace KouXiaGu.Globalization
         /// </summary>
         public static void Initialize()
         {
-            LanguagePackXmlSearcher searcher = new LanguagePackXmlSearcher();
-            LanguagePackXmlSerializer serializer = new LanguagePackXmlSerializer();
-            ConfigReader configReader = new ConfigReader();
+            if (!IsInitialized)
+            {
+                LanguagePackXmlSearcher searcher = new LanguagePackXmlSearcher();
+                LanguagePackXmlSerializer serializer = new LanguagePackXmlSerializer();
+                ConfigReader configReader = new ConfigReader();
 
-            var config = configReader.ReadOrDefault();
-            var packs = searcher.EnumeratePacks().ToList();
-            try
-            {
-                var stream = Find(packs, config);
-                var pack = serializer.Deserialize(stream);
-                SetLanguage_internal(pack);
-            }
-            finally
-            {
-                LanguagePackStream.CloseAll(packs);
+                var config = configReader.ReadOrDefault();
+                var packs = searcher.EnumeratePacks().ToList();
+                try
+                {
+                    var stream = Find(packs, config);
+                    var pack = serializer.Deserialize(stream);
+                    SetLanguage_internal(pack);
+                }
+                finally
+                {
+                    LanguagePackStream.CloseAll(packs);
+                }
+                IsInitialized = true;
             }
         }
 

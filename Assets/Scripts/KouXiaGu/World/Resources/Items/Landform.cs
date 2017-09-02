@@ -13,7 +13,7 @@ namespace KouXiaGu.World.Resources
     /// 地形信息;
     /// </summary>
     [XmlType("Landform")]
-    public class LandformInfo : IElement
+    public class OLandformInfo : IElement
     {
         [XmlAttribute("id")]
         public int ID { get; set; }
@@ -31,7 +31,7 @@ namespace KouXiaGu.World.Resources
         public int TagsMask { get; internal set; }
 
         [XmlIgnore]
-        public LandformResource Terrain { get; internal set; }
+        public Terrain3D.LandformResource Terrain { get; internal set; }
 
         public override string ToString()
         {
@@ -50,7 +50,7 @@ namespace KouXiaGu.World.Resources
         }
     }
 
-    class LandformInfoXmlSerializer : XmlElementsReaderWriter<LandformInfo>
+    class LandformInfoXmlSerializer : XmlElementsReaderWriter<OLandformInfo>
     {
         public LandformInfoXmlSerializer() : base(new LandformFile())
         {

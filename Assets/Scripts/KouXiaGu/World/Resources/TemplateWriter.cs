@@ -15,9 +15,9 @@ namespace KouXiaGu.World.Resources
     class TemplateWriter
     {
 
-        static readonly Dictionary<int, LandformInfo> templateLandformInfos = new Dictionary<int, LandformInfo>()
+        static readonly Dictionary<int, OLandformInfo> templateLandformInfos = new Dictionary<int, OLandformInfo>()
         {
-            { 1, new LandformInfo()
+            { 1, new OLandformInfo()
             {
                 ID = 1,
                 Name = "none",
@@ -110,7 +110,7 @@ namespace KouXiaGu.World.Resources
                }
             };
 
-        static IWriter<Dictionary<int, LandformInfo>> LandformSerializer = new LandformInfoXmlSerializer().ToTemplateWriter();
+        static IWriter<Dictionary<int, OLandformInfo>> LandformSerializer = new LandformInfoXmlSerializer().ToTemplateWriter();
         static IWriter<Dictionary<int, BuildingInfo>> BuildingSerializer = new BuildingInfoXmlSerializer().ToTemplateWriter();
         static IWriter<Dictionary<int, RoadInfo>> RoadSerializer = new RoadInfoXmlSerializer().ToTemplateWriter();
         static IWriter<Dictionary<int, ProductInfo>> ProductSerializer = new ProductInfoXmlSerializer().ToTemplateWriter();

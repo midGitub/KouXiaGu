@@ -19,24 +19,29 @@ namespace KouXiaGu.InputControl
         /// </summary>
         public static CustomKeyMap KeyMap { get; private set; }
         public static OccupiedInput OccupiedInput { get; private set; }
+        public static bool IsInitialized { get; private set; }
 
         /// <summary>
         /// 初始化;
         /// </summary>
         public static void Initialize()
         {
-            var serializer = new CustomKeyMapXmlSerializer();
-            CustomKeyMap keyMap;
-            try
+            if (!IsInitialized)
             {
-                keyMap = serializer.Read();
+                var serializer = new CustomKeyMapXmlSerializer();
+                CustomKeyMap keyMap;
+                try
+                {
+                    keyMap = serializer.Read();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("未能读取自定义按键;" + ex);
+                    keyMap = DefaultKeyMap.GetDefaultKeyMap();
+                }
+                SetKeyMap(keyMap);
+                IsInitialized = true;
             }
-            catch(Exception ex)
-            {
-                Debug.LogWarning("未能读取自定义按键;" + ex);
-                keyMap = DefaultKeyMap.GetDefaultKeyMap();
-            }
-            SetKeyMap(keyMap);
         }
 
         /// <summary>

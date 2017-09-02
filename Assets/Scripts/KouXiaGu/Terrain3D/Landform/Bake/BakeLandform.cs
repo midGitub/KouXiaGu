@@ -38,7 +38,7 @@ namespace KouXiaGu.Terrain3D
             get { return worldData.MapData.ReadOnlyMap; }
         }
 
-        IDictionary<int, LandformInfo> landformInfos
+        IDictionary<int, OLandformInfo> landformInfos
         {
             get { return worldData.BasicData.BasicResource.Terrain.Landform; }
         }
@@ -110,7 +110,7 @@ namespace KouXiaGu.Terrain3D
                 if (worldMap.TryGetValue(display, out node))
                 {
                     float angle = node.Landform.Angle;
-                    LandformInfo info;
+                    OLandformInfo info;
                     int landformType = node.Landform.LandformType;
                     if (landformInfos.TryGetValue(landformType, out info))
                     {

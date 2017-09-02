@@ -106,7 +106,7 @@ namespace KouXiaGu.World
             }
             else if (BasicResource == null || InfoReader == null)
             {
-                BasicResource = GameInitializer.GameDataInitialize;
+                BasicResource = OGameInitializer.GameDataInitialize;
                 InfoReader = new DefaultWorldInfo();
             }
             WorldInitialization initializer = new WorldInitialization();

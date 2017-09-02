@@ -77,7 +77,7 @@ namespace KouXiaGu.Navigation
             int mask = 0;
             if (node.Landform.Exist())
             {
-                LandformInfo landformInfo;
+                OLandformInfo landformInfo;
                 if (Resources.Landform.TryGetValue(node.Landform.LandformType, out landformInfo))
                 {
                     mask |= landformInfo.TagsMask;

@@ -9,7 +9,7 @@ namespace KouXiaGu.World.Resources
 
     public class WorldResources
     {
-        public IDictionary<int, LandformInfo> Landform { get; internal set; }
+        public IDictionary<int, OLandformInfo> Landform { get; internal set; }
         public IDictionary<int, BuildingInfo> Building { get; internal set; }
         public IDictionary<int, RoadInfo> Road { get; internal set; }
         public IDictionary<int, ProductInfo> Products { get; internal set; }

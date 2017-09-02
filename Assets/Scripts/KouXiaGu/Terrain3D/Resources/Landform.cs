@@ -44,12 +44,12 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class LandformResource : IDisposable
     {
-        public LandformResource(LandformInfo info)
+        public LandformResource(OLandformInfo info)
         {
             Info = info;
         }
 
-        public LandformInfo Info { get; internal set; }
+        public OLandformInfo Info { get; internal set; }
         public Texture DiffuseTex { get; internal set; }
         public Texture DiffuseBlendTex { get; internal set; }
         public Texture HeightTex { get; internal set; }
@@ -108,14 +108,14 @@ namespace KouXiaGu.Terrain3D
 
     public class LandformResourceReader : AsyncRequest
     {
-        public LandformResourceReader(AssetBundle assetBundle, LandformInfo info)
+        public LandformResourceReader(AssetBundle assetBundle, OLandformInfo info)
         {
             this.assetBundle = assetBundle;
             this.info = info;
         }
 
         AssetBundle assetBundle;
-        LandformInfo info;
+        OLandformInfo info;
 
         protected override bool Operate()
         {
