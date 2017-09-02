@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace KouXiaGu.Diagnostics
     [DisallowMultipleComponent]
     public class XiaGuConsoleInitializer : MonoBehaviour, IInitializer
     {
-        Task IInitializer.StartInitialize()
+        Task IInitializer.StartInitialize(IOperationState state)
         {
             Task task = Task.Run(delegate ()
             {

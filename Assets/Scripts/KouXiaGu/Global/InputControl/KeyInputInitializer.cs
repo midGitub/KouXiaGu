@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace KouXiaGu.InputControl
         {
         }
 
-        Task IInitializer.StartInitialize()
+        Task IInitializer.StartInitialize(IOperationState state)
         {
             return Task.Run(delegate ()
             {
