@@ -17,9 +17,25 @@ namespace KouXiaGu
 
     public interface IDictionaryObserver<TKey, TValue>
     {
+        /// <summary>
+        /// 在加入之后调用;
+        /// </summary>
         void OnAdded(TKey key, TValue newValue);
+
+        /// <summary>
+        /// 在移除之后调用;
+        /// </summary>
         void OnRemoved(TKey key, TValue originalValue);
+
+        /// <summary>
+        /// 在更新之后调用;
+        /// </summary>
         void OnUpdated(TKey key, TValue originalValue, TValue newValue);
+
+        /// <summary>
+        /// 在清除之前调用;
+        /// </summary>
+        void OnClear();
     }
 
     /// <summary>
@@ -92,20 +108,12 @@ namespace KouXiaGu
                 if (dictionary.TryGetValue(key, out original))
                 {
                     dictionary[key] = value;
-                    TrackUpdate(key, original, value);
+                    TrackUpdated(key, original, value);
                 }
                 else
                 {
                     throw new KeyNotFoundException();
                 }
-            }
-        }
-
-        void TrackUpdate(TKey key, TValue original, TValue newValue)
-        {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnUpdated(key, original, newValue);
             }
         }
 
@@ -125,15 +133,7 @@ namespace KouXiaGu
         public void Add(TKey key, TValue value)
         {
             dictionary.Add(key, value);
-            TrackAdd(key, value);
-        }
-
-        void TrackAdd(TKey key, TValue newValue)
-        {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnAdded(key, newValue);
-            }
+            TrackAdded(key, value);
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -147,20 +147,12 @@ namespace KouXiaGu
             if (dictionary.TryGetValue(key, out original))
             {
                 dictionary.Remove(key);
-                TrackRemove(key, original);
+                TrackRemoved(key, original);
                 return true;
             }
             else
             {
                 return false;
-            }
-        }
-
-        void TrackRemove(TKey key, TValue original)
-        {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnRemoved(key, original);
             }
         }
 
@@ -184,10 +176,7 @@ namespace KouXiaGu
         /// </summary>
         public void Clear()
         {
-            foreach (var item in dictionary)
-            {
-                TrackRemove(item.Key, item.Value);
-            }
+            TrackClear();
             dictionary.Clear();
         }
 
@@ -204,6 +193,39 @@ namespace KouXiaGu
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return dictionary.GetEnumerator();
+        }
+
+
+        void TrackAdded(TKey key, TValue newValue)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnAdded(key, newValue);
+            }
+        }
+
+        void TrackRemoved(TKey key, TValue original)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnRemoved(key, original);
+            }
+        }
+
+        void TrackUpdated(TKey key, TValue original, TValue newValue)
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnUpdated(key, original, newValue);
+            }
+        }
+
+        void TrackClear()
+        {
+            foreach (var observer in observers.EnumerateObserver())
+            {
+                observer.OnClear();
+            }
         }
     }
 

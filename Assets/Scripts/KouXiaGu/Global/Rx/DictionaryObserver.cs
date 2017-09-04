@@ -19,6 +19,7 @@ namespace KouXiaGu
         public abstract void OnAdded(TKey key, TValue newValue);
         public abstract void OnRemoved(TKey key, TValue originalValue);
         public abstract void OnUpdated(TKey key, TValue originalValue, TValue newValue);
+        public abstract void OnClear();
 
         public void Subscribe(IObservableDictionary<TKey, TValue> provider)
         {

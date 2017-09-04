@@ -4,17 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KouXiaGu.World.Map
+namespace KouXiaGu.World.RectMap
 {
 
     /// <summary>
     /// 记录地图变化;
     /// </summary>
-    class MapChangedRecorder<TKey, TVaule> : IDictionaryObserver<TKey, TVaule>, IDisposable
+    public class MapChangedRecorder<TKey, TVaule> : IDictionaryObserver<TKey, TVaule>, IDisposable
     {
         public MapChangedRecorder(IObservableDictionary<TKey, TVaule> observableMap)
         {
             ChangedPositions = new HashSet<TKey>();
+            unsubscriber = observableMap.Subscribe(this);
+        }
+
+        public MapChangedRecorder(IObservableDictionary<TKey, TVaule> observableMap, IEnumerable<TKey> changedPositions)
+        {
+            ChangedPositions = new HashSet<TKey>(changedPositions);
             unsubscriber = observableMap.Subscribe(this);
         }
 
@@ -38,6 +44,12 @@ namespace KouXiaGu.World.Map
 
         void IDictionaryObserver<TKey, TVaule>.OnClear()
         {
+            ChangedPositions.Clear();
+        }
+
+        public void Clear()
+        {
+            ChangedPositions.Clear();
         }
 
         /// <summary>

@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+using UnityEngine;
+using KouXiaGu.Resources;
+
+namespace KouXiaGu.World
+{
+
+    [Serializable]
+    public class WorldDataFiler
+    {
+        /// <summary>
+        /// 地图数据路径;
+        /// </summary>
+        [SerializeField]
+        string fileName;
+
+        /// <summary>
+        /// 地图存档数据路径;
+        /// </summary>
+        [SerializeField]
+        string archiveFileName;
+
+        /// <summary>
+        /// 地图数据路径;
+        /// </summary>
+        public string FileName
+        {
+            get { return fileName; }
+        }
+
+        /// <summary>
+        /// 地图存档数据路径;
+        /// </summary>
+        public string ArchiveFileName
+        {
+            get { return archiveFileName; }
+        }
+
+        /// <summary>
+        /// 获取到完整的文件存储路径;
+        /// </summary>
+        public string GetFileFullPath()
+        {
+            return Path.Combine(Resource.ConfigDirectoryPath, FileName);
+        }
+
+        /// <summary>
+        /// 获取到完整的文件存档路径;
+        /// </summary>
+        public string GetArchiveFileFullPath(ArchiveFile archive)
+        {
+            return Path.Combine(archive.ArchiveDirectory, archiveFileName);
+        }
+    }
+}

@@ -40,7 +40,8 @@ namespace KouXiaGu.Terrain3D
 
         IDictionary<int, OLandformInfo> landformInfos
         {
-            get { return worldData.BasicData.BasicResource.Terrain.Landform; }
+            get { throw new NotImplementedException(); }
+            //get { return worldData.BasicData.BasicResource.Terrain.Landform; }
         }
 
         public void Initialize()

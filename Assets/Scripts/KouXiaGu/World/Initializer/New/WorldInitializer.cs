@@ -6,19 +6,21 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace KouXiaGu
+namespace KouXiaGu.World
 {
 
     /// <summary>
     /// 游戏场景初始化器;
     /// </summary>
     [DisallowMultipleComponent]
-    public class WorldInitializer : SceneSington<WorldInitializer>, IOperationState
+    public sealed class WorldInitializer : SceneSington<WorldInitializer>, IOperationState
     {
         WorldInitializer()
         {
         }
 
+        [SerializeField]
+        DataInitializer worldDataInitializer;
         List<Task> tasks;
         IInitializer[] initializers;
         internal Task InitializeTask { get; private set; }
@@ -61,8 +63,7 @@ namespace KouXiaGu
 
             IsRunning = true;
 
-            GameInitializer gameInitializer = GameInitializer.Instance;
-            while (!gameInitializer.IsCompleted)
+            while (!worldDataInitializer.IsCompleted)
             {
                 await Task.Delay(500);
             }

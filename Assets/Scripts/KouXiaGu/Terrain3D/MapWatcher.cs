@@ -76,6 +76,10 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
+        void IDictionaryObserver<CubicHexCoord, MapNode>.OnClear()
+        {
+        }
+
         void UpdateLandformChunks(CubicHexCoord coord, BakeTargets targets)
         {
             var belongChunks = GetBakeChunks(coord);
