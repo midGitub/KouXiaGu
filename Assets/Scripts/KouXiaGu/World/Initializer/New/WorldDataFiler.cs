@@ -52,9 +52,27 @@ namespace KouXiaGu.World
         /// <summary>
         /// 获取到完整的文件存档路径;
         /// </summary>
-        public string GetArchiveFileFullPath(ArchiveFile archive)
+        public string GetArchiveFileFullPath(Archive archive)
         {
-            return Path.Combine(archive.ArchiveDirectory, archiveFileName);
+            return Path.Combine(archive.Directory, archiveFileName);
+        }
+
+        /// <summary>
+        /// 是否存在文件;
+        /// </summary>
+        public bool ExistsFile()
+        {
+            string path = GetFileFullPath();
+            return File.Exists(path);
+        }
+
+        /// <summary>
+        /// 是否存在存档文件;
+        /// </summary>
+        public bool ExistsArchive(Archive archive)
+        {
+            string path = GetArchiveFileFullPath(archive);
+            return File.Exists(path);
         }
     }
 }

@@ -74,19 +74,23 @@ namespace KouXiaGu.World
                 tasks.Add(task);
             }
 
-            InitializeTask = Task.WhenAll(tasks);
-            await InitializeTask;
-
-            if (InitializeTask.IsCompleted)
+            try
             {
-                if (InitializeTask.IsFaulted)
-                {
-                    Debug.LogError("[场景初始化]时遇到错误:" + InitializeTask.Exception);
-                }
+                InitializeTask = Task.WhenAll(tasks);
+                await InitializeTask;
                 Debug.Log("[场景初始化]完成;");
             }
-
-            IsRunning = false;
+            catch
+            {
+                Debug.LogError("[场景初始化]时遇到错误:" + InitializeTask.Exception);
+            }
+            finally
+            {
+                tasks = null;
+                initializers = null;
+                InitializeTask = null;
+                IsRunning = false;
+            }
         }
 
         protected override void OnDestroy()

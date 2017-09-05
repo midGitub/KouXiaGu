@@ -9,7 +9,7 @@ namespace KouXiaGu.World
 
     public interface IDataInitializer
     {
-        Task StartInitialize(ArchiveFile archive, IOperationState state);
+        Task StartInitialize(Archive archive, IOperationState state);
     }
 
     /// <summary>
@@ -21,6 +21,17 @@ namespace KouXiaGu.World
         DataInitializer()
         {
         }
+
+        /// <summary>
+        /// 存档信息,在初始化之前赋值,若未Null则初始化异常;
+        /// </summary>
+        public static Archive Archive { get; set; }
+
+        /// <summary>
+        /// 默认的存档,在未指定存档时使用的存档;
+        /// </summary>
+        [SerializeField]
+        Archive defaultArchive;
 
         List<Task> tasks;
         IDataInitializer[] initializers;
@@ -50,14 +61,25 @@ namespace KouXiaGu.World
             initializers = GetComponentsInChildren<IDataInitializer>();
         }
 
+        void Start()
+        {
+            StartInitialize();
+        }
+
         /// <summary>
         /// 开始进行初始化;
         /// </summary>
-        public async void StartInitialize(ArchiveFile archive)
+        public async void StartInitialize()
         {
             if (IsCompleted)
             {
                 return;
+            }
+
+            var archive = Archive;
+            if (archive == null)
+            {
+                archive = defaultArchive;
             }
 
             IsRunning = true;
@@ -74,25 +96,30 @@ namespace KouXiaGu.World
                 tasks.Add(task);
             }
 
-            InitializeTask = Task.WhenAll(tasks);
-            await InitializeTask;
-
-            if (InitializeTask.IsCompleted)
+            try
             {
-                if (InitializeTask.IsFaulted)
-                {
-                    Debug.LogError("[场景初始化]时遇到错误:" + InitializeTask.Exception);
-                }
-                Debug.Log("[场景初始化]完成;");
+                InitializeTask = Task.WhenAll(tasks);
+                await InitializeTask;
+                Debug.Log("[场景数据初始化]完成;");
             }
-
-            IsRunning = false;
+            catch
+            {
+                Debug.LogError("[场景数据初始化]时遇到错误:" + InitializeTask.Exception);
+            }
+            finally
+            {
+                tasks = null;
+                initializers = null;
+                InitializeTask = null;
+                IsRunning = false;
+            }
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             IsCanceled = true;
+            Archive = null;
         }
 
         /// <summary>

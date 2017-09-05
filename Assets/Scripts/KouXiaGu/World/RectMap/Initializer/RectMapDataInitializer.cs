@@ -52,19 +52,26 @@ namespace KouXiaGu.World.RectMap
             get { return ProtoFileSerializer<MapData>.Default; }
         }
 
-        Task IDataInitializer.StartInitialize(ArchiveFile archive, IOperationState state)
+        Task IDataInitializer.StartInitialize(Archive archive, IOperationState state)
         {
             return Task.Run(delegate ()
             {
-                MapData data = Serializer.Read(mapDataFile.GetFileFullPath());
-                if (archive == null)
+                string filePath = mapDataFile.GetFileFullPath();
+                if (!File.Exists(filePath))
                 {
-                    WorldMap = new WorldMap(data);
+                    throw new ArgumentException("未找到地图文件:" + filePath);
+                }
+                MapData data = Serializer.Read(filePath);
+
+                string archivePath = mapDataFile.GetArchiveFileFullPath(archive);
+                if (File.Exists(archivePath))
+                {
+                    MapData archiveMap = Serializer.Read(archivePath);
+                    WorldMap = new WorldMap(data, archiveMap);
                 }
                 else
                 {
-                    MapData archiveMap = Serializer.Read(mapDataFile.GetArchiveFileFullPath(archive));
-                    WorldMap = new WorldMap(data, archiveMap);
+                    WorldMap = new WorldMap(data);
                 }
             });
         }
