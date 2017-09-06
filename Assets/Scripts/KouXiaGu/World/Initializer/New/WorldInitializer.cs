@@ -1,8 +1,5 @@
-﻿using KouXiaGu.Concurrent;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -69,7 +66,12 @@ namespace KouXiaGu.World
             {
                 await Task.Delay(500);
             }
+            if (worldDataInitializer.IsFaulted)
+            {
+                return;
+            }
 
+            Debug.Log("[场景初始化]开始初始化;");
             foreach (var initializer in initializers)
             {
                 Task task = initializer.StartInitialize(TokenSource.Token);
@@ -88,9 +90,6 @@ namespace KouXiaGu.World
             }
             finally
             {
-                tasks = null;
-                initializers = null;
-                InitializeTask = null;
                 IsRunning = false;
             }
         }

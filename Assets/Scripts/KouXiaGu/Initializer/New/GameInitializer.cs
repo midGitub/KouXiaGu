@@ -81,9 +81,6 @@ namespace KouXiaGu
             }
             finally
             {
-                tasks = null;
-                initializers = null;
-                InitializeTask = null;
                 IsRunning = false;
             }
         }

@@ -92,6 +92,7 @@ namespace KouXiaGu.World
                 await Task.Delay(500);
             }
 
+            Debug.Log("[场景数据初始化]开始初始化;");
             foreach (var initializer in initializers)
             {
                 Task task = initializer.StartInitialize(archive, TokenSource.Token);
@@ -110,9 +111,6 @@ namespace KouXiaGu.World
             }
             finally
             {
-                tasks = null;
-                initializers = null;
-                InitializeTask = null;
                 IsRunning = false;
             }
         }
