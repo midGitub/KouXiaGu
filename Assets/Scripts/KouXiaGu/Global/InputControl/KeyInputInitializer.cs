@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -17,13 +18,13 @@ namespace KouXiaGu.InputControl
         {
         }
 
-        Task IInitializer.StartInitialize(IOperationState state)
+        Task IInitializer.StartInitialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {
                 KeyInput.Initialize();
                 OnCustomInputCompleted();
-            });
+            }, token);
         }
 
         [Conditional("EDITOR_LOG")]

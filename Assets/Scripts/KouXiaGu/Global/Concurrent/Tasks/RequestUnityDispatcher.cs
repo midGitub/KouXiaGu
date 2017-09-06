@@ -23,7 +23,7 @@ namespace KouXiaGu.Concurrent
 
         public int Count
         {
-            get { return RequestQueue.Count; }
+            get { return RequestQueue != null ? RequestQueue.Count : 0; }
         }
 
         void Awake()

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace KouXiaGu
@@ -16,6 +17,6 @@ namespace KouXiaGu
         /// <summary>
         /// 开始初始化;
         /// </summary>
-        Task StartInitialize(IOperationState state);
+        Task StartInitialize(CancellationToken token);
     }
 }

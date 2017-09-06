@@ -1,6 +1,7 @@
 ﻿using KouXiaGu.Concurrent;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -9,14 +10,14 @@ namespace KouXiaGu.World
 
     public interface IDataInitializer
     {
-        Task StartInitialize(Archive archive, IOperationState state);
+        Task StartInitialize(Archive archive, CancellationToken token);
     }
 
     /// <summary>
     /// 游戏场景信息初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class DataInitializer : SceneSington<DataInitializer>, IOperationState
+    public sealed class DataInitializer : SceneSington<DataInitializer>
     {
         DataInitializer()
         {
@@ -53,12 +54,13 @@ namespace KouXiaGu.World
         }
 
         public bool IsRunning { get; private set; }
-        public bool IsCanceled { get; private set; }
+        public CancellationTokenSource TokenSource { get; private set; }
 
         void Awake()
         {
             tasks = new List<Task>();
             initializers = GetComponentsInChildren<IDataInitializer>();
+            TokenSource = new CancellationTokenSource();
         }
 
         void Start()
@@ -92,7 +94,7 @@ namespace KouXiaGu.World
 
             foreach (var initializer in initializers)
             {
-                Task task = initializer.StartInitialize(archive, this);
+                Task task = initializer.StartInitialize(archive, TokenSource.Token);
                 tasks.Add(task);
             }
 
@@ -118,16 +120,8 @@ namespace KouXiaGu.World
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            IsCanceled = true;
+            TokenSource.Cancel();
             Archive = null;
-        }
-
-        /// <summary>
-        /// 取消初始化;
-        /// </summary>
-        public void CanceleInitialize()
-        {
-            IsCanceled = true;
         }
     }
 }

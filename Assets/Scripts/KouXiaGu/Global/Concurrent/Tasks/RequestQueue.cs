@@ -15,6 +15,7 @@ namespace KouXiaGu.Concurrent
         {
             Stopwatch = stopwatch;
             requestQueue = new Queue<IRequest>();
+            coroutine = Coroutine();
         }
 
         Queue<IRequest> requestQueue;
@@ -61,6 +62,12 @@ namespace KouXiaGu.Concurrent
             {
                 IRequest request;
 
+                if (Stopwatch.Await())
+                {
+                    yield return null;
+                    Stopwatch.Restart();
+                }
+
                 lock (asyncLock)
                 {
                     while (requestQueue.Count == 0)
@@ -70,15 +77,7 @@ namespace KouXiaGu.Concurrent
                     request = requestQueue.Dequeue();
                 }
 
-                while (!request.IsCompleted)
-                {
-                    if (Stopwatch.Await())
-                    {
-                        yield return null;
-                        Stopwatch.Restart();
-                    }
-                    Do(request);
-                }
+                Do(request);
             }
         }
 
@@ -86,7 +85,10 @@ namespace KouXiaGu.Concurrent
         {
             try
             {
-                request.MoveNext();
+                if (!request.IsCompleted)
+                {
+                    request.MoveNext();
+                }
             }
             catch(Exception ex)
             {

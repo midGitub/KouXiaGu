@@ -7,7 +7,7 @@ namespace KouXiaGu.Concurrent
 {
 
 
-    public static class RequestDispatcherExtensions
+    public static class AsyncRequestDispatcherExtensions
     {
 
         /// <summary>

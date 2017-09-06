@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace KouXiaGu
     /// 负责游戏程序初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GameInitializer : UnitySington<GameInitializer>, IOperationState
+    public sealed class GameInitializer : UnitySington<GameInitializer>
     {
         GameInitializer()
         {
@@ -39,12 +40,13 @@ namespace KouXiaGu
         }
 
         public bool IsRunning { get; private set; }
-        public bool IsCanceled { get; private set; }
+        public CancellationTokenSource TokenSource { get; private set; }
 
         void Awake()
         {
             tasks = new List<Task>();
             initializers = GetComponentsInChildren<IInitializer>();
+            TokenSource = new CancellationTokenSource();
         }
 
         void Start()
@@ -63,7 +65,7 @@ namespace KouXiaGu
 
             foreach (var initializer in initializers)
             {
-                Task task = initializer.StartInitialize(this);
+                Task task = initializer.StartInitialize(TokenSource.Token);
                 tasks.Add(task);
             }
 
@@ -89,15 +91,7 @@ namespace KouXiaGu
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            IsCanceled = true;
-        }
-
-        /// <summary>
-        /// 取消初始化;
-        /// </summary>
-        public void CanceleInitialize()
-        {
-            IsCanceled = true;
+            TokenSource.Cancel();
         }
     }
 }

@@ -18,8 +18,19 @@ namespace KouXiaGu.Concurrent
         bool IsCompleted { get; }
 
         /// <summary>
-        /// 表示对应操作,直到 IsCompleted 为true时停止调用;
+        /// 表示对应操作;
         /// </summary>
         void MoveNext();
+    }
+
+    /// <summary>
+    /// 带返回结果的请求;
+    /// </summary>
+    public interface IRequest<T> : IRequest
+    {
+        /// <summary>
+        /// 请求结果;
+        /// </summary>
+        T Result { get; }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -16,13 +17,13 @@ namespace KouXiaGu.Diagnostics
     [DisallowMultipleComponent]
     public class XiaGuConsoleInitializer : MonoBehaviour, IInitializer
     {
-        Task IInitializer.StartInitialize(IOperationState state)
+        Task IInitializer.StartInitialize(CancellationToken token)
         {
             Task task = Task.Run(delegate ()
             {
                 XiaGuConsole.Initialize();
                 OnXiaGuConsoleCompleted();
-            });
+            }, token);
             return task;
         }
 

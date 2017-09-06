@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using KouXiaGu.Concurrent;
 using UnityEngine;
 using KouXiaGu.Resources;
+using System.Threading;
 
 namespace KouXiaGu.World.RectMap
 {
@@ -52,15 +53,15 @@ namespace KouXiaGu.World.RectMap
             get { return ProtoFileSerializer<MapData>.Default; }
         }
 
-        Task IDataInitializer.StartInitialize(Archive archive, IOperationState state)
+        Task IDataInitializer.StartInitialize(Archive archive, CancellationToken token)
         {
             return Task.Run(delegate ()
             {
-                WorldMap = ReadMap(archive, state);
-            });
+                WorldMap = ReadMap(archive);
+            }, token);
         }
 
-        WorldMap ReadMap(Archive archive, IOperationState state)
+        WorldMap ReadMap(Archive archive)
         {
             string filePath = mapDataFile.GetFileFullPath();
             if (!File.Exists(filePath))
