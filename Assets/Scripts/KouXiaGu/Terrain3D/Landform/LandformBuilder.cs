@@ -46,7 +46,7 @@ namespace KouXiaGu.Terrain3D
     [Obsolete]
     class OLandformBuilder
     {
-        public OLandformBuilder(IWorld world, IRequestDispatcher requestDispatcher)
+        public OLandformBuilder(IWorld world, IAsyncRequestDispatcher requestDispatcher)
         {
             if (world == null)
                 throw new ArgumentNullException("world");
@@ -60,7 +60,7 @@ namespace KouXiaGu.Terrain3D
 
         public IWorld World { get; private set; }
         public Dictionary<RectCoord, CreateRequest> SceneChunks { get; private set; }
-        IRequestDispatcher requestDispatcher;
+        IAsyncRequestDispatcher requestDispatcher;
         readonly object unityThreadLock = new object();
         readonly LandformChunkPool chunkPool;
         readonly Tracker<RectCoord> completedChunkSender;

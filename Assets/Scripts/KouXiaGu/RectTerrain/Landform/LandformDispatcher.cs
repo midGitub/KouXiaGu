@@ -12,7 +12,7 @@ namespace KouXiaGu.RectTerrain
     /// 处理地形在Unity线程执行的操作;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class LandformDispatcher : MonoBehaviour, IRequestDispatcher
+    public sealed class LandformDispatcher : MonoBehaviour, IAsyncRequestDispatcher
     {
         LandformDispatcher()
         {

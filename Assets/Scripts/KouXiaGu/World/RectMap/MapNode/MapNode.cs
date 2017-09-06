@@ -19,5 +19,8 @@ namespace KouXiaGu.World.RectMap
 
         [ProtoMember(2)]
         public NodeBuildingInfo Building { get; set; }
+
+        [ProtoMember(3)]
+        public NodeRoadInfo Road { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class BuildingBuilder : ChunkBuilder<CubicHexCoord, BuildingUnit>
     {
-        public BuildingBuilder(IWorldData worldData, IRequestDispatcher requestDispatcher) : base(requestDispatcher)
+        public BuildingBuilder(IWorldData worldData, IAsyncRequestDispatcher requestDispatcher) : base(requestDispatcher)
         {
             if (worldData == null)
             {

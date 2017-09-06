@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KouXiaGu.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,5 +19,10 @@ namespace KouXiaGu.RectTerrain
         {
         }
 
+        /// <summary>
+        /// Unity线程处置器;
+        /// </summary>
+        [SerializeField]
+        RequestUnityDispatcher Dispatcher;
     }
 }

@@ -12,7 +12,7 @@ namespace KouXiaGu.World.Resources
     /// </summary>
     public class ResourceInfo
     {
-        public LandformResourceInfo[] LandformInfos { get; private set; }
+        public LandformResource[] LandformInfos { get; private set; }
 
     }
 

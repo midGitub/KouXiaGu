@@ -6,7 +6,7 @@ using System.Text;
 namespace KouXiaGu.Concurrent
 {
 
-    public interface IRequestDispatcher
+    public interface IAsyncRequestDispatcher
     {
         int RequestCount { get; }
         void Add(IAsyncRequest request);

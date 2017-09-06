@@ -6,131 +6,96 @@ using KouXiaGu.Concurrent;
 namespace KouXiaGu.RectTerrain
 {
 
-    [XmlRoot("TextureInfo")]
-    public class TextureInfo
-    {
-        [XmlElement("Name")]
-        public string Name { get; set; }
-
-        [XmlIgnore]
-        public Texture Texture { get; set; }
-    }
-
-
     /// <summary>
     /// 地貌资源信息;
     /// </summary>
     [XmlRoot("LandformResourceInfo")]
-    public class LandformResourceInfo
+    public sealed class LandformResource
     {
+        public LandformResource()
+        {
+        }
+
         /// <summary>
-        /// 高度调整贴图名;
+        /// 高度调整贴图;
         /// </summary>
         [XmlElement("HeightTex")]
-        public string HeightTexName { get; set; }
-
-        [XmlIgnore]
-        public Texture HeightTex { get; set; }
-
+        public TextureInfo HeightTex { get; set; }
 
         /// <summary>
         /// 高度调整的权重贴图;
         /// </summary>
         [XmlElement("HeightBlendTex")]
-        public string HeightBlendTexName { get; set; }
-
-        [XmlIgnore]
-        public Texture HeightBlendTex { get; set; }
-
+        public TextureInfo HeightBlendTex { get; set; }
 
         /// <summary>
         /// 漫反射贴图名;
         /// </summary>
         [XmlElement("DiffuseTex")]
-        public string DiffuseTexName { get; set; }
-
-        [XmlIgnore]
-        public Texture DiffuseTex { get; set; }
-
+        public TextureInfo DiffuseTex { get; set; }
 
         /// <summary>
         /// 漫反射混合贴图名;
         /// </summary>
         [XmlElement("DiffuseBlendTex")]
-        public string DiffuseBlendTexName { get; set; }
-
-        [XmlIgnore]
-        public Texture DiffuseBlendTex { get; set; }
-    }
-
-
-    /// <summary>
-    /// 地貌贴图信息;
-    /// </summary>
-    public class LandformResource
-    {
-        public LandformResourceInfo Info { get; protected set; }
-        public Texture DiffuseTex { get; protected set; }
-        public Texture DiffuseBlendTex { get; protected set; }
-        public Texture HeightTex { get; protected set; }
-        public Texture HeightBlendTex { get; protected set; }
+        public TextureInfo DiffuseBlendTex { get; set; }
 
         /// <summary>
         /// 是否为空?
         /// </summary>
-        public virtual bool IsEmpty
+        public bool IsEmpty
         {
             get
             {
                 return
-                    DiffuseTex == null &&
-                    DiffuseBlendTex == null &&
-                    HeightTex == null &&
-                    HeightBlendTex == null;
+                    DiffuseTex.Texture == null &&
+                    DiffuseBlendTex.Texture == null &&
+                    HeightTex.Texture == null &&
+                    HeightBlendTex.Texture == null;
             }
         }
 
         /// <summary>
         /// 是否所有都不为空?
         /// </summary>
-        public virtual bool IsComplete
+        public bool IsCompleted
         {
             get
             {
                 return
-                    DiffuseTex != null &&
-                    DiffuseBlendTex != null &&
-                    HeightTex != null &&
-                    HeightBlendTex != null;
+                    DiffuseTex.IsCompleted &&
+                    DiffuseBlendTex.IsCompleted &&
+                    HeightTex.IsCompleted &&
+                    HeightBlendTex.IsCompleted;
             }
         }
 
         /// <summary>
         /// 销毁所有贴图;
         /// </summary>
-        public virtual void Destroy()
+        public void Destroy()
         {
-            if (DiffuseTex != null)
+            if (DiffuseTex.Texture != null)
             {
-                Destroy(DiffuseTex);
+                Destroy(DiffuseTex.Texture);
                 DiffuseTex = null;
             }
 
-            if (DiffuseBlendTex != null)
+            if (DiffuseBlendTex.Texture != null)
             {
-                Destroy(DiffuseBlendTex);
+                Destroy(DiffuseBlendTex.Texture);
                 DiffuseBlendTex = null;
             }
 
-            if (HeightTex != null)
+            if (HeightTex.Texture != null)
             {
-                Destroy(HeightTex);
+                Destroy(HeightTex.Texture);
                 HeightTex = null;
             }
 
-            if (HeightBlendTex != null)
+            if (HeightBlendTex.Texture != null)
             {
-                Destroy(HeightBlendTex);
+                Destroy(HeightBlendTex.Texture);
                 HeightBlendTex = null;
             }
         }
@@ -143,5 +108,13 @@ namespace KouXiaGu.RectTerrain
             GameObject.Destroy(item);
 #endif
         }
+    }
+
+    /// <summary>
+    /// 序列化之后处理程序;
+    /// </summary>
+    public class LandformResourceAfterSerialization
+    {
+
     }
 }

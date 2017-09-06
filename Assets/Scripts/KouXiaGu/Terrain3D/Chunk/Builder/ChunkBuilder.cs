@@ -99,7 +99,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public abstract class ChunkBuilder<TPoint, TChunk> : IEnumerable<IChunkInfo<TPoint, TChunk>>
     {
-        public ChunkBuilder(IRequestDispatcher requestDispatcher)
+        public ChunkBuilder(IAsyncRequestDispatcher requestDispatcher)
         {
             chunks = new Dictionary<TPoint, ChunkData>();
             RequestDispatcher = requestDispatcher;
@@ -131,7 +131,7 @@ namespace KouXiaGu.Terrain3D
         /// <summary>
         /// 请求处置器;
         /// </summary>
-        public IRequestDispatcher RequestDispatcher { get; private set; }
+        public IAsyncRequestDispatcher RequestDispatcher { get; private set; }
 
         /// <summary>
         /// 获取到对应块信息,若不存在则返回异常 ArgumentException();

@@ -74,7 +74,7 @@ namespace KouXiaGu.Terrain3D
     [Obsolete]
     class OBuildingBuilder 
     {
-        public OBuildingBuilder(IWorld world, OLandformBuilder landformBuilder, IRequestDispatcher requestDispatcher)
+        public OBuildingBuilder(IWorld world, OLandformBuilder landformBuilder, IAsyncRequestDispatcher requestDispatcher)
         {
             World = world;
             //BuildingCollection = world.Components.Landform.Buildings;
@@ -84,7 +84,7 @@ namespace KouXiaGu.Terrain3D
 
         public IWorld World { get; private set; }
         public SceneBuildingCollection BuildingCollection { get; private set; }
-        public IRequestDispatcher RequestDispatcher { get; private set; }
+        public IAsyncRequestDispatcher RequestDispatcher { get; private set; }
         readonly object unityThreadLock = new object();
 
         HashSet<RectCoord> sceneChunks

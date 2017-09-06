@@ -9,7 +9,7 @@ namespace KouXiaGu.Concurrent
     /// <summary>
     /// 异步请求合集;
     /// </summary>
-    public class AsyncRequestQueue : IRequestDispatcher
+    public class AsyncRequestQueue : IAsyncRequestDispatcher
     {
         public AsyncRequestQueue(ISegmented stopwatch)
         {

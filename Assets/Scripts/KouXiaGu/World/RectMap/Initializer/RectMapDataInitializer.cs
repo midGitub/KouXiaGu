@@ -56,24 +56,34 @@ namespace KouXiaGu.World.RectMap
         {
             return Task.Run(delegate ()
             {
-                string filePath = mapDataFile.GetFileFullPath();
-                if (!File.Exists(filePath))
-                {
-                    throw new ArgumentException("未找到地图文件:" + filePath);
-                }
-                MapData data = Serializer.Read(filePath);
-
-                string archivePath = mapDataFile.GetArchiveFileFullPath(archive);
-                if (File.Exists(archivePath))
-                {
-                    MapData archiveMap = Serializer.Read(archivePath);
-                    WorldMap = new WorldMap(data, archiveMap);
-                }
-                else
-                {
-                    WorldMap = new WorldMap(data);
-                }
+                WorldMap = ReadMap(archive, state);
             });
+        }
+
+        WorldMap ReadMap(Archive archive, IOperationState state)
+        {
+            string filePath = mapDataFile.GetFileFullPath();
+            if (!File.Exists(filePath))
+            {
+                throw new ArgumentException("未找到地图文件:" + filePath);
+            }
+            MapData data = Serializer.Read(filePath);
+
+            string archivePath = mapDataFile.GetArchiveFileFullPath(archive);
+            if (File.Exists(archivePath))
+            {
+                MapData archiveMap = Serializer.Read(archivePath);
+                return new WorldMap(data, archiveMap);
+            }
+            else
+            {
+                return new WorldMap(data);
+            }
+        }
+
+        WorldMap ReadRandomMap()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -9,6 +9,7 @@ using KouXiaGu.Globalization;
 using System.Xml.Serialization;
 using System.IO;
 using KouXiaGu.Diagnostics;
+using KouXiaGu.RectTerrain;
 
 namespace KouXiaGu
 {
@@ -31,12 +32,21 @@ namespace KouXiaGu
             Resource.Initialize();
         }
 
-        public int size = 1;
-
         [ContextMenu("Test")]
         void Test()
         {
-            Debug.Log(RectCoord.Ring(RectCoord.Self, size).ToLog());
+            var serializer = new XmlFileSerializer<LandformResource[]>();
+            LandformResource[] array = new LandformResource[]
+                {
+                    new LandformResource()
+                    {
+                        DiffuseTex = new TextureInfo("None"),
+                        DiffuseBlendTex = new TextureInfo("None"),
+                        HeightTex = new TextureInfo("None"),
+                        HeightBlendTex = new TextureInfo("None"),
+                    },
+                };
+            serializer.Write(array, @"11.xml", FileMode.Create);
         }
     }
 }

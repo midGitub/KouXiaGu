@@ -28,7 +28,7 @@ namespace KouXiaGu.Terrain3D
 
         bool isUpdating;
         bool updateThreadRunning;
-        internal IRequestDispatcher LandformDispatcher { get; private set; }
+        internal IAsyncRequestDispatcher LandformDispatcher { get; private set; }
         internal OLandformBuilder LandformBuilder { get; private set; }
         internal OLandformUpdater LandformUpdater { get; private set; }
         internal OBuildingBuilder BuildingBuilder { get; private set; }

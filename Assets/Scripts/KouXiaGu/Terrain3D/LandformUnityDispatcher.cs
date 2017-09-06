@@ -12,7 +12,7 @@ namespace KouXiaGu.Terrain3D
     /// 处理地形在Unity线程执行的操作;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class LandformUnityDispatcher : SceneSington<LandformUnityDispatcher>, IRequestDispatcher
+    public sealed class LandformUnityDispatcher : SceneSington<LandformUnityDispatcher>, IAsyncRequestDispatcher
     {
         LandformUnityDispatcher()
         {

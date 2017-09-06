@@ -18,7 +18,7 @@ namespace KouXiaGu.RectTerrain
     {
         LandformBakeCamera bakeCamera;
 
-        public LandformBuilder(LandformBakeCamera bakeCamera, IRequestDispatcher requestDispatcher) : base(requestDispatcher)
+        public LandformBuilder(LandformBakeCamera bakeCamera, IAsyncRequestDispatcher requestDispatcher) : base(requestDispatcher)
         {
             this.bakeCamera = bakeCamera;
         }

@@ -11,7 +11,7 @@ namespace KouXiaGu.Concurrent
     /// <summary>
     /// 用于处理在Unity线程进行操作的异步请求;
     /// </summary>
-    public sealed class UnityAsyncRequestDispatcher : UnitySington<UnityAsyncRequestDispatcher>, IRequestDispatcher
+    public sealed class UnityAsyncRequestDispatcher : UnitySington<UnityAsyncRequestDispatcher>, IAsyncRequestDispatcher
     {
         object asyncLock;
         [SerializeField]

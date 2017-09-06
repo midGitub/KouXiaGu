@@ -16,7 +16,7 @@ namespace KouXiaGu.Terrain3D
     /// </summary>
     public class LandformBuilder : ChunkBuilder<RectCoord, LandformChunk>
     {
-        public LandformBuilder(IWorldData worldData, IRequestDispatcher requestDispatcher) : base(requestDispatcher)
+        public LandformBuilder(IWorldData worldData, IAsyncRequestDispatcher requestDispatcher) : base(requestDispatcher)
         {
             if (worldData == null)
             {

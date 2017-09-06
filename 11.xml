@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfLandformResourceInfo>
+  <LandformResourceInfo>
+    <HeightTex name="None" />
+    <HeightBlendTex name="None" />
+    <DiffuseTex name="None" />
+    <DiffuseBlendTex name="None" />
+  </LandformResourceInfo>
+</ArrayOfLandformResourceInfo>

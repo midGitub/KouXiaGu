@@ -9,24 +9,15 @@ namespace KouXiaGu.World.Resources
 {
 
     /// <summary>
-    /// 地形资源信息;
+    /// 地形资源;
     /// </summary>
     [XmlRoot("LandformInfo")]
-    public class LandformResourceInfo
+    public class LandformResource
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
 
         [XmlElement("Terrain")]
-        public RectTerrain.LandformResourceInfo Terrain { get; set; }
-    }
-
-    /// <summary>
-    /// 地形资源;
-    /// </summary>
-    public class LandformResource
-    {
-        public string Name { get; private set; }
-        public RectTerrain.LandformResource Terrain { get; private set; }
+        public RectTerrain.LandformResource Terrain { get; set; }
     }
 }
