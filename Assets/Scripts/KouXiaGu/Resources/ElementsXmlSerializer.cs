@@ -17,11 +17,11 @@ namespace KouXiaGu.Resources
     public class ElementsReaderWriter<T> : FilesReaderWriter<T[], Dictionary<int, T>>
          where T : IElement
     {
-        public ElementsReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<T[]> serializer, ICombiner<T[], Dictionary<int, T>> combiner) : base(multipleFile, serializer, combiner)
+        public ElementsReaderWriter(IMultipleFilePath multipleFile, IOFileSerializer<T[]> serializer, ICombiner<T[], Dictionary<int, T>> combiner) : base(multipleFile, serializer, combiner)
         {
         }
 
-        public ElementsReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<T[]> serializer) : base(multipleFile, serializer, defaultCombiner)
+        public ElementsReaderWriter(IMultipleFilePath multipleFile, IOFileSerializer<T[]> serializer) : base(multipleFile, serializer, defaultCombiner)
         {
         }
 

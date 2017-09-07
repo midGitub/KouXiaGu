@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using System.IO;
 using KouXiaGu.Diagnostics;
 using KouXiaGu.RectTerrain;
+using KouXiaGu.RectTerrain.Resources;
 
 namespace KouXiaGu
 {

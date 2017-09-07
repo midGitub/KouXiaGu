@@ -16,8 +16,5 @@ namespace KouXiaGu.World.Resources
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
-
-        [XmlElement("Terrain")]
-        public RectTerrain.LandformResource Terrain { get; set; }
     }
 }

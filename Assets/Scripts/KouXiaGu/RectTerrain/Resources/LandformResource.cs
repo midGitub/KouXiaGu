@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 using UnityEngine;
 using KouXiaGu.Concurrent;
+using KouXiaGu.RectTerrain;
 using System.IO;
+using KouXiaGu.Resources;
 
-namespace KouXiaGu.RectTerrain
+namespace KouXiaGu.RectTerrain.Resources
 {
 
     /// <summary>
@@ -13,9 +16,9 @@ namespace KouXiaGu.RectTerrain
     [XmlRoot("LandformResourceInfo")]
     public sealed class LandformResource
     {
-        public LandformResource()
-        {
-        }
+
+        [XmlAttribute("name")]
+        public string Name { get; set; }
 
         /// <summary>
         /// 高度调整贴图;
@@ -111,10 +114,28 @@ namespace KouXiaGu.RectTerrain
         }
     }
 
+    public sealed class LandformResourceSerializer
+    {
+        public LandformResourceSerializer(string directory, MultipleConfigFileName fileName)
+        {
+
+        }
+
+        public Dictionary<string, LandformResource> Read()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Wirte(Dictionary<string, LandformResource> data)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /// <summary>
     /// 序列化之后处理程序;
     /// </summary>
-    public class LandformResourceLoadRequest : Request
+    public sealed class LandformResourceLoadRequest : Request
     {
         public LandformResourceLoadRequest(LandformResource landformResource, AssetBundle assetbundle)
         {

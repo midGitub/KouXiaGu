@@ -48,7 +48,7 @@ namespace KouXiaGu.World.RectMap
         /// </summary>
         public WorldMap WorldMap { get; private set; }
 
-        public IFileSerializer<MapData> Serializer
+        public IOFileSerializer<MapData> Serializer
         {
             get { return ProtoFileSerializer<MapData>.Default; }
         }

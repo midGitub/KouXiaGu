@@ -17,7 +17,7 @@ namespace KouXiaGu.InputControl
         {
         }
 
-        public CustomKeyMapXmlSerializer(ISingleFilePath file, IFileSerializer<CustomKeyMap> serializer) : base(file, serializer)
+        public CustomKeyMapXmlSerializer(ISingleFilePath file, IOFileSerializer<CustomKeyMap> serializer) : base(file, serializer)
         {
         }
     }

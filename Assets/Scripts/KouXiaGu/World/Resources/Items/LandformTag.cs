@@ -90,7 +90,7 @@ namespace KouXiaGu.World.Resources
     /// </summary>
     public class LandformTagXmlSerializer : FileReaderWriter<LandformTag[]>
     {
-        static readonly IFileSerializer<LandformTag[]> fileSerializer = new XmlFileSerializer<LandformTag[]>();
+        static readonly IOFileSerializer<LandformTag[]> fileSerializer = new XmlFileSerializer<LandformTag[]>();
 
         public LandformTagXmlSerializer() : base(new LandformTagFile(), fileSerializer)
         {

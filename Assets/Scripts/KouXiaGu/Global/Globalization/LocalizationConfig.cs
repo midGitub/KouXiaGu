@@ -30,13 +30,13 @@ namespace KouXiaGu.Globalization
 
     class ConfigReader : FileReaderWriter<LocalizationConfig>
     {
-        static readonly IFileSerializer<LocalizationConfig> fileSerializer = new XmlFileSerializer<LocalizationConfig>();
+        static readonly IOFileSerializer<LocalizationConfig> fileSerializer = new XmlFileSerializer<LocalizationConfig>();
 
         public ConfigReader() : base(new ConfigFilePath(), fileSerializer)
         {
         }
 
-        public ConfigReader(ISingleFilePath file, IFileSerializer<LocalizationConfig> serializer) : base(file, serializer)
+        public ConfigReader(ISingleFilePath file, IOFileSerializer<LocalizationConfig> serializer) : base(file, serializer)
         {
         }
     }

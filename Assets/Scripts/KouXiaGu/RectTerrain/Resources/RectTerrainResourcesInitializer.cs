@@ -1,15 +1,11 @@
 ﻿using KouXiaGu.Concurrent;
 using KouXiaGu.Resources;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace KouXiaGu.RectTerrain
+namespace KouXiaGu.RectTerrain.Resources
 {
 
     /// <summary>
@@ -22,10 +18,10 @@ namespace KouXiaGu.RectTerrain
         {
         }
 
-        internal const string TerrainAssetBundleName = "terrain";
-        internal const string LandformResourceName = "Terrain/Landform";
-        internal const string BuildingResourceName = "Terrain/Building";
-        internal const string RoadResourceName = "Terrain/Road";
+        internal static SingleConfigFileName TerrainAssetBundleName = "terrain";
+        internal static MultipleConfigFileName LandformResourceName = "Terrain/Landform";
+        internal static MultipleConfigFileName BuildingResourceName = "Terrain/Building";
+        internal static MultipleConfigFileName RoadResourceName = "Terrain/Road";
 
         /// <summary>
         /// Unity线程处置器;

@@ -11,15 +11,66 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 从文件读取资源方式;
     /// </summary>
-    public interface IFileSerializer<T>
+    public interface IOFileSerializer<T>
     {
+        /// <summary>
+        /// 拓展名;
+        /// </summary>
+        string Extension { get; }
+
+        /// <summary>
+        /// 读取到;
+        /// </summary>
         T Read(string filePath);
+
+        /// <summary>
+        /// 输出到;
+        /// </summary>
         void Write(T item, string filePath, FileMode fileMode);
     }
 
-    public sealed class ProtoFileSerializer<T> : IFileSerializer<T>
+
+    /// <summary>
+    /// 从文件读取资源方式;
+    /// </summary>
+    public interface ISerializer<T>
+    {
+        /// <summary>
+        /// 拓展名;
+        /// </summary>
+        string Extension { get; }
+
+        /// <summary>
+        /// 读取到;
+        /// </summary>
+        T Read(Stream stream);
+
+        /// <summary>
+        /// 输出到;
+        /// </summary>
+        void Write(T item, Stream stream);
+    }
+
+
+    public sealed class ProtoFileSerializer<T> : IOFileSerializer<T>, ISerializer<T>
     {
         public static readonly ProtoFileSerializer<T> Default = new ProtoFileSerializer<T>();
+
+        public string Extension
+        {
+            get { return ".xml"; }
+        }
+
+        public T Read(Stream stream)
+        {
+            return ProtoBuf.Serializer.Deserialize<T>(stream);
+        }
+
+        public void Write(T item, Stream stream)
+        {
+            ProtoBuf.Serializer.Serialize(stream, item);
+        }
+
 
         public T Read(string filePath)
         {
@@ -38,7 +89,8 @@ namespace KouXiaGu.Resources
         }
     }
 
-    public sealed class XmlFileSerializer<T> : IFileSerializer<T>
+
+    public sealed class XmlFileSerializer<T> : IOFileSerializer<T>, ISerializer<T>
     {
         public XmlFileSerializer()
         {
@@ -46,6 +98,23 @@ namespace KouXiaGu.Resources
         }
 
         public XmlSerializer Serializer { get; private set; }
+
+        public string Extension
+        {
+            get { return ".data"; }
+        }
+
+        public T Read(Stream stream)
+        {
+            T item = (T)Serializer.Deserialize(stream);
+            return item;
+        }
+
+        public void Write(T item, Stream stream)
+        {
+            Serializer.SerializeXiaGu(item, stream);
+        }
+
 
         public T Read(string filePath)
         {
@@ -58,5 +127,4 @@ namespace KouXiaGu.Resources
             Serializer.SerializeXiaGu(item, filePath, fileMode);
         }
     }
-
 }

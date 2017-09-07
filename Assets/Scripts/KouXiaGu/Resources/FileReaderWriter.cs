@@ -9,14 +9,14 @@ namespace KouXiaGu.Resources
     
     public class FileReaderWriter<T> : IFileReaderWriter<T>, IReader<T>, IWriter<T>
     {
-        public FileReaderWriter(ISingleFilePath file, IFileSerializer<T> serializer)
+        public FileReaderWriter(ISingleFilePath file, IOFileSerializer<T> serializer)
         {
             FilePath = file;
             Serializer = serializer;
         }
 
         public ISingleFilePath FilePath { get; set; }
-        public IFileSerializer<T> Serializer { get; set; }
+        public IOFileSerializer<T> Serializer { get; set; }
 
         public virtual T Read()
         {
@@ -67,7 +67,7 @@ namespace KouXiaGu.Resources
     /// <typeparam name="TResult">转换后的内容;</typeparam>
     public class FilesReaderWriter<TSource, TResult> : IFilesReaderWriter<TResult>
     {
-        public FilesReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<TSource> serializer, ICombiner<TSource, TResult> combiner)
+        public FilesReaderWriter(IMultipleFilePath multipleFile, IOFileSerializer<TSource> serializer, ICombiner<TSource, TResult> combiner)
         {
             FilePath = multipleFile;
             Serializer = serializer;
@@ -75,7 +75,7 @@ namespace KouXiaGu.Resources
         }
 
         public IMultipleFilePath FilePath { get; set; }
-        public IFileSerializer<TSource> Serializer { get; set; }
+        public IOFileSerializer<TSource> Serializer { get; set; }
         public ICombiner<TSource, TResult> Combiner { get; set; }
 
         public TResult Read()
@@ -165,7 +165,7 @@ namespace KouXiaGu.Resources
     [Obsolete]
     public abstract class FilesReaderWriter<T> : FilesReaderWriter<T, T>, IFilesReaderWriter<T>
     {
-        public FilesReaderWriter(IMultipleFilePath multipleFile, IFileSerializer<T> serializer, ICombiner<T> combiner) : base(multipleFile, serializer, combiner)
+        public FilesReaderWriter(IMultipleFilePath multipleFile, IOFileSerializer<T> serializer, ICombiner<T> combiner) : base(multipleFile, serializer, combiner)
         {
         }
     }

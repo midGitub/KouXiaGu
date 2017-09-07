@@ -21,7 +21,7 @@ namespace KouXiaGu.World.Map
         {
         }
 
-        public WorldMapReader(ISingleFilePath dataFile, ISingleFilePath archivedFile, IFileSerializer<MapData> serializer)
+        public WorldMapReader(ISingleFilePath dataFile, ISingleFilePath archivedFile, IOFileSerializer<MapData> serializer)
         {
             DataFile = dataFile;
             ArchivedFile = archivedFile;
@@ -30,7 +30,7 @@ namespace KouXiaGu.World.Map
 
         public ISingleFilePath DataFile { get; private set; }
         public ISingleFilePath ArchivedFile { get; private set; }
-        public IFileSerializer<MapData> Serializer { get; private set; }
+        public IOFileSerializer<MapData> Serializer { get; private set; }
 
         public WorldMap Read(IGameResource item)
         {
@@ -50,14 +50,14 @@ namespace KouXiaGu.World.Map
         {
         }
 
-        public MapDataWriter(ISingleFilePath file, IFileSerializer<MapData> serializer)
+        public MapDataWriter(ISingleFilePath file, IOFileSerializer<MapData> serializer)
         {
             File = file;
             Serializer = serializer;
         }
 
         public ISingleFilePath File { get; private set; }
-        public IFileSerializer<MapData> Serializer { get; private set; }
+        public IOFileSerializer<MapData> Serializer { get; private set; }
 
         public void Write(MapData item)
         {

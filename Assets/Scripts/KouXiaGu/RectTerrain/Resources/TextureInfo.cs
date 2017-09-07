@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using UnityEngine;
 
-namespace KouXiaGu.RectTerrain
+namespace KouXiaGu.RectTerrain.Resources
 {
 
     /// <summary>

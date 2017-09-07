@@ -20,7 +20,7 @@ namespace KouXiaGu.Terrain3D.DynamicMeshs
 
     class DynamicMeshReaderWriter : FilesReaderWriter<KeyValuePair<string, DynamicMeshData>, Dictionary<string, DynamicMeshData>>
     {
-        static readonly IFileSerializer<KeyValuePair<string, DynamicMeshData>> fileSerializer = new ProtoFileSerializer<KeyValuePair<string, DynamicMeshData>>();
+        static readonly IOFileSerializer<KeyValuePair<string, DynamicMeshData>> fileSerializer = new ProtoFileSerializer<KeyValuePair<string, DynamicMeshData>>();
 
         static readonly ICombiner<KeyValuePair<string, DynamicMeshData>, Dictionary<string, DynamicMeshData>> combiner = new DataCombiner();
 
