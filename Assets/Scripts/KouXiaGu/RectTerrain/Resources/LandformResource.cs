@@ -2,6 +2,7 @@
 using System.Xml.Serialization;
 using UnityEngine;
 using KouXiaGu.Concurrent;
+using System.IO;
 
 namespace KouXiaGu.RectTerrain
 {
@@ -113,8 +114,34 @@ namespace KouXiaGu.RectTerrain
     /// <summary>
     /// 序列化之后处理程序;
     /// </summary>
-    public class LandformResourceAfterSerialization
+    public class LandformResourceLoadRequest : Request
     {
+        public LandformResourceLoadRequest(LandformResource landformResource, AssetBundle assetbundle)
+        {
+            this.landformResource = landformResource;
+            this.assetbundle = assetbundle;
+        }
 
+        readonly LandformResource landformResource;
+        readonly AssetBundle assetbundle;
+
+        protected override void Operate()
+        {
+            Load(landformResource.DiffuseTex);
+            Load(landformResource.DiffuseBlendTex);
+            Load(landformResource.HeightTex);
+            Load(landformResource.HeightBlendTex);
+            OnComplete();
+        }
+
+        void Load(TextureInfo info)
+        {
+            var texture = assetbundle.LoadAsset<Texture>(info.Name);
+            if (texture == null)
+            {
+                AddException(new FileNotFoundException("未能从<" + assetbundle.name + ">读取到资源:", info.Name));
+            }
+            info.Texture = texture;
+        }
     }
 }

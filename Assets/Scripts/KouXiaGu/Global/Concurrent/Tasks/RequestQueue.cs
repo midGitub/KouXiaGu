@@ -87,7 +87,7 @@ namespace KouXiaGu.Concurrent
             {
                 if (!request.IsCompleted)
                 {
-                    request.MoveNext();
+                    request.Operate();
                 }
             }
             catch(Exception ex)

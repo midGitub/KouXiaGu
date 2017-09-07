@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace KouXiaGu.Concurrent
@@ -10,61 +11,87 @@ namespace KouXiaGu.Concurrent
     public static class RequestDispatcherExtensions
     {
 
-        public static IRequest Add(this IRequestDispatcher dispatcher, Action action)
+
+        public static Request Add(this IRequestDispatcher dispatcher, Action action)
         {
-            var request = new Request(action);
+            var request = new ActionRequest(action);
             dispatcher.Add(request);
             return request;
         }
 
-        class Request : IRequest
+        public static Request Add(this IRequestDispatcher dispatcher, Action action, CancellationToken cancellationToken)
         {
-            public Request(Action action)
+            var request = new ActionRequest(action, cancellationToken);
+            dispatcher.Add(request);
+            return request;
+        }
+
+        class ActionRequest : Request
+        {
+            public ActionRequest(Action action)
             {
                 if (action == null)
                     throw new ArgumentNullException("action");
 
                 this.action = action;
-                IsCompleted = false;
+            }
+
+            public ActionRequest(Action action, CancellationToken cancellationToken) : base(cancellationToken)
+            {
+                if (action == null)
+                    throw new ArgumentNullException("action");
+
+                this.action = action;
             }
 
             readonly Action action;
-            public bool IsCompleted { get; private set; }
 
-            public void MoveNext()
+            protected override void Operate()
             {
                 action();
-                IsCompleted = true;
             }
         }
 
 
-        public static IRequest<T> Add<T>(this IRequestDispatcher dispatcher, Func<T> func)
+
+        public static Request<T> Add<T>(this IRequestDispatcher dispatcher, Func<T> func)
         {
-            var request = new Request<T>(func);
+            var request = new FuncRequest<T>(func);
             dispatcher.Add(request);
             return request;
         }
 
-        class Request<T> : IRequest<T>
+        public static Request<T> Add<T>(this IRequestDispatcher dispatcher, Func<T> func, CancellationToken cancellationToken)
         {
-            public Request(Func<T> func)
+            var request = new FuncRequest<T>(func, cancellationToken);
+            dispatcher.Add(request);
+            return request;
+        }
+
+
+        class FuncRequest<T> : Request<T>
+        {
+            public FuncRequest(Func<T> func)
             {
                 if (func == null)
                     throw new ArgumentNullException("func");
 
                 this.func = func;
-                IsCompleted = false;
+            }
+
+            public FuncRequest(Func<T> func, CancellationToken cancellationToken) : base(cancellationToken)
+            {
+                if (func == null)
+                    throw new ArgumentNullException("action");
+
+                this.func = func;
             }
 
             readonly Func<T> func;
-            public bool IsCompleted { get; private set; }
-            public T Result { get; private set; }
 
-            public void MoveNext()
+            protected override T Operate()
             {
-                Result = func();
-                IsCompleted = true;
+                return func();
             }
         }
     }

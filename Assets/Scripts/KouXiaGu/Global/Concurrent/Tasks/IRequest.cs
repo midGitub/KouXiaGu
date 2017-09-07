@@ -20,7 +20,7 @@ namespace KouXiaGu.Concurrent
         /// <summary>
         /// 表示对应操作;
         /// </summary>
-        void MoveNext();
+        void Operate();
     }
 
     /// <summary>
