@@ -124,7 +124,7 @@ namespace KouXiaGu.RectTerrain.Resources
         {
         }
 
-        protected override Dictionary<string, LandformResource> Convert(IEnumerable<LandformResource[]> sources)
+        protected override Dictionary<string, LandformResource> Convert(List<LandformResource[]> sources)
         {
             var dictionary = new Dictionary<string, LandformResource>();
             foreach (var source in sources)

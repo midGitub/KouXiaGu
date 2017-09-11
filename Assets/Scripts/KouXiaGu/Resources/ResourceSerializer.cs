@@ -24,7 +24,7 @@ namespace KouXiaGu.Resources
         public ISerializer<TSource> Serializer { get; set; }
         public ResourceSearcher ResourceSearcher { get; set; }
 
-        protected abstract TResult Convert(IEnumerable<TSource> sources);
+        protected abstract TResult Convert(List<TSource> sources);
         protected abstract TSource Convert(TResult result);
 
         public void Serialize(TResult result)
@@ -38,22 +38,24 @@ namespace KouXiaGu.Resources
 
         public TResult Deserialize()
         {
-            IEnumerable<TSource> sources = DeserializeSources();
+            var sources = DeserializeSources();
             TResult result = Convert(sources);
             return result;
         }
 
-        IEnumerable<TSource> DeserializeSources()
+        List<TSource> DeserializeSources()
         {
+            List<TSource> sources = new List<TSource>();
             IEnumerable<Stream> streams = ResourceSearcher.Searche(Serializer);
             foreach (var stream in streams)
             {
                 using (stream)
                 {
                     TSource source = Serializer.Deserialize(stream);
-                    yield return source;
+                    sources.Add(source);
                 }
             }
+            return sources;
         }
     }
 }

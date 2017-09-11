@@ -57,6 +57,31 @@ namespace KouXiaGu.Resources
             }
             return this;
         }
+
+        public override bool Equals(object obj)
+        {
+            ResourceSearcher i = obj as ResourceSearcher;
+
+            if (i == null)
+                return false;
+
+            return i.ResourceName == ResourceName;
+        }
+
+        public override int GetHashCode()
+        {
+            return ResourceName.GetHashCode();
+        }
+
+        public static implicit operator ResourceSearcher(string resourceName)
+        {
+            return new ResourceSearcher(resourceName);
+        }
+
+        public static implicit operator string(ResourceSearcher searcher)
+        {
+            return searcher.ResourceName;
+        }
     }
 
 
@@ -92,8 +117,8 @@ namespace KouXiaGu.Resources
             string fullPath = Path.Combine(directory, ResourceName);
             string directoryPath = Path.GetDirectoryName(fullPath);
             string fileName = Path.GetFileNameWithoutExtension(fullPath);
-            string searchPattern = fileName + "_*" + serializer.Extension;
-            return Directory.EnumerateFiles(directory, searchPattern, SearchOption);
+            string searchPattern = fileName + "*" + serializer.Extension;
+            return Directory.EnumerateFiles(directoryPath, searchPattern, SearchOption);
         }
 
         public override Stream GetWrite<T>(ISerializer<T> serializer)
@@ -110,14 +135,12 @@ namespace KouXiaGu.Resources
 
         string GetWritePath<T>(ISerializer<T> serializer, string directory, int max = 100)
         {
-            string path = string.Empty;
-            for (int i = 1; i < max; i++)
+            string path = Path.Combine(directory, ResourceName + serializer.Extension);
+            int i = 0;
+            while (File.Exists(path))
             {
                 path = Path.Combine(directory, ResourceName + "_" + i.ToString() + serializer.Extension);
-                if (!File.Exists(path))
-                {
-                    break;
-                }
+                i++;
             }
             return path;
         }

@@ -43,7 +43,7 @@ namespace KouXiaGu.RectTerrain.Resources
 
         public RectTerrainResourcesSerializer()
         {
-            LandformSerializer = new LandformResourceSerializer(new XmlFileSerializer<LandformResource[]>(), new ResourceSearcher("Terrain/Landform"));
+            LandformSerializer = new LandformResourceSerializer(new XmlFileSerializer<LandformResource[]>(), new MultipleResourceSearcher("Terrain/Landform"));
         }
 
         public static RectTerrainResourcesSerializer DefaultInstance { get; private set; }

@@ -20,28 +20,31 @@ namespace KouXiaGu.RectTerrain.Resources
         {
         }
 
-        internal static SingleConfigFileName TerrainAssetBundleName = "terrain";
-        internal static MultipleConfigFileName BuildingResourceName = "Terrain/Building";
-        internal static MultipleConfigFileName RoadResourceName = "Terrain/Road";
+        internal static string TerrainAssetBundleName = "terrain";
 
         /// <summary>
         /// Unity线程处置器;
         /// </summary>
         [SerializeField]
         RequestUnityDispatcher Dispatcher;
-        RectTerrainResources rectTerrainResources;
+
+        /// <summary>
+        /// 地形资源,若未完成初始化则为Null;
+        /// </summary>
+        public static RectTerrainResources RectTerrainResources { get; private set; }
 
         Task IInitializer.StartInitialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {
-                AssetBundle assetBundle = LoadAssetBundle(TerrainAssetBundleName.GetAssetBundleFullPath());
+                AssetBundle assetBundle = LoadAssetBundle();
 
                 List<Request> faults;
-                rectTerrainResources = ReadRectTerrainResources(assetBundle, out faults);
+                var rectTerrainResources = ReadRectTerrainResources(assetBundle, out faults);
 
                 UnloadAssetBundle(assetBundle);
 
+                RectTerrainResources = rectTerrainResources;
                 OnCompleted(faults);
             }, token);
         }
@@ -49,10 +52,11 @@ namespace KouXiaGu.RectTerrain.Resources
         /// <summary>
         /// 读取地形资源包;
         /// </summary>
-        AssetBundle LoadAssetBundle(string path)
+        AssetBundle LoadAssetBundle()
         {
             var request = Dispatcher.Add(delegate()
             {
+                string path = Path.Combine(Resource.AssetBundleDirectoryPath, TerrainAssetBundleName);
                 return AssetBundle.LoadFromFile(path);
             });
             while (!request.IsCompleted)
@@ -117,9 +121,9 @@ namespace KouXiaGu.RectTerrain.Resources
 
         string GetRectTerrainResourcesInfo()
         {
-            if (rectTerrainResources != null)
+            if (RectTerrainResources != null)
             {
-                return "[Landform:Count:" + rectTerrainResources.Landform.Count
+                return "[Landform:Count:" + RectTerrainResources.Landform.Count
                 + "]";
             }
             return string.Empty;

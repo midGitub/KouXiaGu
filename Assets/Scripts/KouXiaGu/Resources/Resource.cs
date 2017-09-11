@@ -31,12 +31,6 @@ namespace KouXiaGu.Resources
             return assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles");
         }
 
-        public static string GetAssetBundleFullPath(this SingleConfigFileName assetBundleName)
-        {
-            return Path.Combine(AssetBundleDirectoryPath, assetBundleName);
-        }
-
-
 
         static string configDirectoryPath = string.Empty;
 
