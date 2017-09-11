@@ -8,6 +8,7 @@ using KouXiaGu.Concurrent;
 using UnityEngine;
 using KouXiaGu.Resources;
 using System.Threading;
+using KouXiaGu.Resources.Archive;
 
 namespace KouXiaGu.World.RectMap
 {
@@ -33,27 +34,16 @@ namespace KouXiaGu.World.RectMap
             get { return isUseRandomMap; }
         }
 
+        static MapDataSerializer mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new MultipleResourceSearcher("World/Data"));
 
-        [SerializeField]
-        WorldDataFiler mapDataFile;
-
-        public WorldDataFiler MapDataFile
-        {
-            get { return mapDataFile; }
-        }
-
+        static WorldMapSerializer worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data");
 
         /// <summary>
         /// 游戏地图;
         /// </summary>
         public WorldMap WorldMap { get; private set; }
 
-        public IOFileSerializer<MapData> Serializer
-        {
-            get { return ProtoFileSerializer<MapData>.Default; }
-        }
-
-        Task IDataInitializer.StartInitialize(Archive archive, CancellationToken token)
+        Task IDataInitializer.StartInitialize(ArchiveInfo archive, CancellationToken token)
         {
             return Task.Run(delegate ()
             {
@@ -61,25 +51,10 @@ namespace KouXiaGu.World.RectMap
             }, token);
         }
 
-        WorldMap ReadMap(Archive archive)
+        WorldMap ReadMap(ArchiveInfo archive)
         {
-            string filePath = mapDataFile.GetFileFullPath();
-            if (!File.Exists(filePath))
-            {
-                throw new ArgumentException("未找到地图文件:" + filePath);
-            }
-            MapData data = Serializer.Read(filePath);
-
-            string archivePath = mapDataFile.GetArchiveFileFullPath(archive);
-            if (File.Exists(archivePath))
-            {
-                MapData archiveMap = Serializer.Read(archivePath);
-                return new WorldMap(data, archiveMap);
-            }
-            else
-            {
-                return new WorldMap(data);
-            }
+            WorldMap map = worldMapSerializer.Deserialize(archive);
+            return map;
         }
 
         WorldMap ReadRandomMap()

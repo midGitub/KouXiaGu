@@ -23,5 +23,16 @@ namespace KouXiaGu.World.RectMap
 
         [ProtoMember(1)]
         public Dictionary<RectCoord, MapNode> Data { get; set; }
+
+        /// <summary>
+        /// 整合其它地图数据;
+        /// </summary>
+        public void Add(MapData other)
+        {
+            if (other != this)
+            {
+                Data.AddOrUpdate(other.Data);
+            }
+        }
     }
 }

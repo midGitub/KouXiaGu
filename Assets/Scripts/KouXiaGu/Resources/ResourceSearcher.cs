@@ -21,21 +21,25 @@ namespace KouXiaGu.Resources
 
         public string ResourceName { get; private set; }
 
-        public virtual IEnumerable<Stream> Searche<T>(ISerializer<T> serializer)
+        /// <summary>
+        /// 获取到对应资源的文件路径;
+        /// </summary>
+        public virtual IEnumerable<string> Searche<T>(ISerializer<T> serializer)
         {
             string filePath = GetFilePath(serializer);
             if (File.Exists(filePath))
             {
-                Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                yield return stream;
+                yield return filePath;
             }
         }
 
-        public virtual Stream GetWrite<T>(ISerializer<T> serializer)
+        /// <summary>
+        /// 获取到用于输出的文件路径;
+        /// </summary>
+        public virtual string GetWrite<T>(ISerializer<T> serializer)
         {
             string filePath = GetFilePath(serializer);
-            Stream stream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
-            return stream;
+            return filePath;
         }
 
         string GetFilePath<T>(ISerializer<T> serializer)
@@ -97,22 +101,12 @@ namespace KouXiaGu.Resources
 
         public SearchOption SearchOption { get; private set; }
 
-        public override IEnumerable<Stream> Searche<T>(ISerializer<T> serializer)
+        public override IEnumerable<string> Searche<T>(ISerializer<T> serializer)
         {
             return Searche(serializer, Resource.ConfigDirectoryPath);
         }
 
-        IEnumerable<Stream> Searche<T>(ISerializer<T> serializer, string directory)
-        {
-            IEnumerable<string> paths = SearchePath(serializer, directory);
-            foreach (var path in paths)
-            {
-                Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                yield return stream;
-            }
-        }
-
-        public IEnumerable<string> SearchePath<T>(ISerializer<T> serializer, string directory)
+        public IEnumerable<string> Searche<T>(ISerializer<T> serializer, string directory)
         {
             string fullPath = Path.Combine(directory, ResourceName);
             string directoryPath = Path.GetDirectoryName(fullPath);
@@ -121,19 +115,18 @@ namespace KouXiaGu.Resources
             return Directory.EnumerateFiles(directoryPath, searchPattern, SearchOption);
         }
 
-        public override Stream GetWrite<T>(ISerializer<T> serializer)
+        public override string GetWrite<T>(ISerializer<T> serializer)
         {
             return GetWrite(serializer, Resource.ConfigDirectoryPath);
         }
 
-        Stream GetWrite<T>(ISerializer<T> serializer, string directory)
+        string GetWrite<T>(ISerializer<T> serializer, string directory)
         {
             string path = GetWritePath(serializer, directory);
-            Stream stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite);
-            return stream;
+            return path;
         }
 
-        string GetWritePath<T>(ISerializer<T> serializer, string directory, int max = 100)
+        string GetWritePath<T>(ISerializer<T> serializer, string directory)
         {
             string path = Path.Combine(directory, ResourceName + serializer.Extension);
             int i = 0;

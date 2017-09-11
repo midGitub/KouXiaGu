@@ -11,10 +11,24 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 读取资源;
     /// </summary>
+    /// <typeparam name="T">读取到T;</typeparam>
+    public interface IResourceSerializer<T>
+    {
+        void Serialize(T result);
+        T Deserialize();
+    }
+
+    /// <summary>
+    /// 读取资源;
+    /// </summary>
     /// <typeparam name="TSource">序列化得到的内容;</typeparam>
     /// <typeparam name="TResult">转换到的内容;</typeparam>
-    public abstract class ResourceSerializer<TSource, TResult>
+    public abstract class ResourceSerializer<TSource, TResult> : IResourceSerializer<TResult>
     {
+        protected ResourceSerializer()
+        {
+        }
+
         public ResourceSerializer(ISerializer<TSource> serializer, ResourceSearcher resourceSearcher)
         {
             Serializer = serializer;
@@ -24,13 +38,21 @@ namespace KouXiaGu.Resources
         public ISerializer<TSource> Serializer { get; set; }
         public ResourceSearcher ResourceSearcher { get; set; }
 
-        protected abstract TResult Convert(List<TSource> sources);
+        /// <summary>
+        /// 将多个TSource转换成一个TResult;
+        /// </summary>
+        protected abstract TResult Combine(List<TSource> sources);
+
+        /// <summary>
+        /// 将 TResult 转换为 TSource;
+        /// </summary>
         protected abstract TSource Convert(TResult result);
 
         public void Serialize(TResult result)
         {
             TSource source = Convert(result);
-            using (Stream stream = ResourceSearcher.GetWrite(Serializer))
+            string path = ResourceSearcher.GetWrite(Serializer);
+            using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 Serializer.Serialize(source, stream);
             }
@@ -39,17 +61,17 @@ namespace KouXiaGu.Resources
         public TResult Deserialize()
         {
             var sources = DeserializeSources();
-            TResult result = Convert(sources);
+            TResult result = Combine(sources);
             return result;
         }
 
         List<TSource> DeserializeSources()
         {
             List<TSource> sources = new List<TSource>();
-            IEnumerable<Stream> streams = ResourceSearcher.Searche(Serializer);
-            foreach (var stream in streams)
+            IEnumerable<string> paths = ResourceSearcher.Searche(Serializer);
+            foreach (var path in paths)
             {
-                using (stream)
+                using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
                     TSource source = Serializer.Deserialize(stream);
                     sources.Add(source);

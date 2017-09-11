@@ -1,26 +1,31 @@
-﻿using System;
+﻿using KouXiaGu.Resources;
+using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KouXiaGu.RectTerrain;
-using KouXiaGu.Resources;
 
 namespace KouXiaGu.World.RectMap
 {
 
-    /// <summary>
-    /// 地图数据读取;
-    /// </summary>
-    class MapDataSerializer : ResourceSerializer<MapData, MapData>
+
+    public class MapDataSerializer : ResourceSerializer<MapData, MapData>
     {
         public MapDataSerializer(ISerializer<MapData> serializer, ResourceSearcher resourceSearcher) : base(serializer, resourceSearcher)
         {
         }
 
-        protected override MapData Convert(List<MapData> sources)
+        protected override MapData Combine(List<MapData> sources)
         {
-            throw new NotImplementedException();
+            if (sources .Count > 0)
+            {
+                MapData main = sources[0];
+                for (int i = 1; i < sources.Count; i++)
+                {
+                    MapData other = sources[i];
+                    main.Add(other);
+                }
+                return main;
+            }
+            throw new FileNotFoundException("未找到对应地图文件;");
         }
 
         protected override MapData Convert(MapData result)

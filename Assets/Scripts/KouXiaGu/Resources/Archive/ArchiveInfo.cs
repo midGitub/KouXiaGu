@@ -5,17 +5,16 @@ using System.Text;
 using System.IO;
 using UnityEngine;
 
-namespace KouXiaGu.World
+namespace KouXiaGu.Resources.Archive
 {
 
     /// <summary>
     /// 存档;
     /// </summary>
     [Serializable]
-    [Obsolete]
-    public class Archive
+    public class ArchiveInfo
     {
-        public Archive(string archiveDirectory)
+        public ArchiveInfo(string archiveDirectory)
         {
             Directory = archiveDirectory;
         }
@@ -27,6 +26,11 @@ namespace KouXiaGu.World
         {
             get { return directory; }
             private set { directory = value; }
+        }
+
+        public string GetFullPath(string name)
+        {
+            return Path.Combine(directory, name);
         }
     }
 }

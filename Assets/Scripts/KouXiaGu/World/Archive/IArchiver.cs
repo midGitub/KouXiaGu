@@ -6,6 +6,7 @@ using System.Text;
 namespace KouXiaGu.World
 {
 
+    [Obsolete]
     public interface IArchiver
     {
         /// <summary>
