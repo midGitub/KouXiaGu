@@ -2,6 +2,7 @@
 using KouXiaGu.Resources;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -19,7 +20,6 @@ namespace KouXiaGu.RectTerrain.Resources
         }
 
         internal static SingleConfigFileName TerrainAssetBundleName = "terrain";
-        internal static MultipleConfigFileName LandformResourceName = "Terrain/Landform";
         internal static MultipleConfigFileName BuildingResourceName = "Terrain/Building";
         internal static MultipleConfigFileName RoadResourceName = "Terrain/Road";
 
@@ -29,18 +29,17 @@ namespace KouXiaGu.RectTerrain.Resources
         [SerializeField]
         RequestUnityDispatcher Dispatcher;
 
-        internal static string TerrainAssetBundlePath
-        {
-            get { return Path.Combine(Resource.AssetBundleDirectoryPath, TerrainAssetBundleName); }
-        }
+        RectTerrainResources rectTerrainResources;
 
         Task IInitializer.StartInitialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {
                 Debug.Log("[开始地形初始化]");
-                AssetBundle assetBundle = LoadAssetBundle(TerrainAssetBundlePath);
+                AssetBundle assetBundle = LoadAssetBundle(TerrainAssetBundleName.GetAssetBundleFullPath());
                 Debug.Log("[完成地形资源包读取]");
+                ReadRectTerrainResources(assetBundle);
+                Debug.Log("[完成地形资源读取]");
                 UnloadAssetBundle(assetBundle);
                 Debug.Log("[完成地形初始化]");
             }, token);
@@ -59,6 +58,27 @@ namespace KouXiaGu.RectTerrain.Resources
             {
             }
             return request.Result;
+        }
+
+        RectTerrainResources ReadRectTerrainResources(AssetBundle assetBundle)
+        {
+            var res = RectTerrainResourcesSerializer.DefaultInstance.Deserialize();
+            var requests = new List<Request>();
+
+            LoadLandformResInUnityThread(assetBundle, res.Landform.Values, requests);
+
+            RequestBase.WaitAll(requests);
+            return res;
+        }
+
+        void LoadLandformResInUnityThread(AssetBundle assetBundle, IEnumerable<LandformResource> landformRes, ICollection<Request> requests)
+        {
+            foreach (var landform in landformRes)
+            {
+                LandformResourceLoadRequest request = new LandformResourceLoadRequest(landform, assetBundle);
+                requests.Add(request);
+                Dispatcher.Add(request);
+            }
         }
 
         /// <summary>

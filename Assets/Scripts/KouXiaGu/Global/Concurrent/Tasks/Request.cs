@@ -72,7 +72,8 @@ namespace KouXiaGu.Concurrent
         /// <summary>
         /// 等待所有请求处理完成调用;
         /// </summary>
-        public static void WaitAll(ICollection<Request> requests)
+        public static void WaitAll<T>(ICollection<T> requests)
+            where T : Request
         {
             if (requests == null)
                 throw new ArgumentNullException("requests");
@@ -88,7 +89,8 @@ namespace KouXiaGu.Concurrent
         /// <summary>
         /// 等待所有请求处理完成调用,并保存出现异常的请求;
         /// </summary>
-        public static void WaitAll(ICollection<Request> requests, ICollection<Request> faults)
+        public static void WaitAll<T>(ICollection<T> requests, ICollection<T> faults)
+            where T : Request
         {
             if (requests == null)
                 throw new ArgumentNullException("requests");

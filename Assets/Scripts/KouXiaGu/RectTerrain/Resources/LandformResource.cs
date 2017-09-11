@@ -3,9 +3,9 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 using UnityEngine;
 using KouXiaGu.Concurrent;
-using KouXiaGu.RectTerrain;
 using System.IO;
 using KouXiaGu.Resources;
+using System.Linq;
 
 namespace KouXiaGu.RectTerrain.Resources
 {
@@ -114,21 +114,32 @@ namespace KouXiaGu.RectTerrain.Resources
         }
     }
 
-    public sealed class LandformResourceSerializer
+
+    /// <summary>
+    /// 地形资源序列化;
+    /// </summary>
+    public sealed class LandformResourceSerializer : ResourceSerializer<LandformResource[], Dictionary<string, LandformResource>>
     {
-        public LandformResourceSerializer(string directory, MultipleConfigFileName fileName)
+        public LandformResourceSerializer(ISerializer<LandformResource[]> serializer, ResourceSearcher resourceSearcher) : base(serializer, resourceSearcher)
         {
-
         }
 
-        public Dictionary<string, LandformResource> Read()
+        protected override Dictionary<string, LandformResource> Convert(IEnumerable<LandformResource[]> sources)
         {
-            throw new NotImplementedException();
+            var dictionary = new Dictionary<string, LandformResource>();
+            foreach (var source in sources)
+            {
+                foreach (var res in source)
+                {
+                    dictionary.Add(res.Name, res);
+                }
+            }
+            return dictionary;
         }
 
-        public void Wirte(Dictionary<string, LandformResource> data)
+        protected override LandformResource[] Convert(Dictionary<string, LandformResource> result)
         {
-            throw new NotImplementedException();
+            return result.Values.ToArray();
         }
     }
 

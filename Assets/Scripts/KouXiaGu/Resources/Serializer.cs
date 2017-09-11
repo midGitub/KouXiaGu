@@ -11,6 +11,7 @@ namespace KouXiaGu.Resources
     /// <summary>
     /// 从文件读取资源方式;
     /// </summary>
+    [Obsolete]
     public interface IOFileSerializer<T>
     {
         /// <summary>
@@ -40,15 +41,8 @@ namespace KouXiaGu.Resources
         /// </summary>
         string Extension { get; }
 
-        /// <summary>
-        /// 读取到;
-        /// </summary>
-        T Read(Stream stream);
-
-        /// <summary>
-        /// 输出到;
-        /// </summary>
-        void Write(T item, Stream stream);
+        void Serialize(T item, Stream stream);
+        T Deserialize(Stream stream);
     }
 
 
@@ -58,15 +52,15 @@ namespace KouXiaGu.Resources
 
         public string Extension
         {
-            get { return ".xml"; }
+            get { return ".data"; }
         }
 
-        public T Read(Stream stream)
+        public T Deserialize(Stream stream)
         {
             return ProtoBuf.Serializer.Deserialize<T>(stream);
         }
 
-        public void Write(T item, Stream stream)
+        public void Serialize(T item, Stream stream)
         {
             ProtoBuf.Serializer.Serialize(stream, item);
         }
@@ -101,16 +95,16 @@ namespace KouXiaGu.Resources
 
         public string Extension
         {
-            get { return ".data"; }
+            get { return ".xml"; }
         }
 
-        public T Read(Stream stream)
+        public T Deserialize(Stream stream)
         {
             T item = (T)Serializer.Deserialize(stream);
             return item;
         }
 
-        public void Write(T item, Stream stream)
+        public void Serialize(T item, Stream stream)
         {
             Serializer.SerializeXiaGu(item, stream);
         }

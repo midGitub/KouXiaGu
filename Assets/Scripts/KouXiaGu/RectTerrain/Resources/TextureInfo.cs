@@ -34,5 +34,13 @@ namespace KouXiaGu.RectTerrain.Resources
         {
             get { return Texture != null; }
         }
+
+        public static implicit operator TextureInfo(string name)
+        {
+            return new TextureInfo()
+            {
+                Name = name
+            };
+        }
     }
 }
