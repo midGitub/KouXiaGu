@@ -5,6 +5,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Diagnostics;
 
 namespace KouXiaGu.RectTerrain.Resources
 {
@@ -28,20 +29,20 @@ namespace KouXiaGu.RectTerrain.Resources
         /// </summary>
         [SerializeField]
         RequestUnityDispatcher Dispatcher;
-
         RectTerrainResources rectTerrainResources;
 
         Task IInitializer.StartInitialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {
-                Debug.Log("[开始地形初始化]");
                 AssetBundle assetBundle = LoadAssetBundle(TerrainAssetBundleName.GetAssetBundleFullPath());
-                Debug.Log("[完成地形资源包读取]");
-                ReadRectTerrainResources(assetBundle);
-                Debug.Log("[完成地形资源读取]");
+
+                List<Request> faults;
+                rectTerrainResources = ReadRectTerrainResources(assetBundle, out faults);
+
                 UnloadAssetBundle(assetBundle);
-                Debug.Log("[完成地形初始化]");
+
+                OnCompleted(faults);
             }, token);
         }
 
@@ -60,14 +61,15 @@ namespace KouXiaGu.RectTerrain.Resources
             return request.Result;
         }
 
-        RectTerrainResources ReadRectTerrainResources(AssetBundle assetBundle)
+        RectTerrainResources ReadRectTerrainResources(AssetBundle assetBundle, out List<Request> faults)
         {
             var res = RectTerrainResourcesSerializer.DefaultInstance.Deserialize();
             var requests = new List<Request>();
+            faults = new List<Request>();
 
             LoadLandformResInUnityThread(assetBundle, res.Landform.Values, requests);
 
-            RequestBase.WaitAll(requests);
+            RequestBase.WaitAll(requests, faults);
             return res;
         }
 
@@ -93,6 +95,34 @@ namespace KouXiaGu.RectTerrain.Resources
             while (!request.IsCompleted)
             {
             }
+        }
+
+        [Conditional("EDITOR_LOG")]
+        void OnCompleted(ICollection<Request> faults)
+        {
+            const string prefix = "[地形资源]";
+            if (faults.Count == 0)
+            {
+                UnityEngine.Debug.Log(prefix + "初始化完成;" + GetRectTerrainResourcesInfo());
+            }
+            else
+            {
+                string fault = faults.ToLog(delegate (Request request)
+                {
+                    return request.Exception.ToString();
+                });
+                UnityEngine.Debug.Log(prefix + "初始化完成;" + GetRectTerrainResourcesInfo() + "异常:" + fault);
+            }
+        }
+
+        string GetRectTerrainResourcesInfo()
+        {
+            if (rectTerrainResources != null)
+            {
+                return "[Landform:Count:" + rectTerrainResources.Landform.Count
+                + "]";
+            }
+            return string.Empty;
         }
     }
 }

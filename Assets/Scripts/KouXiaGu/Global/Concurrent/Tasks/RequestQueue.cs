@@ -68,12 +68,13 @@ namespace KouXiaGu.Concurrent
                     Stopwatch.Restart();
                 }
 
+                while (requestQueue.Count == 0)
+                {
+                    yield return null;
+                }
+
                 lock (asyncLock)
                 {
-                    while (requestQueue.Count == 0)
-                    {
-                        yield return null;
-                    }
                     request = requestQueue.Dequeue();
                 }
 

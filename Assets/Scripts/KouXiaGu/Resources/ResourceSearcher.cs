@@ -92,7 +92,7 @@ namespace KouXiaGu.Resources
             string fullPath = Path.Combine(directory, ResourceName);
             string directoryPath = Path.GetDirectoryName(fullPath);
             string fileName = Path.GetFileNameWithoutExtension(fullPath);
-            string searchPattern = fileName + "*" + serializer.Extension;
+            string searchPattern = fileName + "_*" + serializer.Extension;
             return Directory.EnumerateFiles(directory, searchPattern, SearchOption);
         }
 

@@ -163,7 +163,6 @@ namespace KouXiaGu.RectTerrain.Resources
             Load(landformResource.DiffuseBlendTex);
             Load(landformResource.HeightTex);
             Load(landformResource.HeightBlendTex);
-            OnComplete();
         }
 
         void Load(TextureInfo info)
@@ -172,6 +171,7 @@ namespace KouXiaGu.RectTerrain.Resources
             if (texture == null)
             {
                 AddException(new FileNotFoundException("未能从<" + assetbundle.name + ">读取到资源:", info.Name));
+                IsFaulted = true;
             }
             info.Texture = texture;
         }

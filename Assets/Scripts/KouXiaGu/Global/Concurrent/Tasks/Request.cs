@@ -29,9 +29,9 @@ namespace KouXiaGu.Concurrent
             cancellationToken.Register(OnCancele);
         }
 
-        public bool IsCompleted { get; private set; }
-        public bool IsFaulted { get; private set; }
-        public bool IsCanceled { get; private set; }
+        public bool IsCompleted { get; protected set; }
+        public bool IsFaulted { get; protected set; }
+        public bool IsCanceled { get; protected set; }
         public AggregateException Exception { get; protected set; }
         protected CancellationToken cancellationToken { get; private set; }
 
@@ -64,7 +64,17 @@ namespace KouXiaGu.Concurrent
             }
             else
             {
-                Exception = new AggregateException(Exception, ex);
+                var aggregateException = Exception as AggregateException;
+                if (aggregateException == null)
+                {
+                    Exception = new AggregateException(Exception, ex);
+                }
+                else
+                {
+                    var exceptionList = new List<Exception>(Exception.InnerExceptions);
+                    exceptionList.Add(ex);
+                    Exception = new AggregateException(exceptionList);
+                }
             }
         }
 
