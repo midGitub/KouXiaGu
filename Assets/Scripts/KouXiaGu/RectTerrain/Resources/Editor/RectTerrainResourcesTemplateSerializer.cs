@@ -14,12 +14,13 @@ namespace KouXiaGu.RectTerrain.Resources
 
         static readonly RectTerrainResources rectTerrainResources = new RectTerrainResources()
         {
-            Landform = new Dictionary<string, LandformResource>()
+            Landform = new Dictionary<int, LandformResource>()
             {
                 {
-                    "Unknow1",
+                    1,
                     new LandformResource()
                     {
+                        ID = 1,
                         Name = "Unknow1",
                         DiffuseTex = "DiffuseTex1",
                         DiffuseBlendTex = "DiffuseBlendTex1",
@@ -28,9 +29,10 @@ namespace KouXiaGu.RectTerrain.Resources
                     }
                 },
                 {
-                    "Unknow2",
+                    2,
                     new LandformResource()
                     {
+                        ID = 2,
                         Name = "Unknow2",
                         DiffuseTex = "DiffuseTex2",
                         DiffuseBlendTex = "DiffuseBlendTex2",

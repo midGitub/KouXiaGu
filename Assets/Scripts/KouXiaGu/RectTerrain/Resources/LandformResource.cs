@@ -17,6 +17,15 @@ namespace KouXiaGu.RectTerrain.Resources
     public sealed class LandformResource
     {
 
+        /// <summary>
+        /// 唯一标识ID;
+        /// </summary>
+        [XmlAttribute("id")]
+        public int ID { get; set; }
+
+        /// <summary>
+        /// 地形名;
+        /// </summary>
         [XmlAttribute("name")]
         public string Name { get; set; }
 
@@ -118,26 +127,26 @@ namespace KouXiaGu.RectTerrain.Resources
     /// <summary>
     /// 地形资源序列化;
     /// </summary>
-    public sealed class LandformResourceSerializer : ResourceSerializer<LandformResource[], Dictionary<string, LandformResource>>
+    public sealed class LandformResourceSerializer : ResourceSerializer<LandformResource[], Dictionary<int, LandformResource>>
     {
         public LandformResourceSerializer(ISerializer<LandformResource[]> serializer, ResourceSearcher resourceSearcher) : base(serializer, resourceSearcher)
         {
         }
 
-        protected override Dictionary<string, LandformResource> Combine(List<LandformResource[]> sources)
+        protected override Dictionary<int, LandformResource> Combine(List<LandformResource[]> sources)
         {
-            var dictionary = new Dictionary<string, LandformResource>();
+            var dictionary = new Dictionary<int, LandformResource>();
             foreach (var source in sources)
             {
                 foreach (var res in source)
                 {
-                    dictionary.Add(res.Name, res);
+                    dictionary.Add(res.ID, res);
                 }
             }
             return dictionary;
         }
 
-        protected override LandformResource[] Convert(Dictionary<string, LandformResource> result)
+        protected override LandformResource[] Convert(Dictionary<int, LandformResource> result)
         {
             return result.Values.ToArray();
         }

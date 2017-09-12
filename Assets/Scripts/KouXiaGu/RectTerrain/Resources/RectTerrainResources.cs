@@ -15,7 +15,7 @@ namespace KouXiaGu.RectTerrain.Resources
     {
         public RectTerrainResources()
         {
-            Landform = new Dictionary<string, LandformResource>();
+            Landform = new Dictionary<int, LandformResource>();
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace KouXiaGu.RectTerrain.Resources
         {
         }
 
-        public Dictionary<string, LandformResource> Landform { get; set; }
+        public Dictionary<int, LandformResource> Landform { get; set; }
 
         public void Clear()
         {

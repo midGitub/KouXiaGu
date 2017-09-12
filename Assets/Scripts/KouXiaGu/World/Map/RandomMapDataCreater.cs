@@ -39,16 +39,16 @@ namespace KouXiaGu.World.Map
                 node.Landform = new LandformNode()
                 {
                     ID = landform.GetNewEffectiveID(),
-                    LandformType = RandomXiaGu.Get(landformArray),
-                    Angle = RandomXiaGu.Angle(),
+                    LandformType = RandomXiaGu.Default.Get(landformArray),
+                    Angle = RandomXiaGu.Default.Angle(),
                 };
 
-                if (RandomXiaGu.Boolean())
+                if (RandomXiaGu.Default.Boolean())
                 {
                     node.Road = new RoadNode()
                     {
                         ID = road.GetNewEffectiveID(),
-                        RoadType = RandomXiaGu.Get(roadArray),
+                        RoadType = RandomXiaGu.Default.Get(roadArray),
                     };
                 }
 

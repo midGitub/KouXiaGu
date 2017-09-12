@@ -145,7 +145,7 @@ namespace KouXiaGu.World.Map.MapEdit
             {
                 if (randomAngleToggle.isOn)
                 {
-                    return RandomXiaGu.Angle();
+                    return RandomXiaGu.Default.Angle();
                 }
                 else
                 {

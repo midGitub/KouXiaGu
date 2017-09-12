@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Threading.Tasks;
-using KouXiaGu.Concurrent;
 using UnityEngine;
 using KouXiaGu.Resources;
 using System.Threading;
 using KouXiaGu.Resources.Archive;
+using KouXiaGu.RectTerrain.Resources;
 
 namespace KouXiaGu.World.RectMap
 {
@@ -25,6 +21,8 @@ namespace KouXiaGu.World.RectMap
 
         [SerializeField]
         bool isUseRandomMap;
+        [SerializeField]
+        int randomMapRadius;
 
         /// <summary>
         /// 是否使用随机地图?
@@ -32,11 +30,27 @@ namespace KouXiaGu.World.RectMap
         public bool IsUseRandomMap
         {
             get { return isUseRandomMap; }
+            set { isUseRandomMap = value; }
         }
 
-        static MapDataSerializer mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new MultipleResourceSearcher("World/Data"));
+        /// <summary>
+        /// 生成的随机地图大小;
+        /// </summary>
+        public int RandomMapRadius
+        {
+            get { return randomMapRadius; }
+            set { randomMapRadius = value; }
+        }
 
-        static WorldMapSerializer worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data");
+        MapDataSerializer mapDataSerializer
+        {
+            get { return new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new MultipleResourceSearcher("World/Data")); }
+        }
+
+        WorldMapSerializer worldMapSerializer
+        {
+            get { return new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data"); }
+        }
 
         /// <summary>
         /// 游戏地图;
@@ -47,19 +61,42 @@ namespace KouXiaGu.World.RectMap
         {
             return Task.Run(delegate ()
             {
-                WorldMap = ReadMap(archive);
+                if (isUseRandomMap)
+                {
+                    WorldMap = GetRandomMap();
+                }
+                else
+                {
+                    WorldMap = GetMap(archive);
+                }
+                OnCompleted();
             }, token);
         }
 
-        WorldMap ReadMap(ArchiveInfo archive)
+        WorldMap GetMap(ArchiveInfo archive)
         {
             WorldMap map = worldMapSerializer.Deserialize(archive);
             return map;
         }
 
-        WorldMap ReadRandomMap()
+        WorldMap GetRandomMap()
         {
-            throw new NotImplementedException();
+            RectTerrainResources rectTerrainResources = RectTerrainResourcesInitializer.RectTerrainResources;
+
+            if (rectTerrainResources == null)
+                throw new ArgumentException("RectTerrainResources 未初始化完成!");
+
+            var mapGenerator = new SimpleMapGenerator(rectTerrainResources);
+            MapData map = mapGenerator.Create(randomMapRadius);
+            return new WorldMap(map);
+        }
+
+        [System.Diagnostics.Conditional("EDITOR_LOG")]
+        void OnCompleted()
+        {
+            const string prefix = "[地图资源]";
+            string info = "[地图:Size:" + WorldMap.Map.Count + "]";
+            Debug.Log(prefix + "初始化完成;" + info);
         }
     }
 }
