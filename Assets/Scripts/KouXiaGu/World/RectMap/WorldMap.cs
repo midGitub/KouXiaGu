@@ -25,7 +25,7 @@ namespace KouXiaGu.World.RectMap
         {
             MapData = data;
             observableMap = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-            MapChangedRecorder = new MapChangedRecorder<RectCoord, MapNode>(observableMap);
+            MapChangedRecorder = new WorldMapChangedRecorder<RectCoord, MapNode>(observableMap);
             MapEditorLock = new ReaderWriterLockSlim();
         }
 
@@ -33,7 +33,7 @@ namespace KouXiaGu.World.RectMap
         {
             MapData = Combine(data, archive);
             observableMap = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-            MapChangedRecorder = new MapChangedRecorder<RectCoord, MapNode>(observableMap, archive.Data.Keys);
+            MapChangedRecorder = new WorldMapChangedRecorder<RectCoord, MapNode>(observableMap, archive.Data.Keys);
             MapEditorLock = new ReaderWriterLockSlim();
         }
 
@@ -42,7 +42,7 @@ namespace KouXiaGu.World.RectMap
         /// </summary>
         public MapData MapData { get; private set; }
         ObservableDictionary<RectCoord, MapNode> observableMap;
-        public MapChangedRecorder<RectCoord, MapNode> MapChangedRecorder { get; private set; }
+        public WorldMapChangedRecorder<RectCoord, MapNode> MapChangedRecorder { get; private set; }
 
         /// <summary>
         /// 地图读写锁;
@@ -112,6 +112,65 @@ namespace KouXiaGu.World.RectMap
         public static implicit operator MapData(WorldMap gameMap)
         {
             return gameMap.MapData;
+        }
+
+
+        /// <summary>
+        /// 记录地图变化;
+        /// </summary>
+        public class WorldMapChangedRecorder<TKey, Tvalue> : IDictionaryObserver<TKey, Tvalue>, IDisposable
+        {
+            public WorldMapChangedRecorder(IObservableDictionary<TKey, Tvalue> observableMap)
+            {
+                ChangedPositions = new HashSet<TKey>();
+                unsubscriber = observableMap.Subscribe(this);
+            }
+
+            public WorldMapChangedRecorder(IObservableDictionary<TKey, Tvalue> observableMap, IEnumerable<TKey> changedPositions)
+            {
+                ChangedPositions = new HashSet<TKey>(changedPositions);
+                unsubscriber = observableMap.Subscribe(this);
+            }
+
+            IDisposable unsubscriber;
+            public HashSet<TKey> ChangedPositions { get; private set; }
+
+            void IDictionaryObserver<TKey, Tvalue>.OnAdded(TKey key, Tvalue newValue)
+            {
+                ChangedPositions.Add(key);
+            }
+
+            void IDictionaryObserver<TKey, Tvalue>.OnRemoved(TKey key, Tvalue originalValue)
+            {
+                ChangedPositions.Remove(key);
+            }
+
+            void IDictionaryObserver<TKey, Tvalue>.OnUpdated(TKey key, Tvalue originalValue, Tvalue newValue)
+            {
+                ChangedPositions.Add(key);
+            }
+
+            void IDictionaryObserver<TKey, Tvalue>.OnClear(IDictionary<TKey, Tvalue> dictionary)
+            {
+                ChangedPositions.Clear();
+            }
+
+            public void Clear()
+            {
+                ChangedPositions.Clear();
+            }
+
+            /// <summary>
+            /// 取消订阅;
+            /// </summary>
+            public void Dispose()
+            {
+                if (unsubscriber != null)
+                {
+                    unsubscriber.Dispose();
+                    unsubscriber = null;
+                }
+            }
         }
     }
 }

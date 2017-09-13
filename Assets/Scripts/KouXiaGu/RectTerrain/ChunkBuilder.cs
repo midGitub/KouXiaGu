@@ -52,37 +52,6 @@ namespace KouXiaGu.RectTerrain
     }
 
     /// <summary>
-    /// 块当前的状态;
-    /// </summary>
-    public enum ChunkState
-    {
-        /// <summary>
-        /// 未创建;
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// 正在创建中;
-        /// </summary>
-        Creating,
-
-        /// <summary>
-        /// 创建完成;
-        /// </summary>
-        Completed,
-
-        /// <summary>
-        /// 正在更新中;
-        /// </summary>
-        Updating,
-
-        /// <summary>
-        /// 正在销毁中;
-        /// </summary>
-        Destroying,
-    }
-
-    /// <summary>
     /// 块信息;
     /// </summary>
     public interface IChunkInfo<TPoint, TChunk>
@@ -94,8 +63,10 @@ namespace KouXiaGu.RectTerrain
         void RemoveListener(Action<IChunkInfo<TPoint, TChunk>> listener);
     }
 
+
+
     /// <summary>
-    /// 块创建;
+    /// 抽象类 地形创建器;
     /// </summary>
     public abstract class ChunkBuilder<TPoint, TChunk> : IEnumerable<IChunkInfo<TPoint, TChunk>>
     {

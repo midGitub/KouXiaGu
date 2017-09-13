@@ -10,9 +10,9 @@ namespace KouXiaGu.World.Map
     /// <summary>
     /// 记录地图变化;
     /// </summary>
-    class MapChangedRecorder<TKey, TVaule> : IDictionaryObserver<TKey, TVaule>, IDisposable
+    class MapChangedRecorder<TKey, TValue> : IDictionaryObserver<TKey, TValue>, IDisposable
     {
-        public MapChangedRecorder(IObservableDictionary<TKey, TVaule> observableMap)
+        public MapChangedRecorder(IObservableDictionary<TKey, TValue> observableMap)
         {
             ChangedPositions = new HashSet<TKey>();
             unsubscriber = observableMap.Subscribe(this);
@@ -21,22 +21,22 @@ namespace KouXiaGu.World.Map
         IDisposable unsubscriber;
         public HashSet<TKey> ChangedPositions { get; private set; }
 
-        void IDictionaryObserver<TKey, TVaule>.OnAdded(TKey key, TVaule newValue)
+        void IDictionaryObserver<TKey, TValue>.OnAdded(TKey key, TValue newValue)
         {
             ChangedPositions.Add(key);
         }
 
-        void IDictionaryObserver<TKey, TVaule>.OnRemoved(TKey key, TVaule originalValue)
+        void IDictionaryObserver<TKey, TValue>.OnRemoved(TKey key, TValue originalValue)
         {
             ChangedPositions.Remove(key);
         }
 
-        void IDictionaryObserver<TKey, TVaule>.OnUpdated(TKey key, TVaule originalValue, TVaule newValue)
+        void IDictionaryObserver<TKey, TValue>.OnUpdated(TKey key, TValue originalValue, TValue newValue)
         {
             ChangedPositions.Add(key);
         }
 
-        void IDictionaryObserver<TKey, TVaule>.OnClear()
+        void IDictionaryObserver<TKey, TValue>.OnClear(IDictionary<TKey, TValue> dictionary)
         {
         }
 

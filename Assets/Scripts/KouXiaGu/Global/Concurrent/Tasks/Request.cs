@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace KouXiaGu.Concurrent
 {
 
+
     /// <summary>
     /// 请求基类;
     /// </summary>
@@ -29,21 +30,33 @@ namespace KouXiaGu.Concurrent
             cancellationToken.Register(OnCancele);
         }
 
+        protected Action<RequestBase> onCompleteEvent;
         public bool IsCompleted { get; protected set; }
         public bool IsFaulted { get; protected set; }
         public bool IsCanceled { get; protected set; }
         public AggregateException Exception { get; protected set; }
         protected CancellationToken cancellationToken { get; private set; }
 
+        /// <summary>
+        /// 当请求完成时调用,不管成功还是失败;
+        /// </summary>
+        public event Action<RequestBase> OnCompleteEvent
+        {
+            add { onCompleteEvent += value; }
+            remove { onCompleteEvent -= value; }
+        }
+
         protected void OnComplete()
         {
             IsCompleted = true;
+            onCompleteEvent?.Invoke(this);
         }
 
         protected void OnFault()
         {
             IsFaulted = true;
             IsCompleted = true;
+            onCompleteEvent?.Invoke(this);
         }
 
         void OnCancele()
@@ -51,6 +64,7 @@ namespace KouXiaGu.Concurrent
             AddException(new OperationCanceledException());
             IsCanceled = true;
             IsCompleted = true;
+            onCompleteEvent?.Invoke(this);
         }
 
         /// <summary>

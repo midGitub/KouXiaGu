@@ -12,7 +12,7 @@ namespace KouXiaGu.RectTerrain
     /// 处理地形在Unity线程执行的操作;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class LandformDispatcher : MonoBehaviour, IAsyncRequestDispatcher
+    public sealed class LandformDispatcher : MonoBehaviour, IRequestDispatcher
     {
         LandformDispatcher()
         {
@@ -20,16 +20,16 @@ namespace KouXiaGu.RectTerrain
 
         [SerializeField]
         Stopwatch runtimeStopwatch = new Stopwatch(0.2f);
-        AsyncRequestQueue requestQueue;
+        RequestQueue requestQueue;
 
-        public int RequestCount
+        public int Count
         {
-            get { return requestQueue == null ? 0 : requestQueue.RequestCount; }
+            get { return requestQueue == null ? 0 : requestQueue.Count; }
         }
 
         void Awake()
         {
-            requestQueue = new AsyncRequestQueue(runtimeStopwatch);
+            requestQueue = new RequestQueue(runtimeStopwatch);
         }
 
         void Update()
@@ -37,9 +37,9 @@ namespace KouXiaGu.RectTerrain
             requestQueue.MoveNext();
         }
 
-        public void Add(IAsyncRequest request)
+        public IRequest Add(IRequest request)
         {
-            requestQueue.Add(request);
+            return requestQueue.Add(request);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace KouXiaGu.Terrain3D
             }
         }
 
-        void IDictionaryObserver<CubicHexCoord, MapNode>.OnClear()
+        void IDictionaryObserver<CubicHexCoord, MapNode>.OnClear(IDictionary<CubicHexCoord, MapNode> dictionary)
         {
         }
 
