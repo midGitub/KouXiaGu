@@ -10,7 +10,7 @@ namespace KouXiaGu.RectTerrain
     /// <summary>
     /// 显示坐标提供;
     /// </summary>
-    public interface IGuider<TPoint>
+    public interface IDisplayGuider<TPoint>
     {
         /// <summary>
         /// 获取到需要显示的坐标;

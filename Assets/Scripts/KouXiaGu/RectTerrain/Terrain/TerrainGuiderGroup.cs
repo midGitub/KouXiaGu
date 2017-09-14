@@ -10,21 +10,21 @@ namespace KouXiaGu.RectTerrain
     /// <summary>
     /// 显示合集\组;
     /// </summary>
-    public abstract class GuiderGroup<TPoint> : IGuider<TPoint>
+    public abstract class TerrainGuiderGroup<TPoint> : IDisplayGuider<TPoint>
     {
-        public GuiderGroup()
+        public TerrainGuiderGroup()
         {
         }
 
-        public GuiderGroup(GuiderGroup<TPoint> guiderGroup)
+        public TerrainGuiderGroup(TerrainGuiderGroup<TPoint> guiderGroup)
         {
 
         }
 
-        protected abstract ICollection<IGuider<TPoint>> guiderCollection { get; }
+        protected abstract ICollection<IDisplayGuider<TPoint>> guiderCollection { get; }
         protected abstract ICollection<TPoint> pisplayPointCollection { get; }
 
-        public virtual void Add(IGuider<TPoint> guider)
+        public virtual void Add(IDisplayGuider<TPoint> guider)
         {
             if (!guiderCollection.Contains(guider))
             {
@@ -32,7 +32,7 @@ namespace KouXiaGu.RectTerrain
             }
         }
 
-        public virtual bool Remove(IGuider<TPoint> guider)
+        public virtual bool Remove(IDisplayGuider<TPoint> guider)
         {
             return guiderCollection.Remove(guider);
         }
@@ -50,23 +50,23 @@ namespace KouXiaGu.RectTerrain
             return pisplayPointCollection.AsReadOnlyCollection();
         }
 
-        IEnumerable<TPoint> IGuider<TPoint>.GetPointsToDisplay()
+        IEnumerable<TPoint> IDisplayGuider<TPoint>.GetPointsToDisplay()
         {
             return GetPointsToDisplay();
         }
 
-        public class GuiderGroup_HashSet : GuiderGroup<TPoint>
+        public class GuiderGroup_HashSet : TerrainGuiderGroup<TPoint>
         {
             public GuiderGroup_HashSet()
             {
-                guiderList = new List<IGuider<TPoint>>();
+                guiderList = new List<IDisplayGuider<TPoint>>();
                 pisplayPoints = new HashSet<TPoint>();
             }
 
-            List<IGuider<TPoint>> guiderList;
+            List<IDisplayGuider<TPoint>> guiderList;
             HashSet<TPoint> pisplayPoints;
 
-            protected override ICollection<IGuider<TPoint>> guiderCollection
+            protected override ICollection<IDisplayGuider<TPoint>> guiderCollection
             {
                 get { return guiderList; }
             }
@@ -77,18 +77,18 @@ namespace KouXiaGu.RectTerrain
             }
         }
 
-        public class GuiderGroup_List : GuiderGroup<TPoint>
+        public class GuiderGroup_List : TerrainGuiderGroup<TPoint>
         {
             public GuiderGroup_List()
             {
-                guiderList = new List<IGuider<TPoint>>();
+                guiderList = new List<IDisplayGuider<TPoint>>();
                 pisplayPoints = new List<TPoint>();
             }
 
-            List<IGuider<TPoint>> guiderList;
+            List<IDisplayGuider<TPoint>> guiderList;
             List<TPoint> pisplayPoints;
 
-            protected override ICollection<IGuider<TPoint>> guiderCollection
+            protected override ICollection<IDisplayGuider<TPoint>> guiderCollection
             {
                 get { return guiderList; }
             }

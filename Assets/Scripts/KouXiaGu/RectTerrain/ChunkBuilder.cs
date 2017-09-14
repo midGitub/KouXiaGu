@@ -13,7 +13,7 @@ namespace KouXiaGu.RectTerrain
     /// </summary>
     public class ChunkUpdater<TPoint, TChunk>
     {
-        public ChunkUpdater(ChunkBuilder<TPoint, TChunk> builder, GuiderGroup<TPoint> guiderGroup)
+        public ChunkUpdater(ChunkBuilder<TPoint, TChunk> builder, TerrainGuiderGroup<TPoint> guiderGroup)
         {
             Builder = builder;
             GuiderGroup = guiderGroup;
@@ -21,7 +21,7 @@ namespace KouXiaGu.RectTerrain
         }
 
         public ChunkBuilder<TPoint, TChunk> Builder { get; private set; }
-        public GuiderGroup<TPoint> GuiderGroup { get; private set; }
+        public TerrainGuiderGroup<TPoint> GuiderGroup { get; private set; }
         List<TPoint> needDestoryPoints;
 
         public void Update()
