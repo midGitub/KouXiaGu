@@ -10,6 +10,7 @@ namespace KouXiaGu
     /// <summary>
     /// 挂载在场景控制器下的物体;
     /// </summary>
+    [Obsolete]
     public abstract class SceneObject : MonoBehaviour
     {
         protected SceneObject()

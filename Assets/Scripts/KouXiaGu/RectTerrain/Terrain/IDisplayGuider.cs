@@ -15,6 +15,6 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 获取到需要显示的坐标;
         /// </summary>
-        IEnumerable<TPoint> GetPointsToDisplay();
+        IReadOnlyCollection<TPoint> GetPointsToDisplay();
     }
 }

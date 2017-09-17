@@ -24,14 +24,25 @@ namespace KouXiaGu
         [CustomUnityTag("全局控制器标签;")]
         public const string Tag = "GlobalController";
 
+        static GameObject globalController;
+
         void Awake()
         {
             SetInstance(this);
+            globalController = gameObject;
             tag = Tag;
             DontDestroyOnLoad(gameObject);
+
             XiaGu.Initialize();
             Resource.Initialize();
         }
+
+        public static T GetSington<T>()
+        {
+            return globalController.GetComponentInChildren<T>();
+        }
+
+
 
         [ContextMenu("Test")]
         void Test()

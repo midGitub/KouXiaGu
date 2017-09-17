@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KouXiaGu.Grids;
+using UnityEngine;
 
 namespace KouXiaGu.RectTerrain
 {
@@ -17,21 +15,56 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 重要显示区域;
         /// </summary>
-        public RectRange DisplayRange;
+        [SerializeField]
+        RectRange displayRange;
 
         /// <summary>
         /// 缓冲区域;
         /// </summary>
-        public RectRange SmoothRange;
+        [SerializeField]
+        RectRange bufferRange;
 
-        /// <summary>
-        /// 显示中心点;
-        /// </summary>
-        RectCoord center;
+        bool isChanged;
+        List<RectCoord> displayPoints;
 
-        IEnumerable<RectCoord> IDisplayGuider<RectCoord>.GetPointsToDisplay()
+        public void Awake()
         {
-            throw new NotImplementedException();
+            displayPoints = new List<RectCoord>();
+        }
+
+        public void OnValidate()
+        {
+            if (bufferRange.Height < displayRange.Height)
+            {
+                bufferRange.Height = displayRange.Height;
+            }
+            if (bufferRange.Width < displayRange.Width)
+            {
+                bufferRange.Width = displayRange.Width;
+            }
+            isChanged = true;
+        }
+
+        public void SetCenter(RectCoord center)
+        {
+            if (displayRange.Center != center)
+            {
+                isChanged = true;
+            }
+            displayRange.Center = center;
+        }
+
+        IReadOnlyCollection<RectCoord> IDisplayGuider<RectCoord>.GetPointsToDisplay()
+        {
+            if (isChanged)
+            {
+                isChanged = false;
+                bufferRange = RectRange.Contain(bufferRange, displayRange);
+                var points = bufferRange.Range();
+                displayPoints.Clear();
+                displayPoints.AddRange(points);
+            }
+            return displayPoints;
         }
     }
 }

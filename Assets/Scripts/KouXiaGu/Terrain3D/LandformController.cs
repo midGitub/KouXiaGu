@@ -13,7 +13,7 @@ namespace KouXiaGu.Terrain3D
     /// 游戏地形控制;负责地形的更新和创建;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformController : SceneSington<LandformController>, IComponentInitializer
+    public class LandformController : SceneSington<LandformController>
     {
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace KouXiaGu.Terrain3D
             SetInstance(this);
         }
 
-        void IComponentInitializer.WorldDataCompleted(IWorldData data)
+        public void WorldDataCompleted(IWorldData data)
         {
             LandformBuilder = new LandformBuilder(data, landformUnityDispatcher);
             BuildingBuilder = new BuildingBuilder(data, landformUnityDispatcher);

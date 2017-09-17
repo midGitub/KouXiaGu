@@ -11,7 +11,8 @@ namespace KouXiaGu.Grids
     /// <summary>
     /// 区别于UnityEngine.Rect,表示带一个中心点的矩形;
     /// </summary>
-    public struct RectRange
+    [Serializable]
+    public struct RectRange : IEquatable<RectRange>
     {
         public RectRange(RectCoord center, int width, int height) : this(center.x, center.y, width, height)
         {
@@ -90,12 +91,22 @@ namespace KouXiaGu.Grids
             get { return height * 2 + 1; }
         }
 
+        public RectCoord Center
+        {
+            get { return new RectCoord(x, y); }
+            set
+            {
+                x = value.x;
+                y = value.y;
+            }
+        }
+
         /// <summary>
         /// 最左上角坐标;
         /// </summary>
         public RectCoord Northeast
         {
-            get { return new RectCoord(x - width, y + height); }
+            get { return new RectCoord(x + width, y + height); }
         }
 
         /// <summary>
@@ -103,7 +114,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public RectCoord Northwest
         {
-            get { return new RectCoord(x + width, y + height); }
+            get { return new RectCoord(x - width, y + height); }
         }
 
         /// <summary>
@@ -111,7 +122,7 @@ namespace KouXiaGu.Grids
         /// </summary>
         public RectCoord Southeast
         {
-            get { return new RectCoord(x - width, y - height); }
+            get { return new RectCoord(x + width, y - height); }
         }
 
         /// <summary>
@@ -119,7 +130,34 @@ namespace KouXiaGu.Grids
         /// </summary>
         public RectCoord Southwest
         {
-            get { return new RectCoord(x + width, y - height); }
+            get { return new RectCoord(x - width, y - height); }
+        }
+
+        public bool Equals(RectRange other)
+        {
+            return this == other;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is RectRange)
+            {
+                Equals((RectRange)obj);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return height;
+        }
+
+        /// <summary>
+        /// 迭代范围;
+        /// </summary>
+        public IEnumerable<RectCoord> Range()
+        {
+            return RectCoord.Range(Southwest, Northeast);
         }
 
         /// <summary>
@@ -130,6 +168,9 @@ namespace KouXiaGu.Grids
         /// <returns>改变中心坐标以后的范围</returns>
         public static RectRange Contain(RectRange parent, RectRange child)
         {
+            if (child > parent)
+                throw new ArgumentException("child的范围大于parent的范围;");
+
             RectCoord offset;
 
             offset = child.Northeast - parent.Northeast;
@@ -153,6 +194,37 @@ namespace KouXiaGu.Grids
             }
 
             return parent;
+        }
+
+        /// <summary>
+        /// v1 的范围是否大于 v2 的范围;
+        /// </summary>
+        public static bool operator >(RectRange v1, RectRange v2)
+        {
+            return v1.width > v2.width 
+                && v1.height > v2.height;
+        }
+
+        /// <summary>
+        /// v1 的范围是否小于 v2 的范围;
+        /// </summary>
+        public static bool operator <(RectRange v1, RectRange v2)
+        {
+            return v1.width < v2.width 
+                && v1.height < v2.height;
+        }
+
+        public static bool operator ==(RectRange v1, RectRange v2)
+        {
+            return v1.height == v2.height
+                && v1.width == v2.width 
+                && v1.x == v2.x 
+                && v1.y == v2.y;
+        }
+
+        public static bool operator !=(RectRange v1, RectRange v2)
+        {
+            return !(v1 == v2);
         }
     }
 }

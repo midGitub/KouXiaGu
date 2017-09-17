@@ -18,6 +18,8 @@ namespace KouXiaGu.RectTerrain
         {
         }
 
+        public const string tessellationName = "_LandformTess";
+        public const string DisplacementName = "_LandformDisplacement";
         MeshRenderer meshRenderer;
         event Action<LandformChunkRenderer> onHeightChanged;
         bool isHeightChanged;
@@ -135,7 +137,29 @@ namespace KouXiaGu.RectTerrain
                 return 0;
 
             Color pixelColor = HeightMap.GetPixel(uv);
-            return pixelColor.r * RectTerrainController.Instance.LandformParameter.Displacement;
+            return pixelColor.r * GetDisplacement();
+        }
+
+        public static float GetTessellation()
+        {
+            float value = Shader.GetGlobalFloat(tessellationName);
+            return value;
+        }
+
+        public static void SetTessellation(float value)
+        {
+            Shader.SetGlobalFloat(tessellationName, value);
+        }
+
+        public static float GetDisplacement()
+        {
+            float value = Shader.GetGlobalFloat(DisplacementName);
+            return value;
+        }
+
+        public static void SetDisplacement(float value)
+        {
+            Shader.SetGlobalFloat(DisplacementName, value);
         }
     }
 }

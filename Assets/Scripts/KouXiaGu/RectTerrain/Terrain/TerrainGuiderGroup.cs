@@ -8,17 +8,58 @@ namespace KouXiaGu.RectTerrain
 {
 
     /// <summary>
-    /// 显示合集\组;
+    /// 显示组;
     /// </summary>
-    public abstract class TerrainGuiderGroup<TPoint> : IDisplayGuider<TPoint>
+    public class TerrainGuiderGroup<TPoint>
     {
         public TerrainGuiderGroup()
         {
+            guiderCollection = new List<IDisplayGuider<TPoint>>();
         }
 
-        public TerrainGuiderGroup(TerrainGuiderGroup<TPoint> guiderGroup)
-        {
+        List<IDisplayGuider<TPoint>> guiderCollection;
 
+        public bool Add(IDisplayGuider<TPoint> guider)
+        {
+            if (!guiderCollection.Contains(guider))
+            {
+                guiderCollection.Add(guider);
+                return true;
+            }
+            return false;
+        }
+
+        public bool Remove(IDisplayGuider<TPoint> guider)
+        {
+            return guiderCollection.Remove(guider);
+        }
+
+        /// <summary>
+        /// 获取到需要显示的坐标;
+        /// </summary>
+        public void GetPointsToDisplay(ref ICollection<TPoint> displayPoints)
+        {
+            foreach (var chunkGuider in guiderCollection)
+            {
+                foreach (var display in chunkGuider.GetPointsToDisplay())
+                {
+                    if (!displayPoints.Contains(display))
+                    {
+                        displayPoints.Add(display);
+                    }
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// 显示合集\组;
+    /// </summary>
+    public abstract class OTerrainGuiderGroup<TPoint> : IDisplayGuider<TPoint>
+    {
+        public OTerrainGuiderGroup()
+        {
         }
 
         protected abstract ICollection<IDisplayGuider<TPoint>> guiderCollection { get; }
@@ -50,12 +91,12 @@ namespace KouXiaGu.RectTerrain
             return pisplayPointCollection.AsReadOnlyCollection();
         }
 
-        IEnumerable<TPoint> IDisplayGuider<TPoint>.GetPointsToDisplay()
+        IReadOnlyCollection<TPoint> IDisplayGuider<TPoint>.GetPointsToDisplay()
         {
             return GetPointsToDisplay();
         }
 
-        public class GuiderGroup_HashSet : TerrainGuiderGroup<TPoint>
+        public class GuiderGroup_HashSet : OTerrainGuiderGroup<TPoint>
         {
             public GuiderGroup_HashSet()
             {
@@ -77,7 +118,7 @@ namespace KouXiaGu.RectTerrain
             }
         }
 
-        public class GuiderGroup_List : TerrainGuiderGroup<TPoint>
+        public class GuiderGroup_List : OTerrainGuiderGroup<TPoint>
         {
             public GuiderGroup_List()
             {

@@ -26,6 +26,7 @@ namespace KouXiaGu.World
     /// 游戏数据初始化;
     /// </summary>
     [DisallowMultipleComponent]
+    [Obsolete]
     public class WorldDataInitializer : MonoBehaviour, IWorldData
     {
         WorldDataInitializer()
@@ -51,7 +52,7 @@ namespace KouXiaGu.World
 
             foreach (var item in GetComponentsInChildren<IComponentInitializer>())
             {
-                item.WorldDataCompleted(this);
+                //item.WorldDataCompleted(this);
             }
             Debug.Log("游戏数据初始化完成;");
         }

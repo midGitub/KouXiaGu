@@ -18,7 +18,7 @@ namespace KouXiaGu.World
     /// 游戏场景信息初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class DataInitializer : SceneSington<DataInitializer>
+    public sealed class DataInitializer : Initializer<IDataInitializer>
     {
         DataInitializer()
         {
@@ -34,93 +34,38 @@ namespace KouXiaGu.World
         /// </summary>
         [SerializeField]
         ArchiveInfo defaultArchive;
+        GameInitializer gameInitializer;
 
-        List<Task> tasks;
-        IDataInitializer[] initializers;
-        internal Task InitializeTask { get; private set; }
-
-        public bool IsCompleted
+        protected override string InitializerName
         {
-            get { return InitializeTask != null ? InitializeTask.IsCompleted : false; }
+            get { return "[场景数据初始化]"; }
         }
 
-        public bool IsFaulted
+        protected override void Awake()
         {
-            get { return InitializeTask != null ? InitializeTask.IsFaulted : false; }
+            base.Awake();
+            gameInitializer = GlobalController.GetSington<GameInitializer>();
         }
 
-        public AggregateException Exception
+        protected override bool Prepare()
         {
-            get { return InitializeTask != null ? InitializeTask.Exception : null; }
+            if (gameInitializer.IsCompleted)
+            {
+                if (!gameInitializer.IsFaulted)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new ArgumentException("gameInitializer 初始化失败;");
+                }
+            }
+            return false;
         }
 
-        public bool IsRunning { get; private set; }
-        public CancellationTokenSource TokenSource { get; private set; }
-
-        void Awake()
+        protected override Task GetTask(IDataInitializer initializer)
         {
-            tasks = new List<Task>();
-            initializers = GetComponentsInChildren<IDataInitializer>();
-            TokenSource = new CancellationTokenSource();
-        }
-
-        void Start()
-        {
-            StartInitialize();
-        }
-
-        /// <summary>
-        /// 开始进行初始化;
-        /// </summary>
-        public async void StartInitialize()
-        {
-            if (IsCompleted)
-            {
-                return;
-            }
-
-            var archive = Archive;
-            if (archive == null)
-            {
-                archive = defaultArchive;
-            }
-
-            IsRunning = true;
-
-            GameInitializer gameInitializer = GameInitializer.Instance;
-            while (!gameInitializer.IsCompleted)
-            {
-                await Task.Delay(500);
-            }
-
-            Debug.Log("[场景数据初始化]开始初始化;");
-            foreach (var initializer in initializers)
-            {
-                Task task = initializer.StartInitialize(archive, TokenSource.Token);
-                tasks.Add(task);
-            }
-
-            try
-            {
-                InitializeTask = Task.WhenAll(tasks);
-                await InitializeTask;
-                Debug.Log("[场景数据初始化]完成;");
-            }
-            catch
-            {
-                Debug.LogError("[场景数据初始化]时遇到错误:" + InitializeTask.Exception);
-            }
-            finally
-            {
-                IsRunning = false;
-            }
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            TokenSource.Cancel();
-            Archive = null;
+            return initializer.StartInitialize(Archive, TokenSource.Token);
         }
     }
 }
