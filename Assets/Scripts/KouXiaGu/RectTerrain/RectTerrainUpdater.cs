@@ -22,6 +22,10 @@ namespace KouXiaGu.RectTerrain
 
         [SerializeField]
         RectTerrainController terrainController;
+
+        /// <summary>
+        /// 更新间隔时间(毫秒);
+        /// </summary>
         [SerializeField]
         int updateInterval;
 
@@ -36,10 +40,7 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 是否正在更新;
         /// </summary>
-        public bool IsUpdating
-        {
-            get { return updateTask != null; }
-        }
+        public bool IsUpdating { get; private set; }
 
         public LandformUpdater LandformUpdater
         {
@@ -48,7 +49,7 @@ namespace KouXiaGu.RectTerrain
 
         void OnDestroy()
         {
-            tokenSource.Cancel();
+            CancelUpdate();
         }
 
         Task IUpdaterInitializer.StartInitialize(CancellationToken token)
@@ -59,10 +60,12 @@ namespace KouXiaGu.RectTerrain
 
                 while (UpdateTimes < 1)
                 {
+                    token.ThrowIfCancellationRequested();
                 }
 
                 while (!terrainController.Landform.IsBakeComplete)
                 {
+                    token.ThrowIfCancellationRequested();
                 }
 
                 Debug.Log("[地形更新器]更新完成;");
@@ -76,8 +79,9 @@ namespace KouXiaGu.RectTerrain
         {
             if (!IsUpdating)
             {
+                IsUpdating = true;
                 tokenSource = new CancellationTokenSource();
-                updateTask = Task.Run((Action)TerrainUpdate, tokenSource.Token);
+                updateTask = Task.Run(() => TerrainUpdate(tokenSource.Token), tokenSource.Token);
             }
         }
 
@@ -88,16 +92,18 @@ namespace KouXiaGu.RectTerrain
         {
             if (IsUpdating)
             {
+                IsUpdating = false;
                 tokenSource.Cancel();
                 tokenSource = null;
                 updateTask = null;
             }
         }
 
-        void TerrainUpdate()
+        void TerrainUpdate(CancellationToken token)
         {
             while (true)
             {
+                token.ThrowIfCancellationRequested();
                 LandformUpdater.Update();
                 UpdateTimes++;
                 Thread.Sleep(updateInterval);
