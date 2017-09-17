@@ -1,5 +1,7 @@
 ﻿using System;
+using KouXiaGu.Grids;
 using KouXiaGu.Concurrent;
+using UnityEngine;
 
 namespace KouXiaGu.RectTerrain
 {
@@ -55,20 +57,6 @@ namespace KouXiaGu.RectTerrain
         }
 
         /// <summary>
-        /// 块内容变化委托;
-        /// </summary>
-        internal Action<TerrainChunkInfo<TPoint, TChunk>> onChunkChanged { get; private set; }
-
-        /// <summary>
-        /// 块内容变化委托;
-        /// </summary>
-        internal event Action<TerrainChunkInfo<TPoint, TChunk>> OnChunkChanged
-        {
-            add { onChunkChanged += value; }
-            remove { onChunkChanged -= value; }
-        }
-
-        /// <summary>
         /// 异步创建;
         /// </summary>
         internal void CreateAsync()
@@ -118,7 +106,11 @@ namespace KouXiaGu.RectTerrain
                     State = ChunkState.Destroying;
                     TryAddDispatcherQueue();
                 }
-                else
+                else if (State == ChunkState.Updating)
+                {
+                    State = ChunkState.Destroying;
+                }
+                else if (State == ChunkState.Creating)
                 {
                     State = ChunkState.None;
                 }
@@ -132,6 +124,7 @@ namespace KouXiaGu.RectTerrain
         {
             if (!InQueue)
             {
+                isCompleted = false;
                 requestDispatcher.Add(this);
                 InQueue = true;
             }
@@ -161,11 +154,13 @@ namespace KouXiaGu.RectTerrain
                         Chunk = default(TChunk);
                         State = ChunkState.None;
                         break;
+
+                    default:
+                        break;
                 }
                 isCompleted = true;
                 InQueue = false;
             }
-            onChunkChanged?.Invoke(this);
         }
 
         /// <summary>

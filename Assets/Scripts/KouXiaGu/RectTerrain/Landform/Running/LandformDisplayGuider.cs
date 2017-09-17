@@ -11,18 +11,10 @@ namespace KouXiaGu.RectTerrain
 
 
     [DisallowMultipleComponent]
-    public class LandformDisplayGuider : MonoBehaviour
+    public class LandformDisplayGuider : BufferDisplayGuider
     {
         LandformDisplayGuider()
         {
-        }
-
-        [SerializeField]
-        BufferDisplayGuider displayGuider;
-
-        void Awake()
-        {
-            displayGuider.Awake();
         }
 
         void OnEnable()
@@ -30,7 +22,7 @@ namespace KouXiaGu.RectTerrain
             LandformController controller = SceneController.GetSington<LandformController>();
             if (controller != null)
             {
-                controller.GuiderGroup.Add(displayGuider);
+                controller.GuiderGroup.Add(this);
             }
         }
 
@@ -39,19 +31,14 @@ namespace KouXiaGu.RectTerrain
             LandformController controller = SceneController.GetSington<LandformController>();
             if (controller != null)
             {
-                controller.GuiderGroup.Remove(displayGuider);
+                controller.GuiderGroup.Remove(this);
             }
         }
 
         void Update()
         {
             RectCoord chunkPos = transform.position.ToLandformChunkRect();
-            displayGuider.SetCenter(chunkPos);
-        }
-
-        void OnValidate()
-        {
-            displayGuider.OnValidate();
+            SetCenter(chunkPos);
         }
     }
 }

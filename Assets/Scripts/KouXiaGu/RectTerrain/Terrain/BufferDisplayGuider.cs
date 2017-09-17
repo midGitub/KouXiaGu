@@ -10,7 +10,7 @@ namespace KouXiaGu.RectTerrain
     /// 有缓冲区域的显示导航;
     /// </summary>
     [Serializable]
-    public class BufferDisplayGuider : IDisplayGuider<RectCoord>
+    public class BufferDisplayGuider : MonoBehaviour, IDisplayGuider<RectCoord>
     {
         /// <summary>
         /// 重要显示区域;

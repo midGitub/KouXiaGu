@@ -41,21 +41,9 @@ namespace KouXiaGu.RectTerrain
             if (!chunks.TryGetValue(chunkPos, out info))
             {
                 info = Create(chunkPos);
-                info.OnChunkChanged += OnChunkInfoChanged;
                 chunks.Add(chunkPos, info);
             }
             return info;
-        }
-
-        void OnChunkInfoChanged(TerrainChunkInfo<TPoint, TChunk> info)
-        {
-            lock (asyncLock)
-            {
-                if (info.State == ChunkState.None)
-                {
-                    chunks.Remove(info.Point);
-                }
-            }
         }
 
         /// <summary>
@@ -103,8 +91,16 @@ namespace KouXiaGu.RectTerrain
                 TerrainChunkInfo<TPoint, TChunk> info;
                 if (chunks.TryGetValue(chunkPos, out info))
                 {
-                    info.DestroyAsync();
-                    return info;
+                    if (info.State == ChunkState.None)
+                    {
+                        chunks.Remove(chunkPos);
+                        return null;
+                    }
+                    else
+                    {
+                        info.DestroyAsync();
+                        return info;
+                    }
                 }
                 return null;
             }
