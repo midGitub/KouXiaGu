@@ -20,17 +20,20 @@ namespace KouXiaGu.RectTerrain
 
         protected override LandformChunkRenderer Create()
         {
-            return Baker.CreateChunk(Point);
-        }
-
-        protected override void Destroy(LandformChunkRenderer chunk)
-        {
-            Baker.DestroyChunk(chunk);
+            var chunk = Baker.LandformChunkPool.Get();
+            chunk.transform.position = Point.ToLandformChunkPixel();
+            Baker.Bake(Point, chunk);
+            return chunk;
         }
 
         protected override void Update(LandformChunkRenderer chunk)
         {
-            Baker.UpdateChunk(Point, chunk);
+            Baker.Bake(Point, chunk);
+        }
+
+        protected override void Destroy(LandformChunkRenderer chunk)
+        {
+            Baker.LandformChunkPool.Release(chunk);
         }
     }
 }

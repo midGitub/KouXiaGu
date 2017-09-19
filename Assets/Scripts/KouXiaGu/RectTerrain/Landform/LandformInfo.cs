@@ -15,19 +15,14 @@ namespace KouXiaGu.RectTerrain
     public static class LandformInfo 
     {
         /// <summary>
-        /// 宽度存在的地图节点数目;
+        /// 地形块范围;
         /// </summary>
-        public static readonly int NumberOfNodesInWidth = 3;
-
-        /// <summary>
-        /// 高度存在的地图节点数目;
-        /// </summary>
-        public static readonly int NumberOfNodesInHeight = 3;
+        public static readonly RectRange ChunkRange = new RectRange(1, 1);
 
         /// <summary>
         /// 地形块宽度;
         /// </summary>
-        public static readonly float ChunkWidth = RectTerrainInfo.NodeWidth * NumberOfNodesInWidth;
+        public static readonly float ChunkWidth = RectTerrainInfo.NodeWidth * ChunkRange.RealWidth;
 
         /// <summary>
         /// 一半地形块宽度;
@@ -37,7 +32,7 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 地形块高度;
         /// </summary>
-        public static readonly float ChunkHeight = RectTerrainInfo.NodeHeight * NumberOfNodesInHeight;
+        public static readonly float ChunkHeight = RectTerrainInfo.NodeHeight * ChunkRange.RealHeight;
 
         /// <summary>
         /// 一半地形块高度;
@@ -58,6 +53,16 @@ namespace KouXiaGu.RectTerrain
         }
 
         /// <summary>
+        /// 将地形块坐标转换成地形块中心点像素坐标;
+        /// </summary>
+        public static Vector3 ToLandformChunkPixel(this RectCoord chunkPos, float y)
+        {
+            Vector3 pixel = Grid.GetCenter(chunkPos);
+            pixel.y = y;
+            return pixel;
+        }
+
+        /// <summary>
         /// 将像素坐标转换成地形块坐标;
         /// </summary>
         public static RectCoord ToLandformChunkRect(this Vector3 pos)
@@ -65,28 +70,14 @@ namespace KouXiaGu.RectTerrain
             return Grid.GetCoord(pos);
         }
 
-
-        static readonly RectCoord[] ChildOffsets = new RectCoord[]
-            {
-                new RectCoord(-1 , 1),
-                new RectCoord(0, 1), 
-                new RectCoord(1, 1),
-
-                new RectCoord(-1, 0),
-                new RectCoord(0, 0),
-                new RectCoord(1, 0),
-
-                new RectCoord(-1, -1),
-                new RectCoord(0, -1),
-                new RectCoord(1, -1),
-            };
+        static readonly RectCoord[] childNodeOffsets = ChunkRange.Range().ToArray();
 
         /// <summary>
         /// 获取到块的所有子节点;
         /// </summary>
-        public static IEnumerable<RectCoord> GetChildren(RectCoord chunkPos)
+        public static IEnumerable<RectCoord> GetChunkChildNodes(RectCoord chunkPos)
         {
-            foreach (var offset in ChildOffsets)
+            foreach (var offset in childNodeOffsets)
             {
                 yield return offset + chunkPos;
             }

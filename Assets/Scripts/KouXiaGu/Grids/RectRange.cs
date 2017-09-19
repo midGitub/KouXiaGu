@@ -91,6 +91,14 @@ namespace KouXiaGu.Grids
             get { return height * 2 + 1; }
         }
 
+        /// <summary>
+        /// 范围内节点数;
+        /// </summary>
+        public int NodeCount
+        {
+            get { return RealWidth * RealHeight; }
+        }
+
         public RectCoord Center
         {
             get { return new RectCoord(x, y); }

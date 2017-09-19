@@ -59,6 +59,14 @@ namespace KouXiaGu.RectTerrain
         }
 
         /// <summary>
+        /// 重置参数;
+        /// </summary>
+        public void Reset()
+        {
+            Destroy();
+        }
+
+        /// <summary>
         /// 设置到贴图,并且销毁旧贴图;
         /// </summary>
         public void SetDiffuseMap(Texture2D diffuseMap)
@@ -118,7 +126,7 @@ namespace KouXiaGu.RectTerrain
         }
 
         /// <summary>
-        /// 应用到贴图,设置完毕后需要手动调用;
+        /// 应用贴图,设置完毕后需要手动调用;
         /// </summary>
         public void Apply()
         {

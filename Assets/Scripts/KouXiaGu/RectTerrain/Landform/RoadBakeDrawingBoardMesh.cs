@@ -11,15 +11,15 @@ namespace KouXiaGu.RectTerrain
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
-    public sealed class LandformBakeDrawingBoardMesh : MonoBehaviour
+    public sealed class RoadBakeDrawingBoardMesh : MonoBehaviour
     {
-        LandformBakeDrawingBoardMesh()
+        RoadBakeDrawingBoardMesh()
         {
         }
 
-        const string meshName = "LandformBakeDrawingBoardMesh";
-        static readonly float chunkHalfWidth = RectTerrainInfo.NodeWidth / 2 + (RectTerrainInfo.NodeWidth / 3);
-        static readonly float chunkHalfHeight = RectTerrainInfo.NodeHeight / 2 + (RectTerrainInfo.NodeHeight / 3);
+        const string meshName = "RoadBakeDrawingBoardMesh";
+        static readonly float chunkHalfWidth = RectTerrainInfo.NodeWidth / 2;
+        static readonly float chunkHalfHeight = RectTerrainInfo.NodeHeight / 2;
         const float altitude = 0;
 
         /// <summary>

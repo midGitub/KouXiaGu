@@ -12,5 +12,4 @@ namespace KouXiaGu
         T Get();
         void Release(T item);
     }
-
 }

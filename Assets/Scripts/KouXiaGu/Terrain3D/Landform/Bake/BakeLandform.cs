@@ -47,7 +47,7 @@ namespace KouXiaGu.Terrain3D
         public void Initialize()
         {
             sceneObjects = new List<Pack>();
-            objectPool = new GameObjectPool<MeshRenderer>(prefab, "BakeLandformMesh");
+            objectPool = new GameObjectPool<MeshRenderer>(prefab, null);
         }
 
         /// <summary>

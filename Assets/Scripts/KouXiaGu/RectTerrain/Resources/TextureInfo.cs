@@ -42,5 +42,10 @@ namespace KouXiaGu.RectTerrain.Resources
                 Name = name
             };
         }
+
+        public static implicit operator Texture(TextureInfo info)
+        {
+            return info.Texture;
+        }
     }
 }

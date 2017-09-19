@@ -6,6 +6,10 @@ using KouXiaGu.Grids;
 using KouXiaGu.World;
 using UnityEngine;
 using KouXiaGu.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using KouXiaGu.RectTerrain.Resources;
+using KouXiaGu.World.RectMap;
 
 namespace KouXiaGu.RectTerrain
 {
@@ -14,26 +18,25 @@ namespace KouXiaGu.RectTerrain
     /// 地形烘培器,在Unity线程进行烘培任务;
     /// </summary>
     [Serializable]
-    public sealed class LandformBaker : MonoBehaviour
+    public sealed class LandformBaker : MonoBehaviour, IComponentInitializer
     {
         LandformBaker()
         {
         }
 
         [SerializeField]
+        RectMapDataInitializer mapInitializer;
+        [SerializeField]
         LandformDispatcher dispatcher;
-
         [SerializeField]
         LandformBakeCamera bakeCamera;
-
         [SerializeField]
-        LandformBakeDrawingBoardRenderer drawingBoardPrefab = null;
-
+        LandformChunkPool landformChunkPool;
         [SerializeField]
-        LandformChunkRenderer rectLandformChunk;
+        LandformBakeDrawingBoardCollection landformBoardCollection;
 
-        IWorld world;
-        List<RectCoord> displayPoints;
+        RectTerrainResources resources;
+        IDictionary<RectCoord, MapNode> map;
 
         /// <summary>
         /// 地形请求处置器;
@@ -48,36 +51,187 @@ namespace KouXiaGu.RectTerrain
             get { return bakeCamera; }
         }
 
-        void Awake()
+        public LandformQuality Quality
         {
-            displayPoints = new List<RectCoord>();
+            get { return bakeCamera.Quality; }
         }
 
-        public LandformChunkRenderer CreateChunk(RectCoord chunkPos)
+        public IObjectPool<LandformChunkRenderer> LandformChunkPool
         {
-            Vector3 pos = chunkPos.ToLandformChunkPixel();
-            return Instantiate(rectLandformChunk, pos, Quaternion.identity);
+            get { return landformChunkPool; }
         }
 
-        public void UpdateChunk(RectCoord chunkPos, LandformChunkRenderer landformChunk)
+        Task IComponentInitializer.StartInitialize(CancellationToken token)
         {
-            Debug.Log("Update:" + chunkPos.ToString());
+            resources = RectTerrainResourcesInitializer.RectTerrainResources;
+            map = mapInitializer.WorldMap.Map;
+            landformBoardCollection.Initialize();
+            return null;
         }
 
-        public void DestroyChunk(LandformChunkRenderer landformChunk)
+        public void Bake(RectCoord chunkPos, LandformChunkRenderer landformChunk)
         {
-            Destroy(landformChunk.gameObject);
+            BakeTextureInfo landformDiffuseInfo = Quality.LandformDiffuseMap;
+            RenderTexture diffuseRT = RenderTexture.GetTemporary(landformDiffuseInfo.BakeWidth, landformDiffuseInfo.BakeHeight);
+
+            PrepareLandformBakeScene(chunkPos);
+            BakeLandformDiffuse(chunkPos, diffuseRT);
+
+
+
+            Texture2D diffuseMap = GetDiffuseMap(diffuseRT);
+
+            landformChunk.SetDiffuseMap(diffuseMap);
         }
 
-        ///// <summary>
-        ///// 烘培对应地形块;
-        ///// </summary>
-        //void Bake(RectCoord chunkPos , LandformChunkRenderer landformChunk)
-        //{
-        //    displayPoints.Clear();
-        //    displayPoints.AddRange(LandformInfo.GetChildren(chunkPos));
+        void PrepareLandformBakeScene(RectCoord chunkPos)
+        {
+            var bakePoints = landformBoardCollection.GetBakePoints(chunkPos);
+            var boardList = landformBoardCollection.DrawingBoardList;
+            int i = 0;
+            foreach (var bakePoint in bakePoints)
+            {
+                RectCoord drawingBoardChunkPoint = landformBoardCollection.GetDrawingBoardPoint(chunkPos, bakePoint);
+                Vector3 drawingBoardPoint = drawingBoardChunkPoint.ToRectTerrainPixel(-i);
+                var landformInfo = GetLandformNodeInfo(bakePoint);
+                var landformResource = GetLandformResource(landformInfo.TypeID);
+                Quaternion rotation = Quaternion.Euler(0, landformInfo.Angle, 0);
+                LandformBakeDrawingBoardRenderer board = boardList[i++];
+                board.Initialize(drawingBoardPoint, rotation, landformResource);
+            }
+        }
 
-        //    throw new NotImplementedException();
-        //}
+        NodeLandformInfo GetLandformNodeInfo(RectCoord position)
+        {
+            MapNode node;
+            map.TryGetValue(position, out node);
+            return node.Landform;
+        }
+
+        LandformResource GetLandformResource(int typeID)
+        {
+            LandformResource res;
+            resources.Landform.TryGetValue(typeID, out res);
+            return res;
+        }
+
+        void BakeLandformDiffuse(RectCoord chunkPos, RenderTexture rt)
+        {
+            foreach (var drawingBoard in landformBoardCollection.DrawingBoardList)
+            {
+                drawingBoard.DisplayDiffuse();
+            }
+            Vector3 cameraPos = landformBoardCollection.ChunkCenter.ToLandformChunkPixel(5);
+            bakeCamera.CameraRender(cameraPos, rt);
+        }
+
+        public Texture2D GetDiffuseMap(RenderTexture rt, TextureFormat format = TextureFormat.RGB24, bool mipmap = false)
+        {
+            BakeTextureInfo texInfo = Quality.LandformDiffuseMap;
+            RenderTexture.active = rt;
+            Texture2D diffuseTex = new Texture2D(texInfo.Width, texInfo.Height, format, mipmap);
+            diffuseTex.ReadPixels(texInfo.ClippingRect, 0, 0, false);
+            diffuseTex.wrapMode = TextureWrapMode.Clamp;
+            diffuseTex.Apply();
+            return diffuseTex;
+        }
+
+
+
+        abstract class BakeDrawingBoardCollection<T>
+            where T : Component
+        {
+
+            [SerializeField]
+            T prefab;
+            [SerializeField]
+            Transform objectParent;
+            [SerializeField]
+            RectCoord chunkCenter;
+
+            public List<T> DrawingBoardList { get; private set; }
+            public abstract int BakeDrawingBoardCount { get; }
+
+            public RectCoord ChunkCenter
+            {
+                get { return chunkCenter; }
+            }
+
+            /// <summary>
+            /// 初始化合集内容;
+            /// </summary>
+            public virtual void Initialize()
+            {
+                int bakeDrawingBoardCount = BakeDrawingBoardCount;
+                DrawingBoardList = new List<T>(bakeDrawingBoardCount);
+                for (int i = 0; i < bakeDrawingBoardCount; i++)
+                {
+                    var board = Instantiate();
+                    DrawingBoardList.Add(board);
+                }
+            }
+
+            /// <summary>
+            /// 获取到在烘培时显示的坐标;
+            /// </summary>
+            public abstract IEnumerable<RectCoord> GetBakePoints(RectCoord chunkPos);
+
+            /// <summary>
+            /// 获取到烘培面板的位置;
+            /// </summary>
+            public IEnumerable<RectCoord> GetDrawingBoardPoints(RectCoord chunkPos, IEnumerable<RectCoord> bakePoints)
+            {
+                foreach (var bakePoint in bakePoints)
+                {
+                    yield return GetDrawingBoardPoint(chunkPos, bakePoint);
+                }
+            }
+
+            /// <summary>
+            /// 获取到烘培面板的位置;
+            /// </summary>
+            public RectCoord GetDrawingBoardPoint(RectCoord chunkPos, RectCoord bakePoint)
+            {
+                return chunkCenter - chunkPos + bakePoint;
+            }
+
+            T Instantiate()
+            {
+                if (objectParent == null)
+                {
+                    return GameObject.Instantiate(prefab);
+                }
+                else
+                {
+                    return GameObject.Instantiate(prefab, objectParent);
+                }
+            }
+
+            void Destroy(T item)
+            {
+                GameObject.Destroy(item.gameObject);
+            }
+        }
+
+        [Serializable]
+        class LandformBakeDrawingBoardCollection : BakeDrawingBoardCollection<LandformBakeDrawingBoardRenderer>
+        {
+            static readonly RectRange landformBakeRange = new RectRange(LandformInfo.ChunkRange.Height + 1 , LandformInfo.ChunkRange.Width + 1);
+
+            static readonly RectCoord[] landformBakePointOffsets = landformBakeRange.Range().ToArray();
+
+            public override int BakeDrawingBoardCount
+            {
+                get { return landformBakeRange.NodeCount; }
+            }
+
+            public override IEnumerable<RectCoord> GetBakePoints(RectCoord chunkPos)
+            {
+                foreach (var offset in landformBakePointOffsets)
+                {
+                    yield return offset + chunkPos;
+                }
+            }
+        }
     }
 }

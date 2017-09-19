@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using KouXiaGu.Grids;
 using KouXiaGu.World;
+using KouXiaGu.RectTerrain.Resources;
 
 namespace KouXiaGu.RectTerrain
 {
@@ -23,29 +24,45 @@ namespace KouXiaGu.RectTerrain
         }
 
         [SerializeField]
-        Shader diffuseShader = null;
-        [SerializeField]
-        Shader heightShader = null;
-
+        Shader displayInBakeDrawingBoardShader = null;
         MeshRenderer meshRenderer;
-        Material diffuseMeterial;
-        Material heightMeterial;
+        Material meterial;
+        public LandformResource landformResource { get; private set; }
 
         void Awake()
         {
             meshRenderer = GetComponent<MeshRenderer>();
-            diffuseMeterial = new Material(diffuseShader);
-            heightMeterial = new Material(heightShader);
+            meshRenderer.material = meterial = new Material(displayInBakeDrawingBoardShader);
         }
 
-        public void DisplayDiffuse(RectCoord nodePos)
+        public void Initialize(Vector3 pos, Quaternion rotation, LandformResource resource)
         {
-            throw new NotImplementedException();
+            transform.position = pos;
+            transform.rotation = rotation;
+            landformResource = resource;
         }
 
-        public void DisplayHeight(RectCoord nodePos)
+        public void Reset()
         {
-            throw new NotImplementedException();
+            landformResource = null;
+        }
+
+        public void DisplayDiffuse()
+        {
+            if (landformResource == null)
+                throw new ArgumentNullException("landformResource");
+
+            meterial.SetTexture("_MainTex", landformResource.DiffuseTex);
+            meterial.SetTexture("_BlendTex", landformResource.DiffuseBlendTex);
+        }
+
+        public void DisplayHeight()
+        {
+            if (landformResource == null)
+                throw new ArgumentNullException("landformResource");
+
+            meterial.SetTexture("_MainTex", landformResource.HeightTex);
+            meterial.SetTexture("_BlendTex", landformResource.HeightBlendTex);
         }
     }
 }

@@ -10,35 +10,24 @@ namespace KouXiaGu
     /// <summary>
     /// UnityEngine.Component 泛型对象池;
     /// </summary>
+    [Serializable]
     public class GameObjectPool<T> : ObjectPool<T>
         where T : Component
     {
-
-        public GameObjectPool(T prefab)
-            : base()
+        protected GameObjectPool()
         {
-            if (prefab == null)
-                throw new ArgumentNullException();
-            this.prefab = prefab;
         }
 
-        public GameObjectPool(T prefab, string parentName)
+        public GameObjectPool(T prefab, Transform objectParent)
         {
-            if (prefab == null)
-                throw new ArgumentNullException();
             this.prefab = prefab;
-            this.objectParent = new GameObject(parentName).transform;
+            this.objectParent = objectParent;
         }
 
-        public GameObjectPool(T prefab, int maxCapacity)
-            : base(maxCapacity)
-        {
-            if (prefab == null)
-                throw new ArgumentNullException();
-            this.prefab = prefab;
-        }
 
-        readonly T prefab;
+        [SerializeField]
+        T prefab;
+        [SerializeField]
         Transform objectParent;
 
         public T Prefab
@@ -54,25 +43,31 @@ namespace KouXiaGu
 
         public override T Instantiate()
         {
-            var item = GameObject.Instantiate(prefab);
-            item.transform.SetParent(objectParent);
-            return item;
-        }
-
-        public override void ResetWhenEnterPool(T item)
-        {
-            item.gameObject.SetActive(false);
-        }
-
-        public override void ResetWhenOutPool(T item)
-        {
-            item.gameObject.SetActive(true);
+            if (ObjectParent == null)
+            {
+                return GameObject.Instantiate(prefab);
+            }
+            else
+            {
+                return GameObject.Instantiate(prefab, objectParent);
+            }
         }
 
         public override void Destroy(T item)
         {
             GameObject.Destroy(item.gameObject);
         }
-    }
 
+        public override void ResetWhenEnterPool(T item)
+        {
+            item.gameObject.SetActive(false);
+            item.gameObject.hideFlags = HideFlags.HideAndDontSave;
+        }
+
+        public override void ResetWhenOutPool(T item)
+        {
+            item.gameObject.SetActive(true);
+            item.gameObject.hideFlags = HideFlags.None;
+        }
+    }
 }

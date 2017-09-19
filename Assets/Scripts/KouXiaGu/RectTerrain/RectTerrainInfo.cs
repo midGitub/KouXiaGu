@@ -36,6 +36,16 @@ namespace KouXiaGu.RectTerrain
         }
 
         /// <summary>
+        /// 将地图节点坐标转换为地图节点中心像素坐标;
+        /// </summary>
+        public static Vector3 ToRectTerrainPixel(this RectCoord pos, float y)
+        {
+            Vector3 pixel = Grid.GetCenter(pos);
+            pixel.y = y;
+            return pixel;
+        }
+
+        /// <summary>
         /// 将像素坐标转换成地图节点坐标;
         /// </summary>
         public static RectCoord ToRectTerrainRect(this Vector3 pos)

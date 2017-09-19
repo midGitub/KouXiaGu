@@ -70,7 +70,7 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 使用摄像机烘焙;
         /// </summary>
-        public void CameraRender(RenderTexture rt, Vector3 cameraPoint)
+        public void CameraRender(Vector3 cameraPoint, RenderTexture rt)
         {
             _camera.transform.position = cameraPoint;
             CameraRender(rt);
@@ -79,7 +79,7 @@ namespace KouXiaGu.RectTerrain
         /// <summary>
         /// 使用摄像机烘焙;
         /// </summary>
-        public void CameraRender(RenderTexture rt)
+        void CameraRender(RenderTexture rt)
         {
             _camera.targetTexture = rt;
             _camera.Render();

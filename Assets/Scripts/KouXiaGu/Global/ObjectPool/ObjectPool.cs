@@ -1,39 +1,52 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 对象池;
+    /// </summary>
+    [Serializable]
     public abstract class ObjectPool<T> : IObjectPool<T>
     {
-        const int defaultMaxCapacity = 60;
-
         public ObjectPool()
-            : this(defaultMaxCapacity)
         {
         }
 
         public ObjectPool(int maxCapacity)
         {
             MaxCapacity = maxCapacity;
-            objectQueue = new Queue<T>(maxCapacity);
         }
 
-        readonly Queue<T> objectQueue;
-        public int MaxCapacity { get; private set; }
+        [SerializeField]
+        int maxCapacity = 200;
+        Queue<T> objectQueue;
+
+        Queue<T> ObjectQueue
+        {
+            get { return objectQueue != null ? objectQueue : objectQueue = new Queue<T>(MaxCapacity); }
+        }
+
+        public int MaxCapacity
+        {
+            get { return maxCapacity; }
+            private set { maxCapacity = value; }
+        }
 
         /// <summary>
         /// 在对象池中的对象;
         /// </summary>
         protected IEnumerable<T> PoolObjects
         {
-            get { return objectQueue; }
+            get { return ObjectQueue; }
         }
 
         public int Count
         {
-            get { return objectQueue.Count; }
+            get { return objectQueue != null ? ObjectQueue.Count : 0; }
         }
 
         public bool IsFull
@@ -66,7 +79,6 @@ namespace KouXiaGu
         /// </summary>
         public abstract void Destroy(T item);
 
-
         /// <summary>
         /// 获取到对象实例;
         /// </summary>
@@ -79,7 +91,7 @@ namespace KouXiaGu
             }
             else
             {
-                T item = objectQueue.Dequeue();
+                T item = ObjectQueue.Dequeue();
                 ResetWhenOutPool(item);
                 return item;
             }
@@ -100,7 +112,7 @@ namespace KouXiaGu
             else
             {
                 ResetWhenEnterPool(item);
-                objectQueue.Enqueue(item);
+                ObjectQueue.Enqueue(item);
             }
         }
 
@@ -109,10 +121,10 @@ namespace KouXiaGu
         /// </summary>
         public void SetMaxCapacity(int maxCapacity)
         {
-            MaxCapacity = MaxCapacity;
+            MaxCapacity = maxCapacity;
             while (IsFull)
             {
-                T item = objectQueue.Dequeue();
+                T item = ObjectQueue.Dequeue();
                 Destroy(item);
             }
         }
@@ -122,13 +134,11 @@ namespace KouXiaGu
         /// </summary>
         public void DestroyAll()
         {
-            foreach (var item in objectQueue)
+            foreach (var item in ObjectQueue)
             {
                 Destroy(item);
             }
-            objectQueue.Clear();
+            ObjectQueue.Clear();
         }
-
     }
-
 }

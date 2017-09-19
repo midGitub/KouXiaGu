@@ -23,8 +23,6 @@ namespace KouXiaGu.RectTerrain
         }
 
         [SerializeField]
-        RectTerrainUpdater terrainUpdater;
-        [SerializeField]
         RectMapDataInitializer rectMapData;
         [SerializeField]
         LandformBaker baker;

@@ -20,8 +20,8 @@ namespace KouXiaGu.RectTerrain
         const string MeshName = "Terrain Collision Mesh";
 
         //网格细分程度;
-        const int sub_x = 5;
-        const int sub_z = 5;
+        const int sub_x = 4;
+        const int sub_z = 4;
 
         static readonly List<KeyValuePair<Vector3, Vector2>> vertices = GetVerticesAndUV();
         static readonly int[] triangles = GetTriangles();
