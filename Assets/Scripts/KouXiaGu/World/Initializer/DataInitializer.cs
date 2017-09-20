@@ -1,5 +1,5 @@
 ﻿using KouXiaGu.Concurrent;
-using KouXiaGu.Resources.Archive;
+using KouXiaGu.Resources.Archives;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,7 +11,7 @@ namespace KouXiaGu.World
 
     public interface IDataInitializer
     {
-        Task StartInitialize(ArchiveInfo archive, CancellationToken token);
+        Task StartInitialize(Archive archive, CancellationToken token);
     }
 
     /// <summary>
@@ -27,13 +27,13 @@ namespace KouXiaGu.World
         /// <summary>
         /// 存档信息,在初始化之前赋值,若未Null则初始化异常;
         /// </summary>
-        public static ArchiveInfo Archive { get; set; }
+        public static Archive Archive { get; set; }
 
         /// <summary>
         /// 默认的存档,在未指定存档时使用的存档;
         /// </summary>
         [SerializeField]
-        ArchiveInfo defaultArchive;
+        Archive defaultArchive;
         GameInitializer gameInitializer;
 
         protected override string InitializerName

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KouXiaGu.Resources.Archive
+namespace KouXiaGu.Resources.Archives
 {
 
     /// <summary>
@@ -13,12 +13,12 @@ namespace KouXiaGu.Resources.Archive
     /// </summary>
     public interface IArchiveSerializer<T>
     {
-        void Serialize(ArchiveInfo archive, T result);
-        T Deserialize(ArchiveInfo archive);
+        void Serialize(Archive archive, T result);
+        T Deserialize(Archive archive);
     }
 
     /// <summary>
-    /// 读取资源;
+    /// 读取存档资源;
     /// </summary>
     /// <typeparam name="TArchive">存档序列化得到的内容;</typeparam>
     /// <typeparam name="TResult">最终转换到的内容;</typeparam>
@@ -52,7 +52,7 @@ namespace KouXiaGu.Resources.Archive
         /// <summary>
         /// 序列化存档资源到...;
         /// </summary>
-        public void Serialize(ArchiveInfo archive, TResult result)
+        public void Serialize(Archive archive, TResult result)
         {
             TArchive archiveData = ConvertArchive(result);
             Serialize(archive, archiveData);
@@ -61,7 +61,7 @@ namespace KouXiaGu.Resources.Archive
         /// <summary>
         /// 序列化存档;
         /// </summary>
-        public void Serialize(ArchiveInfo archive, TArchive archiveData)
+        public void Serialize(Archive archive, TArchive archiveData)
         {
             string archivePath = GetFullPath(archive);
             using (Stream stream = new FileStream(archivePath, FileMode.Create, FileAccess.Write))
@@ -73,14 +73,14 @@ namespace KouXiaGu.Resources.Archive
         /// <summary>
         /// 从存档反序列化资源;
         /// </summary>
-        public TResult Deserialize(ArchiveInfo archive)
+        public TResult Deserialize(Archive archive)
         {
             TSource source = ResourceSerializer.Deserialize();
             TArchive archiveData = DeserializeArchive(archive);
             return Convert(source, archiveData);
         }
 
-        public TArchive DeserializeArchive(ArchiveInfo archive)
+        public TArchive DeserializeArchive(Archive archive)
         {
             string archivePath = GetFullPath(archive);
             if (File.Exists(archivePath))
@@ -93,7 +93,7 @@ namespace KouXiaGu.Resources.Archive
             return default(TArchive);
         }
 
-        string GetFullPath(ArchiveInfo archive)
+        string GetFullPath(Archive archive)
         {
             return Path.Combine(archive.Directory, ArchiveName + ArchiveDataSerializer.Extension);
         }

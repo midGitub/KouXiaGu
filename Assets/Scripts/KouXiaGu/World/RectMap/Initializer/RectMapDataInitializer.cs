@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using KouXiaGu.Resources;
 using System.Threading;
-using KouXiaGu.Resources.Archive;
+using KouXiaGu.Resources.Archives;
 using KouXiaGu.RectTerrain.Resources;
 
 namespace KouXiaGu.World.RectMap
@@ -62,7 +62,7 @@ namespace KouXiaGu.World.RectMap
             SetInstance(this);
         }
 
-        Task IDataInitializer.StartInitialize(ArchiveInfo archive, CancellationToken token)
+        Task IDataInitializer.StartInitialize(Archive archive, CancellationToken token)
         {
             return Task.Run(delegate ()
             {
@@ -78,7 +78,7 @@ namespace KouXiaGu.World.RectMap
             }, token);
         }
 
-        WorldMap GetMap(ArchiveInfo archive)
+        WorldMap GetMap(Archive archive)
         {
             WorldMap map = worldMapSerializer.Deserialize(archive);
             return map;

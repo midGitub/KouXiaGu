@@ -1,4 +1,4 @@
-﻿using KouXiaGu.Resources.Archive;
+﻿using KouXiaGu.Resources.Archives;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
