@@ -14,7 +14,7 @@ namespace KouXiaGu
     /// 负责游戏程序初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GameInitializer : Initializer<IInitializer>
+    public sealed class GameInitializer : Initializer<IGameInitializer>
     {
         GameInitializer()
         {
@@ -25,7 +25,7 @@ namespace KouXiaGu
             get { return "[游戏初始化]"; }
         }
 
-        protected override Task GetTask(IInitializer initializer)
+        protected override Task GetTask(IGameInitializer initializer)
         {
             return initializer.StartInitialize(TokenSource.Token);
         }

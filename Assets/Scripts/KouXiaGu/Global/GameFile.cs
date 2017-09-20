@@ -16,12 +16,12 @@ namespace KouXiaGu
         /// </summary>
         public static List<string> GameDirectorys = new List<string>()
         {
-            Resource.ConfigDirectoryPath,
+            Resource.DataDirectoryPath,
         };
         
         public static string MainDirectory
         {
-            get { return Resource.ConfigDirectoryPath; }
+            get { return Resource.DataDirectoryPath; }
         }
     }
 

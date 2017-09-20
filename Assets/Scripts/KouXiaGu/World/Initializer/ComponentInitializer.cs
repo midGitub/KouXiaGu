@@ -30,20 +30,9 @@ namespace KouXiaGu.World
             get { return "[场景组件初始化]"; }
         }
 
-        protected override bool Prepare()
+        protected override Task WaitPrepare(CancellationToken token)
         {
-            if (dataInitializer.IsCompleted)
-            {
-                if (!dataInitializer.IsFaulted)
-                {
-                    return true;
-                }
-                else
-                {
-                    throw new ArgumentException("worldDataInitializer 失败!");
-                }
-            }
-            return false;
+            return WaitInitializer(dataInitializer, token);
         }
 
         protected override Task GetTask(IComponentInitializer initializer)

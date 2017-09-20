@@ -12,13 +12,13 @@ namespace KouXiaGu.Globalization
 {
 
     [DisallowMultipleComponent]
-    public class LocalizationInitializer : MonoBehaviour, IInitializer
+    public class LocalizationInitializer : MonoBehaviour, IGameInitializer
     {
         LocalizationInitializer()
         {
         }
 
-        Task IInitializer.StartInitialize(CancellationToken token)
+        Task IGameInitializer.StartInitialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {

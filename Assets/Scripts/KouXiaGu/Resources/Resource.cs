@@ -16,6 +16,8 @@ namespace KouXiaGu.Resources
     public static class Resource
     {
 
+#region AssetBundle文件
+
         static string assetBundleDirectoryPath = string.Empty;
 
         /// <summary>
@@ -31,23 +33,47 @@ namespace KouXiaGu.Resources
             return assetBundleDirectoryPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles");
         }
 
+#endregion
 
-        static string configDirectoryPath = string.Empty;
+#region 游戏资源文件
+
+        static string dataDirectoryPath = string.Empty;
 
         /// <summary>
         /// 存放配置文件的文件夹路径;
         /// </summary>
-        public static string ConfigDirectoryPath
+        public static string DataDirectoryPath
         {
-            get { return string.IsNullOrEmpty(configDirectoryPath) ? GetConfigDirectoryPath() : configDirectoryPath; }
+            get { return string.IsNullOrEmpty(dataDirectoryPath) ? GetDataDirectoryPath() : dataDirectoryPath; }
         }
 
-        static string GetConfigDirectoryPath()
+        static string GetDataDirectoryPath()
         {
-            return configDirectoryPath = Application.streamingAssetsPath;
+            return dataDirectoryPath = Application.streamingAssetsPath;
         }
 
+#endregion
 
+#region 用户配置文件
+
+        static string userConfigDirectoryPath = string.Empty;
+
+        /// <summary>
+        /// 用于存放用户配置文件的文件夹;
+        /// </summary>
+        public static string UserConfigDirectoryPath
+        {
+            get { return string.IsNullOrEmpty(userConfigDirectoryPath) ? GetUserConfigDirectoryPath() : userConfigDirectoryPath; }
+        }
+
+        static string GetUserConfigDirectoryPath()
+        {
+            return userConfigDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.productName);
+        }
+
+#endregion
+
+#region 用户存档文件
 
         static string archiveDirectoryPath = string.Empty;
 
@@ -61,16 +87,18 @@ namespace KouXiaGu.Resources
 
         static string GetArchiveDirectoryPath()
         {
-            return archiveDirectoryPath = Path.Combine(Application.persistentDataPath, "Saves");
+            return archiveDirectoryPath = Path.Combine(UserConfigDirectoryPath, "Saves");
         }
 
+        #endregion
 
+#region 临时文件
+
+        static string tempDirectoryPath = string.Empty;
 
         /// <summary>
         /// 用于测试使用的临时文件夹路径;
         /// </summary>
-        static string tempDirectoryPath = string.Empty;
-
         public static string TempDirectoryPath
         {
             get { return string.IsNullOrEmpty(tempDirectoryPath) ? GetTempDirectoryPath() : tempDirectoryPath; }
@@ -81,15 +109,16 @@ namespace KouXiaGu.Resources
             return tempDirectoryPath = Path.Combine(Application.streamingAssetsPath, "Temps");
         }
 
-
+#endregion
 
         /// <summary>
         /// 在游戏开始时初始化;
         /// </summary>
-        public static void Initialize()
+        internal static void Initialize()
         {
             GetAssetBundleDirectoryPath();
-            GetConfigDirectoryPath();
+            GetDataDirectoryPath();
+            GetUserConfigDirectoryPath();
             GetArchiveDirectoryPath();
             GetTempDirectoryPath();
         }
@@ -99,7 +128,8 @@ namespace KouXiaGu.Resources
         {
             string str =
                 "AssetBundleDirectoryPath : " + AssetBundleDirectoryPath +
-                "\nConfigDirectoryPath : " + ConfigDirectoryPath +
+                "\nDataDirectoryPath : " + DataDirectoryPath +
+                "\nUserConfigDirectoryPath" + UserConfigDirectoryPath +
                 "\nArchiveDirectoryPath : " + ArchiveDirectoryPath +
                 "\nTempDirectoryPath : " + TempDirectoryPath;
             Debug.Log(str);

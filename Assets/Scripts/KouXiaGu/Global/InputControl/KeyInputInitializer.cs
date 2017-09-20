@@ -12,13 +12,13 @@ namespace KouXiaGu.InputControl
 {
 
 
-    public class KeyInputInitializer : MonoBehaviour, IInitializer
+    public class KeyInputInitializer : MonoBehaviour, IGameInitializer
     {
         KeyInputInitializer()
         {
         }
 
-        Task IInitializer.StartInitialize(CancellationToken token)
+        Task IGameInitializer.StartInitialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {

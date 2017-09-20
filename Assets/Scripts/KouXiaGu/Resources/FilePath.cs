@@ -20,7 +20,7 @@ namespace KouXiaGu.Resources
     /// </summary>
     public abstract class SingleFilePath : ISingleFilePath
     {
-        public SingleFilePath() : this(Resource.ConfigDirectoryPath)
+        public SingleFilePath() : this(Resource.DataDirectoryPath)
         {
         }
 
@@ -68,7 +68,7 @@ namespace KouXiaGu.Resources
     /// </summary>
     public abstract class MultipleFilePath : IMultipleFilePath
     {
-        public MultipleFilePath() : this(Resource.ConfigDirectoryPath)
+        public MultipleFilePath() : this(Resource.DataDirectoryPath)
         {
         }
 

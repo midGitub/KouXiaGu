@@ -1,36 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+using System.Xml.Serialization;
 using UnityEngine;
 
 namespace KouXiaGu.Resources.Archives
 {
 
     /// <summary>
-    /// 存档;
+    /// 存档信息,记录存档信息,输出输入结构;
     /// </summary>
-    [Serializable]
-    public class Archive
+    [XmlRoot("ArchiveInfo")]
+    public struct ArchiveInfo
     {
-        public Archive(string archiveDirectory)
+        /// <summary>
+        /// 创建一个当前适用的存档信息;
+        /// </summary>
+        public ArchiveInfo(ArchiveInfo info)
         {
-            Directory = archiveDirectory;
+            Name = info.Name;
+            TimeTicks = DateTime.Now.Ticks;
+            ProgramVersion = Application.version;
         }
 
-        [SerializeField]
-        string directory;
+        /// <summary>
+        /// 存档名;
+        /// </summary>
+        [XmlElement]
+        public string Name { get; set; }
 
-        public string Directory
-        {
-            get { return directory; }
-            private set { directory = value; }
-        }
+        /// <summary>
+        /// 存档最后修改时间 Ticks;
+        /// </summary>
+        [XmlElement]
+        public long TimeTicks { get; set; }
 
-        public string GetFullPath(string name)
+        /// <summary>
+        /// 保存时的游戏程序版本;
+        /// </summary>
+        [XmlElement]
+        public string ProgramVersion{ get; set; }
+
+        /// <summary>
+        /// 存档最后修改时间;
+        /// </summary>
+        public DateTime Time
         {
-            return Path.Combine(directory, name);
+            get { return new DateTime(TimeTicks); }
         }
     }
 }

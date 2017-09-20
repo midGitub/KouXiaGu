@@ -29,11 +29,6 @@ namespace KouXiaGu.World
         /// </summary>
         public static Archive Archive { get; set; }
 
-        /// <summary>
-        /// 默认的存档,在未指定存档时使用的存档;
-        /// </summary>
-        [SerializeField]
-        Archive defaultArchive;
         GameInitializer gameInitializer;
 
         protected override string InitializerName
@@ -41,26 +36,14 @@ namespace KouXiaGu.World
             get { return "[场景数据初始化]"; }
         }
 
-        protected override void Awake()
+        void Awake()
         {
-            base.Awake();
             gameInitializer = GlobalController.GetSington<GameInitializer>();
         }
 
-        protected override bool Prepare()
+        protected override Task WaitPrepare(CancellationToken token)
         {
-            if (gameInitializer.IsCompleted)
-            {
-                if (!gameInitializer.IsFaulted)
-                {
-                    return true;
-                }
-                else
-                {
-                    throw new ArgumentException("gameInitializer 初始化失败;");
-                }
-            }
-            return false;
+            return WaitInitializer(gameInitializer, token);
         }
 
         protected override Task GetTask(IDataInitializer initializer)

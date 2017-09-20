@@ -12,7 +12,7 @@ namespace KouXiaGu
     /// <summary>
     /// 初始化接口;
     /// </summary>
-    public interface IInitializer
+    public interface IGameInitializer
     {
         /// <summary>
         /// 开始初始化;

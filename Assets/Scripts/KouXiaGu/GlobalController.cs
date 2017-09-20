@@ -11,6 +11,7 @@ using System.IO;
 using KouXiaGu.Diagnostics;
 using KouXiaGu.RectTerrain;
 using KouXiaGu.RectTerrain.Resources;
+using KouXiaGu.Resources.Archives;
 
 namespace KouXiaGu
 {
@@ -42,23 +43,10 @@ namespace KouXiaGu
             return globalController.GetComponentInChildren<T>();
         }
 
-
-
         [ContextMenu("Test")]
         void Test()
         {
-            var serializer = new XmlFileSerializer<LandformResource[]>();
-            LandformResource[] array = new LandformResource[]
-                {
-                    new LandformResource()
-                    {
-                        DiffuseTex = new TextureInfo("None"),
-                        DiffuseBlendTex = new TextureInfo("None"),
-                        HeightTex = new TextureInfo("None"),
-                        HeightBlendTex = new TextureInfo("None"),
-                    },
-                };
-            serializer.Write(array, @"11.xml", FileMode.Create);
+
         }
     }
 }

@@ -32,20 +32,9 @@ namespace KouXiaGu.World
             get { return "[场景更新器初始化]"; }
         }
 
-        protected override bool Prepare()
+        protected override Task WaitPrepare(CancellationToken token)
         {
-            if (componentInitializer.IsCompleted)
-            {
-                if (!componentInitializer.IsFaulted)
-                {
-                    return true;
-                }
-                else
-                {
-                    throw new ArgumentException("componentInitializer 失败!");
-                }
-            }
-            return false;
+            return WaitInitializer(componentInitializer, token);
         }
 
         protected override Task GetTask(IUpdaterInitializer initializer)

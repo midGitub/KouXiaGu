@@ -25,12 +25,12 @@ namespace KouXiaGu.OGlobalization
 
         static string ConfigFilePath
         {
-            get { return Path.Combine(Resource.ConfigDirectoryPath, "Localization/Config.xml"); }
+            get { return Path.Combine(Resource.DataDirectoryPath, "Localization/Config.xml"); }
         }
 
         static string PackDirectoryPath
         {
-            get { return Path.Combine(Resource.ConfigDirectoryPath, "Localization"); }
+            get { return Path.Combine(Resource.DataDirectoryPath, "Localization"); }
         }
 
         static readonly HashSet<ITextObserver> textObservers = new HashSet<ITextObserver>();

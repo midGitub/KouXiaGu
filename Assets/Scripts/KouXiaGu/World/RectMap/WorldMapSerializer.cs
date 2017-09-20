@@ -8,7 +8,7 @@ using KouXiaGu.Resources;
 namespace KouXiaGu.World.RectMap
 {
 
-    public class WorldMapSerializer : ArchiveSerializer<MapData, MapData, WorldMap>
+    public class WorldMapSerializer : DataSerializer<MapData, MapData, WorldMap>
     {
         public WorldMapSerializer(IResourceSerializer<MapData> resourceSerializer, ISerializer<MapData> archiveSerializer, string archiveName) : base(resourceSerializer, archiveSerializer, archiveName)
         {

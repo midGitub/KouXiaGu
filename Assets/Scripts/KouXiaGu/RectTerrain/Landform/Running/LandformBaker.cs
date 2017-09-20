@@ -61,11 +61,15 @@ namespace KouXiaGu.RectTerrain
             get { return landformChunkPool; }
         }
 
+        void Awake()
+        {
+            landformBoardCollection.Initialize();
+        }
+
         Task IComponentInitializer.StartInitialize(CancellationToken token)
         {
             resources = RectTerrainResourcesInitializer.RectTerrainResources;
             map = mapInitializer.WorldMap.Map;
-            landformBoardCollection.Initialize();
             return null;
         }
 

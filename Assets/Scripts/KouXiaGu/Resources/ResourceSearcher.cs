@@ -44,7 +44,7 @@ namespace KouXiaGu.Resources
 
         string GetFilePath<T>(ISerializer<T> serializer)
         {
-            string filePath = Path.Combine(Resource.ConfigDirectoryPath, ResourceName + serializer.Extension);
+            string filePath = Path.Combine(Resource.DataDirectoryPath, ResourceName + serializer.Extension);
             return filePath;
         }
 
@@ -103,7 +103,7 @@ namespace KouXiaGu.Resources
 
         public override IEnumerable<string> Searche<T>(ISerializer<T> serializer)
         {
-            return Searche(serializer, Resource.ConfigDirectoryPath);
+            return Searche(serializer, Resource.DataDirectoryPath);
         }
 
         public IEnumerable<string> Searche<T>(ISerializer<T> serializer, string directory)
@@ -117,7 +117,7 @@ namespace KouXiaGu.Resources
 
         public override string GetWrite<T>(ISerializer<T> serializer)
         {
-            return GetWrite(serializer, Resource.ConfigDirectoryPath);
+            return GetWrite(serializer, Resource.DataDirectoryPath);
         }
 
         string GetWrite<T>(ISerializer<T> serializer, string directory)

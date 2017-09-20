@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,9 +11,21 @@ namespace KouXiaGu
 
     public abstract class Initializer<T> : MonoBehaviour
     {
-        List<Task> tasks;
-        T[] initializers;
-        internal Task InitializeTask { get; private set; }
+
+        /// <summary>
+        /// 当前初始化异步操作,若还未初始化则为NUll;
+        /// </summary>
+        public Task InitializeTask { get; private set; }
+
+        /// <summary>
+        /// 取消器,若还未初始化则为NUll;
+        /// </summary>
+        public CancellationTokenSource TokenSource { get; private set; }
+
+        /// <summary>
+        /// 初始化组件名;
+        /// </summary>
+        protected abstract string InitializerName { get; }
 
         public bool IsCompleted
         {
@@ -30,14 +42,12 @@ namespace KouXiaGu
             get { return InitializeTask != null ? InitializeTask.Exception : null; }
         }
 
-        public bool IsRunning { get; private set; }
-        protected CancellationTokenSource TokenSource { get; private set; }
-
-        protected virtual void Awake()
+        /// <summary>
+        /// 是否正在初始化?
+        /// </summary>
+        public bool IsRunning
         {
-            tasks = new List<Task>();
-            initializers = GetComponentsInChildren<T>();
-            TokenSource = new CancellationTokenSource();
+            get { return InitializeTask != null && !InitializeTask.IsCompleted; }
         }
 
         protected virtual void Start()
@@ -45,39 +55,40 @@ namespace KouXiaGu
             StartInitialize();
         }
 
-        protected virtual void OnDestroy()
+        /// <summary>
+        /// 开始进行异步的初始化;
+        /// </summary>
+        public Task StartInitialize()
         {
-            TokenSource.Cancel();
+            if (InitializeTask == null)
+            {
+                InitializeTask = StartInitializeAsync();
+            }
+            return InitializeTask;
         }
 
         /// <summary>
-        /// 初始化组件名;
+        /// 进行初始化;
         /// </summary>
-        protected abstract string InitializerName { get; }
-
-        /// <summary>
-        /// 获取到
-        /// </summary>
-        protected abstract Task GetTask(T initializer);
-
-        async void StartInitialize()
+        async Task StartInitializeAsync()
         {
-            if (IsCompleted)
-            {
-                return;
-            }
-            IsRunning = true;
-
             try
             {
-                while (!Prepare())
+                TokenSource = new CancellationTokenSource();
+                var waiter = WaitPrepare(TokenSource.Token);
+                if (waiter != null)
                 {
-                    await Task.Delay(500, TokenSource.Token);
+                    await waiter;
                 }
 
-                Debug.Log(InitializerName + "开始初始化;");
-                foreach (var initializer in initializers)
+                OnStart();
+                T[] initializers = GetComponentsInChildren<T>();
+                List<Task> tasks = new List<Task>();
+
+                for (int i = 0; i < initializers.Length; i++)
                 {
+                    TokenSource.Token.ThrowIfCancellationRequested();
+                    var initializer = initializers[i];
                     Task task = GetTask(initializer);
                     if (task != null)
                     {
@@ -85,26 +96,32 @@ namespace KouXiaGu
                     }
                 }
 
-                InitializeTask = Task.WhenAll(tasks);
-                await InitializeTask;
+                await Task.WhenAll(tasks);
                 OnCompleted();
             }
             catch(Exception ex)
             {
                 OnFaulted(ex);
-            }
-            finally
-            {
-                IsRunning = false;
+                throw ex;
             }
         }
 
         /// <summary>
+        /// 获取到Task;
+        /// </summary>
+        protected abstract Task GetTask(T initializer);
+
+        /// <summary>
         /// 进行准备,若为准备好初始化者返回false,准备开始初始化返回true,出现异常则抛出异常;
         /// </summary>
-        protected virtual bool Prepare()
+        protected virtual Task WaitPrepare(CancellationToken token)
         {
-            return true;
+            return null;
+        }
+
+        protected virtual void OnStart()
+        {
+            Debug.Log(InitializerName + "开始初始化;");
         }
 
         /// <summary>
@@ -121,6 +138,97 @@ namespace KouXiaGu
         protected virtual void OnFaulted(Exception ex)
         {
             Debug.LogError(InitializerName + "初始化时遇到错误:" + ex);
+        }
+
+        public static Task WaitInitializer<T1>(Initializer<T1> initializer, CancellationToken token)
+        {
+            return Task.Run(delegate ()
+            {
+                while (!initializer.IsCompleted)
+                {
+                    token.ThrowIfCancellationRequested();
+                }
+                if (initializer.IsFaulted)
+                {
+                    throw initializer.Exception;
+                }
+            }, token);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            CancelInitialize();
+        }
+
+        /// <summary>
+        /// 取消初始化;
+        /// </summary>
+        public virtual void CancelInitialize()
+        {
+            if (TokenSource != null)
+            {
+                TokenSource.Cancel();
+            }
+        }
+
+
+        public TaskAwaiter GetAwaiter()
+        {
+            StartInitialize();
+            return InitializeTask.GetAwaiter();
+        }
+
+        public struct InitializerAwaiter : INotifyCompletion
+        {
+            internal InitializerAwaiter(Initializer<T> initializer)
+            {
+                Initializer = initializer;
+            }
+
+            public Initializer<T> Initializer { get; private set; }
+
+            public bool IsCompleted
+            {
+                get { return Initializer.IsCompleted; }
+            }
+
+            public void OnCompleted(Action continuation)
+            {
+                Initializer<T> initializer = Initializer;
+                CancellationToken token = initializer.TokenSource.Token;
+                initializer.InitializeTask.ContinueWith(delegate (Task task)
+                {
+                    if (task.IsFaulted)
+                    {
+                        throw task.Exception;
+                    }
+                    continuation();
+                }, token);
+
+                //if (initializer.InitializeTask != null)
+                //{
+                //    initializer.InitializeTask.ContinueWith(_ => continuation(), token);
+                //}
+                //else
+                //{
+                //    Task.Run(delegate ()
+                //    {
+                //        while (!initializer.IsCompleted)
+                //        {
+                //            token.ThrowIfCancellationRequested();
+                //        }
+                //        continuation();
+                //    }, token);
+                //}
+            }
+
+            public void GetResult()
+            {
+                if (Initializer.IsFaulted)
+                {
+                    throw Initializer.Exception;
+                }
+            }
         }
     }
 }

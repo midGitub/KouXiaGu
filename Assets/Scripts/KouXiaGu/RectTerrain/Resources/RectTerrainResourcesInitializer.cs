@@ -14,7 +14,7 @@ namespace KouXiaGu.RectTerrain.Resources
     /// 地形资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectTerrainResourcesInitializer : MonoBehaviour, IInitializer
+    public sealed class RectTerrainResourcesInitializer : MonoBehaviour, IGameInitializer
     {
         RectTerrainResourcesInitializer()
         {
@@ -33,7 +33,7 @@ namespace KouXiaGu.RectTerrain.Resources
         /// </summary>
         public static RectTerrainResources RectTerrainResources { get; private set; }
 
-        Task IInitializer.StartInitialize(CancellationToken token)
+        Task IGameInitializer.StartInitialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {

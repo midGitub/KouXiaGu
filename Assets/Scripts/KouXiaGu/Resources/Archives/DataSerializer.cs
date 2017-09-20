@@ -9,26 +9,17 @@ namespace KouXiaGu.Resources.Archives
 {
 
     /// <summary>
-    /// 可存档资源读取;
-    /// </summary>
-    public interface IArchiveSerializer<T>
-    {
-        void Serialize(Archive archive, T result);
-        T Deserialize(Archive archive);
-    }
-
-    /// <summary>
-    /// 读取存档资源;
+    /// 从存档和本地文件读取对应资源;
     /// </summary>
     /// <typeparam name="TArchive">存档序列化得到的内容;</typeparam>
     /// <typeparam name="TResult">最终转换到的内容;</typeparam>
-    public abstract class ArchiveSerializer<TSource, TArchive, TResult> : IArchiveSerializer<TResult>
+    public abstract class DataSerializer<TSource, TArchive, TResult> : IArchiveSerializer<TResult>
     {
-        protected ArchiveSerializer()
+        protected DataSerializer()
         {
         }
 
-        public ArchiveSerializer(IResourceSerializer<TSource> resourceSerializer, ISerializer<TArchive> archiveSerializer, string archiveName)
+        public DataSerializer(IResourceSerializer<TSource> resourceSerializer, ISerializer<TArchive> archiveSerializer, string archiveName)
         {
             ResourceSerializer = resourceSerializer;
             ArchiveDataSerializer = archiveSerializer;
