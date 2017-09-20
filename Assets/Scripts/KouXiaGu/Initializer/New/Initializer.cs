@@ -142,17 +142,30 @@ namespace KouXiaGu
 
         public static Task WaitInitializer<T1>(Initializer<T1> initializer, CancellationToken token)
         {
-            return Task.Run(delegate ()
+            if (initializer.InitializeTask == null)
             {
-                while (!initializer.IsCompleted)
+                return Task.Run(delegate ()
                 {
-                    token.ThrowIfCancellationRequested();
-                }
-                if (initializer.IsFaulted)
+                    while (!initializer.IsCompleted)
+                    {
+                        token.ThrowIfCancellationRequested();
+                    }
+                    if (initializer.IsFaulted)
+                    {
+                        throw initializer.Exception;
+                    }
+                }, token);
+            }
+            else
+            {
+                return initializer.InitializeTask.ContinueWith(delegate (Task task)
                 {
-                    throw initializer.Exception;
-                }
-            }, token);
+                    if (initializer.IsFaulted)
+                    {
+                        throw initializer.Exception;
+                    }
+                }, token);
+            }
         }
 
         protected virtual void OnDestroy()
