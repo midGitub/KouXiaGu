@@ -45,6 +45,14 @@ namespace KouXiaGu.RectTerrain
         public static readonly RectGrid Grid = new RectGrid(ChunkWidth, ChunkHeight);
 
         /// <summary>
+        /// 转换为地形块的中心坐标;
+        /// </summary>
+        public static RectCoord ToLandformChunkCenter(this RectCoord chunkPos)
+        {
+            return new RectCoord(chunkPos.x * ChunkRange.RealWidth, chunkPos.y * ChunkRange.RealHeight);
+        }
+
+        /// <summary>
         /// 将地形块坐标转换成地形块中心点像素坐标;
         /// </summary>
         public static Vector3 ToLandformChunkPixel(this RectCoord chunkPos)

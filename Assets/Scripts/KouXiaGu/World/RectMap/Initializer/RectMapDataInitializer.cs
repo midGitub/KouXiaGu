@@ -13,7 +13,7 @@ namespace KouXiaGu.World.RectMap
     /// 地图数据读取;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectMapDataInitializer : MonoBehaviour, IDataInitializer
+    public sealed class RectMapDataInitializer : SceneSington<RectMapDataInitializer>, IDataInitializer
     {
         RectMapDataInitializer()
         {
@@ -56,6 +56,11 @@ namespace KouXiaGu.World.RectMap
         /// 游戏地图;
         /// </summary>
         public WorldMap WorldMap { get; private set; }
+
+        void Awake()
+        {
+            SetInstance(this);
+        }
 
         Task IDataInitializer.StartInitialize(ArchiveInfo archive, CancellationToken token)
         {

@@ -52,5 +52,14 @@ namespace KouXiaGu.RectTerrain
         {
             return Grid.GetCoord(pos);
         }
+
+        /// <summary>
+        /// 改变Y坐标,并返回;
+        /// </summary>
+        public static Vector3 ChangedY(this Vector3 v3, float y)
+        {
+            v3.y = y;
+            return v3;
+        }
     }
 }

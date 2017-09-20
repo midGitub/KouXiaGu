@@ -32,9 +32,17 @@ namespace KouXiaGu.RectTerrain
             requestQueue = new RequestQueue(runtimeStopwatch);
         }
 
+        [SerializeField]
+        int wait;
+        int temp;
+
         void Update()
         {
-            requestQueue.MoveNext();
+            if (wait < temp++)
+            {
+                temp = 0;
+                requestQueue.MoveNext();
+            }
         }
 
         public IRequest Add(IRequest request)

@@ -74,14 +74,21 @@ namespace KouXiaGu.RectTerrain
             BakeTextureInfo landformDiffuseInfo = Quality.LandformDiffuseMap;
             RenderTexture diffuseRT = RenderTexture.GetTemporary(landformDiffuseInfo.BakeWidth, landformDiffuseInfo.BakeHeight);
 
+            BakeTextureInfo landformHeightInfo = Quality.LandformHeightMap;
+            RenderTexture heightRT = RenderTexture.GetTemporary(landformHeightInfo.BakeWidth, landformHeightInfo.BakeHeight);
+
             PrepareLandformBakeScene(chunkPos);
             BakeLandformDiffuse(chunkPos, diffuseRT);
-
-
+            BakeLandformHeight(chunkPos, heightRT);
 
             Texture2D diffuseMap = GetDiffuseMap(diffuseRT);
+            Texture2D heightMap = GetHeightMap(heightRT);
 
             landformChunk.SetDiffuseMap(diffuseMap);
+            landformChunk.SetHeightMap(heightMap);
+
+            RenderTexture.ReleaseTemporary(diffuseRT);
+            RenderTexture.ReleaseTemporary(heightRT);
         }
 
         void PrepareLandformBakeScene(RectCoord chunkPos)
@@ -91,8 +98,7 @@ namespace KouXiaGu.RectTerrain
             int i = 0;
             foreach (var bakePoint in bakePoints)
             {
-                RectCoord drawingBoardChunkPoint = landformBoardCollection.GetDrawingBoardPoint(chunkPos, bakePoint);
-                Vector3 drawingBoardPoint = drawingBoardChunkPoint.ToRectTerrainPixel(-i);
+                var drawingBoardPoint = landformBoardCollection.GetDrawingBoardPoint(chunkPos, bakePoint).ChangedY(-i);
                 var landformInfo = GetLandformNodeInfo(bakePoint);
                 var landformResource = GetLandformResource(landformInfo.TypeID);
                 Quaternion rotation = Quaternion.Euler(0, landformInfo.Angle, 0);
@@ -121,11 +127,21 @@ namespace KouXiaGu.RectTerrain
             {
                 drawingBoard.DisplayDiffuse();
             }
-            Vector3 cameraPos = landformBoardCollection.ChunkCenter.ToLandformChunkPixel(5);
+            Vector3 cameraPos = landformBoardCollection.Center.ChangedY(5);
             bakeCamera.CameraRender(cameraPos, rt);
         }
 
-        public Texture2D GetDiffuseMap(RenderTexture rt, TextureFormat format = TextureFormat.RGB24, bool mipmap = false)
+        void BakeLandformHeight(RectCoord chunkPos, RenderTexture rt)
+        {
+            foreach (var drawingBoard in landformBoardCollection.DrawingBoardList)
+            {
+                drawingBoard.DisplayHeight();
+            }
+            Vector3 cameraPos = landformBoardCollection.Center.ChangedY(5);
+            bakeCamera.CameraRender(cameraPos, rt);
+        }
+
+        Texture2D GetDiffuseMap(RenderTexture rt, TextureFormat format = TextureFormat.RGB24, bool mipmap = false)
         {
             BakeTextureInfo texInfo = Quality.LandformDiffuseMap;
             RenderTexture.active = rt;
@@ -136,6 +152,16 @@ namespace KouXiaGu.RectTerrain
             return diffuseTex;
         }
 
+        Texture2D GetHeightMap(RenderTexture rt, TextureFormat format = TextureFormat.RGB24, bool mipmap = false)
+        {
+            BakeTextureInfo texInfo = Quality.LandformHeightMap;
+            RenderTexture.active = rt;
+            Texture2D diffuseTex = new Texture2D(texInfo.Width, texInfo.Height, format, mipmap);
+            diffuseTex.ReadPixels(texInfo.ClippingRect, 0, 0, false);
+            diffuseTex.wrapMode = TextureWrapMode.Clamp;
+            diffuseTex.Apply();
+            return diffuseTex;
+        }
 
 
         abstract class BakeDrawingBoardCollection<T>
@@ -147,14 +173,17 @@ namespace KouXiaGu.RectTerrain
             [SerializeField]
             Transform objectParent;
             [SerializeField]
-            RectCoord chunkCenter;
+            Vector3 center;
 
             public List<T> DrawingBoardList { get; private set; }
             public abstract int BakeDrawingBoardCount { get; }
 
-            public RectCoord ChunkCenter
+            /// <summary>
+            /// 将显示的坐标转换到的中心点;
+            /// </summary>
+            public Vector3 Center
             {
-                get { return chunkCenter; }
+                get { return center; }
             }
 
             /// <summary>
@@ -179,20 +208,11 @@ namespace KouXiaGu.RectTerrain
             /// <summary>
             /// 获取到烘培面板的位置;
             /// </summary>
-            public IEnumerable<RectCoord> GetDrawingBoardPoints(RectCoord chunkPos, IEnumerable<RectCoord> bakePoints)
+            public Vector3 GetDrawingBoardPoint(RectCoord chunkPos, RectCoord bakePoint)
             {
-                foreach (var bakePoint in bakePoints)
-                {
-                    yield return GetDrawingBoardPoint(chunkPos, bakePoint);
-                }
-            }
-
-            /// <summary>
-            /// 获取到烘培面板的位置;
-            /// </summary>
-            public RectCoord GetDrawingBoardPoint(RectCoord chunkPos, RectCoord bakePoint)
-            {
-                return chunkCenter - chunkPos + bakePoint;
+                Vector3 chunkCenter = chunkPos.ToLandformChunkPixel();
+                Vector3 bakePixel = bakePoint.ToRectTerrainPixel();
+                return center + (bakePixel - chunkCenter);
             }
 
             T Instantiate()
@@ -227,9 +247,10 @@ namespace KouXiaGu.RectTerrain
 
             public override IEnumerable<RectCoord> GetBakePoints(RectCoord chunkPos)
             {
+                RectCoord chunkCenter = chunkPos.ToLandformChunkCenter();
                 foreach (var offset in landformBakePointOffsets)
                 {
-                    yield return offset + chunkPos;
+                    yield return offset + chunkCenter;
                 }
             }
         }

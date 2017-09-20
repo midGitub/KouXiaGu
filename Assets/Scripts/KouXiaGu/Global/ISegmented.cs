@@ -30,11 +30,14 @@ namespace KouXiaGu
         {
         }
 
-        public Stopwatch(float seconds)
+        public Stopwatch(float idleSeconds)
         {
-            this.idleSeconds = seconds;
+            this.idleSeconds = idleSeconds;
         }
 
+        /// <summary>
+        /// 用于的执行时间;
+        /// </summary>
         [SerializeField]
         float idleSeconds;
         float before;
