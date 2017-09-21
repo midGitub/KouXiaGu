@@ -8,42 +8,24 @@ using UnityEngine;
 namespace KouXiaGu
 {
 
+    /// <summary>
+    /// 场景控制器;
+    /// </summary>
     [DisallowMultipleComponent]
-    public class SceneController : MonoBehaviour
+    public abstract class SceneController : SceneSington<SceneController>
     {
-        SceneController()
-        {
-        }
 
-        [CustomUnityTag("场景控制器标签;")]
-        public const string Tag = "SceneController";
-        static GameObject sceneController;
-
-        void Awake()
+        /// <summary>
+        /// 获取到挂载在场景控制器上面的组件;
+        /// </summary>
+        public static TComponent GetSington<TComponent>()
+            where TComponent : class
         {
-            if (sceneController != null)
+            if (Instance != null)
             {
-                Debug.LogError("场景已经存在 SceneController:" + sceneController.ToString() + ";尝试加入新的:" + ToString());
+                return Instance.GetComponentInChildren<TComponent>();
             }
-            else
-            {
-                sceneController = gameObject;
-            }
-        }
-
-        void OnDestroy()
-        {
-            sceneController = null;
-        }
-
-        public static T GetSington<T>()
-            where T : class
-        {
-            if (sceneController != null)
-            {
-                return sceneController.GetComponentInChildren<T>();
-            }
-            return default(T);
+            return default(TComponent);
         }
     }
 }

@@ -16,14 +16,13 @@ namespace KouXiaGu
         where T : SceneSington<T>
     {
 
-        [CustomUnityTag]
-        public const string DefaultTagName = "SceneController";
+        [CustomUnityTag("场景控制器;")]
+        public const string SceneControllerTagName = "SceneController";
 
         static T _instance;
-        static readonly object asyncLock = new object();
 
         /// <summary>
-        /// 获取到单例,允许多线程访问,若不存在则为Null;
+        /// 获取到单例(允许多线程访问,但是未在Unity线程设置到单例,永远返回Null);
         /// </summary>
         public static T Instance
         {
@@ -32,7 +31,8 @@ namespace KouXiaGu
 #if UNITY_EDITOR
                 if (!XiaGu.IsPlaying)
                 {
-                    throw new ArgumentException("尝试在编辑器模式下访问单例;");
+                    Debug.LogWarning("在编辑模式下进行了单例访问;");
+                    return Find_safe();
                 }
 #endif
                 return _instance ?? Find_safe();
@@ -50,30 +50,17 @@ namespace KouXiaGu
 
         static T Find_safe()
         {
-            lock (asyncLock)
+            if (XiaGu.IsUnityThread)
             {
-                if (_instance == null)
-                {
-                    if (XiaGu.IsUnityThread)
-                    {
-                        _instance = Find();
-                    }
-                    else
-                    {
-                        Operate operate = new Operate(() => _instance = Find());
-                        UnityAsyncRequestDispatcher.Instance.Add(operate);
-                        while (!operate.IsCompleted)
-                        {
-                        }
-                    }
-                }
+                _instance = Find();
                 return _instance;
             }
+            return null;
         }
 
         static T Find()
         {
-            GameObject sceneController = GameObject.FindWithTag(DefaultTagName);
+            GameObject sceneController = GameObject.FindWithTag(SceneControllerTagName);
             if (sceneController != null)
             {
                 T instance = sceneController.GetComponentInChildren<T>();
@@ -85,37 +72,31 @@ namespace KouXiaGu
         /// <summary>
         /// 手动设置到单例,若出现错误则弹出异常;
         /// </summary>
-        protected static void SetInstance(T instance)
+        protected void SetInstance(T instance)
         {
-            lock (asyncLock)
+            if (instance == null)
             {
-                if (instance == null)
-                {
-                    Debug.LogError("传入参数 instance 为 Null;");
-                }
-                else if (Instance != null && Instance != instance)
-                {
-                    Debug.LogError("设置不同的单例;原本:" + (Instance as MonoBehaviour).name + ",请求:" + (instance as MonoBehaviour).name);
-                }
-                else
-                {
-                    Instance = instance;
-                }
+                Debug.LogError("传入参数 instance 为 Null;");
+            }
+            else if (_instance != null && _instance != instance)
+            {
+                Debug.LogError("设置不同的单例;原本:" + (_instance as MonoBehaviour).name + ",请求:" + (instance as MonoBehaviour).name);
+            }
+            else
+            {
+                Instance = instance;
             }
         }
 
         protected virtual void OnDestroy()
         {
-            lock (asyncLock)
+            if (Instance != null && Instance != this)
             {
-                if (Instance != null && Instance != this)
-                {
-                    Debug.LogError("场景单例不为即将销毁的;");
-                }
-                else
-                {
-                    Instance = null;
-                }
+                Debug.LogError("场景单例不为即将销毁的;");
+            }
+            else
+            {
+                Instance = null;
             }
         }
     }

@@ -19,7 +19,7 @@ namespace KouXiaGu.RectTerrain
 
         void OnEnable()
         {
-            LandformController controller = SceneController.GetSington<LandformController>();
+            LandformController controller = LandformController.Instance;
             if (controller != null)
             {
                 controller.GuiderGroup.Add(this);
@@ -28,7 +28,7 @@ namespace KouXiaGu.RectTerrain
 
         void OnDisable()
         {
-            LandformController controller = SceneController.GetSington<LandformController>();
+            LandformController controller = LandformController.Instance;
             if (controller != null)
             {
                 controller.GuiderGroup.Remove(this);

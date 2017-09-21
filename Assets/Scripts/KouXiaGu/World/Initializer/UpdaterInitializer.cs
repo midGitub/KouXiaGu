@@ -41,5 +41,15 @@ namespace KouXiaGu.World
         {
             return initializer.StartInitialize(TokenSource.Token);
         }
+
+        protected override void OnCompleted()
+        {
+            base.OnCompleted();
+            var handles = GetComponentsInChildren<IWorldCompletedHandle>();
+            foreach (var handle in handles)
+            {
+                handle.OnWorldCompleted();
+            }
+        }
     }
 }

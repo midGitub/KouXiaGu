@@ -86,7 +86,7 @@ namespace KouXiaGu.Resources.Archives
 
         string GetFullPath(Archive archive)
         {
-            return Path.Combine(archive.Directory, ArchiveName + ArchiveDataSerializer.Extension);
+            return Path.Combine(archive.ArchiveDirectory, ArchiveName + ArchiveDataSerializer.Extension);
         }
     }
 }

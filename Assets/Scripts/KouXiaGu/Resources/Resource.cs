@@ -80,7 +80,7 @@ namespace KouXiaGu.Resources
         /// <summary>
         /// 存放存档的文件夹路径;
         /// </summary>
-        public static string ArchiveDirectoryPath
+        public static string ArchivesDirectoryPath
         {
             get { return string.IsNullOrEmpty(archiveDirectoryPath) ? GetArchiveDirectoryPath() : archiveDirectoryPath; }
         }
@@ -130,7 +130,7 @@ namespace KouXiaGu.Resources
                 "AssetBundleDirectoryPath : " + AssetBundleDirectoryPath +
                 "\nDataDirectoryPath : " + DataDirectoryPath +
                 "\nUserConfigDirectoryPath" + UserConfigDirectoryPath +
-                "\nArchiveDirectoryPath : " + ArchiveDirectoryPath +
+                "\nArchiveDirectoryPath : " + ArchivesDirectoryPath +
                 "\nTempDirectoryPath : " + TempDirectoryPath;
             Debug.Log(str);
         }

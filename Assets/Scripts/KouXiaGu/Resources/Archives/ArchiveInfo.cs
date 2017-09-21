@@ -11,14 +11,18 @@ namespace KouXiaGu.Resources.Archives
     [XmlRoot("ArchiveInfo")]
     public struct ArchiveInfo
     {
+        public ArchiveInfo(string name)
+        {
+            Name = name;
+            TimeTicks = DateTime.Now.Ticks;
+            ProgramVersion = Application.version;
+        }
+
         /// <summary>
         /// 创建一个当前适用的存档信息;
         /// </summary>
-        public ArchiveInfo(ArchiveInfo info)
+        public ArchiveInfo(ArchiveInfo info) : this(info.Name)
         {
-            Name = info.Name;
-            TimeTicks = DateTime.Now.Ticks;
-            ProgramVersion = Application.version;
         }
 
         /// <summary>
@@ -45,6 +49,11 @@ namespace KouXiaGu.Resources.Archives
         public DateTime Time
         {
             get { return new DateTime(TimeTicks); }
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + "[Name:" + Name + ",Time:" + Time.ToShortTimeString() + "]";
         }
     }
 }

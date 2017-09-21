@@ -16,7 +16,7 @@ namespace KouXiaGu.RectTerrain
     /// 管理地形组件的地貌;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformController : MonoBehaviour, IComponentInitializer
+    public class LandformController : SceneSington<LandformController>, IComponentInitializer
     {
         LandformController()
         {
@@ -83,6 +83,7 @@ namespace KouXiaGu.RectTerrain
 
         void Awake()
         {
+            SetInstance(this);
             OnValidate();
         }
 
