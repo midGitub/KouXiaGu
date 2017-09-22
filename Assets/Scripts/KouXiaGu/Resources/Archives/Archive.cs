@@ -7,19 +7,30 @@ namespace KouXiaGu.Resources.Archives
 {
 
     /// <summary>
-    /// 存档;
+    /// 存档目录;
     /// </summary>
     public class Archive
     {
         /// <summary>
-        /// 创建一个新的存档路径;
+        /// 创建一个新的存档路径,但不进行创建存档;
         /// </summary>
         public Archive(ArchiveInfo info) : this(GetNewArchiveDirectory(), info)
         {
         }
 
         /// <summary>
-        /// 指定存档路径,信息;
+        /// 指定存档路径,但不进行创建存档;
+        /// </summary>
+        public Archive(string archiveDirectory)
+        {
+            ArchiveDirectoryInfo = new DirectoryInfo(archiveDirectory);
+            ArchiveInfo info;
+            TryReadInfo(archiveDirectory, out info);
+            Info = info;
+        }
+
+        /// <summary>
+        /// 指定存档路径,信息,但不进行创建存档;
         /// </summary>
         public Archive(string archiveDirectory, ArchiveInfo info)
         {
@@ -40,7 +51,7 @@ namespace KouXiaGu.Resources.Archives
         /// <summary>
         /// 存档信息;
         /// </summary>
-        public ArchiveInfo Info { get; private set; }
+        public ArchiveInfo Info { get; set; }
 
         /// <summary>
         /// 存档存放路径;
@@ -73,7 +84,15 @@ namespace KouXiaGu.Resources.Archives
         public bool Exists()
         {
             return ArchiveDirectoryInfo.Exists
-                && File.Exists(archiveInfoSerializer.GetArchiveInfoPath(ArchiveDirectory));
+                && ExistsInfo();
+        }
+
+        /// <summary>
+        /// 是否存在信息文件?
+        /// </summary>
+        public bool ExistsInfo()
+        {
+            return File.Exists(archiveInfoSerializer.GetArchiveInfoPath(ArchiveDirectory));
         }
 
         /// <summary>
@@ -94,20 +113,42 @@ namespace KouXiaGu.Resources.Archives
         }
 
         /// <summary>
-        /// 清除存档内容,但是保留存档目录;
-        /// </summary>
-        public void Clear()
-        {
-            ArchiveDirectoryInfo.Delete(true);
-            ArchiveDirectoryInfo.Create();
-        }
-
-        /// <summary>
         /// 删除存档;
         /// </summary>
         public void Delete()
         {
-            ArchiveDirectoryInfo.Delete(true);
+            ArchiveDirectoryInfo.Refresh();
+            if (ArchiveDirectoryInfo.Exists)
+            {
+                ArchiveDirectoryInfo.Delete(true);
+            }
+        }
+
+        /// <summary>
+        /// 移动存档;
+        /// </summary>
+        public void MoveTo(Archive archive)
+        {
+            archive.Delete();
+            archive.ArchiveDirectoryInfo.Parent.Create();
+            ArchiveDirectoryInfo.MoveTo(archive.ArchiveDirectory);
+        }
+
+        /// <summary>
+        /// 尝试读取到信息文件,若未能读取到则返回默认值;
+        /// </summary>
+        public static bool TryReadInfo(string archiveDirectory, out ArchiveInfo info)
+        {
+            try
+            {
+                info = archiveInfoSerializer.Deserialize(archiveDirectory);
+                return true;
+            }
+            catch
+            {
+                info = default(ArchiveInfo);
+                return false;
+            }
         }
 
         /// <summary>
@@ -160,10 +201,74 @@ namespace KouXiaGu.Resources.Archives
             }
         }
 
-
         public override string ToString()
         {
             return base.ToString() + "[ArchiveDirectory:" + ArchiveDirectory + "]";
+        }
+
+
+        /// <summary>
+        /// 根据时间升序的对比器;存档时间由早到晚,未创建的存档永远在最后;
+        /// </summary>
+        public class OrderByTimeAscendingComparer : Comparer<Archive>
+        {
+            public override int Compare(Archive x, Archive y)
+            {
+                if (x.Exists())
+                {
+                    if (y.Exists())
+                    {
+                        return (int)(x.Info.Time.Ticks - y.Info.Time.Ticks);
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+                else
+                {
+                    if (y.Exists())
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 根据时间降序的对比器;存档时间由晚到早,未创建的存档永远在最后;;
+        /// </summary>
+        public class OrderByTimeDescendingComparer : Comparer<Archive>
+        {
+            public override int Compare(Archive x, Archive y)
+            {
+                if (x.Exists())
+                {
+                    if (y.Exists())
+                    {
+                        return (int)(y.Info.Time.Ticks - x.Info.Time.Ticks);
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+                else
+                {
+                    if (y.Exists())
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace KouXiaGu.RectTerrain
     /// 管理地形组件的地貌;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformController : SceneSington<LandformController>, IComponentInitializer
+    public class LandformController : SceneSington<LandformController>, IComponentInitializeHandle
     {
         LandformController()
         {
@@ -93,7 +93,7 @@ namespace KouXiaGu.RectTerrain
             LandformChunkRenderer.SetDisplacement(displacement);
         }
 
-        Task IComponentInitializer.StartInitialize(CancellationToken token)
+        Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
         {
             Builder = new LandformBuilder(baker);
             Updater = new LandformUpdater(Builder, GuiderGroup, rectMapData.WorldMap);

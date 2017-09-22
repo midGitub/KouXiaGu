@@ -50,7 +50,7 @@ namespace KouXiaGu.World
                 yield return null;
             }
 
-            foreach (var item in GetComponentsInChildren<IComponentInitializer>())
+            foreach (var item in GetComponentsInChildren<IComponentInitializeHandle>())
             {
                 //item.WorldDataCompleted(this);
             }

@@ -55,6 +55,7 @@ namespace KouXiaGu.Resources.Archives
         public void Serialize(Archive archive, TArchive archiveData)
         {
             string archivePath = GetFullPath(archive);
+            Directory.CreateDirectory(Path.GetDirectoryName(archivePath));
             using (Stream stream = new FileStream(archivePath, FileMode.Create, FileAccess.Write))
             {
                 ArchiveDataSerializer.Serialize(archiveData, stream);
@@ -84,6 +85,9 @@ namespace KouXiaGu.Resources.Archives
             return default(TArchive);
         }
 
+        /// <summary>
+        /// 获取到存档路径;
+        /// </summary>
         string GetFullPath(Archive archive)
         {
             return Path.Combine(archive.ArchiveDirectory, ArchiveName + ArchiveDataSerializer.Extension);

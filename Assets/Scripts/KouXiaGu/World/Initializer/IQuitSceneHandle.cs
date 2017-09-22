@@ -12,6 +12,6 @@ namespace KouXiaGu.World
     /// </summary>
     public interface IQuitSceneHandle
     {
-        void OnQuitScene();
+        Task OnQuitScene();
     }
 }

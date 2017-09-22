@@ -9,16 +9,11 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
-    public interface IDataInitializer
-    {
-        Task StartInitialize(Archive archive, CancellationToken token);
-    }
-
     /// <summary>
     /// 游戏场景信息初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class DataInitializer : Initializer<IDataInitializer>
+    public sealed class DataInitializer : Initializer<IDataInitializeHandle>
     {
         DataInitializer()
         {
@@ -46,7 +41,7 @@ namespace KouXiaGu.World
             return WaitInitializer(gameInitializer, token);
         }
 
-        protected override Task GetTask(IDataInitializer initializer)
+        protected override Task GetTask(IDataInitializeHandle initializer)
         {
             return initializer.StartInitialize(Archive, TokenSource.Token);
         }

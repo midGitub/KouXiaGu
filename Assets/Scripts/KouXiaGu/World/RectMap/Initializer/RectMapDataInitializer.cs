@@ -5,6 +5,7 @@ using KouXiaGu.Resources;
 using System.Threading;
 using KouXiaGu.Resources.Archives;
 using KouXiaGu.RectTerrain.Resources;
+using KouXiaGu.World.Archives;
 
 namespace KouXiaGu.World.RectMap
 {
@@ -13,7 +14,7 @@ namespace KouXiaGu.World.RectMap
     /// 地图数据读取;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectMapDataInitializer : SceneSington<RectMapDataInitializer>, IDataInitializer
+    public sealed class RectMapDataInitializer : SceneSington<RectMapDataInitializer>, IDataInitializeHandle, ISceneArchiveHandle
     {
         RectMapDataInitializer()
         {
@@ -23,6 +24,9 @@ namespace KouXiaGu.World.RectMap
         bool isUseRandomMap;
         [SerializeField]
         int randomMapRadius;
+
+        MapDataSerializer mapDataSerializer;
+        WorldMapSerializer worldMapSerializer;
 
         /// <summary>
         /// 是否使用随机地图?
@@ -42,16 +46,6 @@ namespace KouXiaGu.World.RectMap
             set { randomMapRadius = value; }
         }
 
-        MapDataSerializer mapDataSerializer
-        {
-            get { return new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new MultipleResourceSearcher("World/Data")); }
-        }
-
-        WorldMapSerializer worldMapSerializer
-        {
-            get { return new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data"); }
-        }
-
         /// <summary>
         /// 游戏地图;
         /// </summary>
@@ -59,10 +53,12 @@ namespace KouXiaGu.World.RectMap
 
         void Awake()
         {
+            mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new MultipleResourceSearcher("World/Data"));
+            worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data");
             SetInstance(this);
         }
 
-        Task IDataInitializer.StartInitialize(Archive archive, CancellationToken token)
+        Task IDataInitializeHandle.StartInitialize(Archive archive, CancellationToken token)
         {
             return Task.Run(delegate ()
             {
@@ -102,6 +98,15 @@ namespace KouXiaGu.World.RectMap
             const string prefix = "[地图资源]";
             string info = "[地图:Size:" + WorldMap.Map.Count + "]";
             Debug.Log(prefix + "初始化完成;" + info);
+        }
+
+
+        Task ISceneArchiveHandle.WriteArchive(Archive archive, CancellationToken token)
+        {
+            return Task.Run(delegate ()
+            {
+                worldMapSerializer.Serialize(archive, WorldMap);
+            }, token);
         }
     }
 }

@@ -9,16 +9,11 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
-    public interface IUpdaterInitializer
-    {
-        Task StartInitialize(CancellationToken token);
-    }
-
     /// <summary>
     /// 场景更新器初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class UpdaterInitializer : Initializer<IUpdaterInitializer>
+    public class UpdaterInitializer : Initializer<IUpdaterInitializeHandle>
     {
         UpdaterInitializer()
         {
@@ -37,7 +32,7 @@ namespace KouXiaGu.World
             return WaitInitializer(componentInitializer, token);
         }
 
-        protected override Task GetTask(IUpdaterInitializer initializer)
+        protected override Task GetTask(IUpdaterInitializeHandle initializer)
         {
             return initializer.StartInitialize(TokenSource.Token);
         }

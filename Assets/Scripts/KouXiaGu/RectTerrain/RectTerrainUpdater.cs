@@ -14,7 +14,7 @@ namespace KouXiaGu.RectTerrain
     /// 负责地形组件更新;
     /// </summary>
     [DisallowMultipleComponent]
-    public class RectTerrainUpdater : MonoBehaviour, IUpdaterInitializer
+    public class RectTerrainUpdater : MonoBehaviour, IUpdaterInitializeHandle
     {
         RectTerrainUpdater()
         {
@@ -52,7 +52,7 @@ namespace KouXiaGu.RectTerrain
             CancelUpdate();
         }
 
-        Task IUpdaterInitializer.StartInitialize(CancellationToken token)
+        Task IUpdaterInitializeHandle.StartInitialize(CancellationToken token)
         {
             StartUpdate();
             return Task.Run(delegate ()

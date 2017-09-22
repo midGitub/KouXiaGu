@@ -11,18 +11,24 @@ namespace KouXiaGu.Resources.Archives
     [XmlRoot("ArchiveInfo")]
     public struct ArchiveInfo
     {
-        public ArchiveInfo(string name)
+
+        public ArchiveInfo(string name, bool isAutoSave) : this()
         {
             Name = name;
-            TimeTicks = DateTime.Now.Ticks;
-            ProgramVersion = Application.version;
+            IsAutoSave = isAutoSave;
+        }
+
+        public ArchiveInfo(string name) : this(name, false)
+        {
         }
 
         /// <summary>
-        /// 创建一个当前适用的存档信息;
+        /// 创建一个当前适用的存档信息(仅在Unity线程);
         /// </summary>
-        public ArchiveInfo(ArchiveInfo info) : this(info.Name)
+        public ArchiveInfo(ArchiveInfo info) : this(info.Name, info.IsAutoSave)
         {
+            TimeTicks = DateTime.Now.Ticks;
+            ProgramVersion = Application.version;
         }
 
         /// <summary>
@@ -30,6 +36,12 @@ namespace KouXiaGu.Resources.Archives
         /// </summary>
         [XmlElement]
         public string Name { get; set; }
+
+        /// <summary>
+        /// 是否为自动保存存档?
+        /// </summary>
+        [XmlElement]
+        public bool IsAutoSave { get; set; }
 
         /// <summary>
         /// 存档最后修改时间 Ticks;

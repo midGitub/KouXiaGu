@@ -18,7 +18,7 @@ namespace KouXiaGu.RectTerrain
     /// 地形烘培器,在Unity线程进行烘培任务;
     /// </summary>
     [Serializable]
-    public sealed class LandformBaker : MonoBehaviour, IComponentInitializer
+    public sealed class LandformBaker : MonoBehaviour, IComponentInitializeHandle
     {
         LandformBaker()
         {
@@ -66,7 +66,7 @@ namespace KouXiaGu.RectTerrain
             landformBoardCollection.Initialize();
         }
 
-        Task IComponentInitializer.StartInitialize(CancellationToken token)
+        Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
         {
             resources = RectTerrainResourcesInitializer.RectTerrainResources;
             map = mapInitializer.WorldMap.Map;

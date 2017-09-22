@@ -97,7 +97,7 @@ namespace KouXiaGu.Resources
         static string tempDirectoryPath = string.Empty;
 
         /// <summary>
-        /// 用于测试使用的临时文件夹路径;
+        /// 临时文件夹路径;
         /// </summary>
         public static string TempDirectoryPath
         {

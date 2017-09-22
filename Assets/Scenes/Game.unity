@@ -17423,12 +17423,12 @@ Prefab:
     - target: {fileID: 224098570929088718, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 224098570929088718, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 224986475311664514, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
@@ -17448,12 +17448,12 @@ Prefab:
     - target: {fileID: 224986475311664514, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 224986475311664514, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 224091245587034626, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
@@ -17473,12 +17473,12 @@ Prefab:
     - target: {fileID: 224091245587034626, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 224091245587034626, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 224022686103660802, guid: 201da34782f3aa24a958d139d4cc0039,
         type: 2}
@@ -21550,8 +21550,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e14e62ecd3a124e4a88ceff633ad88ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoSaveInterval: 0
-  maxAutoArchive: 0
+  isActivate: 1
+  autoSaveInterval: 360
 --- !u!114 &1981945333
 MonoBehaviour:
   m_ObjectHideFlags: 0

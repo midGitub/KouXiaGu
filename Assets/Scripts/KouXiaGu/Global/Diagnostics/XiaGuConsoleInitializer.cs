@@ -15,9 +15,9 @@ namespace KouXiaGu.Diagnostics
     /// 负责游戏控制台初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class XiaGuConsoleInitializer : MonoBehaviour, IGameInitializer
+    public class XiaGuConsoleInitializer : MonoBehaviour, IGameInitializeHandle
     {
-        Task IGameInitializer.StartInitialize(CancellationToken token)
+        Task IGameInitializeHandle.StartInitialize(CancellationToken token)
         {
             Task task = Task.Run(delegate ()
             {

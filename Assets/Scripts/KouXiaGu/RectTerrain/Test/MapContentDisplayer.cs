@@ -17,14 +17,14 @@ namespace KouXiaGu.RectTerrain
     /// 将鼠标所指向地图节点的内容输出为文本;
     /// </summary>
     [DisallowMultipleComponent]
-    class MapContentDisplayer : MonoBehaviour, IComponentInitializer
+    class MapContentDisplayer : MonoBehaviour, IComponentInitializeHandle
     {
 
         [SerializeField]
         Text textObject;
         IDictionary<RectCoord, MapNode> map;
 
-        Task IComponentInitializer.StartInitialize(CancellationToken token)
+        Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
         {
             map = RectMapDataInitializer.Instance.WorldMap.Map;
             enabled = true;

@@ -7,16 +7,11 @@ using UnityEngine;
 namespace KouXiaGu.World
 {
 
-    public interface IComponentInitializer
-    {
-        Task StartInitialize(CancellationToken token);
-    }
-
     /// <summary>
     /// 游戏场景初始化器;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class ComponentInitializer : Initializer<IComponentInitializer>
+    public sealed class ComponentInitializer : Initializer<IComponentInitializeHandle>
     {
         ComponentInitializer()
         {
@@ -35,7 +30,7 @@ namespace KouXiaGu.World
             return WaitInitializer(dataInitializer, token);
         }
 
-        protected override Task GetTask(IComponentInitializer initializer)
+        protected override Task GetTask(IComponentInitializeHandle initializer)
         {
             return initializer.StartInitialize(TokenSource.Token);
         }
