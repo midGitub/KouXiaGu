@@ -21551,7 +21551,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActivate: 1
-  autoSaveInterval: 3
+  autoSaveInterval: 360
 --- !u!114 &1981945333
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using JiongXiaGu.World.Map;
+using JiongXiaGu.Resources;
+using JiongXiaGu.Diagnostics;
+
+namespace JiongXiaGu.World
+{
+
+    [ConsoleMethodsClass]
+    class DevelopmentTool
+    {
+
+
+        [ConsoleMethod("write_map", "输出地图到文件")]
+        public static void WriteMap()
+        {
+            var worldInitializer = WorldSceneManager.WorldInitializer;
+            if (worldInitializer != null && worldInitializer.IsCompleted)
+            {
+                IWorld world = worldInitializer.Result;
+                var file = new MapFile();
+                MapDataWriter mapDataSerializer = new MapDataWriter(new MapFile());
+                world.WorldData.MapData.Write(mapDataSerializer);
+                XiaGuConsole.Log("已输出地图文件到 " + file.GetFullPath());
+                return;
+            }
+            else
+            {
+                XiaGuConsole.LogError("游戏场景还未初始化完成;");
+            }
+        }
+
+        [ConsoleMethod("archive_map", "将地图存档输出到临时目录")]
+        public static void WriteMapArchive()
+        {
+            var worldInitializer = WorldSceneManager.WorldInitializer;
+            if (worldInitializer != null && worldInitializer.IsCompleted)
+            {
+                IWorld world = worldInitializer.Result;
+                var file = new MapArchiveFile(Resource.TempDirectoryPath);
+                MapDataWriter mapDataSerializer = new MapDataWriter(new MapArchiveFile(Resource.TempDirectoryPath));
+                world.WorldData.MapData.WriteArchivedData(mapDataSerializer);
+                XiaGuConsole.Log("已输出地图存档文件到 " + file.GetFullPath());
+            }
+            else
+            {
+                XiaGuConsole.LogError("游戏场景还未初始化完成;");
+            }
+        }
+    }
+}
