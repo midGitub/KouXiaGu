@@ -39,12 +39,6 @@ namespace KouXiaGu
         [ContextMenu("Test")]
         void Test()
         {
-            new Archive(new ArchiveInfo("鸡腿")).Create();
-            new Archive(new ArchiveInfo("鸡腿1")).Create();
-            new Archive(new ArchiveInfo("鸡腿2")).Create();
-            new Archive(new ArchiveInfo("鸡腿3")).Create();
-
-            Debug.Log(Archive.EnumerateArchives().ToLog());
         }
     }
 }

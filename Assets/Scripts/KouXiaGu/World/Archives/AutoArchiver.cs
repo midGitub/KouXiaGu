@@ -20,7 +20,6 @@ namespace KouXiaGu.World.Archives
     [RequireComponent(typeof(SceneArchiveController))]
     public class AutoArchiver : MonoBehaviour, IDataInitializeHandle, IWorldCompletedHandle
     {
-
         /// <summary>
         /// 是否启用自动存档?
         /// </summary>
@@ -74,7 +73,6 @@ namespace KouXiaGu.World.Archives
             return Task.Run(delegate ()
             {
                 autoArchives = new List<Archive>(EnumerateAutoArchives());
-                autoArchives.Sort(new OrderByTimeAscendingComparer());
             });
         }
 
@@ -88,12 +86,8 @@ namespace KouXiaGu.World.Archives
             {
                 string archiveName = "AutoSave" + i;
                 string archivePath = Path.Combine(Resource.ArchivesDirectoryPath, archiveName);
-                ArchiveInfo info;
-                if (!Archive.TryReadInfo(archivePath, out info))
-                {
-                    info = new ArchiveInfo(archiveName, true);
-                }
-                Archive archive = new Archive(archivePath, info);
+                ArchiveInfo info = new ArchiveInfo(archiveName, true);
+                Archive archive = Archive.ReadOrCreate(archivePath, info);
                 yield return archive;
             }
         }
@@ -107,19 +101,17 @@ namespace KouXiaGu.World.Archives
         {
             while (true)
             {
-                for (int i = 0; i < autoArchives.Count; i++)
+                yield return new WaitForSecondsRealtime(autoSaveInterval);
+
+                while (archiveController.IsWriting)
                 {
-                    yield return new WaitForSecondsRealtime(autoSaveInterval);
-
-                    while (archiveController.IsWriting)
-                    {
-                        yield return new WaitForSecondsRealtime(10);
-                    }
-
-                    Archive archive = autoArchives[i];
-                    lastAutoSaveTime = Time.realtimeSinceStartup;
-                    archiveController.WriteArchive(archive);
+                    yield return new WaitForSecondsRealtime(10);
                 }
+
+                autoArchives.Sort(new Archive.OrderByTimeAscendingComparer());
+                Archive archive = autoArchives[0];
+                lastAutoSaveTime = Time.realtimeSinceStartup;
+                archiveController.WriteArchive(archive);
             }
         }
 
@@ -130,39 +122,5 @@ namespace KouXiaGu.World.Archives
         {
 
         }
-
-        /// <summary>
-        /// 根据时间升序的对比器;存档时间由早到晚,未创建的存档永远在最前面;
-        /// </summary>
-        class OrderByTimeAscendingComparer : Comparer<Archive>
-        {
-            public override int Compare(Archive x, Archive y)
-            {
-                if (x.Exists())
-                {
-                    if (y.Exists())
-                    {
-                        int r = (int)(x.Info.Time.Ticks - y.Info.Time.Ticks);
-                        return r;
-                    }
-                    else
-                    {
-                        return 1;
-                    }
-                }
-                else
-                {
-                    if (y.Exists())
-                    {
-                        return -1;
-                    }
-                    else
-                    {
-                        return 0;
-                    }
-                }
-            }
-        }
-
     }
 }

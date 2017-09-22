@@ -23,15 +23,6 @@ namespace KouXiaGu.Resources.Archives
         }
 
         /// <summary>
-        /// 创建一个当前适用的存档信息(仅在Unity线程);
-        /// </summary>
-        public ArchiveInfo(ArchiveInfo info) : this(info.Name, info.IsAutoSave)
-        {
-            TimeTicks = DateTime.Now.Ticks;
-            ProgramVersion = Application.version;
-        }
-
-        /// <summary>
         /// 存档名;
         /// </summary>
         [XmlElement]
@@ -61,6 +52,16 @@ namespace KouXiaGu.Resources.Archives
         public DateTime Time
         {
             get { return new DateTime(TimeTicks); }
+        }
+
+        /// <summary>
+        /// 更新存档信息到当前配置变量(仅在Unity线程);
+        /// </summary>
+        public ArchiveInfo Update()
+        {
+            TimeTicks = DateTime.Now.Ticks;
+            ProgramVersion = Application.version;
+            return this;
         }
 
         public override string ToString()

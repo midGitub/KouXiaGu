@@ -49,11 +49,13 @@ namespace KouXiaGu.World.Archives
             }
 
             Debug.Log("正在进行存档任务:" + archive.ToString());
+
             ISceneArchiveHandle[] archivers = GetComponentsInChildren<ISceneArchiveHandle>();
             List<Task> tasks = new List<Task>();
             tokenSource = new CancellationTokenSource();
-            archive.Info = new ArchiveInfo(archive.Info);
+            archive.Info = archive.Info.Update();
             Archive tempArchive = GetTempArchive(archive.Info);
+
             try
             {
                 tempArchive.Create();
