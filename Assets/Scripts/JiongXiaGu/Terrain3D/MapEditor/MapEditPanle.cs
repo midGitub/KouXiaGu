@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using JiongXiaGu.Grids;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.World;
 using UnityEngine.EventSystems;
 
@@ -20,15 +20,16 @@ namespace JiongXiaGu.Terrain3D.MapEditor
 
 
         public IEditOperation Current { get; private set; }
-
-        IRecorder Recorder
-        {
-            get { return RecordManager.DefaultRecorder; }
-        }
+        public VoidableOperationRecorder Recorder { get; private set; }
 
         IWorldComplete world
         {
             get { return WorldSceneManager.World; }
+        }
+
+        void Awake()
+        {
+            Recorder = new VoidableOperationRecorder();
         }
 
         void Update()
@@ -67,7 +68,7 @@ namespace JiongXiaGu.Terrain3D.MapEditor
             Recorder.Register(operation);
         }
 
-        sealed class SetEditOperation : SafeVoidable
+        sealed class SetEditOperation : VoidableOperation
         {
             public SetEditOperation(MapEditPanle parent, IEditOperation original, IEditOperation newValue)
             {
@@ -81,12 +82,12 @@ namespace JiongXiaGu.Terrain3D.MapEditor
             readonly IEditOperation original;
             readonly IEditOperation newValue;
 
-            public override void PerformRedo()
+            protected override void PerformDo_protected()
             {
                 parent.Current = newValue;
             }
 
-            public override void PerformUndo()
+            protected override void PerformUndo_protected()
             {
                 parent.Current = original;
             }

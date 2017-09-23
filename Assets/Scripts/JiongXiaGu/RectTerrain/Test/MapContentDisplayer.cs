@@ -17,28 +17,24 @@ namespace JiongXiaGu.RectTerrain
     /// 将鼠标所指向地图节点的内容输出为文本;
     /// </summary>
     [DisallowMultipleComponent]
-    class MapContentDisplayer : MonoBehaviour, IComponentInitializeHandle
+    class MapContentDisplayer : MonoBehaviour, IWorldCompletedHandle
     {
 
         [SerializeField]
         Text textObject;
         IDictionary<RectCoord, MapNode> map;
 
-        Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
+        void IWorldCompletedHandle.OnWorldCompleted()
         {
             map = RectMapDataInitializer.Instance.WorldMap.Map;
-            enabled = true;
-            return null;
-        }
-
-        void Awake()
-        {
-            enabled = false;
         }
 
         void Update()
         {
-            textObject.text = TextUpdate();
+            if (map != null)
+            {
+                textObject.text = TextUpdate();
+            }
         }
 
         string TextUpdate()

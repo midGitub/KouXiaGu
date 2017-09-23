@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +22,7 @@ namespace JiongXiaGu.World.Map.MapEdit
 
         public abstract string GetMessage();
         public abstract bool Contrast(IMapEditHandler handler);
-        public abstract IVoidable Execute(IEnumerable<EditMapNode> nodes);
+        public abstract VoidableOperation Execute(IEnumerable<EditMapNode> nodes);
 
         public void Initialize(UIMapEditHandlerTitle title)
         {

@@ -1,40 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using JiongXiaGu.Collections;
 
-namespace JiongXiaGu.OperationRecord
+namespace JiongXiaGu.Operations
 {
+
+    /// <summary>
+    /// 提供的非泛型版本;
+    /// </summary>
+    public class VoidableOperationRecorder : VoidableOperationRecorder<VoidableOperation>
+    {
+        public VoidableOperationRecorder()
+        {
+        }
+
+        public VoidableOperationRecorder(int maxRecord) : base(maxRecord)
+        {
+        }
+    }
 
     /// <summary>
     /// 记录操作;
     /// </summary>
-    public class Recorder<T> : IRecorder, IVoidable
-        where T : class, IVoidable
+    public class VoidableOperationRecorder<T>
+        where T : VoidableOperation
     {
         internal const int DefaultMaxRecord = 20;
 
-        public Recorder() : this(DefaultMaxRecord)
+        public VoidableOperationRecorder() : this(DefaultMaxRecord)
         {
         }
 
-        public Recorder(int maxRecord)
+        public VoidableOperationRecorder(int maxRecord)
         {
             if (maxRecord <= 0)
                 throw new ArgumentOutOfRangeException("maxRecord :" + maxRecord);
 
             MaxRecord = maxRecord;
-            operationQueue = new Collections.LinkedList<IVoidable>();
-            current = null;
+            operationQueue = new Collections.LinkedList<T>();
         }
 
-        readonly Collections.LinkedList<IVoidable> operationQueue;
-        Collections.LinkedListNode<IVoidable> current;
+        /// <summary>
+        /// 操作记录链;
+        /// </summary>
+        readonly Collections.LinkedList<T> operationQueue;
+
+        /// <summary>
+        /// 最后执行的操作;
+        /// </summary>
+        Collections.LinkedListNode<T> current;
+
+        /// <summary>
+        /// 最大记录数目;
+        /// </summary>
         public int MaxRecord { get; set; }
 
         /// <summary>
-        /// 指令总数;
+        /// 指令总数,可能会大于最大记录数目;
         /// </summary>
         public int Count
         {
@@ -57,32 +79,14 @@ namespace JiongXiaGu.OperationRecord
             get { return operationQueue.OfType<T>(); }
         }
 
-        IEnumerable<IVoidable> IRecorder.Operations
-        {
-            get { return operationQueue; }
-        }
-
-        void IRecorder.Register(IVoidable operation)
-        {
-            if (operation == null)
-                throw new ArgumentNullException("operation");
-
-            Register_internal(operation);
-        }
-
         /// <summary>
-        /// 记录这个操作;
+        /// 记录这个操作为最后的操作;
         /// </summary>
         public void Register(T operation)
         {
             if (operation == null)
                 throw new ArgumentNullException("operation");
 
-            Register_internal(operation);
-        }
-
-        void Register_internal(IVoidable operation)
-        {
             if (current == operationQueue.Last)
             {
                 operationQueue.AddLast(operation);
@@ -115,13 +119,12 @@ namespace JiongXiaGu.OperationRecord
         /// </summary>
         public void PerformUndo()
         {
-            if (current == null)
+            if (current != null)
             {
-                return;
+                var operation = current.Value;
+                operation.PerformUndo();
+                current = current.Previous;
             }
-            var operation = current.Value;
-            operation.PerformUndo();
-            current = current.Previous;
         }
 
         /// <summary>
@@ -134,7 +137,7 @@ namespace JiongXiaGu.OperationRecord
                 if (operationQueue.First != null)
                 {
                     var operation = operationQueue.First.Value;
-                    operation.PerformRedo();
+                    operation.PerformDo();
                     current = operationQueue.First;
                 }
             }
@@ -143,7 +146,7 @@ namespace JiongXiaGu.OperationRecord
                 if (current.Next != null)
                 {
                     var operation = current.Next.Value;
-                    operation.PerformRedo();
+                    operation.PerformDo();
                     current = current.Next;
                 }
             }

@@ -14,14 +14,11 @@ namespace JiongXiaGu.RectTerrain
     /// 负责地形组件更新;
     /// </summary>
     [DisallowMultipleComponent]
-    public class RectTerrainUpdater : MonoBehaviour, IUpdaterInitializeHandle
+    public sealed class RectTerrainUpdater : MonoBehaviour, IUpdaterInitializeHandle
     {
         RectTerrainUpdater()
         {
         }
-
-        [SerializeField]
-        RectTerrainController terrainController;
 
         /// <summary>
         /// 更新间隔时间(毫秒);
@@ -31,6 +28,7 @@ namespace JiongXiaGu.RectTerrain
 
         Task updateTask;
         CancellationTokenSource tokenSource;
+        IRectTerrainUpdateHandle[] rectTerrainUpdateHandles;
 
         /// <summary>
         /// 更新次数;
@@ -42,14 +40,9 @@ namespace JiongXiaGu.RectTerrain
         /// </summary>
         public bool IsUpdating { get; private set; }
 
-        public LandformUpdater LandformUpdater
+        void Awake()
         {
-            get { return terrainController.Landform.Updater; }
-        }
-
-        void OnDestroy()
-        {
-            CancelUpdate();
+            rectTerrainUpdateHandles = GetComponentsInChildren<IRectTerrainUpdateHandle>();
         }
 
         Task IUpdaterInitializeHandle.StartInitialize(CancellationToken token)
@@ -57,17 +50,18 @@ namespace JiongXiaGu.RectTerrain
             StartUpdate();
             return Task.Run(delegate ()
             {
-
                 while (UpdateTimes < 1)
                 {
                     token.ThrowIfCancellationRequested();
                 }
 
-                while (!terrainController.Landform.IsBakeComplete)
+                foreach (var rectTerrainUpdateHandle in rectTerrainUpdateHandles)
                 {
-                    token.ThrowIfCancellationRequested();
+                    while (!rectTerrainUpdateHandle.IsCompleted)
+                    {
+                        token.ThrowIfCancellationRequested();
+                    }
                 }
-
                 Debug.Log("[地形更新器]更新完成;");
             }, token);
         }
@@ -85,6 +79,27 @@ namespace JiongXiaGu.RectTerrain
             }
         }
 
+        void TerrainUpdate(CancellationToken token)
+        {
+            while (true)
+            {
+                token.ThrowIfCancellationRequested();
+
+                foreach (var rectTerrainUpdateHandle in rectTerrainUpdateHandles)
+                {
+                    rectTerrainUpdateHandle.TerrainUpdate();
+                }
+
+                UpdateTimes++;
+                Thread.Sleep(updateInterval);
+            }
+        }
+
+        void OnDestroy()
+        {
+            CancelUpdate();
+        }
+
         /// <summary>
         /// 取消更新;
         /// </summary>
@@ -96,17 +111,6 @@ namespace JiongXiaGu.RectTerrain
                 tokenSource.Cancel();
                 tokenSource = null;
                 updateTask = null;
-            }
-        }
-
-        void TerrainUpdate(CancellationToken token)
-        {
-            while (true)
-            {
-                token.ThrowIfCancellationRequested();
-                LandformUpdater.Update();
-                UpdateTimes++;
-                Thread.Sleep(updateInterval);
             }
         }
     }

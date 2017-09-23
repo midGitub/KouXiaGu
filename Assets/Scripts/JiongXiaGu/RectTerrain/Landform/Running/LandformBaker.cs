@@ -18,12 +18,16 @@ namespace JiongXiaGu.RectTerrain
     /// 地形烘培器,在Unity线程进行烘培任务;
     /// </summary>
     [Serializable]
-    public sealed class LandformBaker : MonoBehaviour, IComponentInitializeHandle
+    public sealed class LandformBaker : SceneSington<LandformBaker>, IComponentInitializeHandle
     {
         LandformBaker()
         {
         }
 
+        [SerializeField, Range(0, 64)]
+        float tessellation = 48f;
+        [SerializeField, Range(0, 5)]
+        float displacement = 1.5f;
         [SerializeField]
         RectMapDataInitializer mapInitializer;
         [SerializeField]
@@ -56,14 +60,46 @@ namespace JiongXiaGu.RectTerrain
             get { return bakeCamera.Quality; }
         }
 
+        /// <summary>
+        /// 地形细分程度;
+        /// </summary>
+        public float Tessellation
+        {
+            get { return tessellation; }
+        }
+
+        /// <summary>
+        /// 地形高度缩放;
+        /// </summary>
+        public float Displacement
+        {
+            get { return displacement; }
+        }
+
         public IObjectPool<LandformChunkRenderer> LandformChunkPool
         {
             get { return landformChunkPool; }
         }
 
+        /// <summary>
+        /// 是否现在所有地形已经创建完成;
+        /// </summary>
+        public bool IsBakeComplete
+        {
+            get { return RequestDispatcher.Count <= 0; }
+        }
+
         void Awake()
         {
+            SetInstance(this);
             landformBoardCollection.Initialize();
+            OnValidate();
+        }
+
+        void OnValidate()
+        {
+            LandformChunkRenderer.SetTessellation(tessellation);
+            LandformChunkRenderer.SetDisplacement(displacement);
         }
 
         Task IComponentInitializeHandle.StartInitialize(CancellationToken token)

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.World.Resources;
 using JiongXiaGu.Globalization;
 using UnityEngine;
@@ -93,7 +93,7 @@ namespace JiongXiaGu.World.Map.MapEdit
             return handler is UIChangeLandform;
         }
 
-        public override IVoidable Execute(IEnumerable<EditMapNode> nodes)
+        public override VoidableOperation Execute(IEnumerable<EditMapNode> nodes)
         {
             IWorldComplete world = WorldSceneManager.World;
             if (world != null)

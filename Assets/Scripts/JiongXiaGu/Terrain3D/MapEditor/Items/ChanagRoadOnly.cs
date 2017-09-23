@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JiongXiaGu.Grids;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.World.Map;
 
 namespace JiongXiaGu.Terrain3D.MapEditor
@@ -21,7 +21,7 @@ namespace JiongXiaGu.Terrain3D.MapEditor
 
         public int RoadType { get; private set; }
 
-        public override IVoidable Perform(CubicHexCoord position)
+        public override VoidableOperation Perform(CubicHexCoord position)
         {
             MapNode node;
             if (map.TryGetValue(position, out node))

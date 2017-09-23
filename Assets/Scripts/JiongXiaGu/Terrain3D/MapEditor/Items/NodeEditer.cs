@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JiongXiaGu.Grids;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.World.Map;
 
 namespace JiongXiaGu.Terrain3D.MapEditor
@@ -30,9 +30,9 @@ namespace JiongXiaGu.Terrain3D.MapEditor
             return;
         }
 
-        IVoidable IEditOperation.Perform(CubicHexCoord position)
+        VoidableOperation IEditOperation.Perform(CubicHexCoord position)
         {
-            VoidableGroup<IVoidable> group = new VoidableGroup<IVoidable>();
+            VoidableOperationGroup<VoidableOperation> group = new VoidableOperationGroup<VoidableOperation>();
             foreach (var pos in GetCoverageArea(position))
             {
                 var operation = Perform(pos);
@@ -41,7 +41,7 @@ namespace JiongXiaGu.Terrain3D.MapEditor
             return group;
         }
 
-        public abstract IVoidable Perform(CubicHexCoord position);
+        public abstract VoidableOperation Perform(CubicHexCoord position);
 
         IEnumerable<CubicHexCoord> GetCoverageArea(CubicHexCoord position)
         {

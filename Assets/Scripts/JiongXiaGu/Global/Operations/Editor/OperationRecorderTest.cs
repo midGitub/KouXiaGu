@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JiongXiaGu.OperationRecord
+namespace JiongXiaGu.Operations
 {
 
     [TestFixture]
@@ -13,7 +13,7 @@ namespace JiongXiaGu.OperationRecord
         [Test]
         public void MaxRecordTest()
         {
-            var recorder = new Recorder<IVoidable>(40);
+            var recorder = new VoidableOperationRecorder<VoidableOperation>(40);
 
             for (int i = 0; i < 20; i++)
             {
@@ -34,7 +34,7 @@ namespace JiongXiaGu.OperationRecord
             }
         }
 
-        class EmptyOperation : IVoidable
+        class EmptyOperation : VoidableOperation
         {
             public EmptyOperation(int id)
             {
@@ -42,31 +42,35 @@ namespace JiongXiaGu.OperationRecord
             }
 
             public int ID { get; private set; }
-            public bool IsUndo { get; private set; }
 
-            public void PerformRedo() { }
-            public void PerformUndo() { }
+            protected override void PerformDo_protected()
+            {
+            }
+
+            protected override void PerformUndo_protected()
+            {
+            }
         }
 
         [Test]
         public void Test1()
         {
             List<int> data = GetData();
-            var recorder = new Recorder<IVoidable>();
+            var recorder = new VoidableOperationRecorder<VoidableOperation>();
 
-            var add4 = data.VoidableAdd(4);
+            var add4 = data.VoidableAdd(4).PerformDo();
             Assert.AreEqual(4, data[4]);
             Assert.AreEqual(5, data.Count);
             recorder.Register(add4);
             Assert.AreEqual(1, recorder.Count);
 
-            var add5 = data.VoidableAdd(5);
+            var add5 = data.VoidableAdd(5).PerformDo();
             Assert.AreEqual(5, data[5]);
             Assert.AreEqual(6, data.Count);
             recorder.Register(add5);
             Assert.AreEqual(2, recorder.Count);
 
-            var remove1 = data.VoidableRemoveAt(1);
+            var remove1 = data.VoidableRemoveAt(1).PerformDo();
             Assert.AreEqual(0, data[0]);
             Assert.AreEqual(2, data[1]);
             Assert.AreEqual(3, data[2]);
@@ -100,7 +104,7 @@ namespace JiongXiaGu.OperationRecord
             Assert.AreEqual(3, data[3]);
             Assert.AreEqual(4, data.Count);
 
-            var add9 = data.VoidableAdd(9);
+            var add9 = data.VoidableAdd(9).PerformDo();
             Assert.AreEqual(5, data.Count);
             recorder.Register(add9);
             Assert.AreEqual(1, recorder.Count);
@@ -110,14 +114,15 @@ namespace JiongXiaGu.OperationRecord
         public void GroupTest()
         {
             List<int> data = GetData();
-            var recorder = new Recorder<IVoidable>();
+            var recorder = new VoidableOperationRecorder<VoidableOperation>();
 
-            var group = new VoidableGroup<IVoidable>()
+            var group = new VoidableOperationGroup<VoidableOperation>()
             {
-                data.VoidableAdd(4),
-                data.VoidableAdd(5),
-                data.VoidableRemove(4),
+                data.VoidableAdd(4).PerformDo(),
+                data.VoidableAdd(5).PerformDo(),
+                data.VoidableRemove(4).PerformDo(),
             };
+
             recorder.Register(group);
             Assert.AreEqual(0, data[0]);
             Assert.AreEqual(1, data[1]);
@@ -125,7 +130,7 @@ namespace JiongXiaGu.OperationRecord
             Assert.AreEqual(3, data[3]);
             Assert.AreEqual(5, data[4]);
             Assert.AreEqual(5, data.Count);
-
+            
             recorder.PerformUndo();
             Assert.AreEqual(0, data[0]);
             Assert.AreEqual(1, data[1]);

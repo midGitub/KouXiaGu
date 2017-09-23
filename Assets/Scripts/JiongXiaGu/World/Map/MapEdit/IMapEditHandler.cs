@@ -1,4 +1,4 @@
-﻿using JiongXiaGu.OperationRecord;
+﻿using JiongXiaGu.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +25,6 @@ namespace JiongXiaGu.World.Map.MapEdit
         /// <summary>
         /// 对所有节点执行操作,若不存在独立的撤销操作则返回Null;
         /// </summary>
-        IVoidable Execute(IEnumerable<EditMapNode> nodes);
+        VoidableOperation Execute(IEnumerable<EditMapNode> nodes);
     }
 }

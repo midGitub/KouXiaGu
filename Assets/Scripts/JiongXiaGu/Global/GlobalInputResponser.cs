@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using JiongXiaGu.Diagnostics;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 
 namespace JiongXiaGu
 {
@@ -23,17 +23,9 @@ namespace JiongXiaGu
             }
 
 
-            if (Input.GetKey(KeyCode.LeftControl))
-            {
-                if (Input.GetKeyDown(KeyCode.Z))
-                {
-                    RecordManager.PerformUndo();
-                }
-                if (Input.GetKeyDown(KeyCode.Y))
-                {
-                    RecordManager.PerformRedo();
-                }
-            }
+            //if (Input.GetKey(KeyCode.LeftControl))
+            //{
+            //}
         }
     }
 }

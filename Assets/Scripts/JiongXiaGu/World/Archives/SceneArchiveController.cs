@@ -1,12 +1,11 @@
-﻿using System;
+﻿using JiongXiaGu.Resources;
+using JiongXiaGu.Resources.Archives;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using JiongXiaGu.Resources.Archives;
-using System.Threading;
-using JiongXiaGu.Resources;
-using JiongXiaGu.Concurrent;
 
 namespace JiongXiaGu.World.Archives
 {

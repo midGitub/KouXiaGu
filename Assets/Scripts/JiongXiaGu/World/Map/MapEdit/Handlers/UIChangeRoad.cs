@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -127,7 +127,7 @@ namespace JiongXiaGu.World.Map.MapEdit
             return "Unknown";
         }
 
-        public override IVoidable Execute(IEnumerable<EditMapNode> nodes)
+        public override VoidableOperation Execute(IEnumerable<EditMapNode> nodes)
         {
             IWorldComplete world = WorldSceneManager.World;
             if (world != null)

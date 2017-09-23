@@ -1,5 +1,5 @@
 ﻿using JiongXiaGu.Concurrent;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.UI;
 using System;
 using System.Collections.Generic;
@@ -111,7 +111,7 @@ namespace JiongXiaGu.World.Map.MapEdit
         /// <summary>
         /// 对所有节点执行操作;
         /// </summary>
-        public IVoidable Execute(WorldMap map, ICollection<EditMapNode> selectedArea)
+        public VoidableOperation Execute(WorldMap map, ICollection<EditMapNode> selectedArea)
         {
             if (map == null)
                 throw new ArgumentNullException("map");
@@ -120,7 +120,7 @@ namespace JiongXiaGu.World.Map.MapEdit
 
             using (map.MapEditorLock.WriteLock())
             {
-                var voidableGroup = new VoidableGroup<IVoidable>();
+                var voidableGroup = new VoidableOperationGroup<VoidableOperation>();
                 foreach (var handlerTitle in handlerTitles)
                 {
                     if (handlerTitle.IsActivate)
@@ -139,9 +139,9 @@ namespace JiongXiaGu.World.Map.MapEdit
         /// <summary>
         /// 撤销对地图的操作;
         /// </summary>
-        sealed class MapSetValue : SafeVoidable
+        sealed class MapSetValue : VoidableOperation
         {
-            public MapSetValue(WorldMap map, IEnumerable<EditMapNode> editNodes, IVoidable voidableGroup)
+            public MapSetValue(WorldMap map, IEnumerable<EditMapNode> editNodes, VoidableOperation voidableGroup)
             {
                 Map = map;
                 EditNodes = editNodes;
@@ -151,11 +151,11 @@ namespace JiongXiaGu.World.Map.MapEdit
 
             public WorldMap Map { get; private set; }
             public IEnumerable<EditMapNode> EditNodes { get; private set; }
-            readonly IVoidable voidableGroup;
+            readonly VoidableOperation voidableGroup;
 
-            public override void PerformRedo()
+            protected override void PerformDo_protected()
             {
-                voidableGroup.PerformRedo();
+                voidableGroup.PerformDo();
                 Initialize();
             }
 
@@ -167,7 +167,7 @@ namespace JiongXiaGu.World.Map.MapEdit
                 }
             }
 
-            public override void PerformUndo()
+            protected override void PerformUndo_protected()
             {
                 voidableGroup.PerformUndo();
                 Recovery();

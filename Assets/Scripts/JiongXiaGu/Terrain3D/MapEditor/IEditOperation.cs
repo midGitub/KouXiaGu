@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.Grids;
 
 namespace JiongXiaGu.Terrain3D.MapEditor
@@ -21,6 +21,6 @@ namespace JiongXiaGu.Terrain3D.MapEditor
         /// <summary>
         /// 执行操作;
         /// </summary>
-        IVoidable Perform(CubicHexCoord position);
+        VoidableOperation Perform(CubicHexCoord position);
     }
 }

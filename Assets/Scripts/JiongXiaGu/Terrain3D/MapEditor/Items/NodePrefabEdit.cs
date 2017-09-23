@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JiongXiaGu.Grids;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.World.Map;
 
 namespace JiongXiaGu.Terrain3D.MapEditor
@@ -40,9 +40,9 @@ namespace JiongXiaGu.Terrain3D.MapEditor
             return;
         }
 
-        public IVoidable Perform(CubicHexCoord position)
+        public VoidableOperation Perform(CubicHexCoord position)
         {
-            VoidableGroup<IVoidable> group = new VoidableGroup<IVoidable>();
+            VoidableOperationGroup<VoidableOperation> group = new VoidableOperationGroup<VoidableOperation>();
             foreach (var info in Prefab.Infos)
             {
                 var pos = info.Key + position;

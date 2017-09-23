@@ -1,6 +1,6 @@
 ﻿using JiongXiaGu.Concurrent;
 using JiongXiaGu.Grids;
-using JiongXiaGu.OperationRecord;
+using JiongXiaGu.Operations;
 using JiongXiaGu.Terrain3D;
 using JiongXiaGu.UI;
 using System;
@@ -112,7 +112,7 @@ namespace JiongXiaGu.World.Map.MapEdit
         /// <summary>
         /// 对所有节点执行操作;
         /// </summary>
-        public IVoidable Execute(CubicHexCoord center)
+        public VoidableOperation Execute(CubicHexCoord center)
         {
             if (WorldSceneManager.World == null)
                 return null;
