@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JiongXiaGu.Operations
+namespace JiongXiaGu.VoidableOperations
 {
 
     /// <summary>

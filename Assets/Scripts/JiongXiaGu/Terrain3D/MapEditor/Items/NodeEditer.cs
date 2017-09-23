@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JiongXiaGu.Grids;
-using JiongXiaGu.Operations;
+using JiongXiaGu.VoidableOperations;
 using JiongXiaGu.World.Map;
 
 namespace JiongXiaGu.Terrain3D.MapEditor

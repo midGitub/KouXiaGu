@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JiongXiaGu.Operations
+namespace JiongXiaGu.VoidableOperations
 {
 
     /// <summary>

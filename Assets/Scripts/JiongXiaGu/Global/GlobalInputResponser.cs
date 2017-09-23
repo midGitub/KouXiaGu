@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using JiongXiaGu.Diagnostics;
-using JiongXiaGu.Operations;
+using JiongXiaGu.VoidableOperations;
 
 namespace JiongXiaGu
 {
