@@ -9,7 +9,7 @@ namespace JiongXiaGu.World.RectMap
 
     public class MapDataSerializer : ResourceSerializer<MapData, MapData>
     {
-        public MapDataSerializer(ISerializer<MapData> serializer, ResourceSearcher resourceSearcher) : base(serializer, resourceSearcher)
+        public MapDataSerializer(ISerializer<MapData> serializer, FileSearcher resourceSearcher) : base(serializer, resourceSearcher)
         {
         }
 

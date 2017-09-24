@@ -1,42 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Resources
 {
 
     /// <summary>
-    /// 读取资源;
-    /// </summary>
-    /// <typeparam name="T">读取到T;</typeparam>
-    public interface IResourceSerializer<T>
-    {
-        void Serialize(T result);
-        T Deserialize();
-    }
-
-    /// <summary>
-    /// 读取资源;
+    /// 资源序列化抽象类;
     /// </summary>
     /// <typeparam name="TSource">序列化得到的内容;</typeparam>
     /// <typeparam name="TResult">转换到的内容;</typeparam>
     public abstract class ResourceSerializer<TSource, TResult> : IResourceSerializer<TResult>
     {
-        protected ResourceSerializer()
-        {
-        }
-
-        public ResourceSerializer(ISerializer<TSource> serializer, ResourceSearcher resourceSearcher)
+        public ResourceSerializer(ISerializer<TSource> serializer, FileSearcher resourceSearcher)
         {
             Serializer = serializer;
             ResourceSearcher = resourceSearcher;
         }
 
         public ISerializer<TSource> Serializer { get; set; }
-        public ResourceSearcher ResourceSearcher { get; set; }
+        public FileSearcher ResourceSearcher { get; set; }
 
         /// <summary>
         /// 将多个TSource转换成一个TResult;

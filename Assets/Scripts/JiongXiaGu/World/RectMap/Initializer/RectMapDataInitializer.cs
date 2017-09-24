@@ -53,7 +53,7 @@ namespace JiongXiaGu.World.RectMap
 
         void Awake()
         {
-            mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new MultipleResourceSearcher("World/Data"));
+            mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new ResourceMultipleSearcher("World/Data"));
             worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data");
             SetInstance(this);
         }
