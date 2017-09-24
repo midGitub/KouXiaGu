@@ -7,9 +7,9 @@ namespace JiongXiaGu.Resources
     /// <summary>
     /// 游戏数据目录文件搜寻器,目录只存在一个资源文件获取;
     /// </summary>
-    public class ResourceSingleSearcher : FileSearcher
+    public class ResourcesSingleSearcher : ResourcesSearcher
     {
-        public ResourceSingleSearcher(string resourceName)
+        public ResourcesSingleSearcher(string resourceName)
         {
             ResourceName = resourceName;
         }
@@ -46,13 +46,13 @@ namespace JiongXiaGu.Resources
         /// <summary>
         /// 转换为模版输出;
         /// </summary>
-        public override FileSearcher AsTemplateResourceSearcher()
+        public override ResourcesSearcher AsTemplateResourceSearcher()
         {
             const string template = "_Template";
             if (!ResourceName.EndsWith(template))
             {
                 string resName = ResourceName + template;
-                return new ResourceSingleSearcher(resName);
+                return new ResourcesSingleSearcher(resName);
             }
             return this;
         }

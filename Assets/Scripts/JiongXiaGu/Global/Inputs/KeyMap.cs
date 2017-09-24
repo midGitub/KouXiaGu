@@ -9,20 +9,35 @@ namespace JiongXiaGu.Inputs
 {
 
     /// <summary>
+    /// 按键映射读取器;
+    /// </summary>
+    public class KeyMapReader
+    {
+
+    }
+
+    /// <summary>
     /// 按键映射;
     /// </summary>
-    public class KeyMap : Dictionary<string, CustomKey>
+    public class KeyMap
     {
         public KeyMap()
         {
         }
 
-        public KeyMap(int capacity) : base(capacity)
+        public KeyMap(IDictionary<string, FunctionInfo> dictionary)
         {
         }
 
-        public KeyMap(IDictionary<string, CustomKey> dictionary) : base(dictionary)
+        /// <summary>
+        /// 按键映射信息;
+        /// </summary>
+        readonly Dictionary<string, FunctionInfo> keyDictionary;
+
+
+        public FunctionInfo this[string name]
         {
+
         }
     }
 }

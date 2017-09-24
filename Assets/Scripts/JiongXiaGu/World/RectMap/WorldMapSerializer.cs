@@ -10,7 +10,7 @@ namespace JiongXiaGu.World.RectMap
 
     public class WorldMapSerializer : DataSerializer<MapData, MapData, WorldMap>
     {
-        public WorldMapSerializer(IResourceSerializer<MapData> resourceSerializer, ISerializer<MapData> archiveSerializer, string archiveName) : base(resourceSerializer, archiveSerializer, archiveName)
+        public WorldMapSerializer(IResourceReader<MapData> resourceSerializer, ISerializer<MapData> archiveSerializer, string archiveName) : base(resourceSerializer, archiveSerializer, archiveName)
         {
         }
 

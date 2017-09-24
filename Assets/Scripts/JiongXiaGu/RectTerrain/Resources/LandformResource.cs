@@ -127,9 +127,9 @@ namespace JiongXiaGu.RectTerrain.Resources
     /// <summary>
     /// 地形资源序列化;
     /// </summary>
-    public sealed class LandformResourceSerializer : ResourceSerializer<LandformResource[], Dictionary<int, LandformResource>>
+    public sealed class LandformResourceSerializer : ResourcesReader<LandformResource[], Dictionary<int, LandformResource>>
     {
-        public LandformResourceSerializer(ISerializer<LandformResource[]> serializer, FileSearcher resourceSearcher) : base(serializer, resourceSearcher)
+        public LandformResourceSerializer(ISerializer<LandformResource[]> serializer, ResourcesSearcher resourceSearcher) : base(serializer, resourceSearcher)
         {
         }
 

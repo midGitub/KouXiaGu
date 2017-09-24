@@ -2,10 +2,11 @@
 
 namespace JiongXiaGu.Resources
 {
+
     /// <summary>
     /// 资源文件搜寻器抽象类;
     /// </summary>
-    public abstract class FileSearcher
+    public abstract class ResourcesSearcher
     {
         /// <summary>
         /// 获取到对应资源的文件路径(可能返回多个或者一个);
@@ -36,7 +37,7 @@ namespace JiongXiaGu.Resources
         /// <summary>
         /// 提供一个模版文件搜寻器(若不存在则返回null);
         /// </summary>
-        public virtual FileSearcher AsTemplateResourceSearcher()
+        public virtual ResourcesSearcher AsTemplateResourceSearcher()
         {
             return null;
         }

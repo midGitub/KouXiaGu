@@ -4,9 +4,9 @@
     /// 读取资源;
     /// </summary>
     /// <typeparam name="T">读取到T;</typeparam>
-    public interface IResourceSerializer<T>
+    public interface IResourceReader<T>
     {
-        void Serialize(T result);
+        void Serialize(T item);
         T Deserialize();
     }
 }

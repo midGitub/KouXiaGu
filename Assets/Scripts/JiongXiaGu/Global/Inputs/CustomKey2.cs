@@ -8,28 +8,25 @@ namespace JiongXiaGu.Inputs
 {
 
     /// <summary>
-    /// 自定义按键;
+    /// 提供两个按键组合
     /// </summary>
-    public struct CustomKey : IEquatable<CustomKey>, IXmlSerializable
+    public struct CustomKey2 : IEquatable<CustomKey2>, IXmlSerializable
     {
-        const string Name_AttributeName = "name";
         const string Key0_AttributeName = "key0";
         const string Key1_AttributeName = "key1";
 
-        public string Name { get; set; }
         public KeyCode Key0 { get; set; }
         public KeyCode Key1 { get; set; }
 
-        public CustomKey(string name, KeyCode key0, KeyCode key1)
+        public CustomKey2(KeyCode key0, KeyCode key1)
         {
-            Name = name;
             Key0 = key0;
             Key1 = key1;
         }
 
         public override string ToString()
         {
-            return "[Name:" + Name + ",Key0:" + Key0 + ",Key1:" + Key1 + "]";
+            return "[Key0:" + Key0 + ",Key1:" + Key1 + "]";
         }
 
         public override int GetHashCode()
@@ -39,25 +36,22 @@ namespace JiongXiaGu.Inputs
 
         public override bool Equals(object obj)
         {
-            if (obj is CustomKey)
+            if (obj is CustomKey2)
             {
-                return Equals((CustomKey)obj);
+                return Equals((CustomKey2)obj);
             }
             return false;
         }
 
-        bool IEquatable<CustomKey>.Equals(CustomKey other)
+        bool IEquatable<CustomKey2>.Equals(CustomKey2 other)
         {
-            if (Name == other.Name)
+            if (Key0 == other.Key0 && Key1 == other.Key1)
             {
-                if (Key0 == other.Key0 && Key1 == other.Key1)
-                {
-                    return true;
-                }
-                else if (Key0 == other.Key1 && Key1 == other.Key0)
-                {
-                    return true;
-                }
+                return true;
+            }
+            else if (Key0 == other.Key1 && Key1 == other.Key0)
+            {
+                return true;
             }
             return false;
         }
@@ -71,7 +65,6 @@ namespace JiongXiaGu.Inputs
         {
             try
             {
-                Name = reader.GetAttribute(Name_AttributeName);
                 string key0 = reader.GetAttribute(Key0_AttributeName);
                 string key1 = reader.GetAttribute(Key1_AttributeName);
 
@@ -110,7 +103,6 @@ namespace JiongXiaGu.Inputs
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString(Name_AttributeName, Name.ToString());
             if (Key0 == Key1)
             {
                 WriteKeyAttributeString(writer, Key0_AttributeName, Key0);

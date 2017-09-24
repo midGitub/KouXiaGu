@@ -19,14 +19,14 @@ namespace JiongXiaGu.Resources.Archives
         {
         }
 
-        public DataSerializer(IResourceSerializer<TSource> resourceSerializer, ISerializer<TArchive> archiveSerializer, string archiveName)
+        public DataSerializer(IResourceReader<TSource> resourceSerializer, ISerializer<TArchive> archiveSerializer, string archiveName)
         {
             ResourceSerializer = resourceSerializer;
             ArchiveDataSerializer = archiveSerializer;
             ArchiveName = archiveName;
         }
 
-        public IResourceSerializer<TSource> ResourceSerializer { get; set; }
+        public IResourceReader<TSource> ResourceSerializer { get; set; }
         public ISerializer<TArchive> ArchiveDataSerializer { get; set; }
         public string ArchiveName { get; set; }
 

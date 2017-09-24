@@ -58,7 +58,7 @@ namespace JiongXiaGu.Terrain3D.DynamicMeshs
         void BuildWall()
         {
             Vector3[] newPath = GetWallRoute(map, position, Info.ID);
-            if (newPath != null && !path.IsSameContent(newPath))
+            if (newPath != null && !path.IsClone(newPath))
             {
                 BuildWall(newPath);
             }

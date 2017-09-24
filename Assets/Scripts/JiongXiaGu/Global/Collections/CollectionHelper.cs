@@ -26,21 +26,15 @@ namespace JiongXiaGu
 
 
         /// <summary>
-        /// 移除指定下标的元素,同 List 的 RemoveAt();
-        /// </summary>
-        public static void RemoveAt<T>(ref T[] array, int index)
-        {
-            Array.Copy(array, index + 1, array, index, array.Length - index - 1);
-            Array.Resize(ref array, array.Length - 1);
-        }
-
-        #region IList
-
-        /// <summary>
         /// 移除符合要求的第一个元素;
         /// </summary>
         public static bool Remove<T>(this IList<T> list, Func<T, bool> func)
         {
+            if (list == null)
+                throw new ArgumentNullException("collection");
+            if (func == null)
+                throw new ArgumentNullException("comparer");
+
             int index = list.FindIndex(func);
             if (index >= 0)
             {
@@ -57,8 +51,11 @@ namespace JiongXiaGu
         /// <param name="comparer">一个对值进行比较的相等比较器;</param>
         public static bool Remove<T>(IList<T> collection, T item, IEqualityComparer<T> comparer)
         {
-            ValidateCollection(collection);
-            ValidateNull(comparer);
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+            if (comparer == null)
+                throw new ArgumentNullException("comparer");
+
             int index = FindIndex(collection, item, comparer);
             if (index >= 0)
             {
@@ -67,6 +64,71 @@ namespace JiongXiaGu
             }
             return false;
         }
+
+
+
+        /// <summary>
+        /// 移除指定下标的元素,同 List 的 RemoveAt();
+        /// </summary>
+        public static void RemoveAt<T>(ref T[] array, int index)
+        {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
+            Array.Copy(array, index + 1, array, index, array.Length - index - 1);
+            Array.Resize(ref array, array.Length - 1);
+        }
+
+
+
+        /// <summary>
+        /// 移除范围内条件相匹配的所有元素;
+        /// </summary>
+        /// <param name="startIndex">开始移除的下标</param>
+        /// <param name="match">返回ture则移除</param>
+        public static void RemoveAll<T>(this IList<T> list, int startIndex, Func<T, bool> match)
+        {
+            if (list == null)
+                throw new ArgumentNullException("list");
+            if (match == null)
+                throw new ArgumentNullException("match");
+            if (startIndex < 0 || startIndex >= list.Count)
+                throw new ArgumentOutOfRangeException("startIndex");
+
+            int index = startIndex;
+            while (index < list.Count)
+            {
+                T item = list[index];
+                if (match(item))
+                {
+                    list.RemoveAt(index);
+                }
+                else
+                {
+                    index++;
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// 移除合集内相同的元素;
+        /// 若存在相同的元素,则保留第一个元素,其余的都移除;
+        /// </summary>
+        public static void RemoveSame<T>(this IList<T> list)
+        {
+            if (list == null)
+                throw new ArgumentNullException("list");
+
+            for (int i = 0; i < list.Count;)
+            {
+                T item = list[i];
+                list.RemoveAll(++i, other => item.Equals(other));
+            }
+        }
+
+
 
         /// <summary>
         /// 获取到对应元素下标,若不存在则返回-1;
@@ -114,27 +176,54 @@ namespace JiongXiaGu
             return -1;
         }
 
+
         /// <summary>
-        /// 这两个合集是否拥有相同的内容?
+        /// 这两个合集是否拥有相同的内容?尽管顺序和包含个数不同;
         /// </summary>
-        public static bool IsSameContent<T>(this IList<T> c1, IList<T> c2)
+        public static bool IsSameContent<T>(this IEnumerable<T> collection, ICollection<T> otherList)
         {
-            if (c1 == c2)
+            if (collection == null)
+                throw new ArgumentNullException("list");
+            if (otherList == null)
+                throw new ArgumentNullException("otherList");
+
+            if (collection == otherList)
                 return true;
-            if (c1 == null || c2 == null)
-                return false;
-            if (c1.Count != c2.Count)
+
+            foreach (var item in collection)
+            {
+                if (!otherList.Contains(item))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// 这两个合集是否完全相同?
+        /// </summary>
+        public static bool IsClone<T>(this IList<T> list, IList<T> otherList)
+        {
+            if (list == null)
+                throw new ArgumentNullException("list");
+            if (otherList == null)
+                throw new ArgumentNullException("otherList");
+
+            if (list == otherList)
+                return true;
+            if (list.Count != otherList.Count)
                 return false;
 
-            for (int i = 0; i < c1.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (c1[i].Equals(c2[i]))
+                if (list[i].Equals(otherList[i]))
                     return false;
             }
             return true;
         }
 
-        #endregion
 
         #region IDictionary
 

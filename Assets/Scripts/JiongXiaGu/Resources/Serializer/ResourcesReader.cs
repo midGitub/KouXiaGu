@@ -9,16 +9,16 @@ namespace JiongXiaGu.Resources
     /// </summary>
     /// <typeparam name="TSource">序列化得到的内容;</typeparam>
     /// <typeparam name="TResult">转换到的内容;</typeparam>
-    public abstract class ResourceSerializer<TSource, TResult> : IResourceSerializer<TResult>
+    public abstract class ResourcesReader<TSource, TResult> : IResourceReader<TResult>
     {
-        public ResourceSerializer(ISerializer<TSource> serializer, FileSearcher resourceSearcher)
+        public ResourcesReader(ISerializer<TSource> serializer, ResourcesSearcher resourceSearcher)
         {
             Serializer = serializer;
             ResourceSearcher = resourceSearcher;
         }
 
         public ISerializer<TSource> Serializer { get; set; }
-        public FileSearcher ResourceSearcher { get; set; }
+        public ResourcesSearcher ResourceSearcher { get; set; }
 
         /// <summary>
         /// 将多个TSource转换成一个TResult;

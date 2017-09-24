@@ -7,9 +7,9 @@ namespace JiongXiaGu.Resources
     /// <summary>
     /// 游戏数据目录文件搜寻器,相同目录多个不同命名的资源文件获取;
     /// </summary>
-    public class ResourceMultipleSearcher : FileSearcher
+    public class ResourcesMultipleSearcher : ResourcesSearcher
     {
-        public ResourceMultipleSearcher(string resourceName)
+        public ResourcesMultipleSearcher(string resourceName)
         {
             ResourceName = resourceName;
             SearchOption = SearchOption.TopDirectoryOnly;
@@ -67,13 +67,13 @@ namespace JiongXiaGu.Resources
         /// <summary>
         /// 转换为模版输出;
         /// </summary>
-        public override FileSearcher AsTemplateResourceSearcher()
+        public override ResourcesSearcher AsTemplateResourceSearcher()
         {
             const string template = "_Template";
             if (!ResourceName.EndsWith(template))
             {
                 string resName = ResourceName + template;
-                return new ResourceSingleSearcher(resName);
+                return new ResourcesSingleSearcher(resName);
             }
             return this;
         }
