@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
+using JiongXiaGu.Collections;
 using System.Collections.Generic;
 
 namespace JiongXiaGu.Diagnostics

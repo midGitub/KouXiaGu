@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JiongXiaGu.Collections;
 using UnityEngine;
 
 namespace JiongXiaGu.InputControl
@@ -9,10 +10,10 @@ namespace JiongXiaGu.InputControl
     {
         public OccupiedInput()
         {
-            subscriberStack = new LinkedList<Subscriber>();
+            subscriberStack = new Collections.LinkedList<Subscriber>();
         }
 
-        readonly LinkedList<Subscriber> subscriberStack;
+        readonly Collections.LinkedList<Subscriber> subscriberStack;
 
         public IKeyInput Subscribe(object observer)
         {
@@ -38,7 +39,7 @@ namespace JiongXiaGu.InputControl
             return subscriber;
         }
 
-        void Remove(LinkedListNode<Subscriber> node)
+        void Remove(Collections.LinkedListNode<Subscriber> node)
         {
             subscriberStack.Remove(node);
             var lastNode = subscriberStack.Last;
@@ -57,7 +58,7 @@ namespace JiongXiaGu.InputControl
             }
 
             public OccupiedInput Parent { get; private set; }
-            public LinkedListNode<Subscriber> Node { get; set; }
+            public Collections.LinkedListNode<Subscriber> Node { get; set; }
             public bool IsDisposabled { get; private set; }
             public bool IsActivating { get; set; }
 
