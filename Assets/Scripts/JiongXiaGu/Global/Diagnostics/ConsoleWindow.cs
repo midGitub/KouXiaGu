@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using JiongXiaGu.InputControl;
 using JiongXiaGu.UI;
+using JiongXiaGu.Unity;
 
 namespace JiongXiaGu.Diagnostics
 {

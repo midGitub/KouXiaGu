@@ -37,7 +37,7 @@ namespace JiongXiaGu.Inputs
 
         public FunctionInfo this[string name]
         {
-
+            get { throw new NotImplementedException(); }
         }
     }
 }

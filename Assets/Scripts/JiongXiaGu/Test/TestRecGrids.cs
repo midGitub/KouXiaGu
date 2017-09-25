@@ -1,10 +1,5 @@
-﻿using System;
+﻿using JiongXiaGu.Grids;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using JiongXiaGu.Grids;
-using JiongXiaGu.Terrain3D;
 using UnityEngine;
 using UnityEngine.UI;
 

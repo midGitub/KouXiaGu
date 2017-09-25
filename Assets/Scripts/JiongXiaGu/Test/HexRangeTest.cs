@@ -1,11 +1,8 @@
 ﻿using System;
+using JiongXiaGu.Grids;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using JiongXiaGu.Terrain3D;
-using JiongXiaGu.Grids;
 
 namespace JiongXiaGu.Test
 {
@@ -74,25 +71,27 @@ namespace JiongXiaGu.Test
 
         void Output(RectCoord coord)
         {
-            foreach (var item in ChunkPartitioner.GetLandform(coord))
-            {
-                this.Instantiate(item);
-            }
+            //foreach (var item in ChunkPartitioner.GetLandform(coord))
+            //{
+            //    this.Instantiate(item);
+            //}
+            throw new NotImplementedException();
         }
 
         void Instantiate(CubicHexCoord coord)
         {
-            if (!insObjects.ContainsKey(coord))
-            {
-                Vector3 point = LandformConvert.Grid.GetPixel(coord);
-                GameObject gt = Instantiate(textObject, point, Quaternion.identity, parent) as GameObject;
-                gt.SetActive(true);
-                Text t = gt.GetComponentInChildren<Text>();
+            //if (!insObjects.ContainsKey(coord))
+            //{
+            //    Vector3 point = LandformConvert.Grid.GetPixel(coord);
+            //    GameObject gt = Instantiate(textObject, point, Quaternion.identity, parent) as GameObject;
+            //    gt.SetActive(true);
+            //    Text t = gt.GetComponentInChildren<Text>();
 
-                t.text = GetText(coord);
+            //    t.text = GetText(coord);
 
-                insObjects.Add(coord, gt);
-            }
+            //    insObjects.Add(coord, gt);
+            //}
+            throw new NotImplementedException();
         }
 
         string GetText(CubicHexCoord coord)

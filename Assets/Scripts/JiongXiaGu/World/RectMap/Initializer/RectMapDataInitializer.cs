@@ -4,8 +4,9 @@ using UnityEngine;
 using JiongXiaGu.Resources;
 using System.Threading;
 using JiongXiaGu.Resources.Archives;
-using JiongXiaGu.RectTerrain.Resources;
+using JiongXiaGu.Unity.RectTerrain.Resources;
 using JiongXiaGu.World.Archives;
+using JiongXiaGu.Unity;
 
 namespace JiongXiaGu.World.RectMap
 {

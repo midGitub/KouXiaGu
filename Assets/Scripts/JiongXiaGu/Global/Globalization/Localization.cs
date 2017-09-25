@@ -1,6 +1,7 @@
 ﻿using JiongXiaGu.Concurrent;
 using JiongXiaGu.Diagnostics;
 using JiongXiaGu.Resources;
+using JiongXiaGu.Unity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -134,7 +135,7 @@ namespace JiongXiaGu.Globalization
             }
             else
             {
-                UnityAsyncRequestDispatcher.Instance.Add(() => SetLanguage(pack));
+                //UnityAsyncRequestDispatcher.Instance.Add(() => SetLanguage(pack));
             }
         }
 

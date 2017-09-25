@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JiongXiaGu.RectTerrain;
-using JiongXiaGu.RectTerrain.Resources;
+using JiongXiaGu.Unity.RectTerrain;
+using JiongXiaGu.Unity.RectTerrain.Resources;
 using JiongXiaGu.Grids;
 
 namespace JiongXiaGu.World.RectMap
