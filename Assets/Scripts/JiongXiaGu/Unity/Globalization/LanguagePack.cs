@@ -9,7 +9,6 @@ namespace JiongXiaGu.Globalization
     /// 语言包信息;
     /// </summary>
     [XmlRoot(LanguagePackXmlSerializer.RootName)]
-    //[XmlType(LanguagePackXmlSerializer.RootName)]
     public class LanguagePack : LanguagePackHead
     {
         public LanguagePack() : this(string.Empty, string.Empty)

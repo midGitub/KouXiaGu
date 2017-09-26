@@ -24,6 +24,44 @@ namespace JiongXiaGu.Collections
 
 
         /// <summary>
+        /// 若合集内不存在则加入到,否者更新合集内的元素;
+        /// </summary>
+        public static AddOrUpdateStatus AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                dictionary[key] = value;
+                return AddOrUpdateStatus.Updated;
+            }
+            else
+            {
+                dictionary.Add(key, value);
+                return AddOrUpdateStatus.Added;
+            }
+        }
+
+        /// <summary>
+        /// 将合集加入到dest,若出现相同的Key则替换;
+        /// </summary>
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dest, IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            foreach (var item in items)
+            {
+                TKey key = item.Key;
+                TValue value = item.Value;
+                if (dest.ContainsKey(key))
+                {
+                    dest[key] = value;
+                }
+                else
+                {
+                    dest.Add(item);
+                }
+            }
+        }
+
+
+        /// <summary>
         /// 确认合集内是否存在符合条件的元素;
         /// </summary>
         /// <param name="collection"></param>
@@ -142,10 +180,19 @@ namespace JiongXiaGu.Collections
             if (list == null)
                 throw new ArgumentNullException("list");
 
-            for (int i = 0; i < list.Count;)
+            int i = 0;
+            while (true)
             {
                 T item = list[i];
-                list.RemoveAll(++i, other => item.Equals(other));
+                i++;
+                if (i < list.Count)
+                {
+                    list.RemoveAll(i, other => item.Equals(other));
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
@@ -260,32 +307,6 @@ namespace JiongXiaGu.Collections
             }
             return array;
         }
-
-
-
-        #region IDictionary
-
-        /// <summary>
-        /// 将合集加入到dest,若出现相同的Key则替换;
-        /// </summary>
-        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dest, IEnumerable<KeyValuePair<TKey, TValue>> items)
-        {
-            foreach (var item in items)
-            {
-                TKey key = item.Key;
-                TValue value = item.Value;
-                if (dest.ContainsKey(key))
-                {
-                    dest[key] = value;
-                }
-                else
-                {
-                    dest.Add(item);
-                }
-            }
-        }
-
-        #endregion
 
         #region IEnumerable
 

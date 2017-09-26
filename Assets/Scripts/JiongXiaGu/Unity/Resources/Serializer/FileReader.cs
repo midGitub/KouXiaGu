@@ -9,7 +9,7 @@ namespace JiongXiaGu.Resources
 {
 
     /// <summary>
-    /// 用于固定的单个文件序列化;
+    /// 用于固定的单个文件读写;
     /// </summary>
     /// <typeparam name="T">返回的内容</typeparam>
     public abstract class FileReader<T> : IResourceReader<T>
@@ -18,6 +18,11 @@ namespace JiongXiaGu.Resources
         /// 序列化接口;
         /// </summary>
         public ISerializer<T> Serializer { get; set; }
+
+        /// <summary>
+        /// 输出时自动创建目录;
+        /// </summary>
+        public bool IsAutoCreateDirectory { get; set; } = false;
 
         /// <summary>
         /// 文件拓展名;
@@ -38,6 +43,13 @@ namespace JiongXiaGu.Resources
         public void Serialize(T item)
         {
             string path = GetFilePath();
+
+            if (IsAutoCreateDirectory)
+            {
+                string dirName = Path.GetDirectoryName(path);
+                Directory.CreateDirectory(dirName);
+            }
+
             using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 Serializer.Serialize(item, stream);

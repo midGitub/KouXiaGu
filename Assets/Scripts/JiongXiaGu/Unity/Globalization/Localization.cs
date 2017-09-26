@@ -1,5 +1,4 @@
-﻿using JiongXiaGu.Concurrent;
-using JiongXiaGu.Diagnostics;
+﻿using JiongXiaGu.Diagnostics;
 using JiongXiaGu.Resources;
 using JiongXiaGu.Unity;
 using System;
