@@ -81,7 +81,7 @@ namespace JiongXiaGu.Resources
     }
 
 
-    public sealed class XmlFileSerializer<T> : IOFileSerializer<T>, ISerializer<T>
+    public sealed class XmlFileSerializer<T> : ISerializer<T>, IOFileSerializer<T>
     {
         public XmlFileSerializer()
         {
@@ -90,9 +90,15 @@ namespace JiongXiaGu.Resources
 
         public XmlSerializer Serializer { get; private set; }
 
-        public string Extension
+        public const string Extension = ".xml";
+        string ISerializer<T>.Extension
         {
-            get { return ".xml"; }
+            get { return Extension; }
+        }
+
+        string IOFileSerializer<T>.Extension
+        {
+            get { return Extension; }
         }
 
         public T Deserialize(Stream stream)

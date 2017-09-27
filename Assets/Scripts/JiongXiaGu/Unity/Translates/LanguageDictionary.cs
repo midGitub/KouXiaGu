@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using JiongXiaGu.Collections;
 
-namespace JiongXiaGu.Unity.Localizations
+namespace JiongXiaGu.Unity.Translates
 {
 
     /// <summary>
@@ -22,6 +23,20 @@ namespace JiongXiaGu.Unity.Localizations
 
         public LanguageDictionary(IDictionary<string, string> dictionary) : base(dictionary)
         {
+        }
+
+        /// <summary>
+        /// 添加字典内容;
+        /// </summary>
+        public void AddOrUpdate(LanguageDictionary languageDictionary)
+        {
+            if (languageDictionary == this)
+                return;
+
+            foreach (var pair in languageDictionary)
+            {
+                this.AddOrUpdate(pair);
+            }
         }
     }
 }

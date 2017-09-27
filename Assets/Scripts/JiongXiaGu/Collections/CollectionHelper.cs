@@ -26,6 +26,14 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 若合集内不存在则加入到,否者更新合集内的元素;
         /// </summary>
+        public static AddOrUpdateStatus AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, KeyValuePair<TKey, TValue> pair)
+        {
+            return AddOrUpdate(dictionary, pair.Key, pair.Value);
+        }
+
+        /// <summary>
+        /// 若合集内不存在则加入到,否者更新合集内的元素;
+        /// </summary>
         public static AddOrUpdateStatus AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             if (dictionary.ContainsKey(key))

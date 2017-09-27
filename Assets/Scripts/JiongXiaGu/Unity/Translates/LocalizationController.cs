@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace JiongXiaGu.Unity.Localizations
+namespace JiongXiaGu.Unity.Translates
 {
 
     /// <summary>

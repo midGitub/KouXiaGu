@@ -7,13 +7,10 @@ namespace JiongXiaGu
 {
 
     /// <summary>
-    /// 取消订阅器,不进行 Add() 操作;;
+    /// 取消订阅器,不进行 Add() 操作;
     /// </summary>
-    class CollectionUnsubscriber<T> : IDisposable
+    public sealed class CollectionUnsubscriber<T> : IDisposable
     {
-        /// <summary>
-        /// 不进行 Add() 操作;
-        /// </summary>
         public CollectionUnsubscriber(ICollection<T> collection, T observer)
         {
             if (collection == null || observer == null)
@@ -23,10 +20,21 @@ namespace JiongXiaGu
             Observer = observer;
         }
 
+        ~CollectionUnsubscriber()
+        {
+            Dispose(false);
+        }
+
         public ICollection<T> Collection { get; private set; }
         public T Observer { get; private set; }
 
         public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
         {
             if (Collection != null)
             {
@@ -35,6 +43,5 @@ namespace JiongXiaGu
                 Observer = default(T);
             }
         }
-
     }
 }

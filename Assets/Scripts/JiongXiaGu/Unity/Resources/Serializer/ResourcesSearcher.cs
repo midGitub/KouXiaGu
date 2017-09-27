@@ -14,17 +14,17 @@ namespace JiongXiaGu.Resources
         public abstract IEnumerable<string> Searche(string fileExtension);
 
         /// <summary>
-        /// 获取到用于输出的文件路径;
-        /// </summary>
-        public abstract string GetWrite(string fileExtension);
-
-        /// <summary>
         /// 获取到对应资源的文件路径(可能返回多个或者一个);
         /// </summary>
         public IEnumerable<string> Searche<T>(ISerializer<T> serializer)
         {
             return Searche(serializer.Extension);
         }
+
+        /// <summary>
+        /// 获取到用于输出的文件路径;
+        /// </summary>
+        public abstract string GetWrite(string fileExtension);
 
         /// <summary>
         /// 获取到用于输出的文件路径;
