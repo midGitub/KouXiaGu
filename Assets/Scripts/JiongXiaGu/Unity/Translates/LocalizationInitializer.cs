@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
 using JiongXiaGu.Unity.Resources;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.Unity.Translates
 {
@@ -70,14 +70,13 @@ namespace JiongXiaGu.Unity.Translates
 
                     var spareLanguages = new string[]
                     {
-                        Application.systemLanguage.ToString(),
+                        XiaGu.SystemLanguage.ToString(),
                         defaultLanguage.ToString(),
                         SystemLanguage.ChineseSimplified.ToString(),
                     };
 
                     targetFileInfos = FindLanguagePask(fileInfos, targetMatch, spareLanguages);
                 }
-
 
 
             }, token);

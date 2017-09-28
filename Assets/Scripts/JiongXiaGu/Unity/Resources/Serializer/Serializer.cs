@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml.Serialization;
 
-namespace JiongXiaGu.Resources
+namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>

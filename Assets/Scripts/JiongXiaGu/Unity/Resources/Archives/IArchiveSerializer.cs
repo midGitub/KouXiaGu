@@ -1,4 +1,4 @@
-﻿namespace JiongXiaGu.Resources.Archives
+﻿namespace JiongXiaGu.Unity.Resources.Archives
 {
     /// <summary>
     /// 从存档和本地文件读取对应资源;

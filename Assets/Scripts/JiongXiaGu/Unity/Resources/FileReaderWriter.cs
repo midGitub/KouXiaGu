@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 using System.IO;
 using UnityEngine;
 
-namespace JiongXiaGu.Resources
+namespace JiongXiaGu.Unity.Resources
 {
     
     public class FileReaderWriter<T> : IFileReaderWriter<T>, IReader<T>, IWriter<T>

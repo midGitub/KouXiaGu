@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace JiongXiaGu.Resources.Archives
+namespace JiongXiaGu.Unity.Resources.Archives
 {
     public class ArchiveInfoSerializer
     {

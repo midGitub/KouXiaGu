@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using JiongXiaGu.Concurrent;
 using System.IO;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 using System.Linq;
 
 namespace JiongXiaGu.Unity.RectTerrain.Resources

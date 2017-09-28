@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JiongXiaGu.Resources
+namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>

@@ -6,7 +6,7 @@ namespace JiongXiaGu.EditorTool
     using UnityEditor;
     using UnityEngine;
     using System.IO;
-    using JiongXiaGu.Resources;
+    using JiongXiaGu.Unity.Resources;
 
     /// <summary>
     /// 构造资源包;

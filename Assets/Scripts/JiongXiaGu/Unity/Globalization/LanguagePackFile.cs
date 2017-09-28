@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.Globalization
 {

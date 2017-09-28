@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.Unity.RectTerrain.Resources
 {

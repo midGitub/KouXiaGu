@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace JiongXiaGu.Resources
+namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>

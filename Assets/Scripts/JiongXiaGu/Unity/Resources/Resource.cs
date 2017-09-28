@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace JiongXiaGu.Resources
+namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>

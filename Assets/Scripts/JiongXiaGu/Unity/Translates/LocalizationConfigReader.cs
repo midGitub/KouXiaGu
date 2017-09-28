@@ -1,5 +1,4 @@
-﻿using JiongXiaGu.Resources;
-using JiongXiaGu.Unity.Resources;
+﻿using JiongXiaGu.Unity.Resources;
 using System.IO;
 
 namespace JiongXiaGu.Unity.Translates

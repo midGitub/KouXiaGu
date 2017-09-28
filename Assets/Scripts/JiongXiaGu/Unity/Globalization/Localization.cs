@@ -1,5 +1,5 @@
 ﻿using JiongXiaGu.Diagnostics;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity;
 using System;
 using System.Collections.Generic;

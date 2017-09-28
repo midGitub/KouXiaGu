@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JiongXiaGu.Grids;
 using System.Threading;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Concurrent;
 using JiongXiaGu.Collections;
 

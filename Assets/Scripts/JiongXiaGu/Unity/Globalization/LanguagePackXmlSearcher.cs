@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using UnityEngine;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.Globalization
 {

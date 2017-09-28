@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
 
-namespace JiongXiaGu.Resources
+namespace JiongXiaGu.Unity.Resources
 {
     
     public interface IElement

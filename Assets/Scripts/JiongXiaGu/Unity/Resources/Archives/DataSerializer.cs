@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.Resources.Archives
+namespace JiongXiaGu.Unity.Resources.Archives
 {
 
     /// <summary>

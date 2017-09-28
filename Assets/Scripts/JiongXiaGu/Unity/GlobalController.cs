@@ -1,4 +1,4 @@
-﻿using JiongXiaGu.Resources;
+﻿using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.KeyInputs;
 using System.IO;
 using UnityEngine;

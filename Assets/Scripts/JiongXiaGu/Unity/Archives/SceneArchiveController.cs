@@ -1,5 +1,5 @@
-﻿using JiongXiaGu.Resources;
-using JiongXiaGu.Resources.Archives;
+﻿using JiongXiaGu.Unity.Resources;
+using JiongXiaGu.Unity.Resources.Archives;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,6 +1,6 @@
 ﻿using JiongXiaGu.Concurrent;
-using JiongXiaGu.Resources;
-using JiongXiaGu.Resources.Archives;
+using JiongXiaGu.Unity.Resources;
+using JiongXiaGu.Unity.Resources.Archives;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;

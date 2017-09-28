@@ -1,9 +1,9 @@
-﻿using JiongXiaGu.Resources.Archives;
+﻿using JiongXiaGu.Unity.Resources.Archives;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System;
-using JiongXiaGu.Resources;
+using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.World.RectMap
 {

@@ -1,4 +1,4 @@
-﻿namespace JiongXiaGu.Resources
+﻿namespace JiongXiaGu.Unity.Resources
 {
     /// <summary>
     /// 读取资源;
