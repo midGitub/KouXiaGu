@@ -15,6 +15,6 @@ namespace JiongXiaGu.Unity.Translates
         /// <summary>
         /// 语言类型;
         /// </summary>
-        public string Language { get; set; }
+        public LanguagePackInfo LanguagePackInfo { get; set; }
     }
 }

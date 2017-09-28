@@ -17,6 +17,7 @@ namespace JiongXiaGu.Unity.Translates
         }
 
         XmlSerializer languagePackSerializer;
+        internal const string LanguagePackInfoRootName = "LanguagePackInfo";
         internal const string NameXmlAttributeName = "name";
         internal const string LanguageXmlAttributeName = "language";
         const string languagePackPrefix = "Language_";
@@ -93,12 +94,19 @@ namespace JiongXiaGu.Unity.Translates
                 XmlReader xmlReader = XmlReader.Create(stream);
                 xmlReader.MoveToContent();
 
-                string name = xmlReader.GetAttribute(NameXmlAttributeName);
-                string language = xmlReader.GetAttribute(LanguageXmlAttributeName);
-                if (string.IsNullOrEmpty(language))
-                    throw new XmlException("未指定属性language;");
+                if (xmlReader.IsStartElement() && xmlReader.LocalName == LanguagePackInfoRootName)
+                {
+                    string name = xmlReader.GetAttribute(NameXmlAttributeName);
+                    string language = xmlReader.GetAttribute(LanguageXmlAttributeName);
+                    if (string.IsNullOrEmpty(language))
+                        throw new XmlException("未指定属性language;");
 
-                return new LanguagePackFileInfo(fileInfo, name, language);
+                    return new LanguagePackFileInfo(fileInfo, name, language);
+                }
+                else
+                {
+                    throw new XmlException("不是有效的语言包;");
+                }
             }
         }
 
@@ -112,7 +120,7 @@ namespace JiongXiaGu.Unity.Translates
                 languagePack = ReadInfo(fileInfo);
                 return true;
             }
-            catch (XmlException)
+            catch
             {
                 languagePack = default(LanguagePackFileInfo);
                 return false;

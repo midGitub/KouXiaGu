@@ -8,12 +8,11 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 在程序中定义的文件路径,需要放在 public 访问级别的静态变量上;
+    /// 在程序中定义的文件路径,需要放在 internal 访问级别的静态变量上;
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public sealed class FileDefinitionAttribute : Attribute
+    public sealed class PathDefinitionAttribute : Attribute
     {
-
         /// <summary>
         /// 资源类型;
         /// </summary>
@@ -34,7 +33,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         /// <param name="resourceTypes">资源类型</param>
         /// <param name="name">简短描述</param>
-        public FileDefinitionAttribute(ResourceTypes resourceTypes, string name) : this(resourceTypes, name, string.Empty)
+        public PathDefinitionAttribute(ResourceTypes resourceTypes, string name) : this(resourceTypes, name, string.Empty)
         {
         }
 
@@ -44,7 +43,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="resourceTypes">资源类型</param>
         /// <param name="name">简短描述</param>
         /// <param name="message">详细描述</param>
-        public FileDefinitionAttribute(ResourceTypes resourceTypes, string name, string message)
+        public PathDefinitionAttribute(ResourceTypes resourceTypes, string name, string message)
         {
             ResourceTypes = resourceTypes;
             Name = name;

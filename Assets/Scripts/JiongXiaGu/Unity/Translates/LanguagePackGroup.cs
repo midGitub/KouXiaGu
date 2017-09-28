@@ -21,11 +21,12 @@ namespace JiongXiaGu.Unity.Translates
         /// <summary>
         /// 语言包合集;
         /// </summary>
-        public List<LanguagePack> LanguagePackPacks { get; private set; }
+        public List<LanguagePack> LanguagePacks { get; private set; }
 
-        public LanguagePackGroup(string language)
+        public LanguagePackGroup(LanguagePack main)
         {
-            LanguagePackPacks = new List<LanguagePack>();
+            LanguagePacks = new List<LanguagePack>();
+            LanguagePacks.Add(main);
         }
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace JiongXiaGu.Unity.Translates
             if (languagePack.Language != Language)
                 throw new ArgumentException("languagePack 语言不同于该组;");
 
-            LanguagePackPacks.Add(languagePack);
+            LanguagePacks.Add(languagePack);
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace JiongXiaGu.Unity.Translates
         /// </summary>
         public bool Remove(LanguagePack languagePack)
         {
-            return LanguagePackPacks.Remove(languagePack);
+            return LanguagePacks.Remove(languagePack);
         }
 
         /// <summary>
@@ -52,9 +53,9 @@ namespace JiongXiaGu.Unity.Translates
         /// </summary>
         public string Translate(string key)
         {
-            for (int i = LanguagePackPacks.Count - 1; i >= 0; i--)
+            for (int i = LanguagePacks.Count - 1; i >= 0; i--)
             {
-                var languagePack = LanguagePackPacks[i];
+                var languagePack = LanguagePacks[i];
                 string value;
                 if (languagePack.LanguageDictionary.TryGetValue(key, out value))
                 {

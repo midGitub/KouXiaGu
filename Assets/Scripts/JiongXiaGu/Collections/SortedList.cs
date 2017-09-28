@@ -96,9 +96,6 @@ namespace JiongXiaGu.Collections
                 collection.Insert(~index, item);
             else
                 collection.Insert(index, item);
-
-            //int index = BinarySearch(item);
-            //collection.Insert(index, item);
         }
 
         /// <summary>

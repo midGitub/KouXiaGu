@@ -24,5 +24,20 @@ namespace JiongXiaGu.Unity.Resources
         /// 用户存档数据;
         /// </summary>
         Archive,
+
+        /// <summary>
+        /// 资源数据目录;
+        /// </summary>
+        DataDirectory,
+
+        /// <summary>
+        /// 用户数据目录;
+        /// </summary>
+        UserConfigDirectory,
+
+        /// <summary>
+        /// 用户存档数据目录;
+        /// </summary>
+        ArchiveDirectory,
     }
 }

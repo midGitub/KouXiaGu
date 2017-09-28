@@ -6,7 +6,7 @@ namespace JiongXiaGu.Unity.Translates
     /// <summary>
     /// 语言包;
     /// </summary>
-    [XmlRoot("LanguageInfo")]
+    [XmlRoot(LanguagePackReader.LanguagePackInfoRootName)]
     public class LanguagePack
     {
         /// <summary>
@@ -32,6 +32,11 @@ namespace JiongXiaGu.Unity.Translates
             Name = name;
             Language = language;
             LanguageDictionary = new LanguageDictionary();
+        }
+
+        public static implicit operator LanguagePackInfo(LanguagePack info)
+        {
+            return new LanguagePackInfo(info.Name, info.Language);
         }
     }
 }

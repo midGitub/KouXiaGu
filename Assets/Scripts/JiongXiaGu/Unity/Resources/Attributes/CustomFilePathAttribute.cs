@@ -9,6 +9,7 @@ namespace JiongXiaGu.Resources
     /// <summary>
     /// 在程序中定义的文件路径,需要放在 public 访问级别的静态变量上;
     /// </summary>
+    [Obsolete]
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class CustomFilePathAttribute : Attribute
     {

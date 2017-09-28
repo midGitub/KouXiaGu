@@ -34,5 +34,10 @@ namespace JiongXiaGu.Unity.Translates
             Name = name;
             Language = language;
         }
+
+        public static implicit operator LanguagePackInfo(LanguagePackFileInfo fileInfo)
+        {
+            return new LanguagePackInfo(fileInfo.Name, fileInfo.Language);
+        }
     }
 }
