@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         void IWorldCompletedHandle.OnWorldCompleted()
         {
-            map = RectMapSceneController.Instance.WorldMap.Map;
+            map = RectMapController.Instance.WorldMap.Map;
         }
 
         void Update()

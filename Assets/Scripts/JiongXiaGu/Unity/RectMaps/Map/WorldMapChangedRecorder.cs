@@ -38,11 +38,6 @@ namespace JiongXiaGu.Unity.RectMaps
             ChangedPositions.Add(key);
         }
 
-        void IDictionaryObserver<TKey, Tvalue>.OnClear(IDictionary<TKey, Tvalue> dictionary)
-        {
-            ChangedPositions.Clear();
-        }
-
         public void Clear()
         {
             ChangedPositions.Clear();

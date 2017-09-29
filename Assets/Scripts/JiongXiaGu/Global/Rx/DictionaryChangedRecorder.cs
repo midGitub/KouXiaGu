@@ -44,14 +44,5 @@ namespace JiongXiaGu
             var item = new RecordeItem<TKey, TValue>(key, originalValue);
             RecordeQueue.Enqueue(item);
         }
-
-        void IDictionaryObserver<TKey, TValue>.OnClear(IDictionary<TKey, TValue> dictionary)
-        {
-            foreach (var pair in dictionary)
-            {
-                var item = new RecordeItem<TKey, TValue>(pair.Key, pair.Value);
-                RecordeQueue.Enqueue(item);
-            }
-        }
     }
 }

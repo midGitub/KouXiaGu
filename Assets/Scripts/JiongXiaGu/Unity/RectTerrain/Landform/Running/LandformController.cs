@@ -36,7 +36,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
         {
             Builder = new LandformBuilder(LandformBaker.Instance);
-            Updater = new LandformUpdater(Builder, LandformGuiderGroup, RectMapSceneController.Instance.WorldMap);
+            Updater = new LandformUpdater(Builder, LandformGuiderGroup, RectMapController.Instance.WorldMap);
             Debug.Log("[地貌组件]初始化完成;");
             return null;
         }

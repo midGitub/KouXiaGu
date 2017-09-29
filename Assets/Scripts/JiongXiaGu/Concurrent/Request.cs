@@ -23,9 +23,6 @@ namespace JiongXiaGu.Concurrent
 
         public RequestBase(CancellationToken cancellationToken) : this()
         {
-            if (cancellationToken == null)
-                throw new ArgumentNullException("cancellationToken");
-
             this.cancellationToken = cancellationToken;
             cancellationToken.Register(OnCancele);
         }

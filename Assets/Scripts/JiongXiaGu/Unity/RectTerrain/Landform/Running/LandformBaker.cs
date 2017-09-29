@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         [SerializeField, Range(0, 5)]
         float displacement = 1.5f;
         [SerializeField]
-        RectMapSceneController mapInitializer;
+        RectMapController mapInitializer;
         [SerializeField]
         LandformDispatcher dispatcher;
         [SerializeField]

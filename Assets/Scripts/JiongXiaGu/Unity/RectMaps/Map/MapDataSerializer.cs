@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace JiongXiaGu.Unity.RectMaps
 {
 
-
+    [Obsolete]
     public class MapDataSerializer : ResourcesReader<MapData, MapData>
     {
         public MapDataSerializer(ISerializer<MapData> serializer, ResourcesSearcher resourceSearcher) : base(serializer, resourceSearcher)
@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.RectMaps
                 for (int i = 1; i < sources.Count; i++)
                 {
                     MapData other = sources[i];
-                    main.Add(other);
+                    throw new NotImplementedException();
                 }
                 return main;
             }

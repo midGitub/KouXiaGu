@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -34,16 +35,11 @@ namespace JiongXiaGu
         /// 在更新之后调用;
         /// </summary>
         void OnUpdated(TKey key, TValue originalValue, TValue newValue);
-
-        /// <summary>
-        /// 在清除之前调用;
-        /// </summary>
-        void OnClear(IDictionary<TKey, TValue> dictionary);
     }
 
 
     /// <summary>
-    /// 可订阅的字典结构; 
+    /// 可订阅的字典结构(线程安全); 
     /// </summary>
     public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
@@ -54,6 +50,7 @@ namespace JiongXiaGu
         {
             this.dictionary = dictionary;
             observers = new ObserverLinkedList<IDictionaryObserver<TKey, TValue>>();
+            dictionaryOperationCache = new DictionaryOperationCache();
         }
 
         /// <summary>
@@ -63,10 +60,12 @@ namespace JiongXiaGu
         {
             this.dictionary = dictionary;
             this.observers = observers;
+            dictionaryOperationCache = new DictionaryOperationCache();
         }
 
         readonly IDictionary<TKey, TValue> dictionary;
         readonly IObserverCollection<IDictionaryObserver<TKey, TValue>> observers;
+        readonly DictionaryOperationCache dictionaryOperationCache;
 
         public int Count
         {
@@ -112,7 +111,7 @@ namespace JiongXiaGu
                 if (dictionary.TryGetValue(key, out original))
                 {
                     dictionary[key] = value;
-                    TrackUpdated(key, original, value);
+                    OnUpdated(key, original, value);
                 }
                 else
                 {
@@ -137,7 +136,7 @@ namespace JiongXiaGu
         public void Add(TKey key, TValue value)
         {
             dictionary.Add(key, value);
-            TrackAdded(key, value);
+            OnAdded(key, value);
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -151,7 +150,7 @@ namespace JiongXiaGu
             if (dictionary.TryGetValue(key, out original))
             {
                 dictionary.Remove(key);
-                TrackRemoved(key, original);
+                OnRemoved(key, original);
                 return true;
             }
             else
@@ -180,8 +179,7 @@ namespace JiongXiaGu
         /// </summary>
         public void Clear()
         {
-            TrackClear(this);
-            dictionary.Clear();
+            throw new InvalidOperationException("不支持清空操作!");
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -200,36 +198,194 @@ namespace JiongXiaGu
         }
 
 
-        void TrackAdded(TKey key, TValue newValue)
+        void OnAdded(TKey key, TValue newValue)
         {
-            foreach (var observer in observers.EnumerateObserver())
+            dictionaryOperationCache.Add(key, newValue);
+        }
+
+        void OnRemoved(TKey key, TValue original)
+        {
+            dictionaryOperationCache.Remove(key, original);
+        }
+
+        void OnUpdated(TKey key, TValue original, TValue newValue)
+        {
+            dictionaryOperationCache.Update(key, original, newValue);
+        }
+
+        /// <summary>
+        /// 提供外部调用,通知所有观察者合集的变化;
+        /// </summary>
+        public void TrackAll()
+        {
+            foreach (var operation in dictionaryOperationCache.DictionaryOperations)
             {
-                observer.OnAdded(key, newValue);
+                Action<IDictionaryObserver<TKey, TValue>> trackAction;
+                switch (operation.OperationType)
+                {
+                    case OperationTypes.Add:
+                        trackAction = observer => observer.OnAdded(operation.Key, operation.NewValue);
+                        break;
+
+                    case OperationTypes.Remove:
+                        trackAction = observer => observer.OnRemoved(operation.Key, operation.OriginalValue);
+                        break;
+
+                    case OperationTypes.Update:
+                        trackAction = observer => observer.OnUpdated(operation.Key, operation.OriginalValue, operation.NewValue);
+                        break;
+
+                    default:
+                        throw new ArgumentException(operation.OperationType.ToString());
+                }
+
+                foreach (var observer in observers.EnumerateObserver())
+                {
+                    trackAction(observer);
+                }
             }
         }
 
-        void TrackRemoved(TKey key, TValue original)
+        /// <summary>
+        /// 字典操作缓存;
+        /// </summary>
+        class DictionaryOperationCache
         {
-            foreach (var observer in observers.EnumerateObserver())
+            public List<DictionaryOperation> DictionaryOperations { get; private set; }
+
+            public DictionaryOperationCache()
             {
-                observer.OnRemoved(key, original);
+                DictionaryOperations = new List<DictionaryOperation>();
+            }
+
+            /// <summary>
+            /// 添加一个加入操作;
+            /// </summary>
+            public void Add(TKey key, TValue newValue)
+            {
+                int index = FindIndex(key);
+                if (index < 0)
+                {
+                    var operation = new DictionaryOperation()
+                    {
+                        OperationType = OperationTypes.Add,
+                        Key = key,
+                        NewValue = newValue,
+                    };
+                    DictionaryOperations.Add(operation);
+                }
+                else
+                {
+                    var operation = DictionaryOperations[index];
+                    switch (operation.OperationType)
+                    {
+                        case OperationTypes.Remove:
+                            operation.OperationType = OperationTypes.Update;
+                            operation.NewValue = newValue;
+                            DictionaryOperations[index] = operation;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException();
+                    }
+                }
+            }
+
+            /// <summary>
+            /// 添加一个移除操作;
+            /// </summary>
+            public void Remove(TKey key, TValue original)
+            {
+                int index = FindIndex(key);
+                if (index < 0)
+                {
+                    var operation = new DictionaryOperation()
+                    {
+                        OperationType = OperationTypes.Remove,
+                        Key = key,
+                        OriginalValue = original,
+                    };
+                    DictionaryOperations.Add(operation);
+                }
+                else
+                {
+                    var operation = DictionaryOperations[index];
+                    switch (operation.OperationType)
+                    {
+                        case OperationTypes.Add:
+                            DictionaryOperations.RemoveAt(index);
+                            break;
+
+                        case OperationTypes.Update:
+                            operation.OperationType = OperationTypes.Remove;
+                            operation.NewValue = default(TValue);
+                            DictionaryOperations[index] = operation;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException();
+                    }
+                }
+            }
+
+            /// <summary>
+            /// 添加一个升级操作;
+            /// </summary>
+            public void Update(TKey key, TValue original, TValue newValue)
+            {
+                int index = FindIndex(key);
+                if (index < 0)
+                {
+                    var operation = new DictionaryOperation()
+                    {
+                        OperationType = OperationTypes.Update,
+                        Key = key,
+                        OriginalValue = original,
+                        NewValue = newValue,
+                    };
+                    DictionaryOperations.Add(operation);
+                }
+                else
+                {
+                    var operation = DictionaryOperations[index];
+                    switch (operation.OperationType)
+                    {
+                        case OperationTypes.Update:
+                            operation.NewValue = newValue;
+                            DictionaryOperations[index] = operation;
+                            break;
+
+                        case OperationTypes.Add:
+                            operation.NewValue = newValue;
+                            DictionaryOperations[index] = operation;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException();
+                    }
+                }
+            }
+
+            int FindIndex(TKey key)
+            {
+                return DictionaryOperations.FindIndex(item => item.Key.Equals(key));
             }
         }
 
-        void TrackUpdated(TKey key, TValue original, TValue newValue)
+        struct DictionaryOperation
         {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnUpdated(key, original, newValue);
-            }
+            public OperationTypes OperationType { get; set; }
+            public TKey Key { get; set; }
+            public TValue OriginalValue { get; set; }
+            public TValue NewValue { get; set; }
         }
 
-        void TrackClear(IDictionary<TKey, TValue> dictionary)
+        enum OperationTypes
         {
-            foreach (var observer in observers.EnumerateObserver())
-            {
-                observer.OnClear(dictionary);
-            }
+            None,
+            Add,
+            Remove,
+            Update,
         }
     }
 }

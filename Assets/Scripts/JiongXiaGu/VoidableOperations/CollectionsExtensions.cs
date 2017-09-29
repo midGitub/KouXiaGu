@@ -107,7 +107,7 @@ namespace JiongXiaGu.VoidableOperations
 
     #region Collection
 
-    sealed class CollectionClear<T> : VoidableOperation
+    public class CollectionClear<T> : VoidableOperation
     {
         public CollectionClear(ICollection<T> collection)
         {
@@ -137,7 +137,7 @@ namespace JiongXiaGu.VoidableOperations
 
     #region List
 
-    sealed class ListSetValue<T> : VoidableOperation
+    public class ListSetValue<T> : VoidableOperation
     {
         public ListSetValue(IList<T> list, int index, T item)
         {
@@ -149,10 +149,10 @@ namespace JiongXiaGu.VoidableOperations
             this.item = item;
         }
 
-        readonly IList<T> list;
-        readonly int index;
-        readonly T item;
-        T original;
+        protected readonly IList<T> list;
+        protected readonly int index;
+        protected readonly T item;
+        protected T original;
 
         protected override void PerformDo_protected()
         {
@@ -166,7 +166,7 @@ namespace JiongXiaGu.VoidableOperations
         }
     }
 
-    sealed class ListAdd<T> : VoidableOperation
+    public class ListAdd<T> : VoidableOperation
     {
         public ListAdd(IList<T> list, T item)
         {
@@ -177,8 +177,8 @@ namespace JiongXiaGu.VoidableOperations
             this.item = item;
         }
 
-        readonly IList<T> list;
-        readonly T item;
+        protected readonly IList<T> list;
+        protected readonly T item;
 
         protected override void PerformDo_protected()
         {
@@ -191,7 +191,7 @@ namespace JiongXiaGu.VoidableOperations
         }
     }
 
-    sealed class ListRemove<T> : VoidableOperation
+    public class ListRemove<T> : VoidableOperation
     {
         public ListRemove(IList<T> list, T item)
         {
@@ -202,8 +202,8 @@ namespace JiongXiaGu.VoidableOperations
             this.item = item;
         }
 
-        readonly IList<T> list;
-        readonly T item;
+        protected readonly IList<T> list;
+        protected readonly T item;
         int index;
 
         protected override void PerformDo_protected()
@@ -225,7 +225,7 @@ namespace JiongXiaGu.VoidableOperations
         }
     }
 
-    sealed class ListRemoveAt<T> : VoidableOperation
+    public class ListRemoveAt<T> : VoidableOperation
     {
         public ListRemoveAt(IList<T> list, int index)
         {
@@ -236,9 +236,9 @@ namespace JiongXiaGu.VoidableOperations
             this.index = index;
         }
 
-        readonly IList<T> list;
-        readonly int index;
-        T original;
+        protected readonly IList<T> list;
+        protected readonly int index;
+        protected T original;
 
         protected override void PerformDo_protected()
         {
@@ -252,7 +252,7 @@ namespace JiongXiaGu.VoidableOperations
         }
     }
 
-    sealed class ListInsert<T> : VoidableOperation
+    public class ListInsert<T> : VoidableOperation
     {
         public ListInsert(IList<T> list, int index, T item)
         {
@@ -264,9 +264,9 @@ namespace JiongXiaGu.VoidableOperations
             this.item = item;
         }
 
-        readonly IList<T> list;
-        readonly int index;
-        readonly T item;
+        protected readonly IList<T> list;
+        protected readonly int index;
+        protected readonly T item;
 
         protected override void PerformDo_protected()
         {
@@ -283,7 +283,7 @@ namespace JiongXiaGu.VoidableOperations
 
     #region Dictionary
 
-    sealed class DictionarySetValue<TKey, TValue> : VoidableOperation
+    public class DictionarySetValue<TKey, TValue> : VoidableOperation
     {
         public DictionarySetValue(IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue)
         {
@@ -295,9 +295,9 @@ namespace JiongXiaGu.VoidableOperations
             this.newValue = newValue;
         }
 
-        readonly IDictionary<TKey, TValue> dictionary;
-        readonly TKey key;
-        readonly TValue newValue;
+        protected readonly IDictionary<TKey, TValue> dictionary;
+        protected readonly TKey key;
+        protected readonly TValue newValue;
         TValue original;
 
         protected override void PerformDo_protected()
@@ -312,7 +312,7 @@ namespace JiongXiaGu.VoidableOperations
         }
     }
 
-    sealed class DictionaryAdd<TKey, TValue> : VoidableOperation
+    public class DictionaryAdd<TKey, TValue> : VoidableOperation
     {
         public DictionaryAdd(IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
@@ -324,9 +324,9 @@ namespace JiongXiaGu.VoidableOperations
             this.value = value;
         }
 
-        readonly IDictionary<TKey, TValue> dictionary;
-        readonly TKey key;
-        readonly TValue value;
+        protected readonly IDictionary<TKey, TValue> dictionary;
+        protected readonly TKey key;
+        protected readonly TValue value;
 
         protected override void PerformDo_protected()
         {
@@ -339,7 +339,7 @@ namespace JiongXiaGu.VoidableOperations
         }
     }
 
-    sealed class DictionaryRemove<TKey, TValue> : VoidableOperation
+    public class DictionaryRemove<TKey, TValue> : VoidableOperation
     {
         public DictionaryRemove(IDictionary<TKey, TValue> dictionary, TKey key)
         {
@@ -350,9 +350,9 @@ namespace JiongXiaGu.VoidableOperations
             this.key = key;
         }
 
-        readonly IDictionary<TKey, TValue> dictionary;
-        readonly TKey key;
-        TValue original;
+        protected readonly IDictionary<TKey, TValue> dictionary;
+        protected readonly TKey key;
+        protected TValue original;
 
         protected override void PerformDo_protected()
         {
