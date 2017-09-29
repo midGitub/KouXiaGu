@@ -13,9 +13,9 @@ namespace JiongXiaGu.Unity.RectMaps
     public struct NodeOwnershipInfo : IEquatable<NodeOwnershipInfo>
     {
         /// <summary>
-        /// 所属的国家ID;
+        /// 所属的城镇ID;
         /// </summary>
-        public int CountryID { get; set; }
+        public int CityID { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -28,12 +28,24 @@ namespace JiongXiaGu.Unity.RectMaps
 
         public bool Equals(NodeOwnershipInfo other)
         {
-            throw new NotImplementedException();
+            return CityID == other.CityID;
         }
 
         public override int GetHashCode()
         {
-            return CountryID;
+            var hashCode = 1713381551;
+            hashCode = hashCode * -1521134295 + CityID.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(NodeOwnershipInfo a, NodeOwnershipInfo b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(NodeOwnershipInfo a, NodeOwnershipInfo b)
+        {
+            return !a.Equals(b);
         }
     }
 }

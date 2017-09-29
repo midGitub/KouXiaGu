@@ -50,7 +50,10 @@ namespace JiongXiaGu.Unity.RectMaps
 
         public override int GetHashCode()
         {
-            return TypeID;
+            var hashCode = -654319184;
+            hashCode = hashCode * -1521134295 + TypeID.GetHashCode();
+            hashCode = hashCode * -1521134295 + Angle.GetHashCode();
+            return hashCode;
         }
 
         public static bool operator ==(NodeLandformInfo a, NodeLandformInfo b)

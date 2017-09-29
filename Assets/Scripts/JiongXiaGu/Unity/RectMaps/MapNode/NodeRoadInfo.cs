@@ -36,7 +36,9 @@ namespace JiongXiaGu.Unity.RectMaps
 
         public override int GetHashCode()
         {
-            return TypeID;
+            var hashCode = -173284040;
+            hashCode = hashCode * -1521134295 + TypeID.GetHashCode();
+            return hashCode;
         }
 
         public static bool operator ==(NodeRoadInfo a, NodeRoadInfo b)
