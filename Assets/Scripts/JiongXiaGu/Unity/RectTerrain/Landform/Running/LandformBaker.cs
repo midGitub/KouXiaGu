@@ -2,8 +2,8 @@
 using JiongXiaGu.Grids;
 using JiongXiaGu.Unity.RectTerrain.Resources;
 using JiongXiaGu.Unity;
-using JiongXiaGu.World;
-using JiongXiaGu.World.RectMap;
+using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.RectMaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         [SerializeField, Range(0, 5)]
         float displacement = 1.5f;
         [SerializeField]
-        RectMapDataInitializer mapInitializer;
+        RectMapSceneController mapInitializer;
         [SerializeField]
         LandformDispatcher dispatcher;
         [SerializeField]
@@ -89,11 +89,11 @@ namespace JiongXiaGu.Unity.RectTerrain
             get { return RequestDispatcher.Count <= 0; }
         }
 
-        void Awake()
+        protected override void Awake()
         {
-            SetInstance(this);
             landformBoardCollection.Initialize();
             OnValidate();
+            base.Awake();
         }
 
         void OnValidate()

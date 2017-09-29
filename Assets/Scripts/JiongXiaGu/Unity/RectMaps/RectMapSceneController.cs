@@ -5,19 +5,18 @@ using JiongXiaGu.Unity.Resources;
 using System.Threading;
 using JiongXiaGu.Unity.Resources.Archives;
 using JiongXiaGu.Unity.RectTerrain.Resources;
-using JiongXiaGu.World.Archives;
-using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.Archives;
 
-namespace JiongXiaGu.World.RectMap
+namespace JiongXiaGu.Unity.RectMaps
 {
 
     /// <summary>
     /// 地图数据读取;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectMapDataInitializer : SceneSington<RectMapDataInitializer>, IDataInitializeHandle, ISceneArchiveHandle
+    public sealed class RectMapSceneController : SceneSington<RectMapSceneController>, IDataInitializeHandle, ISceneArchiveHandle
     {
-        RectMapDataInitializer()
+        RectMapSceneController()
         {
         }
 
@@ -52,8 +51,9 @@ namespace JiongXiaGu.World.RectMap
         /// </summary>
         public WorldMap WorldMap { get; private set; }
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new ResourcesMultipleSearcher("World/Data"));
             worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data");
             SetInstance(this);

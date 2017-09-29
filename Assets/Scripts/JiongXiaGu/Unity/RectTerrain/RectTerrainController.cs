@@ -1,30 +1,24 @@
-﻿using JiongXiaGu.Unity;
+﻿using JiongXiaGu.Grids;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Threading;
+using JiongXiaGu.Unity.RectMaps;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
 
     /// <summary>
-    /// 矩形地图的地形;
+    /// 矩形地图全局管理器;
     /// </summary>
     [DisallowMultipleComponent]
-    public class RectTerrainController : SceneSington<RectTerrainController>
+    public sealed class RectTerrainController : UnitySington<RectTerrainController>
     {
         RectTerrainController()
         {
-        }
-
-        [SerializeField]
-        LandformController landform;
-
-        public LandformController Landform
-        {
-            get { return landform; }
         }
     }
 }

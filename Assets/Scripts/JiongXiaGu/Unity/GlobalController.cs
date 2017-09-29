@@ -2,6 +2,7 @@
 using JiongXiaGu.Unity.KeyInputs;
 using System.IO;
 using UnityEngine;
+using JiongXiaGu.Grids;
 
 namespace JiongXiaGu.Unity
 {
@@ -29,13 +30,8 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         void Test()
         {
-            int i = 0;
-            i = BitCombiner.SetValue(i, -344, 0);
-            i = BitCombiner.SetValue(i, -233, 2);
-
-            Debug.Log(BitCombiner.GetInt16(i, 0));
-            Debug.Log(BitCombiner.GetInt16(i, 2));
-            Debug.Log(i);
+            Debug.Log(new RectCoord(int.MaxValue, int.MaxValue).GetHashCode());
+            Debug.Log(new RectCoord(-int.MaxValue, int.MaxValue).GetHashCode());
         }
     }
 }

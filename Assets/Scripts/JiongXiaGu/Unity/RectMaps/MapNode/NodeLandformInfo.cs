@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.World.RectMap
+namespace JiongXiaGu.Unity.RectMaps
 {
 
     /// <summary>
@@ -15,7 +15,7 @@ namespace JiongXiaGu.World.RectMap
     public struct NodeLandformInfo : IEquatable<NodeLandformInfo>
     {
         /// <summary>
-        /// 地形类型;
+        /// 地形类型,0代表不存在;
         /// </summary>
         [ProtoMember(1)]
         public int TypeID { get; set; }

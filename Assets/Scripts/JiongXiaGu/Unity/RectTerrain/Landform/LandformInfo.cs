@@ -49,7 +49,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// </summary>
         public static RectCoord ToLandformChunkCenter(this RectCoord chunkPos)
         {
-            return new RectCoord(chunkPos.x * ChunkRange.RealWidth, chunkPos.y * ChunkRange.RealHeight);
+            return new RectCoord(chunkPos.X * ChunkRange.RealWidth, chunkPos.Y * ChunkRange.RealHeight);
         }
 
         /// <summary>

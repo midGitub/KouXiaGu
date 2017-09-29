@@ -1,7 +1,7 @@
 ﻿using JiongXiaGu.Grids;
 using JiongXiaGu.Unity;
-using JiongXiaGu.World;
-using JiongXiaGu.World.RectMap;
+using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.RectMaps;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -19,13 +19,13 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
         }
 
-        TerrainGuiderGroup<RectCoord> guiderGroup;
+        TerrainGuiderGroup<RectCoord> landformGuiderGroup;
         public LandformBuilder Builder { get; private set; }
         public LandformUpdater Updater { get; private set; }
 
-        public TerrainGuiderGroup<RectCoord> GuiderGroup
+        public TerrainGuiderGroup<RectCoord> LandformGuiderGroup
         {
-            get { return guiderGroup != null ? guiderGroup : guiderGroup = new TerrainGuiderGroup<RectCoord>(); }
+            get { return landformGuiderGroup != null ? landformGuiderGroup : landformGuiderGroup = new TerrainGuiderGroup<RectCoord>(); }
         }
 
         bool IRectTerrainUpdateHandle.IsCompleted
@@ -33,15 +33,10 @@ namespace JiongXiaGu.Unity.RectTerrain
             get { return LandformBaker.Instance.IsBakeComplete; }
         }
 
-        void Awake()
-        {
-            SetInstance(this);
-        }
-
         Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
         {
             Builder = new LandformBuilder(LandformBaker.Instance);
-            Updater = new LandformUpdater(Builder, GuiderGroup, RectMapDataInitializer.Instance.WorldMap);
+            Updater = new LandformUpdater(Builder, LandformGuiderGroup, RectMapSceneController.Instance.WorldMap);
             Debug.Log("[地貌组件]初始化完成;");
             return null;
         }

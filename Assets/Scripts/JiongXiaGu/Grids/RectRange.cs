@@ -14,7 +14,7 @@ namespace JiongXiaGu.Grids
     [Serializable]
     public struct RectRange : IEquatable<RectRange>
     {
-        public RectRange(RectCoord center, int width, int height) : this(center.x, center.y, width, height)
+        public RectRange(RectCoord center, int width, int height) : this(center.X, center.Y, width, height)
         {
         }
 
@@ -104,8 +104,8 @@ namespace JiongXiaGu.Grids
             get { return new RectCoord(x, y); }
             set
             {
-                x = value.x;
-                y = value.y;
+                x = value.X;
+                y = value.Y;
             }
         }
 
@@ -182,23 +182,23 @@ namespace JiongXiaGu.Grids
             RectCoord offset;
 
             offset = child.Northeast - parent.Northeast;
-            if (offset.x > 0)
+            if (offset.X > 0)
             {
-                parent.x += offset.x;
+                parent.x += offset.X;
             }
-            if (offset.y > 0)
+            if (offset.Y > 0)
             {
-                parent.y += offset.y;
+                parent.y += offset.Y;
             }
 
             offset = child.Southwest - parent.Southwest;
-            if (offset.x < 0)
+            if (offset.X < 0)
             {
-                parent.x += offset.x;
+                parent.x += offset.X;
             }
-            if (offset.y < 0)
+            if (offset.Y < 0)
             {
-                parent.y += offset.y;
+                parent.y += offset.Y;
             }
 
             return parent;

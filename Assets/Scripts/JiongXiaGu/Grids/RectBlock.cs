@@ -87,8 +87,8 @@ namespace JiongXiaGu.Grids
         /// </summary>
         public RectCoord GetChunk(RectCoord coord)
         {
-            short x = (short)Math.Round(coord.x / (float)width);
-            short y = (short)Math.Round(coord.y / (float)height);
+            short x = (short)Math.Round(coord.X / (float)width);
+            short y = (short)Math.Round(coord.Y / (float)height);
             return new Grids.RectCoord(x, y);
         }
 
@@ -97,8 +97,8 @@ namespace JiongXiaGu.Grids
         /// </summary>
         public RectCoord GetCenter(RectCoord chunk)
         {
-            int x = chunk.x * width;
-            int y = chunk.y * height;
+            int x = chunk.X * width;
+            int y = chunk.Y * height;
             return new RectCoord((short)x, (short)y);
         }
 
@@ -111,9 +111,9 @@ namespace JiongXiaGu.Grids
             RectCoord southwest = SouthwestAdge(center);
             RectCoord northeast = NorthEastAdge(center);
 
-            for (short x = southwest.x; x <= northeast.x; x++)
+            for (var x = southwest.X; x <= northeast.X; x++)
             {
-                for (short y = southwest.y; y <= northeast.y; y++)
+                for (var y = southwest.Y; y <= northeast.Y; y++)
                 {
                     yield return new RectCoord(x, y);
                 }
@@ -122,15 +122,15 @@ namespace JiongXiaGu.Grids
 
         RectCoord SouthwestAdge(RectCoord coord)
         {
-            int x = coord.x - width / 2;
-            int y = coord.y - height / 2;
+            int x = coord.X - width / 2;
+            int y = coord.Y - height / 2;
             return new RectCoord((short)x, (short)y);
         }
 
         RectCoord NorthEastAdge(RectCoord coord)
         {
-            int x = coord.x + width / 2;
-            int y = coord.y + height / 2;
+            int x = coord.X + width / 2;
+            int y = coord.Y + height / 2;
             return new RectCoord((short)x, (short)y);
         }
 

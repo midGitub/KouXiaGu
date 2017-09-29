@@ -94,8 +94,8 @@ namespace JiongXiaGu.Grids
         /// </summary>
         public CubicHexCoord GetCenter(RectCoord chunk)
         {
-            int x = chunk.x * width;
-            int y = chunk.y * height;
+            int x = chunk.X * width;
+            int y = chunk.Y * height;
             return new CubicHexCoord((short)x, (short)y);
         }
 

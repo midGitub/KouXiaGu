@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             LandformController controller = LandformController.Instance;
             if (controller != null)
             {
-                controller.GuiderGroup.Add(this);
+                controller.LandformGuiderGroup.Add(this);
             }
         }
 
@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             LandformController controller = LandformController.Instance;
             if (controller != null)
             {
-                controller.GuiderGroup.Remove(this);
+                controller.LandformGuiderGroup.Remove(this);
             }
         }
 

@@ -244,14 +244,23 @@ namespace JiongXiaGu.Grids
 
         public override int GetHashCode()
         {
-            //int hashCode = x ^ y;
-
-            //在数值不大于10位的时候获得最好的性能;
-            int hashCode = x << 21 & -0x7FE00000;
-            hashCode |= y << 10 & 0x1FFC00;
-            hashCode |= z & 0x3FF;
+            var hashCode = 1502939027;
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
+            hashCode = hashCode * -1521134295 + z.GetHashCode();
             return hashCode;
         }
+
+        //public override int GetHashCode()
+        //{
+        //    //int hashCode = x ^ y;
+
+        //    //在数值不大于10位的时候获得最好的性能;
+        //    int hashCode = x << 21 & -0x7FE00000;
+        //    hashCode |= y << 10 & 0x1FFC00;
+        //    hashCode |= z & 0x3FF;
+        //    return hashCode;
+        //}
 
         ///// <summary>
         ///// 将哈希值转换成坐标;
@@ -612,7 +621,6 @@ namespace JiongXiaGu.Grids
                 }
             }
         }
-
 
         public static bool operator ==(CubicHexCoord a, CubicHexCoord b)
         {

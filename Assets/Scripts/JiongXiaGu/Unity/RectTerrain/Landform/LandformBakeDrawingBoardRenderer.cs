@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using JiongXiaGu.Grids;
-using JiongXiaGu.World;
+using JiongXiaGu.Unity;
 using JiongXiaGu.Unity.RectTerrain.Resources;
 
 namespace JiongXiaGu.Unity.RectTerrain

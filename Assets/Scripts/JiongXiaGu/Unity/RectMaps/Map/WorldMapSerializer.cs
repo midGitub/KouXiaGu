@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System;
 using JiongXiaGu.Unity.Resources;
 
-namespace JiongXiaGu.World.RectMap
+namespace JiongXiaGu.Unity.RectMaps
 {
 
     public class WorldMapSerializer : DataSerializer<MapData, MapData, WorldMap>

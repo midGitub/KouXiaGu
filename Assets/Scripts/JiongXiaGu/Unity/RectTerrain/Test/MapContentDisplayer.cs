@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using JiongXiaGu.Grids;
-using JiongXiaGu.World.RectMap;
-using JiongXiaGu.World;
+using JiongXiaGu.Unity.RectMaps;
+using JiongXiaGu.Unity;
 using System.Threading;
 using UnityEngine.UI;
 
@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         void IWorldCompletedHandle.OnWorldCompleted()
         {
-            map = RectMapDataInitializer.Instance.WorldMap.Map;
+            map = RectMapSceneController.Instance.WorldMap.Map;
         }
 
         void Update()

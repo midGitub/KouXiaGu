@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JiongXiaGu.Grids;
-using JiongXiaGu.World.RectMap;
+using JiongXiaGu.Unity.RectMaps;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
             worldMap = map;
             mapChangedRecorder = new DictionaryChangedRecorder<RectCoord, MapNode>();
-            unsubscriber = map.ObservableMap.Subscribe(mapChangedRecorder);
+            unsubscriber = map.Map.Subscribe(mapChangedRecorder);
         }
 
         WorldMap worldMap;

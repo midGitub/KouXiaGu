@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using JiongXiaGu.Unity.Resources.Archives;
 
-namespace JiongXiaGu.World.Archives
+namespace JiongXiaGu.Unity.Archives
 {
 
     /// <summary>

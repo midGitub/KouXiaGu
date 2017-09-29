@@ -5,7 +5,7 @@ namespace JiongXiaGu
 {
 
     /// <summary>
-    /// 字典变化记录器;
+    /// 字典变化记录器(线程安全);
     /// </summary>
     public class DictionaryChangedRecorder<TKey, TValue> : IDictionaryObserver<TKey, TValue>
     {

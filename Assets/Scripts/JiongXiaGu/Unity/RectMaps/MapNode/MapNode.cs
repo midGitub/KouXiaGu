@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.World.RectMap
+namespace JiongXiaGu.Unity.RectMaps
 {
 
     /// <summary>
@@ -17,10 +17,10 @@ namespace JiongXiaGu.World.RectMap
         [ProtoMember(1)]
         public NodeLandformInfo Landform { get; set; }
 
-        [ProtoMember(2)]
+        [ProtoMember(10)]
         public NodeBuildingInfo Building { get; set; }
 
-        [ProtoMember(3)]
+        [ProtoMember(20)]
         public NodeRoadInfo Road { get; set; }
     }
 }

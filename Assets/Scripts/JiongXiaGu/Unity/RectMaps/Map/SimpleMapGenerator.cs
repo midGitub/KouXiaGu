@@ -5,7 +5,7 @@ using JiongXiaGu.Unity.RectTerrain.Resources;
 using JiongXiaGu.Grids;
 using JiongXiaGu.Collections;
 
-namespace JiongXiaGu.World.RectMap
+namespace JiongXiaGu.Unity.RectMaps
 {
 
     /// <summary>

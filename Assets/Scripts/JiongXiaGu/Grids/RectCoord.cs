@@ -1,8 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using JiongXiaGu.Grids;
-using ProtoBuf;
 using UnityEngine;
 
 namespace JiongXiaGu.Grids
@@ -25,7 +24,6 @@ namespace JiongXiaGu.Grids
         Northwest = 128,
         Self = 256,
     }
-
 
     /// <summary>
     /// 矩形网格的坐标;
@@ -101,25 +99,31 @@ namespace JiongXiaGu.Grids
             RecDirections.North,
         };
 
-        [ProtoMember(1)]
-        public short x;
+        [ProtoMember(1), SerializeField]
+        int x;
 
-        [ProtoMember(2)]
-        public short y;
+        [ProtoMember(2), SerializeField]
+        int y;
 
-        public RectCoord(short x, short y)
+        public int X
+        {
+            get { return x; }
+            set { x = value; }
+        }
+
+        public int Y
+        {
+            get { return y; }
+            set { y = value; }
+        }
+
+        public RectCoord(int x, int y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public RectCoord(int x, int y)
-        {
-            this.x = (short)x;
-            this.y = (short)y;
-        }
-
-        public void SetValue(short x, short y)
+        public void SetValue(int x, int y)
         {
             this.x = x;
             this.y = y;
@@ -127,7 +131,7 @@ namespace JiongXiaGu.Grids
 
         public override string ToString()
         {
-            return String.Concat("(", x, " , ", y, ")");
+            return String.Concat("(", X, " , ", Y, ")");
         }
 
         public override bool Equals(object obj)
@@ -139,20 +143,16 @@ namespace JiongXiaGu.Grids
 
         public bool Equals(RectCoord other)
         {
-            return x == other.x && y == other.y;
+            return X == other.X && Y == other.Y;
         }
 
-        /// <summary>
-        /// 根据位置确定哈希值;
-        /// </summary>
-        /// <returns></returns>
         public override int GetHashCode()
         {
-            int hashCode = x << 16;
-            hashCode += short.MaxValue + y;
+            var hashCode = -49524601;
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
             return hashCode;
         }
-
 
         /// <summary>
         /// 获取到这个方向的坐标;
@@ -169,7 +169,7 @@ namespace JiongXiaGu.Grids
         {
             foreach (var direction in Directions)
             {
-                yield return new CoordPack<RectCoord, RecDirections>(this.GetDirection(direction), direction);
+                yield return new CoordPack<RectCoord, RecDirections>(GetDirection(direction), direction);
             }
         }
 
@@ -180,7 +180,7 @@ namespace JiongXiaGu.Grids
         {
             foreach (var direction in GetDirections(directions))
             {
-                yield return new CoordPack<RectCoord, RecDirections>(this.GetDirection(direction), direction);
+                yield return new CoordPack<RectCoord, RecDirections>(GetDirection(direction), direction);
             }
         }
 
@@ -191,7 +191,7 @@ namespace JiongXiaGu.Grids
         {
             foreach (var direction in DirectionsAndSelf)
             {
-                yield return new CoordPack<RectCoord, RecDirections>(this.GetDirection(direction), direction);
+                yield return new CoordPack<RectCoord, RecDirections>(GetDirection(direction), direction);
             }
         }
 
@@ -206,24 +206,12 @@ namespace JiongXiaGu.Grids
             return GetNeighboursAndSelf().Select(coord => coord.Point).Cast<IGrid>();
         }
 
-
-        /// <summary>
-        /// 将哈希值转换成坐标;
-        /// </summary>
-        public static RectCoord HashCodeToVector(int hashCode)
-        {
-            short x = (short)(hashCode >> 16);
-            short y = (short)((hashCode & 0xFFFF) - short.MaxValue);
-            return new RectCoord(x, y);
-        }
-
-
         /// <summary>
         /// 获取这两个点的距离;
         /// </summary>
         public static float Distance(RectCoord v1, RectCoord v2)
         {
-            float distance = (float)Math.Sqrt(Math.Pow((v1.x - v2.x), 2) + Math.Pow((v1.y - v2.y), 2));
+            float distance = (float)Math.Sqrt(Math.Pow((v1.X - v2.X), 2) + Math.Pow((v1.Y - v2.Y), 2));
             return distance;
         }
 
@@ -232,10 +220,9 @@ namespace JiongXiaGu.Grids
         /// </summary>
         public static int ManhattanDistance(RectCoord v1, RectCoord v2)
         {
-            int distance = Math.Abs(v1.x - v2.x) + Math.Abs(v1.y - v2.y);
+            int distance = Math.Abs(v1.X - v2.X) + Math.Abs(v1.Y - v2.Y);
             return distance;
         }
-
 
         /// <summary>
         /// 按标记为从 高位到低位 循序返回的迭代结构;不包含本身
@@ -276,16 +263,14 @@ namespace JiongXiaGu.Grids
             }
         }
 
-
-
         /// <summary>
         /// 返回矩形内的所有的点;step 应该为正数;
         /// </summary>
         public static IEnumerable<RectCoord> Range(RectCoord southwest, RectCoord northeast)
         {
-            for (short x = southwest.x; x <= northeast.x; x++)
+            for (int x = southwest.X; x <= northeast.X; x++)
             {
-                for (short y = southwest.y; y <= northeast.y; y++)
+                for (int y = southwest.Y; y <= northeast.Y; y++)
                 {
                     yield return new RectCoord(x, y);
                 }
@@ -295,7 +280,7 @@ namespace JiongXiaGu.Grids
         /// <summary>
         /// 返回矩形内的所有的点;step 应该为正数;
         /// </summary>
-        public static IEnumerable<RectCoord> Range(RectCoord center, short step)
+        public static IEnumerable<RectCoord> Range(RectCoord center, int step)
         {
             if (step < 0)
                 throw new ArgumentOutOfRangeException();
@@ -308,13 +293,13 @@ namespace JiongXiaGu.Grids
         /// <summary>
         /// 返回矩形内的所有的点;step 应该为正数;
         /// </summary>
-        public static IEnumerable<RectCoord> Range(RectCoord center, short stepX, short stepY)
+        public static IEnumerable<RectCoord> Range(RectCoord center, int stepX, int stepY)
         {
             if (stepX < 0 || stepY < 0)
                 throw new ArgumentOutOfRangeException();
 
-            RectCoord southwest = new RectCoord(center.x - stepX, center.y - stepY);
-            RectCoord northeast = new RectCoord(center.x + stepX, center.y + stepY);
+            RectCoord southwest = new RectCoord(center.X - stepX, center.Y - stepY);
+            RectCoord northeast = new RectCoord(center.X + stepX, center.Y + stepY);
             return Range(southwest, northeast);
         }
 
@@ -403,10 +388,9 @@ namespace JiongXiaGu.Grids
             }
         }
 
-
         public static bool operator ==(RectCoord a, RectCoord b)
         {
-            return  a.x == b.x && a.y == b.y;
+            return  a.X == b.X && a.Y == b.Y;
         }
 
         public static bool operator !=(RectCoord a, RectCoord b)
@@ -416,45 +400,44 @@ namespace JiongXiaGu.Grids
 
         public static RectCoord operator -(RectCoord point1, RectCoord point2)
         {
-            point1.x -= point2.x;
-            point1.y -= point2.y;
+            point1.X -= point2.X;
+            point1.Y -= point2.Y;
             return point1;
         }
 
         public static RectCoord operator +(RectCoord point1, RectCoord point2)
         {
-            point1.x += point2.x;
-            point1.y += point2.y;
+            point1.X += point2.X;
+            point1.Y += point2.Y;
             return point1;
         }
 
         public static RectCoord operator *(RectCoord point1, int n)
         {
-            point1.x = (short)(point1.x * n);
-            point1.y = (short)(point1.y * n);
+            point1.X = point1.X * n;
+            point1.Y = point1.Y * n;
             return point1;
         }
 
         public static RectCoord operator /(RectCoord point1, int n)
         {
-            point1.x = (short)(point1.x / n);
-            point1.y = (short)(point1.y / n);
+            point1.X = point1.X / n;
+            point1.Y = point1.Y / n;
             return point1;
         }
 
         public static RectCoord operator +(RectCoord point1, int n)
         {
-            point1.x = (short)(point1.x + n);
-            point1.y = (short)(point1.y + n);
+            point1.X = point1.X + n;
+            point1.Y = point1.Y + n;
             return point1;
         }
 
         public static RectCoord operator -(RectCoord point1, int n)
         {
-            point1.x = (short)(point1.x - n);
-            point1.y = (short)(point1.y - n);
+            point1.X = point1.X - n;
+            point1.Y = point1.Y - n;
             return point1;
         }
-
     }
 }
