@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Concurrent;
+using JiongXiaGu.Unity;
 using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.Resources.Archives;
 using System.Collections;

@@ -83,6 +83,11 @@ namespace JiongXiaGu.Unity
             }
         }
 
+        protected virtual void Awake()
+        {
+            SetInstance(this as T);
+        }
+
         protected virtual void OnDestroy()
         {
             if (Instance != null && Instance != this)

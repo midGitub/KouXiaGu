@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.World
+namespace JiongXiaGu.Unity
 {
     public interface IComponentInitializeHandle
     {

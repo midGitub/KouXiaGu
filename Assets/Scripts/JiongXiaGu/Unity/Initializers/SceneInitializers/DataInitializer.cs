@@ -1,13 +1,9 @@
-﻿using JiongXiaGu.Concurrent;
-using JiongXiaGu.Unity.Resources.Archives;
-using JiongXiaGu.Unity;
-using System;
-using System.Collections.Generic;
+﻿using JiongXiaGu.Unity.Resources.Archives;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace JiongXiaGu.World
+namespace JiongXiaGu.Unity
 {
 
     /// <summary>
