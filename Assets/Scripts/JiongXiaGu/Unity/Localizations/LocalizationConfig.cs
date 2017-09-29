@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.Unity.Translates
+namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
-    /// 本地化组件观察者;
+    /// 语言配置信息;
     /// </summary>
-    public interface ILanguageObserver
+    public struct LocalizationConfig
     {
         /// <summary>
-        /// 当语言发生变化后调用(在Unity线程调用);
+        /// 语言类型;
         /// </summary>
-        void OnLanguageChanged();
+        public LanguagePackInfo LanguagePackInfo { get; set; }
     }
 }

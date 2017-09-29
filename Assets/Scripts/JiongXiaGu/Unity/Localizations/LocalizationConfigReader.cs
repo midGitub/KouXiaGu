@@ -1,7 +1,7 @@
 ﻿using JiongXiaGu.Unity.Resources;
 using System.IO;
 
-namespace JiongXiaGu.Unity.Translates
+namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>

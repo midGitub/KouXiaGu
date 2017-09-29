@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace JiongXiaGu.Unity.Translates
+namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
@@ -27,11 +27,19 @@ namespace JiongXiaGu.Unity.Translates
         [XmlElement]
         public LanguageDictionary LanguageDictionary { get; set; }
 
-        public LanguagePack(string name, string language)
+        LanguagePack()
+        {
+        }
+
+        public LanguagePack(string name, string language) : this(name, language, new LanguageDictionary())
+        {
+        }
+
+        public LanguagePack(string name, string language, LanguageDictionary languageDictionary)
         {
             Name = name;
             Language = language;
-            LanguageDictionary = new LanguageDictionary();
+            LanguageDictionary = languageDictionary;
         }
 
         public static implicit operator LanguagePackInfo(LanguagePack info)

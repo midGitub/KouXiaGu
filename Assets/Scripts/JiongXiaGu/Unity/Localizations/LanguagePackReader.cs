@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace JiongXiaGu.Unity.Translates
+namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
@@ -38,8 +38,16 @@ namespace JiongXiaGu.Unity.Translates
         {
             using (var stream = info.FileInfo.OpenRead())
             {
-                return (LanguagePack)languagePackSerializer.Deserialize(stream);
+                return Read(stream);
             }
+        }
+
+        /// <summary>
+        /// 读取语言包;
+        /// </summary>
+        public LanguagePack Read(Stream stream)
+        {
+            return (LanguagePack)languagePackSerializer.Deserialize(stream);
         }
 
         /// <summary>
@@ -55,6 +63,14 @@ namespace JiongXiaGu.Unity.Translates
                 languagePackSerializer.SerializeXiaGu(languagePack, stream);
             }
             return new LanguagePackFileInfo(fileInfo, languagePack.Name, languagePack.Language);
+        }
+
+        /// <summary>
+        /// 输出语言文件;
+        /// </summary>
+        public void Write(Stream stream, LanguagePack languagePack)
+        {
+            languagePackSerializer.SerializeXiaGu(languagePack, stream);
         }
 
         /// <summary>

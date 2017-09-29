@@ -256,19 +256,19 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 这两个合集是否拥有相同的内容?尽管顺序和包含个数不同;
         /// </summary>
-        public static bool IsSameContent<T>(this IEnumerable<T> collection, ICollection<T> otherList)
+        public static bool IsSameContent<T>(this ICollection<T> collection, IEnumerable<T> other)
         {
             if (collection == null)
                 throw new ArgumentNullException("list");
-            if (otherList == null)
+            if (other == null)
                 throw new ArgumentNullException("otherList");
 
-            if (collection == otherList)
+            if (collection == other)
                 return true;
 
-            foreach (var item in collection)
+            foreach (var item in other)
             {
-                if (!otherList.Contains(item))
+                if (!collection.Contains(item))
                 {
                     return false;
                 }
@@ -276,26 +276,57 @@ namespace JiongXiaGu.Collections
             return true;
         }
 
+        /// <summary>
+        /// 这两个合集是否拥有相同的内容?
+        /// </summary>
+        public static bool IsSameContent<TKey, TValue>(this IDictionary<TKey, TValue> collection, IEnumerable<KeyValuePair<TKey, TValue>> other)
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+            if (other == null)
+                throw new ArgumentNullException("other");
+            if (collection == other)
+                return true;
+
+            foreach (var pair in other)
+            {
+                TValue value;
+                if (collection.TryGetValue(pair.Key, out value))
+                {
+                    if (pair.Value.Equals(value))
+                    {
+                        continue;
+                    }
+                }
+                return false;
+            }
+            return true;
+        }
+
 
         /// <summary>
-        /// 这两个合集是否完全相同?
+        /// 这两个合集返回内容和返回次序是否完全相同?
         /// </summary>
-        public static bool IsClone<T>(this IList<T> list, IList<T> otherList)
+        public static bool IsSame<T>(this IEnumerable<T> collection, IEnumerable<T> other)
         {
-            if (list == null)
-                throw new ArgumentNullException("list");
-            if (otherList == null)
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+            if (other == null)
                 throw new ArgumentNullException("otherList");
-
-            if (list == otherList)
+            if (collection == other)
                 return true;
-            if (list.Count != otherList.Count)
-                return false;
 
-            for (int i = 0; i < list.Count; i++)
+            IEnumerator<T> otherEnumerator = other.GetEnumerator();
+            foreach (var item in collection)
             {
-                if (list[i].Equals(otherList[i]))
-                    return false;
+                if (otherEnumerator.MoveNext())
+                {
+                    if (item.Equals(otherEnumerator.Current))
+                    {
+                        continue;
+                    }
+                }
+                return false;
             }
             return true;
         }
