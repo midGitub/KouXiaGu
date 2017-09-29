@@ -22,16 +22,24 @@ namespace JiongXiaGu.Unity.Localizations
         static readonly List<ILanguageObserver> languageHandlers = new List<ILanguageObserver>();
 
         /// <summary>
-        /// 不允许更改当前语言;
+        /// 是否不允许更改当前语言;
         /// </summary>
         public static bool IsLockLanguage { get; internal set; } = false;
+
+        /// <summary>
+        /// 组件是否准备完成?
+        /// </summary>
+        public static bool IsReady
+        {
+            get { return LanguagePackGroup != null; }
+        }
 
         /// <summary>
         /// 当前语言类型,若未进行设置则返回 "Unknow";
         /// </summary>
         public static string Language
         {
-            get { return LanguagePackGroup != null ? LanguagePackGroup.Language : "Unknow"; }
+            get { return IsReady ? LanguagePackGroup.Language : "Unknow"; }
         }
 
         /// <summary>

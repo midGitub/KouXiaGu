@@ -8,11 +8,11 @@ namespace JiongXiaGu.Collections
     /// <summary>
     /// 空的迭代结构;
     /// </summary>
-    public struct StaticEnumerator<T> : IEnumerator<T>, IEnumerable<T>
+    public struct EmptyCollection<T> : IReadOnlyCollection<T>, IReadOnlyList<T>, IEnumerator<T>, IEnumerable<T>
     {
-        public static StaticEnumerator<T> Default
+        public static EmptyCollection<T> Default
         {
-            get { return new StaticEnumerator<T>(); }
+            get { return new EmptyCollection<T>(); }
         }
 
         T IEnumerator<T>.Current
@@ -23,6 +23,16 @@ namespace JiongXiaGu.Collections
         object IEnumerator.Current
         {
             get { return default(T); }
+        }
+
+        int IReadOnlyCollection<T>.Count
+        {
+            get { return 0; }
+        }
+
+        T IReadOnlyList<T>.this[int index]
+        {
+            get { throw new ArgumentOutOfRangeException("index"); }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

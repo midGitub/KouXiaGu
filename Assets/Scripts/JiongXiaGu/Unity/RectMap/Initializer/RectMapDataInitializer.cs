@@ -101,7 +101,6 @@ namespace JiongXiaGu.World.RectMap
             Debug.Log(prefix + "初始化完成;" + info);
         }
 
-
         Task ISceneArchiveHandle.WriteArchive(Archive archive, CancellationToken token)
         {
             return Task.Run(delegate ()

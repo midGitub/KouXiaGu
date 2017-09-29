@@ -23,7 +23,7 @@ namespace JiongXiaGu.Unity.KeyInputs
 
         public IEnumerable<KeyCode> Keys
         {
-            get { return keys ?? (IEnumerable<KeyCode>)StaticEnumerator<KeyCode>.Default; }
+            get { return keys ?? (IEnumerable<KeyCode>)EmptyCollection<KeyCode>.Default; }
         }
 
         public int KeyCount
