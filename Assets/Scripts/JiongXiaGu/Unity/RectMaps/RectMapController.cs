@@ -14,7 +14,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// 地图数据读取;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectMapController : SceneSington<RectMapController>, IDataInitializeHandle, ISceneArchiveHandle
+    public sealed class RectMapController : SceneSington<RectMapController>, IDataInitializeHandle
     {
         RectMapController()
         {
@@ -101,12 +101,12 @@ namespace JiongXiaGu.Unity.RectMaps
             Debug.Log(prefix + "初始化完成;" + info);
         }
 
-        Task ISceneArchiveHandle.WriteArchive(Archive archive, CancellationToken token)
-        {
-            return Task.Run(delegate ()
-            {
-                worldMapSerializer.Serialize(archive, WorldMap);
-            }, token);
-        }
+        //Task WriteArchive(Archive archive, CancellationToken token)
+        //{
+        //    return Task.Run(delegate ()
+        //    {
+        //        worldMapSerializer.Serialize(archive, WorldMap);
+        //    }, token);
+        //}
     }
 }

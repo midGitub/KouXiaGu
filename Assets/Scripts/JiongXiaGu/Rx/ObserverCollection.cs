@@ -21,6 +21,11 @@ namespace JiongXiaGu
         IDisposable Subscribe(T observer);
 
         /// <summary>
+        /// 取消订阅;
+        /// </summary>
+        bool Unsubscribe(T observer);
+
+        /// <summary>
         /// 迭代获取到观察者,并且在迭代过程中允许对删除合集元素,但是不允许嵌套;
         /// 若在迭代时加入新元素,则不会出现在本次迭代;
         /// </summary>
@@ -73,6 +78,14 @@ namespace JiongXiaGu
         }
 
         /// <summary>
+        /// 取消订阅;
+        /// </summary>
+        public bool Unsubscribe(T observer)
+        {
+            return observersCollection.Remove(observer);
+        }
+
+        /// <summary>
         /// 迭代获取到观察者,并且在迭代过程中允许对删除合集元素,但是不允许嵌套;
         /// </summary>
         public IEnumerable<T> EnumerateObserver()
@@ -105,6 +118,11 @@ namespace JiongXiaGu
                 this.node = node;
             }
 
+            ~Unsubscriber()
+            {
+                Dispose(false);
+            }
+
             bool isUnsubscribed;
             ObserverLinkedList<T> parent;
             LinkedListNode<T> node;
@@ -122,13 +140,18 @@ namespace JiongXiaGu
 
             public void Dispose()
             {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            void Dispose(bool disposing)
+            {
                 if (!isUnsubscribed)
                 {
                     if (node == currentNode)
                     {
                         currentNode = currentNode.Next;
                     }
-
                     observers.Remove(node);
                     isUnsubscribed = true;
                 }
@@ -194,6 +217,11 @@ namespace JiongXiaGu
             return new Unsubscriber(observersCollection, observer);
         }
 
+        public bool Unsubscribe(T observer)
+        {
+            return observersCollection.Remove(observer);
+        }
+
         public IEnumerable<T> EnumerateObserver()
         {
             T[] observerArray = observersCollection.ToArray();
@@ -219,11 +247,22 @@ namespace JiongXiaGu
                 this.item = item;
             }
 
+            ~Unsubscriber()
+            {
+                Dispose(false);
+            }
+
             bool isUnsubscribe;
             readonly ICollection<T> observersCollection;
             readonly T item;
 
-            void IDisposable.Dispose()
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            void Dispose(bool disposing)
             {
                 if (!isUnsubscribe)
                 {

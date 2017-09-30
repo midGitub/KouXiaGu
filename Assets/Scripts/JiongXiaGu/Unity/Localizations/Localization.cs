@@ -19,7 +19,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 观察者合集;
         /// </summary>
-        static readonly List<ILanguageObserver> languageHandlers = new List<ILanguageObserver>();
+        static readonly IObserverCollection<ILanguageObserver> observers = new ObserverLinkedList<ILanguageObserver>();
 
         /// <summary>
         /// 是否不允许更改当前语言;
@@ -106,7 +106,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         internal static void OnLanguageChanged()
         {
-            foreach (var languageHandler in languageHandlers)
+            foreach (var languageHandler in observers.EnumerateObserver())
             {
                 try
                 {
@@ -124,11 +124,9 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public static IDisposable Subscribe(ILanguageObserver handler)
         {
-            if (!languageHandlers.Contains(handler))
+            if (!observers.Contains(handler))
             {
-                languageHandlers.Add(handler);
-                var unsubscriber = new CollectionUnsubscriber<ILanguageObserver>(languageHandlers, handler);
-                return unsubscriber;
+                return observers.Subscribe(handler);
             }
             return null;
         }
@@ -138,7 +136,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public static bool Unsubscribe(ILanguageObserver handler)
         {
-            return languageHandlers.Remove(handler);
+            return observers.Unsubscribe(handler);
         }
     }
 }

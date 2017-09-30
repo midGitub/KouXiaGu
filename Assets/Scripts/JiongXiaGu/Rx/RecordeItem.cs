@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 
 namespace JiongXiaGu
 {
@@ -6,6 +6,7 @@ namespace JiongXiaGu
     /// <summary>
     /// 记录条目;
     /// </summary>
+    [Obsolete]
     public struct RecordeItem<TKey, TValue>
     {
         public RecordeItem(TKey key)

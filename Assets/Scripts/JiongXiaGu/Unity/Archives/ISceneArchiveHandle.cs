@@ -11,8 +11,22 @@ namespace JiongXiaGu.Unity.Archives
     public interface ISceneArchiveHandle
     {
         /// <summary>
+        /// 表示开始进行存档操作;
+        /// </summary>
+        void Prepare(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// 准备存档内容;
+        /// </summary>
+        /// <param name="archive">存档路径;</param>
+        /// <param name="cancellationToken">取消存档标记;</param>
+        void Begin();
+
+        /// <summary>
         /// 输出存档内容;
         /// </summary>
-        Task WriteArchive(Archive archive, CancellationToken token);
+        /// <param name="archive">存档路径;</param>
+        /// <param name="cancellationToken">取消存档标记;</param>
+        Task Write(Archive archive);
     }
 }

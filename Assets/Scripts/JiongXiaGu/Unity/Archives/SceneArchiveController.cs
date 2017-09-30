@@ -1,5 +1,4 @@
-﻿using JiongXiaGu.Unity;
-using JiongXiaGu.Unity.Resources;
+﻿using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.Resources.Archives;
 using System;
 using System.Collections.Generic;
@@ -42,53 +41,58 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 将存档内容输出到存档目录(仅在Unity线程调用);
         /// </summary>
-        public async Task WriteArchive(Archive archive)
+        public Task WriteArchive(Archive archive)
         {
             if (IsWriting)
-            {
                 throw new ArgumentException("正在进行存档任务;");
-            }
 
             Debug.Log("正在进行存档任务:" + archive.ToString());
 
             ISceneArchiveHandle[] archivers = GetComponentsInChildren<ISceneArchiveHandle>();
-            List<Task> tasks = new List<Task>();
             tokenSource = new CancellationTokenSource();
             archive.Info = archive.Info.Update();
             Archive tempArchive = GetTempArchive(archive.Info);
 
-            try
+            WriteArchiveTask = Task.Run(delegate ()
             {
-                tempArchive.Create();
-
-                foreach (var archiver in archivers)
+                try
                 {
-                    Task task = archiver.WriteArchive(tempArchive, tokenSource.Token);
-                    if (task != null)
+                    tempArchive.Create();
+
+                    //通知开始进行存档操作;
+                    foreach (var archiver in archivers)
                     {
-                        tasks.Add(task);
+                        archiver.Prepare(tokenSource.Token);
                     }
+
+                    //准备存档内容;
+                    foreach (var archiver in archivers)
+                    {
+                        archiver.Begin();
+                    }
+
+                    var tasks = new List<Task>();
+                    //输出存档内容;
+                    foreach (var archiver in archivers)
+                    {
+                        Task task = archiver.Write(tempArchive);
+                        if (task != null)
+                        {
+                            tasks.Add(task);
+                        }
+                    }
+                    Task.WaitAll(tasks.ToArray());
+                    tempArchive.MoveTo(archive);
                 }
-
-                WriteArchiveTask = Task.WhenAll(tasks).ContinueWith(delegate (Task task)
+                catch (Exception ex)
                 {
-                    if (task.IsFaulted)
-                    {
-                        throw task.Exception;
-                    }
-                    else
-                    {
-                        tempArchive.MoveTo(archive);
-                    }
-                });
-                await WriteArchiveTask;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning("存档时发生错误:" + ex);
-                tempArchive.Delete();
-                throw ex;
-            }
+                    Debug.LogWarning("存档时发生错误:" + ex);
+                    tokenSource.Cancel();
+                    tempArchive.Delete();
+                    throw ex;
+                }
+            }, tokenSource.Token);
+            return WriteArchiveTask;
         }
 
         /// <summary>
