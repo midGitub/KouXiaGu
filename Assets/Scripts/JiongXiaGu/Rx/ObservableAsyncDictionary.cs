@@ -10,6 +10,7 @@ namespace JiongXiaGu
     public class ObservableAsyncDictionary<TKey, TValue> : ObservableDictionary<TKey, TValue>
     {
         readonly DictionaryOperationCache dictionaryOperationCache;
+        readonly object asyncLock = new object();
 
         public ObservableAsyncDictionary(IDictionary<TKey, TValue> dictionary) : base(dictionary)
         {
@@ -23,17 +24,26 @@ namespace JiongXiaGu
 
         protected override void OnAdded(TKey key, TValue newValue)
         {
-            dictionaryOperationCache.Add(key, newValue);
+            lock (asyncLock)
+            {
+                dictionaryOperationCache.Add(key, newValue);
+            }
         }
 
         protected override void OnRemoved(TKey key, TValue original)
         {
-            dictionaryOperationCache.Remove(key, original);
+            lock (asyncLock)
+            {
+                dictionaryOperationCache.Remove(key, original);
+            }
         }
 
         protected override void OnUpdated(TKey key, TValue original, TValue newValue)
         {
-            dictionaryOperationCache.Update(key, original, newValue);
+            lock (asyncLock)
+            {
+                dictionaryOperationCache.Update(key, original, newValue);
+            }
         }
 
         /// <summary>
@@ -41,7 +51,13 @@ namespace JiongXiaGu
         /// </summary>
         public void TrackAll()
         {
-            foreach (var operation in dictionaryOperationCache.DictionaryOperations)
+            DictionaryOperation[] dictionaryOperations;
+            lock (asyncLock)
+            {
+                dictionaryOperations = dictionaryOperationCache.DictionaryOperations.ToArray();
+                dictionaryOperationCache.DictionaryOperations.Clear();
+            }
+            foreach (var operation in dictionaryOperations)
             {
                 Action<IDictionaryObserver<TKey, TValue>> trackAction;
                 switch (operation.OperationType)

@@ -10,6 +10,11 @@ namespace JiongXiaGu.Unity
     /// </summary>
     public interface IDataInitializeHandle
     {
+        /// <summary>
+        /// 进行初始化,
+        /// </summary>
+        /// <param name="archive">若不存在存档,则为null</param>
+        /// <param name="token">取消标记</param>
         Task StartInitialize(Archive archive, CancellationToken token);
     }
 }

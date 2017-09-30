@@ -17,7 +17,7 @@ namespace JiongXiaGu.Unity
         }
 
         /// <summary>
-        /// 存档信息,在初始化之前赋值,若未Null则初始化异常;
+        /// 存档信息,在初始化之前赋值,若为Null则表示不通过存档初始化;
         /// </summary>
         public static Archive Archive { get; set; }
 

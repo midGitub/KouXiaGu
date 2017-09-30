@@ -12,34 +12,6 @@ namespace JiongXiaGu.Unity.RectMaps
     /// </summary>
     public class WorldMap
     {
-        public WorldMap() : this(new MapData())
-        {
-        }
-
-        public WorldMap(MapData data)
-        {
-            if (data == null)
-                throw new ArgumentNullException("data");
-
-            MapData = data;
-            Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-            MapChangedRecorder = new WorldMapChangedRecorder<RectCoord, MapNode>(Map);
-            MapEditorLock = new ReaderWriterLockSlim();
-        }
-
-        public WorldMap(MapData data, MapData archive)
-        {
-            if (data == null)
-                throw new ArgumentNullException("data");
-            if (archive == null)
-                throw new ArgumentNullException("archive");
-
-            MapData = Combine(data, archive);
-            Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-            MapChangedRecorder = new WorldMapChangedRecorder<RectCoord, MapNode>(Map, archive.Data.Keys);
-            MapEditorLock = new ReaderWriterLockSlim();
-        }
-
         /// <summary>
         /// 当前地图数据;
         /// </summary>
@@ -53,32 +25,62 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图变化记录;
         /// </summary>
-        public WorldMapChangedRecorder<RectCoord, MapNode> MapChangedRecorder { get; private set; }
+        public DictionaryChangedKeyRecorder<RectCoord, MapNode> MapChangedRecorder { get; private set; }
 
-        /// <summary>
-        /// 地图读写锁;
-        /// </summary>
-        public ReaderWriterLockSlim MapEditorLock { get; private set; }
+        public WorldMap() : this(new MapData())
+        {
+        }
+
+        public WorldMap(MapData data)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            MapData = data;
+            Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
+            MapChangedRecorder = new DictionaryChangedKeyRecorder<RectCoord, MapNode>(new HashSet<RectCoord>());
+            Map.Subscribe(MapChangedRecorder);
+        }
+
+        public WorldMap(MapData data, ArchiveData archive)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+            if (archive == null)
+                throw new ArgumentNullException("archive");
+
+            MapData = Combine(data, archive);
+            Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
+            MapChangedRecorder = new DictionaryChangedKeyRecorder<RectCoord, MapNode>(new HashSet<RectCoord>(archive.Data.Keys));
+            Map.Subscribe(MapChangedRecorder);
+        }
 
         /// <summary>
         /// 整合存档数据;
         /// </summary>
-        MapData Combine(MapData dest, MapData archive)
+        MapData Combine(MapData dest, ArchiveData archive)
         {
             dest.Data.AddOrUpdate(archive.Data);
             return dest;
         }
 
         /// <summary>
-        /// 获取到用于存档的地图数据;
+        /// 获取到用于存档的地图数据,若不存在需要存档的内容,则返回null;
         /// </summary>
-        public MapData GetArchivedMapData()
+        public ArchiveData GetArchiveData()
         {
-            MapData archivedData = new MapData()
+            if (MapChangedRecorder.ChangedPositions.Count == 0)
             {
-                Data = GetChangedData(),
-            };
-            return archivedData;
+                return null;
+            }
+            else
+            {
+                ArchiveData archivedData = new ArchiveData()
+                {
+                    Data = GetChangedData(),
+                };
+                return archivedData;
+            }
         }
 
         /// <summary>
@@ -94,11 +96,6 @@ namespace JiongXiaGu.Unity.RectMaps
                 changedData.Add(position, node);
             }
             return changedData;
-        }
-
-        public static implicit operator MapData(WorldMap gameMap)
-        {
-            return gameMap.MapData;
         }
     }
 }

@@ -1,27 +1,22 @@
-﻿using System;
-using JiongXiaGu.Collections;
+﻿using JiongXiaGu.Collections;
 using JiongXiaGu.Grids;
 using ProtoBuf;
+using System;
 using System.Collections.Generic;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
 
     /// <summary>
-    /// 地图存档数据;
+    /// 地图信息定义;
     /// </summary>
-    [ProtoContract]
-    public class ArchiveData
+    public struct MapDescribe
     {
-        /// <summary>
-        /// 地图节点字典;
-        /// </summary>
-        [ProtoMember(1)]
-        public Dictionary<RectCoord, MapNode> Data { get; internal set; }
+
     }
 
     /// <summary>
-    /// 游戏地图数据;
+    /// 地图数据;
     /// </summary>
     [ProtoContract]
     public class MapData 

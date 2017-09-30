@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
 
     [DisallowMultipleComponent]
-    public sealed class RectMapSceneController : SceneSington<RectMapSceneController>, ISceneArchiveHandle
+    public sealed class RectMapSceneController : SceneSington<RectMapSceneController>, IDataInitializeHandle, ISceneArchiveHandle
     {
         RectMapSceneController()
         {
@@ -23,6 +23,16 @@ namespace JiongXiaGu.Unity.RectMaps
         /// 是否正在进行存档操作?
         /// </summary>
         public bool IsArchiving { get; private set; }
+
+        /// <summary>
+        /// 当前场景使用的地图;
+        /// </summary>
+        public WorldMap Map { get; private set; }
+
+        Task IDataInitializeHandle.StartInitialize(Archive archive, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
 
         void ISceneArchiveHandle.Begin()
         {

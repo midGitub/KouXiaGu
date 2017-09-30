@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             base.Awake();
             mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new ResourcesMultipleSearcher("World/Data"));
-            worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<MapData>.Default, "World/Data");
+            worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<ArchiveData>.Default, "World/Data");
             SetInstance(this);
         }
 
