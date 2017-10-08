@@ -27,16 +27,13 @@ namespace JiongXiaGu.Unity.RectMaps
 
         public MapData Create(int radius)
         {
-            MapData map = new MapData()
-            {
-                Data = RandomMap(radius),
-            };
-            return map;
+            MapData data = new MapData();
+            RandomMap(data.Data, radius);
+            return data;
         }
 
-        Dictionary<RectCoord, MapNode> RandomMap(int radius)
+        Dictionary<RectCoord, MapNode> RandomMap(Dictionary<RectCoord, MapNode> map, int radius)
         {
-            var map = new Dictionary<RectCoord, MapNode>();
             foreach (var point in RectCoord.Spiral_in(RectCoord.Self, radius))
             {
                 MapNode node = RandomMapNode();

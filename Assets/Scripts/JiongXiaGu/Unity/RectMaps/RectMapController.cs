@@ -25,9 +25,6 @@ namespace JiongXiaGu.Unity.RectMaps
         [SerializeField]
         int randomMapRadius;
 
-        MapDataSerializer mapDataSerializer;
-        WorldMapSerializer worldMapSerializer;
-
         /// <summary>
         /// 是否使用随机地图?
         /// </summary>
@@ -54,9 +51,8 @@ namespace JiongXiaGu.Unity.RectMaps
         protected override void Awake()
         {
             base.Awake();
-            mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new ResourcesMultipleSearcher("World/Data"));
-            worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<ArchiveData>.Default, "World/Data");
-            SetInstance(this);
+            //mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new ResourcesMultipleSearcher("World/Data"));
+            //worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<ArchiveData>.Default, "World/Data");
         }
 
         Task IDataInitializeHandle.StartInitialize(Archive archive, CancellationToken token)
@@ -77,8 +73,9 @@ namespace JiongXiaGu.Unity.RectMaps
 
         WorldMap GetMap(Archive archive)
         {
-            WorldMap map = worldMapSerializer.Deserialize(archive);
-            return map;
+            throw new NotImplementedException();
+            //WorldMap map = worldMapSerializer.Deserialize(archive);
+            //return map;
         }
 
         WorldMap GetRandomMap()

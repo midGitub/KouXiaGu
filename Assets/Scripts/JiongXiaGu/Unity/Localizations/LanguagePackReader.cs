@@ -60,7 +60,7 @@ namespace JiongXiaGu.Unity.Localizations
             var fileInfo = new FileInfo(packPath);
             using (var stream = fileInfo.Create())
             {
-                languagePackSerializer.SerializeXiaGu(languagePack, stream);
+                languagePackSerializer.SerializeXiaGu(stream, languagePack);
             }
             return new LanguagePackFileInfo(fileInfo, languagePack.Name, languagePack.Language);
         }
@@ -70,7 +70,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public void Write(Stream stream, LanguagePack languagePack)
         {
-            languagePackSerializer.SerializeXiaGu(languagePack, stream);
+            languagePackSerializer.SerializeXiaGu(stream, languagePack);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 读取到语言包信息,若不为语言文件则返回异常;
         /// </summary>
-        public static LanguagePackFileInfo ReadInfo(FileInfo fileInfo)
+        internal static LanguagePackFileInfo ReadInfo(FileInfo fileInfo)
         {
             using (Stream stream = fileInfo.OpenRead())
             {
@@ -129,7 +129,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 尝试读取到语言包信息;
         /// </summary>
-        public static bool TryReadInfo(FileInfo fileInfo, out LanguagePackFileInfo languagePack)
+        internal static bool TryReadInfo(FileInfo fileInfo, out LanguagePackFileInfo languagePack)
         {
             try
             {
