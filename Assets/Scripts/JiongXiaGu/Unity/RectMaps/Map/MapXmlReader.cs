@@ -10,7 +10,6 @@ using System.Xml.Serialization;
 namespace JiongXiaGu.Unity.RectMaps
 {
 
-
     /// <summary>
     /// 提供地图读写方法;
     /// </summary>
@@ -19,11 +18,17 @@ namespace JiongXiaGu.Unity.RectMaps
         internal const string MapRootName = "RectMap";
         internal const string MapNameAttributeName = "Name";
         internal const string MapVersionAttributeName = "Version";
+        internal const string MapIsArchivedAttributeName = "isArchived";
         internal const string MapNodeElementName = "Item";
         const string mapFilePrefix = "Map_";
         const string mapFileExtension = ".xml";
 
         XmlSerializer mapSerializer;
+
+        public MapXmlReader()
+        {
+            mapSerializer = new XmlSerializer(typeof(Map));
+        }
 
         /// <summary>
         /// 语言包搜索模式;
@@ -31,11 +36,6 @@ namespace JiongXiaGu.Unity.RectMaps
         static string mapFileSearchPattern
         {
             get { return mapFilePrefix + "*" + mapFileExtension; }
-        }
-
-        public MapXmlReader()
-        {
-            mapSerializer = new XmlSerializer(typeof(Map));
         }
 
         /// <summary>
@@ -93,6 +93,7 @@ namespace JiongXiaGu.Unity.RectMaps
                 }
                 tempFileInfo.MoveTo(file.File.FullName);
                 file.File = tempFileInfo;
+                file.Description = map.Description;
             }
             catch(Exception ex)
             {
@@ -109,10 +110,18 @@ namespace JiongXiaGu.Unity.RectMaps
             foreach (var path in Directory.EnumerateFiles(directory, mapFileSearchPattern, searchOption))
             {
                 MapDataXmlFileInfo info;
-                if (TryReadInfo(path, out info))
+
+                try
                 {
-                    yield return info;
+                    info = ReadInfo(path);
                 }
+                catch
+                {
+                    continue;
+                }
+
+                yield return info;
+                info = null;
             }
         }
 
@@ -122,41 +131,33 @@ namespace JiongXiaGu.Unity.RectMaps
         public static MapDataXmlFileInfo ReadInfo(string filePath)
         {
             FileInfo fileInfo = new FileInfo(filePath);
-            if (fileInfo.Exists)
+            using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                {
-                    using (XmlReader xmlReader = XmlReader.Create(stream))
-                    {
-                        xmlReader.MoveToContent();
-                        if (xmlReader.IsStartElement() && xmlReader.Name == MapRootName)
-                        {
-                            string name = xmlReader.GetAttribute(MapNameAttributeName);
-                            int version = Convert.ToInt32(xmlReader.GetAttribute(MapVersionAttributeName));
-                            var info = new MapDataXmlFileInfo(fileInfo, name, version);
-                            return info;
-                        }
-                    }
-                }
+                MapDescription description = ReadInfo(stream);
+                return new MapDataXmlFileInfo(fileInfo, description);
             }
-            throw new XmlException(string.Format("无法获取到详细信息:{0}", filePath));
         }
 
-        /// <summary>
-        /// 尝试读取到地图文件信息;
-        /// </summary>
-        internal static bool TryReadInfo(string filePath, out MapDataXmlFileInfo info)
+        public static MapDescription ReadInfo(Stream stream)
         {
-            try
+            using (XmlReader xmlReader = XmlReader.Create(stream))
             {
-                info = ReadInfo(filePath);
-                return true;
+                xmlReader.MoveToContent();
+                if (xmlReader.IsStartElement() && xmlReader.Name == MapRootName)
+                {
+                    string name = xmlReader.GetAttribute(MapNameAttributeName);
+                    int version = Convert.ToInt32(xmlReader.GetAttribute(MapVersionAttributeName));
+                    bool isArchived = Convert.ToBoolean(xmlReader.GetAttribute(MapIsArchivedAttributeName));
+                    var info = new MapDescription()
+                    {
+                        Name = name,
+                        Version = version,
+                        IsArchived = isArchived,
+                    };
+                    return info;
+                }
             }
-            catch
-            {
-                info = default(MapDataXmlFileInfo);
-                return false;
-            }
+            throw new XmlException(string.Format("无法获取到详细信息;{0}", stream));
         }
     }
 }

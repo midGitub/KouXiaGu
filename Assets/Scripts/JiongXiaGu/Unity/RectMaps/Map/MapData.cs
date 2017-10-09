@@ -1,49 +1,12 @@
-﻿using JiongXiaGu.Collections;
-using JiongXiaGu.Grids;
+﻿using JiongXiaGu.Grids;
 using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using System.Xml;
 using System.Collections;
-using System.Linq;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
-
-
-    [XmlRoot(MapXmlReader.MapRootName)]
-    public class Map
-    {
-        /// <summary>
-        /// 地图名;
-        /// </summary>
-        [XmlAttribute(MapXmlReader.MapNameAttributeName)]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 地图版本;
-        /// </summary>
-        [XmlAttribute(MapXmlReader.MapVersionAttributeName)]
-        public int Version { get; set; }
-
-        /// <summary>
-        /// 地图数据;
-        /// </summary>
-        [XmlElement(MapXmlReader.MapNodeElementName)]
-        public MapData Data { get; set; }
-
-        public Map()
-        {
-            Data = new MapData();
-        }
-
-        public Map(string name, int version) : this()
-        {
-            Name = name;
-            Version = version;
-        }
-    }
 
     /// <summary>
     /// 地图数据;
@@ -64,17 +27,6 @@ namespace JiongXiaGu.Unity.RectMaps
         public void Add(NodeItem item)
         {
             Data.Add(item.Point, item.Node);
-        }
-
-        /// <summary>
-        /// 添加存档数据;
-        /// </summary>
-        public void AddArchive(ArchiveData archiveData)
-        {
-            if (archiveData == null)
-                throw new ArgumentNullException("archiveData");
-
-            Data.AddOrUpdate(archiveData.Data);
         }
 
         public IEnumerator<NodeItem> GetEnumerator()

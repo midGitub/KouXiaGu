@@ -1,0 +1,971 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RectMap Name="测试1" Version="0" isArchived="false">
+  <Item>
+    <Point x="0" y="0" />
+    <Node>
+      <Landform id="683429219" angle="208" />
+      <Building id="1516037354" angle="148" />
+      <Road ID="256449669" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="1" />
+    <Node>
+      <Landform id="269362111" angle="176" />
+      <Building id="354705889" angle="248" />
+      <Road ID="1643368402" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="1" />
+    <Node>
+      <Landform id="1152683065" angle="110" />
+      <Building id="129913879" angle="207" />
+      <Road ID="1984224888" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="0" />
+    <Node>
+      <Landform id="544410703" angle="43" />
+      <Building id="346191588" angle="125" />
+      <Road ID="918738055" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="-1" />
+    <Node>
+      <Landform id="910386217" angle="164" />
+      <Building id="919711120" angle="154" />
+      <Road ID="1895156877" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="-1" />
+    <Node>
+      <Landform id="1855176639" angle="319" />
+      <Building id="45078911" angle="102" />
+      <Road ID="1787406422" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="-1" />
+    <Node>
+      <Landform id="1912071806" angle="143" />
+      <Building id="1671312" angle="262" />
+      <Road ID="366800075" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="0" />
+    <Node>
+      <Landform id="1153861992" angle="158" />
+      <Building id="929122173" angle="129" />
+      <Road ID="98585028" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="1" />
+    <Node>
+      <Landform id="1987704457" angle="216" />
+      <Building id="2075048668" angle="227" />
+      <Road ID="1227967435" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="2" />
+    <Node>
+      <Landform id="1838296364" angle="83" />
+      <Building id="760395888" angle="328" />
+      <Road ID="1683709558" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="2" />
+    <Node>
+      <Landform id="1974964936" angle="293" />
+      <Building id="1849252265" angle="146" />
+      <Road ID="164827501" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="2" />
+    <Node>
+      <Landform id="1847721924" angle="54" />
+      <Building id="591519506" angle="191" />
+      <Road ID="548756677" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="1" />
+    <Node>
+      <Landform id="511395756" angle="168" />
+      <Building id="1893000923" angle="308" />
+      <Road ID="1878780243" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="0" />
+    <Node>
+      <Landform id="296019027" angle="110" />
+      <Building id="709053379" angle="145" />
+      <Road ID="830362896" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="-1" />
+    <Node>
+      <Landform id="1743799644" angle="247" />
+      <Building id="1718589847" angle="109" />
+      <Road ID="1078517245" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="-2" />
+    <Node>
+      <Landform id="1766864131" angle="176" />
+      <Building id="1711334056" angle="309" />
+      <Road ID="56860513" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="-2" />
+    <Node>
+      <Landform id="1359942433" angle="191" />
+      <Building id="231102225" angle="179" />
+      <Road ID="1959925133" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="-2" />
+    <Node>
+      <Landform id="160238621" angle="193" />
+      <Building id="1277346524" angle="235" />
+      <Road ID="666561798" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="-2" />
+    <Node>
+      <Landform id="828403956" angle="59" />
+      <Building id="1936969447" angle="37" />
+      <Road ID="1734672919" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="-2" />
+    <Node>
+      <Landform id="981552016" angle="259" />
+      <Building id="235181691" angle="272" />
+      <Road ID="931948408" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="-1" />
+    <Node>
+      <Landform id="1180449765" angle="324" />
+      <Building id="2037176299" angle="189" />
+      <Road ID="2087393561" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="0" />
+    <Node>
+      <Landform id="498826807" angle="5" />
+      <Building id="1197568908" angle="325" />
+      <Road ID="545447017" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="1" />
+    <Node>
+      <Landform id="792096003" angle="127" />
+      <Building id="894969093" angle="181" />
+      <Road ID="1336297891" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="2" />
+    <Node>
+      <Landform id="1513825289" angle="129" />
+      <Building id="820038221" angle="339" />
+      <Road ID="1718541622" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="2" />
+    <Node>
+      <Landform id="1288607254" angle="256" />
+      <Building id="1453020380" angle="34" />
+      <Road ID="1958940" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="3" />
+    <Node>
+      <Landform id="1387224444" angle="282" />
+      <Building id="1492261136" angle="178" />
+      <Road ID="96965229" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="3" />
+    <Node>
+      <Landform id="221375674" angle="137" />
+      <Building id="86769941" angle="152" />
+      <Road ID="1023894395" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="3" />
+    <Node>
+      <Landform id="1573761606" angle="210" />
+      <Building id="1247488435" angle="189" />
+      <Road ID="1461098326" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="3" />
+    <Node>
+      <Landform id="126995283" angle="352" />
+      <Building id="1484055334" angle="143" />
+      <Road ID="2021949442" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="2" />
+    <Node>
+      <Landform id="66796329" angle="269" />
+      <Building id="854193587" angle="173" />
+      <Road ID="220847630" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="1" />
+    <Node>
+      <Landform id="206501800" angle="121" />
+      <Building id="355239847" angle="344" />
+      <Road ID="1790824801" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="0" />
+    <Node>
+      <Landform id="1799949690" angle="80" />
+      <Building id="1833034861" angle="189" />
+      <Road ID="700169117" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="-1" />
+    <Node>
+      <Landform id="959658125" angle="115" />
+      <Building id="133074823" angle="309" />
+      <Road ID="324071343" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="-2" />
+    <Node>
+      <Landform id="2119135420" angle="113" />
+      <Building id="2130367088" angle="9" />
+      <Road ID="1910019932" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="-3" />
+    <Node>
+      <Landform id="258463827" angle="280" />
+      <Building id="1834469080" angle="94" />
+      <Road ID="1591546339" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="-3" />
+    <Node>
+      <Landform id="1331280742" angle="7" />
+      <Building id="594950751" angle="55" />
+      <Road ID="2082646258" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="-3" />
+    <Node>
+      <Landform id="1925618337" angle="139" />
+      <Building id="454746669" angle="141" />
+      <Road ID="2037947076" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="-3" />
+    <Node>
+      <Landform id="1643409085" angle="77" />
+      <Building id="180747448" angle="212" />
+      <Road ID="1371428352" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="-3" />
+    <Node>
+      <Landform id="1093117512" angle="263" />
+      <Building id="118349938" angle="72" />
+      <Road ID="501440201" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="-3" />
+    <Node>
+      <Landform id="1586013081" angle="330" />
+      <Building id="1787729373" angle="89" />
+      <Road ID="2050297669" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="-3" />
+    <Node>
+      <Landform id="1539442290" angle="272" />
+      <Building id="795312122" angle="213" />
+      <Road ID="2109867450" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="-2" />
+    <Node>
+      <Landform id="678940019" angle="174" />
+      <Building id="1936396329" angle="77" />
+      <Road ID="459544059" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="-1" />
+    <Node>
+      <Landform id="1756021302" angle="340" />
+      <Building id="1503359218" angle="200" />
+      <Road ID="922034427" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="0" />
+    <Node>
+      <Landform id="127199383" angle="39" />
+      <Building id="1436912015" angle="327" />
+      <Road ID="828145905" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="1" />
+    <Node>
+      <Landform id="1653931037" angle="82" />
+      <Building id="861622590" angle="139" />
+      <Road ID="816902420" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="2" />
+    <Node>
+      <Landform id="836137226" angle="260" />
+      <Building id="1401585409" angle="10" />
+      <Road ID="5533258" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="3" />
+    <Node>
+      <Landform id="1507029053" angle="67" />
+      <Building id="60952465" angle="71" />
+      <Road ID="543203968" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="3" />
+    <Node>
+      <Landform id="299412024" angle="6" />
+      <Building id="1327252134" angle="147" />
+      <Road ID="1359007057" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="3" />
+    <Node>
+      <Landform id="604944282" angle="113" />
+      <Building id="1866271294" angle="135" />
+      <Road ID="1762890697" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="4" />
+    <Node>
+      <Landform id="1207424169" angle="11" />
+      <Building id="1071857699" angle="277" />
+      <Road ID="374240818" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="4" />
+    <Node>
+      <Landform id="1352293901" angle="89" />
+      <Building id="1981866841" angle="310" />
+      <Road ID="396366632" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="4" />
+    <Node>
+      <Landform id="1045352052" angle="128" />
+      <Building id="2107859009" angle="76" />
+      <Road ID="1273730224" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="4" />
+    <Node>
+      <Landform id="1269728176" angle="299" />
+      <Building id="1871509365" angle="76" />
+      <Road ID="1099998653" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="4" />
+    <Node>
+      <Landform id="1352338640" angle="330" />
+      <Building id="1076497597" angle="109" />
+      <Road ID="622622403" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="3" />
+    <Node>
+      <Landform id="90052763" angle="176" />
+      <Building id="555649363" angle="99" />
+      <Road ID="223201623" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="2" />
+    <Node>
+      <Landform id="977639336" angle="129" />
+      <Building id="52422151" angle="204" />
+      <Road ID="1756961898" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="1" />
+    <Node>
+      <Landform id="769686196" angle="81" />
+      <Building id="1890736165" angle="308" />
+      <Road ID="800723004" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="0" />
+    <Node>
+      <Landform id="972205732" angle="95" />
+      <Building id="355100084" angle="5" />
+      <Road ID="1645335563" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="-1" />
+    <Node>
+      <Landform id="1682311948" angle="12" />
+      <Building id="869176372" angle="294" />
+      <Road ID="89278881" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="-2" />
+    <Node>
+      <Landform id="968064888" angle="159" />
+      <Building id="1409844751" angle="311" />
+      <Road ID="410552057" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="-3" />
+    <Node>
+      <Landform id="1382683291" angle="190" />
+      <Building id="421085781" angle="173" />
+      <Road ID="284188055" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="-4" />
+    <Node>
+      <Landform id="298343208" angle="356" />
+      <Building id="1387527719" angle="273" />
+      <Road ID="1566210943" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="-4" />
+    <Node>
+      <Landform id="270049461" angle="119" />
+      <Building id="888329299" angle="142" />
+      <Road ID="504044028" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="-4" />
+    <Node>
+      <Landform id="784890385" angle="342" />
+      <Building id="33379572" angle="302" />
+      <Road ID="127792921" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="-4" />
+    <Node>
+      <Landform id="783039172" angle="271" />
+      <Building id="1046002608" angle="193" />
+      <Road ID="1087794102" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="-4" />
+    <Node>
+      <Landform id="13281505" angle="30" />
+      <Building id="948116935" angle="84" />
+      <Road ID="1402620382" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="-4" />
+    <Node>
+      <Landform id="25373353" angle="253" />
+      <Building id="343220365" angle="135" />
+      <Road ID="374278607" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="-4" />
+    <Node>
+      <Landform id="1779732763" angle="10" />
+      <Building id="855025677" angle="260" />
+      <Road ID="502379796" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="-4" />
+    <Node>
+      <Landform id="993031774" angle="222" />
+      <Building id="872449326" angle="102" />
+      <Road ID="1375286102" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="-4" />
+    <Node>
+      <Landform id="970150376" angle="223" />
+      <Building id="20578861" angle="209" />
+      <Road ID="1451872143" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="-3" />
+    <Node>
+      <Landform id="1074438012" angle="154" />
+      <Building id="1754141212" angle="289" />
+      <Road ID="1774996532" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="-2" />
+    <Node>
+      <Landform id="1913042497" angle="15" />
+      <Building id="1415649426" angle="351" />
+      <Road ID="270906550" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="-1" />
+    <Node>
+      <Landform id="113568887" angle="197" />
+      <Building id="882467478" angle="38" />
+      <Road ID="1540837590" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="0" />
+    <Node>
+      <Landform id="904591621" angle="61" />
+      <Building id="79351646" angle="79" />
+      <Road ID="871794912" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="1" />
+    <Node>
+      <Landform id="721138375" angle="198" />
+      <Building id="626921481" angle="218" />
+      <Road ID="1282244794" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="2" />
+    <Node>
+      <Landform id="1601267423" angle="124" />
+      <Building id="434234915" angle="322" />
+      <Road ID="117643726" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="3" />
+    <Node>
+      <Landform id="824839546" angle="27" />
+      <Building id="1844628535" angle="201" />
+      <Road ID="328182370" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="4" />
+    <Node>
+      <Landform id="1253970589" angle="319" />
+      <Building id="761811500" angle="198" />
+      <Road ID="608719757" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="4" />
+    <Node>
+      <Landform id="1688298291" angle="133" />
+      <Building id="907109291" angle="215" />
+      <Road ID="388810909" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="4" />
+    <Node>
+      <Landform id="1961974751" angle="74" />
+      <Building id="644935303" angle="204" />
+      <Road ID="470694481" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="4" />
+    <Node>
+      <Landform id="601209169" angle="210" />
+      <Building id="1693743604" angle="63" />
+      <Road ID="730733768" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="5" />
+    <Node>
+      <Landform id="2035836813" angle="48" />
+      <Building id="453333822" angle="74" />
+      <Road ID="173729109" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="5" />
+    <Node>
+      <Landform id="1168367382" angle="302" />
+      <Building id="1638015526" angle="331" />
+      <Road ID="1593550651" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="5" />
+    <Node>
+      <Landform id="2096857074" angle="248" />
+      <Building id="1829279380" angle="343" />
+      <Road ID="286867001" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="5" />
+    <Node>
+      <Landform id="1145791346" angle="294" />
+      <Building id="1045370525" angle="337" />
+      <Road ID="1330980268" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="5" />
+    <Node>
+      <Landform id="2073035791" angle="46" />
+      <Building id="1491369940" angle="152" />
+      <Road ID="1467753690" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="5" />
+    <Node>
+      <Landform id="1154479505" angle="16" />
+      <Building id="1363304812" angle="243" />
+      <Road ID="1663918204" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="4" />
+    <Node>
+      <Landform id="1715749233" angle="103" />
+      <Building id="1465451400" angle="78" />
+      <Road ID="439829204" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="3" />
+    <Node>
+      <Landform id="962005659" angle="243" />
+      <Building id="315163782" angle="168" />
+      <Road ID="1587836022" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="2" />
+    <Node>
+      <Landform id="2031098734" angle="218" />
+      <Building id="1076836631" angle="307" />
+      <Road ID="439437482" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="1" />
+    <Node>
+      <Landform id="480578969" angle="128" />
+      <Building id="745603650" angle="156" />
+      <Road ID="1472386782" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="0" />
+    <Node>
+      <Landform id="994079462" angle="35" />
+      <Building id="1828144457" angle="200" />
+      <Road ID="805181624" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="-1" />
+    <Node>
+      <Landform id="1756861258" angle="158" />
+      <Building id="1688820988" angle="188" />
+      <Road ID="1166733251" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="-2" />
+    <Node>
+      <Landform id="1068627570" angle="73" />
+      <Building id="183592460" angle="52" />
+      <Road ID="2025285065" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="-3" />
+    <Node>
+      <Landform id="1478921571" angle="2" />
+      <Building id="1359341403" angle="269" />
+      <Road ID="1472344989" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="-4" />
+    <Node>
+      <Landform id="1840324893" angle="241" />
+      <Building id="37634866" angle="71" />
+      <Road ID="1447365181" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="5" y="-5" />
+    <Node>
+      <Landform id="767981439" angle="226" />
+      <Building id="1801885403" angle="79" />
+      <Road ID="987174721" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="4" y="-5" />
+    <Node>
+      <Landform id="389487320" angle="251" />
+      <Building id="431758063" angle="356" />
+      <Road ID="669838742" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="3" y="-5" />
+    <Node>
+      <Landform id="1504545798" angle="157" />
+      <Building id="269770886" angle="303" />
+      <Road ID="830451593" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="2" y="-5" />
+    <Node>
+      <Landform id="13927022" angle="320" />
+      <Building id="1336269754" angle="333" />
+      <Road ID="519208452" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="1" y="-5" />
+    <Node>
+      <Landform id="1589720342" angle="187" />
+      <Building id="762998528" angle="328" />
+      <Road ID="1107999558" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="0" y="-5" />
+    <Node>
+      <Landform id="464634587" angle="260" />
+      <Building id="1286101201" angle="269" />
+      <Road ID="1779545536" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="-5" />
+    <Node>
+      <Landform id="1702113537" angle="29" />
+      <Building id="1402897685" angle="317" />
+      <Road ID="37200185" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="-5" />
+    <Node>
+      <Landform id="407238687" angle="216" />
+      <Building id="1216261989" angle="23" />
+      <Road ID="777245931" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="-5" />
+    <Node>
+      <Landform id="1714491408" angle="1" />
+      <Building id="201556176" angle="300" />
+      <Road ID="520739267" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="-5" />
+    <Node>
+      <Landform id="541646878" angle="317" />
+      <Building id="1694585050" angle="130" />
+      <Road ID="1458417967" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="-5" />
+    <Node>
+      <Landform id="2076195781" angle="17" />
+      <Building id="196632458" angle="344" />
+      <Road ID="2005128486" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="-4" />
+    <Node>
+      <Landform id="1794003194" angle="98" />
+      <Building id="1990202284" angle="253" />
+      <Road ID="522540134" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="-3" />
+    <Node>
+      <Landform id="983836538" angle="36" />
+      <Building id="972556303" angle="58" />
+      <Road ID="1115208852" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="-2" />
+    <Node>
+      <Landform id="1330977229" angle="281" />
+      <Building id="521455553" angle="297" />
+      <Road ID="423212906" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="-1" />
+    <Node>
+      <Landform id="867733788" angle="116" />
+      <Building id="1197066800" angle="203" />
+      <Road ID="952200691" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="0" />
+    <Node>
+      <Landform id="1580100013" angle="154" />
+      <Building id="1118999167" angle="241" />
+      <Road ID="566352680" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="1" />
+    <Node>
+      <Landform id="718461091" angle="336" />
+      <Building id="509566698" angle="24" />
+      <Road ID="1850833402" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="2" />
+    <Node>
+      <Landform id="1598933719" angle="356" />
+      <Building id="1496859365" angle="341" />
+      <Road ID="390680638" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="3" />
+    <Node>
+      <Landform id="1968098291" angle="243" />
+      <Building id="1851702548" angle="295" />
+      <Road ID="1940893040" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="4" />
+    <Node>
+      <Landform id="1498972800" angle="198" />
+      <Building id="1999065428" angle="113" />
+      <Road ID="1337245685" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-5" y="5" />
+    <Node>
+      <Landform id="1007269870" angle="230" />
+      <Building id="2067028882" angle="59" />
+      <Road ID="590684179" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-4" y="5" />
+    <Node>
+      <Landform id="1380845011" angle="176" />
+      <Building id="1132875981" angle="184" />
+      <Road ID="425028473" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-3" y="5" />
+    <Node>
+      <Landform id="874097478" angle="270" />
+      <Building id="551774785" angle="158" />
+      <Road ID="1951562690" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-2" y="5" />
+    <Node>
+      <Landform id="1125287159" angle="310" />
+      <Building id="824288863" angle="108" />
+      <Road ID="1663758780" />
+    </Node>
+  </Item>
+  <Item>
+    <Point x="-1" y="5" />
+    <Node>
+      <Landform id="1354041118" angle="31" />
+      <Building id="630785059" angle="232" />
+      <Road ID="602598262" />
+    </Node>
+  </Item>
+</RectMap>

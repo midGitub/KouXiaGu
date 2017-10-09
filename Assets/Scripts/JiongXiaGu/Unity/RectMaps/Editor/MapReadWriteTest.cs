@@ -1,12 +1,6 @@
 ﻿using JiongXiaGu.Collections;
-using JiongXiaGu.Grids;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -23,11 +17,7 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             var reader = new MapXmlReader();
             var map = Generate();
-            FileInfo fileInfo = new FileInfo(@"NUnitTemp/map.xml");
-            using (var stream = fileInfo.Create())
-            {
-                reader.Write(stream, map);
-            }
+            reader.Write(@"NUnitTemp", map);
         }
 
         [Test]
@@ -42,23 +32,23 @@ namespace JiongXiaGu.Unity.RectMaps
                 stream.Seek(0, SeekOrigin.Begin);
                 var newMap = reader.Read(stream);
 
-                CheckIsSame(map, newMap);
+                Assert.IsTrue(map.Description == newMap.Description);
+                Assert.IsTrue(map.Data.IsSameContent(newMap.Data));
+
+
+                stream.Seek(0, SeekOrigin.Begin);
+                var mapDescription = MapXmlReader.ReadInfo(stream);
+
+                Assert.IsTrue(map.Description == mapDescription);
             }
         }
 
         Map Generate()
         {
-            Map map = new Map("测试1", 1);
+            Map map = new Map("测试1");
             MapDataGenerator mapDataGenerator = new MapDataGenerator();
-            mapDataGenerator.Generate(map.Data.Data, 5);
+            mapDataGenerator.Generate(map.Data, 5);
             return map;
-        }
-
-        void CheckIsSame(Map map, Map other)
-        {
-            Assert.AreEqual(map.Name, other.Name);
-            Assert.AreEqual(map.Version, other.Version);
-            Assert.IsTrue(map.Data.Data.IsSameContent(other.Data.Data));
         }
     }
 }

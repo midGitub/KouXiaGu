@@ -86,7 +86,7 @@ namespace JiongXiaGu.Unity.RectMaps
                 throw new ArgumentException("RectTerrainResources 未初始化完成!");
 
             var mapGenerator = new SimpleMapDataGenerator(rectTerrainResources);
-            MapData map = new MapData();
+            Map map = new Map("RandomMap");
             mapGenerator.Generate(map.Data, randomMapRadius);
             return new WorldMap(map);
         }
@@ -98,13 +98,5 @@ namespace JiongXiaGu.Unity.RectMaps
             string info = "[地图:Size:" + WorldMap.Map.Count + "]";
             Debug.Log(prefix + "初始化完成;" + info);
         }
-
-        //Task WriteArchive(Archive archive, CancellationToken token)
-        //{
-        //    return Task.Run(delegate ()
-        //    {
-        //        worldMapSerializer.Serialize(archive, WorldMap);
-        //    }, token);
-        //}
     }
 }
