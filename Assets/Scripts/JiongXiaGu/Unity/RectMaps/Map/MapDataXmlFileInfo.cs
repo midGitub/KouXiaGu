@@ -15,19 +15,25 @@ namespace JiongXiaGu.Unity.RectMaps
     public class MapDataXmlFileInfo
     {
         /// <summary>
-        /// 地图文件路径;
+        /// 地图名;
         /// </summary>
-        public FileInfo File { get; private set; }
+        public string Name { get; internal set; }
 
         /// <summary>
-        /// 地图信息;
+        /// 地图版本;
         /// </summary>
-        public MapDescription Description { get; private set; }
+        public int Version { get; internal set; }
 
-        public MapDataXmlFileInfo(FileInfo file, MapDescription description)
+        /// <summary>
+        /// 地图文件路径;
+        /// </summary>
+        public FileInfo File { get; internal set; }
+
+        public MapDataXmlFileInfo(FileInfo file, string name, int version)
         {
             File = file;
-            Description = description;
+            Name = name;
+            Version = version;
         }
     }
 }

@@ -6,6 +6,9 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.Localizations
 {
 
+    /// <summary>
+    /// 语言包读写测试;
+    /// </summary>
     [TestFixture]
     class LanguagePackReaderWriterTest
     {

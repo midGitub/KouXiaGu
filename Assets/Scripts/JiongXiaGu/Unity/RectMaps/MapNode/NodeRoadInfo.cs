@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -15,6 +16,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// 道路类型,0代表不存在;
         /// </summary>
         [ProtoMember(1)]
+        [XmlAttribute("ID")]
         public int TypeID { get; set; }
 
         public bool Exist()

@@ -85,8 +85,9 @@ namespace JiongXiaGu.Unity.RectMaps
             if (rectTerrainResources == null)
                 throw new ArgumentException("RectTerrainResources 未初始化完成!");
 
-            var mapGenerator = new SimpleMapGenerator(rectTerrainResources);
-            MapData map = mapGenerator.Create(randomMapRadius);
+            var mapGenerator = new SimpleMapDataGenerator(rectTerrainResources);
+            MapData map = new MapData();
+            mapGenerator.Generate(map.Data, randomMapRadius);
             return new WorldMap(map);
         }
 

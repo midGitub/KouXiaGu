@@ -13,18 +13,13 @@ namespace JiongXiaGu
     public static class RandomExtensions
     {
         /// <summary>
-        /// 返回一个随机的0~360的角度;
-        /// </summary>
-        public static float Angle(this Random random)
-        {
-            return random.Next(0, 360);
-        }
-
-        /// <summary>
         /// 返回一个随机的布尔值;
         /// </summary>
         public static bool Boolean(this Random random)
         {
+            if (random == null)
+                throw new ArgumentNullException("random");
+
             int i = random.Next(0, 2);
             return i == 0;
         }
@@ -34,6 +29,11 @@ namespace JiongXiaGu
         /// </summary>
         public static T Get<T>(this Random random, IList<T> array)
         {
+            if (random == null)
+                throw new ArgumentNullException("random");
+            if (array == null)
+                throw new ArgumentNullException("array");
+
             int index = random.Next(0, array.Count);
             return array[index];
         }

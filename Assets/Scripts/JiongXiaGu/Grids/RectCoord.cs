@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System.Xml.Serialization;
 
 namespace JiongXiaGu.Grids
 {
@@ -105,12 +106,14 @@ namespace JiongXiaGu.Grids
         [ProtoMember(2), SerializeField]
         int y;
 
+        [XmlAttribute("x")]
         public int X
         {
             get { return x; }
             set { x = value; }
         }
 
+        [XmlAttribute("y")]
         public int Y
         {
             get { return y; }

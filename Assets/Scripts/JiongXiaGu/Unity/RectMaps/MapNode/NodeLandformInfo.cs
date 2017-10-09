@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -18,12 +19,14 @@ namespace JiongXiaGu.Unity.RectMaps
         /// 地形类型,0代表不存在;
         /// </summary>
         [ProtoMember(1)]
+        [XmlAttribute("id")]
         public int TypeID { get; set; }
 
         /// <summary>
         /// 地形旋转角度;
         /// </summary>
         [ProtoMember(2)]
+        [XmlAttribute("angle")]
         public float Angle { get; set; }
 
         /// <summary>

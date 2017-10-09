@@ -236,10 +236,12 @@ namespace JiongXiaGu.XiaGuTools
 
             if (File.Exists(filePath))
             {
-                DefineAndTag[] defines = (DefineAndTag[])DefineAndTag.ArraySerializer.DeserializeXiaGu(filePath);
-
-                defineSymblos.Clear();
-                AddRange(defineSymblos, defines);
+                using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    DefineAndTag[] defines = (DefineAndTag[])DefineAndTag.ArraySerializer.Deserialize(stream);
+                    defineSymblos.Clear();
+                    AddRange(defineSymblos, defines);
+                }
             }
         }
 
@@ -256,7 +258,11 @@ namespace JiongXiaGu.XiaGuTools
             Directory.CreateDirectory(DirPath);
 
             DefineAndTag[] save = defineSymblos.Where(item => !item.IsEmpty).ToArray();
-            DefineAndTag.ArraySerializer.SerializeXiaGu(save, FilePath);
+
+            using (Stream stream = new FileStream(FilePath, FileMode.Create, FileAccess.Write))
+            {
+                DefineAndTag.ArraySerializer.Serialize(stream, save);
+            }
         }
 
     }
