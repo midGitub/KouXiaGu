@@ -1,102 +1,65 @@
-﻿using System;
-using System.Threading.Tasks;
-using UnityEngine;
-using JiongXiaGu.Unity.Resources;
-using System.Threading;
-using JiongXiaGu.Unity.Resources.Archives;
-using JiongXiaGu.Unity.RectTerrain.Resources;
-using JiongXiaGu.Unity.Archives;
+﻿//using System;
+//using System.Threading.Tasks;
+//using UnityEngine;
+//using System.Threading;
+//using JiongXiaGu.Unity.Resources.Archives;
+//using JiongXiaGu.Unity.RectTerrain.Resources;
 
-namespace JiongXiaGu.Unity.RectMaps
-{
+//namespace JiongXiaGu.Unity.RectMaps
+//{
 
-    /// <summary>
-    /// 地图数据读取;
-    /// </summary>
-    [DisallowMultipleComponent]
-    public sealed class RectMapController : SceneSington<RectMapController>, IDataInitializeHandle
-    {
-        RectMapController()
-        {
-        }
+//    /// <summary>
+//    /// 地图全局控制器;
+//    /// </summary>
+//    [DisallowMultipleComponent]
+//    public sealed class RectMapController : SceneSington<RectMapController>
+//    {
+//        RectMapController()
+//        {
+//        }
 
-        [SerializeField]
-        bool isUseRandomMap;
-        [SerializeField]
-        int randomMapRadius;
+//        [SerializeField]
+//        bool isUseRandomMap;
+//        [SerializeField]
+//        int randomMapRadius;
 
-        /// <summary>
-        /// 是否使用随机地图?
-        /// </summary>
-        public bool IsUseRandomMap
-        {
-            get { return isUseRandomMap; }
-            set { isUseRandomMap = value; }
-        }
+//        /// <summary>
+//        /// 是否使用随机地图?
+//        /// </summary>
+//        public bool IsUseRandomMap
+//        {
+//            get { return isUseRandomMap; }
+//            set { isUseRandomMap = value; }
+//        }
 
-        /// <summary>
-        /// 生成的随机地图大小;
-        /// </summary>
-        public int RandomMapRadius
-        {
-            get { return randomMapRadius; }
-            set { randomMapRadius = value; }
-        }
+//        /// <summary>
+//        /// 生成的随机地图大小;
+//        /// </summary>
+//        public int RandomMapRadius
+//        {
+//            get { return randomMapRadius; }
+//            set { randomMapRadius = value; }
+//        }
 
-        /// <summary>
-        /// 游戏地图;
-        /// </summary>
-        public WorldMap WorldMap { get; private set; }
+//        /// <summary>
+//        /// 获取到一个游戏使用的地图;
+//        /// </summary>
+//        public WorldMap GetWorldMap(Archive archive, CancellationToken token)
+//        {
+//            throw new NotImplementedException();
+//        }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            //mapDataSerializer = new MapDataSerializer(ProtoFileSerializer<MapData>.Default, new ResourcesMultipleSearcher("World/Data"));
-            //worldMapSerializer = new WorldMapSerializer(mapDataSerializer, ProtoFileSerializer<ArchiveData>.Default, "World/Data");
-        }
+//        WorldMap GetRandomMap()
+//        {
+//            RectTerrainResources rectTerrainResources = RectTerrainResourcesInitializer.RectTerrainResources;
 
-        Task IDataInitializeHandle.StartInitialize(Archive archive, CancellationToken token)
-        {
-            return Task.Run(delegate ()
-            {
-                if (isUseRandomMap)
-                {
-                    WorldMap = GetRandomMap();
-                }
-                else
-                {
-                    WorldMap = GetMap(archive);
-                }
-                OnCompleted();
-            }, token);
-        }
+//            if (rectTerrainResources == null)
+//                throw new ArgumentException("RectTerrainResources 未初始化完成!");
 
-        WorldMap GetMap(Archive archive)
-        {
-            throw new NotImplementedException();
-            //WorldMap map = worldMapSerializer.Deserialize(archive);
-            //return map;
-        }
-
-        WorldMap GetRandomMap()
-        {
-            RectTerrainResources rectTerrainResources = RectTerrainResourcesInitializer.RectTerrainResources;
-
-            if (rectTerrainResources == null)
-                throw new ArgumentException("RectTerrainResources 未初始化完成!");
-
-            var mapGenerator = new SimpleMapDataGenerator(rectTerrainResources);
-            Map map = new Map("RandomMap");
-            mapGenerator.Generate(map.Data, randomMapRadius);
-            return new WorldMap(map);
-        }
-
-        [System.Diagnostics.Conditional("EDITOR_LOG")]
-        void OnCompleted()
-        {
-            const string prefix = "[地图资源]";
-            string info = "[地图:Size:" + WorldMap.Map.Count + "]";
-            Debug.Log(prefix + "初始化完成;" + info);
-        }
-    }
-}
+//            var mapGenerator = new SimpleMapDataGenerator(rectTerrainResources);
+//            Map map = new Map("RandomMap");
+//            mapGenerator.Generate(map.Data, randomMapRadius);
+//            return new WorldMap(map);
+//        }
+//    }
+//}

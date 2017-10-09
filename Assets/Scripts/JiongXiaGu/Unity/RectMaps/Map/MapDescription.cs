@@ -14,10 +14,13 @@ namespace JiongXiaGu.Unity.RectMaps
             Name = name;
         }
 
-        public MapDescription(string name, int version, bool isArchived) : this()
+        public MapDescription(string name, int version) : this(name)
         {
-            Name = name;
             Version = version;
+        }
+
+        public MapDescription(string name, int version, bool isArchived) : this(name, version)
+        {
             IsArchived = isArchived;
         }
 

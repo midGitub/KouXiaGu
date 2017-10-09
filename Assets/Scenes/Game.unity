@@ -1631,7 +1631,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 783227698}
-  - component: {fileID: 783227699}
+  - component: {fileID: 783227700}
   m_Layer: 0
   m_Name: RectMap
   m_TagString: Untagged
@@ -1652,7 +1652,7 @@ Transform:
   m_Father: {fileID: 1981945331}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &783227699
+--- !u!114 &783227700
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1660,11 +1660,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 783227697}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b77fe7d98243c4842827d22fee658501, type: 3}
+  m_Script: {fileID: 11500000, guid: aec5be221f52156428742b9d26b253a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isUseRandomMap: 1
-  randomMapRadius: 200
 --- !u!1 &788961800
 GameObject:
   m_ObjectHideFlags: 0
@@ -2645,7 +2643,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tessellation: 48
   displacement: 1.5
-  mapInitializer: {fileID: 783227699}
   dispatcher: {fileID: 948599236}
   bakeCamera: {fileID: 627787005}
   landformChunkPool:
@@ -5375,7 +5372,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActivate: 1
-  autoSaveInterval: 360
+  autoSaveInterval: 3
 --- !u!114 &1981945333
 MonoBehaviour:
   m_ObjectHideFlags: 0

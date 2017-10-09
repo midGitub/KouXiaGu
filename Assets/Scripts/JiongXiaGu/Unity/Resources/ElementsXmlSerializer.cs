@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
-    
+
     public interface IElement
     {
         int ID { get; }

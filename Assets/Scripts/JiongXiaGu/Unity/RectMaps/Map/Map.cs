@@ -1,9 +1,9 @@
-﻿using System.Xml.Serialization;
-using System.Xml;
-using System;
-using JiongXiaGu.Collections;
-using System.Collections.Generic;
+﻿using JiongXiaGu.Collections;
 using JiongXiaGu.Grids;
+using System;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// 地图数据;
     /// </summary>
     [XmlRoot(MapXmlReader.MapRootName)]
-    public class Map
+    public sealed class Map
     {
         MapDescription description;
 
@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.RectMaps
         [XmlElement(MapXmlReader.MapNodeElementName)]
         public MapData MapData { get; set; }
 
-        public Map()
+        Map()
         {
             MapData = new MapData();
         }
@@ -92,6 +92,10 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             if (archiveMap == null)
                 throw new ArgumentNullException("archiveData");
+            if (archiveMap.Name != Name)
+                throw new InvalidOperationException("不允许合并不同的地图");
+            if (!archiveMap.IsArchived)
+                throw new InvalidOperationException("传入参数不为存档;");
 
             Data.AddOrUpdate(archiveMap.Data);
         }

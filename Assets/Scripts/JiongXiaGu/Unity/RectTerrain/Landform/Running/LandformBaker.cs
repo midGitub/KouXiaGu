@@ -1,8 +1,6 @@
 ﻿using JiongXiaGu.Concurrent;
 using JiongXiaGu.Grids;
 using JiongXiaGu.Unity.RectTerrain.Resources;
-using JiongXiaGu.Unity;
-using JiongXiaGu.Unity;
 using JiongXiaGu.Unity.RectMaps;
 using System;
 using System.Collections.Generic;
@@ -28,8 +26,6 @@ namespace JiongXiaGu.Unity.RectTerrain
         float tessellation = 48f;
         [SerializeField, Range(0, 5)]
         float displacement = 1.5f;
-        [SerializeField]
-        RectMapController mapInitializer;
         [SerializeField]
         LandformDispatcher dispatcher;
         [SerializeField]
@@ -105,7 +101,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
         {
             resources = RectTerrainResourcesInitializer.RectTerrainResources;
-            map = mapInitializer.WorldMap.Map;
+            map = RectMapSceneController.WorldMap.Map;
             return null;
         }
 

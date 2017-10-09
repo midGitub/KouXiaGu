@@ -20,8 +20,8 @@ namespace JiongXiaGu.Unity.RectMaps
         internal const string MapVersionAttributeName = "Version";
         internal const string MapIsArchivedAttributeName = "isArchived";
         internal const string MapNodeElementName = "Item";
-        const string mapFilePrefix = "Map_";
-        const string mapFileExtension = ".xml";
+        const string MapFilePrefix = "Map_";
+        const string MapFileExtension = ".xmap";
 
         XmlSerializer mapSerializer;
 
@@ -30,12 +30,9 @@ namespace JiongXiaGu.Unity.RectMaps
             mapSerializer = new XmlSerializer(typeof(Map));
         }
 
-        /// <summary>
-        /// 语言包搜索模式;
-        /// </summary>
         static string mapFileSearchPattern
         {
-            get { return mapFilePrefix + "*" + mapFileExtension; }
+            get { return MapFilePrefix + "*" + MapFileExtension; }
         }
 
         /// <summary>
@@ -62,7 +59,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public void Write(string dirPath, Map map)
         {
-            string fileName = mapFilePrefix + map.Name + mapFileExtension;
+            string fileName = MapFilePrefix + map.Name + MapFileExtension;
             string filePath = Path.Combine(dirPath, fileName);
             using (Stream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {

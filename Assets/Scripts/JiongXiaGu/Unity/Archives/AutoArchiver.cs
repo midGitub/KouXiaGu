@@ -1,7 +1,6 @@
 ﻿using JiongXiaGu.Concurrent;
 using JiongXiaGu.Unity;
 using JiongXiaGu.Unity.Resources;
-using JiongXiaGu.Unity.Resources.Archives;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -91,8 +90,8 @@ namespace JiongXiaGu.Unity.Archives
             {
                 string archiveName = "AutoSave" + i;
                 string archivePath = Path.Combine(Resource.ArchivesDirectoryPath, archiveName);
-                ArchiveInfo info = new ArchiveInfo(archiveName, true);
-                Archive archive = Archive.ReadOrCreate(archivePath, info);
+                ArchiveDescription description = new ArchiveDescription(archiveName, true);
+                Archive archive = new Archive(description, archivePath);
                 yield return archive;
             }
         }

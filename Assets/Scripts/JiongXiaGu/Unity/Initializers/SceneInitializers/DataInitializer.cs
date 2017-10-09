@@ -1,4 +1,4 @@
-﻿using JiongXiaGu.Unity.Resources.Archives;
+﻿using JiongXiaGu.Unity.Archives;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;

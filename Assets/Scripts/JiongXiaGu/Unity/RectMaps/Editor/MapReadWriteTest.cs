@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Collections;
+using JiongXiaGu.Grids;
 using NUnit.Framework;
 using System.IO;
 
@@ -9,7 +10,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// 地图读写测试;
     /// </summary>
     [TestFixture]
-    public class MapReadWriteTest
+    class MapReadWriteTest
     {
 
         [Test]
@@ -17,7 +18,7 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             var reader = new MapXmlReader();
             var map = Generate();
-            reader.Write(@"NUnitTemp", map);
+            reader.Write(NUnit.TempDirectory, map);
         }
 
         [Test]
@@ -45,9 +46,9 @@ namespace JiongXiaGu.Unity.RectMaps
 
         Map Generate()
         {
-            Map map = new Map("测试1");
-            MapDataGenerator mapDataGenerator = new MapDataGenerator();
-            mapDataGenerator.Generate(map.Data, 5);
+            var points = RectCoord.Spiral_in(RectCoord.Self, 5);
+            MapGenerator mapGenerator = new RandomMapGenerator(new MapDescription("测试1"), points);
+            Map map = mapGenerator.Generate();
             return map;
         }
     }

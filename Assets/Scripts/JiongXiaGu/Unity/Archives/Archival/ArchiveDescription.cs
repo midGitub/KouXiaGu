@@ -2,26 +2,15 @@
 using System.Xml.Serialization;
 using UnityEngine;
 
-namespace JiongXiaGu.Unity.Resources.Archives
+namespace JiongXiaGu.Unity.Archives
 {
 
     /// <summary>
-    /// 存档信息,记录存档信息,输出输入结构;
+    /// 存档描述;
     /// </summary>
-    [XmlRoot("ArchiveInfo")]
-    public struct ArchiveInfo
+    [XmlRoot("ArchiveDescription")]
+    public struct ArchiveDescription
     {
-
-        public ArchiveInfo(string name, bool isAutoSave) : this()
-        {
-            Name = name;
-            IsAutoSave = isAutoSave;
-        }
-
-        public ArchiveInfo(string name) : this(name, false)
-        {
-        }
-
         /// <summary>
         /// 存档名;
         /// </summary>
@@ -46,6 +35,16 @@ namespace JiongXiaGu.Unity.Resources.Archives
         [XmlElement]
         public string ProgramVersion{ get; set; }
 
+        public ArchiveDescription(string name) : this(name, false)
+        {
+        }
+
+        public ArchiveDescription(string name, bool isAutoSave) : this()
+        {
+            Name = name;
+            IsAutoSave = isAutoSave;
+        }
+
         /// <summary>
         /// 存档最后修改时间;
         /// </summary>
@@ -57,7 +56,7 @@ namespace JiongXiaGu.Unity.Resources.Archives
         /// <summary>
         /// 更新存档信息到当前配置变量(仅在Unity线程);
         /// </summary>
-        public ArchiveInfo Update()
+        public ArchiveDescription Update()
         {
             TimeTicks = DateTime.Now.Ticks;
             ProgramVersion = Application.version;

@@ -1,23 +1,25 @@
-﻿using System.IO;
+﻿using JiongXiaGu.Unity.Resources;
+using System.IO;
 
-namespace JiongXiaGu.Unity.Resources.Archives
+namespace JiongXiaGu.Unity.Archives
 {
-    public class ArchiveInfoSerializer
+
+    public class ArchiveDescriptionReader
     {
-        public ArchiveInfoSerializer() : this(new XmlFileSerializer<ArchiveInfo>(), "Info")
+        public ArchiveDescriptionReader() : this(new XmlFileSerializer<ArchiveDescription>(), "Info")
         {
         }
 
-        public ArchiveInfoSerializer(ISerializer<ArchiveInfo> serializer, string name)
+        public ArchiveDescriptionReader(ISerializer<ArchiveDescription> serializer, string name)
         {
             Serializer = serializer;
             Name = name;
         }
 
-        public ISerializer<ArchiveInfo> Serializer { get; private set; }
+        public ISerializer<ArchiveDescription> Serializer { get; private set; }
         public string Name { get; private set; }
 
-        public void Serialize(string archiveDirectory, ArchiveInfo result)
+        public void Write(string archiveDirectory, ArchiveDescription result)
         {
             string path = GetArchiveInfoPath(archiveDirectory);
             using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
@@ -26,7 +28,7 @@ namespace JiongXiaGu.Unity.Resources.Archives
             }
         }
 
-        public ArchiveInfo Deserialize(string archiveDirectory)
+        public ArchiveDescription Read(string archiveDirectory)
         {
             string path = GetArchiveInfoPath(archiveDirectory);
             using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))

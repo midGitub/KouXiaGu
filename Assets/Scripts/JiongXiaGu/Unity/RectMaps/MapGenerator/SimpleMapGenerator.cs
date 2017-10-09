@@ -11,21 +11,21 @@ namespace JiongXiaGu.Unity.RectMaps
     /// <summary>
     /// 简单的地图随机生成器;
     /// </summary>
-    public class SimpleMapDataGenerator : MapDataGenerator
+    public class SimpleMapGenerator : RandomMapGenerator
     {
         int[] landformTypes;
 
-        public SimpleMapDataGenerator(RectTerrainResources rectTerrainResources) : base()
+        public SimpleMapGenerator(MapDescription description, RectTerrainResources resources, IEnumerable<RectCoord> points) : base(description, points)
         {
-            if (rectTerrainResources == null)
-                throw new ArgumentNullException("rectTerrainResources");
+            if (resources == null)
+                throw new ArgumentNullException(nameof(resources));
 
-            landformTypes = rectTerrainResources.Landform.Values.ToArray(item => item.ID);
+            landformTypes = resources.Landform.Values.ToArray(item => item.ID);
         }
 
-        public override void Generate(IDictionary<RectCoord, MapNode> map, IEnumerable<RectCoord> points) 
+        public override void GenerateData(IDictionary<RectCoord, MapNode> map)
         {
-            foreach (var point in points)
+            foreach (var point in Points)
             {
                 MapNode node = new MapNode()
                 {

@@ -27,14 +27,10 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public DictionaryChangedKeyRecorder<RectCoord, MapNode> MapChangedRecorder { get; private set; }
 
-        public WorldMap() : this(new Map())
-        {
-        }
-
         public WorldMap(Map data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
 
             MapData = data;
             Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
@@ -45,9 +41,9 @@ namespace JiongXiaGu.Unity.RectMaps
         public WorldMap(Map data, Map archive)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             if (archive == null)
-                throw new ArgumentNullException("archive");
+                throw new ArgumentNullException(nameof(archive));
 
             data.AddArchive(archive);
             Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
@@ -66,8 +62,8 @@ namespace JiongXiaGu.Unity.RectMaps
             }
             else
             {
-                Map archivedMap = new Map();
-                GetChangedData(archivedMap.Data);
+                Map archivedMap = new Map(MapData.Description);
+                UpdateChangedData(archivedMap.Data);
                 return archivedMap;
             }
         }
@@ -75,7 +71,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 获取到发生变化的节点合集;
         /// </summary>
-        void GetChangedData(IDictionary<RectCoord, MapNode> map)
+        void UpdateChangedData(IDictionary<RectCoord, MapNode> map)
         {
             var changedData = new Dictionary<RectCoord, MapNode>();
             foreach (var position in MapChangedRecorder.ChangedPositions)

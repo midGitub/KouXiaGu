@@ -5,26 +5,43 @@ using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
-    public class MapDataGenerator
+
+    /// <summary>
+    /// 地图随机生成器;
+    /// </summary>
+    public class RandomMapGenerator : MapGenerator
     {
         protected readonly Random random;
 
-        public MapDataGenerator()
+        /// <summary>
+        /// 需要生成地图节点的坐标;
+        /// </summary>
+        IEnumerable<RectCoord> points;
+
+        public RandomMapGenerator(MapDescription description, IEnumerable<RectCoord> points) : base(description)
         {
+            if(points == null)
+                throw new ArgumentNullException(nameof(points));
+
             random = new Random();
+            this.points = points;
         }
 
         /// <summary>
-        /// 生成随机地图节点;
+        /// 需要生成地图节点的坐标;
         /// </summary>
-        /// <param name="map"></param>
-        /// <param name="radius"></param>
-        public virtual void Generate(IDictionary<RectCoord, MapNode> map, int radius)
+        public IEnumerable<RectCoord> Points
         {
-            Generate(map, RectCoord.Spiral_in(RectCoord.Self, radius));
+            get { return points; }
+            set
+            {
+                if(value == null)
+                    throw new ArgumentNullException(nameof(value));
+                points = value;
+            }
         }
 
-        public virtual void Generate(IDictionary<RectCoord, MapNode> map, IEnumerable<RectCoord> points)
+        public override void GenerateData(IDictionary<RectCoord, MapNode> map)
         {
             foreach (var point in points)
             {
@@ -54,7 +71,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 返回一个随机的0~360的角度;
         /// </summary>
-        public float Angle()
+        protected float Angle()
         {
             return random.Next(0, 360);
         }

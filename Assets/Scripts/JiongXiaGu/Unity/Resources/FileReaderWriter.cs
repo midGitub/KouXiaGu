@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
-    
+
     public class FileReaderWriter<T> : IFileReaderWriter<T>, IReader<T>, IWriter<T>
     {
         public FileReaderWriter(ISingleFilePath file, IOFileSerializer<T> serializer)
