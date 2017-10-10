@@ -27,6 +27,11 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public DictionaryChangedKeyRecorder<RectCoord, MapNode> MapChangedRecorder { get; private set; }
 
+        /// <summary>
+        /// 是否为只读?
+        /// </summary>
+        public bool IsReadOnly { get; internal set; }
+
         public WorldMap(Map data)
         {
             if (data == null)

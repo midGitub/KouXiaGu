@@ -58,7 +58,6 @@ namespace JiongXiaGu.Unity.RectMaps
         public override int GetHashCode()
         {
             var hashCode = 2009097656;
-            hashCode = hashCode * -1521134295 + base.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             hashCode = hashCode * -1521134295 + Version.GetHashCode();
             hashCode = hashCode * -1521134295 + IsArchived.GetHashCode();

@@ -107,7 +107,7 @@ namespace JiongXiaGu.Unity.Archives
                     archive.DirectoryInfo.Create();
 
                     List<Task> list = new List<Task>();
-                    foreach (var archivalData in sceneArchivalData.ArchivalData)
+                    foreach (var archivalData in sceneArchivalData)
                     {
                         Task task = archivalData.Write(archive, cancellationToken);
                         if (task != null)

@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// <summary>
     /// 地图数据;
     /// </summary>
-    [XmlRoot(MapXmlReader.MapRootName)]
+    [XmlRoot(MapReader.MapRootName)]
     public sealed class Map
     {
         MapDescription description;
@@ -19,7 +19,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图数据;
         /// </summary>
-        [XmlElement(MapXmlReader.MapNodeElementName)]
+        [XmlElement(MapReader.MapNodeElementName)]
         public MapData MapData { get; set; }
 
         Map()
@@ -50,7 +50,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图名;
         /// </summary>
-        [XmlAttribute(MapXmlReader.MapNameAttributeName)]
+        [XmlAttribute(MapReader.MapNameAttributeName)]
         public string Name
         {
             get { return description.Name; }
@@ -60,7 +60,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图版本;
         /// </summary>
-        [XmlAttribute(MapXmlReader.MapVersionAttributeName)]
+        [XmlAttribute(MapReader.MapVersionAttributeName)]
         public int Version
         {
             get { return description.Version; }
@@ -70,7 +70,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 是否为存档?
         /// </summary>
-        [XmlAttribute(MapXmlReader.MapIsArchivedAttributeName)]
+        [XmlAttribute(MapReader.MapIsArchivedAttributeName)]
         public bool IsArchived
         {
             get { return description.IsArchived; }

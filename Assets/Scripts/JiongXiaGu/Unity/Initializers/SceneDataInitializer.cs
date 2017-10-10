@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 场景数据初始化处置器;
     /// </summary>
-    public interface ISceneDataInitializeHandle : ISceneArchiveHandle
+    public interface ISceneDataInitializeHandle
     {
         /// <summary>
         /// 进行初始化,
@@ -21,6 +21,13 @@ namespace JiongXiaGu.Unity.Initializers
         /// <param name="sceneData">场景数据;</param>
         /// <param name="token">取消标记;</param>
         Task Initialize(SceneArchivalData sceneData, CancellationToken token);
+
+        ///// <summary>
+        ///// 进行初始化,
+        ///// </summary>
+        ///// <param name="archive">存档数据;</param>
+        ///// <param name="token">取消标记;</param>
+        //Task Initialize(IArchiveFileInfo archive, CancellationToken token);
     }
 
     /// <summary>
@@ -85,7 +92,7 @@ namespace JiongXiaGu.Unity.Initializers
             get { return "[场景数据初始化]"; }
         }
 
-        protected override Task Initialize_internal(CancellationToken cancellationToken)
+        protected override  Task Initialize_internal(CancellationToken cancellationToken)
         {
             isInitializing = true;
             if (ArchivalData != null)
@@ -112,9 +119,9 @@ namespace JiongXiaGu.Unity.Initializers
         /// </summary>
         private async Task Initialize(Archive archive, CancellationToken cancellationToken)
         {
-            SceneArchivalData sceneData = await ArchivedReader.Read(archive, initializers.Cast<ISceneArchiveHandle>(), cancellationToken);
-            await Initialize(sceneData, cancellationToken);
-            isInitializing = false;
+            throw new NotImplementedException();
+            //await WhenAll(initializers, initializer => initializer.Initialize(archive, cancellationToken));
+            //isInitializing = false;
         }
 
         /// <summary>

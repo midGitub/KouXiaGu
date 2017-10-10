@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading.Tasks;
-using ProtoBuf;
+﻿using System.IO;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -12,7 +6,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// <summary>
     /// 游戏地图文件信息;
     /// </summary>
-    public class MapDataXmlFileInfo
+    public class MapFileInfo
     {
         /// <summary>
         /// 地图文件描述信息;
@@ -22,11 +16,11 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图文件路径;
         /// </summary>
-        public FileInfo File { get; internal set; }
+        public FileInfo FileInfo { get; private set; }
 
-        public MapDataXmlFileInfo(FileInfo file, MapDescription description)
+        public MapFileInfo(FileInfo file, MapDescription description)
         {
-            File = file;
+            FileInfo = file;
             Description = description;
         }
     }

@@ -17,68 +17,43 @@ namespace JiongXiaGu.Unity.RectMaps
     /// 地图场景控制器;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectMapSceneController : SceneSington<RectMapSceneController>, ISceneDataInitializeHandle
+    public sealed class RectMapSceneController : MonoBehaviour, ISceneDataInitializeHandle
     {
-        RectMapSceneController()
-        {
-        }
-
-        /// <summary>
-        /// 游戏地图存放目录;
-        /// </summary>
-        [PathDefinition(ResourceTypes.DataDirectory, "游戏地图存放目录;")]
-        internal const string MapsDirectoryName = "Maps";
-
-        /// <summary>
-        /// 默认地图(在不存在存档时通过此变量初始化,可以手动指定);
-        /// </summary>
-        public static Map DefaultMap { get; set; } 
-
-        /// <summary>
-        /// 是否正在进行存档操作?
-        /// </summary>
-        public static bool IsArchiving { get; private set; }
-
         /// <summary>
         /// 当前场景使用的地图;
         /// </summary>
         public static WorldMap WorldMap { get; private set; }
 
+        private RectMapSceneController()
+        {
+        }
+
         Task ISceneDataInitializeHandle.Initialize(SceneArchivalData archivalData, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return Task.Run(delegate ()
+            {
+                MapSceneArchivalData mapSceneArchivalData = archivalData.Get<MapSceneArchivalData>();
+                if (mapSceneArchivalData == null)
+                    throw new ArgumentException(string.Format("{0}未定义地图数据;", nameof(archivalData)));
+
+                MapReader mapXmlReader = new MapReader();
+                Map mainMap = mapXmlReader.Read(mapSceneArchivalData.MainMapFileInfo);
+                Map archiveMap = mapSceneArchivalData.ArchiveMap;
+                if (archiveMap == null)
+                {
+                    WorldMap = new WorldMap(mainMap);
+                }
+                else
+                {
+                    WorldMap = new WorldMap(mainMap, archiveMap);
+                }
+                OnCompleted();
+            });
         }
 
-        void ISceneArchiveHandle.Prepare(CancellationToken cancellationToken)
+        private void OnDestroy()
         {
-            throw new NotImplementedException();
-        }
-
-        Task ISceneArchiveHandle.Collect(SceneArchivalData archivalData, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task ISceneArchiveHandle.Read(IArchiveFileInfo archive, SceneArchivalData archivalData, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 从地图构造器获取到地图;
-        /// </summary>
-        WorldMap ReadMapFromMemory(CancellationToken token)
-        {
-            WorldMap worldMap = new WorldMap(DefaultMap);
-            return worldMap;
-        }
-
-        /// <summary>
-        /// 从存档获取到地图;
-        /// </summary>
-        WorldMap ReadMapFromArchive(Archive archive, CancellationToken token)
-        {
-            throw new NotImplementedException();
+            WorldMap = null;
         }
 
         [System.Diagnostics.Conditional("EDITOR_LOG")]

@@ -16,15 +16,15 @@ namespace JiongXiaGu.Unity.RectMaps
         [Test]
         public void TestWriteFile()
         {
-            var reader = new MapXmlReader();
+            var reader = new MapReader();
             var map = Generate();
-            reader.Write(NUnit.TempDirectory, map);
+            reader.WriteToDirectory(NUnit.TempDirectory, map);
         }
 
         [Test]
         public void TestReadWrite()
         {
-            var reader = new MapXmlReader();
+            var reader = new MapReader();
             var map = Generate();
             using (var stream = new MemoryStream())
             {
@@ -38,7 +38,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
 
                 stream.Seek(0, SeekOrigin.Begin);
-                var mapDescription = MapXmlReader.ReadInfo(stream);
+                var mapDescription = reader.ReadInfo(stream);
 
                 Assert.IsTrue(map.Description == mapDescription);
             }

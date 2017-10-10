@@ -1,29 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using JiongXiaGu.Collections;
+using JiongXiaGu.Concurrent;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.Archives
 {
 
     /// <summary>
-    /// 游戏场景归档数据;
+    /// 游戏场景归档数据(线程安全);
     /// </summary>
-    public class SceneArchivalData
+    public class SceneArchivalData : IEnumerable<IDataArchival>
     {
         readonly List<IDataArchival> archivalData;
+        ReaderWriterLockSlim readerWriterLock;
 
         public SceneArchivalData()
         {
             archivalData = new List<IDataArchival>();
+            readerWriterLock = new ReaderWriterLockSlim();
         }
 
-        /// <summary>
-        /// 状态合集;
-        /// </summary>
-        public IEnumerable<IDataArchival> ArchivalData
+        public int Count
         {
-            get { return archivalData; }
+            get { return archivalData.Count; }
         }
 
         /// <summary>
@@ -32,9 +33,12 @@ namespace JiongXiaGu.Unity.Archives
         public void Add<T>(T item)
             where T : class, IDataArchival
         {
-            if (!archivalData.Contains(i => i is T))
+            using (readerWriterLock.WriteLock())
             {
-                archivalData.Add(item);
+                if (!archivalData.Contains(i => i is T))
+                {
+                    archivalData.Add(item);
+                }
             }
         }
 
@@ -45,7 +49,10 @@ namespace JiongXiaGu.Unity.Archives
         public bool Remove<T>()
             where T : class, IDataArchival
         {
-            return archivalData.Remove(item => item is T);
+            using (readerWriterLock.WriteLock())
+            {
+                return archivalData.Remove(item => item is T);
+            }
         }
 
         /// <summary>
@@ -54,7 +61,23 @@ namespace JiongXiaGu.Unity.Archives
         public T Get<T>()
             where T : class, IDataArchival
         {
-            return archivalData.Find(item => item is T) as T;
+            using (readerWriterLock.ReadLock())
+            {
+                return archivalData.Find(item => item is T) as T;
+            }
+        }
+
+        public IEnumerator<IDataArchival> GetEnumerator()
+        {
+            using (readerWriterLock.WriteLock())
+            {
+                return archivalData.ToList().GetEnumerator();
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
