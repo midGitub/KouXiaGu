@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.Initializers;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,9 +12,9 @@ namespace JiongXiaGu.Diagnostics
     /// 负责游戏控制台初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public class XiaGuConsoleInitializer : MonoBehaviour, IGameInitializeHandle
+    public class XiaGuConsoleInitializer : MonoBehaviour, IGameComponentInitializeHandle
     {
-        Task IGameInitializeHandle.StartInitialize(CancellationToken token)
+        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
         {
             Task task = Task.Run(delegate ()
             {

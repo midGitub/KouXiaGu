@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 读取存档;
         /// </summary>
-        public Task<SceneArchivalData> Read(Archive archive, IEnumerable<ISceneArchiveHandle> sceneArchiveHandles, CancellationToken cancellationToken)
+        public static Task<SceneArchivalData> Read(Archive archive, IEnumerable<ISceneArchiveHandle> sceneArchiveHandles, CancellationToken cancellationToken)
         {
             return Task.Run(delegate ()
             {

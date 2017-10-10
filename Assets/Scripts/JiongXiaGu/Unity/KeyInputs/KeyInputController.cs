@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.Initializers;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,13 +11,13 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// 输入组件控制;
     /// </summary>
     [DisallowMultipleComponent]
-    class KeyInputController : MonoBehaviour, IGameInitializeHandle
+    class KeyInputController : MonoBehaviour, IGameComponentInitializeHandle
     {
         KeyInputController()
         {
         }
 
-        Task IGameInitializeHandle.StartInitialize(CancellationToken token)
+        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
         {
             return Task.Run((Action)ReadAndApplyKeyMap);
         }

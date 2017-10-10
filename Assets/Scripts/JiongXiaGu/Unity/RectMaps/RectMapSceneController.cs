@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Threading;
 using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Grids;
+using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -16,7 +17,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// 地图场景控制器;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectMapSceneController : SceneSington<RectMapSceneController>, IDataInitializeHandle
+    public sealed class RectMapSceneController : SceneSington<RectMapSceneController>, ISceneDataInitializeHandle
     {
         RectMapSceneController()
         {
@@ -43,20 +44,24 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public static WorldMap WorldMap { get; private set; }
 
-        Task IDataInitializeHandle.StartInitialize(Archive archive, CancellationToken token)
+        Task ISceneDataInitializeHandle.Initialize(SceneArchivalData archivalData, CancellationToken token)
         {
-            return Task.Run(delegate ()
-            {
-                if (archive == null)
-                {
-                    WorldMap = ReadMapFromMemory(token);
-                }
-                else
-                {
-                    WorldMap = ReadMapFromArchive(archive, token);
-                }
-                OnCompleted();
-            });
+            throw new NotImplementedException();
+        }
+
+        void ISceneArchiveHandle.Prepare(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ISceneArchiveHandle.Collect(SceneArchivalData archivalData, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ISceneArchiveHandle.Read(IArchiveFileInfo archive, SceneArchivalData archivalData, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

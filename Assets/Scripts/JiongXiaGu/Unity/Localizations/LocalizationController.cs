@@ -6,6 +6,7 @@ using UnityEngine;
 using System.IO;
 using JiongXiaGu.Unity.Resources;
 using System.Collections;
+using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.Localizations
 {
@@ -14,7 +15,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// 本地化组件控制;
     /// </summary>
     [DisallowMultipleComponent]
-    class LocalizationController : UnitySington<LocalizationController>, IGameInitializeHandle
+    class LocalizationController : UnitySington<LocalizationController>, IGameComponentInitializeHandle
     {
         LocalizationController()
         {
@@ -27,23 +28,58 @@ namespace JiongXiaGu.Unity.Localizations
         /// 默认语言,在找不到指定语言和系统语言时使用的语言;
         /// </summary>
         [SerializeField]
-        SystemLanguage defaultLanguage;
+        private SystemLanguage defaultLanguage;
 
         /// <summary>
         /// 语言包读写器;
         /// </summary>
-        LanguagePackReader languagePackReader;
+        private LanguagePackReader languagePackReader;
 
         /// <summary>
         /// 系统语言;
         /// </summary>
         public SystemLanguage SystemLanguage { get; private set; }
 
-        void Awake()
+        private void Awake()
         {
             languagePackReader = new LanguagePackReader();
             SystemLanguage = Application.systemLanguage;
             SetInstance(this);
+        }
+
+        /// <summary>
+        /// 在游戏开始时进行初始化;
+        /// </summary>
+        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
+        {
+            Task<LanguagePackGroup> task = ReadLanguagePack(token);
+            StartCoroutine(WaitLanguagePackCoroutine(task, _ => OnLocalizationCompleted()));
+            return task;
+        }
+
+        [System.Diagnostics.Conditional("EDITOR_LOG")]
+        private void OnLocalizationCompleted()
+        {
+            const string log = "[本地化组件]初始化完成;\n";
+            string Info = GetInfoLog();
+            Debug.Log(log + Info);
+        }
+
+        private string GetInfoLog()
+        {
+            string log = "Language:" + Localization.Language
+                + ", SystemLanguage" + SystemLanguage.ToString()
+
+                + "\nLanguagePackCount:" + Localization.LanguagePackGroup.Count
+                + ", ItemCount:" + Localization.LanguagePackGroup.TextItemCount()
+                ;
+            return log;
+        }
+
+        [ContextMenu("报告详细信息")]
+        private void LogInfo()
+        {
+            Debug.Log(GetInfoLog());
         }
 
         /// <summary>
@@ -62,7 +98,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 等待读取完成,并且应用到本地化组件(若读取失败则不进行此操作),完成时调用 callback(无论是否失败);
         /// </summary>
-        IEnumerator WaitLanguagePackCoroutine(Task<LanguagePackGroup> languagePackTask, Action<Task> callback = null)
+        private IEnumerator WaitLanguagePackCoroutine(Task<LanguagePackGroup> languagePackTask, Action<Task> callback = null)
         {
             while (!languagePackTask.IsCompleted)
             {
@@ -76,42 +112,9 @@ namespace JiongXiaGu.Unity.Localizations
         }
 
         /// <summary>
-        /// 在游戏开始时进行初始化;
-        /// </summary>
-        Task IGameInitializeHandle.StartInitialize(CancellationToken token)
-        {
-            var task = ReadLanguagePack(token);
-            StartCoroutine(WaitLanguagePackCoroutine(task, _ => OnLocalizationCompleted()));
-            return task;
-        }
-
-        [System.Diagnostics.Conditional("EDITOR_LOG")]
-        void OnLocalizationCompleted()
-        {
-            const string log = "[本地化组件]初始化完成;\n";
-            string Info = GetInfoLog();
-            Debug.Log(log + Info);
-        }
-
-        string GetInfoLog()
-        {
-            string log = "Language:" + Localization.Language
-                + "\nLanguagePackCount:" + Localization.LanguagePackGroup.Count
-                + ", ItemCount:" + Localization.LanguagePackGroup.TextItemCount()
-                ;
-            return log;
-        }
-
-        [ContextMenu("报告详细信息")]
-        void LogInfo()
-        {
-            Debug.Log(GetInfoLog());
-        }
-
-        /// <summary>
         /// 读取到主要的语言文件;
         /// </summary>
-        Task<LanguagePackGroup> ReadLanguagePack(CancellationToken token)
+        private Task<LanguagePackGroup> ReadLanguagePack(CancellationToken token)
         {
             return Task.Run(delegate ()
             {
@@ -153,7 +156,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 尝试读取到配置文件;
         /// </summary>
-        bool TryReadLocalizationConfig(out LocalizationConfig config)
+        private bool TryReadLocalizationConfig(out LocalizationConfig config)
         {
             LocalizationConfigReader configReader = new LocalizationConfigReader();
             try
@@ -171,7 +174,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有符合要求的语言包;
         /// </summary>
-        IEnumerable<LanguagePackFileInfo> EnumerateLanguagePask()
+        private IEnumerable<LanguagePackFileInfo> EnumerateLanguagePask()
         {
             string systemLanguage = SystemLanguage.ToString();
             Func<LanguagePackFileInfo, bool> targetMatch = delegate (LanguagePackFileInfo info)
@@ -191,7 +194,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有符合要求的语言包;
         /// </summary>
-        IEnumerable<LanguagePackFileInfo> EnumerateLanguagePask(LocalizationConfig config)
+        private IEnumerable<LanguagePackFileInfo> EnumerateLanguagePask(LocalizationConfig config)
         {
             Func<LanguagePackFileInfo, bool> targetMatch = delegate (LanguagePackFileInfo info)
             {
@@ -214,7 +217,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <param name="fileInfos">所以可用的语言信息</param>
         /// <param name="targetMatch">优选语言筛选器</param>
         /// <param name="spareLanguages">备选语言合集(优先级为数组排列顺序)</param>
-        IEnumerable<LanguagePackFileInfo> FindLanguagePask(IEnumerable<LanguagePackFileInfo> fileInfos, Func<LanguagePackFileInfo, bool> targetMatch, params string[] spareLanguages)
+        private IEnumerable<LanguagePackFileInfo> FindLanguagePask(IEnumerable<LanguagePackFileInfo> fileInfos, Func<LanguagePackFileInfo, bool> targetMatch, params string[] spareLanguages)
         {
             List<LanguagePackFileInfo>[] spareFileInfo = new List<LanguagePackFileInfo>[spareLanguages.Length];
 
@@ -266,7 +269,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// 获取到语言包存放目录;
         /// </summary>
         /// <returns></returns>
-        static string GetLanguagePasksDirectory()
+        private static string GetLanguagePasksDirectory()
         {
             string path = Path.Combine(Resource.DataDirectoryPath, LocalizationDirectoryName);
             return path;

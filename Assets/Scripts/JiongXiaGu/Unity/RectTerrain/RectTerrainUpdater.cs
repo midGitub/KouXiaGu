@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
@@ -14,7 +15,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 负责地形组件更新;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectTerrainUpdater : MonoBehaviour, IUpdaterInitializeHandle
+    public sealed class RectTerrainUpdater : MonoBehaviour, IScenePreparationHandle
     {
         RectTerrainUpdater()
         {
@@ -45,7 +46,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             rectTerrainUpdateHandles = GetComponentsInChildren<IRectTerrainUpdateHandle>();
         }
 
-        Task IUpdaterInitializeHandle.StartInitialize(CancellationToken token)
+        Task IScenePreparationHandle.Prepare(CancellationToken token)
         {
             StartUpdate();
             return Task.Run(delegate ()

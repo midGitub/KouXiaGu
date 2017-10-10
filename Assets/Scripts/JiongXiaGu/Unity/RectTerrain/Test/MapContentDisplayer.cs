@@ -9,6 +9,7 @@ using JiongXiaGu.Unity.RectMaps;
 using JiongXiaGu.Unity;
 using System.Threading;
 using UnityEngine.UI;
+using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
@@ -17,14 +18,14 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 将鼠标所指向地图节点的内容输出为文本;
     /// </summary>
     [DisallowMultipleComponent]
-    class MapContentDisplayer : MonoBehaviour, IWorldCompletedHandle
+    class MapContentDisplayer : MonoBehaviour, ISceneCompletedHandle
     {
 
         [SerializeField]
         Text textObject;
         IDictionary<RectCoord, MapNode> map;
 
-        void IWorldCompletedHandle.OnWorldCompleted()
+        void ISceneCompletedHandle.OnSceneCompleted()
         {
             map = RectMapSceneController.WorldMap.Map;
         }

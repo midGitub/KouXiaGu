@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.Initializers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,13 +14,13 @@ namespace JiongXiaGu.Unity.Localizations
     /// 本地化组件的场景控制器;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LocalizationSceneController : SceneSington<LocalizationSceneController>, IComponentInitializeHandle, IQuitSceneHandle
+    public class LocalizationSceneController : SceneSington<LocalizationSceneController>, ISceneComponentInitializeHandle, IQuitSceneHandle
     {
         LocalizationSceneController()
         {
         }
 
-        Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
+        Task ISceneComponentInitializeHandle.Initialize(CancellationToken token)
         {
             Localization.IsLockLanguage = true;
             return null;

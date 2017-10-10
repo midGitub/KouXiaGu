@@ -1,6 +1,7 @@
 ﻿using JiongXiaGu.Grids;
 using JiongXiaGu.Unity;
 using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.Initializers;
 using JiongXiaGu.Unity.RectMaps;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 管理地形组件的地貌;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformController : SceneSington<LandformController>, IComponentInitializeHandle, IRectTerrainUpdateHandle
+    public class LandformController : SceneSington<LandformController>, ISceneComponentInitializeHandle, IRectTerrainUpdateHandle
     {
         LandformController()
         {
@@ -33,7 +34,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             get { return LandformBaker.Instance.IsBakeComplete; }
         }
 
-        Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
+        Task ISceneComponentInitializeHandle.Initialize(CancellationToken token)
         {
             Builder = new LandformBuilder(LandformBaker.Instance);
             Updater = new LandformUpdater(Builder, LandformGuiderGroup, RectMapSceneController.WorldMap);

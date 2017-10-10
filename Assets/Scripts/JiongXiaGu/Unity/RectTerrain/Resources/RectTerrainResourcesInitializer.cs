@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Diagnostics;
+using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.RectTerrain.Resources
 {
@@ -14,7 +15,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
     /// 地形资源初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectTerrainResourcesInitializer : MonoBehaviour, IGameInitializeHandle
+    public sealed class RectTerrainResourcesInitializer : MonoBehaviour, IGameComponentInitializeHandle
     {
         RectTerrainResourcesInitializer()
         {
@@ -33,7 +34,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
         /// </summary>
         public static RectTerrainResources RectTerrainResources { get; private set; }
 
-        Task IGameInitializeHandle.StartInitialize(CancellationToken token)
+        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {

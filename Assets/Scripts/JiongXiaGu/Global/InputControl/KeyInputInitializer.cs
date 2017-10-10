@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.Initializers;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -9,13 +10,13 @@ namespace JiongXiaGu.InputControl
 {
 
 
-    public class KeyInputInitializer : MonoBehaviour, IGameInitializeHandle
+    public class KeyInputInitializer : MonoBehaviour, IGameComponentInitializeHandle
     {
         KeyInputInitializer()
         {
         }
 
-        Task IGameInitializeHandle.StartInitialize(CancellationToken token)
+        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {

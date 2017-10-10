@@ -5,7 +5,7 @@ namespace JiongXiaGu.Unity.Archives
 {
 
     /// <summary>
-    /// 场景信息处置接口;
+    /// 场景信息收集\读取处置接口;
     /// </summary>
     public interface ISceneArchiveHandle
     {

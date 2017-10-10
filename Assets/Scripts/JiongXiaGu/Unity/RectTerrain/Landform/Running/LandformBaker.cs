@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
@@ -16,7 +17,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 地形烘培器,在Unity线程进行烘培任务;
     /// </summary>
     [Serializable]
-    public sealed class LandformBaker : SceneSington<LandformBaker>, IComponentInitializeHandle
+    public sealed class LandformBaker : SceneSington<LandformBaker>, ISceneComponentInitializeHandle
     {
         LandformBaker()
         {
@@ -98,7 +99,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             LandformChunkRenderer.SetDisplacement(displacement);
         }
 
-        Task IComponentInitializeHandle.StartInitialize(CancellationToken token)
+        Task ISceneComponentInitializeHandle.Initialize(CancellationToken token)
         {
             resources = RectTerrainResourcesInitializer.RectTerrainResources;
             map = RectMapSceneController.WorldMap.Map;

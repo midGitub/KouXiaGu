@@ -1,5 +1,6 @@
 ﻿using JiongXiaGu.Concurrent;
 using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.Initializers;
 using JiongXiaGu.Unity.Resources;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace JiongXiaGu.Unity.Archives
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SceneArchiveController))]
-    public class AutoArchiver : MonoBehaviour, IDataInitializeHandle, IWorldCompletedHandle
+    public class AutoArchiver : MonoBehaviour, ISceneComponentInitializeHandle, ISceneCompletedHandle
     {
         /// <summary>
         /// 是否启用自动存档?
@@ -71,7 +72,7 @@ namespace JiongXiaGu.Unity.Archives
             archiveController = GetComponent<SceneArchiveController>();
         }
 
-        Task IDataInitializeHandle.StartInitialize(Archive archive, CancellationToken token)
+        Task ISceneComponentInitializeHandle.Initialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {
@@ -96,7 +97,7 @@ namespace JiongXiaGu.Unity.Archives
             }
         }
 
-        void IWorldCompletedHandle.OnWorldCompleted()
+        void ISceneCompletedHandle.OnSceneCompleted()
         {
             if (isActivate)
             {

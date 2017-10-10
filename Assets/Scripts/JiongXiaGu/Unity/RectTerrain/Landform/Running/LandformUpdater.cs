@@ -13,6 +13,9 @@ namespace JiongXiaGu.Unity.RectTerrain
     {
         public LandformUpdater(LandformBuilder builder, TerrainGuiderGroup<RectCoord> guiderGroup, WorldMap map) : base(builder, guiderGroup)
         {
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
+
             worldMap = map;
             mapChangedRecorder = new DictionaryChangedRecorder<RectCoord, MapNode>();
             unsubscriber = map.Map.Subscribe(mapChangedRecorder);
