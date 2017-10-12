@@ -111,9 +111,12 @@ namespace JiongXiaGu
 
         class Unsubscriber : IDisposable
         {
+            private bool isDisposed = false;
+            private ObserverLinkedList<T> parent;
+            private LinkedListNode<T> node;
+
             public Unsubscriber(ObserverLinkedList<T> parent, LinkedListNode<T> node)
             {
-                isUnsubscribed = false;
                 this.parent = parent;
                 this.node = node;
             }
@@ -122,10 +125,6 @@ namespace JiongXiaGu
             {
                 Dispose(false);
             }
-
-            bool isUnsubscribed;
-            ObserverLinkedList<T> parent;
-            LinkedListNode<T> node;
 
             LinkedList<T> observers
             {
@@ -146,14 +145,17 @@ namespace JiongXiaGu
 
             void Dispose(bool disposing)
             {
-                if (!isUnsubscribed)
+                if (!isDisposed)
                 {
                     if (node == currentNode)
                     {
                         currentNode = currentNode.Next;
                     }
                     observers.Remove(node);
-                    isUnsubscribed = true;
+
+                    parent = null;
+                    node = null;
+                    isDisposed = true;
                 }
             }
         }
@@ -240,21 +242,21 @@ namespace JiongXiaGu
 
         class Unsubscriber : IDisposable
         {
-            public Unsubscriber(ICollection<T> observersCollection, T item)
+            private bool isDisposed;
+            private ICollection<T> observersCollection;
+            private T observer;
+
+            public Unsubscriber(ICollection<T> observersCollection, T observer)
             {
-                isUnsubscribe = false;
+                isDisposed = false;
                 this.observersCollection = observersCollection;
-                this.item = item;
+                this.observer = observer;
             }
 
             ~Unsubscriber()
             {
                 Dispose(false);
             }
-
-            bool isUnsubscribe;
-            readonly ICollection<T> observersCollection;
-            readonly T item;
 
             public void Dispose()
             {
@@ -264,10 +266,13 @@ namespace JiongXiaGu
 
             void Dispose(bool disposing)
             {
-                if (!isUnsubscribe)
+                if (!isDisposed)
                 {
-                    isUnsubscribe = true;
-                    observersCollection.Remove(item);
+                    observersCollection.Remove(observer);
+
+                    observersCollection = null;
+                    observer = default(T);
+                    isDisposed = true;
                 }
             }
         }

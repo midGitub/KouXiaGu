@@ -20,6 +20,7 @@ namespace JiongXiaGu.Concurrent
 
         class ReaderWriterLockSlimReadLock : IDisposable
         {
+            private bool isDisposed = false;
             ReaderWriterLockSlim readerWriterLockSlim;
 
             public ReaderWriterLockSlimReadLock(ReaderWriterLockSlim readerWriterLockSlim)
@@ -41,10 +42,11 @@ namespace JiongXiaGu.Concurrent
 
             void Dispose(bool disposing)
             {
-                if (readerWriterLockSlim != null)
+                if (isDisposed)
                 {
                     readerWriterLockSlim.ExitReadLock();
                     readerWriterLockSlim = null;
+                    isDisposed = true;
                 }
             }
         }
@@ -59,6 +61,7 @@ namespace JiongXiaGu.Concurrent
 
         class ReaderWriterLockSlimWriteLock : IDisposable
         {
+            private bool isDisposed = false;
             ReaderWriterLockSlim readerWriterLockSlim;
 
             public ReaderWriterLockSlimWriteLock(ReaderWriterLockSlim readerWriterLockSlim)
@@ -80,10 +83,11 @@ namespace JiongXiaGu.Concurrent
 
             void Dispose(bool disposing)
             {
-                if (readerWriterLockSlim != null)
+                if (isDisposed)
                 {
                     readerWriterLockSlim.ExitWriteLock();
                     readerWriterLockSlim = null;
+                    isDisposed = true;
                 }
             }
         }

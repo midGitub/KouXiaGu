@@ -11,6 +11,10 @@ namespace JiongXiaGu
     /// </summary>
     public sealed class CollectionUnsubscriber<T> : IDisposable
     {
+        private bool isDisposed = false;
+        public ICollection<T> Collection { get; private set; }
+        public T Observer { get; private set; }
+
         public CollectionUnsubscriber(ICollection<T> collection, T observer)
         {
             if (collection == null || observer == null)
@@ -25,9 +29,6 @@ namespace JiongXiaGu
             Dispose(false);
         }
 
-        public ICollection<T> Collection { get; private set; }
-        public T Observer { get; private set; }
-
         public void Dispose()
         {
             Dispose(true);
@@ -36,11 +37,12 @@ namespace JiongXiaGu
 
         void Dispose(bool disposing)
         {
-            if (Collection != null)
+            if (isDisposed)
             {
                 Collection.Remove(Observer);
                 Collection = null;
                 Observer = default(T);
+                isDisposed = true;
             }
         }
     }
