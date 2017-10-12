@@ -47,7 +47,7 @@ namespace JiongXiaGu.Unity.Initializers
 
         protected override Task Initialize_internal(CancellationToken cancellationToken)
         {
-            return WhenAll(preparationHandles, preparationHandle => preparationHandle.Prepare(cancellationToken));
+            return WhenAll(preparationHandles, preparationHandle => preparationHandle.Prepare(cancellationToken), cancellationToken);
         }
 
         protected override void OnCompleted()

@@ -54,7 +54,7 @@ namespace JiongXiaGu.Unity
         {
             if (!IsUnityThread)
             {
-                throw new NotImplementedException("仅允许在Unity线程调用!");
+                throw new InvalidOperationException("仅允许在Unity线程调用!");
             }
         }
 

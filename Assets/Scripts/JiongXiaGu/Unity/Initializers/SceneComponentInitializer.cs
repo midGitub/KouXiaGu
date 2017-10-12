@@ -42,7 +42,7 @@ namespace JiongXiaGu.Unity.Initializers
 
         protected override Task Initialize_internal(CancellationToken cancellationToken)
         {
-            return WhenAll(initializers, initializer => initializer.Initialize(cancellationToken));
+            return WhenAll(initializers, initializer => initializer.Initialize(cancellationToken), cancellationToken);
         }
     }
 }

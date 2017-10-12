@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JiongXiaGu.Unity.RectMaps;
 
 namespace JiongXiaGu.Unity.Initializers
 {
@@ -15,6 +16,13 @@ namespace JiongXiaGu.Unity.Initializers
         public DefaultSceneArchivalData()
         {
             Value = new SceneArchivalData();
+            AddMapData();
+        }
+
+        void AddMapData()
+        {
+            MapSceneArchivalData archivalData = MapSceneArchivalData.Create("Wolrd_111");
+            Value.Add(archivalData);
         }
     }
 }

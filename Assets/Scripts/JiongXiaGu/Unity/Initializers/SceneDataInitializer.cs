@@ -22,12 +22,13 @@ namespace JiongXiaGu.Unity.Initializers
         /// <param name="token">取消标记;</param>
         Task Initialize(SceneArchivalData sceneData, CancellationToken token);
 
-        ///// <summary>
-        ///// 进行初始化,
-        ///// </summary>
-        ///// <param name="archive">存档数据;</param>
-        ///// <param name="token">取消标记;</param>
-        //Task Initialize(IArchiveFileInfo archive, CancellationToken token);
+        /// <summary>
+        /// 从存档读取状态信息;
+        /// </summary>
+        /// <param name="archive">需要读取的存档;</param>
+        /// <param name="archivalData">需要保存到的游戏状态;</param>
+        /// <param name="cancellationToken">取消标记;</param>
+        Task Read(IArchiveFileInfo archive, SceneArchivalData archivalData, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -92,7 +93,7 @@ namespace JiongXiaGu.Unity.Initializers
             get { return "[场景数据初始化]"; }
         }
 
-        protected override  Task Initialize_internal(CancellationToken cancellationToken)
+        protected override Task Initialize_internal(CancellationToken cancellationToken)
         {
             isInitializing = true;
             if (ArchivalData != null)
@@ -117,7 +118,7 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 从存档进行初始化;
         /// </summary>
-        private async Task Initialize(Archive archive, CancellationToken cancellationToken)
+        private Task Initialize(Archive archive, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
             //await WhenAll(initializers, initializer => initializer.Initialize(archive, cancellationToken));
@@ -127,10 +128,13 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 从场景数据进行初始化;
         /// </summary>
-        private async Task Initialize(SceneArchivalData sceneData, CancellationToken cancellationToken)
+        private Task Initialize(SceneArchivalData sceneData, CancellationToken cancellationToken)
         {
-            await WhenAll(initializers, initializer => initializer.Initialize(sceneData, cancellationToken));
-            isInitializing = false;
+            return Task.Run(delegate ()
+            {
+                WaitAll(initializers, initializer => initializer.Initialize(sceneData, cancellationToken), cancellationToken);
+                isInitializing = false;
+            });
         }
     }
 }

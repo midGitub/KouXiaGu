@@ -1,12 +1,9 @@
 ﻿using JiongXiaGu.Unity.Archives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using JiongXiaGu.Unity.Resources;
+using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -25,7 +22,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图读写器;
         /// </summary>
-        readonly MapReader mapXmlReader = new MapReader();
+        private readonly MapReader mapReader;
 
         /// <summary>
         /// 主地图文件信息;
@@ -37,14 +34,6 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public Map ArchiveMap { get; private set; }
 
-        public MapSceneArchivalData(MapFileInfo mainMapFileInfo) 
-        {
-            if (mainMapFileInfo == null)
-                throw new ArgumentNullException(nameof(mainMapFileInfo));
-
-            MainMapFileInfo = mainMapFileInfo;
-        }
-
         public MapSceneArchivalData(MapFileInfo mainMapFileInfo, Map archiveMap)
         {
             if (mainMapFileInfo == null)
@@ -52,23 +41,84 @@ namespace JiongXiaGu.Unity.RectMaps
             if (archiveMap == null)
                 throw new ArgumentNullException(nameof(archiveMap));
 
+            mapReader = new MapReader();
+            MainMapFileInfo = mainMapFileInfo;
+            ArchiveMap = archiveMap;
+        }
+
+        private MapSceneArchivalData(MapReader mapReader, MapFileInfo mainMapFileInfo, Map archiveMap)
+        {
+            this.mapReader = mapReader;
             MainMapFileInfo = mainMapFileInfo;
             ArchiveMap = archiveMap;
         }
 
         /// <summary>
-        /// 输出存档内容;
+        /// 从存档读取到场景地图状态;
         /// </summary>
-        public Task Write(IArchiveFileInfo archive, CancellationToken cancellationToken)
+        public static MapSceneArchivalData Create(IArchiveFileInfo archive)
         {
-            return Task.Run(delegate ()
-            {
-                if (ArchiveMap != null)
-                {
-                    string filePath = Path.Combine(archive.ArchiveDirectory, ArchiveMapFileName);
-                    mapXmlReader.WriteToFile(filePath, ArchiveMap);
-                }
-            });
+            if (archive == null)
+                throw new ArgumentNullException(nameof(archive));
+
+            MapReader mapReader = new MapReader();
+            string archiveMapFilePath = GetArchiveMapFilePath(archive);
+            Map archiveMap = mapReader.Read(archiveMapFilePath);
+            MapFileInfo mainMapFileInfo = mapReader.FindByName(archiveMap.Name);
+            return new MapSceneArchivalData(mapReader, mainMapFileInfo, archiveMap);
+        }
+
+        /// <summary>
+        /// 从地图名获取到场景地图状态;
+        /// </summary>
+        public static MapSceneArchivalData Create(string mapName)
+        {
+            MapReader mapReader = new MapReader();
+            MapFileInfo mainMapFileInfo = mapReader.FindByName(mapName);
+            Map archiveMap = new Map(mainMapFileInfo.Description);
+            return new MapSceneArchivalData(mapReader, mainMapFileInfo, archiveMap);
+        }
+
+        /// <summary>
+        /// 从地图文件信息创建一个初始的场景地图状态;
+        /// </summary>
+        public static MapSceneArchivalData Create(MapFileInfo mainMapFileInfo)
+        {
+            MapReader mapReader = new MapReader();
+            Map archiveMap = new Map(mainMapFileInfo.Description);
+            return new MapSceneArchivalData(mapReader, mainMapFileInfo, archiveMap);
+        }
+
+        /// <summary>
+        /// 创建一个新的游戏使用的地图;
+        /// </summary>
+        public WorldMap CreateMap()
+        {
+            Map mainMap = mapReader.Read(MainMapFileInfo);
+            return new WorldMap(mainMap, ArchiveMap);
+        }
+
+        Task IDataArchival.Write(IArchiveFileInfo archive, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => Write(archive, cancellationToken));
+        }
+
+        /// <summary>
+        /// 输出地图资源到存档;
+        /// </summary>
+        public void Write(IArchiveFileInfo archive, CancellationToken cancellationToken)
+        {
+            string filePath = GetArchiveMapFilePath(archive);
+            mapReader.WriteToFile(filePath, ArchiveMap);
+        }
+
+        /// <summary>
+        /// 获取到对应的存档地图路径;
+        /// </summary>
+        private static string GetArchiveMapFilePath(IArchiveFileInfo archive)
+        {
+            string filePath = Path.Combine(archive.ArchiveDirectory, ArchiveMapFileName);
+            return filePath;
         }
     }
 }

@@ -66,10 +66,11 @@ namespace JiongXiaGu.Unity.Initializers
         protected abstract string InitializerName { get; }
 
         /// <summary>
-        /// 进行初始化;
+        /// 进行初始化,仅由Unity线程调用;
         /// </summary>
         public async Task Initialize()
         {
+            XiaGu.ThrowIfNotUnityThread();
             if (InitializeTask != null)
                 throw new InvalidOperationException("已经初始化完成,或者正在初始化;");
 
@@ -92,9 +93,25 @@ namespace JiongXiaGu.Unity.Initializers
         protected abstract Task Initialize_internal(CancellationToken cancellationToken);
 
         /// <summary>
-        /// 对所有处置器进行对应操作;
+        /// 对所有处置器进行对应操作,并且等待完成;
         /// </summary>
-        protected static Task WhenAll<T>(IEnumerable<T> initializeHandles, Func<T, Task> func)
+        protected static async Task WhenAll<T>(IEnumerable<T> initializeHandles, Func<T, Task> func, CancellationToken cancellationToken)
+        {
+            foreach (var initializeHandle in initializeHandles)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                Task task = func(initializeHandle);
+                if (task != null)
+                {
+                    await task;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 对所有处置器进行对应操作,并且等待完成;
+        /// </summary>
+        protected static void WaitAll<T>(IEnumerable<T> initializeHandles, Func<T, Task> func, CancellationToken cancellationToken)
         {
             List<Task> tasks = new List<Task>();
             foreach (var initializeHandle in initializeHandles)
@@ -105,7 +122,8 @@ namespace JiongXiaGu.Unity.Initializers
                     tasks.Add(task);
                 }
             }
-            return Task.WhenAll(tasks);
+            var taskArray = tasks.ToArray();
+            Task.WaitAll(taskArray, cancellationToken);
         }
 
         /// <summary>

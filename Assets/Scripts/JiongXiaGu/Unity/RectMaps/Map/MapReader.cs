@@ -27,16 +27,27 @@ namespace JiongXiaGu.Unity.RectMaps
         const string MapFilePrefix = "Map_";
         const string MapFileExtension = ".xmap";
 
-        XmlSerializer mapSerializer;
+        readonly XmlSerializer mapSerializer;
+        readonly string mapsDirectory;
 
         public MapReader()
         {
             mapSerializer = new XmlSerializer(typeof(Map));
+            mapsDirectory = GetMapsDirectory();
         }
 
         static string mapFileSearchPattern
         {
             get { return MapFilePrefix + "*" + MapFileExtension; }
+        }
+
+        /// <summary>
+        /// 获取到默认地图存储目录;
+        /// </summary>
+        string GetMapsDirectory()
+        {
+            string directory = Path.Combine(Resource.DataDirectoryPath, MapsDirectoryName);
+            return directory;
         }
 
         /// <summary>
@@ -161,28 +172,46 @@ namespace JiongXiaGu.Unity.RectMaps
             mapSerializer.SerializeXiaGu(stream, map);
         }
 
+
+        internal const SearchOption DefaultMapsSearchOption = SearchOption.AllDirectories;
+
+        /// <summary>
+        /// 根据地图名获取到对应地图;
+        /// </summary>
+        public MapFileInfo FindByName(string mapName, SearchOption searchOption = DefaultMapsSearchOption)
+        {
+            return FindByName(mapName, mapsDirectory, searchOption);
+        }
+
+        /// <summary>
+        /// 根据地图名获取到对应地图;
+        /// </summary>
+        public MapFileInfo FindByName(string mapName, string directory, SearchOption searchOption = DefaultMapsSearchOption)
+        {
+            IEnumerable<MapFileInfo> mapFileInfos = EnumerateMapInfos(directory, searchOption);
+            foreach (var mapFileInfo in mapFileInfos)
+            {
+                if (mapFileInfo.Description.Name == mapName)
+                {
+                    return mapFileInfo;
+                }
+            }
+            throw new FileNotFoundException(string.Format("在目录[{0}]未找到对应地图:[{1}]", directory, mapName));
+        }
+
         /// <summary>
         /// 迭代获取到所有地图文件信息;
         /// </summary>
-        public IEnumerable<MapFileInfo> EnumerateMapInfos(SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public IEnumerable<MapFileInfo> EnumerateMapInfos(SearchOption searchOption = DefaultMapsSearchOption)
         {
             string directory = GetMapsDirectory();
             return EnumerateMapInfos(directory, searchOption);
         }
 
         /// <summary>
-        /// 获取到默认地图存储目录;
-        /// </summary>
-        string GetMapsDirectory()
-        {
-            string directory = Path.Combine(Resource.DataDirectoryPath, MapsDirectoryName);
-            return directory;
-        }
-
-        /// <summary>
         /// 迭代获取到所有地图文件信息;
         /// </summary>
-        public IEnumerable<MapFileInfo> EnumerateMapInfos(string directory, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public IEnumerable<MapFileInfo> EnumerateMapInfos(string directory, SearchOption searchOption = DefaultMapsSearchOption)
         {
             foreach (var path in Directory.EnumerateFiles(directory, mapFileSearchPattern, searchOption))
             {

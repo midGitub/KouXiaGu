@@ -1,14 +1,9 @@
 ﻿using JiongXiaGu.Unity.Archives;
+using JiongXiaGu.Unity.Initializers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Threading;
-using JiongXiaGu.Unity.Resources;
-using JiongXiaGu.Grids;
-using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -33,21 +28,21 @@ namespace JiongXiaGu.Unity.RectMaps
             return Task.Run(delegate ()
             {
                 MapSceneArchivalData mapSceneArchivalData = archivalData.Get<MapSceneArchivalData>();
+
                 if (mapSceneArchivalData == null)
                     throw new ArgumentException(string.Format("{0}未定义地图数据;", nameof(archivalData)));
 
-                MapReader mapXmlReader = new MapReader();
-                Map mainMap = mapXmlReader.Read(mapSceneArchivalData.MainMapFileInfo);
-                Map archiveMap = mapSceneArchivalData.ArchiveMap;
-                if (archiveMap == null)
-                {
-                    WorldMap = new WorldMap(mainMap);
-                }
-                else
-                {
-                    WorldMap = new WorldMap(mainMap, archiveMap);
-                }
+                WorldMap = mapSceneArchivalData.CreateMap();
                 OnCompleted();
+            });
+        }
+
+        Task ISceneDataInitializeHandle.Read(IArchiveFileInfo archive, SceneArchivalData archivalData, CancellationToken cancellationToken)
+        {
+            return Task.Run(delegate ()
+            {
+                MapSceneArchivalData sceneArchivalData = MapSceneArchivalData.Create(archive);
+                archivalData.Add(sceneArchivalData);
             });
         }
 
