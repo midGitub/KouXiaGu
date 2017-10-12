@@ -1,13 +1,10 @@
-﻿
-#if UNITY_EDITOR
+﻿using UnityEditor;
+using UnityEngine;
+using System.IO;
+using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.EditorTool
 {
-    using UnityEditor;
-    using UnityEngine;
-    using System.IO;
-    using JiongXiaGu.Unity.Resources;
-
     /// <summary>
     /// 构造资源包;
     /// </summary>
@@ -17,17 +14,14 @@ namespace JiongXiaGu.EditorTool
         [MenuItem("Assets/Build AssetBundles")]
         static void BuildAllAssetBundles()
         {
-            string directoryPath = Resource.AssetBundleDirectoryPath;
+            string directoryPath = AssetBundleReader.GetAssetBundlesDirectory();
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
             }
 
-            BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.None,
+            BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.UncompressedAssetBundle,
                 BuildTarget.StandaloneWindows);
         }
-
     }
 }
-
-#endif

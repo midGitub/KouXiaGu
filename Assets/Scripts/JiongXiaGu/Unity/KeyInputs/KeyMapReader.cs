@@ -23,14 +23,14 @@ namespace JiongXiaGu.Unity.KeyInputs
         /// <summary>
         /// 读取到按键映射;
         /// </summary>
-        public KeyMap Deserialize()
+        public KeyMap Read()
         {
-            KeyInfo[] defaultKeys = DefaultKeyConfigReader.Deserialize();
+            KeyInfo[] defaultKeys = DefaultKeyConfigReader.Read();
             var keyMap = new KeyMap();
 
             try
             {
-                KeyInfo[] userKeys = UserKeyConfigReader.Deserialize();
+                KeyInfo[] userKeys = UserKeyConfigReader.Read();
                 keyMap.AddOrUpdate(defaultKeys);
                 keyMap.AddOrUpdate(userKeys);
             }
@@ -65,17 +65,17 @@ namespace JiongXiaGu.Unity.KeyInputs
         /// <summary>
         /// 默认输出到用户配置文件;
         /// </summary>
-        public void Serialize(KeyMap keyMap)
+        public void Write(KeyMap keyMap)
         {
             var keyInfos = keyMap.ToArray(pair => new KeyInfo(pair.Key, pair.Value));
-            UserKeyConfigReader.Serialize(keyInfos);
+            UserKeyConfigReader.Write(keyInfos);
         }
     }
 
     /// <summary>
     /// 默认按键配置文件读写器;
     /// </summary>
-    public class DefaultKeyConfigReader : FileReader<KeyInfo[]>
+    public class DefaultKeyConfigReader : ConfigFileReader<KeyInfo[]>
     {
         const string ConfigFileName = "Configs/KeyboardInput";
 
@@ -83,9 +83,9 @@ namespace JiongXiaGu.Unity.KeyInputs
         {
         }
 
-        public override string GetFilePath()
+        public override string GetFilePathWithoutExtension()
         {
-            string path = Path.Combine(Resource.DataDirectoryPath, ConfigFileName + FileExtension);
+            string path = Path.Combine(Resource.CoreDataDirectory, ConfigFileName);
             return path;
         }
     }
@@ -93,7 +93,7 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// <summary>
     /// 用户按键配置文件读写器;
     /// </summary>
-    public class UserKeyConfigReader : FileReader<KeyInfo[]>
+    public class UserKeyConfigReader : ConfigFileReader<KeyInfo[]>
     {
         const string ConfigFileName = "Configs/KeyboardInput";
 
@@ -101,9 +101,9 @@ namespace JiongXiaGu.Unity.KeyInputs
         {
         }
 
-        public override string GetFilePath()
+        public override string GetFilePathWithoutExtension()
         {
-            string path = Path.Combine(Resource.UserConfigDirectoryPath, ConfigFileName + FileExtension);
+            string path = Path.Combine(Resource.UserConfigDirectory, ConfigFileName);
             return path;
         }
     }

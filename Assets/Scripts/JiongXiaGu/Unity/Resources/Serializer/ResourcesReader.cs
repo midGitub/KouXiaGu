@@ -30,7 +30,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         protected abstract TSource Convert(TResult result);
 
-        public void Serialize(TResult result)
+        public void Write(TResult result)
         {
             TSource source = Convert(result);
             string path = ResourceSearcher.GetWrite(Serializer);
@@ -40,7 +40,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public TResult Deserialize()
+        public TResult Read()
         {
             var sources = DeserializeSources();
             TResult result = Combine(sources);

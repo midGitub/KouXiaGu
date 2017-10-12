@@ -12,12 +12,12 @@ namespace JiongXiaGu.Unity.Resources
     /// 用于固定的单个文件读写;
     /// </summary>
     /// <typeparam name="T">返回的内容</typeparam>
-    public abstract class FileReader<T> : IResourceReader<T>
+    public abstract class ConfigFileReader<T> : IResourceReader<T>
     {
         /// <summary>
         /// 序列化接口;
         /// </summary>
-        public ISerializer<T> Serializer { get; set; }
+        public ISerializer<T> Serializer { get; private set; }
 
         /// <summary>
         /// 输出时自动创建目录;
@@ -27,12 +27,12 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 文件拓展名;
         /// </summary>
-        public string FileExtension
+        string FileExtension
         {
             get { return Serializer.Extension; }
         }
 
-        public FileReader(ISerializer<T> serializer)
+        public ConfigFileReader(ISerializer<T> serializer)
         {
             Serializer = serializer;
         }
@@ -40,9 +40,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 输出资源到文件;
         /// </summary>
-        public void Serialize(T item)
+        public void Write(T item)
         {
-            string path = GetFilePath();
+            string path = GetFilePathWithoutExtension() + FileExtension;
 
             if (IsAutoCreateDirectory)
             {
@@ -59,9 +59,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从文件读取资源;
         /// </summary>
-        public T Deserialize()
+        public T Read()
         {
-            string path = GetFilePath();
+            string path = GetFilePathWithoutExtension() + FileExtension;
             using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 return Serializer.Deserialize(stream);
@@ -69,8 +69,8 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到完整的文件路径(包括后缀名);
+        /// 获取到完整的文件路径(不包括后缀名);
         /// </summary>
-        public abstract string GetFilePath();
+        public abstract string GetFilePathWithoutExtension();
     }
 }

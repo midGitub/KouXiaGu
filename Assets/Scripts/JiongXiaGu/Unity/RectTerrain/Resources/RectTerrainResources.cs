@@ -54,7 +54,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
         /// </summary>
         public void Serialize(RectTerrainResources res)
         {
-            LandformSerializer.Serialize(res.Landform);
+            LandformSerializer.Write(res.Landform);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
         {
             var res = new RectTerrainResources(true)
             {
-                Landform = LandformSerializer.Deserialize(),
+                Landform = LandformSerializer.Read(),
             };
             return res;
         }

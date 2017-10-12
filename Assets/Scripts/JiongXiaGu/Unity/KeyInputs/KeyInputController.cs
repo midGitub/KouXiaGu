@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.KeyInputs
         void ReadAndApplyKeyMap()
         {
             KeyMapReader keyMapReader = new KeyMapReader();
-            KeyInput.CurrentKeyMap = keyMapReader.Deserialize();
+            KeyInput.CurrentKeyMap = keyMapReader.Read();
         }
 
         [ContextMenu("输出默认按键模版")]
@@ -40,7 +40,7 @@ namespace JiongXiaGu.Unity.KeyInputs
 
             DefaultKeyConfigReader reader = new DefaultKeyConfigReader();
             reader.IsAutoCreateDirectory = true;
-            reader.Serialize(keyMap.ToArray());
+            reader.Write(keyMap.ToArray());
         }
     }
 }

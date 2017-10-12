@@ -68,7 +68,7 @@ namespace JiongXiaGu.Unity.Localizations
         private string GetInfoLog()
         {
             string log = "Language:" + Localization.Language
-                + ", SystemLanguage" + SystemLanguage.ToString()
+                + ", SystemLanguage:" + SystemLanguage.ToString()
 
                 + "\nLanguagePackCount:" + Localization.LanguagePackGroup.Count
                 + ", ItemCount:" + Localization.LanguagePackGroup.TextItemCount()
@@ -161,7 +161,7 @@ namespace JiongXiaGu.Unity.Localizations
             LocalizationConfigReader configReader = new LocalizationConfigReader();
             try
             {
-                config = configReader.Deserialize();
+                config = configReader.Read();
                 return true;
             }
             catch (FileNotFoundException)
@@ -271,7 +271,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <returns></returns>
         private static string GetLanguagePasksDirectory()
         {
-            string path = Path.Combine(Resource.DataDirectoryPath, LocalizationDirectoryName);
+            string path = Path.Combine(Resource.CoreDataDirectory, LocalizationDirectoryName);
             return path;
         }
     }

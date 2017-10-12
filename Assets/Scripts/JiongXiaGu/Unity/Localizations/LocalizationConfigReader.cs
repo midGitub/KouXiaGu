@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 本地化配置文件;
     /// </summary>
-    public class LocalizationConfigReader : FileReader<LocalizationConfig>
+    public class LocalizationConfigReader : ConfigFileReader<LocalizationConfig>
     {
 
         [PathDefinition(ResourceTypes.UserConfig, "本地化组件信息配置")]
@@ -17,9 +17,9 @@ namespace JiongXiaGu.Unity.Localizations
         {
         }
 
-        public override string GetFilePath()
+        public override string GetFilePathWithoutExtension()
         {
-            string path = Path.Combine(Resource.UserConfigDirectoryPath, FileName + FileExtension);
+            string path = Path.Combine(Resource.UserConfigDirectory, FileName);
             return path;
         }
     }

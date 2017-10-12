@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public abstract class SingleFilePath : ISingleFilePath
     {
-        public SingleFilePath() : this(Resource.DataDirectoryPath)
+        public SingleFilePath() : this(Resource.CoreDataDirectory)
         {
         }
 
@@ -68,7 +68,7 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public abstract class MultipleFilePath : IMultipleFilePath
     {
-        public MultipleFilePath() : this(Resource.DataDirectoryPath)
+        public MultipleFilePath() : this(Resource.CoreDataDirectory)
         {
         }
 

@@ -6,7 +6,7 @@
     /// <typeparam name="T">读取到T;</typeparam>
     public interface IResourceReader<T>
     {
-        void Serialize(T item);
-        T Deserialize();
+        void Write(T item);
+        T Read();
     }
 }

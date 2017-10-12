@@ -42,7 +42,7 @@ namespace JiongXiaGu.Concurrent
 
             void Dispose(bool disposing)
             {
-                if (isDisposed)
+                if (!isDisposed)
                 {
                     readerWriterLockSlim.ExitReadLock();
                     readerWriterLockSlim = null;
@@ -83,7 +83,7 @@ namespace JiongXiaGu.Concurrent
 
             void Dispose(bool disposing)
             {
-                if (isDisposed)
+                if (!isDisposed)
                 {
                     readerWriterLockSlim.ExitWriteLock();
                     readerWriterLockSlim = null;

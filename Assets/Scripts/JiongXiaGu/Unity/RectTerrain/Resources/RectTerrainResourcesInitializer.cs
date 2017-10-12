@@ -57,8 +57,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
         {
             var request = Dispatcher.Add(delegate()
             {
-                string path = Path.Combine(Resource.AssetBundleDirectoryPath, TerrainAssetBundleName);
-                return AssetBundle.LoadFromFile(path);
+                return AssetBundleReader.Load(TerrainAssetBundleName);
             });
             while (!request.IsCompleted)
             {

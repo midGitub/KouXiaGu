@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         string GetMapsDirectory()
         {
-            string directory = Path.Combine(Resource.DataDirectoryPath, MapsDirectoryName);
+            string directory = Path.Combine(Resource.CoreDataDirectory, MapsDirectoryName);
             return directory;
         }
 
