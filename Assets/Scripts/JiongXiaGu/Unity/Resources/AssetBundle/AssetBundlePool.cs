@@ -1,204 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// AssetBundle 引用,在不需要使用时需要 Dispose();
+    /// AssetBundle 实例池(大部分方法仅由Unity线程调用);
     /// </summary>
-    public interface IAssetBundleReference : IDisposable
+    public class AssetBundlePool : IDisposable
     {
-        AssetBundle AssetBundle { get; }
-    }
+        private bool isDisposed = false;
+        private Dictionary<string, AssetBundle> assetBundles;
 
-    /// <summary>
-    /// 游戏使用的 AssetBundle 读取;
-    /// </summary>
-    public static class AssetBundleReader
-    {
-        /// <summary>
-        /// 游戏使用到的AssetBundle存放目录;
-        /// </summary>
-        [PathDefinition(ResourceTypes.DataDirectory, "游戏使用到的AssetBundle存放目录")]
-        internal const string AssetBundlesDirectoryName = "AssetBundles";
-
-        /// <summary>
-        /// AssetBundle 文件拓展名;
-        /// </summary>
-        static readonly string AssetBundleFileExtension = String.Empty;
-
-        /// <summary>
-        /// 从文件读取到资源包;
-        /// </summary>
-        public static AssetBundle Load(string assetBundleName)
+        public AssetBundlePool()
         {
-            string filePath = GetAssetBundleFilePath(assetBundleName);
-            AssetBundle assetBundle = AssetBundle.LoadFromFile(filePath);
+            assetBundles = new Dictionary<string, AssetBundle>();
+        }
+
+        ~AssetBundlePool()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
+        /// 获取到对应对应资源包;
+        /// </summary>
+        public AssetBundle Get(string dataName, string assetBundleName)
+        {
+            var key = GetAssetBundleHashKey(dataName, assetBundleName);
+            AssetBundle assetBundle = assetBundles[key];
             return assetBundle;
         }
 
         /// <summary>
-        /// 获取到自带资源包目录路径;
+        /// 获取到对应对应资源包;
         /// </summary>
-        public static string GetAssetBundlesDirectory()
+        public AssetBundle GetOrLoad(ModInfo dataInfo, string assetBundleName)
         {
-            string directory = Path.Combine(Resource.CoreDataDirectory, AssetBundlesDirectoryName);
-            return directory;
-        }
-
-        /// <summary>
-        /// 获取到资源包路径;
-        /// </summary>
-        public static string GetAssetBundleFilePath(string assetBundleName)
-        {
-            string fileName = assetBundleName + AssetBundleFileExtension;
-            string filePath = Path.Combine(GetAssetBundlesDirectory(), fileName);
-            return filePath;
-        }
-    }
-
-    /// <summary>
-    /// AssetBundle 实例池(仅Unity线程调用);
-    /// </summary>
-    public static class AssetBundlePool
-    {
-
-        /// <summary>
-        /// 游戏使用到的AssetBundle存放目录;
-        /// </summary>
-        [PathDefinition(ResourceTypes.DataDirectory, "游戏使用到的AssetBundle存放目录")]
-        internal const string AssetBundlesDirectory = "AssetBundles";
-
-        private static readonly Dictionary<string, AssetBundleCounter> assetBundles = new Dictionary<string, AssetBundleCounter>();
-
-        internal static void Initialize()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 添加一个 AssetBundle 到池;
-        /// </summary>
-        internal static void AddAssetBundle(AssetBundle assetBundle)
-        {
-            AssetBundleCounter counter = new AssetBundleCounter(assetBundle);
-            assetBundles.Add(counter.Name, counter);
-        }
-
-        /// <summary>
-        /// 获取到指定 AssetBundle 实例;
-        /// </summary>
-        public static IAssetBundleReference GetByName(string assetBundleName)
-        {
-            throw new NotImplementedException();
-        }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //static AssetBundle Load(string assetBundleName)
-        //{
-        //    AssetBundle.LoadFromFile()
-        //}
-
-        //private static string GetAssetBundlePath(string assetBundleName)
-        //{
-            
-        //}
-
-        /// <summary>
-        /// 获取到游戏使用到的AssetBundle存放目录;
-        /// </summary>
-        private static string GetAssetBundlesDirectory()
-        {
-            string directory = Path.Combine(Application.streamingAssetsPath, AssetBundlesDirectory);
-            return directory;
-        }
-
-        /// <summary>
-        /// AssetBundle 引用计数器;
-        /// </summary>
-        sealed class AssetBundleCounter
-        {
-            public int ReferenceCount { get; private set; }
-
-            /// <summary>
-            /// AssetBundle 资源实例;
-            /// </summary>
-            public AssetBundle AssetBundle { get; private set; }
-
-            /// <summary>
-            /// AssetBundle 名;
-            /// </summary>
-            public string Name
+            var key = GetAssetBundleHashKey(dataInfo.Name, assetBundleName);
+            AssetBundle assetBundle;
+            if (!assetBundles.TryGetValue(key, out assetBundle))
             {
-                get { return AssetBundle.name; }
+                assetBundle = AssetBundleReader.Load(dataInfo, assetBundleName);
+                assetBundles.Add(key, assetBundle);
             }
+            return assetBundle;
+        }
 
-            /// <summary>
-            /// 当前此 AssetBundle 是否不再被需要?
-            /// </summary>
-            public bool IsUseless
+        /// <summary>
+        /// 获取到 assetBundles 字典关键词;
+        /// </summary>
+        private string GetAssetBundleHashKey(string dataName, string assetBundleName)
+        {
+            return string.Concat(dataName, ":", assetBundleName);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (!isDisposed)
             {
-                get { return ReferenceCount == 0; }
-            }
-
-            public AssetBundleCounter(AssetBundle assetBundle)
-            {
-                if (assetBundle == null)
-                    throw new ArgumentNullException(nameof(assetBundle));
-
-                AssetBundle = assetBundle;
-            }
-
-            /// <summary>
-            /// 获取到资源包的引用;
-            /// </summary>
-            public IAssetBundleReference GetReference()
-            {
-                return new AssetBundleReference(this, AssetBundle);
-            }
-
-            /// <summary>
-            /// AssetBundle 引用;
-            /// </summary>
-            sealed class AssetBundleReference : IAssetBundleReference
-            {
-                private bool isDisposed = false;
-                public AssetBundleCounter Counter { get; private set; }
-                public AssetBundle AssetBundle { get; private set; }
-
-                public AssetBundleReference(AssetBundleCounter counter, AssetBundle assetBundle)
+                foreach (var assetBundle in assetBundles.Values)
                 {
-                    Counter.ReferenceCount++;
-                    AssetBundle = assetBundle;
+                    assetBundle.Unload(true);
                 }
 
-                ~AssetBundleReference()
-                {
-                    Dispose(false);
-                }
-
-                private void Dispose(bool disposing)
-                {
-                    if (!isDisposed)
-                    {
-                        Counter.ReferenceCount--;
-                        isDisposed = true;
-                    }
-                }
-
-                public void Dispose()
-                {
-                    Dispose(true);
-                    GC.SuppressFinalize(this);
-                }
+                assetBundles = null;
+                isDisposed = true;
             }
         }
     }

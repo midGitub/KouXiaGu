@@ -9,7 +9,7 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     /// <typeparam name="TSource">序列化得到的内容;</typeparam>
     /// <typeparam name="TResult">转换到的内容;</typeparam>
-    public abstract class ResourcesReader<TSource, TResult> : IResourceReader<TResult>
+    public abstract class ResourcesReader<TSource, TResult>
     {
         public ResourcesReader(ISerializer<TSource> serializer, ResourcesSearcher resourceSearcher)
         {
@@ -36,7 +36,7 @@ namespace JiongXiaGu.Unity.Resources
             string path = ResourceSearcher.GetWrite(Serializer);
             using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
-                Serializer.Serialize(source, stream);
+                Serializer.Serialize(stream, source);
             }
         }
 

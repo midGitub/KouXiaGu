@@ -39,8 +39,7 @@ namespace JiongXiaGu.Unity.KeyInputs
             };
 
             DefaultKeyConfigReader reader = new DefaultKeyConfigReader();
-            reader.IsAutoCreateDirectory = true;
-            reader.Write(keyMap.ToArray());
+            reader.Write(keyMap.ToArray(), true);
         }
     }
 }

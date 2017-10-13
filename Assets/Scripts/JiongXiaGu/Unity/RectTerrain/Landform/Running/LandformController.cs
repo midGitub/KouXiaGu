@@ -1,6 +1,4 @@
 ﻿using JiongXiaGu.Grids;
-using JiongXiaGu.Unity;
-using JiongXiaGu.Unity;
 using JiongXiaGu.Unity.Initializers;
 using JiongXiaGu.Unity.RectMaps;
 using System.Threading;

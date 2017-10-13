@@ -18,7 +18,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public IEnumerable<string> Searche<T>(ISerializer<T> serializer)
         {
-            return Searche(serializer.Extension);
+            return Searche(serializer.FileExtension);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public string GetWrite<T>(ISerializer<T> serializer)
         {
-            return GetWrite(serializer.Extension);
+            return GetWrite(serializer.FileExtension);
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.Unity.Resources
+namespace JiongXiaGu
 {
 
     /// <summary>
@@ -13,6 +13,17 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public static class IOExtensions
     {
+
+        /// <summary>
+        /// 若文件不存在,则弹出异常 DirectoryNotFoundException;
+        /// </summary>
+        public static void ThrowIfFileNotExisted(this FileInfo fileInfo)
+        {
+            if (!fileInfo.Exists)
+            {
+                throw new FileNotFoundException(string.Format("文件不存在[{0}]", fileInfo.FullName));
+            }
+        }
 
         /// <summary>
         /// 若目录不存在,则弹出异常 DirectoryNotFoundException;

@@ -8,24 +8,21 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 数据顺序记录;
     /// </summary>
-    public class DataOrderRecord : IEnumerable<string>
+    public class ModOrderRecord : IEnumerable<string>
     {
         readonly List<string> dataOrder;
 
-        public DataOrderRecord()
+        public ModOrderRecord()
         {
             dataOrder = new List<string>();
         }
 
-        public DataOrderRecord(IEnumerable<DataDirectoryInfo> dataDirectoryInfos)
+        public ModOrderRecord(IEnumerable<ModInfo> dataDirectoryInfos)
         {
             dataOrder = new List<string>();
             foreach (var dataDirectoryInfo in dataDirectoryInfos)
             {
-                if (dataDirectoryInfo.Enabled)
-                {
-                    dataOrder.Add(dataDirectoryInfo.Name);
-                }
+                dataOrder.Add(dataDirectoryInfo.Name);
             }
         }
 
@@ -37,9 +34,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 对数据文件夹进行优先级排序,返回一个新的合集;
         /// </summary>
-        public List<DataDirectoryInfo> Sort(IReadOnlyCollection<DataDirectoryInfo> dataDirectoryInfos)
+        public List<ModInfo> Sort(IReadOnlyCollection<ModInfo> dataDirectoryInfos)
         {
-            DataDirectoryInfo[] list = new DataDirectoryInfo[dataOrder.Count];
+            ModInfo[] list = new ModInfo[dataOrder.Count];
             foreach(var dataDirectoryInfo in dataDirectoryInfos)
             {
                 int index = dataOrder.FindIndex(item => item == dataDirectoryInfo.Name);

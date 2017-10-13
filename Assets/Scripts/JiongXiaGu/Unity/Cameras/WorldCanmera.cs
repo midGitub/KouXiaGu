@@ -1,5 +1,4 @@
-﻿using JiongXiaGu.InputControl;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace JiongXiaGu.Cameras
 {
@@ -190,19 +189,19 @@ namespace JiongXiaGu.Cameras
         /// </summary>
         void MovementRespond(ref Vector3 position)
         {
-            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_up))
+            if (Input.GetKey(KeyCode.UpArrow))
             {
                 position.z += movementRatio * Time.deltaTime;
             }
-            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_down))
+            if (Input.GetKey(KeyCode.DownArrow))
             {
                 position.z -= movementRatio * Time.deltaTime;
             }
-            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_left))
+            if (Input.GetKey(KeyCode.LeftArrow))
             {
                 position.x -= movementRatio * Time.deltaTime;
             }
-            if (KeyInput.GetKeyHold(KeyFunction.Camera_movement_right))
+            if (Input.GetKey(KeyCode.RightArrow))
             {
                 position.x += movementRatio * Time.deltaTime;
             }
@@ -264,7 +263,7 @@ namespace JiongXiaGu.Cameras
         /// </summary>
         void CameraRetrunRespond()
         {
-            if (KeyInput.GetKeyDown(KeyFunction.Camera_return))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 CameraRetrun();
             }

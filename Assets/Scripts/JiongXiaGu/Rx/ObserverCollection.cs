@@ -172,16 +172,6 @@ namespace JiongXiaGu
     }
 
     /// <summary>
-    /// 不允许重复订阅的合集;加入O(n),移除O(n);
-    /// </summary>
-    public class ObserverSet<T> : ObserverCollection<T>
-    {
-        public ObserverSet() : base(new Set<T>())
-        {
-        }
-    }
-
-    /// <summary>
     /// 不允许重复订阅的合集;加入O(1),移除O(1);
     /// </summary>
     public class ObserverHashSet<T> : ObserverCollection<T>

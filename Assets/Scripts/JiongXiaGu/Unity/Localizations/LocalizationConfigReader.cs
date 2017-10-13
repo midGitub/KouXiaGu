@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.Localizations
         [PathDefinition(ResourceTypes.UserConfig, "本地化组件信息配置")]
         internal const string FileName = "Configs/LocalizationConfig";
 
-        public LocalizationConfigReader() : base(new XmlFileSerializer<LocalizationConfig>())
+        public LocalizationConfigReader() : base(new XmlSerializer<LocalizationConfig>())
         {
         }
 

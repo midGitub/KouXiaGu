@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using JiongXiaGu.InputControl;
 using JiongXiaGu.UI;
 using JiongXiaGu.Unity;
 
@@ -20,7 +19,6 @@ namespace JiongXiaGu.Diagnostics
 
         LogRecorder logRecorder;
         Recorder<string> inputRecorder;
-        IKeyInput keyInput;
         bool isTextHasChanged = false;
         public ScrollRect OutputScrollRect = null;
         public Text OutputTextObject = null;
@@ -51,20 +49,20 @@ namespace JiongXiaGu.Diagnostics
 
         void OnFocus()
         {
-            if (keyInput != null)
-            {
-                keyInput.Dispose();
-            }
-            keyInput = KeyInput.OccupiedInput.Subscribe(this);
+            //if (keyInput != null)
+            //{
+            //    keyInput.Dispose();
+            //}
+            //keyInput = KeyInput.OccupiedInput.Subscribe(this);
         }
 
         void OnBlur()
         {
-            if (keyInput != null)
-            {
-                keyInput.Dispose();
-                keyInput = null;
-            }
+            //if (keyInput != null)
+            //{
+            //    keyInput.Dispose();
+            //    keyInput = null;
+            //}
         }
 
         void LateUpdate()
@@ -76,11 +74,11 @@ namespace JiongXiaGu.Diagnostics
             }
             if (IsFocus)
             {
-                if (keyInput.GetKeyDown(KeyCode.Return) || keyInput.GetKeyDown(KeyCode.KeypadEnter))
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 {
                     Operation();
                 }
-                if (keyInput.GetKeyDown(KeyCode.UpArrow))
+                if (Input.GetKeyDown(KeyCode.UpArrow))
                 {
                     if (inputRecorder.Count != 0)
                     {
@@ -88,7 +86,7 @@ namespace JiongXiaGu.Diagnostics
                         InputField.MoveTextEnd(false);
                     }
                 }
-                if (keyInput.GetKeyDown(KeyCode.DownArrow))
+                if (Input.GetKeyDown(KeyCode.DownArrow))
                 {
                     if (inputRecorder.Count != 0)
                     {
@@ -96,7 +94,7 @@ namespace JiongXiaGu.Diagnostics
                         InputField.MoveTextEnd(false);
                     }
                 }
-                if (keyInput.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyDown(KeyCode.Escape))
                 {
                     Panel.Hide();
                 }

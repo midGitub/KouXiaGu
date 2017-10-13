@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
-    public class ExpandedDataSearcher
-    {
 
+    public class ModSearcher
+    {
         /// <summary>
         /// 获取到所有拓展数据目录;
         /// </summary>
-        public List<DataDirectoryInfo> Search()
+        public List<ModInfo> Search()
         {
-            return new List<DataDirectoryInfo>();
+            return new List<ModInfo>();
         }
     }
 }

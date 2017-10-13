@@ -6,7 +6,7 @@ namespace JiongXiaGu.Unity.Archives
 
     public class ArchiveDescriptionReader
     {
-        public ArchiveDescriptionReader() : this(new XmlFileSerializer<ArchiveDescription>(), "Info")
+        public ArchiveDescriptionReader() : this(new XmlSerializer<ArchiveDescription>(), "Info")
         {
         }
 
@@ -24,7 +24,7 @@ namespace JiongXiaGu.Unity.Archives
             string path = GetArchiveInfoPath(archiveDirectory);
             using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
-                Serializer.Serialize(result, stream);
+                Serializer.Serialize(stream, result);
             }
         }
 
@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.Archives
 
         public string GetArchiveInfoPath(string archiveDirectory)
         {
-            return Path.Combine(archiveDirectory, Name + Serializer.Extension);
+            return Path.Combine(archiveDirectory, Name + Serializer.FileExtension);
         }
     }
 }

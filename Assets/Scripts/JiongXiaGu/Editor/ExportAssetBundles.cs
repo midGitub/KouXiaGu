@@ -8,19 +8,31 @@ namespace JiongXiaGu.EditorTool
     /// <summary>
     /// 构造资源包;
     /// </summary>
-    public class ExportAssetBundles : MonoBehaviour
+    public static class ExportAssetBundles
     {
-
         [MenuItem("Assets/Build AssetBundles")]
-        static void BuildAllAssetBundles()
+        public static void BuildAssetBundleAll()
         {
-            string directoryPath = AssetBundleReader.GetAssetBundlesDirectory();
+            string directoryPath = AssetBundleReader.GetAssetBundlesDirectory(Resource.ReadCoreDirectoryInfo());
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
             }
 
             BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.UncompressedAssetBundle,
+                BuildTarget.StandaloneWindows);
+        }
+
+        [MenuItem("Assets/Rebuild AssetBundles")]
+        public static void RebuildAssetBundleAll()
+        {
+            string directoryPath = AssetBundleReader.GetAssetBundlesDirectory(Resource.ReadCoreDirectoryInfo());
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle,
                 BuildTarget.StandaloneWindows);
         }
     }

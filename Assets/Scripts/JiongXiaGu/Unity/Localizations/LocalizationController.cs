@@ -271,7 +271,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <returns></returns>
         private static string GetLanguagePasksDirectory()
         {
-            string path = Path.Combine(Resource.CoreDataDirectory, LocalizationDirectoryName);
+            string path = Path.Combine(Resource.CoreDirectory, LocalizationDirectoryName);
             return path;
         }
     }

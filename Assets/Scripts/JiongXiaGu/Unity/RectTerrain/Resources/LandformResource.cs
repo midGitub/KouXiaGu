@@ -16,7 +16,6 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
     [XmlRoot("LandformResourceInfo")]
     public sealed class LandformResource
     {
-
         /// <summary>
         /// 唯一标识ID;
         /// </summary>

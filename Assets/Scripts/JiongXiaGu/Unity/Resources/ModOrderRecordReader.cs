@@ -11,25 +11,25 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 资源读取顺序文件读取;
     /// </summary>
-    public class DataOrderRecordReader : ConfigFileReader<DataOrderRecord>
+    internal class ModOrderRecordReader : ConfigFileReader<ModOrderRecord>
     {
         /// <summary>
         /// 游戏地图存放目录;
         /// </summary>
         [PathDefinition(ResourceTypes.DataDirectory, "资源读取顺序文件")]
-        internal const string DataOrderRecordFileName = "Configs/DataOrderRecord";
+        internal const string DataOrderRecordFileName = "Configs/ModOrderRecord";
 
-        public DataOrderRecordReader() : base(new XmlFileSerializer<DataOrderRecord>())
+        public ModOrderRecordReader() : base(new XmlSerializer<ModOrderRecord>())
         {
         }
 
-        public DataOrderRecordReader(ISerializer<DataOrderRecord> serializer) : base(serializer)
+        public ModOrderRecordReader(ISerializer<ModOrderRecord> serializer) : base(serializer)
         {
         }
 
         public override string GetFilePathWithoutExtension()
         {
-            return Path.Combine(Resource.CoreDataDirectory, DataOrderRecordFileName);
+            return Path.Combine(Resource.CoreDirectory, DataOrderRecordFileName);
         }
     }
 }

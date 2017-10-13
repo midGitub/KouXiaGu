@@ -9,7 +9,7 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// <summary>
     /// 按键配置读写器;
     /// </summary>
-    public class KeyMapReader : IResourceReader<KeyMap>
+    public class KeyMapReader
     {
         public KeyMapReader()
         {
@@ -79,13 +79,13 @@ namespace JiongXiaGu.Unity.KeyInputs
     {
         const string ConfigFileName = "Configs/KeyboardInput";
 
-        public DefaultKeyConfigReader() : base(new XmlFileSerializer<KeyInfo[]>())
+        public DefaultKeyConfigReader() : base(new XmlSerializer<KeyInfo[]>())
         {
         }
 
         public override string GetFilePathWithoutExtension()
         {
-            string path = Path.Combine(Resource.CoreDataDirectory, ConfigFileName);
+            string path = Path.Combine(Resource.CoreDirectory, ConfigFileName);
             return path;
         }
     }
@@ -97,7 +97,7 @@ namespace JiongXiaGu.Unity.KeyInputs
     {
         const string ConfigFileName = "Configs/KeyboardInput";
 
-        public UserKeyConfigReader() : base(new XmlFileSerializer<KeyInfo[]>())
+        public UserKeyConfigReader() : base(new XmlSerializer<KeyInfo[]>())
         {
         }
 
