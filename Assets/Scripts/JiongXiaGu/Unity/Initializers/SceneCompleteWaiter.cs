@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// 场景更新等待;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class SceneCompleteWaiter : InitializerBase
+    public sealed class SceneCompleteWaiter : InitializerBase<SceneCompleteWaiter>
     {
         private IScenePreparationHandle[] preparationHandles;
         private ISceneCompletedHandle[] completedHandles;
@@ -34,8 +34,9 @@ namespace JiongXiaGu.Unity.Initializers
         {
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             preparationHandles = GetComponentsInChildren<IScenePreparationHandle>();
             completedHandles = GetComponentsInChildren<ISceneCompletedHandle>();
         }
@@ -45,7 +46,7 @@ namespace JiongXiaGu.Unity.Initializers
             get { return "[场景更新等待器]"; }
         }
 
-        protected override Task Initialize_internal(CancellationToken cancellationToken)
+        Task Initialize_internal(CancellationToken cancellationToken)
         {
             return WhenAll(preparationHandles, preparationHandle => preparationHandle.Prepare(cancellationToken), cancellationToken);
         }

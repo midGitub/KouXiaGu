@@ -38,7 +38,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 是否已经实例化?
         /// </summary>
-        public static bool IsInitialized
+        private static bool IsInitialized
         {
             get { return _instance != null; }
         }

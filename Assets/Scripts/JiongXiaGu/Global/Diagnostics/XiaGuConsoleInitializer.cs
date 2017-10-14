@@ -18,6 +18,7 @@ namespace JiongXiaGu.Diagnostics
         {
             Task task = Task.Run(delegate ()
             {
+                token.ThrowIfCancellationRequested();
                 XiaGuConsole.Initialize();
                 OnXiaGuConsoleCompleted();
             }, token);

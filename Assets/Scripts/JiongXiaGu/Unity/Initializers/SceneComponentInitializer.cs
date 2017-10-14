@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 场景组件初始化;
     /// </summary>
-    public sealed class SceneComponentInitializer : InitializerBase
+    public sealed class SceneComponentInitializer : InitializerBase<SceneComponentInitializer>
     {
         private ISceneComponentInitializeHandle[] initializers;
 
@@ -30,8 +30,9 @@ namespace JiongXiaGu.Unity.Initializers
         {
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             initializers = GetComponentsInChildren<ISceneComponentInitializeHandle>();
         }
 
@@ -40,7 +41,7 @@ namespace JiongXiaGu.Unity.Initializers
             get { return "[场景组件初始化]"; }
         }
 
-        protected override Task Initialize_internal(CancellationToken cancellationToken)
+        Task Initialize_internal(CancellationToken cancellationToken)
         {
             return WhenAll(initializers, initializer => initializer.Initialize(cancellationToken), cancellationToken);
         }

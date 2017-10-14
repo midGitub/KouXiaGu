@@ -21,9 +21,6 @@ namespace JiongXiaGu.Unity.Localizations
         {
         }
 
-        [PathDefinition(ResourceTypes.DataDirectory, "本地化组件资源目录;")]
-        internal const string LocalizationDirectoryName = "Localization";
-
         /// <summary>
         /// 默认语言,在找不到指定语言和系统语言时使用的语言;
         /// </summary>
@@ -52,9 +49,23 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
         {
-            Task<LanguagePackGroup> task = ReadLanguagePack(token);
-            StartCoroutine(WaitLanguagePackCoroutine(task, _ => OnLocalizationCompleted()));
-            return task;
+            bool isCompleted = false;
+            Task<LanguagePackGroup> readTask = ReadLanguagePack(token);
+            StartCoroutine(WaitLanguagePackCoroutine(readTask, _ => isCompleted = true));
+            readTask = readTask.ContinueWith(delegate (Task<LanguagePackGroup> task)
+            {
+                while (!isCompleted)
+                {
+                    token.ThrowIfCancellationRequested();
+                }
+                if (task.IsFaulted)
+                {
+                    throw task.Exception;
+                }
+                OnLocalizationCompleted();
+                return task.Result;
+            });
+            return readTask;
         }
 
         [System.Diagnostics.Conditional("EDITOR_LOG")]
@@ -67,11 +78,11 @@ namespace JiongXiaGu.Unity.Localizations
 
         private string GetInfoLog()
         {
-            string log = "Language:" + Localization.Language
-                + ", SystemLanguage:" + SystemLanguage.ToString()
+            string log = "语言:" + Localization.Language
+                + ", 系统语言::" + SystemLanguage.ToString()
 
-                + "\nLanguagePackCount:" + Localization.LanguagePackGroup.Count
-                + ", ItemCount:" + Localization.LanguagePackGroup.TextItemCount()
+                + "\n文件总数:" + Localization.LanguagePackGroup.Count
+                + ", 条目总数:" + Localization.LanguagePackGroup.TextItemCount()
                 ;
             return log;
         }
@@ -187,7 +198,7 @@ namespace JiongXiaGu.Unity.Localizations
                 defaultLanguage.ToString(),
             };
 
-            IEnumerable<LanguagePackFileInfo> fileInfos = EnumerateLanguagePaskInfos();
+            IEnumerable<LanguagePackFileInfo> fileInfos = LanguagePackReader.EnumerateInfos();
             return FindLanguagePask(fileInfos, targetMatch, spareLanguages);
         }
 
@@ -207,7 +218,7 @@ namespace JiongXiaGu.Unity.Localizations
                 defaultLanguage.ToString(),
             };
 
-            IEnumerable<LanguagePackFileInfo> fileInfos = EnumerateLanguagePaskInfos();
+            IEnumerable<LanguagePackFileInfo> fileInfos = LanguagePackReader.EnumerateInfos();
             return FindLanguagePask(fileInfos, targetMatch, spareLanguages);
         }
 
@@ -254,25 +265,6 @@ namespace JiongXiaGu.Unity.Localizations
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 枚举所有语言包信息;
-        /// </summary>
-        public static IEnumerable<LanguagePackFileInfo> EnumerateLanguagePaskInfos()
-        {
-            string languagePasksDirectory = GetLanguagePasksDirectory();
-            return LanguagePackReader.EnumerateInfos(languagePasksDirectory, SearchOption.AllDirectories);
-        }
-
-        /// <summary>
-        /// 获取到语言包存放目录;
-        /// </summary>
-        /// <returns></returns>
-        private static string GetLanguagePasksDirectory()
-        {
-            string path = Path.Combine(Resource.CoreDirectory, LocalizationDirectoryName);
-            return path;
         }
     }
 }

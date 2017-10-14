@@ -34,7 +34,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 场景数据初始化;
     /// </summary>
-    public sealed class SceneDataInitializer : InitializerBase
+    internal sealed class SceneDataInitializer : InitializerBase<SceneDataInitializer>
     {
         static bool isInitializing;
         static Archive archive;
@@ -47,20 +47,6 @@ namespace JiongXiaGu.Unity.Initializers
         bool canUseDefaultSceneArchivalData;
 
         /// <summary>
-        /// 初始化处置器;
-        /// </summary>
-        private ISceneDataInitializeHandle[] initializers;
-
-        private SceneDataInitializer()
-        {
-        }
-
-        private void Awake()
-        {
-            initializers = GetComponentsInChildren<ISceneDataInitializeHandle>();
-        }
-
-        /// <summary>
         /// 存档信息,在初始化之前赋值,若为Null则表示不通过存档初始化;
         /// </summary>
         public static Archive Archive
@@ -69,7 +55,8 @@ namespace JiongXiaGu.Unity.Initializers
             set
             {
                 if (isInitializing)
-                    throw new InvalidOperationException("在初始化时无法变更;");
+                    throw new InvalidOperationException(string.Format("在初始化时无法变更变量[{0}];", nameof(Archive)));
+
                 archive = value;
             }
         }
@@ -83,58 +70,68 @@ namespace JiongXiaGu.Unity.Initializers
             set
             {
                 if (isInitializing)
-                    throw new InvalidOperationException("在初始化时无法变更;");
+                    throw new InvalidOperationException(string.Format("在初始化时无法变更变量[{0}];", nameof(ArchivalData)));
+
                 archivalData = value;
             }
         }
 
         protected override string InitializerName
         {
-            get { return "[场景数据初始化]"; }
+            get { return "场景数据初始化"; }
         }
 
-        protected override Task Initialize_internal(CancellationToken cancellationToken)
+        protected override void Awake()
         {
+            base.Awake();
+            StartCoroutine(WaitInitializers(Initialize, ModDataInitializer.Instance));
+        }
+
+        private void Initialize()
+        {
+            ISceneDataInitializeHandle[] initializers = GetComponentsInChildren<ISceneDataInitializeHandle>();
+            initializeCancellation = new CancellationTokenSource();
+
             isInitializing = true;
+            Task task;
             if (ArchivalData != null)
             {
-                return Initialize(ArchivalData, cancellationToken);
+                task = Initialize(initializers, ArchivalData);
             }
             else if (Archive != null)
             {
-                return Initialize(Archive, cancellationToken);
+                task = Initialize(initializers, Archive);
             }
             else if (canUseDefaultSceneArchivalData)
             {
                 var defaultValue = new DefaultSceneArchivalData();
-                return Initialize(defaultValue.Value, cancellationToken);
+                task = Initialize(initializers, defaultValue.Value);
             }
-
-            Exception ex = new InvalidOperationException("未指定初始化方法;");
-            OnFaulted(ex);
-            throw ex;
+            else
+            {
+                Exception ex = new InvalidOperationException("未指定初始化方法;");
+                task = Task.FromException(ex);
+            }
+            initializeTask = task.ContinueWith(OnInitializeTaskCompleted);
+            isInitializing = false;
         }
 
         /// <summary>
         /// 从存档进行初始化;
         /// </summary>
-        private Task Initialize(Archive archive, CancellationToken cancellationToken)
+        private async Task Initialize(ISceneDataInitializeHandle[] initializers, IArchiveFileInfo archive)
         {
-            throw new NotImplementedException();
-            //await WhenAll(initializers, initializer => initializer.Initialize(archive, cancellationToken));
-            //isInitializing = false;
+            SceneArchivalData sceneData = new SceneArchivalData();
+            await WhenAll(initializers, initializer => initializer.Read(archive, sceneData, initializeCancellation.Token));
+            await Initialize(initializers, sceneData);
         }
 
         /// <summary>
         /// 从场景数据进行初始化;
         /// </summary>
-        private Task Initialize(SceneArchivalData sceneData, CancellationToken cancellationToken)
+        private Task Initialize(ISceneDataInitializeHandle[] initializers, SceneArchivalData sceneData)
         {
-            return Task.Run(delegate ()
-            {
-                WaitAll(initializers, initializer => initializer.Initialize(sceneData, cancellationToken), cancellationToken);
-                isInitializing = false;
-            });
+            return WhenAll(initializers, initializer => initializer.Initialize(sceneData, initializeCancellation.Token));
         }
     }
 }

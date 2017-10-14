@@ -19,10 +19,6 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public static WorldMap WorldMap { get; private set; }
 
-        private RectMapSceneController()
-        {
-        }
-
         Task ISceneDataInitializeHandle.Initialize(SceneArchivalData archivalData, CancellationToken token)
         {
             return Task.Run(delegate ()
@@ -41,7 +37,7 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             return Task.Run(delegate ()
             {
-                MapSceneArchivalData sceneArchivalData = MapSceneArchivalData.Create(archive);
+                MapSceneArchivalData sceneArchivalData = new MapSceneArchivalData(archive);
                 archivalData.Add(sceneArchivalData);
             });
         }
@@ -52,11 +48,24 @@ namespace JiongXiaGu.Unity.RectMaps
         }
 
         [System.Diagnostics.Conditional("EDITOR_LOG")]
-        void OnCompleted()
+        private void OnCompleted()
         {
-            const string prefix = "[地图资源]";
-            string info = "[地图:Size:" + WorldMap.Map.Count + "]";
-            Debug.Log(prefix + "初始化完成;" + info);
+            const string log = "[地图资源]初始化完成;\n";
+            string Info = GetInfoLog();
+            Debug.Log(log + Info);
+        }
+
+        private string GetInfoLog()
+        {
+            string log = "地图名:" + WorldMap.MapData.Name
+                + ", 地图节点数目:" + WorldMap.Map.Count;
+            return log;
+        }
+
+        [ContextMenu("报告详细信息")]
+        private void LogInfo()
+        {
+            Debug.Log(GetInfoLog());
         }
     }
 }

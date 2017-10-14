@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     public class ModSearcher
     {
+
         /// <summary>
-        /// 获取到所有拓展数据目录;
+        /// 枚举所有模组;
         /// </summary>
-        public List<ModInfo> Search()
+        public IEnumerable<ModInfo> EnumerateModInfos()
         {
+            Debug.LogWarning("还未实现Mod搜寻;");
             return new List<ModInfo>();
         }
     }

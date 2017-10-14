@@ -1,9 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Initializers
 {
+
     /// <summary>
     /// 初始化接口;
     /// </summary>
@@ -19,17 +21,10 @@ namespace JiongXiaGu.Unity.Initializers
     /// 游戏程序初始化;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GameComponentInitializer : InitializerBase
+    internal sealed class GameComponentInitializer : InitializerBase<GameComponentInitializer>
     {
-        private IGameComponentInitializeHandle[] initializers;
-
         private GameComponentInitializer()
         {
-        }
-
-        private void Awake()
-        {
-            initializers = GetComponentsInChildren<IGameComponentInitializeHandle>();
         }
 
         private void Start()
@@ -39,12 +34,16 @@ namespace JiongXiaGu.Unity.Initializers
 
         protected override string InitializerName
         {
-            get { return "[游戏组件初始化]"; }
+            get { return "游戏组件初始化"; }
         }
 
-        protected override Task Initialize_internal(CancellationToken cancellationToken)
+        private void Initialize()
         {
-            return WhenAll(initializers, initializer => initializer.Initialize(cancellationToken), cancellationToken);
+            var initializers = GetComponentsInChildren<IGameComponentInitializeHandle>();
+            initializeCancellation = new CancellationTokenSource();
+            CancellationToken token = initializeCancellation.Token;
+            var task = WhenAll(initializers, initializer => initializer.Initialize(token));
+            initializeTask = task.ContinueWith(OnInitializeTaskCompleted);
         }
     }
 }

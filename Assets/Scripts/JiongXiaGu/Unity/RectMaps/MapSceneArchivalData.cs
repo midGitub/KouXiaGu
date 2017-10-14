@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图读写器;
         /// </summary>
-        private readonly MapReader mapReader;
+        private readonly MapReader mapReader = new MapReader();
 
         /// <summary>
         /// 主地图文件信息;
@@ -41,14 +41,6 @@ namespace JiongXiaGu.Unity.RectMaps
             if (archiveMap == null)
                 throw new ArgumentNullException(nameof(archiveMap));
 
-            mapReader = new MapReader();
-            MainMapFileInfo = mainMapFileInfo;
-            ArchiveMap = archiveMap;
-        }
-
-        private MapSceneArchivalData(MapReader mapReader, MapFileInfo mainMapFileInfo, Map archiveMap)
-        {
-            this.mapReader = mapReader;
             MainMapFileInfo = mainMapFileInfo;
             ArchiveMap = archiveMap;
         }
@@ -56,37 +48,30 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 从存档读取到场景地图状态;
         /// </summary>
-        public static MapSceneArchivalData Create(IArchiveFileInfo archive)
+        public MapSceneArchivalData(IArchiveFileInfo archive)
         {
             if (archive == null)
                 throw new ArgumentNullException(nameof(archive));
 
-            MapReader mapReader = new MapReader();
             string archiveMapFilePath = GetArchiveMapFilePath(archive);
-            Map archiveMap = mapReader.Read(archiveMapFilePath);
-            MapFileInfo mainMapFileInfo = mapReader.FindByName(archiveMap.Name);
-            return new MapSceneArchivalData(mapReader, mainMapFileInfo, archiveMap);
+            ArchiveMap = mapReader.Read(archiveMapFilePath);
+            MainMapFileInfo = mapReader.FindByName(ArchiveMap.Name);
         }
 
         /// <summary>
         /// 从地图名获取到场景地图状态;
         /// </summary>
-        public static MapSceneArchivalData Create(string mapName)
+        public MapSceneArchivalData(string mapName)
         {
-            MapReader mapReader = new MapReader();
-            MapFileInfo mainMapFileInfo = mapReader.FindByName(mapName);
-            Map archiveMap = new Map(mainMapFileInfo.Description);
-            return new MapSceneArchivalData(mapReader, mainMapFileInfo, archiveMap);
+            MainMapFileInfo = mapReader.FindByName(mapName);
         }
 
         /// <summary>
         /// 从地图文件信息创建一个初始的场景地图状态;
         /// </summary>
-        public static MapSceneArchivalData Create(MapFileInfo mainMapFileInfo)
+        public MapSceneArchivalData(MapFileInfo mainMapFileInfo)
         {
-            MapReader mapReader = new MapReader();
-            Map archiveMap = new Map(mainMapFileInfo.Description);
-            return new MapSceneArchivalData(mapReader, mainMapFileInfo, archiveMap);
+            MainMapFileInfo = mainMapFileInfo;
         }
 
         /// <summary>
@@ -95,7 +80,14 @@ namespace JiongXiaGu.Unity.RectMaps
         public WorldMap CreateMap()
         {
             Map mainMap = mapReader.Read(MainMapFileInfo);
-            return new WorldMap(mainMap, ArchiveMap);
+            if (ArchiveMap != null)
+            {
+                return new WorldMap(mainMap, ArchiveMap);
+            }
+            else
+            {
+                return new WorldMap(mainMap);
+            }
         }
 
         Task IDataArchival.Write(IArchiveFileInfo archive, CancellationToken cancellationToken)

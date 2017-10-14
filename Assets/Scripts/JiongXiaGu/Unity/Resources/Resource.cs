@@ -15,8 +15,6 @@ namespace JiongXiaGu.Unity.Resources
     public static class Resource
     {
         private static bool isInitialized = false;
-        private static readonly ModSearcher modSearcher = new ModSearcher();
-        private static readonly ModOrderRecordReader modOrderRecordReader = new ModOrderRecordReader();
 
         /// <summary>
         /// 核心数据和配置文件的文件夹;
@@ -34,14 +32,9 @@ namespace JiongXiaGu.Unity.Resources
         public static DirectoryInfo ArchivesDirectoryInfo { get; private set; }
 
         /// <summary>
-        /// 所有的游戏拓展数据目录信息;
+        /// 模组资源,在未指定时为null;
         /// </summary>
-        private static List<ModInfo> modInfos;
-
-        /// <summary>
-        /// 按优先顺序排列的游戏数据目录信息;
-        /// </summary>
-        private static List<ModInfo> orderedModInfos;
+        internal static ModResource ModResource { get; set; }
 
         /// <summary>
         /// 在游戏开始时初始化;
@@ -53,8 +46,6 @@ namespace JiongXiaGu.Unity.Resources
                 CoreDirectoryInfo = ReadCoreDirectoryInfo();
                 UserConfigDirectoryInfo = ReadUserConfigDirectoryInfo();
                 ArchivesDirectoryInfo = ReadArchivesDirectoryInfo();
-                modInfos = SearchModDirectoryInfos();
-                orderedModInfos = GetOrderedModDirectoryInfos();
                 isInitialized = true;
             }
             return Task.CompletedTask;
@@ -82,14 +73,6 @@ namespace JiongXiaGu.Unity.Resources
         public static string ArchivesDirectory
         {
             get { return ArchivesDirectoryInfo.FullName; }
-        }
-
-        /// <summary>
-        /// 所有的游戏拓展数据目录信息;
-        /// </summary>
-        public static IEnumerable<ModInfo> ModDirectoryInfos
-        {
-            get { return modInfos; }
         }
 
         /// <summary>
@@ -125,67 +108,7 @@ namespace JiongXiaGu.Unity.Resources
             directoryInfo.Create();
             return directoryInfo;
         }
-
-        internal static List<ModInfo> SearchModDirectoryInfos()
-        {
-            var expandedDataDirectoryInfos = modSearcher.Search();
-            return expandedDataDirectoryInfos;
-        }
-
-        internal static List<ModInfo> GetOrderedModDirectoryInfos()
-        {
-            try
-            {
-                ModOrderRecord dataOrderRecord = modOrderRecordReader.Read();
-                var orderedDataDirectoryInfos = dataOrderRecord.Sort(modInfos);
-                return orderedDataDirectoryInfos;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning(string.Format("读取资源排列顺序文件失败:{0}", ex));
-                return new List<ModInfo>();
-            }
-        }
-
-        /// <summary>
-        /// 设置数据排列顺序;
-        /// </summary>
-        public static void UpdateModOrder(IEnumerable<ModInfo> orderedModDirectoryInfos)
-        {
-            ModOrderRecord dataOrderRecord = new ModOrderRecord(orderedModDirectoryInfos);
-            Resource.orderedModInfos = new List<ModInfo>(orderedModDirectoryInfos);
-            modOrderRecordReader.Write(dataOrderRecord);
-        }
-
-        /// <summary>
-        /// 设置数据排列顺序;
-        /// </summary>
-        public static void UpdateModOrder(ModOrderRecord modOrderRecord)
-        {
-            orderedModInfos = modOrderRecord.Sort(modInfos);
-            modOrderRecordReader.Write(modOrderRecord);
-        }
-
-        /// <summary>
-        /// 根据优先顺序返回所有数据目录;
-        /// </summary>
-        public static IEnumerable<ModInfo> GetDataDirectoryInfos()
-        {
-            yield return CoreDirectoryInfo;
-            foreach (var dataDirectoryInfo in orderedModInfos)
-            {
-                yield return dataDirectoryInfo;
-            }
-        }
-
-        /// <summary>
-        /// 根据优先顺序返回所有数据目录(不包括核心资源信息);
-        /// </summary>
-        public static IEnumerable<ModInfo> GetDataDirectoryInfosWithoutCore()
-        {
-            return orderedModInfos;
-        }
-
+        
         [ConsoleMethod("log_resource_path_info", "显示所有资源路径;", IsDeveloperMethod = true)]
         public static void LogInfoAll()
         {

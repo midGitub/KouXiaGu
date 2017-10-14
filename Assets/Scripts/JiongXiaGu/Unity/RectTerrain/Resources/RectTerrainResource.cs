@@ -1,12 +1,9 @@
 ﻿using JiongXiaGu.Unity.Initializers;
+using JiongXiaGu.Unity.Resources;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Threading;
-using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
@@ -16,9 +13,10 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// </summary>
     public class RectTerrainResource : MonoBehaviour, IModDataInitializeHandle
     {
-        Task IModDataInitializeHandle.Initialize(IEnumerable<ModInfo> datanfos, CancellationToken token)
+        Task IModDataInitializeHandle.Initialize(ModResource mods, CancellationToken token)
         {
-            throw new NotImplementedException();
+            Debug.Log("[地形资源]初始化完成;");
+            return Task.CompletedTask;
         }
     }
 }

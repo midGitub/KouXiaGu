@@ -1,5 +1,8 @@
-﻿using System;
+﻿using JiongXiaGu.Concurrent;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,30 +13,49 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 抽象类 内容初始化器;
     /// </summary>
-    public abstract class InitializerBase : MonoBehaviour
+    public abstract class InitializerBase<TSelf> : SceneSington<TSelf>, IAsyncState
+        where TSelf : SceneSington<TSelf>
     {
         /// <summary>
-        /// 当初始化完成时,调用这些初始化程序进行初始化;
+        /// 初始化异步操作;
         /// </summary>
-        [SerializeField]
-        List<InitializerBase> onCompletedCall;
+        public Task initializeTask { get; set; }
 
         /// <summary>
-        /// 当前初始化异步操作,若还未初始化则为NUll;
+        /// 初始化取消器;
         /// </summary>
-        internal Task InitializeTask { get; private set; }
+        protected CancellationTokenSource initializeCancellation { get; set; }
 
         /// <summary>
-        /// 取消器,若还未初始化则为NUll;
+        /// 初始化组件名;
         /// </summary>
-        internal CancellationTokenSource TokenSource { get; private set; }
+        protected virtual string InitializerName
+        {
+            get { return "内容初始化"; }
+        }
+
+        /// <summary>
+        /// 是否正在进行初始化?
+        /// </summary>
+        public bool IsRunning
+        {
+            get { return initializeTask != null && !initializeTask.IsCompleted; }
+        }
+
+        /// <summary>
+        /// 是否已经进行了初始化?
+        /// </summary>
+        public bool IsInitialized
+        {
+            get { return initializeTask != null; }
+        }
 
         /// <summary>
         /// 是否已经初始化完成?
         /// </summary>
         public bool IsCompleted
         {
-            get { return InitializeTask != null ? InitializeTask.IsCompleted : false; }
+            get { return initializeTask != null ? initializeTask.IsCompleted : false; }
         }
 
         /// <summary>
@@ -41,7 +63,7 @@ namespace JiongXiaGu.Unity.Initializers
         /// </summary>
         public bool IsFaulted
         {
-            get { return InitializeTask != null ? InitializeTask.IsFaulted : false; }
+            get { return initializeTask != null ? initializeTask.IsFaulted : false; }
         }
 
         /// <summary>
@@ -49,69 +71,78 @@ namespace JiongXiaGu.Unity.Initializers
         /// </summary>
         public AggregateException Exception
         {
-            get { return InitializeTask != null ? InitializeTask.Exception : null; }
+            get { return initializeTask != null ? initializeTask.Exception : null; }
         }
 
         /// <summary>
-        /// 是否正在初始化?
+        /// 取消初始化;
         /// </summary>
-        public bool IsRunning
+        private void Cancel()
         {
-            get { return InitializeTask != null && !InitializeTask.IsCompleted; }
+            initializeCancellation?.Cancel();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Cancel();
         }
 
         /// <summary>
-        /// 初始化组件名;
+        /// 当初始化完成时选择调用 OnCompleted() 或 OnFaulted(Exception);
         /// </summary>
-        protected abstract string InitializerName { get; }
-
-        /// <summary>
-        /// 进行初始化,仅由Unity线程调用;
-        /// </summary>
-        public async Task Initialize()
+        protected void OnInitializeTaskCompleted(Task task)
         {
-            XiaGu.ThrowIfNotUnityThread();
-            if (InitializeTask != null)
-                throw new InvalidOperationException("已经初始化完成,或者正在初始化;");
-
-            try
+            if (task.IsFaulted)
             {
-                TokenSource = new CancellationTokenSource();
-                InitializeTask = Initialize_internal(TokenSource.Token);
-                await InitializeTask;
+                OnFaulted(task.Exception);
+            }
+            else
+            {
                 OnCompleted();
             }
-            catch (Exception ex)
-            {
-                OnFaulted(ex);
-            }
         }
 
         /// <summary>
-        /// 进行初始化;
+        /// 在初始化完成时调用;
         /// </summary>
-        protected abstract Task Initialize_internal(CancellationToken cancellationToken);
+        protected virtual void OnCompleted()
+        {
+            Debug.Log(string.Format("[{0}]完成;", InitializerName));
+        }
 
         /// <summary>
-        /// 对所有处置器进行对应操作,并且等待完成;
+        /// 在失败时调用;
         /// </summary>
-        protected static async Task WhenAll<T>(IEnumerable<T> initializeHandles, Func<T, Task> func, CancellationToken cancellationToken)
+        protected virtual void OnFaulted(Exception ex)
         {
-            foreach (var initializeHandle in initializeHandles)
+            Debug.Log(string.Format("[{0}]运行时遇到错误:{1}", InitializerName, ex));
+            Cancel();
+        }
+
+        /// <summary>
+        /// 等待所有任务完成;
+        /// </summary>
+        protected IEnumerator WaitInitializers(Action onCompleted, params IAsyncState[] initializers)
+        {
+            if (onCompleted == null)
+                throw new ArgumentNullException(nameof(onCompleted));
+
+            foreach (var initializer in initializers)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                Task task = func(initializeHandle);
-                if (task != null)
+                while (!initializer.IsCompleted)
                 {
-                    await task;
+                    yield return null;
                 }
             }
+            onCompleted.Invoke();
         }
 
         /// <summary>
         /// 对所有处置器进行对应操作,并且等待完成;
         /// </summary>
-        protected static void WaitAll<T>(IEnumerable<T> initializeHandles, Func<T, Task> func, CancellationToken cancellationToken)
+        [Obsolete]
+        protected static Task WhenAll<T>(IEnumerable<T> initializeHandles, Func<T, Task> func, CancellationToken cancellationToken)
         {
             List<Task> tasks = new List<Task>();
             foreach (var initializeHandle in initializeHandles)
@@ -122,44 +153,34 @@ namespace JiongXiaGu.Unity.Initializers
                     tasks.Add(task);
                 }
             }
-            var taskArray = tasks.ToArray();
-            Task.WaitAll(taskArray, cancellationToken);
+            return Task.WhenAll(tasks);
         }
 
         /// <summary>
-        /// 取消初始化;
+        /// 对所有处置器进行对应操作,并且等待完成;
         /// </summary>
-        public void Cancel()
+        protected static Task WhenAll<T>(IEnumerable<T> initializeHandles, Func<T, Task> func)
         {
-            TokenSource?.Cancel();
-        }
-
-        /// <summary>
-        /// 在初始化完成时调用;
-        /// </summary>
-        protected virtual void OnCompleted()
-        {
-            Debug.Log(InitializerName + "完成;");
-            foreach (var initializer in onCompletedCall)
+            List<Task> tasks = new List<Task>();
+            foreach (var initializeHandle in initializeHandles)
             {
-                try
+                Task task = func(initializeHandle);
+                if (task != null)
                 {
-                    initializer?.Initialize();
-                }
-                catch
-                {
-                    continue;
+                    tasks.Add(task);
                 }
             }
+            return Task.WhenAll(tasks);
         }
 
-        /// <summary>
-        /// 在失败时调用;
-        /// </summary>
-        protected virtual void OnFaulted(Exception ex)
-        {
-            Debug.LogError(InitializerName + "运行时遇到错误:" + ex);
-            TokenSource?.Cancel();
-        }
+        //public TaskAwaiter GetAwaiter()
+        //{
+        //    return Task.Run(delegate ()
+        //    {
+        //        while (!IsCompleted)
+        //        {
+        //        }
+        //    }).GetAwaiter();
+        //}
     }
 }

@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.Initializers
 
         void AddMapData()
         {
-            MapSceneArchivalData archivalData = MapSceneArchivalData.Create("Wolrd_111");
+            MapSceneArchivalData archivalData = new MapSceneArchivalData("Wolrd_111");
             Value.Add(archivalData);
         }
     }

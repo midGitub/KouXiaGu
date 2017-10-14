@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JiongXiaGu.Unity.Resources;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -11,10 +12,8 @@ namespace JiongXiaGu.Unity.Localizations
     /// </summary>
     public class LanguagePackReader
     {
-        public LanguagePackReader()
-        {
-            languagePackSerializer = new XmlSerializer(typeof(LanguagePack));
-        }
+        [PathDefinition(ResourceTypes.DataDirectory, "本地化资源目录;")]
+        internal const string LocalizationDirectoryName = "Localization";
 
         XmlSerializer languagePackSerializer;
         internal const string LanguagePackInfoRootName = "LanguagePackInfo";
@@ -22,6 +21,11 @@ namespace JiongXiaGu.Unity.Localizations
         internal const string LanguageXmlAttributeName = "language";
         const string languagePackPrefix = "Language_";
         const string languagePackExtension = ".xml";
+
+        public LanguagePackReader()
+        {
+            languagePackSerializer = new XmlSerializer(typeof(LanguagePack));
+        }
 
         /// <summary>
         /// 语言包搜索模式;
@@ -81,6 +85,23 @@ namespace JiongXiaGu.Unity.Localizations
             return languagePackPrefix + languagePack.Language + languagePackExtension;
         }
 
+        /// <summary>
+        /// 获取到语言包存放目录;
+        /// </summary>
+        public static string GetLanguagePasksDirectory()
+        {
+            string path = Path.Combine(Resource.CoreDirectory, LocalizationDirectoryName);
+            return path;
+        }
+
+        /// <summary>
+        /// 枚举所有语言包信息;
+        /// </summary>
+        public static IEnumerable<LanguagePackFileInfo> EnumerateInfos()
+        {
+            string languagePasksDirectory = GetLanguagePasksDirectory();
+            return EnumerateInfos(languagePasksDirectory, SearchOption.AllDirectories);
+        }
 
         /// <summary>
         /// 迭代获取到所有语言包信息;

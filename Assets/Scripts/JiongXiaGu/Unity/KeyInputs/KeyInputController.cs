@@ -19,13 +19,33 @@ namespace JiongXiaGu.Unity.KeyInputs
 
         Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
         {
-            return Task.Run((Action)ReadAndApplyKeyMap);
+            return Task.Run(delegate()
+            {
+                token.ThrowIfCancellationRequested();
+                KeyMapReader keyMapReader = new KeyMapReader();
+                KeyInput.CurrentKeyMap = keyMapReader.Read();
+                OnInitializeCompleted();
+            }, token);
         }
 
-        void ReadAndApplyKeyMap()
+        [System.Diagnostics.Conditional("EDITOR_LOG")]
+        private void OnInitializeCompleted()
         {
-            KeyMapReader keyMapReader = new KeyMapReader();
-            KeyInput.CurrentKeyMap = keyMapReader.Read();
+            const string log = "[按键映射组件]初始化完成;\n";
+            string Info = GetInfoLog();
+            Debug.Log(log + Info);
+        }
+
+        private string GetInfoLog()
+        {
+            string log = "定义按键总数:" + KeyInput.CurrentKeyMap.Count;
+            return log;
+        }
+
+        [ContextMenu("报告详细信息")]
+        private void LogInfo()
+        {
+            Debug.Log(GetInfoLog());
         }
 
         [ContextMenu("输出默认按键模版")]

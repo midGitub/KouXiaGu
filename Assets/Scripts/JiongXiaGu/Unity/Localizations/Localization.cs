@@ -59,14 +59,6 @@ namespace JiongXiaGu.Unity.Localizations
         }
 
         /// <summary>
-        /// 枚举所有语言包信息;
-        /// </summary>
-        public static IEnumerable<LanguagePackFileInfo> EnumerateLanguagePaskInfos()
-        {
-            return LocalizationController.EnumerateLanguagePaskInfos();
-        }
-
-        /// <summary>
         /// 设置新的语言(仅在Unity线程调用);
         /// </summary>
         public static void SetLanguage(LanguagePackFileInfo languagePackFileInfo, Action<Task> callback = null)

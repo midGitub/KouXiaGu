@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Concurrent
 {
 
-
     /// <summary>
     /// 请求基类;
     /// </summary>
-    public abstract class RequestBase
+    public abstract class RequestBase : IAsyncState
     {
         public RequestBase()
         {

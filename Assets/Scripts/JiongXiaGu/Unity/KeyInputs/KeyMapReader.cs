@@ -11,14 +11,14 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// </summary>
     public class KeyMapReader
     {
+        public DefaultKeyConfigReader DefaultKeyConfigReader { get; private set; }
+        public UserKeyConfigReader UserKeyConfigReader { get; private set; }
+
         public KeyMapReader()
         {
             DefaultKeyConfigReader = new DefaultKeyConfigReader();
             UserKeyConfigReader = new UserKeyConfigReader();
         }
-
-        public DefaultKeyConfigReader DefaultKeyConfigReader { get; private set; }
-        public UserKeyConfigReader UserKeyConfigReader { get; private set; }
 
         /// <summary>
         /// 读取到按键映射;
