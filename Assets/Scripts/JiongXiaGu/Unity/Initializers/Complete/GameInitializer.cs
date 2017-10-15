@@ -8,56 +8,67 @@ namespace JiongXiaGu.Unity.Initializers
 {
 
     /// <summary>
-    /// 模组数据初始化处置;
+    /// 初始化接口;
     /// </summary>
-    public interface IModDataInitializeHandle
+    public interface IGameComponentInitializeHandle
     {
         /// <summary>
-        /// 初始化数据;
+        /// 开始初始化;
         /// </summary>
         Task Initialize(CancellationToken token);
     }
 
     /// <summary>
-    /// 模组数据初始化;
+    /// 游戏程序初始化(仅初始化一次,若初始化失败意味着游戏无法运行);
     /// </summary>
     [DisallowMultipleComponent]
-    internal sealed class ModDataInitializer : MonoBehaviour
+    internal sealed class GameInitializer : MonoBehaviour
     {
-        private static readonly GlobalSingleton<ModDataInitializer> singleton = new GlobalSingleton<ModDataInitializer>();
+        private static readonly GlobalSingleton<GameInitializer> singleton = new GlobalSingleton<GameInitializer>();
 
-        private const string InitializerName = "模组数据初始化";
-        private IModDataInitializeHandle[] initializeHandles;
+        private const string InitializerName = "游戏组件初始化";
+        private IGameComponentInitializeHandle[] initializeHandles;
         internal Task InitializeTask { get; private set; }
         internal CancellationTokenSource InitializeCancellation { get; private set; }
 
-        public static ModDataInitializer Instance
+        public static GameInitializer Instance
         {
             get { return singleton.GetInstance(); }
         }
 
         private void Awake()
         {
-            singleton.SetInstance(this);
-            initializeHandles = GetComponentsInChildren<IModDataInitializeHandle>();
-            InitializeCancellation = new CancellationTokenSource();
-            InitializeTask = new Task(Initialize, InitializeCancellation.Token);
+            try
+            {
+                singleton.SetInstance(this);
+
+                XiaGu.Initialize();
+                Resource.Initialize();
+
+                initializeHandles = GetComponentsInChildren<IGameComponentInitializeHandle>();
+                InitializeCancellation = new CancellationTokenSource();
+                InitializeTask = Task.Run((Action)Initialize);
+            }
+            catch (Exception ex)
+            {
+                OnFaulted(ex);
+            }
         }
 
         private void OnDestroy()
         {
             singleton.OnDestroy(this);
+            InitializeCancellation.Cancel();
         }
 
-        public void InitializeAsync()
-        {
-            Task.Run((Action)Initialize);
-        }
-
-        public void Initialize()
+        /// <summary>
+        /// 进行初始化;
+        /// </summary>
+        private void Initialize()
         {
             try
             {
+                Mod.Initialize();
                 InitializerHelper.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
                 OnCompleted();
             }

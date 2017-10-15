@@ -27,28 +27,26 @@ namespace JiongXiaGu.Unity.Initializers
     [DisallowMultipleComponent]
     public sealed class SceneCompleteWaiter : InitializerBase<SceneCompleteWaiter>
     {
-        private IScenePreparationHandle[] preparationHandles;
-        private ISceneCompletedHandle[] completedHandles;
-
-        private SceneCompleteWaiter()
-        {
-        }
+        ISceneCompletedHandle[] completedHandles;
 
         protected override void Awake()
         {
             base.Awake();
-            preparationHandles = GetComponentsInChildren<IScenePreparationHandle>();
-            completedHandles = GetComponentsInChildren<ISceneCompletedHandle>();
+            StartCoroutine(WaitInitializers(Initialize, SceneComponentInitializer.Instance));
         }
 
         protected override string InitializerName
         {
-            get { return "[场景更新等待器]"; }
+            get { return "场景更新等待器"; }
         }
 
-        Task Initialize_internal(CancellationToken cancellationToken)
+        private void Initialize()
         {
-            return WhenAll(preparationHandles, preparationHandle => preparationHandle.Prepare(cancellationToken), cancellationToken);
+            IScenePreparationHandle[] initializers = GetComponentsInChildren<IScenePreparationHandle>();
+            completedHandles = GetComponentsInChildren<ISceneCompletedHandle>();
+            initializeCancellation = new CancellationTokenSource();
+            Task task = WhenAll(initializers, initializer => initializer.Prepare(initializeCancellation.Token));
+            initializeTask = task.ContinueWith(OnInitializeTaskCompleted);
         }
 
         protected override void OnCompleted()
@@ -64,6 +62,7 @@ namespace JiongXiaGu.Unity.Initializers
             {
                 completedHandle.OnSceneCompleted();
             }
+            Debug.Log("场景开始;");
         }
     }
 }

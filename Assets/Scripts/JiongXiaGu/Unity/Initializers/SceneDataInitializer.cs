@@ -84,7 +84,7 @@ namespace JiongXiaGu.Unity.Initializers
         protected override void Awake()
         {
             base.Awake();
-            StartCoroutine(WaitInitializers(Initialize, ModDataInitializer.Instance));
+            //StartCoroutine(WaitInitializers(Initialize, ModDataInitializer.Instance));
         }
 
         private void Initialize()

@@ -12,68 +12,68 @@ namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
-    /// 本地化组件控制;
+    /// 协调Unity线程和其它线程;
     /// </summary>
     [DisallowMultipleComponent]
-    class LocalizationController : UnitySington<LocalizationController>, IGameComponentInitializeHandle
+    class LocalizationController : MonoBehaviour, IGameComponentInitializeHandle
     {
-        LocalizationController()
-        {
-        }
+        private static readonly GlobalSingleton<LocalizationController> singleton = new GlobalSingleton<LocalizationController>();
+        private const string InitializerName = "游戏组件初始化";
 
         /// <summary>
         /// 默认语言,在找不到指定语言和系统语言时使用的语言;
         /// </summary>
         [SerializeField]
         private SystemLanguage defaultLanguage;
-
-        /// <summary>
-        /// 语言包读写器;
-        /// </summary>
         private LanguagePackReader languagePackReader;
-
-        /// <summary>
-        /// 系统语言;
-        /// </summary>
+        private Task<LanguagePackGroup> readLanguagePackTask;
         public SystemLanguage SystemLanguage { get; private set; }
+
+        public static LocalizationController Instance
+        {
+            get { return singleton.GetInstance(); }
+        }
 
         private void Awake()
         {
+            singleton.SetInstance(this);
             languagePackReader = new LanguagePackReader();
             SystemLanguage = Application.systemLanguage;
-            SetInstance(this);
         }
 
-        /// <summary>
-        /// 在游戏开始时进行初始化;
-        /// </summary>
+        private void Update()
+        {
+            if (readLanguagePackTask != null && readLanguagePackTask.IsCompleted)
+            {
+                if (readLanguagePackTask.IsCompleted && !readLanguagePackTask.IsFaulted)
+                {
+                    Localization.SetLanguage(readLanguagePackTask.Result);
+                }
+                readLanguagePackTask = null;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            singleton.OnDestroy(this);
+        }
+
         Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
         {
-            bool isCompleted = false;
-            Task<LanguagePackGroup> readTask = ReadLanguagePack(token);
-            StartCoroutine(WaitLanguagePackCoroutine(readTask, _ => isCompleted = true));
-            readTask = readTask.ContinueWith(delegate (Task<LanguagePackGroup> task)
+            readLanguagePackTask = ReadLanguagePack(token);
+            var waitReadedTask = readLanguagePackTask.ContinueWith(delegate (Task task)
             {
-                while (!isCompleted)
-                {
-                    token.ThrowIfCancellationRequested();
-                }
                 if (task.IsFaulted)
                 {
                     throw task.Exception;
                 }
-                OnLocalizationCompleted();
-                return task.Result;
+                while (readLanguagePackTask != null)
+                {
+                    token.ThrowIfCancellationRequested();
+                }
+                InitializerHelper.LogComplete(InitializerName, GetInfoLog());
             });
-            return readTask;
-        }
-
-        [System.Diagnostics.Conditional("EDITOR_LOG")]
-        private void OnLocalizationCompleted()
-        {
-            const string log = "[本地化组件]初始化完成;\n";
-            string Info = GetInfoLog();
-            Debug.Log(log + Info);
+            return waitReadedTask;
         }
 
         private string GetInfoLog()
@@ -98,32 +98,33 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public void ReadLanguagePack(LanguagePackFileInfo languagePackFileInfo, Action<Task> callback = null)
         {
-            var task = Task.Run(delegate ()
-            {
-                var languagePack = languagePackReader.Read(languagePackFileInfo);
-                return new LanguagePackGroup(languagePack);
-            });
-            StartCoroutine(WaitLanguagePackCoroutine(task, callback));
+            throw new NotImplementedException();
+            //var task = Task.Run(delegate ()
+            //{
+            //    var languagePack = languagePackReader.Read(languagePackFileInfo);
+            //    return new LanguagePackGroup(languagePack);
+            //});
+            //StartCoroutine(WaitLanguagePackCoroutine(task, callback));
         }
 
-        /// <summary>
-        /// 等待读取完成,并且应用到本地化组件(若读取失败则不进行此操作),完成时调用 callback(无论是否失败);
-        /// </summary>
-        private IEnumerator WaitLanguagePackCoroutine(Task<LanguagePackGroup> languagePackTask, Action<Task> callback = null)
-        {
-            while (!languagePackTask.IsCompleted)
-            {
-                yield return null;
-            }
-            if (!languagePackTask.IsFaulted)
-            {
-                Localization.SetLanguage(languagePackTask.Result);
-            }
-            callback?.Invoke(languagePackTask);
-        }
+        ///// <summary>
+        ///// 等待读取完成,并且应用到本地化组件(若读取失败则不进行此操作),完成时调用 callback(无论是否失败);
+        ///// </summary>
+        //private IEnumerator WaitLanguagePackCoroutine(Task<LanguagePackGroup> languagePackTask, Action<Task> callback = null)
+        //{
+        //    while (!languagePackTask.IsCompleted)
+        //    {
+        //        yield return null;
+        //    }
+        //    if (!languagePackTask.IsFaulted)
+        //    {
+        //        Localization.SetLanguage(languagePackTask.Result);
+        //    }
+        //    callback?.Invoke(languagePackTask);
+        //}
 
         /// <summary>
-        /// 读取到主要的语言文件;
+        /// 读取到预定义的语言;
         /// </summary>
         private Task<LanguagePackGroup> ReadLanguagePack(CancellationToken token)
         {

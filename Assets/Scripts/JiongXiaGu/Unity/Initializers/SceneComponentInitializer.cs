@@ -24,26 +24,23 @@ namespace JiongXiaGu.Unity.Initializers
     /// </summary>
     public sealed class SceneComponentInitializer : InitializerBase<SceneComponentInitializer>
     {
-        private ISceneComponentInitializeHandle[] initializers;
-
-        private SceneComponentInitializer()
-        {
-        }
-
         protected override void Awake()
         {
             base.Awake();
-            initializers = GetComponentsInChildren<ISceneComponentInitializeHandle>();
+            StartCoroutine(WaitInitializers(Initialize, SceneDataInitializer.Instance));
         }
 
         protected override string InitializerName
         {
-            get { return "[场景组件初始化]"; }
+            get { return "场景组件初始化"; }
         }
 
-        Task Initialize_internal(CancellationToken cancellationToken)
+        void Initialize()
         {
-            return WhenAll(initializers, initializer => initializer.Initialize(cancellationToken), cancellationToken);
+            ISceneComponentInitializeHandle[] initializers = GetComponentsInChildren<ISceneComponentInitializeHandle>();
+            initializeCancellation = new CancellationTokenSource();
+            Task task = WhenAll(initializers, initializer => initializer.Initialize(initializeCancellation.Token));
+            initializeTask = task.ContinueWith(OnInitializeTaskCompleted);
         }
     }
 }

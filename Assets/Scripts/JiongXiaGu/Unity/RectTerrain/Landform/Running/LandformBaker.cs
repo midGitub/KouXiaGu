@@ -17,7 +17,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 地形烘培器,在Unity线程进行烘培任务;
     /// </summary>
     [Serializable]
-    public sealed class LandformBaker : SceneSington<LandformBaker>, ISceneComponentInitializeHandle
+    public sealed class LandformBaker : SceneSington<LandformBaker>
     {
         LandformBaker()
         {
@@ -36,7 +36,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         [SerializeField]
         LandformBakeDrawingBoardCollection landformBoardCollection;
 
-        RectTerrainResources resources;
+        RectTerrainResources rectTerrainResources;
         IDictionary<RectCoord, MapNode> map;
 
         /// <summary>
@@ -88,9 +88,9 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         protected override void Awake()
         {
+            base.Awake();
             landformBoardCollection.Initialize();
             OnValidate();
-            base.Awake();
         }
 
         void OnValidate()
@@ -99,11 +99,10 @@ namespace JiongXiaGu.Unity.RectTerrain
             LandformChunkRenderer.SetDisplacement(displacement);
         }
 
-        Task ISceneComponentInitializeHandle.Initialize(CancellationToken token)
+        internal void Initialize(RectTerrainResources rectTerrainResources, IDictionary<RectCoord, MapNode> map)
         {
-            resources = RectTerrainResourcesInitializer.RectTerrainResources;
-            map = RectMapSceneController.WorldMap.Map;
-            return null;
+            this.rectTerrainResources = rectTerrainResources;
+            this.map = map;
         }
 
         public void Bake(RectCoord chunkPos, LandformChunkRenderer landformChunk)
@@ -154,7 +153,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         LandformResource GetLandformResource(int typeID)
         {
             LandformResource res;
-            resources.Landform.TryGetValue(typeID, out res);
+            rectTerrainResources.Landform.TryGetValue(typeID, out res);
             return res;
         }
 

@@ -11,7 +11,7 @@ namespace JiongXiaGu.Concurrent
     /// <summary>
     /// 请求基类;
     /// </summary>
-    public abstract class RequestBase : IAsyncState
+    public abstract class RequestBase : IOperationState
     {
         public RequestBase()
         {

@@ -3,6 +3,7 @@ using JiongXiaGu.Unity.KeyInputs;
 using System.IO;
 using UnityEngine;
 using JiongXiaGu.Grids;
+using System.Collections.Generic;
 
 namespace JiongXiaGu.Unity
 {
@@ -17,9 +18,6 @@ namespace JiongXiaGu.Unity
         {
             SetInstance(this);
             DontDestroyOnLoad(gameObject);
-
-            XiaGu.Initialize();
-            Resource.Initialize();
         }
 
         public static T GetSington<T>()
@@ -30,8 +28,7 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         void Test()
         {
-            Debug.Log(new RectCoord(int.MaxValue, int.MaxValue).GetHashCode());
-            Debug.Log(new RectCoord(-int.MaxValue, int.MaxValue).GetHashCode());
+            Debug.Log(string.Format("{0}  {1}", typeof(List<int>).GetHashCode() , typeof(List<string>).GetHashCode()));
         }
     }
 }

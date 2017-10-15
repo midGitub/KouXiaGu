@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 模组信息;
     /// </summary>
-    public class ModInfo : IDisposable
+    public class ModInfo
     {
         /// <summary>
         /// 模组描述;
@@ -62,11 +62,6 @@ namespace JiongXiaGu.Unity.Resources
         public string Directory
         {
             get { return DirectoryInfo.FullName; }
-        }
-
-        public void Dispose()
-        {
-            return;
         }
     }
 }

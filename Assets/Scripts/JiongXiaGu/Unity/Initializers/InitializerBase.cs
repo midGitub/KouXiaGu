@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 抽象类 内容初始化器;
     /// </summary>
-    public abstract class InitializerBase<TSelf> : SceneSington<TSelf>, IAsyncState
+    public abstract class InitializerBase<TSelf> : SceneSington<TSelf>, IOperationState
         where TSelf : SceneSington<TSelf>
     {
         /// <summary>
@@ -74,6 +74,14 @@ namespace JiongXiaGu.Unity.Initializers
             get { return initializeTask != null ? initializeTask.Exception : null; }
         }
 
+        public bool IsCanceled
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         /// <summary>
         /// 取消初始化;
         /// </summary>
@@ -123,7 +131,7 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 等待所有任务完成;
         /// </summary>
-        protected IEnumerator WaitInitializers(Action onCompleted, params IAsyncState[] initializers)
+        protected IEnumerator WaitInitializers(Action onCompleted, params IOperationState[] initializers)
         {
             if (onCompleted == null)
                 throw new ArgumentNullException(nameof(onCompleted));

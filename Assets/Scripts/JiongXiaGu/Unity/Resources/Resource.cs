@@ -1,6 +1,5 @@
 ﻿using JiongXiaGu.Diagnostics;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -32,14 +31,9 @@ namespace JiongXiaGu.Unity.Resources
         public static DirectoryInfo ArchivesDirectoryInfo { get; private set; }
 
         /// <summary>
-        /// 模组资源,在未指定时为null;
-        /// </summary>
-        internal static ModResource ModResource { get; set; }
-
-        /// <summary>
         /// 在游戏开始时初始化;
         /// </summary>
-        internal static Task Initialize()
+        internal static void Initialize()
         {
             if (!isInitialized)
             {
@@ -48,7 +42,6 @@ namespace JiongXiaGu.Unity.Resources
                 ArchivesDirectoryInfo = ReadArchivesDirectoryInfo();
                 isInitialized = true;
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
