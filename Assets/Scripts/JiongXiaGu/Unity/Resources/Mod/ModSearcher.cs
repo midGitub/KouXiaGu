@@ -8,6 +8,9 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.Resources
 {
 
+    /// <summary>
+    /// 模组信息提供器;
+    /// </summary>
     public class ModSearcher
     {
 

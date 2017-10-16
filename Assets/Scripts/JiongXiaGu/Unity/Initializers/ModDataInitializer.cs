@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.Initializers
 
         private void OnDestroy()
         {
-            singleton.OnDestroy(this);
+            singleton.RemoveInstance(this);
         }
 
         public void InitializeAsync()

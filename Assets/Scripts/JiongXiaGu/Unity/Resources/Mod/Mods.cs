@@ -8,31 +8,31 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 游戏模组信息;
     /// </summary>
-    public static class Mod
+    public class Mods
     {
-        private static readonly ModSearcher modSearcher = new ModSearcher();
-        private static readonly ModOrderReader modOrderReader = new ModOrderReader();
-        internal static bool IsInitialized { get; private set; } = false;
+        private readonly ModSearcher modSearcher = new ModSearcher();
+        private readonly ModOrderReader modOrderReader = new ModOrderReader();
+        internal bool IsInitialized { get; private set; } = false;
 
         /// <summary>
         /// 所有模组信息(不包括核心数据);
         /// </summary>
-        private static List<ModInfo> modInfos;
+        private List<ModInfo> modInfos;
 
         /// <summary>
         /// 根据读取优先顺序排序的模组信息(不包含核心数据);
         /// </summary>
-        private static List<ModInfo> orderedModInfosWithoutCore;
+        private List<ModInfo> orderedModInfosWithoutCore;
 
         /// <summary>
         /// 根据读取优先顺序排序的模组信息(包含核心数据);
         /// </summary>
-        private static List<ModInfo> orderedModInfos;
+        private List<ModInfo> orderedModInfos;
 
         /// <summary>
         /// 所有模组信息;
         /// </summary>
-        public static IReadOnlyCollection<ModInfo> ModInfos
+        public IReadOnlyCollection<ModInfo> ModInfos
         {
             get { return modInfos; }
         }
@@ -40,7 +40,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 按读取优先顺序排序好的模组合集;
         /// </summary>
-        public static IReadOnlyCollection<ModInfo> OrderedModInfos
+        public IReadOnlyCollection<ModInfo> OrderedModInfos
         {
             get { return orderedModInfos; }
         }
@@ -48,12 +48,12 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 按读取优先顺序排序好的模组合集;
         /// </summary>
-        public static IReadOnlyCollection<ModInfo> OrderedModInfosWithoutCore
+        public IReadOnlyCollection<ModInfo> OrderedModInfosWithoutCore
         {
             get { return orderedModInfosWithoutCore; }
         }
 
-        internal static void Initialize()
+        internal Mods()
         {
             if (!IsInitialized)
             {
@@ -72,7 +72,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private static void Initialize(IEnumerable<ModInfo> mods)
+        private void Initialize(IEnumerable<ModInfo> mods)
         {
             modInfos = new List<ModInfo>(mods);
             orderedModInfosWithoutCore = new List<ModInfo>();
@@ -80,7 +80,7 @@ namespace JiongXiaGu.Unity.Resources
             orderedModInfos.Add(Resource.CoreDirectoryInfo);
         }
 
-        private static void Initialize(IEnumerable<ModInfo> mods, ModOrder modOrder)
+        private void Initialize(IEnumerable<ModInfo> mods, ModOrder modOrder)
         {
             modInfos = new List<ModInfo>(mods);
             orderedModInfosWithoutCore = new List<ModInfo>();
@@ -94,7 +94,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 设置模组读取顺序;
         /// </summary>
-        public static void SetModOrder(ModOrder modOrder)
+        public void SetModOrder(ModOrder modOrder)
         {
             if (modOrder == null)
                 throw new ArgumentNullException(nameof(modOrder));

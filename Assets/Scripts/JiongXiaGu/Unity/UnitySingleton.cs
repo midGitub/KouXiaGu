@@ -84,7 +84,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 当单例销毁时调用;
         /// </summary>
-        public void OnDestroy(T currentInstance)
+        public void RemoveInstance(T currentInstance)
         {
             if (currentInstance == null)
             {
@@ -102,6 +102,9 @@ namespace JiongXiaGu.Unity
         }
     }
 
+    /// <summary>
+    /// 挂载在场景控制器的单例;
+    /// </summary>
     public class SceneSingleton<T> : UnitySingleton<T>
          where T : MonoBehaviour
     {
@@ -114,6 +117,9 @@ namespace JiongXiaGu.Unity
         }
     }
 
+    /// <summary>
+    /// 挂载在全局控制器的单例;
+    /// </summary>
     public class GlobalSingleton<T> : UnitySingleton<T>
         where T : MonoBehaviour
     {

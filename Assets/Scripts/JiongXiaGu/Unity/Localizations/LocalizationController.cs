@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         private void OnDestroy()
         {
-            singleton.OnDestroy(this);
+            singleton.RemoveInstance(this);
         }
 
         Task IGameComponentInitializeHandle.Initialize(CancellationToken token)

@@ -57,7 +57,7 @@ namespace JiongXiaGu.Unity.Initializers
 
         private void OnDestroy()
         {
-            singleton.OnDestroy(this);
+            singleton.RemoveInstance(this);
             InitializeCancellation.Cancel();
         }
 
@@ -68,7 +68,6 @@ namespace JiongXiaGu.Unity.Initializers
         {
             try
             {
-                Mod.Initialize();
                 InitializerHelper.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
                 OnCompleted();
             }

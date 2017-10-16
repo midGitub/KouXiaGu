@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace JiongXiaGu.Concurrent
+namespace JiongXiaGu
 {
 
     /// <summary>
@@ -11,7 +11,7 @@ namespace JiongXiaGu.Concurrent
     {
 
         /// <summary>
-        /// 提供 using语句 进行锁读取;
+        /// 提供 using语句 读锁;
         /// </summary>
         public static IDisposable ReadLock(this ReaderWriterLockSlim readerWriterLockSlim)
         {
@@ -29,15 +29,15 @@ namespace JiongXiaGu.Concurrent
                 readerWriterLockSlim.EnterReadLock();
             }
 
-            ~ReaderWriterLockSlimReadLock()
-            {
-                Dispose(false);
-            }
+            //~ReaderWriterLockSlimReadLock()
+            //{
+            //    Dispose(false);
+            //}
 
             public void Dispose()
             {
                 Dispose(true);
-                GC.SuppressFinalize(this);
+                //GC.SuppressFinalize(this);
             }
 
             void Dispose(bool disposing)
@@ -52,7 +52,48 @@ namespace JiongXiaGu.Concurrent
         }
 
         /// <summary>
-        /// 提供 using语句 进行锁写入;
+        /// 提供 using语句 可升级读锁;
+        /// </summary>
+        public static IDisposable UpgradeableReadLock(this ReaderWriterLockSlim readerWriterLockSlim)
+        {
+            return new ReaderWriterLockSlimUpgradeableReadLock(readerWriterLockSlim);
+        }
+
+        class ReaderWriterLockSlimUpgradeableReadLock : IDisposable
+        {
+            private bool isDisposed = false;
+            ReaderWriterLockSlim readerWriterLockSlim;
+
+            public ReaderWriterLockSlimUpgradeableReadLock(ReaderWriterLockSlim readerWriterLockSlim)
+            {
+                this.readerWriterLockSlim = readerWriterLockSlim;
+                readerWriterLockSlim.EnterUpgradeableReadLock();
+            }
+
+            //~ReaderWriterLockSlimUpgradeableReadLock()
+            //{
+            //    Dispose(false);
+            //}
+
+            public void Dispose()
+            {
+                Dispose(true);
+                //GC.SuppressFinalize(this);
+            }
+
+            void Dispose(bool disposing)
+            {
+                if (!isDisposed)
+                {
+                    readerWriterLockSlim.ExitUpgradeableReadLock();
+                    readerWriterLockSlim = null;
+                    isDisposed = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 提供 using语句 写入锁;
         /// </summary>
         public static IDisposable WriteLock(this ReaderWriterLockSlim readerWriterLockSlim)
         {
@@ -70,15 +111,15 @@ namespace JiongXiaGu.Concurrent
                 readerWriterLockSlim.EnterWriteLock();
             }
 
-            ~ReaderWriterLockSlimWriteLock()
-            {
-                Dispose(false);
-            }
+            //~ReaderWriterLockSlimWriteLock()
+            //{
+            //    Dispose(false);
+            //}
 
             public void Dispose()
             {
                 Dispose(true);
-                GC.SuppressFinalize(this);
+                //GC.SuppressFinalize(this);
             }
 
             void Dispose(bool disposing)
