@@ -250,6 +250,35 @@ namespace JiongXiaGu.Collections
         }
 
         /// <summary>
+        /// 清空元素合集;
+        /// </summary>
+        public void Clear()
+        {
+            using (readerWriterLockSlim.WriteLock())
+            {
+                components.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 清空元素合集,并对所有元素进行对应操作;
+        /// </summary>
+        public void Clear(Action<TComponent> action)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            using (readerWriterLockSlim.WriteLock())
+            {
+                foreach (var component in components)
+                {
+                    action.Invoke(component);
+                }
+                components.Clear();
+            }
+        }
+
+        /// <summary>
         /// 返回合集的复制,当合集发生变化时,返回值不会随着改变;
         /// </summary>
         public IEnumerator<TComponent> GetEnumerator()

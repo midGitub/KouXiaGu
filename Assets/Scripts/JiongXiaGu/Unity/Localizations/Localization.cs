@@ -122,13 +122,5 @@ namespace JiongXiaGu.Unity.Localizations
             }
             return null;
         }
-
-        /// <summary>
-        /// 进行取消订阅(仅在Unity线程调用);
-        /// </summary>
-        public static bool Unsubscribe(ILanguageObserver handler)
-        {
-            return observers.Unsubscribe(handler);
-        }
     }
 }

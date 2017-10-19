@@ -89,10 +89,7 @@ namespace JiongXiaGu.Diagnostics
             StringBuilder.Append(message);
             LenghtMask.AddLast(message.Length);
 
-            if (onTextChanged != null)
-            {
-                onTextChanged(this);
-            }
+            onTextChanged?.Invoke(this);
         }
 
         void RemoveTopMessage()

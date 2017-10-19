@@ -6,6 +6,9 @@ using System.Text;
 namespace JiongXiaGu
 {
 
+    /// <summary>
+    /// 观察者合集;
+    /// </summary>
     public interface IObserverCollection<T>
     {
         int Count { get; }
@@ -21,92 +24,73 @@ namespace JiongXiaGu
         IDisposable Subscribe(T observer);
 
         /// <summary>
-        /// 取消订阅;
+        /// 迭代获取到观察者,并且在迭代过程中允许改变合集元素;
+        /// 在迭代时对合集的更改,不会体现在本次迭代;
         /// </summary>
-        bool Unsubscribe(T observer);
-
-        /// <summary>
-        /// 迭代获取到观察者,并且在迭代过程中允许对删除合集元素,但是不允许嵌套;
-        /// 若在迭代时加入新元素,则不会出现在本次迭代;
-        /// </summary>
-        IEnumerable<T> EnumerateObserver();
+        IReadOnlyCollection<T> EnumerateObserver();
 
         /// <summary>
         /// 确认是否存在此元素;
         /// </summary>
         bool Contains(T item);
-
-        /// <summary>
-        /// 清除所有观察者;
-        /// </summary>
-        void Clear();
     }
 
     /// <summary>
-    /// 使用双向链表存储观察者,迭代时不需要临时空间;
+    /// 使用双向链表存储观察者,添加O(1), 移除O(1), 迭代O(n);
     /// </summary>
     public class ObserverLinkedList<T> : IObserverCollection<T>
     {
         public ObserverLinkedList()
         {
-            observersCollection = new LinkedList<T>();
-            currentNode = null;
+            observers = new LinkedList<T>();
+            tempObservers = new List<T>();
+            hasChanged = false;
         }
 
-        readonly LinkedList<T> observersCollection;
-        LinkedListNode<T> currentNode;
+        public ObserverLinkedList(IEnumerable<T> observers)
+        {
+            this.observers = new LinkedList<T>(observers);
+            tempObservers = new List<T>(this.observers);
+            hasChanged = false;
+        }
+
+        readonly LinkedList<T> observers;
+        readonly List<T> tempObservers;
+        bool hasChanged;
 
         public IEnumerable<T> Observers
         {
-            get { return observersCollection; }
+            get { return observers; }
         }
 
         public int Count
         {
-            get { return observersCollection.Count; }
+            get { return observers.Count; }
         }
 
-        /// <summary>
-        /// 订阅到,不检查是否存在重复项目;
-        /// 若在遍历观察者时加入的,将不会出现在迭代内;
-        /// </summary>
         public IDisposable Subscribe(T observer)
         {
             LinkedListNode<T> node;
-            node = observersCollection.AddFirst(observer);
-            return new Unsubscriber(this, node);
+            node = observers.AddFirst(observer);
+            var unsubscriber = new Unsubscriber(this, node);
+            hasChanged = true;
+            return unsubscriber;
         }
 
-        /// <summary>
-        /// 取消订阅;
-        /// </summary>
-        public bool Unsubscribe(T observer)
+        public IReadOnlyCollection<T> EnumerateObserver()
         {
-            return observersCollection.Remove(observer);
-        }
-
-        /// <summary>
-        /// 迭代获取到观察者,并且在迭代过程中允许对删除合集元素,但是不允许嵌套;
-        /// </summary>
-        public IEnumerable<T> EnumerateObserver()
-        {
-            currentNode = observersCollection.First;
-            while (currentNode != null)
+            if (hasChanged)
             {
-                var observer = currentNode.Value;
-                currentNode = currentNode.Next;
-                yield return observer;
+                tempObservers.Clear();
+                tempObservers.AddRange(observers);
+                hasChanged = false;
             }
+            return tempObservers;
         }
 
         public bool Contains(T item)
         {
-            return observersCollection.Contains(item);
-        }
-
-        public void Clear()
-        {
-            observersCollection.Clear();
+            return observers.Contains(item);
         }
 
         class Unsubscriber : IDisposable
@@ -128,13 +112,7 @@ namespace JiongXiaGu
 
             LinkedList<T> observers
             {
-                get { return parent.observersCollection; }
-            }
-
-            LinkedListNode<T> currentNode
-            {
-                get { return parent.currentNode; }
-                set { parent.currentNode = value; }
+                get { return parent.observers; }
             }
 
             public void Dispose()
@@ -147,12 +125,7 @@ namespace JiongXiaGu
             {
                 if (!isDisposed)
                 {
-                    if (node == currentNode)
-                    {
-                        currentNode = currentNode.Next;
-                    }
                     observers.Remove(node);
-
                     parent = null;
                     node = null;
                     isDisposed = true;
@@ -162,72 +135,53 @@ namespace JiongXiaGu
     }
 
     /// <summary>
-    /// 允许重复加入的订阅合集;加入O(1),移除O(n);
-    /// </summary>
-    public class ObserverList<T> : ObserverCollection<T>
-    {
-        public ObserverList() : base(new List<T>())
-        {
-        }
-    }
-
-    /// <summary>
-    /// 不允许重复订阅的合集;加入O(1),移除O(1);
-    /// </summary>
-    public class ObserverHashSet<T> : ObserverCollection<T>
-    {
-        public ObserverHashSet() : base(new HashSet<T>())
-        {
-        }
-    }
-
-    /// <summary>
     /// 使用定义的 ICollection<T> 接口存储观察者,迭代时需要临时空间;
     /// </summary>
     public class ObserverCollection<T> : IObserverCollection<T>
     {
-        public ObserverCollection(ICollection<T> observersCollection)
+        public ObserverCollection(ICollection<T> observers)
         {
-            this.observersCollection = observersCollection;
+            this.observers = observers;
+            tempObservers = new List<T>(observers);
+            hasChanged = false;
         }
 
-        readonly ICollection<T> observersCollection;
+        readonly ICollection<T> observers;
+        readonly List<T> tempObservers;
+        bool hasChanged;
 
         public int Count
         {
-            get { return observersCollection.Count; }
+            get { return observers.Count; }
         }
 
         public IEnumerable<T> Observers
         {
-            get { return observersCollection; }
+            get { return observers; }
         }
 
         public IDisposable Subscribe(T observer)
         {
-            observersCollection.Add(observer);
-            return new Unsubscriber(observersCollection, observer);
+            observers.Add(observer);
+            var unsubscriber = new Unsubscriber(observers, observer);
+            hasChanged = true;
+            return unsubscriber;
         }
 
-        public bool Unsubscribe(T observer)
+        public IReadOnlyCollection<T> EnumerateObserver()
         {
-            return observersCollection.Remove(observer);
-        }
-
-        public IEnumerable<T> EnumerateObserver()
-        {
-            T[] observerArray = observersCollection.ToArray();
-            return observerArray;
+            if (hasChanged)
+            {
+                tempObservers.Clear();
+                tempObservers.AddRange(observers);
+                hasChanged = false;
+            }
+            return tempObservers;
         }
 
         public bool Contains(T item)
         {
-            return observersCollection.Contains(item);
-        }
-
-        public void Clear()
-        {
-            observersCollection.Clear();
+            return observers.Contains(item);
         }
 
         class Unsubscriber : IDisposable
@@ -265,6 +219,34 @@ namespace JiongXiaGu
                     isDisposed = true;
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// 允许重复加入的订阅合集;加入O(1),移除O(n), 迭代O(n);
+    /// </summary>
+    public class ObserverList<T> : ObserverCollection<T>
+    {
+        public ObserverList() : base(new List<T>())
+        {
+        }
+
+        public ObserverList(IEnumerable<T> observers) : base(new List<T>(observers))
+        {
+        }
+    }
+
+    /// <summary>
+    /// 不允许重复订阅的合集;加入O(1), 移除O(1), 迭代O(n);
+    /// </summary>
+    public class ObserverHashSet<T> : ObserverCollection<T>
+    {
+        public ObserverHashSet() : base(new HashSet<T>())
+        {
+        }
+
+        public ObserverHashSet(IEnumerable<T> observers) : base(new HashSet<T>(observers))
+        {
         }
     }
 }

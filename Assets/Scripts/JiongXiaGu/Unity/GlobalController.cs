@@ -1,8 +1,10 @@
 ﻿using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.KeyInputs;
+using System;
 using System.IO;
 using UnityEngine;
 using JiongXiaGu.Grids;
+using System.Reflection;
 using System.Collections.Generic;
 
 namespace JiongXiaGu.Unity
@@ -28,7 +30,30 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         void Test()
         {
-            Debug.Log(string.Format("{0}  {1}", typeof(List<int>).GetHashCode() , typeof(List<string>).GetHashCode()));
+            var methodInfo = typeof(GlobalController).GetMethod("TTT", BindingFlags.Public | BindingFlags.Static);
+            Action action = CreateDelegate<Action>(methodInfo, null);
+            action.Invoke();
+        }
+
+        /// <summary>
+        /// 转换成委托;
+        /// </summary>
+        private static T CreateDelegate<T>(MethodInfo methodInfo, System.Object target)
+            where T : class
+        {
+            if (target == null)
+            {
+                return methodInfo.CreateDelegate(typeof(T)) as T;
+            }
+            else
+            {
+                return methodInfo.CreateDelegate(typeof(T), target) as T;
+            }
+        }
+
+        public static void TTT()
+        {
+            Debug.Log("成功!");
         }
     }
 }
