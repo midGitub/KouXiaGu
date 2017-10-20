@@ -8,25 +8,9 @@ namespace JiongXiaGu.Unity
 {
 
     /// <summary>
-    /// 控制台方法描述;
-    /// </summary>
-    public struct ConsoleMethodDescription
-    {
-        /// <summary>
-        /// 完全名,如 ConsoleMethod.Info.Run ;
-        /// </summary>
-        public string FullName { get; set; }
-
-        /// <summary>
-        /// 预留消息;
-        /// </summary>
-        public string Message { get; set; }
-    }
-
-    /// <summary>
     /// 控制台方法抽象类;
     /// </summary>
-    public abstract class ConsoleMethod
+    public abstract class ConsoleMethodInfo
     {
         /// <summary>
         /// 方法描述;
@@ -43,7 +27,7 @@ namespace JiongXiaGu.Unity
         /// </summary>
         /// <param name="description">方法描述</param>
         /// <param name="prerequisite">前提,为null,则代表不存在前提</param>
-        public ConsoleMethod(ConsoleMethodDescription description, Func<bool> prerequisite)
+        public ConsoleMethodInfo(ConsoleMethodDescription description, Func<bool> prerequisite)
         {
             if (string.IsNullOrWhiteSpace(description.FullName))
                 throw new ArgumentException(nameof(description.FullName));
@@ -109,7 +93,6 @@ namespace JiongXiaGu.Unity
         }
 
 
-
         public delegate void Action1(string v1);
         public delegate void Action2(string v1, string v2);
         public delegate void Action3(string v1, string v2, string v3);
@@ -122,7 +105,7 @@ namespace JiongXiaGu.Unity
         /// </summary>
         /// <param name="methodInfo">对应的方法</param>
         /// <param name="target">若未静态方法则为null,否则传入实例</param>
-        public static ConsoleMethod Create(MethodInfo methodInfo, Object target, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(MethodInfo methodInfo, Object target, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             ParameterInfo[] parameterInfos = methodInfo.GetParameters();
             foreach (var parameterInfo in parameterInfos)
@@ -187,7 +170,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 创建一个新的控制台方法;
         /// </summary>
-        public static ConsoleMethod Create(Action method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(Action method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             return new ConsoleMethod_Action0(method, description, prerequisite);
         }
@@ -195,7 +178,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 创建一个新的控制台方法;
         /// </summary>
-        public static ConsoleMethod Create(Action1 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(Action1 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             return new ConsoleMethod_Action1(method, description, prerequisite);
         }
@@ -203,7 +186,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 创建一个新的控制台方法;
         /// </summary>
-        public static ConsoleMethod Create(Action2 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(Action2 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             return new ConsoleMethod_Action2(method, description, prerequisite);
         }
@@ -211,7 +194,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 创建一个新的控制台方法;
         /// </summary>
-        public static ConsoleMethod Create(Action3 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(Action3 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             return new ConsoleMethod_Action3(method, description, prerequisite);
         }
@@ -219,7 +202,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 创建一个新的控制台方法;
         /// </summary>
-        public static ConsoleMethod Create(Action4 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(Action4 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             return new ConsoleMethod_Action4(method, description, prerequisite);
         }
@@ -227,7 +210,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 创建一个新的控制台方法;
         /// </summary>
-        public static ConsoleMethod Create(Action5 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(Action5 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             return new ConsoleMethod_Action5(method, description, prerequisite);
         }
@@ -235,7 +218,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 创建一个新的控制台方法;
         /// </summary>
-        public static ConsoleMethod Create(Action6 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
+        public static ConsoleMethodInfo Create(Action6 method, ConsoleMethodDescription description, Func<bool> prerequisite = null)
         {
             return new ConsoleMethod_Action6(method, description, prerequisite);
         }
@@ -243,7 +226,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 0个参数的控制台方法;
         /// </summary>
-        private class ConsoleMethod_Action0 : ConsoleMethod
+        private class ConsoleMethod_Action0 : ConsoleMethodInfo
         {
             private Action method;
 
@@ -270,7 +253,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 1个参数的控制台方法;
         /// </summary>
-        private class ConsoleMethod_Action1 : ConsoleMethod
+        private class ConsoleMethod_Action1 : ConsoleMethodInfo
         {
             private Action1 method;
 
@@ -297,7 +280,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 2个参数的控制台方法;
         /// </summary>
-        private class ConsoleMethod_Action2 : ConsoleMethod
+        private class ConsoleMethod_Action2 : ConsoleMethodInfo
         {
             private Action2 method;
 
@@ -324,7 +307,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 3个参数的控制台方法;
         /// </summary>
-        private class ConsoleMethod_Action3 : ConsoleMethod
+        private class ConsoleMethod_Action3 : ConsoleMethodInfo
         {
             private Action3 method;
 
@@ -351,7 +334,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 4个参数的控制台方法;
         /// </summary>
-        private class ConsoleMethod_Action4 : ConsoleMethod
+        private class ConsoleMethod_Action4 : ConsoleMethodInfo
         {
             private Action4 method;
 
@@ -378,7 +361,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 5个参数的控制台方法;
         /// </summary>
-        private class ConsoleMethod_Action5 : ConsoleMethod
+        private class ConsoleMethod_Action5 : ConsoleMethodInfo
         {
             private Action5 method;
 
@@ -405,7 +388,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 6个参数的控制台方法;
         /// </summary>
-        private class ConsoleMethod_Action6 : ConsoleMethod
+        private class ConsoleMethod_Action6 : ConsoleMethodInfo
         {
             private Action6 method;
 

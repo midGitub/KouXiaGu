@@ -14,6 +14,7 @@ namespace JiongXiaGu.Unity
     public static class Console
     {
         private static readonly object asyncLock = new object();
+        private static readonly ConsoleMethodSchema methodSchema = new ConsoleMethodSchema();
         private static readonly ObservableLoggerCollection loggerCollection = new ObservableLoggerCollection();
         private static UnityLogListener unityLogListener = new UnityLogListener();
         private static IDisposable listenUnityDebugDisposer;
@@ -27,7 +28,7 @@ namespace JiongXiaGu.Unity
         }
 
         /// <summary>
-        /// 订阅到日志消息;
+        /// 订阅到控制台日志;
         /// </summary>
         public static IDisposable Subscribe(ILogger logger)
         {
@@ -178,12 +179,34 @@ namespace JiongXiaGu.Unity
             LogError(message);
         }
 
+        private static readonly char[] separator = new char[] { ' ' };
+
         /// <summary>
-        /// 执行控制台方法;
+        /// 执行指定控制台方法;
         /// </summary>
         public static void Do(string method)
         {
-            throw new NotImplementedException();
+            string[] valueArray = method.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+            if (valueArray.Length == 0)
+            {
+                throw new ArgumentException(string.Format("不合法的命令[{0}];", method));
+            }
+            else if (valueArray.Length == 1)
+            {
+                var methodName = valueArray[0];
+                var consoleMethod = methodSchema.GetMethod(methodName);
+                consoleMethod.Invoke(null);
+            }
+            else if (valueArray.Length > 1)
+            {
+                var methodName = valueArray[0];
+                int parameterCount = valueArray.Length - 1;
+                var consoleMethod = methodSchema.GetMethod(methodName, parameterCount);
+                string[] parameters = new string[parameterCount];
+                Array.Copy(valueArray, 1, parameters, 0, parameterCount);
+                consoleMethod.Invoke(parameters);
+            }
         }
 
         /// <summary>
