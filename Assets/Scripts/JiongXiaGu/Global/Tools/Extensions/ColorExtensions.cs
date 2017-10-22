@@ -48,7 +48,9 @@ namespace JiongXiaGu
             return HexStringToInt32(hexStr);
         }
 
-
+        /// <summary>
+        /// 转换成十六进制表示形式;
+        /// </summary>
         public static string ColorToHex(this Color color)
         {
             string str = "#";

@@ -8,17 +8,10 @@ namespace JiongXiaGu
 {
 
     /// <summary>
-    /// 观察者合集;
+    /// 观察者合集; 实现的 IEnumerable<T> 方法提供一个新的合集;
     /// </summary>
     public interface IObserverCollection<T> : IReadOnlyCollection<T>
     {
-        //int Count { get; }
-
-        ///// <summary>
-        ///// 不允许对合集进行更改的迭代结构;
-        ///// </summary>
-        //IEnumerable<T> Observers { get; }
-
         /// <summary>
         /// 订阅到;
         /// </summary>
@@ -91,7 +84,7 @@ namespace JiongXiaGu
 
         public IEnumerator<T> GetEnumerator()
         {
-            return observers.GetEnumerator();
+            return observers.ToList().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -187,7 +180,7 @@ namespace JiongXiaGu
 
         public IEnumerator<T> GetEnumerator()
         {
-            return observers.GetEnumerator();
+            return observers.ToList().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -15,39 +15,38 @@ namespace JiongXiaGu.Unity.GameConsoles
     {
         public const int MaxRecordCount = 500;
         private static readonly object asyncLock = new object();
-        private static readonly IObserverCollection<IConsoleLogger> loggerObservers = new ObserverLinkedList<IConsoleLogger>();
-        private static ConsoleRecord recorder = new ConsoleRecord(MaxRecordCount);
+        private static readonly IObserverCollection<IConsoleLogger> consoleObservers = new ObserverLinkedList<IConsoleLogger>();
         internal static ConsoleMethodSchema MethodSchema { get; private set; } = new ConsoleMethodSchema();
-
+        
         /// <summary>
-        /// 所有输出输入记录;
+        /// 所有控制台订阅者;
         /// </summary>
-        public static IReadOnlyCollection<ConsoleRecordItem> Records
+        public static IReadOnlyCollection<IConsoleLogger> ConsoleObservers
         {
-            get { return recorder; }
+            get { return consoleObservers; }
         }
 
         /// <summary>
         /// 订阅到控制台日志;
         /// </summary>
-        public static IDisposable Subscribe(IConsoleLogger logger)
+        public static IDisposable Subscribe(IConsoleLogger observer)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
 
             lock (asyncLock)
             {
-                if (loggerObservers.Contains(logger))
+                if (consoleObservers.Contains(observer))
                     throw new ArgumentException("重复订阅;");
 
-                return loggerObservers.Subscribe(logger);
+                return consoleObservers.Subscribe(observer);
             }
         }
 
         /// <summary>
         /// 当调用观察者方法返回异常时的解决方案;
         /// </summary>
-        private static void OnObserverFailureLog(IConsoleLogger observer, Exception ex)
+        private static void OnObserverFailure(IConsoleLogger observer, Exception ex)
         {
             Debug.LogWarning(string.Format("订阅者[{0}]出现异常[{1}];", observer, ex));
         }
@@ -59,8 +58,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             lock (asyncLock)
             {
-                recorder.Add(new ConsoleRecordItem(ConsoleRecordTypes.Normal, message));
-                foreach (var observer in loggerObservers.EnumerateObserver())
+                foreach (var observer in consoleObservers.EnumerateObserver())
                 {
                     try
                     {
@@ -68,7 +66,7 @@ namespace JiongXiaGu.Unity.GameConsoles
                     }
                     catch(Exception ex)
                     {
-                        OnObserverFailureLog(observer, ex);
+                        OnObserverFailure(observer, ex);
                     }
                 }
             }
@@ -98,8 +96,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             lock (asyncLock)
             {
-                recorder.Add(new ConsoleRecordItem(ConsoleRecordTypes.Successful, message));
-                foreach (var observer in loggerObservers.EnumerateObserver())
+                foreach (var observer in consoleObservers.EnumerateObserver())
                 {
                     try
                     {
@@ -107,7 +104,7 @@ namespace JiongXiaGu.Unity.GameConsoles
                     }
                     catch (Exception ex)
                     {
-                        OnObserverFailureLog(observer, ex);
+                        OnObserverFailure(observer, ex);
                     }
                 }
             }
@@ -137,8 +134,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             lock (asyncLock)
             {
-                recorder.Add(new ConsoleRecordItem(ConsoleRecordTypes.Warning, message));
-                foreach (var observer in loggerObservers.EnumerateObserver())
+                foreach (var observer in consoleObservers.EnumerateObserver())
                 {
                     try
                     {
@@ -146,7 +142,7 @@ namespace JiongXiaGu.Unity.GameConsoles
                     }
                     catch (Exception ex)
                     {
-                        OnObserverFailureLog(observer, ex);
+                        OnObserverFailure(observer, ex);
                     }
                 }
             }
@@ -176,8 +172,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             lock (asyncLock)
             {
-                recorder.Add(new ConsoleRecordItem(ConsoleRecordTypes.Error, message));
-                foreach (var observer in loggerObservers.EnumerateObserver())
+                foreach (var observer in consoleObservers.EnumerateObserver())
                 {
                     try
                     {
@@ -185,7 +180,7 @@ namespace JiongXiaGu.Unity.GameConsoles
                     }
                     catch (Exception ex)
                     {
-                        OnObserverFailureLog(observer, ex);
+                        OnObserverFailure(observer, ex);
                     }
                 }
             }
@@ -220,8 +215,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             lock (asyncLock)
             {
-                recorder.Add(new ConsoleRecordItem(ConsoleRecordTypes.Method, method));
-                foreach (var observer in loggerObservers.EnumerateObserver())
+                foreach (var observer in consoleObservers.EnumerateObserver())
                 {
                     try
                     {
@@ -229,7 +223,7 @@ namespace JiongXiaGu.Unity.GameConsoles
                     }
                     catch (Exception ex)
                     {
-                        OnObserverFailureLog(observer, ex);
+                        OnObserverFailure(observer, ex);
                     }
                 }
             }
