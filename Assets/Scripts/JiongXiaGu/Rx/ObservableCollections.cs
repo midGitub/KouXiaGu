@@ -52,11 +52,6 @@ namespace JiongXiaGu
             get { return collection; }
         }
 
-        public IEnumerable<ICollectionObserver<T>> Observers
-        {
-            get { return observers.Observers; }
-        }
-
         public int Count
         {
             get { return collection.Count; }

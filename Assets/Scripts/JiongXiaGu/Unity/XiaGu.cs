@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Diagnostics;
+using JiongXiaGu.Unity.GameConsoles;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace JiongXiaGu.Unity
 {
 
-    [ConsoleMethodsClass]
+    [ConsoleMethodClass]
     public static class XiaGu
     {
         static XiaGu()
@@ -60,14 +61,14 @@ namespace JiongXiaGu.Unity
 
 
 
-        [ConsoleMethod("developer", "开发者模式开关", "bool")]
+        [GameConsoles.ConsoleMethod("developer", Message = "开发者模式开关", ParameterDes = new string[] { "bool" })]
         public static void Developer(string isDeveloperMode)
         {
             IsDeveloperMode = Convert.ToBoolean(isDeveloperMode);
             Developer();
         }
 
-        [ConsoleMethod("developer", "显示是否为开发者模式")]
+        [GameConsoles.ConsoleMethod("developer", Message = "显示是否为开发者模式")]
         public static void Developer()
         {
             XiaGuConsole.Log("DeveloperMode :" + IsDeveloperMode);

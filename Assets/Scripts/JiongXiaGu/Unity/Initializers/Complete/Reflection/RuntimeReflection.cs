@@ -38,6 +38,14 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 进行反射处理;
         /// </summary>
+        public void Implement(params Assembly[] assemblys)
+        {
+            Implement(assemblys as IEnumerable<Assembly>);
+        }
+
+        /// <summary>
+        /// 进行反射处理;
+        /// </summary>
         public void Implement(IEnumerable<Assembly> assemblys)
         {
             if (assemblys == null)
@@ -79,7 +87,7 @@ namespace JiongXiaGu.Unity.Initializers
                 properties = type.GetProperties(bindingAttrs.Property);
             }
 
-            foreach (var reflectionHandler in ReflectionHandlers)
+            foreach (var reflectionHandler in effectiveHandlers)
             {
                 BindingAttrGroup bindingFlagsInfo = reflectionHandler.BindingFlagsInfo;
 
@@ -97,6 +105,8 @@ namespace JiongXiaGu.Unity.Initializers
                 {
                     reflectionHandler.Do(Where(properties, bindingFlagsInfo.Property));
                 }
+
+                reflectionHandler.OnCompleted();
             }
         }
 

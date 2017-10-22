@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,14 @@ namespace JiongXiaGu
     /// <summary>
     /// 观察者合集;
     /// </summary>
-    public interface IObserverCollection<T>
+    public interface IObserverCollection<T> : IReadOnlyCollection<T>
     {
-        int Count { get; }
+        //int Count { get; }
 
-        /// <summary>
-        /// 不允许对合集进行更改的迭代结构;
-        /// </summary>
-        IEnumerable<T> Observers { get; }
+        ///// <summary>
+        ///// 不允许对合集进行更改的迭代结构;
+        ///// </summary>
+        //IEnumerable<T> Observers { get; }
 
         /// <summary>
         /// 订阅到;
@@ -58,11 +59,6 @@ namespace JiongXiaGu
         readonly List<T> tempObservers;
         bool hasChanged;
 
-        public IEnumerable<T> Observers
-        {
-            get { return observers; }
-        }
-
         public int Count
         {
             get { return observers.Count; }
@@ -91,6 +87,16 @@ namespace JiongXiaGu
         public bool Contains(T item)
         {
             return observers.Contains(item);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return observers.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         class Unsubscriber : IDisposable
@@ -155,11 +161,6 @@ namespace JiongXiaGu
             get { return observers.Count; }
         }
 
-        public IEnumerable<T> Observers
-        {
-            get { return observers; }
-        }
-
         public IDisposable Subscribe(T observer)
         {
             observers.Add(observer);
@@ -182,6 +183,16 @@ namespace JiongXiaGu
         public bool Contains(T item)
         {
             return observers.Contains(item);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return observers.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         class Unsubscriber : IDisposable

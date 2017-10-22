@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity
         void Test()
         {
             var methodInfo = typeof(GlobalController).GetMethod("TTT", BindingFlags.Public | BindingFlags.Static);
-            Action action = CreateDelegate<Action>(methodInfo, null);
+            var action = CreateDelegate<Func<bool>>(methodInfo, null);
             action.Invoke();
         }
 

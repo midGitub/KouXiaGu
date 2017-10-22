@@ -74,5 +74,13 @@ namespace JiongXiaGu.Unity.Initializers
         {
             return;
         }
+
+        /// <summary>
+        /// 仅当 Do(Type type) 返回true时,周期完成时调用;
+        /// </summary>
+        public virtual void OnCompleted()
+        {
+            return;
+        }
     }
 }

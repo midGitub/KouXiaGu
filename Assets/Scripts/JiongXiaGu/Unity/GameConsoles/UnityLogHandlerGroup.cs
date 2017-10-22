@@ -1,8 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-namespace JiongXiaGu.Unity
+namespace JiongXiaGu.Unity.GameConsoles
 {
+
     /// <summary>
     /// 提供 Unity.Debug.unityLogger.logHandler 为合集加入方式;
     /// </summary>
@@ -43,7 +44,7 @@ namespace JiongXiaGu.Unity
         private static UnityLogHandlerGroup unityLogHandlerGroup;
 
         /// <summary>
-        /// 添加 自定义ILogHandler 到 Unity.Debug.unityLogger.logHandler;
+        /// 添加 自定义ILogHandler 到 Unity.Debug.unityLogger.logHandler(非线程安全);
         /// </summary>
         public static IDisposable AddHandler(ILogHandler logHandler)
         {

@@ -1,4 +1,5 @@
-﻿using JiongXiaGu.Unity.Resources;
+﻿using JiongXiaGu.Unity.GameConsoles;
+using JiongXiaGu.Unity.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,18 @@ namespace JiongXiaGu.Unity.Initializers
         }
 
         private const string InitializerName = "程序初始化";
+        private RuntimeReflection runtimeReflection;
 
         private void Awake()
         {
             try
             {
+                runtimeReflection = new RuntimeReflection();
+
                 XiaGu.Initialize();
                 Resource.Initialize();
 
+                StartReflection();
                 OnCompleted();
             }
             catch (Exception ex)
@@ -44,6 +49,18 @@ namespace JiongXiaGu.Unity.Initializers
         private void OnFaulted(Exception ex)
         {
             InitializerHelper.LogFault(InitializerName, ex);
+        }
+
+        /// <summary>
+        /// 开始进行反射内容;
+        /// </summary>
+        private Task StartReflection()
+        {
+            return Task.Run(delegate ()
+            {
+                runtimeReflection.ReflectionHandlers.Add(ConsoleMethodReflection.Default);
+                runtimeReflection.Implement(typeof(GameInitializer).Assembly);
+            });
         }
     }
 }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace JiongXiaGu.Unity
+namespace JiongXiaGu.Unity.GameConsoles
 {
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 添加控制台方法,若已经存在则返回异常;
         /// </summary>
-        public void Add(ConsoleMethodInfo consoleMethod)
+        public void Add(ConsoleMethod consoleMethod)
         {
             if (consoleMethod == null)
                 throw new ArgumentNullException(nameof(consoleMethod));
@@ -49,7 +49,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 从和合集中移除指定方法;
         /// </summary>
-        public bool Remove(ConsoleMethodInfo consoleMethod)
+        public bool Remove(ConsoleMethod consoleMethod)
         {
             if (consoleMethod == null)
                 throw new ArgumentNullException(nameof(consoleMethod));
@@ -68,7 +68,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 确认是否存在此方法;
         /// </summary>
-        public bool Contains(ConsoleMethodInfo consoleMethod)
+        public bool Contains(ConsoleMethod consoleMethod)
         {
             if (consoleMethod == null)
                 throw new ArgumentNullException(nameof(consoleMethod));
@@ -87,7 +87,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 获取到指定方法,若未能找到则返回异常;
         /// </summary>
-        public ConsoleMethodInfo GetMethod(string name, int parameterNumber = 0)
+        public ConsoleMethod GetMethod(string name, int parameterNumber = 0)
         {
             ConsoleMethodGroup group;
             if (consoleMethods.TryGetValue(name, out group))
@@ -111,9 +111,9 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 枚举所有方法合集;
         /// </summary>
-        public IEnumerable<IReadOnlyCollection<ConsoleMethodInfo>> EnumerateMethodGroup()
+        public IEnumerable<IReadOnlyCollection<ConsoleMethod>> EnumerateMethodGroup()
         {
-            return consoleMethods.Values.OfType<IReadOnlyCollection<ConsoleMethodInfo>>();
+            return consoleMethods.Values.OfType<IReadOnlyCollection<ConsoleMethod>>();
         }
 
         /// <summary>
@@ -127,21 +127,21 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 相同名的方法组,按参数个数区分;
         /// </summary>
-        private class ConsoleMethodGroup : IReadOnlyCollection<ConsoleMethodInfo>
+        private class ConsoleMethodGroup : IReadOnlyCollection<ConsoleMethod>
         {
             public string FullName { get; private set; }
-            private readonly List<ConsoleMethodInfo> consoleMethods;
+            private readonly List<ConsoleMethod> consoleMethods;
 
             public ConsoleMethodGroup(string fullName)
             {
                 FullName = fullName;
-                consoleMethods = new List<ConsoleMethodInfo>();
+                consoleMethods = new List<ConsoleMethod>();
             }
 
-            public ConsoleMethodGroup(string fullName, IEnumerable<ConsoleMethodInfo> consoleMethod)
+            public ConsoleMethodGroup(string fullName, IEnumerable<ConsoleMethod> consoleMethod)
             {
                 FullName = fullName;
-                consoleMethods = new List<ConsoleMethodInfo>(consoleMethod);
+                consoleMethods = new List<ConsoleMethod>(consoleMethod);
             }
 
             public int Count
@@ -152,7 +152,7 @@ namespace JiongXiaGu.Unity
             /// <summary>
             /// 添加控制台方法;
             /// </summary>
-            public void Add(ConsoleMethodInfo consoleMethod)
+            public void Add(ConsoleMethod consoleMethod)
             {
                 if (Contains(consoleMethod.ParameterCount))
                 {
@@ -164,7 +164,7 @@ namespace JiongXiaGu.Unity
             /// <summary>
             /// 移除指定元素;
             /// </summary>
-            public bool Remove(ConsoleMethodInfo consoleMethod)
+            public bool Remove(ConsoleMethod consoleMethod)
             {
                 return consoleMethods.Remove(consoleMethod);
             }
@@ -172,7 +172,7 @@ namespace JiongXiaGu.Unity
             /// <summary>
             /// 确认是否存在此方法;
             /// </summary>
-            public bool Contains(ConsoleMethodInfo consoleMethod)
+            public bool Contains(ConsoleMethod consoleMethod)
             {
                 return consoleMethods.Contains(consoleMethod);
             }
@@ -188,9 +188,9 @@ namespace JiongXiaGu.Unity
             /// <summary>
             /// 获取到指定方法,若未能找到则返回异常 KeyNotFoundException;
             /// </summary>
-            public ConsoleMethodInfo Get(int parameterNumber)
+            public ConsoleMethod Get(int parameterNumber)
             {
-                ConsoleMethodInfo method = consoleMethods.Find(item => item.ParameterCount == parameterNumber);
+                ConsoleMethod method = consoleMethods.Find(item => item.ParameterCount == parameterNumber);
                 if (method == null)
                 {
                     throw new KeyNotFoundException(string.Format("未能找到名[{0}]参数为[{1}]的方法", FullName, parameterNumber));
@@ -201,7 +201,7 @@ namespace JiongXiaGu.Unity
                 }
             }
 
-            public IEnumerator<ConsoleMethodInfo> GetEnumerator()
+            public IEnumerator<ConsoleMethod> GetEnumerator()
             {
                 return consoleMethods.GetEnumerator();
             }

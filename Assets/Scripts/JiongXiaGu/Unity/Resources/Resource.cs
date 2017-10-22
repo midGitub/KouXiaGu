@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Diagnostics;
+using JiongXiaGu.Unity.GameConsoles;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 对游戏资源文件路径进行定义,需要手动初始化;
     /// </summary>
-    [ConsoleMethodsClass]
+    [ConsoleMethodClass]
     public static class Resource
     {
         private static bool isInitialized = false;
@@ -101,8 +102,12 @@ namespace JiongXiaGu.Unity.Resources
             directoryInfo.Create();
             return directoryInfo;
         }
-        
-        [ConsoleMethod("log_resource_path_info", "显示所有资源路径;", IsDeveloperMethod = true)]
+
+
+        [GameConsoles.ConsoleMethod("log_resource_path_info", "显示所有资源路径", new string[]
+            {
+                "dddd", "ddasd",
+            })]
         public static void LogInfoAll()
         {
             string str =

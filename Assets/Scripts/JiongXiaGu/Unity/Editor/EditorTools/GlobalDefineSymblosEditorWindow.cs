@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using UnityEditor;
 using UnityEngine;
 
-namespace JiongXiaGu.XiaGuTools
+namespace JiongXiaGu.Unity.EditorTools
 {
 
     public sealed class GlobalDefineSymblosEditorWindow : EditorWindow
@@ -40,7 +40,7 @@ namespace JiongXiaGu.XiaGuTools
         }
 
 
-        [MenuItem(XiaGuTool.MenuName + "/DefineSymblos")]
+        [MenuItem(XiaGuEditorTool.MenuName + "DefineSymblos")]
         static void Init()
         {
             var window = (GlobalDefineSymblosEditorWindow)GetWindow(typeof(GlobalDefineSymblosEditorWindow));
