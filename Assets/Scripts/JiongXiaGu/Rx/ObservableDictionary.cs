@@ -3,54 +3,43 @@ using System.Collections;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using JiongXiaGu.Collections;
 
 namespace JiongXiaGu
 {
 
-    /// <summary>
-    /// 可订阅的字典结构; 
-    /// </summary>
-    public interface IObservableDictionary<TKey, TValue>
+    public enum DictionaryEventType
     {
-        IDisposable Subscribe(IDictionaryObserver<TKey, TValue> observer);
+        Add,
+        Remove,
+        Update,
+        Clear,
+    }
+
+    public struct DictionaryEvent<TKey, TValue>
+    {
+        public IReadOnlyDictionary<TKey, TValue> Dictionary { get; set; }
+        public DictionaryEventType EventType { get; set; }
+        public TKey Key { get; set; }
+        public TValue OriginalValue { get; set; }
+        public TValue NewValue { get; set; }
     }
 
     /// <summary>
-    /// 字典结构订阅者; 
+    /// 可订阅的字典结构(线程安全); 
     /// </summary>
-    public interface IDictionaryObserver<TKey, TValue>
+    public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, IObservable<DictionaryEvent<TKey, TValue>>
     {
-        /// <summary>
-        /// 在加入之后调用;
-        /// </summary>
-        void OnAdded(TKey key, TValue newValue);
+        private readonly object asyncLock = new object();
+        private readonly IDictionary<TKey, TValue> dictionary;
+        private readonly ObserverCollection<DictionaryEvent<TKey, TValue>> observers;
 
-        /// <summary>
-        /// 在移除之后调用;
-        /// </summary>
-        void OnRemoved(TKey key, TValue originalValue);
-
-        /// <summary>
-        /// 在更新之后调用;
-        /// </summary>
-        void OnUpdated(TKey key, TValue originalValue, TValue newValue);
-    }
-
-    /// <summary>
-    /// 可订阅的字典结构; 
-    /// </summary>
-    public class ObservableDictionary<TKey, TValue> : IObservableDictionary<TKey, TValue>, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
-    {
-        protected readonly IDictionary<TKey, TValue> dictionary;
-        protected readonly IObserverCollection<IDictionaryObserver<TKey, TValue>> observers;
-
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
+        public ObservableDictionary(IDictionary<TKey, TValue> dictionary) : this(dictionary, new ObserverLinkedList<DictionaryEvent<TKey, TValue>>())
         {
-            this.dictionary = dictionary;
-            observers = new ObserverLinkedList<IDictionaryObserver<TKey, TValue>>();
         }
 
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary, IObserverCollection<IDictionaryObserver<TKey, TValue>> observers)
+        public ObservableDictionary(IDictionary<TKey, TValue> dictionary, ObserverCollection<DictionaryEvent<TKey, TValue>> observers)
         {
             this.dictionary = dictionary;
             this.observers = observers;
@@ -61,12 +50,12 @@ namespace JiongXiaGu
             get { return dictionary.Count; }
         }
 
-        public ICollection<TKey> Keys
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys
         {
             get { return dictionary.Keys; }
         }
 
-        public ICollection<TValue> Values
+        ICollection<TValue> IDictionary<TKey, TValue>.Values
         {
             get { return dictionary.Values; }
         }
@@ -74,11 +63,6 @@ namespace JiongXiaGu
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
             get { return false; }
-        }
-
-        public IObserverCollection<IDictionaryObserver<TKey, TValue>> Observers
-        {
-            get { return observers; }
         }
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
@@ -100,7 +84,7 @@ namespace JiongXiaGu
                 if (dictionary.TryGetValue(key, out original))
                 {
                     dictionary[key] = value;
-                    OnUpdated(key, original, value);
+                    NotifyUpdate(key, original, value);
                 }
                 else
                 {
@@ -109,12 +93,12 @@ namespace JiongXiaGu
             }
         }
 
-        public IDisposable Subscribe(IDictionaryObserver<TKey, TValue> observer)
+        public IDisposable Subscribe(IObserver<DictionaryEvent<TKey, TValue>> observer)
         {
-            return observers.Subscribe(observer);
+            return observers.Add(observer);
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             Add(item.Key, item.Value);
         }
@@ -124,11 +108,37 @@ namespace JiongXiaGu
         /// </summary>
         public void Add(TKey key, TValue value)
         {
-            dictionary.Add(key, value);
-            OnAdded(key, value);
+            lock (asyncLock)
+            {
+                NotifyAdd(key, value);
+                dictionary.Add(key, value);
+            }
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        /// <summary>
+        /// 加入到合集,若已经存在则更新;
+        /// </summary>
+        public AddOrUpdateStatus AddOrUpdate(TKey key, TValue value)
+        {
+            lock (asyncLock)
+            {
+                TValue originalValue;
+                if (dictionary.TryGetValue(key, out originalValue))
+                {
+                    NotifyUpdate(key, originalValue, value);
+                    dictionary[key] = value;
+                    return AddOrUpdateStatus.Updated;
+                }
+                else
+                {
+                    NotifyAdd(key, value);
+                    dictionary.Add(key, value);
+                    return AddOrUpdateStatus.Added;
+                }
+            }
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
             return Remove(item.Key);
         }
@@ -139,7 +149,7 @@ namespace JiongXiaGu
             if (dictionary.TryGetValue(key, out original))
             {
                 dictionary.Remove(key);
-                OnRemoved(key, original);
+                NotifyRemove(key, original);
                 return true;
             }
             else
@@ -186,27 +196,73 @@ namespace JiongXiaGu
             return dictionary.GetEnumerator();
         }
 
-        protected virtual void OnAdded(TKey key, TValue newValue)
+        /// <summary>
+        /// 通知观察者合集即将进行加入操作;
+        /// </summary>
+        private void NotifyAdd(TKey key, TValue newValue)
         {
-            foreach (var observer in observers.EnumerateObserver())
+            foreach (var observer in observers)
             {
-                observer.OnAdded(key, newValue);
+                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
+                {
+                    Dictionary = this,
+                    EventType = DictionaryEventType.Add,
+                    Key = key,
+                    NewValue = newValue,
+                };
+                observer.OnNext(dictionaryEvent);
             }
         }
 
-        protected virtual void OnRemoved(TKey key, TValue originalValue)
+        /// <summary>
+        /// 通知观察者合集即将进行加入操作;
+        /// </summary>
+        private void NotifyRemove(TKey key, TValue originalValue)
         {
-            foreach (var observer in observers.EnumerateObserver())
+            foreach (var observer in observers)
             {
-                observer.OnRemoved(key, originalValue);
+                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
+                {
+                    Dictionary = this,
+                    EventType = DictionaryEventType.Remove,
+                    Key = key,
+                    OriginalValue = originalValue,
+                };
+                observer.OnNext(dictionaryEvent);
             }
         }
 
-        protected virtual void OnUpdated(TKey key, TValue originalValue, TValue newValue)
+        /// <summary>
+        /// 通知观察者合集即将进行更新操作;
+        /// </summary>
+        private void NotifyUpdate(TKey key, TValue originalValue, TValue newValue)
         {
-            foreach (var observer in observers.EnumerateObserver())
+            foreach (var observer in observers)
             {
-                observer.OnUpdated(key, originalValue, newValue);
+                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
+                {
+                    Dictionary = this,
+                    EventType = DictionaryEventType.Update,
+                    Key = key,
+                    OriginalValue = originalValue,
+                    NewValue = newValue,
+                };
+                observer.OnNext(dictionaryEvent);
+            }
+        }
+
+        /// <summary>
+        /// 通知观察者合集即将进行清空;
+        /// </summary>
+        private void NotifyClear()
+        {
+            foreach (var observer in observers)
+            {
+                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
+                {
+                    Dictionary = this,
+                    EventType = DictionaryEventType.Clear,
+                };
             }
         }
     }

@@ -17,13 +17,13 @@ namespace JiongXiaGu.Unity.RectTerrain
                 throw new ArgumentNullException(nameof(map));
 
             worldMap = map;
-            mapChangedRecorder = new DictionaryChangedRecorder<RectCoord, MapNode>();
+            mapChangedRecorder = new ObserverEventBuffer<DictionaryEvent<RectCoord, MapNode>>();
             unsubscriber = map.Map.Subscribe(mapChangedRecorder);
         }
 
         WorldMap worldMap;
         IDisposable unsubscriber;
-        DictionaryChangedRecorder<RectCoord, MapNode> mapChangedRecorder;
+        ObserverEventBuffer<DictionaryEvent<RectCoord, MapNode>> mapChangedRecorder;
 
         IDictionary<RectCoord, MapNode> map
         {
@@ -34,7 +34,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
             base.GetPointsToUpdate(ref needUpdatePoints);
 
-            RecordeItem<RectCoord, MapNode> recorde;
+            DictionaryEvent<RectCoord, MapNode> recorde;
             while (mapChangedRecorder.TryDequeue(out recorde))
             {
                 MapNode node;

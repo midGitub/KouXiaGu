@@ -23,33 +23,9 @@ namespace JiongXiaGu.Unity.Initializers
         }
 
         /// <summary>
-        /// 是否检查字段?
-        /// </summary>
-        public virtual bool IsSearchField
-        {
-            get { return (BindingFlagsInfo.Field & RuntimeReflection.DefineFieldBindingAttr) > 0; }
-        }
-
-        /// <summary>
-        /// 是否检查方法?
-        /// </summary>
-        public virtual bool IsSearchMethod
-        {
-            get { return (BindingFlagsInfo.Method & RuntimeReflection.DefineMethodBindingAttr) > 0; }
-        }
-
-        /// <summary>
-        /// 是否检查属性?
-        /// </summary>
-        public virtual bool IsSearchProperty
-        {
-            get { return (BindingFlagsInfo.Property & RuntimeReflection.DefinetPropertyBindingAttr) > 0; }
-        }
-
-        /// <summary>
         /// 进行对应操作,并返回是否继续处理这个Type类型?
         /// </summary>
-        public abstract bool Do(Type type);
+        public abstract bool IsEffective(Type type);
 
         /// <summary>
         /// 进行对应操作;

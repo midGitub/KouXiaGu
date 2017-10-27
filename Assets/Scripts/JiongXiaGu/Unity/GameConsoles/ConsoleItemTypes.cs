@@ -3,7 +3,7 @@
     /// <summary>
     /// 控制台条目类型;
     /// </summary>
-    public enum ConsoleRecordTypes
+    public enum ConsoleItemTypes
     {
         /// <summary>
         /// 正常消息;

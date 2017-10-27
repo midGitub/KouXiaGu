@@ -7,10 +7,23 @@ namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
-    /// 本地化组件(大部分方法仅允许在Unity线程调用);
+    /// 语言变化事件;
+    /// </summary>
+    public struct LanguageChangedEvent
+    {
+        /// <summary>
+        /// 文本字典;
+        /// </summary>
+        public ILanguageDictionary LanguageDictionary { get; set; }
+    }
+
+    /// <summary>
+    /// 本地化静态类(线程安全);
     /// </summary>
     public static class Localization
     {
+        private static readonly object asyncLock = new object();
+
         /// <summary>
         /// 语言包合集;
         /// </summary>
@@ -19,12 +32,15 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 观察者合集;
         /// </summary>
-        static readonly IObserverCollection<ILanguageObserver> observers = new ObserverLinkedList<ILanguageObserver>();
+        private static readonly ObserverCollection<LanguageChangedEvent> observers = new ObserverLinkedList<LanguageChangedEvent>();
 
         /// <summary>
-        /// 是否不允许更改当前语言;
+        /// 当前使用的文本字典;(若不存在则为Null)
         /// </summary>
-        public static bool IsLockLanguage { get; internal set; } = false;
+        public static ILanguageDictionary Dictionary
+        {
+            get { return LanguagePackGroup; }
+        }
 
         /// <summary>
         /// 组件是否准备完成?
@@ -43,7 +59,7 @@ namespace JiongXiaGu.Unity.Localizations
         }
 
         /// <summary>
-        /// 所有语言包;若未初始化则为Null(仅在Unity线程调用);
+        /// 所有语言包;(若不存在则为Null)
         /// </summary>
         public static IReadOnlyCollection<LanguagePack> LanguagePacks
         {
@@ -53,72 +69,50 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 获取到对应文本,若未能获取到则返回 key;
         /// </summary>
-        public static string Translate(string key)
+        public static bool TryTranslate(string key, out string value)
         {
-            return LanguagePackGroup.Translate(key);
+            if (IsReady)
+            {
+                return LanguagePackGroup.TryTranslate(key, out value);
+            }
+            value = default(string);
+            return false;
         }
 
         /// <summary>
-        /// 设置新的语言(仅在Unity线程调用);
+        /// 设置新的语言;
         /// </summary>
-        public static void SetLanguage(LanguagePackFileInfo languagePackFileInfo, Action<Task> callback = null)
+        public static void SetLanguage(LanguagePackGroup group)
         {
-            ThrowIfLanguageIsLock();
-            LocalizationController.Instance.ReadLanguagePack(languagePackFileInfo, callback);
-        }
-
-        /// <summary>
-        /// 设置新的语言(仅在Unity线程调用);
-        /// </summary>
-        public static void SetLanguage(LanguagePackGroup languagePackGroup)
-        {
-            if (languagePackGroup == null)
-                throw new ArgumentNullException("languagePackGroup");
-            if (languagePackGroup == LanguagePackGroup)
+            if (group == null)
+                throw new ArgumentNullException(nameof(group));
+            if (group == LanguagePackGroup)
                 return;
-            ThrowIfLanguageIsLock();
 
-            LanguagePackGroup = languagePackGroup;
+            LanguagePackGroup = group;
             OnLanguageChanged();
         }
 
         /// <summary>
-        /// 锁不允许更改语言则抛出异常;
+        /// 在语言发生变化时调用;
         /// </summary>
-        static void ThrowIfLanguageIsLock()
+        private static void OnLanguageChanged()
         {
-            if(IsLockLanguage)
+            LanguageChangedEvent changedEvent = new LanguageChangedEvent()
             {
-                throw new InvalidOperationException("不允许更改语言;");
-            }
-        }
-
-        /// <summary>
-        /// 在语言发生变化时调用(仅在Unity线程调用);
-        /// </summary>
-        internal static void OnLanguageChanged()
-        {
-            foreach (var languageHandler in observers.EnumerateObserver())
-            {
-                try
-                {
-                    languageHandler.OnLanguageChanged();
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError("在调用本地化观察者时出现异常: " + ex);
-                }
-            }
+                LanguageDictionary = Dictionary,
+            };
+            observers.NotifyNext(changedEvent);
         }
 
         /// <summary>
         /// 订阅到观察者,并返回取消处置器;若已经加入了观察者合集,则返回Null(仅在Unity线程调用);
         /// </summary>
-        public static IDisposable Subscribe(ILanguageObserver handler)
+        public static IDisposable Subscribe(IObserver<LanguageChangedEvent> handler)
         {
             if (!observers.Contains(handler))
             {
-                return observers.Subscribe(handler);
+                return observers.Add(handler);
             }
             return null;
         }

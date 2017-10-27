@@ -1,5 +1,4 @@
-﻿using JiongXiaGu.Diagnostics;
-using JiongXiaGu.Unity.GameConsoles;
+﻿using JiongXiaGu.Unity.GameConsoles;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -71,7 +70,7 @@ namespace JiongXiaGu.Unity
         [GameConsoles.ConsoleMethod("developer", Message = "显示是否为开发者模式")]
         public static void Developer()
         {
-            XiaGuConsole.Log("DeveloperMode :" + IsDeveloperMode);
+            GameConsole.Write("DeveloperMode :" + IsDeveloperMode);
         }
     }
 }

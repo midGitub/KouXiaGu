@@ -1,5 +1,4 @@
-﻿using JiongXiaGu.Diagnostics;
-using JiongXiaGu.Unity.GameConsoles;
+﻿using JiongXiaGu.Unity.GameConsoles;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -104,10 +103,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-        [GameConsoles.ConsoleMethod("log_resource_path_info", "显示所有资源路径", new string[]
-            {
-                "dddd", "ddasd",
-            })]
+        [GameConsoles.ConsoleMethod("log_resource_path_info", Message = "显示所有资源路径")]
         public static void LogInfoAll()
         {
             string str =

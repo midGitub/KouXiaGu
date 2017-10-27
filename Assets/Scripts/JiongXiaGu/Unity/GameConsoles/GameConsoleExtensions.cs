@@ -11,9 +11,13 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// 控制台方法;
     /// </summary>
     [ConsoleMethodClass]
-    public class GameConsoleExtensions
+    public class GameConsoleMethodExtensions
     {
 
+        [ConsoleMethod("Help", Message = "显示帮助")]
+        private static void Help()
+        {
 
+        }
     }
 }

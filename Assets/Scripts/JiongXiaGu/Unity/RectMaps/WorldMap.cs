@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图变化记录;
         /// </summary>
-        public DictionaryChangedKeyRecorder<RectCoord, MapNode> MapChangedRecorder { get; private set; }
+        public MapChangedRecorder MapChangedRecorder { get; private set; }
 
         /// <summary>
         /// 是否为只读?
@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
             MapData = data;
             Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-            MapChangedRecorder = new DictionaryChangedKeyRecorder<RectCoord, MapNode>(new HashSet<RectCoord>());
+            MapChangedRecorder = new MapChangedRecorder();
             Map.Subscribe(MapChangedRecorder);
         }
 
@@ -52,7 +52,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
             data.AddArchive(archive);
             Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-            MapChangedRecorder = new DictionaryChangedKeyRecorder<RectCoord, MapNode>(new HashSet<RectCoord>(archive.Data.Keys));
+            MapChangedRecorder = new MapChangedRecorder(archive.Data.Keys);
             Map.Subscribe(MapChangedRecorder);
         }
 

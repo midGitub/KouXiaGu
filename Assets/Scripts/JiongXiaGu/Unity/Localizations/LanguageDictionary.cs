@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// 文本字典;
     /// </summary>
     [XmlRoot("LanguageDictionary")]
-    public class LanguageDictionary : Dictionary<string, string>, IDictionary<string, string>, IXmlSerializable
+    public class LanguageDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, IDictionary<string, string>, IXmlSerializable
     {
         public LanguageDictionary()
         {

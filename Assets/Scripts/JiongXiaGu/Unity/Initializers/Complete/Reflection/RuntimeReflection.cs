@@ -68,45 +68,48 @@ namespace JiongXiaGu.Unity.Initializers
         {
             BindingAttrGroup bindingAttrs;
             List<ReflectionHandler> effectiveHandlers = GetEffectiveHandlers(type, out bindingAttrs);
-            FieldInfo[] fields = null;
-            MethodInfo[] methods = null;
-            PropertyInfo[] properties = null;
-
-            if (bindingAttrs.Field != 0)
+            if (effectiveHandlers.Count != 0)
             {
-                fields = type.GetFields(bindingAttrs.Field);
-            }
+                FieldInfo[] fields = null;
+                MethodInfo[] methods = null;
+                PropertyInfo[] properties = null;
 
-            if (bindingAttrs.Method != 0)
-            {
-                methods = type.GetMethods(bindingAttrs.Method);
-            }
-
-            if (bindingAttrs.Property != 0)
-            {
-                properties = type.GetProperties(bindingAttrs.Property);
-            }
-
-            foreach (var reflectionHandler in effectiveHandlers)
-            {
-                BindingAttrGroup bindingFlagsInfo = reflectionHandler.BindingFlagsInfo;
-
-                if (reflectionHandler.IsSearchField)
+                if (bindingAttrs.Field != 0)
                 {
-                    reflectionHandler.Do(Where(fields, bindingFlagsInfo.Field));
+                    fields = type.GetFields(bindingAttrs.Field);
                 }
 
-                if (reflectionHandler.IsSearchMethod)
+                if (bindingAttrs.Method != 0)
                 {
-                    reflectionHandler.Do(Where(methods, bindingFlagsInfo.Method));
+                    methods = type.GetMethods(bindingAttrs.Method);
                 }
 
-                if (reflectionHandler.IsSearchProperty)
+                if (bindingAttrs.Property != 0)
                 {
-                    reflectionHandler.Do(Where(properties, bindingFlagsInfo.Property));
+                    properties = type.GetProperties(bindingAttrs.Property);
                 }
 
-                reflectionHandler.OnCompleted();
+                foreach (var reflectionHandler in effectiveHandlers)
+                {
+                    BindingAttrGroup bindingFlagsInfo = reflectionHandler.BindingFlagsInfo;
+
+                    if (reflectionHandler.BindingFlagsInfo.IsSearchField)
+                    {
+                        reflectionHandler.Do(Where(fields, bindingFlagsInfo.Field));
+                    }
+
+                    if (reflectionHandler.BindingFlagsInfo.IsSearchMethod)
+                    {
+                        reflectionHandler.Do(Where(methods, bindingFlagsInfo.Method));
+                    }
+
+                    if (reflectionHandler.BindingFlagsInfo.IsSearchProperty)
+                    {
+                        reflectionHandler.Do(Where(properties, bindingFlagsInfo.Property));
+                    }
+
+                    reflectionHandler.OnCompleted();
+                }
             }
         }
 
@@ -126,15 +129,16 @@ namespace JiongXiaGu.Unity.Initializers
 
             foreach (var reflectionHandler in ReflectionHandlers)
             {
-                if (reflectionHandler.Do(type))
+                if (reflectionHandler.IsEffective(type))
                 {
                     bindingAttrs |= reflectionHandler.BindingFlagsInfo;
+                    tempEffectiveHandlers.Add(reflectionHandler);
                 }
             }
 
             bindingAttrs.Field &= DefineFieldBindingAttr;
-            bindingAttrs.Field &= DefineMethodBindingAttr;
-            bindingAttrs.Field &= DefinetPropertyBindingAttr;
+            bindingAttrs.Method &= DefineMethodBindingAttr;
+            bindingAttrs.Property &= DefinetPropertyBindingAttr;
             return tempEffectiveHandlers;
         }
 

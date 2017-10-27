@@ -30,30 +30,9 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         void Test()
         {
-            var methodInfo = typeof(GlobalController).GetMethod("TTT", BindingFlags.Public | BindingFlags.Static);
-            var action = CreateDelegate<Func<bool>>(methodInfo, null);
-            action.Invoke();
-        }
-
-        /// <summary>
-        /// 转换成委托;
-        /// </summary>
-        private static T CreateDelegate<T>(MethodInfo methodInfo, System.Object target)
-            where T : class
-        {
-            if (target == null)
-            {
-                return methodInfo.CreateDelegate(typeof(T)) as T;
-            }
-            else
-            {
-                return methodInfo.CreateDelegate(typeof(T), target) as T;
-            }
-        }
-
-        public static void TTT()
-        {
-            Debug.Log("成功!");
+            string str = "0123456789";
+            Debug.Log(str.IndexOf("23"));
+            Debug.Log(str.Substring(4));
         }
     }
 }

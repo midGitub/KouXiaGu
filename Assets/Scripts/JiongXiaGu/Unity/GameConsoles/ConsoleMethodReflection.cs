@@ -14,19 +14,19 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// </summary>
     public class ConsoleMethodReflection : ReflectionHandler
     {
+        private static readonly BindingAttrGroup BindingAttrs = new BindingAttrGroup()
+        {
+            Method = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static,
+        };
+
         /// <summary>
         /// 默认实参;
         /// </summary>
         public static ConsoleMethodReflection Default { get; private set; } = new ConsoleMethodReflection();
 
-        private static readonly BindingAttrGroup BindingAttrs = new BindingAttrGroup()
-        {
-            Method = BindingFlags.Public | BindingFlags.Static,
-        };
-
         private readonly List<PrerequisiteInfo> tempPrerequisites;
         private readonly List<ConsoleMethodInfo> tempMethods;
-        private readonly List<Exception> exception;
+        private readonly List<Exception> exceptions;
 
         private ConsoleMethodSchema MethodSchema
         {
@@ -38,7 +38,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         public IReadOnlyCollection<Exception> Exceptions
         {
-            get { return exception; }
+            get { return exceptions; }
         }
 
         /// <summary>
@@ -48,13 +48,21 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             tempPrerequisites = new List<PrerequisiteInfo>();
             tempMethods = new List<ConsoleMethodInfo>();
-            exception = new List<Exception>();
+            exceptions = new List<Exception>();
         }
 
-        public override bool Do(Type type)
+        /// <summary>
+        /// 
+        /// </summary>
+        public override bool IsEffective(Type type)
         {
-            var attribute = type.GetCustomAttribute<ConsoleMethodClassAttribute>();
-            return attribute != null;
+            if (type.IsClass)
+            {
+                var attribute = type.GetCustomAttribute<ConsoleMethodClassAttribute>();
+                bool b = attribute != null;
+                return b;
+            }
+            return true;
         }
 
         public override void Do(IEnumerable<MethodInfo> methodInfos)
@@ -62,8 +70,11 @@ namespace JiongXiaGu.Unity.GameConsoles
             //整理前提方法和控制台执行方法;
             foreach (var methodInfo in methodInfos)
             {
-                var attributes = methodInfo.GetCustomAttributes<ConsoleMethodBaseAttribute>();
-                foreach (var attribute in attributes)
+                //var attributes = methodInfo.GetCustomAttributes<ConsoleMethodBaseAttribute>();
+                var attribute = methodInfo.GetCustomAttribute(typeof(ConsoleMethodBaseAttribute), false) as ConsoleMethodBaseAttribute;
+                //foreach (var attribute in attributes)
+                //{
+                if (attribute != null)
                 {
                     try
                     {
@@ -86,10 +97,11 @@ namespace JiongXiaGu.Unity.GameConsoles
                     }
                     catch (Exception ex)
                     {
-                        exception.Add(ex);
+                        exceptions.Add(ex);
                         continue;
                     }
                 }
+                //}
             }
 
             //将可用的控制台方法加入到合集;
@@ -98,11 +110,15 @@ namespace JiongXiaGu.Unity.GameConsoles
                 try
                 {
                     ConsoleMethod consoleMethod = CreateConsoleMethod(methodInfo);
-                    MethodSchema.Add(consoleMethod);
+                    if (!MethodSchema.TryAdd(consoleMethod))
+                    {
+                        Exception ex = new ArgumentException(string.Format("已经存在名为[{0}]参数为[{1}]的方法", consoleMethod.FullName, consoleMethod.ParameterCount));
+                        exceptions.Add(ex);
+                    }
                 }
                 catch(Exception ex)
                 {
-                    exception.Add(ex);
+                    exceptions.Add(ex);
                     continue;
                 }
             }
@@ -210,7 +226,7 @@ namespace JiongXiaGu.Unity.GameConsoles
     }
 
     /// <summary>
-    /// 控制台方法命令,需要挂在"公共静态方法"上,传入参数都为字符串;
+    /// 控制台方法命令,需要挂在"静态方法"上,传入参数都为字符串;
     /// </summary>
     public sealed class ConsoleMethodAttribute : ConsoleMethodBaseAttribute
     {
@@ -242,36 +258,9 @@ namespace JiongXiaGu.Unity.GameConsoles
             set { description.Parameters = ParameterDescCollection.Convert(value); }
         }
 
-        public ConsoleMethodAttribute(string name) : this(name, string.Empty, string.Empty, null)
-        {
-        }
-
-        /// <summary>
-        /// 构造函数;
-        /// </summary>
-        /// <param name="name">方法名</param>
-        /// <param name="message">方法描述</param>
-        /// <param name="parameterDes">参数描述</param>
-        public ConsoleMethodAttribute(string name, string message, string[] parameterDes = null)
+        public ConsoleMethodAttribute(string name)
         {
             Name = name;
-            Message = message;
-            ParameterDes = parameterDes;
-        }
-
-        /// <summary>
-        /// 构造函数;
-        /// </summary>
-        /// <param name="name">方法名</param>
-        /// <param name="message">方法描述</param>
-        /// <param name="prerequisite">前提方法名</param>
-        /// <param name="parameterDes">参数描述</param>
-        public ConsoleMethodAttribute(string name, string prerequisite, string message, string[] parameterDes = null)
-        {
-            Name = name;
-            PrerequisiteName = prerequisite;
-            Message = message;
-            ParameterDes = parameterDes;
         }
     }
 }

@@ -2,185 +2,241 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace JiongXiaGu
 {
-
+    
     /// <summary>
-    /// 观察者合集; 实现的 IEnumerable<T> 方法提供一个新的合集;
+    /// 抽象类 不允许重复添加的观察者合集;
     /// </summary>
-    public interface IObserverCollection<T> : IReadOnlyCollection<T>
+    public class ObserverCollection<T> : ICollection<IObserver<T>>
     {
-        /// <summary>
-        /// 订阅到;
-        /// </summary>
-        IDisposable Subscribe(T observer);
+        protected ICollection<IObserver<T>> Observers { get; private set; }
 
         /// <summary>
-        /// 迭代获取到观察者,并且在迭代过程中允许改变合集元素;
-        /// 在迭代时对合集的更改,不会体现在本次迭代;
+        /// 观察者总数;
         /// </summary>
-        IReadOnlyCollection<T> EnumerateObserver();
-
-        /// <summary>
-        /// 确认是否存在此元素;
-        /// </summary>
-        bool Contains(T item);
-    }
-
-    /// <summary>
-    /// 使用双向链表存储观察者,添加O(1), 移除O(1), 迭代O(n);
-    /// </summary>
-    public class ObserverLinkedList<T> : IObserverCollection<T>
-    {
-        public ObserverLinkedList()
-        {
-            observers = new LinkedList<T>();
-            tempObservers = new List<T>();
-            hasChanged = false;
-        }
-
-        public ObserverLinkedList(IEnumerable<T> observers)
-        {
-            this.observers = new LinkedList<T>(observers);
-            tempObservers = new List<T>(this.observers);
-            hasChanged = false;
-        }
-
-        readonly LinkedList<T> observers;
-        readonly List<T> tempObservers;
-        bool hasChanged;
-
         public int Count
         {
-            get { return observers.Count; }
+            get { return Observers.Count; }
         }
 
-        public IDisposable Subscribe(T observer)
+        /// <summary>
+        /// 总是返回false;
+        /// </summary>
+        bool ICollection<IObserver<T>>.IsReadOnly
         {
-            LinkedListNode<T> node;
-            node = observers.AddFirst(observer);
-            var unsubscriber = new Unsubscriber(this, node);
-            hasChanged = true;
+            get { return false; }
+        }
+
+        /// <summary>
+        /// 提供子类的构造函数;
+        /// </summary>
+        protected ObserverCollection(ICollection<IObserver<T>> observers)
+        {
+            this.Observers = observers;
+        }
+
+        /// <summary>
+        /// 添加观察者;
+        /// </summary>
+        public virtual IDisposable Add(IObserver<T> observer)
+        {
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
+            if (Observers.Contains(observer))
+                throw RepeatedObserverException(observer);
+
+            Observers.Add(observer);
+            var unsubscriber = new Unsubscriber(Observers, observer);
             return unsubscriber;
         }
 
-        public IReadOnlyCollection<T> EnumerateObserver()
+        /// <summary>
+        /// 返回重复加入观察者的异常;
+        /// </summary>
+        protected Exception RepeatedObserverException(IObserver<T> observer)
         {
-            if (hasChanged)
-            {
-                tempObservers.Clear();
-                tempObservers.AddRange(observers);
-                hasChanged = false;
-            }
-            return tempObservers;
+            return new ArgumentException(string.Format("重复加入观察者[{0}];", observer));
         }
 
-        public bool Contains(T item)
+        void ICollection<IObserver<T>>.Add(IObserver<T> observer)
         {
-            return observers.Contains(item);
+            Add(observer);
         }
 
-        public IEnumerator<T> GetEnumerator()
+        /// <summary>
+        /// 移除指定观察者;
+        /// </summary>
+        public bool Remove(IObserver<T> observer)
         {
-            return observers.ToList().GetEnumerator();
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
+
+            return Observers.Remove(observer);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        bool ICollection<IObserver<T>>.Remove(IObserver<T> observer)
         {
-            return GetEnumerator();
+            return Remove(observer);
         }
 
-        class Unsubscriber : IDisposable
+        /// <summary>
+        /// 确认是否存在此观察者;
+        /// </summary>
+        public bool Contains(IObserver<T> observer)
         {
-            private bool isDisposed = false;
-            private ObserverLinkedList<T> parent;
-            private LinkedListNode<T> node;
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
 
-            public Unsubscriber(ObserverLinkedList<T> parent, LinkedListNode<T> node)
-            {
-                this.parent = parent;
-                this.node = node;
-            }
+            return Observers.Contains(observer);
+        }
 
-            ~Unsubscriber()
-            {
-                Dispose(false);
-            }
+        bool ICollection<IObserver<T>>.Contains(IObserver<T> observer)
+        {
+            return Contains(observer);
+        }
 
-            LinkedList<T> observers
-            {
-                get { return parent.observers; }
-            }
+        /// <summary>
+        /// 清空合集,不会调用 NotifyCompleted();
+        /// </summary>
+        public void Clear()
+        {
+            Observers.Clear();
+        }
 
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
+        void ICollection<IObserver<T>>.Clear()
+        {
+            Clear();
+        }
 
-            void Dispose(bool disposing)
+        /// <summary>
+        /// 向观察者提供新数据;(通知过程中若返回任何异常都不会进行返回)
+        /// </summary>
+        public void NotifyNext(T value)
+        {
+            foreach (var observer in EnumerateObserver())
             {
-                if (!isDisposed)
+                try
                 {
-                    observers.Remove(node);
-                    parent = null;
-                    node = null;
-                    isDisposed = true;
+                    observer.OnNext(value);
+                }
+                catch
+                {
+                    continue;
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// 使用定义的 ICollection<T> 接口存储观察者,迭代时需要临时空间;
-    /// </summary>
-    public class ObserverCollection<T> : IObserverCollection<T>
-    {
-        public ObserverCollection(ICollection<T> observers)
+        /// <summary>
+        /// 向观察者提供新数据;(若有观察者返回异常,则调用 onError,并继续通知下一个观察者)
+        /// </summary>
+        public void NotifyNext(T value, Action<IObserver<T>, Exception> onError)
         {
-            this.observers = observers;
-            tempObservers = new List<T>(observers);
-            hasChanged = false;
-        }
-
-        readonly ICollection<T> observers;
-        readonly List<T> tempObservers;
-        bool hasChanged;
-
-        public int Count
-        {
-            get { return observers.Count; }
-        }
-
-        public IDisposable Subscribe(T observer)
-        {
-            observers.Add(observer);
-            var unsubscriber = new Unsubscriber(observers, observer);
-            hasChanged = true;
-            return unsubscriber;
-        }
-
-        public IReadOnlyCollection<T> EnumerateObserver()
-        {
-            if (hasChanged)
+            foreach (var observer in EnumerateObserver())
             {
-                tempObservers.Clear();
-                tempObservers.AddRange(observers);
-                hasChanged = false;
+                try
+                {
+                    observer.OnNext(value);
+                }
+                catch(Exception ex)
+                {
+                    onError.Invoke(observer, ex);
+                    continue;
+                }
             }
-            return tempObservers;
         }
 
-        public bool Contains(T item)
+        /// <summary>
+        /// 通知观察者，提供程序遇到错误情况;(通知过程中若返回任何异常都不会进行返回)
+        /// </summary>
+        public void NotifyError(Exception ex)
         {
-            return observers.Contains(item);
+            foreach (var observer in EnumerateObserver())
+            {
+                try
+                {
+                    observer.OnError(ex);
+                }
+                catch
+                {
+                    continue;
+                }
+            }
         }
 
-        public IEnumerator<T> GetEnumerator()
+        /// <summary>
+        /// 通知观察者，提供程序遇到错误情况;(若有观察者返回异常,则调用 onError,并继续通知下一个观察者)
+        /// </summary>
+        public void NotifyError(Exception ex, Action<IObserver<T>, Exception> onError)
         {
-            return observers.ToList().GetEnumerator();
+            foreach (var observer in EnumerateObserver())
+            {
+                try
+                {
+                    observer.OnError(ex);
+                }
+                catch(Exception observerEx)
+                {
+                    onError.Invoke(observer, observerEx);
+                    continue;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 通知观察者，提供程序已完成发送基于推送的通知;(通知过程中若返回任何异常都不会进行返回)
+        /// </summary>
+        public void NotifyCompleted()
+        {
+            foreach (var observer in EnumerateObserver())
+            {
+                try
+                {
+                    observer.OnCompleted();
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 通知观察者，提供程序已完成发送基于推送的通知;(若有观察者返回异常,则调用 onError,并继续通知下一个观察者)
+        /// </summary>
+        public void NotifyCompleted(Action<IObserver<T>, Exception> onError)
+        {
+            foreach (var observer in EnumerateObserver())
+            {
+                try
+                {
+                    observer.OnCompleted();
+                }
+                catch (Exception ex)
+                {
+                    onError.Invoke(observer, ex);
+                    continue;
+                }
+            }
+        }
+
+        void ICollection<IObserver<T>>.CopyTo(IObserver<T>[] array, int arrayIndex)
+        {
+            Observers.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// 安全的枚举所有观察者;
+        /// </summary>
+        private IEnumerable<IObserver<T>> EnumerateObserver()
+        {
+            return Observers.ToList();
+        }
+
+        public IEnumerator<IObserver<T>> GetEnumerator()
+        {
+            return Observers.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -188,38 +244,30 @@ namespace JiongXiaGu
             return GetEnumerator();
         }
 
-        class Unsubscriber : IDisposable
+        /// <summary>
+        /// 提供移除观察者方法;
+        /// </summary>
+        private class Unsubscriber : IDisposable
         {
             private bool isDisposed;
-            private ICollection<T> observersCollection;
-            private T observer;
+            private ICollection<IObserver<T>> observersCollection;
+            private IObserver<T> observer;
 
-            public Unsubscriber(ICollection<T> observersCollection, T observer)
+            public Unsubscriber(ICollection<IObserver<T>> observersCollection, IObserver<T> observer)
             {
                 isDisposed = false;
                 this.observersCollection = observersCollection;
                 this.observer = observer;
             }
 
-            ~Unsubscriber()
-            {
-                Dispose(false);
-            }
-
             public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            void Dispose(bool disposing)
             {
                 if (!isDisposed)
                 {
                     observersCollection.Remove(observer);
 
-                    observersCollection = null;
-                    observer = default(T);
+                    observersCollection = default(List<IObserver<T>>);
+                    observer = default(IObserver<T>);
                     isDisposed = true;
                 }
             }
@@ -227,30 +275,64 @@ namespace JiongXiaGu
     }
 
     /// <summary>
-    /// 允许重复加入的订阅合集;加入O(1),移除O(n), 迭代O(n);
+    /// 观察者合集;加入O(1)或O(n),移除O(n), 迭代O(n);
     /// </summary>
     public class ObserverList<T> : ObserverCollection<T>
     {
-        public ObserverList() : base(new List<T>())
-        {
-        }
-
-        public ObserverList(IEnumerable<T> observers) : base(new List<T>(observers))
+        public ObserverList() : base(new List<IObserver<T>>())
         {
         }
     }
 
     /// <summary>
-    /// 不允许重复订阅的合集;加入O(1), 移除O(1), 迭代O(n);
+    /// 使用双向链表存储观察者,添加O(1), 通过IDisposable接口移除O(1),Remove方法, 迭代O(n);
     /// </summary>
-    public class ObserverHashSet<T> : ObserverCollection<T>
+    public class ObserverLinkedList<T> : ObserverCollection<T>
     {
-        public ObserverHashSet() : base(new HashSet<T>())
+        public ObserverLinkedList() : base(new LinkedList<IObserver<T>>())
         {
         }
 
-        public ObserverHashSet(IEnumerable<T> observers) : base(new HashSet<T>(observers))
+        protected LinkedList<IObserver<T>> LinkedListObservers
         {
+            get { return Observers as LinkedList<IObserver<T>>; }
+        }
+
+        public override IDisposable Add(IObserver<T> observer)
+        {
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
+            if (LinkedListObservers.Contains(observer))
+                throw RepeatedObserverException(observer);
+
+            var node = LinkedListObservers.AddLast(observer);
+            var unsubscriber = new LinkedListUnsubscriber(LinkedListObservers, node);
+            return unsubscriber;
+        }
+
+        private class LinkedListUnsubscriber : IDisposable
+        {
+            private bool isDisposed = false;
+            private LinkedList<IObserver<T>> collection;
+            private LinkedListNode<IObserver<T>> node;
+
+            public LinkedListUnsubscriber(LinkedList<IObserver<T>> collection, LinkedListNode<IObserver<T>> node)
+            {
+                this.collection = collection;
+                this.node = node;
+            }
+
+            public void Dispose()
+            {
+                if (!isDisposed)
+                {
+                    collection.Remove(node);
+
+                    collection = default(LinkedList<IObserver<T>>);
+                    node = default(LinkedListNode<IObserver<T>>);
+                    isDisposed = true;
+                }
+            }
         }
     }
 }

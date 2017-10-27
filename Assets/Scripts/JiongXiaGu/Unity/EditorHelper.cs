@@ -6,10 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace JiongXiaGu.Unity.Initializers
+namespace JiongXiaGu.Unity
 {
-
-    internal class InitializerHelper
+    
+    /// <summary>
+    /// 在编辑器模式下的拓展方法;
+    /// </summary>
+    internal class EditorHelper
     {
 
         /// <summary>
@@ -24,6 +27,18 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 输出成功报告信息;
         /// </summary>
+        public static void LogComplete(string initializerName, Func<string> getMessage)
+        {
+            if (getMessage == null)
+                throw new ArgumentNullException(nameof(getMessage));
+
+            string message = getMessage.Invoke();
+            LogComplete(initializerName, message);
+        }
+
+        /// <summary>
+        /// 输出成功报告信息;
+        /// </summary>
         [System.Diagnostics.Conditional("EDITOR_LOG")]
         public static void LogComplete(string initializerName, string message)
         {
@@ -32,12 +47,15 @@ namespace JiongXiaGu.Unity.Initializers
 
 
         /// <summary>
-        /// 在失败时调用;
+        /// 输出失败报告到Debug;
         /// </summary>
+        [System.Diagnostics.Conditional("EDITOR_LOG")]
         public static void LogFault(string initializerName, Exception ex)
         {
-            Debug.Log(string.Format("[{0}]运行时遇到错误:{1}", initializerName, ex));
+            Debug.LogError(string.Format("[{0}]运行时遇到错误:{1}", initializerName, ex));
         }
+
+
 
 
 
@@ -53,7 +71,5 @@ namespace JiongXiaGu.Unity.Initializers
             }
             Task.WaitAll(tasks, token);
         }
-
-        //public static IEnumerator Wait
     }
 }

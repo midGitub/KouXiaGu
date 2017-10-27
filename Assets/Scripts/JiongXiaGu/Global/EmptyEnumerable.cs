@@ -10,6 +10,7 @@ namespace JiongXiaGu
     /// <summary>
     /// 不进行迭代的结构;
     /// </summary>
+    [Obsolete]
     public class EmptyEnumerable<T> : IEnumerable<T>, IEnumerator<T>
     {
         static EmptyEnumerable()

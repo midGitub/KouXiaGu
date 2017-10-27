@@ -23,6 +23,30 @@ namespace JiongXiaGu.Unity.Initializers
         /// </summary>
         public BindingFlags Property { get; set; }
 
+        /// <summary>
+        /// 是否检查字段?
+        /// </summary>
+        public bool IsSearchField
+        {
+            get { return (Field & RuntimeReflection.DefineFieldBindingAttr) > 0; }
+        }
+
+        /// <summary>
+        /// 是否检查方法?
+        /// </summary>
+        public bool IsSearchMethod
+        {
+            get { return (Method & RuntimeReflection.DefineMethodBindingAttr) > 0; }
+        }
+
+        /// <summary>
+        /// 是否检查属性?
+        /// </summary>
+        public bool IsSearchProperty
+        {
+            get { return (Property & RuntimeReflection.DefinetPropertyBindingAttr) > 0; }
+        }
+
         public override bool Equals(object obj)
         {
             return obj is BindingAttrGroup && Equals((BindingAttrGroup)obj);

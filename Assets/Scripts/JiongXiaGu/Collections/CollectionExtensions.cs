@@ -7,7 +7,7 @@ namespace JiongXiaGu.Collections
     /// <summary>
     /// 合集拓展方法;
     /// </summary>
-    public static class CollectionHelper
+    public static class CollectionExtensions
     {
 
         static void ValidateCollection<T>(IEnumerable<T> collection)
@@ -350,6 +350,22 @@ namespace JiongXiaGu.Collections
         #region IEnumerable
 
         /// <summary>
+        /// 对每个元素执行指定操作;
+        /// </summary>
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            foreach (var item in collection)
+            {
+                action.Invoke(item);
+            }
+        }
+
+        /// <summary>
         /// 区别于 Linq.Min();返回转换结果最小的元素;
         /// </summary>
         public static TSource MinSource<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> selector)
@@ -362,9 +378,12 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public static TSource MinSource<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> selector, IComparer<T> comparer)
         {
-            ValidateNull(collection);
-            ValidateNull(selector);
-            ValidateNull(comparer);
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (selector == null)
+                throw new ArgumentNullException(nameof(selector));
+            if (comparer == null)
+                throw new ArgumentNullException(nameof(comparer));
 
             bool isFirst = true;
             TSource minSource = default(TSource);
@@ -403,9 +422,12 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public static TSource MaxSource<T, TSource>(this IEnumerable<TSource> collection, Func<TSource, T> selector, IComparer<T> comparer)
         {
-            ValidateNull(collection);
-            ValidateNull(selector);
-            ValidateNull(comparer);
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (selector == null)
+                throw new ArgumentNullException(nameof(selector));
+            if (comparer == null)
+                throw new ArgumentNullException(nameof(comparer));
 
             bool isFirst = true;
             TSource source = default(TSource);

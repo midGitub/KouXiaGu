@@ -3,9 +3,9 @@
     /// <summary>
     /// 控制台消息条目;
     /// </summary>
-    public struct ConsoleRecordItem
+    public struct ConsoleItem
     {
-        public ConsoleRecordItem(ConsoleRecordTypes type, string message)
+        public ConsoleItem(ConsoleItemTypes type, string message)
         {
             Type = type;
             Message = message;
@@ -14,7 +14,7 @@
         /// <summary>
         /// 消息类型;
         /// </summary>
-        public ConsoleRecordTypes Type { get; private set; }
+        public ConsoleItemTypes Type { get; private set; }
 
         /// <summary>
         /// 消息;

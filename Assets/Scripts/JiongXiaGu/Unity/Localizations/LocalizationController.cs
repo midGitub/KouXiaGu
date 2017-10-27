@@ -12,12 +12,11 @@ namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
-    /// 协调Unity线程和其它线程;
+    /// 提供在Unity编辑器内调整具体参数;
     /// </summary>
     [DisallowMultipleComponent]
-    class LocalizationController : MonoBehaviour, IGameComponentInitializeHandle
+    class LocalizationController : MonoBehaviour
     {
-        private static readonly GlobalSingleton<LocalizationController> singleton = new GlobalSingleton<LocalizationController>();
         private const string InitializerName = "游戏组件初始化";
 
         /// <summary>
@@ -29,14 +28,8 @@ namespace JiongXiaGu.Unity.Localizations
         private Task<LanguagePackGroup> readLanguagePackTask;
         public SystemLanguage SystemLanguage { get; private set; }
 
-        public static LocalizationController Instance
-        {
-            get { return singleton.GetInstance(); }
-        }
-
         private void Awake()
         {
-            singleton.SetInstance(this);
             languagePackReader = new LanguagePackReader();
             SystemLanguage = Application.systemLanguage;
         }
@@ -53,28 +46,23 @@ namespace JiongXiaGu.Unity.Localizations
             }
         }
 
-        private void OnDestroy()
-        {
-            singleton.RemoveInstance(this);
-        }
-
-        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
-        {
-            readLanguagePackTask = ReadLanguagePack(token);
-            var waitReadedTask = readLanguagePackTask.ContinueWith(delegate (Task task)
-            {
-                if (task.IsFaulted)
-                {
-                    throw task.Exception;
-                }
-                while (readLanguagePackTask != null)
-                {
-                    token.ThrowIfCancellationRequested();
-                }
-                InitializerHelper.LogComplete(InitializerName, GetInfoLog());
-            });
-            return waitReadedTask;
-        }
+        //Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
+        //{
+        //    readLanguagePackTask = ReadLanguagePack(token);
+        //    var waitReadedTask = readLanguagePackTask.ContinueWith(delegate (Task task)
+        //    {
+        //        if (task.IsFaulted)
+        //        {
+        //            throw task.Exception;
+        //        }
+        //        while (readLanguagePackTask != null)
+        //        {
+        //            token.ThrowIfCancellationRequested();
+        //        }
+        //        InitializerHelper.LogComplete(InitializerName, GetInfoLog());
+        //    });
+        //    return waitReadedTask;
+        //}
 
         private string GetInfoLog()
         {
