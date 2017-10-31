@@ -1,9 +1,9 @@
 ﻿namespace JiongXiaGu.Unity.GameConsoles
 {
     /// <summary>
-    /// 控制台条目类型;
+    /// 控制台事件类型;
     /// </summary>
-    public enum ConsoleItemTypes
+    public enum ConsoleEventType
     {
         /// <summary>
         /// 正常消息;
@@ -26,7 +26,7 @@
         Error,
 
         /// <summary>
-        /// 方法字段;
+        /// 执行对应方法;
         /// </summary>
         Method,
     }

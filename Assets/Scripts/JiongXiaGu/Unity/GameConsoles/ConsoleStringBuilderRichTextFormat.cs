@@ -3,11 +3,12 @@ using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
+
     /// <summary>
     /// 使用"RichText(富文本)"控制输出格式;
     /// </summary>
     [Serializable]
-    public class ConsoleRecordRichTextFormat : ConsoleRecordFormat
+    public class ConsoleStringBuilderRichTextFormat : ConsoleStringBuilderFormat
     {
         public Color NormalColor = Color.black;
         public Color SuccessfulColor = Color.green;

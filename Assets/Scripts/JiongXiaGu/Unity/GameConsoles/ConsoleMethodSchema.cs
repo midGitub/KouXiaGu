@@ -1,10 +1,5 @@
-﻿using System.Linq;
-using System;
-using System.Collections.Generic;
-using System.Collections;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Threading;
-using System.Diagnostics;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
@@ -49,7 +44,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         }
 
         /// <summary>
-        /// 尝试添加控制台方法,若已经存在则返回异常;
+        /// 尝试添加控制台方法;
         /// </summary>
         public bool TryAdd(ConsoleMethod consoleMethod)
         {

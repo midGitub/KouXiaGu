@@ -3,7 +3,7 @@
     /// <summary>
     /// 格式输出控制;
     /// </summary>
-    public class ConsoleRecordFormat
+    public class ConsoleStringBuilderFormat
     {
         public virtual string GetNormalFormat(string message)
         {

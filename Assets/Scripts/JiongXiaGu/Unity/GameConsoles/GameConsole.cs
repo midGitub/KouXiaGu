@@ -1,10 +1,5 @@
-﻿using JiongXiaGu.Unity.Initializers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
@@ -15,17 +10,64 @@ namespace JiongXiaGu.Unity.GameConsoles
     public static class GameConsole
     {
         /// <summary>
+        /// 异步锁;
+        /// </summary>
+        private static readonly object asyncLock = new object();
+
+        /// <summary>
+        /// 控制台事件观察者合集;
+        /// </summary>
+        private static readonly ObserverCollection<ConsoleEvent> observerCollection = new ObserverList<ConsoleEvent>();
+
+        /// <summary>
         /// 控制台方法合集;
         /// </summary>
-        public static ConsoleMethodSchema MethodSchema { get; internal set; }
-        public static ConsoleItemRecorder Recorder { get; internal set; }
+        public static ConsoleMethodSchema MethodSchema { get; private set; } = new ConsoleMethodSchema();
+
+        /// <summary>
+        /// 订阅控制台事件;
+        /// </summary>
+        public static IDisposable Subscribe(IObserver<ConsoleEvent> observer)
+        {
+            lock (asyncLock)
+            {
+                return observerCollection.Add(observer);
+            }
+        }
+
+        /// <summary>
+        /// 取消订阅;
+        /// </summary>
+        public static bool Unsubscribe(IObserver<ConsoleEvent> observer)
+        {
+            lock (asyncLock)
+            {
+                return observerCollection.Remove(observer);
+            }
+        }
+
+        /// <summary>
+        /// 通知观察者;
+        /// </summary>
+        private static void NotifyNext(ConsoleEvent consoleEvent)
+        {
+            lock (asyncLock)
+            {
+                observerCollection.NotifyNext(consoleEvent);
+            }
+        }
 
         /// <summary>
         /// 记录标准条目;
         /// </summary>
         public static void Write(string message)
         {
-            Recorder.Write(message);
+            ConsoleEvent consoleEvent = new ConsoleEvent()
+            {
+                EventType = ConsoleEventType.Normal,
+                Message = message,
+            };
+            NotifyNext(consoleEvent);
         }
 
         /// <summary>
@@ -50,7 +92,12 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         public static void WriteSuccessful(string message)
         {
-            Recorder.WriteSuccessful(message);
+            ConsoleEvent consoleEvent = new ConsoleEvent()
+            {
+                EventType = ConsoleEventType.Successful,
+                Message = message,
+            };
+            NotifyNext(consoleEvent);
         }
 
         /// <summary>
@@ -75,7 +122,12 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         public static void WriteWarning(string message)
         {
-            Recorder.WriteWarning(message);
+            ConsoleEvent consoleEvent = new ConsoleEvent()
+            {
+                EventType = ConsoleEventType.Warning,
+                Message = message,
+            };
+            NotifyNext(consoleEvent);
         }
 
         /// <summary>
@@ -100,7 +152,12 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         public static void WriteError(string message)
         {
-            Recorder.WriteError(message);
+            ConsoleEvent consoleEvent = new ConsoleEvent()
+            {
+                EventType = ConsoleEventType.Error,
+                Message = message,
+            };
+            NotifyNext(consoleEvent);
         }
 
         /// <summary>
@@ -147,7 +204,13 @@ namespace JiongXiaGu.Unity.GameConsoles
                 ConsoleMethod consoleMethod;
                 if (MethodSchema.TryGetMethod(methodName, 0, out consoleMethod))
                 {
-                    Recorder.WriteMethod(message);
+                    ConsoleEvent consoleEvent = new ConsoleEvent()
+                    {
+                        EventType = ConsoleEventType.Method,
+                        Message = message,
+                    };
+                    NotifyNext(consoleEvent);
+
                     consoleMethod.Invoke(null);
                 }
                 else
@@ -160,11 +223,19 @@ namespace JiongXiaGu.Unity.GameConsoles
                 var methodName = valueArray[0];
                 int parameterCount = valueArray.Length - 1;
                 ConsoleMethod consoleMethod;
+
                 if (MethodSchema.TryGetMethod(methodName, parameterCount, out consoleMethod))
                 {
                     string[] parameters = new string[parameterCount];
                     Array.Copy(valueArray, 1, parameters, 0, parameterCount);
-                    Recorder.WriteMethod(message);
+
+                    ConsoleEvent consoleEvent = new ConsoleEvent()
+                    {
+                        EventType = ConsoleEventType.Method,
+                        Message = message,
+                    };
+                    NotifyNext(consoleEvent);
+
                     consoleMethod.Invoke(parameters);
                 }
                 else

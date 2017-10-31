@@ -16,12 +16,11 @@ namespace JiongXiaGu.Unity.GameConsoles
     internal sealed class ConsoleController : MonoBehaviour
     {
         [SerializeField]
-        private ConsoleRecordRichTextFormat format;
+        private ConsoleStringBuilderRichTextFormat format;
 
         public void Initialize()
         {
-            GameConsole.MethodSchema = new ConsoleMethodSchema();
-            GameConsole.Recorder = new ConsoleItemRecorder(new StringBuilder(), format);
+            //GameConsole.MethodSchema = new ConsoleMethodSchema();
             //initializer.RuntimeReflection.ReflectionHandlers.Add(ConsoleMethodReflection.Default);
         }
 

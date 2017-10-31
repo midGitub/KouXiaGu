@@ -133,6 +133,9 @@ namespace JiongXiaGu
         /// </summary>
         public void NotifyNext(T value, Action<IObserver<T>, Exception> onError)
         {
+            if (onError == null)
+                throw new ArgumentNullException(nameof(onError));
+
             foreach (var observer in EnumerateObserver())
             {
                 try
@@ -170,6 +173,9 @@ namespace JiongXiaGu
         /// </summary>
         public void NotifyError(Exception ex, Action<IObserver<T>, Exception> onError)
         {
+            if (onError == null)
+                throw new ArgumentNullException(nameof(onError));
+
             foreach (var observer in EnumerateObserver())
             {
                 try
@@ -207,6 +213,9 @@ namespace JiongXiaGu
         /// </summary>
         public void NotifyCompleted(Action<IObserver<T>, Exception> onError)
         {
+            if (onError == null)
+                throw new ArgumentNullException(nameof(onError));
+
             foreach (var observer in EnumerateObserver())
             {
                 try
