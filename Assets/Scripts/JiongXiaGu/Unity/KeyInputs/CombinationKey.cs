@@ -13,13 +13,15 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// <summary>
     /// KeyCode 类型的组合键;
     /// </summary>
+    [Serializable]
     [XmlRoot("CombinationKey")]
     public struct CombinationKey : IEquatable<CombinationKey>, IXmlSerializable
     {
         /// <summary>
         /// 组合按键合集;
         /// </summary>
-        List<KeyCode> keys;
+        [SerializeField]
+        private List<KeyCode> keys;
 
         public IEnumerable<KeyCode> Keys
         {
@@ -40,15 +42,42 @@ namespace JiongXiaGu.Unity.KeyInputs
         {
         }
 
-        public CombinationKey(CombinationKey combinationKey)
+        XmlSchema IXmlSerializable.GetSchema()
         {
-            keys = new List<KeyCode>(combinationKey.keys);
+            return null;
+        }
+
+        private const string Key_Separator = ", ";
+        private static readonly string[] Key_SeparatorArray = new string[]
+            {
+                ","
+            };
+
+        void IXmlSerializable.ReadXml(XmlReader reader)
+        {
+            string keyNameString = reader.ReadElementContentAsString();
+            if (!string.IsNullOrEmpty(keyNameString))
+            {
+                string[] keyNames = keyNameString.Split(Key_SeparatorArray, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var keyName in keyNames)
+                {
+                    KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), keyName, true);
+                    AddKey(keyCode);
+                }
+                Normalize();
+            }
+        }
+
+        void IXmlSerializable.WriteXml(XmlWriter writer)
+        {
+            string value = string.Join(Key_Separator, keys);
+            writer.WriteValue(value);
         }
 
         /// <summary>
         /// 添加按键;
         /// </summary>
-        void AddKey(KeyCode key)
+        private void AddKey(KeyCode key)
         {
             if (key != KeyCode.None)
             {
@@ -85,7 +114,6 @@ namespace JiongXiaGu.Unity.KeyInputs
                     break;
                 }
             }
-            keys.Capacity = keys.Count;
         }
 
         public override string ToString()
@@ -116,38 +144,6 @@ namespace JiongXiaGu.Unity.KeyInputs
         public bool Equals(CombinationKey other)
         {
             return keys.IsSameContent(other.keys);
-        }
-
-        XmlSchema IXmlSerializable.GetSchema()
-        {
-            return null;
-        }
-
-        const string Key_Separator = ", ";
-        static readonly string[] Key_SeparatorArray = new string[]
-            {
-                ","
-            };
-
-        void IXmlSerializable.ReadXml(XmlReader reader)
-        {
-            string keyNameString = reader.ReadElementContentAsString();
-            if (!string.IsNullOrEmpty(keyNameString))
-            {
-                string[] keyNames = keyNameString.Split(Key_SeparatorArray, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var keyName in keyNames)
-                {
-                    KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), keyName, true);
-                    AddKey(keyCode);
-                }
-                Normalize();
-            }
-        }
-
-        void IXmlSerializable.WriteXml(XmlWriter writer)
-        {
-            string value = string.Join(Key_Separator, keys);
-            writer.WriteValue(value);
         }
 
         public static bool operator ==(CombinationKey v1, CombinationKey v2)

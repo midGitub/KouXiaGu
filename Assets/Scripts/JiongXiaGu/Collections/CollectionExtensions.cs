@@ -151,16 +151,16 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 移除范围内条件相匹配的所有元素;
         /// </summary>
-        /// <param name="startIndex">开始移除的下标</param>
+        /// <param name="startIndex">包含此下标的开始下标</param>
         /// <param name="match">返回ture则移除</param>
         public static void RemoveAll<T>(this IList<T> list, int startIndex, Func<T, bool> match)
         {
             if (list == null)
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             if (match == null)
-                throw new ArgumentNullException("match");
+                throw new ArgumentNullException(nameof(match));
             if (startIndex < 0 || startIndex >= list.Count)
-                throw new ArgumentOutOfRangeException("startIndex");
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
 
             int index = startIndex;
             while (index < list.Count)

@@ -14,7 +14,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 文本字典;
         /// </summary>
-        public ILanguageDictionary LanguageDictionary { get; set; }
+        public IReadOnlyLanguageDictionary LanguageDictionary { get; set; }
     }
 
     /// <summary>
@@ -23,6 +23,11 @@ namespace JiongXiaGu.Unity.Localizations
     public static class Localization
     {
         private static readonly object asyncLock = new object();
+
+        /// <summary>
+        /// 所有可用的语言包文件;
+        /// </summary>
+        public static List<LanguagePackFileInfo> AvailableLanguagePackFiles { get; private set; }
 
         /// <summary>
         /// 语言包合集;
@@ -37,7 +42,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 当前使用的文本字典;(若不存在则为Null)
         /// </summary>
-        public static ILanguageDictionary Dictionary
+        public static IReadOnlyLanguageDictionary Dictionary
         {
             get { return LanguagePackGroup; }
         }

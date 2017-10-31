@@ -31,9 +31,7 @@ namespace JiongXiaGu.Unity.KeyInputs
         [System.Diagnostics.Conditional("EDITOR_LOG")]
         private void OnInitializeCompleted()
         {
-            const string log = "[按键映射组件]初始化完成;\n";
-            string Info = GetInfoLog();
-            Debug.Log(log + Info);
+            EditorHelper.LogComplete("按键映射组件", GetInfoLog());
         }
 
         private string GetInfoLog()

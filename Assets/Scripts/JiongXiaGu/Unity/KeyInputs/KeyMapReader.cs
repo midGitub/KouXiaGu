@@ -1,7 +1,5 @@
 ﻿using System;
 using JiongXiaGu.Collections;
-using JiongXiaGu.Unity.Resources;
-using System.IO;
 using System.Linq;
 
 namespace JiongXiaGu.Unity.KeyInputs
@@ -46,7 +44,7 @@ namespace JiongXiaGu.Unity.KeyInputs
         /// <summary>
         /// 合并两个信息,若定义的按键存在重复的Name,则只保留最后一个信息;
         /// </summary>
-        KeyMap Combine(KeyInfo[] defaultKeys, KeyInfo[] userKeys)
+        private KeyMap Combine(KeyInfo[] defaultKeys, KeyInfo[] userKeys)
         {
             var dictionary = new KeyMap();
 
@@ -70,42 +68,6 @@ namespace JiongXiaGu.Unity.KeyInputs
         {
             var keyInfos = keyMap.ToArray(pair => new KeyInfo(pair.Key, pair.Value));
             UserKeyConfigReader.Write(keyInfos);
-        }
-    }
-
-    /// <summary>
-    /// 默认按键配置文件读写器;
-    /// </summary>
-    public class DefaultKeyConfigReader : ConfigFileReader<KeyInfo[]>
-    {
-        const string ConfigFileName = "Configs/KeyboardInput";
-
-        public DefaultKeyConfigReader() : base(new XmlSerializer<KeyInfo[]>())
-        {
-        }
-
-        public override string GetFilePathWithoutExtension()
-        {
-            string path = Path.Combine(Resource.CoreDirectory, ConfigFileName);
-            return path;
-        }
-    }
-
-    /// <summary>
-    /// 用户按键配置文件读写器;
-    /// </summary>
-    public class UserKeyConfigReader : ConfigFileReader<KeyInfo[]>
-    {
-        const string ConfigFileName = "Configs/KeyboardInput";
-
-        public UserKeyConfigReader() : base(new XmlSerializer<KeyInfo[]>())
-        {
-        }
-
-        public override string GetFilePathWithoutExtension()
-        {
-            string path = Path.Combine(Resource.UserConfigDirectory, ConfigFileName);
-            return path;
         }
     }
 }

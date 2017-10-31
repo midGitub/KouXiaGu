@@ -3,7 +3,7 @@
     /// <summary>
     /// 语言字典;
     /// </summary>
-    public interface ILanguageDictionary
+    public interface IReadOnlyLanguageDictionary
     {
         /// <summary>
         /// 语言类型;

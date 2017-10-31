@@ -10,7 +10,6 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 初始化接口;
     /// </summary>
-    [Obsolete]
     public interface IGameComponentInitializeHandle
     {
         /// <summary>
@@ -20,18 +19,17 @@ namespace JiongXiaGu.Unity.Initializers
     }
 
     /// <summary>
-    /// 游戏程序初始化(仅初始化一次,若初始化失败意味着游戏无法运行);
+    /// 游戏组件初始化(仅初始化一次,若初始化失败意味着游戏无法运行);
     /// </summary>
     [DisallowMultipleComponent]
-    [Obsolete]
     internal sealed class GameComponentInitializer : MonoBehaviour
     {
         private static readonly GlobalSingleton<GameComponentInitializer> singleton = new GlobalSingleton<GameComponentInitializer>();
 
         private const string InitializerName = "游戏组件初始化";
         private IGameComponentInitializeHandle[] initializeHandles;
-        internal Task InitializeTask { get; private set; }
-        internal CancellationTokenSource InitializeCancellation { get; private set; }
+        public Task InitializeTask { get; private set; }
+        public CancellationTokenSource InitializeCancellation { get; private set; }
 
         public static GameComponentInitializer Instance
         {
@@ -40,17 +38,15 @@ namespace JiongXiaGu.Unity.Initializers
 
         private void Awake()
         {
-            try
-            {
-                singleton.SetInstance(this);
-                initializeHandles = GetComponentsInChildren<IGameComponentInitializeHandle>();
-                InitializeCancellation = new CancellationTokenSource();
-                InitializeTask = Task.Run((Action)Initialize);
-            }
-            catch (Exception ex)
-            {
-                OnFaulted(ex);
-            }
+            singleton.SetInstance(this);
+            initializeHandles = GetComponentsInChildren<IGameComponentInitializeHandle>();
+            InitializeCancellation = new CancellationTokenSource();
+            InitializeTask = new Task(Initialize, InitializeCancellation.Token);
+        }
+
+        private void Start()
+        {
+            InitializeTask.Start();
         }
 
         private void OnDestroy()
