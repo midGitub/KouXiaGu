@@ -111,10 +111,10 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
             }
             else
             {
-                string fault = faults.ToLog(delegate (Request request)
+                string fault = faults.ToText(delegate (Request request)
                 {
                     return request.Exception.ToString();
-                });
+                }).ToString();
                 UnityEngine.Debug.Log(prefix + "初始化完成;" + GetRectTerrainResourcesInfo() + "异常:" + fault);
             }
         }

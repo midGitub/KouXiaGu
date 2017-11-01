@@ -23,20 +23,6 @@ namespace JiongXiaGu.Unity.GameConsoles
         private Func<bool> prerequisite;
 
         /// <summary>
-        /// 构造函数;
-        /// </summary>
-        /// <param name="description">方法描述</param>
-        /// <param name="prerequisite">前提,为null,则代表不存在前提</param>
-        public ConsoleMethod(ConsoleMethodDesc description, Func<bool> prerequisite)
-        {
-            if (string.IsNullOrWhiteSpace(description.FullName))
-                throw new ArgumentException(nameof(description.FullName));
-
-            Description = description;
-            this.prerequisite = prerequisite;
-        }
-
-        /// <summary>
         /// 参数数量;
         /// </summary>
         public abstract int ParameterCount { get; }
@@ -55,6 +41,22 @@ namespace JiongXiaGu.Unity.GameConsoles
         public string Message
         {
             get { return Description.Message; }
+        }
+
+        /// <summary>
+        /// 构造函数;
+        /// </summary>
+        /// <param name="description">方法描述</param>
+        /// <param name="prerequisite">前提,为null,则代表不存在前提</param>
+        private ConsoleMethod(ConsoleMethodDesc description, Func<bool> prerequisite)
+        {
+            if (string.IsNullOrWhiteSpace(description.FullName))
+                throw new ArgumentException(nameof(description.FullName));
+            if (prerequisite == null)
+                throw new ArgumentNullException(nameof(prerequisite));
+
+            Description = description;
+            this.prerequisite = prerequisite;
         }
 
         /// <summary>

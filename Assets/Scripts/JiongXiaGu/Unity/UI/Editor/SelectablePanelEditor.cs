@@ -23,7 +23,7 @@ namespace JiongXiaGu.UI
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            string log = SelectablePanel.Stack.ToLog();
+            string log = SelectablePanel.Stack.ToText().ToString();
             EditorGUILayout.LabelField(log);
         }
     }

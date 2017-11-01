@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
@@ -15,9 +16,10 @@ namespace JiongXiaGu.Unity.GameConsoles
     {
 
         [ConsoleMethod("Help", Message = "显示帮助")]
-        private static void Help()
+        public static void Help()
         {
 
         }
     }
+
 }

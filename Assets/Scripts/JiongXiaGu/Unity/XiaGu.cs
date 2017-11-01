@@ -60,14 +60,14 @@ namespace JiongXiaGu.Unity
 
 
 
-        [GameConsoles.ConsoleMethod("developer", Message = "开发者模式开关", ParameterDes = new string[] { "bool" })]
+        [ConsoleMethod("developer", Message = "开发者模式开关", ParameterDes = new string[] { "bool" })]
         public static void Developer(string isDeveloperMode)
         {
             IsDeveloperMode = Convert.ToBoolean(isDeveloperMode);
             Developer();
         }
 
-        [GameConsoles.ConsoleMethod("developer", Message = "显示是否为开发者模式")]
+        [ConsoleMethod("developer", Message = "显示是否为开发者模式")]
         public static void Developer()
         {
             GameConsole.Write("DeveloperMode :" + IsDeveloperMode);

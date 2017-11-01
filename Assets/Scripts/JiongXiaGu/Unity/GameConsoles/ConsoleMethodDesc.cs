@@ -22,13 +22,13 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 参数描述;
         /// </summary>
-        public ParameterDescCollection Parameters { get; set; }
+        public ParametersDesc Parameters { get; set; }
     }
 
     /// <summary>
     /// 参数描述合集;
     /// </summary>
-    public struct ParameterDescCollection
+    public class ParametersDesc
     {
         private List<ParameterDesc> parameterDescs;
 
@@ -40,7 +40,12 @@ namespace JiongXiaGu.Unity.GameConsoles
             get { return parameterDescs; }
         }
 
-        public ParameterDescCollection(IEnumerable<ParameterDesc> parameters)
+        public ParametersDesc()
+        {
+            parameterDescs = new List<ParameterDesc>();
+        }
+
+        public ParametersDesc(IEnumerable<ParameterDesc> parameters)
         {
             parameterDescs = new List<ParameterDesc>(parameters);
         }
@@ -48,12 +53,8 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 添加描述到下一个参数;
         /// </summary>
-        public void Add(ParameterDesc desc)
+        private void Add(ParameterDesc desc)
         {
-            if (parameterDescs == null)
-            {
-                parameterDescs = new List<ParameterDesc>();
-            }
             parameterDescs.Add(desc);
         }
 
@@ -62,22 +63,18 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         /// <param name="type">参数类型</param>
         /// <param name="message">参数描述</param>
-        public void Add(string type, string message)
+        private void Add(string type, string message)
         {
-            if (parameterDescs == null)
-            {
-                parameterDescs = new List<ParameterDesc>();
-            }
             ParameterDesc desc = new ParameterDesc(type, message);
             parameterDescs.Add(desc);
         }
 
         /// <summary>
-        /// 转换类型;
+        /// 转换类型;合集格式为:[方法1类型, 方法1消息, 方法2类型, 方法2消息, ....]
         /// </summary>
-        internal static ParameterDescCollection Convert(IReadOnlyList<string> desc)
+        internal static ParametersDesc Convert(IReadOnlyList<string> desc)
         {
-            ParameterDescCollection collection = new ParameterDescCollection();
+            ParametersDesc collection = new ParametersDesc();
             if (desc != null)
             {
                 for (int i = 0; i < desc.Count; i++)

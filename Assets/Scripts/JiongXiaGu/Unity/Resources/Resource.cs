@@ -13,35 +13,32 @@ namespace JiongXiaGu.Unity.Resources
     [ConsoleMethodClass]
     public static class Resource
     {
-        private static bool isInitialized = false;
+        private static ModInfo coreDirectoryInfo;
+        private static DirectoryInfo userConfigDirectoryInfo;
+        private static DirectoryInfo archivesDirectoryInfo;
 
         /// <summary>
         /// 核心数据和配置文件的文件夹;
         /// </summary>
-        public static ModInfo CoreDirectoryInfo { get; private set; }
+        public static ModInfo CoreDirectoryInfo
+        {
+            get { return coreDirectoryInfo ?? (coreDirectoryInfo = GetCoreDirectoryInfo()); }
+        }
 
         /// <summary>
         /// 用于存放用户配置文件的文件夹;
         /// </summary>
-        public static DirectoryInfo UserConfigDirectoryInfo { get; private set; }
+        public static DirectoryInfo UserConfigDirectoryInfo
+        {
+            get { return userConfigDirectoryInfo ?? (userConfigDirectoryInfo = GetUserConfigDirectoryInfo()); }
+        }
 
         /// <summary>
         /// 存放存档的文件夹路径;
         /// </summary>
-        public static DirectoryInfo ArchivesDirectoryInfo { get; private set; }
-
-        /// <summary>
-        /// 在游戏开始时初始化;
-        /// </summary>
-        internal static void Initialize()
+        public static DirectoryInfo ArchivesDirectoryInfo
         {
-            if (!isInitialized)
-            {
-                CoreDirectoryInfo = ReadCoreDirectoryInfo();
-                UserConfigDirectoryInfo = ReadUserConfigDirectoryInfo();
-                ArchivesDirectoryInfo = ReadArchivesDirectoryInfo();
-                isInitialized = true;
-            }
+            get { return archivesDirectoryInfo ?? (archivesDirectoryInfo = GetArchivesDirectoryInfo()); }
         }
 
         /// <summary>
@@ -69,9 +66,24 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
+        /// 在游戏开始时初始化;
+        /// </summary>
+        internal static void Initialize()
+        {
+            if (coreDirectoryInfo == null)
+                coreDirectoryInfo = GetCoreDirectoryInfo();
+
+            if (userConfigDirectoryInfo == null)
+                userConfigDirectoryInfo = GetUserConfigDirectoryInfo();
+
+            if (archivesDirectoryInfo == null)
+                archivesDirectoryInfo = GetArchivesDirectoryInfo();
+        }
+
+        /// <summary>
         /// 获取到核心数据和配置文件的文件夹;
         /// </summary>
-        public static ModInfo ReadCoreDirectoryInfo()
+        public static ModInfo GetCoreDirectoryInfo()
         {
             string directory = Application.streamingAssetsPath;
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
@@ -80,7 +92,7 @@ namespace JiongXiaGu.Unity.Resources
             return dataDirectoryInfo;
         }
 
-        public static DirectoryInfo ReadUserConfigDirectoryInfo()
+        public static DirectoryInfo GetUserConfigDirectoryInfo()
         {
             string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.productName);
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
@@ -88,12 +100,12 @@ namespace JiongXiaGu.Unity.Resources
             return directoryInfo;
         }
 
-        public static DirectoryInfo ReadArchivesDirectoryInfo()
+        public static DirectoryInfo GetArchivesDirectoryInfo()
         {
             var userConfigDirectory = UserConfigDirectory;
             if (userConfigDirectory == null)
             {
-                userConfigDirectory = ReadUserConfigDirectoryInfo().FullName;
+                userConfigDirectory = GetUserConfigDirectoryInfo().FullName;
             }
 
             string directory = Path.Combine(userConfigDirectory, "Saves");
@@ -103,7 +115,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-        [GameConsoles.ConsoleMethod("log_resource_path_info", Message = "显示所有资源路径")]
+        [ConsoleMethod("log_resource_path_info", Message = "显示所有资源路径")]
         public static void LogInfoAll()
         {
             string str =
