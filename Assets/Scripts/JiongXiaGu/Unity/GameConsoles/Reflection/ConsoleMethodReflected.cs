@@ -64,7 +64,18 @@ namespace JiongXiaGu.Unity.GameConsoles
 
         public override string ToString()
         {
-            return base.ToString();
+            if (IsCompleted)
+            {
+                if (!IsFaulted)
+                {
+                    return string.Format("[Completed:Name:{0}]", ConsoleMethod.Name);
+                }
+                else
+                {
+                    return string.Format("[Faulted:DeclaringType:{0}, MethodInfo:{1}, Exception:{2}]", MethodInfo.DeclaringType.Name, MethodInfo.Name, Exception);
+                }
+            }
+            return "[NotCompleted]";
         }
     }
 }

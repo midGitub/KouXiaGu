@@ -21,23 +21,34 @@ namespace JiongXiaGu.Unity.GameConsoles
             return Task.Run(delegate ()
             {
                 ConsoleMethodReflector reflector = new ConsoleMethodReflector();
-                var consoleMethods = reflector.Search(typeof(GameConsoleController).Assembly);
+                var consoleMethodStates = reflector.Search(typeof(GameConsoleController).Assembly);
+                List<ConsoleMethodReflected> faultList = new List<ConsoleMethodReflected>();
 
-                foreach (var consoleMethod in consoleMethods)
+                foreach (var consoleMethodState in consoleMethodStates)
                 {
-                    Debug.Log(consoleMethod.MethodInfo.Name);
+                    if (consoleMethodState.IsFaulted)
+                    {
+                        faultList.Add(consoleMethodState);
+                    }
+                    else
+                    {
+                        if (!GameConsole.MethodSchema.TryAdd(consoleMethodState.ConsoleMethod))
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
                 }
 
-                OnComplete();
+                OnComplete(faultList);
             });
         }
 
-        private void OnComplete()
+        private void OnComplete(List<ConsoleMethodReflected> faultList)
         {
-            EditorHelper.LogComplete("控制台", GetConsoleInfo);
+            EditorHelper.LogComplete("控制台",() => GetConsoleInfo(faultList));
         }
 
-        public string GetConsoleInfo()
+        public string GetConsoleInfo(List<ConsoleMethodReflected> faultList)
         {
             string info = string.Format("方法总数:{0}", GameConsole.MethodSchema.Count);
             return info;

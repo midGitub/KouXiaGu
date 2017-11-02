@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 完全名,如 ConsoleMethod.Info.Run ;
         /// </summary>
-        public string FullName { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 预留消息;
@@ -77,9 +77,15 @@ namespace JiongXiaGu.Unity.GameConsoles
             ParametersDesc collection = new ParametersDesc();
             if (desc != null)
             {
-                for (int i = 0; i < desc.Count; i++)
+                for (int i = 0; i < desc.Count; i += 2)
                 {
-                    collection.Add(desc[i * 2], desc[i * 2 + 1]);
+                    int typeIndex = i * 2;
+                    string typeString = desc[typeIndex];
+
+                    int messageIndex = i * 2 + 1;
+                    string messageSrting = messageIndex < desc.Count ? desc[messageIndex] : string.Empty;
+
+                    collection.Add(typeString, messageSrting);
                 }
             }
             return collection;

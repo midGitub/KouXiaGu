@@ -32,7 +32,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         private string GetKey(ConsoleMethod method)
         {
-            return GetKey(method.FullName, method.ParameterCount);
+            return GetKey(method.Name, method.ParameterCount);
         }
 
         /// <summary>

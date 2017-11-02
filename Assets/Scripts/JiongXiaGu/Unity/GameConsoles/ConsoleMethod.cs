@@ -30,9 +30,9 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 完全名,如 ConsoleMethod.Info.Run ;
         /// </summary>
-        public string FullName
+        public string Name
         {
-            get { return Description.FullName; }
+            get { return Description.Name; }
         }
 
         /// <summary>
@@ -50,11 +50,6 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <param name="prerequisite">前提,为null,则代表不存在前提</param>
         private ConsoleMethod(ConsoleMethodDesc description, Func<bool> prerequisite)
         {
-            if (string.IsNullOrWhiteSpace(description.FullName))
-                throw new ArgumentException(nameof(description.FullName));
-            if (prerequisite == null)
-                throw new ArgumentNullException(nameof(prerequisite));
-
             Description = description;
             this.prerequisite = prerequisite;
         }
@@ -149,7 +144,7 @@ namespace JiongXiaGu.Unity.GameConsoles
                     return Create(method6, description, prerequisite);
 
                 default:
-                    throw new NotImplementedException(string.Format("还未支持方法参数数目为 {0}的方法;", parameterInfos.Length));
+                    throw new NotImplementedException(string.Format("还未支持方法参数数目为 {0} 的方法;", parameterInfos.Length));
             }
         }
 
