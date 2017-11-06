@@ -5,7 +5,7 @@ namespace JiongXiaGu.Unity
 {
 
     /// <summary>
-    /// 非继承形式的Unity单例;
+    /// 非继承形式的Unity单例(线程安全);
     /// </summary>
     public abstract class UnitySingleton<T>
         where T : MonoBehaviour
@@ -103,7 +103,7 @@ namespace JiongXiaGu.Unity
     }
 
     /// <summary>
-    /// 挂载在场景控制器的单例;
+    /// 挂载在场景控制器的单例(线程安全);
     /// </summary>
     public class SceneSingleton<T> : UnitySingleton<T>
          where T : MonoBehaviour
@@ -118,7 +118,7 @@ namespace JiongXiaGu.Unity
     }
 
     /// <summary>
-    /// 挂载在全局控制器的单例;
+    /// 挂载在全局控制器的单例(线程安全);
     /// </summary>
     public class GlobalSingleton<T> : UnitySingleton<T>
         where T : MonoBehaviour

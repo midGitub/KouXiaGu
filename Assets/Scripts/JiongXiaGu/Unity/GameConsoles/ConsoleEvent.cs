@@ -5,12 +5,6 @@
     /// </summary>
     public struct ConsoleEvent
     {
-        public ConsoleEvent(ConsoleEventType type, string message)
-        {
-            EventType = type;
-            Message = message;
-        }
-
         /// <summary>
         /// 事件类型;
         /// </summary>
@@ -20,5 +14,17 @@
         /// 消息;
         /// </summary>
         public string Message { get; set; }
+
+        public ConsoleEvent(ConsoleEventType type, string message)
+        {
+            EventType = type;
+            Message = message;
+        }
+
+        public ConsoleEvent(ConsoleEventType type, string format, params object[] args)
+        {
+            EventType = type;
+            Message = string.Format(format, args);
+        }
     }
 }

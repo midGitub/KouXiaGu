@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity
 {
@@ -7,6 +8,7 @@ namespace JiongXiaGu.Unity
     /// 场景单例;
     /// </summary>
     [DisallowMultipleComponent]
+    [Obsolete]
     public abstract class SceneSington<T> : MonoBehaviour
         where T : SceneSington<T>
     {

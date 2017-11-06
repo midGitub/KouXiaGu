@@ -86,9 +86,9 @@ namespace JiongXiaGu.UI
             {
                 return new SelectablePanelTitleStyleInfo()
                 {
-                    OnFocusColor = ColorExtensions.New(240, 80, 80),
-                    OnBlurColor = ColorExtensions.New(240, 120, 120),
-                    CloseImageColor = ColorExtensions.New(25, 25, 25, 255),
+                    OnFocusColor = ColorHelper.New(240, 80, 80),
+                    OnBlurColor = ColorHelper.New(240, 120, 120),
+                    CloseImageColor = ColorHelper.New(25, 25, 25, 255),
                 };
             }
         }

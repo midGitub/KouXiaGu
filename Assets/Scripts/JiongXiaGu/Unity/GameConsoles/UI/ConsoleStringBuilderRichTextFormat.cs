@@ -10,11 +10,11 @@ namespace JiongXiaGu.Unity.GameConsoles
     [Serializable]
     public class ConsoleStringBuilderRichTextFormat : ConsoleStringBuilderFormat
     {
-        public Color NormalColor = Color.black;
-        public Color SuccessfulColor = Color.green;
-        public Color WarningColor = Color.yellow;
-        public Color ErrorColor = Color.red;
-        public Color MethodColor = Color.blue;
+        public Color NormalColor = ColorHelper.HexToColor("#FFFFFFFF");
+        public Color SuccessfulColor = ColorHelper.HexToColor("#74FF00FF");
+        public Color WarningColor = ColorHelper.HexToColor("#FFE304FF");
+        public Color ErrorColor = ColorHelper.HexToColor("#FF3500FF");
+        public Color MethodColor = ColorHelper.HexToColor("#00B5FFFF");
 
         public override string GetNormalFormat(string message)
         {

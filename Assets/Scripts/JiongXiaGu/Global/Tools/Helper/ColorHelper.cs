@@ -8,9 +8,9 @@ namespace JiongXiaGu
 {
 
     /// <summary>
-    /// 十六位颜色表示拓展;
+    /// 颜色拓展;
     /// </summary>
-    public static class ColorExtensions
+    public static class ColorHelper
     {
 
         public static Color New(int r, int g, int b)
@@ -23,29 +23,45 @@ namespace JiongXiaGu
             return new Color(ToColorSingle(r), ToColorSingle(g), ToColorSingle(b), ToColorSingle(a));
         }
 
-
+        /// <summary>
+        /// 将十六进制颜色转换成颜色实例;
+        /// </summary>
+        /// <param name="hex">十六进制颜色文本,如"#FFFFFFFF"</param>
         public static Color HexToColor(string hex)
         {
-            if (!hex.StartsWith("#"))
-                throw new ArgumentException();
+            if (hex.Length == 9)
+            {
+                char[] charArray = hex.ToCharArray();
 
-            char[] charArray = hex.ToCharArray();
-            float r = HexStringToInt32(charArray, 1, 2).ToColorSingle();
-            float g = HexStringToInt32(charArray, 3, 2).ToColorSingle();
-            float b = HexStringToInt32(charArray, 5, 2).ToColorSingle();
-            float a = HexStringToInt32(charArray, 7, 2).ToColorSingle();
-            return new Color(r, g, b, a);
+                if (charArray[0] != '#')
+                {
+                    goto Exception;
+                }
+
+                float r = HexStringToInt32(charArray, 1, 2).ToColorSingle();
+                float g = HexStringToInt32(charArray, 3, 2).ToColorSingle();
+                float b = HexStringToInt32(charArray, 5, 2).ToColorSingle();
+                float a = HexStringToInt32(charArray, 7, 2).ToColorSingle();
+                return new Color(r, g, b, a);
+            }
+            else if (hex.Length == 8)
+            {
+                char[] charArray = hex.ToCharArray();
+                float r = HexStringToInt32(charArray, 0, 2).ToColorSingle();
+                float g = HexStringToInt32(charArray, 2, 2).ToColorSingle();
+                float b = HexStringToInt32(charArray, 4, 2).ToColorSingle();
+                float a = HexStringToInt32(charArray, 6, 2).ToColorSingle();
+                return new Color(r, g, b, a);
+            }
+
+            Exception:
+            throw new ArgumentException(string.Format("不是合法的十六进制颜色值:[{0}];", hex));
         }
 
-        static int HexStringToInt32(string hexStr)
-        {
-            return Convert.ToInt32(hexStr, 16);
-        }
-
-        static int HexStringToInt32(char[] charArray, int startIndex, int length)
+        private static int HexStringToInt32(char[] charArray, int startIndex, int length)
         {
             string hexStr = new string(charArray, startIndex, length);
-            return HexStringToInt32(hexStr);
+            return Convert.ToInt32(hexStr, 16);
         }
 
         /// <summary>

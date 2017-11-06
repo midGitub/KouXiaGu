@@ -178,6 +178,37 @@ namespace JiongXiaGu.Unity.GameConsoles
         }
 
         /// <summary>
+        /// 记录方法条目;
+        /// </summary>
+        public static void WriteMethod(string message)
+        {
+            ConsoleEvent consoleEvent = new ConsoleEvent()
+            {
+                EventType = ConsoleEventType.Method,
+                Message = message,
+            };
+            NotifyNext(consoleEvent);
+        }
+
+        /// <summary>
+        /// 记录方法条目;
+        /// </summary>
+        public static void WriteMethod(object message)
+        {
+            WriteMethod(message.ToString());
+        }
+
+        /// <summary>
+        /// 记录方法条目;
+        /// </summary>
+        public static void WriteMethod(string format, params object[] args)
+        {
+            string message = string.Format(format, args);
+            WriteMethod(message);
+        }
+
+
+        /// <summary>
         /// 输入的方法命令间隔符;
         /// </summary>
         private static readonly char[] methodSeparator = new char[] { ' ' };
@@ -193,6 +224,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
 
             string[] valueArray = message.Split(methodSeparator, StringSplitOptions.RemoveEmptyEntries);
+            var methodName = valueArray[0];
 
             if (valueArray.Length == 0)
             {
@@ -200,17 +232,9 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
             else if (valueArray.Length == 1)
             {
-                var methodName = valueArray[0];
                 ConsoleMethod consoleMethod;
                 if (MethodSchema.TryGetMethod(methodName, 0, out consoleMethod))
                 {
-                    ConsoleEvent consoleEvent = new ConsoleEvent()
-                    {
-                        EventType = ConsoleEventType.Method,
-                        Message = message,
-                    };
-                    NotifyNext(consoleEvent);
-
                     consoleMethod.Invoke(null);
                 }
                 else
@@ -220,7 +244,6 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
             else if (valueArray.Length > 1)
             {
-                var methodName = valueArray[0];
                 int parameterCount = valueArray.Length - 1;
                 ConsoleMethod consoleMethod;
 
@@ -228,13 +251,6 @@ namespace JiongXiaGu.Unity.GameConsoles
                 {
                     string[] parameters = new string[parameterCount];
                     Array.Copy(valueArray, 1, parameters, 0, parameterCount);
-
-                    ConsoleEvent consoleEvent = new ConsoleEvent()
-                    {
-                        EventType = ConsoleEventType.Method,
-                        Message = message,
-                    };
-                    NotifyNext(consoleEvent);
 
                     consoleMethod.Invoke(parameters);
                 }
@@ -255,7 +271,7 @@ namespace JiongXiaGu.Unity.GameConsoles
 
         private static void ThrowMethodNotFound(string methodName, int parameterCount)
         {
-            throw new KeyNotFoundException(string.Format("未找到方法:[{0}]参数总数:[{1}]", methodName, parameterCount));
+            throw new KeyNotFoundException(string.Format("未找到参数为[{1}],方法名为:[{0}]的方法", methodName, parameterCount));
         }
     }
 }
