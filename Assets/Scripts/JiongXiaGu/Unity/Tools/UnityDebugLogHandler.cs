@@ -20,10 +20,10 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 添加 观察者 到 Unity.Debug.unityLogger.logHandler(线程安全);
         /// </summary>
-        public static IDisposable Subscribe(IObserver<UnityDebugLogEvent> logHandler)
+        public static IDisposable Subscribe(IObserver<UnityDebugLogEvent> observer)
         {
-            if (logHandler == null)
-                throw new ArgumentNullException(nameof(logHandler));
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
 
             lock (asyncLock)
             {
@@ -32,7 +32,21 @@ namespace JiongXiaGu.Unity
                     defaultLogHandler = Debug.unityLogger.logHandler;
                     Debug.unityLogger.logHandler = new UnityDebugLogHandler();
                 }
-                return observers.Add(logHandler);
+                return observers.Add(observer);
+            }
+        }
+
+        /// <summary>
+        /// 移除观察者;(线程安全)
+        /// </summary>
+        public static bool Unsubscribe(IObserver<UnityDebugLogEvent> observer)
+        {
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
+
+            lock (asyncLock)
+            {
+                return observers.Remove(observer);
             }
         }
 

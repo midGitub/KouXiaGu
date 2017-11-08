@@ -22,33 +22,32 @@ namespace JiongXiaGu.Unity.GameConsoles
             {
                 ConsoleMethodReflector reflector = new ConsoleMethodReflector();
                 var consoleMethodStates = reflector.Search(typeof(GameConsoleController).Assembly);
-                List<ConsoleMethodReflected> faultList = new List<ConsoleMethodReflected>();
 
                 foreach (var consoleMethodState in consoleMethodStates)
                 {
                     if (consoleMethodState.IsFaulted)
                     {
-                        faultList.Add(consoleMethodState);
+                        Debug.LogError(string.Format("控制台方法[{0}]出现异常:[{1}]", consoleMethodState.MethodInfo.Name, consoleMethodState.Exception));
                     }
                     else
                     {
                         if (!GameConsole.MethodSchema.TryAdd(consoleMethodState.ConsoleMethod))
                         {
-                            throw new NotImplementedException();
+                            Debug.LogError(string.Format("控制台方法[{0}]发生重复;", consoleMethodState.ConsoleMethod.Name));
                         }
                     }
                 }
 
-                OnComplete(faultList);
+                OnComplete();
             });
         }
 
-        private void OnComplete(List<ConsoleMethodReflected> faultList)
+        private void OnComplete()
         {
-            EditorHelper.LogComplete("控制台",() => GetConsoleInfo(faultList));
+            EditorHelper.LogComplete("控制台",() => GetConsoleInfo());
         }
 
-        public string GetConsoleInfo(List<ConsoleMethodReflected> faultList)
+        public string GetConsoleInfo()
         {
             string info = string.Format("方法总数:{0}", GameConsole.MethodSchema.Count);
             return info;

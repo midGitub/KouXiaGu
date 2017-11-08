@@ -232,7 +232,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
             else if (valueArray.Length == 1)
             {
-                ConsoleMethod consoleMethod;
+                IConsoleMethod consoleMethod;
                 if (MethodSchema.TryGetMethod(methodName, 0, out consoleMethod))
                 {
                     consoleMethod.Invoke(null);
@@ -245,7 +245,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             else if (valueArray.Length > 1)
             {
                 int parameterCount = valueArray.Length - 1;
-                ConsoleMethod consoleMethod;
+                IConsoleMethod consoleMethod;
 
                 if (MethodSchema.TryGetMethod(methodName, parameterCount, out consoleMethod))
                 {

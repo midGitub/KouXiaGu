@@ -15,11 +15,79 @@ namespace JiongXiaGu.Unity.GameConsoles
     public class GameConsoleMethodExtensions
     {
 
-        [ConsoleMethod("Help", Message = "显示帮助")]
-        public static void Help()
+        [ConsoleMethod(nameof(ShowMethods), Message = "展示所有方法")]
+        public static void ShowMethods()
         {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.ConsoleMethods.Count);
+            stringBuilder.AppendLine();
 
+            foreach (var consoleMethod in GameConsole.MethodSchema.ConsoleMethods)
+            {
+                AddMethodString(stringBuilder, consoleMethod);
+                stringBuilder.AppendLine();
+            }
+
+            string message = stringBuilder.ToString();
+            GameConsole.Write(message);
+        }
+
+        [ConsoleMethod(nameof(ShowMethods), Message = "按条件展示方法", ParameterDes = new string[]
+            {
+                "bool", "是否仅展示可执行的方法?"
+            })]
+        public static void ShowMethods(string onlyActivated)
+        {
+            bool _onlyActivated = Convert.ToBoolean(onlyActivated);
+
+            if (!_onlyActivated)
+            {
+                ShowMethods();
+            }
+            else
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.ConsoleMethods.Count);
+                stringBuilder.AppendLine();
+
+                foreach (var consoleMethod in GameConsole.MethodSchema.ConsoleMethods)
+                {
+                    if (consoleMethod.Prerequisite())
+                    {
+                        AddMethodString(stringBuilder, consoleMethod);
+                        stringBuilder.AppendLine();
+                    }
+                }
+
+                string message = stringBuilder.ToString();
+                GameConsole.Write(message);
+            }
+        }
+
+        private static void AddMethodString(StringBuilder stringBuilder, IConsoleMethod consoleMethod)
+        {
+            ConsoleMethodDesc description = consoleMethod.Description;
+            if (description.Parameters.Count > 0)
+            {
+                stringBuilder.AppendFormat("MethodName : {0}", description.Name);
+                foreach (var parameter in description.Parameters)
+                {
+                    stringBuilder.Append(string.Format(" [{0}]", parameter.Type));
+                }
+
+                stringBuilder.AppendFormat(", Message : {0}, ParamCount : {1}", description.Message, description.Parameters.Count);
+
+                stringBuilder.Append(", ParamDesc : ");
+                for (int index = 0; index < description.Parameters.Count; index++)
+                {
+                    var parameter = description.Parameters[index];
+                    stringBuilder.AppendFormat("[{0}]({1}){2} ", index, parameter.Type, parameter.Message);
+                }
+            }
+            else
+            {
+                stringBuilder.AppendFormat("MethodName : {0}, Message : {1}, ParamCount : {2}", description.Name, description.Message, description.Parameters.Count);
+            }
         }
     }
-
 }

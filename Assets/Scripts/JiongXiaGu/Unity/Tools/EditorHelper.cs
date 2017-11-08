@@ -42,7 +42,7 @@ namespace JiongXiaGu.Unity
         [System.Diagnostics.Conditional("EDITOR_LOG")]
         public static void LogComplete(string initializerName, string message)
         {
-            Debug.Log(string.Format("[{0}]初始化完成;\n{1}", initializerName, message));
+            Debug.Log(string.Format("[{0}]初始化完成;[{1}]", initializerName, message));
         }
 
 

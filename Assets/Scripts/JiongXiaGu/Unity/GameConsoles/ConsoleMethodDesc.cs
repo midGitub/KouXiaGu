@@ -22,7 +22,17 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 参数描述;
         /// </summary>
-        public ParametersDesc Parameters { get; set; }
+        public ParametersDesc ParameterDescs { get; set; }
+
+        public IList<ParameterDesc> Parameters
+        {
+            get { return ParameterDescs.Parameters; }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[MethodName : {0}, Message : {1}, Parameters:[0]", Name, Message, ParameterDescs.Parameters.ToText(false));
+        }
     }
 
     /// <summary>
@@ -30,24 +40,24 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// </summary>
     public class ParametersDesc
     {
-        private List<ParameterDesc> parameterDescs;
+        private List<ParameterDesc> parameters;
 
         /// <summary>
         /// 参数描述;
         /// </summary>
-        public IList<ParameterDesc> ParameterDescs
+        public IList<ParameterDesc> Parameters
         {
-            get { return parameterDescs; }
+            get { return parameters; }
         }
 
         public ParametersDesc()
         {
-            parameterDescs = new List<ParameterDesc>();
+            parameters = new List<ParameterDesc>();
         }
 
         public ParametersDesc(IEnumerable<ParameterDesc> parameters)
         {
-            parameterDescs = new List<ParameterDesc>(parameters);
+            this.parameters = new List<ParameterDesc>(parameters);
         }
 
         /// <summary>
@@ -55,7 +65,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         private void Add(ParameterDesc desc)
         {
-            parameterDescs.Add(desc);
+            parameters.Add(desc);
         }
 
         /// <summary>
@@ -66,7 +76,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         private void Add(string type, string message)
         {
             ParameterDesc desc = new ParameterDesc(type, message);
-            parameterDescs.Add(desc);
+            parameters.Add(desc);
         }
 
         /// <summary>
@@ -96,16 +106,16 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         internal string[] Convert()
         {
-            if (parameterDescs == null)
+            if (parameters == null)
             {
                 return null;
             }
             else
             {
-                string[] array = new string[parameterDescs.Count * 2];
-                for (int i = 0; i < parameterDescs.Count; i++)
+                string[] array = new string[parameters.Count * 2];
+                for (int i = 0; i < parameters.Count; i++)
                 {
-                    ParameterDesc desc = parameterDescs[i];
+                    ParameterDesc desc = parameters[i];
                     array[2 * i] = desc.Type;
                     array[2 * i + 1] = desc.Message;
                 }
@@ -134,5 +144,10 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// 预留消息;
         /// </summary>
         public string Message { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("[{0}]{1}", Type, Message);
+        }
     }
 }

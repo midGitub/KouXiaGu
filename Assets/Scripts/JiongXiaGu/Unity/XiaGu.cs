@@ -6,7 +6,6 @@ using UnityEngine;
 namespace JiongXiaGu.Unity
 {
 
-    [ConsoleMethodClass]
     public static class XiaGu
     {
         static XiaGu()
@@ -56,21 +55,6 @@ namespace JiongXiaGu.Unity
             {
                 throw new InvalidOperationException("仅允许在Unity线程调用!");
             }
-        }
-
-
-
-        [ConsoleMethod("developer", Message = "开发者模式开关", ParameterDes = new string[] { "bool" })]
-        public static void Developer(string isDeveloperMode)
-        {
-            IsDeveloperMode = Convert.ToBoolean(isDeveloperMode);
-            Developer();
-        }
-
-        [ConsoleMethod("developer", Message = "显示是否为开发者模式")]
-        public static void Developer()
-        {
-            GameConsole.Write("DeveloperMode :" + IsDeveloperMode);
         }
     }
 }

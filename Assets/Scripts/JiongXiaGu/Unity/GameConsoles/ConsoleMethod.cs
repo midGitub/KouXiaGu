@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// <summary>
     /// 控制台方法抽象类;
     /// </summary>
-    public abstract class ConsoleMethod
+    public abstract class ConsoleMethod : IConsoleMethod
     {
         /// <summary>
         /// 方法描述;
@@ -52,6 +52,11 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             Description = description;
             this.prerequisite = prerequisite;
+        }
+
+        public override string ToString()
+        {
+            return Description.ToString();
         }
 
         /// <summary>
@@ -96,6 +101,252 @@ namespace JiongXiaGu.Unity.GameConsoles
         public delegate void Action4(string v1, string v2, string v3, string v4);
         public delegate void Action5(string v1, string v2, string v3, string v4, string v5);
         public delegate void Action6(string v1, string v2, string v3, string v4, string v5, string v6);
+
+        /// <summary>
+        /// 创建一个新的控制台方法;
+        /// </summary>
+        public static ConsoleMethod Create(Action method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
+        {
+            return new ConsoleMethod_Action0(method, description, prerequisite);
+        }
+
+        /// <summary>
+        /// 创建一个新的控制台方法;
+        /// </summary>
+        public static ConsoleMethod Create(Action1 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
+        {
+            return new ConsoleMethod_Action1(method, description, prerequisite);
+        }
+
+        /// <summary>
+        /// 创建一个新的控制台方法;
+        /// </summary>
+        public static ConsoleMethod Create(Action2 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
+        {
+            return new ConsoleMethod_Action2(method, description, prerequisite);
+        }
+
+        /// <summary>
+        /// 创建一个新的控制台方法;
+        /// </summary>
+        public static ConsoleMethod Create(Action3 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
+        {
+            return new ConsoleMethod_Action3(method, description, prerequisite);
+        }
+
+        /// <summary>
+        /// 创建一个新的控制台方法;
+        /// </summary>
+        public static ConsoleMethod Create(Action4 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
+        {
+            return new ConsoleMethod_Action4(method, description, prerequisite);
+        }
+
+        /// <summary>
+        /// 创建一个新的控制台方法;
+        /// </summary>
+        public static ConsoleMethod Create(Action5 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
+        {
+            return new ConsoleMethod_Action5(method, description, prerequisite);
+        }
+
+        /// <summary>
+        /// 创建一个新的控制台方法;
+        /// </summary>
+        public static ConsoleMethod Create(Action6 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
+        {
+            return new ConsoleMethod_Action6(method, description, prerequisite);
+        }
+
+        /// <summary>
+        /// 0个参数的控制台方法;
+        /// </summary>
+        internal class ConsoleMethod_Action0 : ConsoleMethod
+        {
+            private Action method;
+
+            public ConsoleMethod_Action0(Action method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
+            {
+                if (method == null)
+                    throw new ArgumentNullException(nameof(method));
+
+                this.method = method;
+            }
+
+            public override int ParameterCount
+            {
+                get { return 0; }
+            }
+
+            public override void Invoke(string[] parameters)
+            {
+                ThrowIfParametersIsNotNull(parameters);
+                method.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// 1个参数的控制台方法;
+        /// </summary>
+        internal class ConsoleMethod_Action1 : ConsoleMethod
+        {
+            private Action1 method;
+
+            public ConsoleMethod_Action1(Action1 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
+            {
+                if (method == null)
+                    throw new ArgumentNullException(nameof(method));
+
+                this.method = method;
+            }
+
+            public override int ParameterCount
+            {
+                get { return 1; }
+            }
+
+            public override void Invoke(string[] parameters)
+            {
+                ThrowIfParametersIsNotRight(parameters);
+                method.Invoke(parameters[0]);
+            }
+        }
+
+        /// <summary>
+        /// 2个参数的控制台方法;
+        /// </summary>
+        internal class ConsoleMethod_Action2 : ConsoleMethod
+        {
+            private Action2 method;
+
+            public ConsoleMethod_Action2(Action2 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
+            {
+                if (method == null)
+                    throw new ArgumentNullException(nameof(method));
+
+                this.method = method;
+            }
+
+            public override int ParameterCount
+            {
+                get { return 2; }
+            }
+
+            public override void Invoke(string[] parameters)
+            {
+                ThrowIfParametersIsNotRight(parameters);
+                method.Invoke(parameters[0], parameters[1]);
+            }
+        }
+
+        /// <summary>
+        /// 3个参数的控制台方法;
+        /// </summary>
+        internal class ConsoleMethod_Action3 : ConsoleMethod
+        {
+            private Action3 method;
+
+            public ConsoleMethod_Action3(Action3 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
+            {
+                if (method == null)
+                    throw new ArgumentNullException(nameof(method));
+
+                this.method = method;
+            }
+
+            public override int ParameterCount
+            {
+                get { return 3; }
+            }
+
+            public override void Invoke(string[] parameters)
+            {
+                ThrowIfParametersIsNotRight(parameters);
+                method.Invoke(parameters[0], parameters[1], parameters[2]);
+            }
+        }
+
+        /// <summary>
+        /// 4个参数的控制台方法;
+        /// </summary>
+        internal class ConsoleMethod_Action4 : ConsoleMethod
+        {
+            private Action4 method;
+
+            public ConsoleMethod_Action4(Action4 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
+            {
+                if (method == null)
+                    throw new ArgumentNullException(nameof(method));
+
+                this.method = method;
+            }
+
+            public override int ParameterCount
+            {
+                get { return 4; }
+            }
+
+            public override void Invoke(string[] parameters)
+            {
+                ThrowIfParametersIsNotRight(parameters);
+                method.Invoke(parameters[0], parameters[1], parameters[2], parameters[3]);
+            }
+        }
+
+        /// <summary>
+        /// 5个参数的控制台方法;
+        /// </summary>
+        internal class ConsoleMethod_Action5 : ConsoleMethod
+        {
+            private Action5 method;
+
+            public ConsoleMethod_Action5(Action5 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
+            {
+                if (method == null)
+                    throw new ArgumentNullException(nameof(method));
+
+                this.method = method;
+            }
+
+            public override int ParameterCount
+            {
+                get { return 5; }
+            }
+
+            public override void Invoke(string[] parameters)
+            {
+                ThrowIfParametersIsNotRight(parameters);
+                method.Invoke(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
+            }
+        }
+
+        /// <summary>
+        /// 6个参数的控制台方法;
+        /// </summary>
+        internal class ConsoleMethod_Action6 : ConsoleMethod
+        {
+            private Action6 method;
+
+            public ConsoleMethod_Action6(Action6 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
+            {
+                if (method == null)
+                    throw new ArgumentNullException(nameof(method));
+
+                this.method = method;
+            }
+
+            public override int ParameterCount
+            {
+                get { return 6; }
+            }
+
+            public override void Invoke(string[] parameters)
+            {
+                ThrowIfParametersIsNotRight(parameters);
+                method.Invoke(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
+            }
+        }
+
 
         /// <summary>
         /// 创建一个新的控制台方法;
@@ -161,251 +412,6 @@ namespace JiongXiaGu.Unity.GameConsoles
             else
             {
                 return methodInfo.CreateDelegate(typeof(T), target) as T;
-            }
-        }
-
-        /// <summary>
-        /// 创建一个新的控制台方法;
-        /// </summary>
-        public static ConsoleMethod Create(Action method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
-        {
-            return new ConsoleMethod_Action0(method, description, prerequisite);
-        }
-
-        /// <summary>
-        /// 创建一个新的控制台方法;
-        /// </summary>
-        public static ConsoleMethod Create(Action1 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
-        {
-            return new ConsoleMethod_Action1(method, description, prerequisite);
-        }
-
-        /// <summary>
-        /// 创建一个新的控制台方法;
-        /// </summary>
-        public static ConsoleMethod Create(Action2 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
-        {
-            return new ConsoleMethod_Action2(method, description, prerequisite);
-        }
-
-        /// <summary>
-        /// 创建一个新的控制台方法;
-        /// </summary>
-        public static ConsoleMethod Create(Action3 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
-        {
-            return new ConsoleMethod_Action3(method, description, prerequisite);
-        }
-
-        /// <summary>
-        /// 创建一个新的控制台方法;
-        /// </summary>
-        public static ConsoleMethod Create(Action4 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
-        {
-            return new ConsoleMethod_Action4(method, description, prerequisite);
-        }
-
-        /// <summary>
-        /// 创建一个新的控制台方法;
-        /// </summary>
-        public static ConsoleMethod Create(Action5 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
-        {
-            return new ConsoleMethod_Action5(method, description, prerequisite);
-        }
-
-        /// <summary>
-        /// 创建一个新的控制台方法;
-        /// </summary>
-        public static ConsoleMethod Create(Action6 method, ConsoleMethodDesc description, Func<bool> prerequisite = null)
-        {
-            return new ConsoleMethod_Action6(method, description, prerequisite);
-        }
-
-        /// <summary>
-        /// 0个参数的控制台方法;
-        /// </summary>
-        private class ConsoleMethod_Action0 : ConsoleMethod
-        {
-            private Action method;
-
-            public ConsoleMethod_Action0(Action method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
-            {
-                if (method == null)
-                    throw new ArgumentNullException(nameof(method));
-
-                this.method = method;
-            }
-
-            public override int ParameterCount
-            {
-                get { return 0; }
-            }
-
-            public override void Invoke(string[] parameters)
-            {
-                ThrowIfParametersIsNotNull(parameters);
-                method.Invoke();
-            }
-        }
-
-        /// <summary>
-        /// 1个参数的控制台方法;
-        /// </summary>
-        private class ConsoleMethod_Action1 : ConsoleMethod
-        {
-            private Action1 method;
-
-            public ConsoleMethod_Action1(Action1 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
-            {
-                if (method == null)
-                    throw new ArgumentNullException(nameof(method));
-
-                this.method = method;
-            }
-
-            public override int ParameterCount
-            {
-                get { return 1; }
-            }
-
-            public override void Invoke(string[] parameters)
-            {
-                ThrowIfParametersIsNotRight(parameters);
-                method.Invoke(parameters[0]);
-            }
-        }
-
-        /// <summary>
-        /// 2个参数的控制台方法;
-        /// </summary>
-        private class ConsoleMethod_Action2 : ConsoleMethod
-        {
-            private Action2 method;
-
-            public ConsoleMethod_Action2(Action2 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
-            {
-                if (method == null)
-                    throw new ArgumentNullException(nameof(method));
-
-                this.method = method;
-            }
-
-            public override int ParameterCount
-            {
-                get { return 2; }
-            }
-
-            public override void Invoke(string[] parameters)
-            {
-                ThrowIfParametersIsNotRight(parameters);
-                method.Invoke(parameters[0], parameters[1]);
-            }
-        }
-
-        /// <summary>
-        /// 3个参数的控制台方法;
-        /// </summary>
-        private class ConsoleMethod_Action3 : ConsoleMethod
-        {
-            private Action3 method;
-
-            public ConsoleMethod_Action3(Action3 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
-            {
-                if (method == null)
-                    throw new ArgumentNullException(nameof(method));
-
-                this.method = method;
-            }
-
-            public override int ParameterCount
-            {
-                get { return 3; }
-            }
-
-            public override void Invoke(string[] parameters)
-            {
-                ThrowIfParametersIsNotRight(parameters);
-                method.Invoke(parameters[0], parameters[1], parameters[2]);
-            }
-        }
-
-        /// <summary>
-        /// 4个参数的控制台方法;
-        /// </summary>
-        private class ConsoleMethod_Action4 : ConsoleMethod
-        {
-            private Action4 method;
-
-            public ConsoleMethod_Action4(Action4 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
-            {
-                if (method == null)
-                    throw new ArgumentNullException(nameof(method));
-
-                this.method = method;
-            }
-
-            public override int ParameterCount
-            {
-                get { return 4; }
-            }
-
-            public override void Invoke(string[] parameters)
-            {
-                ThrowIfParametersIsNotRight(parameters);
-                method.Invoke(parameters[0], parameters[1], parameters[2], parameters[3]);
-            }
-        }
-
-        /// <summary>
-        /// 5个参数的控制台方法;
-        /// </summary>
-        private class ConsoleMethod_Action5 : ConsoleMethod
-        {
-            private Action5 method;
-
-            public ConsoleMethod_Action5(Action5 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
-            {
-                if (method == null)
-                    throw new ArgumentNullException(nameof(method));
-
-                this.method = method;
-            }
-
-            public override int ParameterCount
-            {
-                get { return 5; }
-            }
-
-            public override void Invoke(string[] parameters)
-            {
-                ThrowIfParametersIsNotRight(parameters);
-                method.Invoke(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
-            }
-        }
-
-        /// <summary>
-        /// 6个参数的控制台方法;
-        /// </summary>
-        private class ConsoleMethod_Action6 : ConsoleMethod
-        {
-            private Action6 method;
-
-            public ConsoleMethod_Action6(Action6 method, ConsoleMethodDesc description, Func<bool> prerequisite) : base(description, prerequisite)
-            {
-                if (method == null)
-                    throw new ArgumentNullException(nameof(method));
-
-                this.method = method;
-            }
-
-            public override int ParameterCount
-            {
-                get { return 6; }
-            }
-
-            public override void Invoke(string[] parameters)
-            {
-                ThrowIfParametersIsNotRight(parameters);
-                method.Invoke(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
             }
         }
     }

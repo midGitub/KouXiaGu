@@ -10,7 +10,6 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 对游戏资源文件路径进行定义,需要手动初始化;
     /// </summary>
-    [ConsoleMethodClass]
     public static class Resource
     {
         private static ModInfo coreDirectoryInfo;
@@ -112,17 +111,6 @@ namespace JiongXiaGu.Unity.Resources
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
             directoryInfo.Create();
             return directoryInfo;
-        }
-
-
-        [ConsoleMethod("log_resource_path_info", Message = "显示所有资源路径")]
-        public static void LogInfoAll()
-        {
-            string str =
-                "\nDataDirectoryPath : " + CoreDirectory +
-                "\nUserConfigDirectoryPath" + UserConfigDirectory +
-                "\nArchiveDirectoryPath : " + ArchivesDirectory;
-            Debug.Log(str);
         }
     }
 }

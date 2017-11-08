@@ -42,7 +42,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             {
                 Name = Name,
                 Message = Message,
-                Parameters = ParametersDesc.Convert(ParameterDes),
+                ParameterDescs = ParametersDesc.Convert(ParameterDes),
             };
         }
     }

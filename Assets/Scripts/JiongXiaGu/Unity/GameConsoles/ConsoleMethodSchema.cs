@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
@@ -12,7 +14,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 方法字典;
         /// </summary>
-        private readonly ConcurrentDictionary<string, ConsoleMethod> consoleMethods;
+        private readonly ConcurrentDictionary<string, IConsoleMethod> consoleMethods;
 
         /// <summary>
         /// 方法数目;
@@ -22,9 +24,14 @@ namespace JiongXiaGu.Unity.GameConsoles
             get { return consoleMethods.Count; }
         }
 
+        public ICollection<IConsoleMethod> ConsoleMethods
+        {
+            get { return consoleMethods.Values; }
+        }
+
         public ConsoleMethodSchema()
         {
-            consoleMethods = new ConcurrentDictionary<string, ConsoleMethod>();
+            consoleMethods = new ConcurrentDictionary<string, IConsoleMethod>();
         }
 
         /// <summary>
@@ -40,7 +47,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         private string GetKey(string methodName, int parameterCount)
         {
-            return string.Format("{0}[{1}]", methodName, parameterCount);
+            return string.Format("{0}[{1}]", methodName.ToLower(), parameterCount);
         }
 
         /// <summary>
@@ -58,7 +65,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 尝试从和合集中移除指定方法,移除成功返回 true;
         /// </summary>
-        public bool TryRemove(string methodName, int parameterCount, out ConsoleMethod consoleMethod)
+        public bool TryRemove(string methodName, int parameterCount, out IConsoleMethod consoleMethod)
         {
             string key = GetKey(methodName, parameterCount);
             return consoleMethods.TryRemove(key, out consoleMethod);
@@ -76,7 +83,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 尝试获取到指定方法,若未能找到则返回false;
         /// </summary>
-        public bool TryGetMethod(string methodName, int parameterCount, out ConsoleMethod consoleMethod)
+        public bool TryGetMethod(string methodName, int parameterCount, out IConsoleMethod consoleMethod)
         {
             string key = GetKey(methodName, parameterCount);
             return consoleMethods.TryGetValue(key, out consoleMethod);

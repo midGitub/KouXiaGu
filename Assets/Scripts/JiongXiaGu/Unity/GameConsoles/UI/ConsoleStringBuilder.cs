@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
@@ -8,7 +9,7 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// <summary>
     /// 将控制台消息写入StringBuilder(线程安全);
     /// </summary>
-    public class ConsoleStringBuilder : IObserver<ConsoleEvent>
+    public class ConsoleStringBuilder : IObserver<ConsoleEvent>, IObserver<UnityDebugLogEvent>
     {
         public const string MessageTooLongErrorString = "[过长的消息,无法显示]";
 
@@ -28,6 +29,11 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// 控制台条目;
         /// </summary>
         private readonly LinkedList<string> eventLengthList;
+
+        /// <summary>
+        /// 是否发生变化;
+        /// </summary>
+        private bool hasChanged;
 
         public ConsoleStringBuilder(StringBuilder stringBuilder) : this(stringBuilder, new ConsoleStringBuilderFormat())
         {
@@ -52,6 +58,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             {
                 eventLengthList.AddLast(stringBuilder.ToString());
             }
+            AppendLine();
         }
 
         void IObserver<ConsoleEvent>.OnNext(ConsoleEvent value)
@@ -79,7 +86,8 @@ namespace JiongXiaGu.Unity.GameConsoles
                     break;
 
                 default:
-                    throw new ArgumentException(string.Format("未知的类型:{0}", value.EventType));
+                    Write(string.Format("[{0}]{1}", value.EventType, value.Message));
+                    break;
             }
         }
 
@@ -92,6 +100,42 @@ namespace JiongXiaGu.Unity.GameConsoles
         {
             return;
         }
+
+
+        void IObserver<UnityDebugLogEvent>.OnNext(UnityDebugLogEvent value)
+        {
+            switch (value.EventType)
+            {
+                case LogType.Log:
+                case LogType.Assert:
+                    Write(value.Message);
+                    break;
+
+                case LogType.Warning:
+                    WriteWarning(value.Message);
+                    break;
+
+                case LogType.Error:
+                case LogType.Exception:
+                    WriteError(value.Message);
+                    break;
+
+                default:
+                    Write(string.Format("[{0}]{1}", value.EventType, value.Message));
+                    break;
+            }
+        }
+
+        void IObserver<UnityDebugLogEvent>.OnError(Exception error)
+        {
+            return;
+        }
+
+        void IObserver<UnityDebugLogEvent>.OnCompleted()
+        {
+            return;
+        }
+
 
         public void Write(string message)
         {
@@ -133,13 +177,6 @@ namespace JiongXiaGu.Unity.GameConsoles
                     message = MessageTooLongErrorString;
                 }
 
-                var lastNode = eventLengthList.Last;
-                if (lastNode != null && !lastNode.Value.EndsWith(Environment.NewLine))
-                {
-                    lastNode.Value += Environment.NewLine;
-                    stringBuilder.Append(Environment.NewLine);
-                }
-
                 int messageLength = stringBuilder.Length + message.Length;
                 int removeLength = 0;
                 while (messageLength - removeLength > stringBuilder.MaxCapacity)
@@ -152,11 +189,44 @@ namespace JiongXiaGu.Unity.GameConsoles
                 stringBuilder.Remove(0, removeLength);
                 stringBuilder.Append(message);
                 eventLengthList.AddLast(message);
+                hasChanged = true;
+
+                AppendLine();
             }
         }
 
         /// <summary>
-        /// 获取到对应文本;
+        /// 若最后一个条目结尾不存在换行,则添加换行符;
+        /// </summary>
+        private void AppendLine()
+        {
+            var lastNode = eventLengthList.Last;
+            if (lastNode != null && !lastNode.Value.EndsWith(Environment.NewLine))
+            {
+                lastNode.Value += Environment.NewLine;
+                stringBuilder.Append(Environment.NewLine);
+            }
+        }
+
+        /// <summary>
+        /// 尝试获取到文本;若未发生变化则返回false,发生变化则返回true;
+        /// </summary>
+        public bool TryGetText(out string text)
+        {
+            lock (asyncLock)
+            {
+                text = stringBuilder.ToString();
+                if (hasChanged)
+                {
+                    hasChanged = false;
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取到对应文本(不改变状态值);
         /// </summary>
         public string GetText()
         {

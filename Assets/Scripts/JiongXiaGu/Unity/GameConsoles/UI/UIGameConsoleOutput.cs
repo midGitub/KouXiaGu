@@ -20,6 +20,9 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         }
 
         [SerializeField]
+        private bool displayUnityDebugLog = false;
+
+        [SerializeField]
         [Range(100, 10000)]
         private int maxCapacity = 5000;
 
@@ -29,19 +32,62 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         [SerializeField]
         private Text output;
 
+        [SerializeField]
+        private Scrollbar scrollbarVertical;
+
+        private bool setScrollbarVerticalValue;
         private ConsoleStringBuilder consoleStringBuilder;
+        private IDisposable consoleEventUnsubscriber;
+        private IDisposable unityDebugLogEventUnsubscriber;
 
         private void Awake()
         {
             StringBuilder stringBuilder = new StringBuilder(maxCapacity, maxCapacity);
             stringBuilder.Append(output.text);
             consoleStringBuilder = new ConsoleStringBuilder(stringBuilder, format);
-            GameConsole.Subscribe(consoleStringBuilder);
+            consoleEventUnsubscriber = GameConsole.Subscribe(consoleStringBuilder);
+            IsDisplayUnityDebugLog(displayUnityDebugLog);
         }
 
-        private void Update()
+        private void LateUpdate()
         {
-            output.text = consoleStringBuilder.GetText();
+            string nowText;
+            if (consoleStringBuilder.TryGetText(out nowText))
+            {
+                setScrollbarVerticalValue = true;
+                output.text = nowText;
+            }
+            else if(setScrollbarVerticalValue)
+            {
+                setScrollbarVerticalValue = false;
+                scrollbarVertical.value = 0;
+            }
+        }
+
+        private void OnValidate()
+        {
+            if (consoleStringBuilder != null)
+            {
+                IsDisplayUnityDebugLog(displayUnityDebugLog);
+            }
+        }
+
+        public void IsDisplayUnityDebugLog(bool isDisplay)
+        {
+            if (isDisplay)
+            {
+                if (unityDebugLogEventUnsubscriber == null)
+                {
+                    unityDebugLogEventUnsubscriber = UnityDebugLogHandler.Subscribe(consoleStringBuilder);
+                }
+            }
+            else
+            {
+                if (unityDebugLogEventUnsubscriber != null)
+                {
+                    unityDebugLogEventUnsubscriber.Dispose();
+                }
+            }
         }
 
         [ContextMenu("ColorTest")]

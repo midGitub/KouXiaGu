@@ -1,4 +1,6 @@
-﻿namespace JiongXiaGu.Unity.GameConsoles
+﻿using System;
+
+namespace JiongXiaGu.Unity.GameConsoles
 {
     /// <summary>
     /// 格式输出控制;
@@ -25,9 +27,9 @@
             return message;
         }
 
-        public virtual string GetMethodFormat(string method)
+        public virtual string GetMethodFormat(string message)
         {
-            return method;
+            return message;
         }
     }
 }
