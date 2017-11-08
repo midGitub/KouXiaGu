@@ -16,11 +16,12 @@ namespace JiongXiaGu.Unity.Resources
         [ConsoleMethod(Prefix + nameof(ShowPaths), Message = "显示所有资源路径")]
         public static void ShowPaths()
         {
-            string str =
-                "DataDirectoryPath : " + Resource.CoreDirectory +
-                "\nUserConfigDirectoryPath" + Resource.UserConfigDirectory +
-                "\nArchiveDirectoryPath : " + Resource.ArchivesDirectory;
-            GameConsole.Write(str);
+            string message =
+                "游戏配置的文件夹 : " + Resource.CoreDirectory + ";" + Environment.NewLine +
+                "用户配置的文件夹 : " + Resource.UserConfigDirectory + ";" + Environment.NewLine +
+                "用户存档的文件夹 : " + Resource.ArchivesDirectory + ";";
+
+            GameConsole.Write(message);
         }
     }
 }
