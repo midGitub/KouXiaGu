@@ -15,5 +15,15 @@
         /// 版本;
         /// </summary>
         public int Version { get; set; }
+
+        /// <summary>
+        /// 标签;
+        /// </summary>
+        public string[] Tags { get; set; }
+
+        /// <summary>
+        /// 预留消息;
+        /// </summary>
+        public string Message { get; set; }
     }
 }

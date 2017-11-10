@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 游戏地图存放目录;
         /// </summary>
-        [PathDefinition(ResourceTypes.DataDirectory, "资源读取顺序文件")]
+        [PathDefinition(ResourceType.DataDirectory, "资源读取顺序文件")]
         internal const string DataOrderRecordFileName = "Configs/ModOrderRecord";
 
         public ModOrderReader() : base(new XmlSerializer<ModOrder>())
@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override string GetFilePathWithoutExtension()
         {
-            return Path.Combine(Resource.CoreDirectory, DataOrderRecordFileName);
+            return Path.Combine(ResourcePath.CoreDirectory.FullName, DataOrderRecordFileName);
         }
     }
 }

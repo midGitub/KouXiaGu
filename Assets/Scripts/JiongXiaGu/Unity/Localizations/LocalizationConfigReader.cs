@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.Localizations
     public class LocalizationConfigReader : ConfigFileReader<LocalizationConfig>
     {
 
-        [PathDefinition(ResourceTypes.UserConfig, "本地化组件信息配置")]
+        [PathDefinition(ResourceType.UserConfig, "本地化组件信息配置")]
         internal const string FileName = "Configs/LocalizationConfig";
 
         public LocalizationConfigReader() : base(new XmlSerializer<LocalizationConfig>())
@@ -19,7 +19,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         public override string GetFilePathWithoutExtension()
         {
-            string path = Path.Combine(Resource.UserConfigDirectory, FileName);
+            string path = Path.Combine(ResourcePath.UserConfigDirectory.FullName, FileName);
             return path;
         }
     }

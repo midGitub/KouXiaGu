@@ -1,4 +1,5 @@
-﻿using JiongXiaGu.Concurrent;
+﻿using System;
+using JiongXiaGu.Concurrent;
 using JiongXiaGu.Unity.Resources;
 using System.IO;
 using System.Threading;
@@ -55,14 +56,15 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
         /// </summary>
         AssetBundle LoadAssetBundle()
         {
-            var request = Dispatcher.Add(delegate()
-            {
-                return AssetBundleReader.Load(Resource.CoreDirectoryInfo, TerrainAssetBundleName);
-            });
-            while (!request.IsCompleted)
-            {
-            }
-            return request.Result;
+            //var request = Dispatcher.Add(delegate()
+            //{
+            //    return AssetBundleReader.Load(Resource.CoreDirectory.FullName, TerrainAssetBundleName);
+            //});
+            //while (!request.IsCompleted)
+            //{
+            //}
+            //return request.Result;
+            throw new NotImplementedException();
         }
 
         RectTerrainResources ReadRectTerrainResources(AssetBundle assetBundle, out List<Request> faults)

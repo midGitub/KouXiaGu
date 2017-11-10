@@ -20,38 +20,9 @@ namespace JiongXiaGu.Unity.Resources
         public DirectoryInfo DirectoryInfo { get; private set; }
 
         /// <summary>
-        /// 是否为核心数据?
-        /// </summary>
-        public bool IsCoreData { get; private set; }
-
-        /// <summary>
-        /// 构造核心数据信息;
-        /// </summary>
-        internal ModInfo(DirectoryInfo directoryInfo)
-        {
-            if (directoryInfo == null)
-                throw new ArgumentNullException(nameof(directoryInfo));
-
-            DirectoryInfo = directoryInfo;
-            IsCoreData = true;
-        }
-
-        /// <summary>
-        /// 构造模组数据信息;
-        /// </summary>
-        public ModInfo(DirectoryInfo directoryInfo, ModDescription description) 
-        {
-            if (directoryInfo == null)
-                throw new ArgumentNullException(nameof(directoryInfo));
-
-            DirectoryInfo = directoryInfo;
-            Description = description;
-        }
-
-        /// <summary>
         /// 数据唯一名称;
         /// </summary>
-        public string Name
+        public string ModName
         {
             get { return Description.Name; }
         }
@@ -59,9 +30,21 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 资源目录;
         /// </summary>
-        public string Directory
+        public string FullPath
         {
             get { return DirectoryInfo.FullName; }
+        }
+
+        /// <summary>
+        /// 构造模组数据信息;
+        /// </summary>
+        internal ModInfo(DirectoryInfo directoryInfo, ModDescription description) 
+        {
+            if (directoryInfo == null)
+                throw new ArgumentNullException(nameof(directoryInfo));
+
+            DirectoryInfo = directoryInfo;
+            Description = description;
         }
     }
 }

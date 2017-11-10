@@ -13,14 +13,16 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class ModSearcher
     {
+        public ModSearcher()
+        {
+        }
 
         /// <summary>
         /// 枚举所有模组;
         /// </summary>
-        public IEnumerable<ModInfo> EnumerateModInfos()
+        public IEnumerable<ModInfo> EnumerateModInfos(string directory)
         {
-            Debug.LogWarning("还未实现Mod搜寻;");
-            return new List<ModInfo>();
+            throw new NotImplementedException();
         }
     }
 }

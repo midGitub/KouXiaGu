@@ -74,23 +74,30 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         private void EnterText()
         {
             string text = input.text;
-            if (!string.IsNullOrWhiteSpace(text))
+            DoMethod(text);
+            ActivateInputField();
+        }
+
+        /// <summary>
+        /// 执行对应方法;
+        /// </summary>
+        public void DoMethod(string method)
+        {
+            if (!string.IsNullOrWhiteSpace(method))
             {
-                AddImportRecord(text);
+                AddImportRecord(method);
                 ClearInputField();
 
                 try
                 {
-                    GameConsole.WriteMethod(text);
-                    GameConsole.Do(text);
+                    GameConsole.WriteMethod(method);
+                    GameConsole.Do(method);
                 }
                 catch (Exception ex)
                 {
                     GameConsole.WriteError(string.Format("执行失败:{0}", ex.Message));
                 }
             }
-
-            input.ActivateInputField();
         }
 
         /// <summary>
@@ -147,13 +154,21 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
             }
         }
 
-        private void SetInputField(string text)
+        /// <summary>
+        /// 指定焦点在输入空间上;
+        /// </summary>
+        public void ActivateInputField()
+        {
+            input.ActivateInputField();
+        }
+
+        public void SetInputField(string text)
         {
             input.text = current.Value;
             input.MoveTextEnd(false);
         }
 
-        private void ClearInputField()
+        public void ClearInputField()
         {
             input.text = string.Empty;
             current = null;

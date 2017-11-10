@@ -23,7 +23,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public override IEnumerable<string> Searche(string fileExtension)
         {
-            return Searche(fileExtension, Resource.CoreDirectory);
+            return Searche(fileExtension, ResourcePath.CoreDirectory.FullName);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public override string GetWrite(string fileExtension)
         {
-            return GetWrite(fileExtension, Resource.CoreDirectory);
+            return GetWrite(fileExtension, ResourcePath.CoreDirectory.FullName);
         }
 
         string GetWrite(string fileExtension, string directory)

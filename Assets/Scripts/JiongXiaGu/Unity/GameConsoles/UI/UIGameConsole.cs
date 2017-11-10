@@ -21,6 +21,9 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         [SerializeField]
         private RectTransform gameConsoleWindow;
 
+        [SerializeField]
+        private UIGameConsoleInput uIGameConsoleInput;
+
         /// <summary>
         /// 是否显示中?
         /// </summary>
@@ -59,6 +62,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         private void DisplayConsoleWindow()
         {
             gameConsoleWindow.gameObject.SetActive(true);
+            uIGameConsoleInput.ActivateInputField();
         }
 
         /// <summary>
@@ -67,6 +71,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         private void HideConsoleWindow()
         {
             gameConsoleWindow.gameObject.SetActive(false);
+            uIGameConsoleInput.ClearInputField();
         }
     }
 }

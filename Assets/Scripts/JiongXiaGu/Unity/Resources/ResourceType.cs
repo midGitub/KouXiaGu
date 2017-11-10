@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Unity.Resources
 {
 
-
-    public enum ResourceTypes
+    /// <summary>
+    /// 资源类型;
+    /// </summary>
+    public enum ResourceType
     {
         /// <summary>
         /// 资源数据;

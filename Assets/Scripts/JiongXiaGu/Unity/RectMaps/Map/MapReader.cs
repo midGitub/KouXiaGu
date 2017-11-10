@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 游戏地图存放目录;
         /// </summary>
-        [PathDefinition(ResourceTypes.DataDirectory, "游戏地图存放目录;")]
+        [PathDefinition(ResourceType.DataDirectory, "游戏地图存放目录;")]
         internal const string MapsDirectoryName = "Maps";
 
         internal const string MapRootName = "RectMap";
@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         string GetMapsDirectory()
         {
-            string directory = Path.Combine(Resource.CoreDirectory, MapsDirectoryName);
+            string directory = Path.Combine(ResourcePath.CoreDirectory.FullName, MapsDirectoryName);
             return directory;
         }
 

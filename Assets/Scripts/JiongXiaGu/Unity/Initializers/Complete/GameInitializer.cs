@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.Initializers
             try
             {
                 XiaGu.Initialize();
-                Resource.Initialize();
+                ResourcePath.Initialize();
                 OnCompleted();
             }
             catch (Exception ex)

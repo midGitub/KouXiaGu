@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 用户存档存放目录;
         /// </summary>
-        [PathDefinition(ResourceTypes.ArchiveDirectory, "用户存档存放目录;")]
+        [PathDefinition(ResourceType.ArchiveDirectory, "用户存档存放目录;")]
         internal const string SavesDirectoryName = "Saves";
 
         /// <summary>

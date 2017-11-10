@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 游戏地图存放目录;
         /// </summary>
-        [PathDefinition(ResourceTypes.Archive, "存档地图存放路径;")]
+        [PathDefinition(ResourceType.Archive, "存档地图存放路径;")]
         internal const string ArchiveMapFileName = "Map/ArchiveMap";
 
         /// <summary>
