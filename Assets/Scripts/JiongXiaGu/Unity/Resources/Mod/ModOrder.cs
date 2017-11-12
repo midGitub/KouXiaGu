@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.Resources
             this.modNames = new List<string>();
             foreach (var dataDirectoryInfo in modOrder)
             {
-                this.modNames.Add(dataDirectoryInfo.ModName);
+                this.modNames.Add(dataDirectoryInfo.Description.Name);
             }
         }
 
@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.Resources
             ModInfo[] list = new ModInfo[modNames.Count];
             foreach (var dataDirectoryInfo in modInfos)
             {
-                int index = modNames.FindIndex(item => item == dataDirectoryInfo.ModName);
+                int index = modNames.FindIndex(item => item == dataDirectoryInfo.Description.Name);
                 if (index >= 0)
                 {
                     list[index] = dataDirectoryInfo;

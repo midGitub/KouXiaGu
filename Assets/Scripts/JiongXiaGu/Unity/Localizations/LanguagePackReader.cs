@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// </summary>
     public class LanguagePackReader
     {
-        [PathDefinition(ResourceType.DataDirectory, "本地化资源目录;")]
+        [PathDefinition(PathDefinition.DataDirectory, "本地化资源目录;")]
         internal const string LocalizationDirectoryName = "Localization";
 
         XmlSerializer languagePackSerializer;

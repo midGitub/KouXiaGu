@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-
-<Project Name="KouXiaGu.luaprj" Cmd="" Arg="" Dir="" Toggle="false" >
-    <LuaFile RelativePath=".\Calendar.lua" />
-    <LuaFile RelativePath=".\Main.lua" />
-</Project>

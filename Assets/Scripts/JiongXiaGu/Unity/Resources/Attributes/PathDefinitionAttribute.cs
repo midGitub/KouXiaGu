@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 资源类型;
         /// </summary>
-        public ResourceType ResourceTypes { get; set; }
+        public PathDefinition ResourceTypes { get; set; }
 
         /// <summary>
         /// 简短描述;
@@ -33,7 +33,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         /// <param name="resourceTypes">资源类型</param>
         /// <param name="name">简短描述</param>
-        public PathDefinitionAttribute(ResourceType resourceTypes, string name) : this(resourceTypes, name, string.Empty)
+        public PathDefinitionAttribute(PathDefinition resourceTypes, string name) : this(resourceTypes, name, string.Empty)
         {
         }
 
@@ -43,7 +43,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="resourceTypes">资源类型</param>
         /// <param name="name">简短描述</param>
         /// <param name="message">详细描述</param>
-        public PathDefinitionAttribute(ResourceType resourceTypes, string name, string message)
+        public PathDefinitionAttribute(PathDefinition resourceTypes, string name, string message)
         {
             ResourceTypes = resourceTypes;
             Name = name;

@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 游戏地图存放目录;
         /// </summary>
-        [PathDefinition(ResourceType.DataDirectory, "游戏地图存放目录;")]
+        [PathDefinition(PathDefinition.DataDirectory, "游戏地图存放目录;")]
         internal const string MapsDirectoryName = "Maps";
 
         internal const string MapRootName = "RectMap";

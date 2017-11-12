@@ -1,45 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace JiongXiaGu.Unity.Resources
+﻿namespace JiongXiaGu.Unity.Resources
 {
-
     /// <summary>
-    /// 资源类型;
+    /// 游戏内容类型;
     /// </summary>
     public enum ResourceType
     {
-        /// <summary>
-        /// 资源数据;
-        /// </summary>
-        Data,
-
-        /// <summary>
-        /// 用户数据;
-        /// </summary>
-        UserConfig,
-
-        /// <summary>
-        /// 用户存档数据;
-        /// </summary>
-        Archive,
-
-        /// <summary>
-        /// 资源数据目录;
-        /// </summary>
-        DataDirectory,
-
-        /// <summary>
-        /// 用户数据目录;
-        /// </summary>
-        UserConfigDirectory,
-
-        /// <summary>
-        /// 用户存档数据目录;
-        /// </summary>
-        ArchiveDirectory,
+        Core,
+        DLC,
+        MOD,
     }
 }

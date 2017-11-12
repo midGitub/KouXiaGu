@@ -14,17 +14,17 @@ namespace JiongXiaGu.Unity.Resources
     public interface ILoadableResource
     {
         /// <summary>
-        /// 优先权,数值越小优先级越高;
+        /// 类型;
         /// </summary>
-        int Priority { get; }
+        ResourceType Type { get; }
 
         /// <summary>
-        /// 内容名;
+        /// 全称;
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        /// 资源目录;
+        /// 存放目录;
         /// </summary>
         DirectoryInfo DirectoryInfo { get; }
     }

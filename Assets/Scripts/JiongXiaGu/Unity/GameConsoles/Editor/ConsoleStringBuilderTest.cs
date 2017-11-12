@@ -17,20 +17,20 @@ namespace JiongXiaGu.Unity.GameConsoles
         [Test]
         public void TestAddMessage_1()
         {
-            StringBuilder stringBuilder = new StringBuilder(15, 15);
+            StringBuilder stringBuilder = new StringBuilder(18, 18);
             stringBuilder.Append("Test1");
             ConsoleStringBuilder consoleStringBuilder = new ConsoleStringBuilder(stringBuilder);
 
-            Assert.AreEqual("Test1", consoleStringBuilder.GetText());
+            Assert.AreEqual("Test1" + Environment.NewLine, consoleStringBuilder.GetText());
 
             consoleStringBuilder.Write("Test2");
-            Assert.AreEqual("Test1" + Environment.NewLine + "Test2", consoleStringBuilder.GetText());
+            Assert.AreEqual("Test1" + Environment.NewLine + "Test2" + Environment.NewLine, consoleStringBuilder.GetText());
 
             consoleStringBuilder.Write("Test3");
-            Assert.AreEqual("Test2" + Environment.NewLine + "Test3", consoleStringBuilder.GetText());
+            Assert.AreEqual("Test2" + Environment.NewLine + "Test3" + Environment.NewLine, consoleStringBuilder.GetText());
 
             consoleStringBuilder.Write("Test4");
-            Assert.AreEqual("Test3" + Environment.NewLine + "Test4", consoleStringBuilder.GetText());
+            Assert.AreEqual("Test3" + Environment.NewLine + "Test4" + Environment.NewLine, consoleStringBuilder.GetText());
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             ConsoleStringBuilder consoleStringBuilder = new ConsoleStringBuilder(stringBuilder);
 
             consoleStringBuilder.Write("Test1 Test2 Test3 Test4 Test5");
-            Assert.AreEqual(ConsoleStringBuilder.MessageTooLongErrorString, consoleStringBuilder.GetText());
+            Assert.AreEqual(ConsoleStringBuilder.MessageTooLongErrorString + Environment.NewLine, consoleStringBuilder.GetText());
         }
     }
 }

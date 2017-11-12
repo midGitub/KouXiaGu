@@ -1,4 +1,5 @@
-﻿using JiongXiaGu.Collections;
+﻿using System;
+using JiongXiaGu.Collections;
 using JiongXiaGu.Grids;
 using NUnit.Framework;
 using System.IO;
@@ -14,6 +15,7 @@ namespace JiongXiaGu.Unity.RectMaps
     {
 
         [Test]
+        [Obsolete]
         public void TestWriteFile()
         {
             var reader = new MapReader();

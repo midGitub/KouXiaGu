@@ -20,22 +20,6 @@ namespace JiongXiaGu.Unity.Resources
         public DirectoryInfo DirectoryInfo { get; private set; }
 
         /// <summary>
-        /// 数据唯一名称;
-        /// </summary>
-        public string ModName
-        {
-            get { return Description.Name; }
-        }
-
-        /// <summary>
-        /// 资源目录;
-        /// </summary>
-        public string FullPath
-        {
-            get { return DirectoryInfo.FullName; }
-        }
-
-        /// <summary>
         /// 构造模组数据信息;
         /// </summary>
         internal ModInfo(DirectoryInfo directoryInfo, ModDescription description) 

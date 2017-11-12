@@ -15,25 +15,30 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 核心资源;
         /// </summary>
-        public ILoadableResource Core
+        public static ILoadableResource Core { get; private set; }
+
+        /// <summary>
+        /// 所有拓展资源;
+        /// </summary>
+        public static IReadOnlyCollection<ModInfo> Dlc
         {
             get { throw new NotImplementedException(); }
         }
 
         /// <summary>
-        /// 拓展资源;
+        /// 所有模组资源;
         /// </summary>
-        public IReadOnlyCollection<DlcInfo> Dlc
+        public static IReadOnlyCollection<ModInfo> Mod
         {
             get { throw new NotImplementedException(); }
         }
 
         /// <summary>
-        /// 模组资源;
+        /// 初始化资源信息;
         /// </summary>
-        public IReadOnlyCollection<ModInfo> Mod
+        internal static void Initialize()
         {
-            get { throw new NotImplementedException(); }
+            Core = new CoreResourceInfo(ResourcePath.CoreDirectory);
         }
     }
 }

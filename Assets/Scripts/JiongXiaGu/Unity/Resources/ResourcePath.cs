@@ -14,71 +14,41 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public static class ResourcePath
     {
-        private static DirectoryInfo coreDirectory;
-        private static DirectoryInfo userConfigDirectory;
-        private static DirectoryInfo archivesDirectory;
-        private static DirectoryInfo modDirectory;
-        private static DirectoryInfo dlcDirectory;
-
         /// <summary>
         /// 存放核心数据和配置文件的文件夹;
         /// </summary>
-        public static DirectoryInfo CoreDirectory
-        {
-            get { return coreDirectory ?? (coreDirectory = GetCoreDirectoryInfo()); }
-        }
+        public static DirectoryInfo CoreDirectory { get; private set; }
 
         /// <summary>
         /// 存放用户配置的文件夹;
         /// </summary>
-        public static DirectoryInfo UserConfigDirectory
-        {
-            get { return userConfigDirectory ?? (userConfigDirectory = GetUserConfigDirectoryInfo()); }
-        }
+        public static DirectoryInfo UserConfigDirectory { get; private set; }
 
         /// <summary>
         /// 存放存档的文件夹路径;
         /// </summary>
-        public static DirectoryInfo ArchivesDirectory
-        {
-            get { return archivesDirectory ?? (archivesDirectory = GetArchivesDirectoryInfo()); }
-        }
+        public static DirectoryInfo ArchiveDirectory { get; private set; }
 
         /// <summary>
         /// 存放模组的文件夹;
         /// </summary>
-        public static DirectoryInfo ModDirectory
-        {
-            get { return modDirectory ?? (modDirectory = GetModsDirectoryInfo()); }
-        }
+        public static DirectoryInfo ModDirectory { get; private set; }
 
         /// <summary>
         /// 存放拓展内容的文件夹;
         /// </summary>
-        public static DirectoryInfo DlcDirectory
-        {
-            get { return dlcDirectory ?? (dlcDirectory = GetDlcDirectoryInfo()); }
-        }
+        public static DirectoryInfo DlcDirectory { get; private set; }
 
         /// <summary>
-        /// 在游戏开始时初始化;
+        /// 初始化路径信息(仅在Unity线程调用);
         /// </summary>
         internal static void Initialize()
         {
-            if (coreDirectory == null)
-                coreDirectory = GetCoreDirectoryInfo();
-
-            if (userConfigDirectory == null)
-                userConfigDirectory = GetUserConfigDirectoryInfo();
-
-            if (archivesDirectory == null)
-                archivesDirectory = GetArchivesDirectoryInfo();
-
-            if (modDirectory == null)
-                modDirectory = GetModsDirectoryInfo();
-
-            if (dlcDirectory == null)
-                dlcDirectory = GetDlcDirectoryInfo();
+            CoreDirectory = GetCoreDirectoryInfo();
+            UserConfigDirectory = GetUserConfigDirectoryInfo();
+            ArchiveDirectory = GetArchiveDirectoryInfo();
+            ModDirectory = GetModsDirectoryInfo();
+            DlcDirectory = GetDlcDirectoryInfo();
         }
 
         /// <summary>
@@ -86,7 +56,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public static DirectoryInfo GetCoreDirectoryInfo()
         {
-            string directory = Application.streamingAssetsPath;
+            string directory = Path.Combine(Application.streamingAssetsPath, "Data");
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
             directoryInfo.ThrowIfDirectoryNotExisted();
             return directoryInfo;
@@ -106,10 +76,10 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到存放存档的文件夹路径;
         /// </summary>
-        public static DirectoryInfo GetArchivesDirectoryInfo()
+        public static DirectoryInfo GetArchiveDirectoryInfo()
         {
             var userConfigDirectory = UserConfigDirectory;
-            string directory = Path.Combine(userConfigDirectory.FullName, "Saves");
+            string directory = Path.Combine(userConfigDirectory.FullName, "Save");
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
             directoryInfo.Create();
             return directoryInfo;
@@ -121,7 +91,7 @@ namespace JiongXiaGu.Unity.Resources
         public static DirectoryInfo GetModsDirectoryInfo()
         {
             var userConfigDirectory = UserConfigDirectory;
-            string directory = Path.Combine(userConfigDirectory.FullName, "Mods");
+            string directory = Path.Combine(userConfigDirectory.FullName, "MOD");
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
             directoryInfo.Create();
             return directoryInfo;
@@ -132,8 +102,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public static DirectoryInfo GetDlcDirectoryInfo()
         {
-            var coreDirectory = CoreDirectory;
-            string directory = Path.Combine(coreDirectory.FullName, "DLC");
+            string directory = Path.Combine(Application.streamingAssetsPath, "DLC");
             DirectoryInfo directoryInfo = new DirectoryInfo(directory);
             directoryInfo.Create();
             return directoryInfo;
