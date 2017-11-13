@@ -2,10 +2,15 @@
 {
 
     /// <summary>
-    /// 模组描述;
+    /// 可加载资源描述;
     /// </summary>
-    public struct ModDescription
+    public struct LoadableContentDescription
     {
+        /// <summary>
+        /// 唯一标识;
+        /// </summary>
+        public string ID { get; set; }
+
         /// <summary>
         /// 模组名称;
         /// </summary>
@@ -25,5 +30,10 @@
         /// 预留消息;
         /// </summary>
         public string Message { get; set; }
+
+        internal LoadableContentDescription(string name) : this()
+        {
+            Name = name;
+        }
     }
 }

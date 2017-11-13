@@ -30,6 +30,7 @@ namespace JiongXiaGu.Unity.Initializers
             {
                 XiaGu.Initialize();
                 ResourcePath.Initialize();
+                Resource.Initialize();
                 OnCompleted();
             }
             catch (Exception ex)

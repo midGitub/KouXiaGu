@@ -33,4 +33,31 @@ namespace JiongXiaGu
             Value = default(T);
         }
     }
+
+    public static class StateExtensions
+    {
+        /// <summary>
+        /// 仅返回成功的状态;
+        /// </summary>
+        public static IEnumerable<State<T>> WhereCompleted<T>(this IEnumerable<State<T>> collection)
+        {
+            return collection.Where(state => state.IsCompleted);
+        }
+
+        /// <summary>
+        /// 仅返回成功的内容;
+        /// </summary>
+        public static IEnumerable<T> WhereCompletedValue<T>(this IEnumerable<State<T>> collection)
+        {
+            return collection.Where(state => state.IsCompleted).Select(state => state.Value);
+        }
+
+        /// <summary>
+        /// 仅返回失败的状态;
+        /// </summary>
+        public static IEnumerable<State<T>> WhereFaulted<T>(this IEnumerable<State<T>> collection)
+        {
+            return collection.Where(state => state.IsFaulted);
+        }
+    }
 }

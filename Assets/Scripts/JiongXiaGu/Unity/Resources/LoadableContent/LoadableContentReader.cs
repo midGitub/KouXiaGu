@@ -9,22 +9,22 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 模组信息读写器;
+    /// 可加载资源信息读写器;
     /// </summary>
-    public class ModInfoReader
+    public class LoadableContentReader
     {
         private const string DescriptionFileName = "Description";
-        private readonly XmlSerializer<ModDescription> xmlSerializer;
+        private readonly XmlSerializer<LoadableContentDescription> xmlSerializer;
 
-        public ModInfoReader()
+        public LoadableContentReader()
         {
-            xmlSerializer = new XmlSerializer<ModDescription>();
+            xmlSerializer = new XmlSerializer<LoadableContentDescription>();
         }
 
         /// <summary>
         /// 创建一个新的模组到指定目录,若该目录已经存在,则返回异常;
         /// </summary>
-        public ModInfo Create(DirectoryInfo directoryInfo, ModDescription description)
+        public LoadableContentInfo Create(DirectoryInfo directoryInfo, LoadableContentDescription description, LoadableContentType type)
         {
             if (directoryInfo == null)
                 throw new ArgumentNullException(nameof(directoryInfo));
@@ -33,14 +33,14 @@ namespace JiongXiaGu.Unity.Resources
 
             directoryInfo.Create();
             WriteDescription(directoryInfo.FullName, description);
-            ModInfo info = new ModInfo(directoryInfo, description);
+            LoadableContentInfo info = new LoadableContentInfo(directoryInfo, description, type);
             return info;
         }
 
         /// <summary>
         /// 将模组描述输出磁盘或更新磁盘的内容;
         /// </summary>
-        public string WriteDescription(string directory, ModDescription description)
+        public string WriteDescription(string directory, LoadableContentDescription description)
         {
             string descriptionFilePath = GetDescriptionFilePath(directory);
             xmlSerializer.Write(descriptionFilePath, description, FileMode.Create);
@@ -60,37 +60,47 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从该目录读取到存档信息,若不存在则返回异常;
         /// </summary>
-        public ModInfo Read(DirectoryInfo directoryInfo)
+        public LoadableContentInfo Read(DirectoryInfo directoryInfo, LoadableContentType type)
         {
             if (directoryInfo == null)
                 throw new ArgumentNullException(nameof(directoryInfo));
             directoryInfo.ThrowIfDirectoryNotExisted();
 
-            ModDescription description = ReadDescription(directoryInfo.FullName);
-            ModInfo info = new ModInfo(directoryInfo, description);
+            LoadableContentDescription description = ReadDescription(directoryInfo.FullName);
+            LoadableContentInfo info = new LoadableContentInfo(directoryInfo, description, type);
             return info;
         }
 
         /// <summary>
         /// 读取描述文件;
         /// </summary>
-        public ModDescription ReadDescription(string directory)
+        public LoadableContentDescription ReadDescription(string directory)
         {
             string descriptionFilePath = GetDescriptionFilePath(directory);
-            ModDescription description = xmlSerializer.Read(descriptionFilePath);
+            LoadableContentDescription description = xmlSerializer.Read(descriptionFilePath);
             return description;
         }
 
         /// <summary>
         /// 枚举目录下的所有模组;
         /// </summary>
-        public IEnumerable<State<ModInfo>> EnumerateModInfos(string directory)
+        public IEnumerable<LoadableContentInfo> EnumerateModInfos(string modsDirectory, LoadableContentType type)
         {
-            foreach (var item in Directory.EnumerateDirectories(directory))
+            foreach (var directory in Directory.EnumerateDirectories(modsDirectory))
             {
+                LoadableContentInfo modInfo = null;
+                try
+                {
+                    DirectoryInfo directoryInfo = new DirectoryInfo(directory);
+                    modInfo = Read(directoryInfo, type);
+                }
+                catch (FileNotFoundException)
+                {
+                }
 
+                if (modInfo != null)
+                    yield return modInfo;
             }
-            throw new NotImplementedException();
         }
     }
 }

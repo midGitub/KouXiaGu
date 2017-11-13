@@ -12,25 +12,28 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class Resource
     {
+        private static LoadableContentInfo[] dlc;
+        private static LoadableContentInfo[] mod;
+
         /// <summary>
         /// 核心资源;
         /// </summary>
-        public static ILoadableResource Core { get; private set; }
+        public static LoadableContentInfo Core { get; private set; }
 
         /// <summary>
         /// 所有拓展资源;
         /// </summary>
-        public static IReadOnlyCollection<ModInfo> Dlc
+        public static IReadOnlyCollection<LoadableContentInfo> Dlc
         {
-            get { throw new NotImplementedException(); }
+            get { return dlc; }
         }
 
         /// <summary>
         /// 所有模组资源;
         /// </summary>
-        public static IReadOnlyCollection<ModInfo> Mod
+        public static IReadOnlyCollection<LoadableContentInfo> Mod
         {
-            get { throw new NotImplementedException(); }
+            get { return mod; }
         }
 
         /// <summary>
@@ -38,7 +41,10 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal static void Initialize()
         {
-            Core = new CoreResourceInfo(ResourcePath.CoreDirectory);
+            LoadableContentReader modInfoReader = new LoadableContentReader();
+            Core = new LoadableContentInfo(ResourcePath.CoreDirectory, new LoadableContentDescription("Core"), LoadableContentType.Core);
+            dlc = modInfoReader.EnumerateModInfos(ResourcePath.DlcDirectory.FullName, LoadableContentType.DLC).ToArray();
+            mod = modInfoReader.EnumerateModInfos(ResourcePath.ModDirectory.FullName, LoadableContentType.MOD).ToArray();
         }
     }
 }

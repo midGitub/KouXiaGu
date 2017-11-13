@@ -1,9 +1,9 @@
 ﻿namespace JiongXiaGu.Unity.Resources
 {
     /// <summary>
-    /// 游戏内容类型;
+    /// 可加载资源类型;
     /// </summary>
-    public enum ResourceType
+    public enum LoadableContentType
     {
         Core,
         DLC,
