@@ -42,7 +42,7 @@ namespace JiongXiaGu.Unity.Resources
         internal static void Initialize()
         {
             LoadableContentReader modInfoReader = new LoadableContentReader();
-            Core = new LoadableContentInfo(ResourcePath.CoreDirectory, new LoadableContentDescription("Core"), LoadableContentType.Core);
+            Core = new LoadableContentInfo(ResourcePath.CoreDirectory, new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
             dlc = modInfoReader.EnumerateModInfos(ResourcePath.DlcDirectory.FullName, LoadableContentType.DLC).ToArray();
             mod = modInfoReader.EnumerateModInfos(ResourcePath.ModDirectory.FullName, LoadableContentType.MOD).ToArray();
         }

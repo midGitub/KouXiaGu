@@ -25,6 +25,23 @@ namespace JiongXiaGu.Unity.Resources
         public LoadableContentType Type { get; private set; }
 
         /// <summary>
+        /// 该资源是否存在?
+        /// </summary>
+        public bool Exists
+        {
+            get { return DirectoryInfo != null && DirectoryInfo.Exists; }
+        }
+
+        /// <summary>
+        /// 构造不存在的模组数据信息;
+        /// </summary>
+        internal LoadableContentInfo(LoadableContentDescription description, LoadableContentType type)
+        {
+            Description = description;
+            Type = type;
+        }
+
+        /// <summary>
         /// 构造模组数据信息;
         /// </summary>
         internal LoadableContentInfo(DirectoryInfo directoryInfo, LoadableContentDescription description, LoadableContentType type) 

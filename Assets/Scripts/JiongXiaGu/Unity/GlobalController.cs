@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using JiongXiaGu.Unity.Resources;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity
 {
@@ -17,9 +18,12 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         void Test()
         {
-            string str = "0123456789";
-            Debug.Log(str.IndexOf("23"));
-            Debug.Log(str.Substring(4));
+            LoadOrder loadOrder = new LoadOrder();
+            loadOrder.Order.AddLast(new LoadableContentInfo(new LoadableContentDescription("0", "Core"), LoadableContentType.Core));
+
+            LoadOrder loadOrder2 = new LoadOrder(loadOrder);
+
+            Debug.Log(loadOrder == loadOrder2);
         }
     }
 }

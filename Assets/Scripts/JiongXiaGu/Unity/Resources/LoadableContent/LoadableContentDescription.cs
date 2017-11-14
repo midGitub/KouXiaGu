@@ -31,8 +31,9 @@
         /// </summary>
         public string Message { get; set; }
 
-        internal LoadableContentDescription(string name) : this()
+        internal LoadableContentDescription(string id, string name) : this()
         {
+            ID = id;
             Name = name;
         }
     }
