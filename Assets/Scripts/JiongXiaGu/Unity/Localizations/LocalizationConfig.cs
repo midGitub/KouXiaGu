@@ -15,6 +15,6 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 语言类型;
         /// </summary>
-        public LanguagePackInfo LanguagePackInfo { get; set; }
+        public LanguagePackDescription LanguagePackInfo { get; set; }
     }
 }

@@ -6,45 +6,26 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 语言包;
     /// </summary>
-    [XmlRoot(LanguagePackReader.LanguagePackInfoRootName)]
     public class LanguagePack
     {
         /// <summary>
-        /// 语言包名;
+        /// 描述;
         /// </summary>
-        [XmlAttribute(LanguagePackReader.NameXmlAttributeName)]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 语言类型;
-        /// </summary>
-        [XmlAttribute(LanguagePackReader.LanguageXmlAttributeName)]
-        public string Language { get; set; }
+        public LanguagePackDescription Description { get; set; }
 
         /// <summary>
         /// 文本字典;
         /// </summary>
-        [XmlElement]
         public LanguageDictionary LanguageDictionary { get; set; }
 
-        LanguagePack()
+        public LanguagePack(LanguagePackDescription description) : this(description, new LanguageDictionary())
         {
         }
 
-        public LanguagePack(string name, string language) : this(name, language, new LanguageDictionary())
+        public LanguagePack(LanguagePackDescription description, LanguageDictionary languageDictionary)
         {
-        }
-
-        public LanguagePack(string name, string language, LanguageDictionary languageDictionary)
-        {
-            Name = name;
-            Language = language;
+            Description = description;
             LanguageDictionary = languageDictionary;
-        }
-
-        public static implicit operator LanguagePackInfo(LanguagePack info)
-        {
-            return new LanguagePackInfo(info.Name, info.Language);
         }
     }
 }

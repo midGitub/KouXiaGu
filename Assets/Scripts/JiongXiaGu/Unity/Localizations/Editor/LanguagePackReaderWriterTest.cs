@@ -10,51 +10,83 @@ namespace JiongXiaGu.Unity.Localizations
     /// 语言包读写测试;
     /// </summary>
     [TestFixture]
-    class LanguagePackReaderWriterTest
+    class LanguagePackReadWritTest
     {
-        [Test]
-        public void Test()
+
+        private LanguagePackDescription description = new LanguagePackDescription()
         {
-            var reader = new LanguagePackReader();
-            LanguagePack languagePack = Create();
-            Stream languagePackStream = WriteTest(reader, languagePack);
-            var otherLanguagePack = ReadTest(reader, languagePackStream);
-            CheckIsSame(languagePack, otherLanguagePack);
+            Name = "Unknow",
+            Language = "Chinese",
+        };
+
+        private LanguageDictionary languageDictionary = new LanguageDictionary()
+        {
+            { "Key1", "Value1"},
+            { "Key2", "Value2"},
+            { "Key3", "Value3"},
+        };
+
+        [Test]
+        public void ReadWriteInMemory()
+        {
+            var reader = new LanguagePackSerializer();
+            LanguagePack pack1 = CreatePack();
+            Stream stream = new MemoryStream();
+            reader.Serialize(stream, pack1);
+            var pack2 = reader.Deserialize(stream);
+
+            CheckIsSame(pack1.Description, pack2.Description);
+            CheckIsSame(pack1.LanguageDictionary, pack2.LanguageDictionary);
         }
 
-        LanguagePack Create()
+        [Test]
+        public void ReadWriteInFile()
+        {
+            var reader = new LanguagePackSerializer();
+            var pack1 = CreatePack();
+            string filePath = Path.Combine(GetTempDirectory(), "ReadWritTest.zip");
+            reader.Serialize(filePath, pack1);
+            var pack2 = reader.Deserialize(filePath);
+
+            CheckIsSame(pack1.Description, pack2.Description);
+            CheckIsSame(pack1.LanguageDictionary, pack2.LanguageDictionary);
+        }
+
+        [Test]
+        public void ReadDescriptionInFile()
+        {
+            var reader = new LanguagePackSerializer();
+            var pack1 = CreatePack();
+            string filePath = Path.Combine(GetTempDirectory(), "ReadDescriptionTest.zip");
+            reader.Serialize(filePath, pack1);
+            var desc = reader.DeserializeDesc(filePath);
+
+            CheckIsSame(pack1.Description, desc);
+        }
+
+        private string GetTempDirectory()
+        {
+            string directory = Path.Combine(NUnit.TempDirectory, "Localizations");
+            Directory.CreateDirectory(directory);
+            return directory;
+        }
+
+        private LanguagePack CreatePack()
         {
             string name = SystemLanguage.ChineseSimplified.ToString();
-            LanguageDictionary languageDictionary = new LanguageDictionary()
-            {
-                { "Key1", "Value1"},
-                { "Key2", "Value2"},
-                { "Key3", "Value3"},
-            };
-            var languagePack = new LanguagePack(name, name, languageDictionary);
+            var languagePack = new LanguagePack(description, languageDictionary);
             return languagePack;
         }
 
-        Stream WriteTest(LanguagePackReader reader, LanguagePack languagePack)
+        private void CheckIsSame(LanguagePackDescription desc1, LanguagePackDescription desc2)
         {
-            Stream languagePackStream = new MemoryStream();
-            reader.Write(languagePackStream, languagePack);
-            return languagePackStream;
+            Assert.AreEqual(desc1.Name, desc2.Name);
+            Assert.AreEqual(desc1.Language, desc2.Language);
         }
 
-        LanguagePack ReadTest(LanguagePackReader reader, Stream languagePackStream)
+        private void CheckIsSame(LanguageDictionary dictionary1, LanguageDictionary dictionary2)
         {
-            languagePackStream.Seek(0, SeekOrigin.Begin);
-            LanguagePack languagePack = reader.Read(languagePackStream);
-            languagePackStream.Dispose();
-            return languagePack;
-        }
-
-        void CheckIsSame(LanguagePack languagePack, LanguagePack other)
-        {
-            Assert.AreEqual(languagePack.Name, other.Name);
-            Assert.AreEqual(languagePack.Language, other.Language);
-            Assert.IsTrue(languagePack.LanguageDictionary.IsSameContent(other.LanguageDictionary));
+            Assert.IsTrue(dictionary1.Dictionary.IsSame(dictionary2));
         }
     }
 }

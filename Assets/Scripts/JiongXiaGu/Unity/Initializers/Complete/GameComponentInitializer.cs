@@ -28,8 +28,8 @@ namespace JiongXiaGu.Unity.Initializers
 
         private const string InitializerName = "游戏组件初始化";
         private IGameComponentInitializeHandle[] initializeHandles;
+        private CancellationTokenSource initializeCancellation;
         public Task InitializeTask { get; private set; }
-        public CancellationTokenSource InitializeCancellation { get; private set; }
 
         public static GameComponentInitializer Instance
         {
@@ -40,8 +40,8 @@ namespace JiongXiaGu.Unity.Initializers
         {
             singleton.SetInstance(this);
             initializeHandles = GetComponentsInChildren<IGameComponentInitializeHandle>();
-            InitializeCancellation = new CancellationTokenSource();
-            InitializeTask = new Task(Initialize, InitializeCancellation.Token);
+            initializeCancellation = new CancellationTokenSource();
+            InitializeTask = new Task(Initialize, initializeCancellation.Token);
         }
 
         private void Start()
@@ -52,7 +52,7 @@ namespace JiongXiaGu.Unity.Initializers
         private void OnDestroy()
         {
             singleton.RemoveInstance(this);
-            InitializeCancellation.Cancel();
+            initializeCancellation.Cancel();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace JiongXiaGu.Unity.Initializers
         {
             try
             {
-                EditorHelper.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
+                EditorHelper.WaitAll(initializeHandles, item => item.Initialize(initializeCancellation.Token), initializeCancellation.Token);
                 OnCompleted();
             }
             catch (Exception ex)

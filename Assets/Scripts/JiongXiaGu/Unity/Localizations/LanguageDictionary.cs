@@ -1,13 +1,8 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.Localizations
 {
@@ -16,14 +11,40 @@ namespace JiongXiaGu.Unity.Localizations
     /// 文本字典;
     /// </summary>
     [XmlRoot("LanguageDictionary")]
-    public class LanguageDictionary : Dictionary<string, string>, IReadOnlyDictionary<string, string>, IDictionary<string, string>, IXmlSerializable
+    public class LanguageDictionary : IEnumerable<KeyValuePair<string,string>>, IXmlSerializable
     {
+        public Dictionary<string, string> Dictionary { get; private set; }
+
         public LanguageDictionary()
         {
+            Dictionary = new Dictionary<string, string>();
         }
 
-        public LanguageDictionary(IDictionary<string, string> dictionary) : base(dictionary)
+        public LanguageDictionary(IDictionary<string, string> dictionary)
         {
+            Dictionary = new Dictionary<string, string>(dictionary);
+        }
+
+        public void Add(KeyValuePair<string, string> pair)
+        {
+            Dictionary.Add(pair.Key, pair.Value);
+        }
+
+        public void Add(string key, string value)
+        {
+            Dictionary.Add(key, value);
+        }
+
+        public void AddOrUpdate(string key, string value)
+        {
+            if (Dictionary.ContainsKey(key))
+            {
+                Dictionary[key] = value;
+            }
+            else
+            {
+                Add(key, value);
+            }
         }
 
         /// <summary>
@@ -34,10 +55,20 @@ namespace JiongXiaGu.Unity.Localizations
             if (languageDictionary == this)
                 return;
 
-            foreach (var pair in languageDictionary)
+            foreach (var pair in Dictionary)
             {
-                this.AddOrUpdate(pair);
+                AddOrUpdate(pair.Key, pair.Value);
             }
+        }
+
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<string, string>>)Dictionary).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<string, string>>)Dictionary).GetEnumerator();
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -47,30 +78,28 @@ namespace JiongXiaGu.Unity.Localizations
 
         internal const string TextItemElementName = "Text";
         internal const string TextItemKeyAttributeName = "key";
-        internal const string TextItemValueAttributeName = "value";
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
             if (reader.ReadToDescendant(TextItemElementName))
             {
-                while (reader.ReadToNextSibling(TextItemElementName))
+                do
                 {
                     string key = reader.GetAttribute(TextItemKeyAttributeName);
-                    string value = reader.GetAttribute(TextItemValueAttributeName);
-                    this.AddOrUpdate(key, value);
+                    string value = reader.ReadElementContentAsString();
+                    AddOrUpdate(key, value);
                 }
-                reader.ReadEndElement();
+                while (reader.IsStartElement());
             }
-            reader.ReadEndElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
-            foreach (var pair in this)
+            foreach (var pair in Dictionary)
             {
                 writer.WriteStartElement(TextItemElementName);
                 writer.WriteAttributeString(TextItemKeyAttributeName, pair.Key);
-                writer.WriteAttributeString(TextItemValueAttributeName, pair.Value);
+                writer.WriteValue(pair.Value);
                 writer.WriteEndElement();
             }
         }

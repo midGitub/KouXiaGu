@@ -9,17 +9,10 @@ namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
-    /// 语言包信息;
+    /// 语言包描述;
     /// </summary>
-    [XmlRoot("LanguagePackInfo")]
-    public struct LanguagePackInfo : IEquatable<LanguagePackInfo>
+    public struct LanguagePackDescription : IEquatable<LanguagePackDescription>
     {
-        public LanguagePackInfo(string name, string language)
-        {
-            Name = name;
-            Language = language;
-        }
-
         /// <summary>
         /// 语言包名;
         /// </summary>
@@ -31,6 +24,12 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         [XmlAttribute("language")]
         public string Language { get; set; }
+
+        public LanguagePackDescription(string name, string language)
+        {
+            Name = name;
+            Language = language;
+        }
 
         public override string ToString()
         {
@@ -44,27 +43,27 @@ namespace JiongXiaGu.Unity.Localizations
 
         public override bool Equals(object obj)
         {
-            if (obj is LanguagePackInfo)
+            if (obj is LanguagePackDescription)
             {
-                return Equals((LanguagePackInfo)obj);
+                return Equals((LanguagePackDescription)obj);
             }
             return false;
         }
 
-        public bool Equals(LanguagePackInfo other)
+        public bool Equals(LanguagePackDescription other)
         {
             return Name == other.Name
                 && Language == other.Language;
         }
 
-        public static bool operator ==(LanguagePackInfo v1, LanguagePackInfo v2)
+        public static bool operator ==(LanguagePackDescription v1, LanguagePackDescription v2)
         {
             return v1.Equals(v2);
         }
 
-        public static bool operator !=(LanguagePackInfo v1, LanguagePackInfo v2)
+        public static bool operator !=(LanguagePackDescription v1, LanguagePackDescription v2)
         {
-            return !v1.Equals(v2);
+            return !(v1 == v2);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.Localizations
 {
@@ -9,14 +10,9 @@ namespace JiongXiaGu.Unity.Localizations
     public class LanguagePackFileInfo
     {
         /// <summary>
-        /// 语言包名;
+        /// 描述;
         /// </summary>
-        public string Name { get; private set; }
-
-        /// <summary>
-        /// 语言类型;
-        /// </summary>
-        public string Language { get; private set; }
+        public LanguagePackDescription Description { get; private set; }
 
         /// <summary>
         /// 文件信息实例;
@@ -26,16 +22,10 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 指定语言包文件信息;
         /// </summary>
-        public LanguagePackFileInfo(FileInfo fileInfo, string name, string language)
+        public LanguagePackFileInfo(LanguagePackDescription description, FileInfo fileInfo)
         {
+            Description = description;
             FileInfo = fileInfo;
-            Name = name;
-            Language = language;
-        }
-
-        public static implicit operator LanguagePackInfo(LanguagePackFileInfo fileInfo)
-        {
-            return new LanguagePackInfo(fileInfo.Name, fileInfo.Language);
         }
     }
 }

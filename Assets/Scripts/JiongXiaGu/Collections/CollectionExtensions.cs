@@ -277,7 +277,7 @@ namespace JiongXiaGu.Collections
         }
 
         /// <summary>
-        /// 这两个合集是否拥有相同的内容?
+        /// 这两个合集是否拥有相同的内容?尽管顺序和包含个数不同;
         /// </summary>
         public static bool IsSameContent<TKey, TValue>(this IDictionary<TKey, TValue> collection, IEnumerable<KeyValuePair<TKey, TValue>> other)
         {
