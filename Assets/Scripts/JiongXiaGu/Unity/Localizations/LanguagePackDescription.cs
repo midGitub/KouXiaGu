@@ -11,21 +11,33 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 语言包描述;
     /// </summary>
-    public struct LanguagePackDescription : IEquatable<LanguagePackDescription>
+    public struct LanguagePackDescription
     {
         /// <summary>
         /// 语言包名;
         /// </summary>
-        [XmlAttribute("name")]
+        [XmlElement("Name")]
         public string Name { get; set; }
 
         /// <summary>
         /// 语言类型;
         /// </summary>
-        [XmlAttribute("language")]
+        [XmlElement("Language")]
         public string Language { get; set; }
 
-        public LanguagePackDescription(string name, string language)
+        /// <summary>
+        /// 版本;
+        /// </summary>
+        [XmlElement("Version")]
+        public string Version { get; set; }
+
+        /// <summary>
+        /// 预留消息;
+        /// </summary>
+        [XmlElement("Message")]
+        public string Message { get; set; }
+
+        public LanguagePackDescription(string name, string language) : this()
         {
             Name = name;
             Language = language;
@@ -33,37 +45,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         public override string ToString()
         {
-            return string.Format("{1}[Name:{2}, Language:{3}]", base.ToString(), Name, Language);
-        }
-
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode() ^ Language.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is LanguagePackDescription)
-            {
-                return Equals((LanguagePackDescription)obj);
-            }
-            return false;
-        }
-
-        public bool Equals(LanguagePackDescription other)
-        {
-            return Name == other.Name
-                && Language == other.Language;
-        }
-
-        public static bool operator ==(LanguagePackDescription v1, LanguagePackDescription v2)
-        {
-            return v1.Equals(v2);
-        }
-
-        public static bool operator !=(LanguagePackDescription v1, LanguagePackDescription v2)
-        {
-            return !(v1 == v2);
+            return string.Format("[Name:{0}, Language:{1}, Version:{2}, Message:{3}]", Name, Language, Version, Message);
         }
     }
 }

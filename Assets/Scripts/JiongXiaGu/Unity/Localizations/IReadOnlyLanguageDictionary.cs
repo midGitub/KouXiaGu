@@ -1,7 +1,8 @@
 ﻿namespace JiongXiaGu.Unity.Localizations
 {
+
     /// <summary>
-    /// 语言字典;
+    /// 只读的语言文本字典;
     /// </summary>
     public interface IReadOnlyLanguageDictionary
     {

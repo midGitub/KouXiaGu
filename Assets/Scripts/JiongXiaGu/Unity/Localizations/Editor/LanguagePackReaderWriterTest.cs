@@ -86,7 +86,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         private void CheckIsSame(LanguageDictionary dictionary1, LanguageDictionary dictionary2)
         {
-            Assert.IsTrue(dictionary1.Dictionary.IsSame(dictionary2));
+            Assert.IsTrue(dictionary1.IsSame(dictionary2));
         }
     }
 }

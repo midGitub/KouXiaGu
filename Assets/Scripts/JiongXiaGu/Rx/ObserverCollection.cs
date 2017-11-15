@@ -66,7 +66,7 @@ namespace JiongXiaGu
         }
 
         /// <summary>
-        /// 移除指定观察者;
+        /// 移除指定观察者,若移除成功则返回true;此方法不会调用观察者的OnCompleted(),
         /// </summary>
         public bool Remove(IObserver<T> observer)
         {
