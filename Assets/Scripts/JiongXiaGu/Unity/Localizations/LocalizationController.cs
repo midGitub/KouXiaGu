@@ -1,12 +1,12 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.Initializers;
+using JiongXiaGu.Unity.Resources;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.IO;
-using JiongXiaGu.Unity.Resources;
-using System.Linq;
-using JiongXiaGu.Unity.Initializers;
 
 namespace JiongXiaGu.Unity.Localizations
 {
@@ -59,7 +59,7 @@ namespace JiongXiaGu.Unity.Localizations
             {
                 token.ThrowIfCancellationRequested();
                 Initialize(token);
-                EditorHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
+                UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
             });
         }
 
@@ -83,7 +83,7 @@ namespace JiongXiaGu.Unity.Localizations
                 }
                 catch (Exception ex)
                 {
-                    EditorHelper.LogWarning(InitializerName, "读取语言包时需要错误", ex);
+                    UnityDebugHelper.LogWarning(InitializerName, "读取语言包时需要错误", ex);
                 }
                 token.ThrowIfCancellationRequested();
             }
@@ -194,10 +194,10 @@ namespace JiongXiaGu.Unity.Localizations
 
         private string GetInfoLog()
         {
-            string log = "语言 : " + Localization.Language
+            string log = "语言 : " + Localization.Language.Language
                 + ", 系统语言 : " + SystemLanguage.ToString()
                 + ", 可读语言总数 : " + Localization.AvailableLanguagePacks.Count
-                + ", 可读语言: : " + string.Join(", ", Localization.AvailableLanguagePacks.Select(item => string.Format("[Language : {0}, Name : {1}]", item.Description.Language, item.Description.Name)))
+                + ", 可读语言 : " + string.Join(", ", Localization.AvailableLanguagePacks.Select(item => string.Format("[Language : {0}, Name : {1}]", item.Description.Language, item.Description.Name)))
                 + ", 语言组内容总数 : " + Localization.language.Count
                 + ", 语言组条目总数 : " + Localization.language.TextItemCount()
                 ;

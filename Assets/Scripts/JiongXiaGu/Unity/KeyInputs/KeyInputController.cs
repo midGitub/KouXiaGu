@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity.KeyInputs
         [System.Diagnostics.Conditional("EDITOR_LOG")]
         private void OnInitializeCompleted()
         {
-            EditorHelper.SuccessfulReport("按键映射组件", GetInfoLog());
+            UnityDebugHelper.SuccessfulReport("按键映射组件", GetInfoLog());
         }
 
         private string GetInfoLog()

@@ -58,7 +58,7 @@ namespace JiongXiaGu.Unity.Initializers
         {
             try
             {
-                EditorHelper.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
+                UnityDebugHelper.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
                 OnCompleted();
             }
             catch (Exception ex)
@@ -69,12 +69,12 @@ namespace JiongXiaGu.Unity.Initializers
 
         private void OnCompleted()
         {
-            EditorHelper.SuccessfulReport(InitializerName);
+            UnityDebugHelper.SuccessfulReport(InitializerName);
         }
 
         private void OnFaulted(Exception ex)
         {
-            EditorHelper.FailureReport(InitializerName, ex);
+            UnityDebugHelper.FailureReport(InitializerName, ex);
         }
     }
 }

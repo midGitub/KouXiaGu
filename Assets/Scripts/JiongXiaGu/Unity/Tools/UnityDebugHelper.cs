@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity
 {
-    
+
     /// <summary>
     /// 提供标准的输出格式;
     /// </summary>
-    internal class EditorHelper
+    internal class UnityDebugHelper
     {
 
         internal const string LogPragma = "EDITOR_LOG";
