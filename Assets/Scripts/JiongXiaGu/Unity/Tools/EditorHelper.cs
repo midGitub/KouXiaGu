@@ -10,56 +10,96 @@ namespace JiongXiaGu.Unity
 {
     
     /// <summary>
-    /// 在编辑器模式下的拓展方法;
+    /// 提供标准的输出格式;
     /// </summary>
     internal class EditorHelper
     {
 
+        internal const string LogPragma = "EDITOR_LOG";
+
+
         /// <summary>
         /// 输出成功报告信息;
         /// </summary>
-        [System.Diagnostics.Conditional("EDITOR_LOG")]
-        public static void LogComplete(string initializerName)
+        [System.Diagnostics.Conditional(LogPragma)]
+        public static void SuccessfulReport(string name)
         {
-            Debug.Log(string.Format("[{0}]初始化完成;", initializerName));
+            Debug.Log(string.Format("[{0}]运行完成;", name));
         }
 
         /// <summary>
         /// 输出成功报告信息;
         /// </summary>
-        public static void LogComplete(string initializerName, Func<string> getMessage)
+        [System.Diagnostics.Conditional(LogPragma)]
+        public static void SuccessfulReport(string name, Func<string> getMessage)
         {
             if (getMessage == null)
                 throw new ArgumentNullException(nameof(getMessage));
 
             string message = getMessage.Invoke();
-            LogComplete(initializerName, message);
+            SuccessfulReport(name, message);
         }
 
         /// <summary>
         /// 输出成功报告信息;
         /// </summary>
-        [System.Diagnostics.Conditional("EDITOR_LOG")]
-        public static void LogComplete(string initializerName, string message)
+        [System.Diagnostics.Conditional(LogPragma)]
+        public static void SuccessfulReport(string name, string message)
         {
-            Debug.Log(string.Format("[{0}]初始化完成;[{1}]", initializerName, message));
+            Debug.Log(string.Format("[{0}]运行完成;[{1}]", name, message));
         }
 
 
         /// <summary>
         /// 输出失败报告到Debug;
         /// </summary>
-        [System.Diagnostics.Conditional("EDITOR_LOG")]
-        public static void LogFault(string initializerName, Exception ex)
+        [System.Diagnostics.Conditional(LogPragma)]
+        public static void FailureReport(string name, Exception ex)
         {
-            Debug.LogError(string.Format("[{0}]运行时遇到错误:{1}", initializerName, ex));
+            Debug.LogError(string.Format("[{0}]运行时遇到错误:{1}", name, ex));
+        }
+
+
+        /// <summary>
+        /// 输出一条警告消息;
+        /// </summary>
+        public static void LogWarning(string name, string message)
+        {
+            string text = string.Format("[{0}]{1}", name, message);
+            Debug.LogWarning(text);
+        }
+
+        /// <summary>
+        /// 输出一条警告消息;
+        /// </summary>
+        public static void LogWarning(string name, string message, Exception ex)
+        {
+            string text = string.Format("[{0}]Message : {1} ; Exception :{2} ;", name, message, ex);
+            Debug.LogWarning(text);
+        }
+
+
+        /// <summary>
+        /// 输出一条错误消息;
+        /// </summary>
+        public static void LogError(string name, string message)
+        {
+            string text = string.Format("[{0}]{1}", name, message);
+            Debug.LogWarning(text);
+        }
+
+        /// <summary>
+        /// 输出一条错误消息;
+        /// </summary>
+        public static void LogError(string name, string message, Exception ex)
+        {
+            string text = string.Format("[{0}]Message : {1} ; Exception :{2} ;", name, message, ex);
+            Debug.LogWarning(text);
         }
 
 
 
-
-
-
+        [Obsolete]
         public static void WaitAll<T>(IReadOnlyList<T> initializeHandles, Func<T, Task> func, CancellationToken token)
         {
             Task[] tasks = new Task[initializeHandles.Count];

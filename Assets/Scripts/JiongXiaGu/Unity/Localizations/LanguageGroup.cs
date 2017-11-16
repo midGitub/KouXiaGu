@@ -14,7 +14,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 主要语言字典;
         /// </summary>
-        private LanguagePack mainPack;
+        public LanguagePack MainPack { get; private set; }
 
         /// <summary>
         /// 补充语言字典合集;
@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public string Language
         {
-            get { return mainPack.Description.Language; }
+            get { return MainPack.Description.Language; }
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace JiongXiaGu.Unity.Localizations
             if (mainPack == null)
                 throw new ArgumentNullException(nameof(mainPack));
 
-            this.mainPack = mainPack;
+            this.MainPack = mainPack;
             supplementPacks = new List<LanguagePack>();
         }
 
@@ -61,7 +61,7 @@ namespace JiongXiaGu.Unity.Localizations
             if (supplementPacks == null)
                 throw new ArgumentNullException(nameof(supplementPacks));
 
-            this.mainPack = mainPack;
+            this.MainPack = mainPack;
             this.supplementPacks = new List<LanguagePack>(supplementPacks);
         }
 
@@ -74,7 +74,7 @@ namespace JiongXiaGu.Unity.Localizations
                 throw new ArgumentNullException(nameof(pack));
             if (pack.Description.Language != Language)
                 throw new ArgumentException("传入语言不同于该合集;");
-            if (mainPack == pack)
+            if (MainPack == pack)
                 throw new ArgumentException(string.Format("传入语言包和主语言包相同[{0}]", pack));
             if (supplementPacks.Contains(pack))
                 throw new ArgumentException(string.Format("已经存在语言包[{0}]", pack));
@@ -83,7 +83,7 @@ namespace JiongXiaGu.Unity.Localizations
         }
 
         /// <summary>
-        /// 移除语言包;
+        /// 移除补充语言包;
         /// </summary>
         public bool Remove(LanguagePack pack)
         {
@@ -100,10 +100,18 @@ namespace JiongXiaGu.Unity.Localizations
         {
             if (languagePack == null)
                 throw new ArgumentNullException(nameof(languagePack));
-            if (languagePack == mainPack)
+            if (languagePack == MainPack)
                 return true;
 
             return supplementPacks.Contains(languagePack);
+        }
+
+        /// <summary>
+        /// 清除所有补充语言包;
+        /// </summary>
+        public void Clear()
+        {
+            supplementPacks.Clear();
         }
 
         /// <summary>
@@ -139,11 +147,11 @@ namespace JiongXiaGu.Unity.Localizations
             {
                 yield return supplementPacks[i];
             }
-            yield return mainPack;
+            yield return MainPack;
         }
 
         /// <summary>
-        /// 枚举所有语言字典(按字典查询优先级返回);
+        /// 枚举所有语言包(按字典查询优先级返回);
         /// </summary>
         public IEnumerator<LanguagePack> GetEnumerator()
         {

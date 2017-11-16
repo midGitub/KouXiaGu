@@ -84,6 +84,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举目录下的所有模组;
         /// </summary>
+        /// <param name="modsDirectory">目标目录</param>
+        /// <param name="type">指定找到的模组类型</param>
+        /// <returns></returns>
         public IEnumerable<LoadableContentInfo> EnumerateModInfos(string modsDirectory, LoadableContentType type)
         {
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory))

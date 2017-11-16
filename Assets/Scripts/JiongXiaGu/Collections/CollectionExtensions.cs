@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 using System.Collections.Generic;
 
 namespace JiongXiaGu.Collections
@@ -10,18 +11,70 @@ namespace JiongXiaGu.Collections
     public static class CollectionExtensions
     {
 
-        static void ValidateCollection<T>(IEnumerable<T> collection)
+        #region AddRange
+
+        /// <summary>
+        /// 添加多个合集内容到链表;(此方法会改变list.Capacity的值)
+        /// </summary>
+        public static void AddRange<T>(this List<T> list, params ICollection<T>[] collections)
         {
-            if (collection == null)
-                throw new ArgumentNullException("collection");
+            int capacity = list.Capacity;
+
+            for (int i = 0; i < collections.Length; i++)
+            {
+                var collection = collections[i];
+
+                if (collection == null)
+                {
+                    throw new ArgumentNullException(string.Format("合集第{0}个元素为Null", i));
+                }
+                else
+                {
+                    capacity += collection.Count;
+                }
+            }
+
+            list.Capacity = capacity;
+
+            foreach (var collection in collections)
+            {
+                list.AddRange(collection);
+            }
         }
 
-        static void ValidateNull(object item)
+        /// <summary>
+        /// 添加多个合集内容到链表;(此方法会改变list.Capacity的值)
+        /// </summary>
+        public static void AddRange<T>(this List<T> list, params IReadOnlyCollection<T>[] collections)
         {
-            if (item == null)
-                throw new ArgumentNullException("item");
+            int capacity = list.Capacity;
+
+            for (int i = 0; i < collections.Length; i++)
+            {
+                IReadOnlyCollection<T> collection = collections[i];
+
+                if (collection == null)
+                {
+                    throw new ArgumentNullException(string.Format("合集第{0}个元素为Null", i));
+                }
+                else
+                {
+                    capacity += collection.Count;
+                }
+            }
+
+            list.Capacity = capacity;
+
+            foreach (var collection in collections)
+            {
+                list.AddRange(collection);
+            }
         }
 
+        #endregion
+
+
+        #region AddOrUpdate
 
         /// <summary>
         /// 若合集内不存在则加入到,否者更新合集内的元素;
@@ -67,6 +120,8 @@ namespace JiongXiaGu.Collections
                 }
             }
         }
+
+#endregion
 
 
         /// <summary>
@@ -221,8 +276,11 @@ namespace JiongXiaGu.Collections
         /// <param name="comparer">一个对值进行比较的相等比较器;</param>
         public static int FindIndex<T>(this IList<T> collection, T item, IEqualityComparer<T> comparer)
         {
-            ValidateCollection(collection);
-            ValidateNull(comparer);
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (comparer == null)
+                throw new ArgumentNullException(nameof(comparer));
+
             for (int i = 0; i < collection.Count; i++)
             {
                 T original = collection[i];
@@ -239,8 +297,11 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public static int FindIndex<T>(this IList<T> collection, Func<T, bool> func)
         {
-            ValidateCollection(collection);
-            ValidateNull(func);
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (func == null)
+                throw new ArgumentNullException(nameof(func));
+
             for (int i = 0; i < collection.Count; i++)
             {
                 T original = collection[i];

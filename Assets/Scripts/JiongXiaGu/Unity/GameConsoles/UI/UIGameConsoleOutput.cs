@@ -37,7 +37,6 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
 
         private bool setScrollbarVerticalValue;
         private ConsoleStringBuilder consoleStringBuilder;
-        private IDisposable consoleEventUnsubscriber;
         private IDisposable unityDebugLogEventUnsubscriber;
 
         private void Awake()
@@ -45,7 +44,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
             StringBuilder stringBuilder = new StringBuilder(maxCapacity, maxCapacity);
             stringBuilder.Append(output.text);
             consoleStringBuilder = new ConsoleStringBuilder(stringBuilder, format);
-            consoleEventUnsubscriber = GameConsole.Subscribe(consoleStringBuilder);
+            GameConsole.Subscribe(consoleStringBuilder);
             IsDisplayUnityDebugLog(displayUnityDebugLog);
         }
 

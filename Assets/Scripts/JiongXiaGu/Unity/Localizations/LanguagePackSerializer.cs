@@ -43,28 +43,13 @@ namespace JiongXiaGu.Unity.Localizations
             using (ZipFile zipFile = new ZipFile(stream))
             {
                 zipFile.IsStreamOwner = false;
+                ZipContent zipContent = Check(zipFile);
 
-                ZipEntry descZipEntry = zipFile.GetEntry(descriptionFileName);
-                if (descZipEntry != null)
-                {
-                    var descStream = zipFile.GetInputStream(descZipEntry);
-                    description = descriptionSerializer.Deserialize(descStream);
-                }
-                else
-                {
-                    throw new FileNotFoundException(string.Format("未找到对应文件:{0}", descriptionFileName));
-                }
+                var descStream = zipFile.GetInputStream(zipContent.Description);
+                description = descriptionSerializer.Deserialize(descStream);
 
-                ZipEntry dictionaryZipEntry = zipFile.GetEntry(dictionaryFileName);
-                if (dictionaryZipEntry != null)
-                {
-                    var dictionarystream = zipFile.GetInputStream(dictionaryZipEntry);
-                    dictionary = dictionarySerializer.Deserialize(dictionarystream);
-                }
-                else
-                {
-                    throw new FileNotFoundException(string.Format("未找到对应文件:{0}", dictionaryFileName));
-                }
+                var dictionarystream = zipFile.GetInputStream(zipContent.Dictionary);
+                dictionary = dictionarySerializer.Deserialize(dictionarystream);
             }
             return new LanguagePack(description, dictionary);
         }
@@ -88,18 +73,33 @@ namespace JiongXiaGu.Unity.Localizations
             using (ZipFile zipFile = new ZipFile(stream))
             {
                 zipFile.IsStreamOwner = false;
-
-                ZipEntry descZipEntry = zipFile.GetEntry(descriptionFileName);
-                if (descZipEntry != null)
-                {
-                    var descStream = zipFile.GetInputStream(descZipEntry);
-                    return descriptionSerializer.Deserialize(descStream);
-                }
-                else
-                {
-                    throw new FileNotFoundException(string.Format("未找到对应文件:{0}", descriptionFileName));
-                }
+                ZipContent zipContent = Check(zipFile);
+                var descStream = zipFile.GetInputStream(zipContent.Description);
+                return descriptionSerializer.Deserialize(descStream);
             }
+        }
+
+        /// <summary>
+        /// 检查压缩包完整性;
+        /// </summary>
+        private ZipContent Check(ZipFile zipFile)
+        {
+            ZipContent zipContent = new ZipContent();
+            zipContent.ZipFile = zipFile;
+
+            zipContent.Description = zipFile.GetEntry(descriptionFileName);
+            if (zipContent.Description == null)
+            {
+                throw new FileNotFoundException(string.Format("未找到对应文件:{0}", descriptionFileName));
+            }
+
+            zipContent.Dictionary = zipFile.GetEntry(dictionaryFileName);
+            if (zipContent.Dictionary == null)
+            {
+                throw new FileNotFoundException(string.Format("未找到对应文件:{0}", dictionaryFileName));
+            }
+
+            return zipContent;
         }
 
         /// <summary>
@@ -130,6 +130,16 @@ namespace JiongXiaGu.Unity.Localizations
                 zipOutputStream.PutNextEntry(dictionaryZipEntry);
                 dictionarySerializer.Serialize(zipOutputStream, pack.LanguageDictionary);
             }
+        }
+
+        /// <summary>
+        /// 表示压缩包内的文件;
+        /// </summary>
+        private struct ZipContent
+        {
+            public ZipFile ZipFile { get; set; }
+            public ZipEntry Description { get; set; }
+            public ZipEntry Dictionary { get; set; }
         }
     }
 }

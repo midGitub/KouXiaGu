@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity.GameConsoles
 
         private void OnComplete()
         {
-            EditorHelper.LogComplete("控制台",() => GetConsoleInfo());
+            EditorHelper.SuccessfulReport("控制台",() => GetConsoleInfo());
         }
 
         public string GetConsoleInfo()

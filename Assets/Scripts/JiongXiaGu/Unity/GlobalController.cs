@@ -1,5 +1,8 @@
 ﻿using JiongXiaGu.Unity.Resources;
+using System.IO;
+using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
+using ICSharpCode.SharpZipLib.Core;
 
 namespace JiongXiaGu.Unity
 {
@@ -9,21 +12,43 @@ namespace JiongXiaGu.Unity
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class GlobalController :MonoBehaviour
-    {   
-        void Awake()
+    {
+        private void Awake()
         {
             DontDestroyOnLoad(gameObject);
         }
 
         [ContextMenu("Test")]
-        void Test()
+        private void Test()
         {
-            LoadOrder loadOrder = new LoadOrder();
-            loadOrder.Order.AddLast(new LoadableContentInfo(new LoadableContentDescription("0", "Core"), LoadableContentType.Core));
+            string directory = "F:\\My_Code\\Unity5\\KouXiaGu\\NUnitTemp";
+            FastZip fast = new FastZip();
 
-            LoadOrder loadOrder2 = new LoadOrder(loadOrder);
+            //string fileFilter = new PathFilter(string.Empty).ToString();
+            //Debug.Log(fileFilter);
+            fast.CreateZip(@"NUnitTemp.zip", directory, true, string.Empty);
 
-            Debug.Log(loadOrder == loadOrder2);
+            //using (ZipFile zipFile = ZipFile.Create(new FileStream(@"NUnitTemp.zip", FileMode.Create, FileAccess.ReadWrite)))
+            //{
+            //    zipFile.IsStreamOwner = true;
+
+            //    zipFile.BeginUpdate();
+
+            //    foreach (var path in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+            //    {
+            //        zipFile.Add(path);
+            //    }
+
+            //    zipFile.CommitUpdate();
+            //}
+
+            using (ZipFile zipFile = new ZipFile(@"NUnitTemp.zip"))
+            {
+                foreach (ZipEntry zipEntry in zipFile)
+                {
+                    Debug.Log(zipEntry.Name);
+                }
+            }
         }
     }
 }

@@ -69,12 +69,12 @@ namespace JiongXiaGu.Unity.Initializers
 
         private void OnCompleted()
         {
-            EditorHelper.LogComplete(InitializerName);
+            EditorHelper.SuccessfulReport(InitializerName);
         }
 
         private void OnFaulted(Exception ex)
         {
-            EditorHelper.LogFault(InitializerName, ex);
+            EditorHelper.FailureReport(InitializerName, ex);
         }
     }
 }
