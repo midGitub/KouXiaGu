@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 搜索可使用的语言文件;
     /// </summary>
-    public class LanguagePackFileSearcher
+    public class LanguagePackSearcher
     {
         [PathDefinition(PathDefinition.DataDirectory, "本地化资源目录;")]
         internal const string LocalizationDirectoryName = "Localization";
@@ -26,12 +26,12 @@ namespace JiongXiaGu.Unity.Localizations
             get { return packFilePrefix + "*" + packFileExtension; }
         }
 
-        public LanguagePackFileSearcher()
+        public LanguagePackSearcher()
         {
             packSerializer = new LanguagePackSerializer();
         }
 
-        public LanguagePackFileSearcher(LanguagePackSerializer packSerializer)
+        public LanguagePackSearcher(LanguagePackSerializer packSerializer)
         {
             this.packSerializer = packSerializer;
         }
@@ -39,26 +39,26 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;
         /// </summary>
-        public IEnumerable<LanguagePackFileInfo> EnumeratePack(LoadableContentInfo loadableContentInfo)
+        public IEnumerable<LanguagePackInfo> EnumeratePack(LoadableContentInfo loadableContentInfo)
         {
-            string directory = Path.Combine(loadableContentInfo.DirectoryInfo.FullName, LocalizationDirectoryName);
-            return EnumeratePack(directory, SearchOption.TopDirectoryOnly);
+            return EnumeratePack(loadableContentInfo.ContentConstruct, SearchOption.TopDirectoryOnly);
         }
 
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        public IEnumerable<LanguagePackFileInfo> EnumeratePack(string directory, SearchOption searchOption)
+        public IEnumerable<LanguagePackInfo> EnumeratePack(LoadableContentConstruct contentConstruct, SearchOption searchOption)
         {
-            foreach (var filePath in Directory.EnumerateFiles(directory, LanguagePackFileSearchPattern, searchOption))
+            foreach (ILoadableEntry entry in contentConstruct.EnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
             {
-                LanguagePackFileInfo languagePack;
-
+                LanguagePackInfo languagePack;
                 try
                 {
-                    FileInfo fileInfo = new FileInfo(filePath);
-                    LanguagePackDescription description = packSerializer.DeserializeDesc(filePath);
-                    languagePack = new LanguagePackFileInfo(description, fileInfo);
+                    using (var stream = contentConstruct.GetStream(entry))
+                    {
+                        LanguagePackDescription description = packSerializer.DeserializeDesc(stream);
+                        languagePack = new LanguagePackInfo(description, contentConstruct, entry);
+                    }
                 }
                 catch (Exception)
                 {

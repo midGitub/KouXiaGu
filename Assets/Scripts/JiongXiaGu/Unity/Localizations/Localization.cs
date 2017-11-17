@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 所有可用的语言包(在进行初始化之后,仅提供Unity线程对此内容进行变更);
         /// </summary>
-        internal static List<LanguagePackFileInfo> AvailableLanguagePacks { get; set; }
+        internal static List<LanguagePackInfo> AvailableLanguagePacks { get; set; }
 
         /// <summary>
         /// 观察者合集;

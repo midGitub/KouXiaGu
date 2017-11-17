@@ -24,7 +24,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         [SerializeField]
         private SystemLanguage defaultLanguage = SystemLanguage.ChineseSimplified;
-        private LanguagePackFileSearcher fileSearcher;
+        private LanguagePackSearcher fileSearcher;
         private LanguagePackSerializer packSerializer;
         private LocalizationConfigFileReader configFileReader;
         public SystemLanguage SystemLanguage { get; private set; }
@@ -34,7 +34,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         internal Exception ReadConfigFileException { get; private set; }
 
-        private List<LanguagePackFileInfo> availableLanguagePacks
+        private List<LanguagePackInfo> availableLanguagePacks
         {
             get { return Localization.AvailableLanguagePacks; }
             set { Localization.AvailableLanguagePacks = value; }
@@ -42,7 +42,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         private void Awake()
         {
-            fileSearcher = new LanguagePackFileSearcher();
+            fileSearcher = new LanguagePackSearcher();
             packSerializer = new LanguagePackSerializer();
             configFileReader = new LocalizationConfigFileReader();
             SystemLanguage = Application.systemLanguage;
@@ -74,11 +74,11 @@ namespace JiongXiaGu.Unity.Localizations
             LocalizationConfig? config = ReadConfigFile();
             LanguagePack languagePack = null;
 
-            foreach (var pack in EnumerateLanguagePask(config))
+            foreach (var packInfo in EnumerateLanguagePask(config))
             {
                 try
                 {
-                    languagePack = packSerializer.Deserialize(pack.FileInfo.FullName);
+                    languagePack = packSerializer.Deserialize(packInfo);
                     break;
                 }
                 catch (Exception ex)
@@ -104,9 +104,9 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 获取到所有可使用的语言包;
         /// </summary>
-        private List<LanguagePackFileInfo> GetLanguagePackAll()
+        private List<LanguagePackInfo> GetLanguagePackAll()
         {
-            List<LanguagePackFileInfo> languagePacks = new List<LanguagePackFileInfo>();
+            List<LanguagePackInfo> languagePacks = new List<LanguagePackInfo>();
 
             foreach (var load in Resource.All)
             {
@@ -136,7 +136,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有符合要求的语言包;
         /// </summary>
-        private IEnumerable<LanguagePackFileInfo> EnumerateLanguagePask(LocalizationConfig? config)
+        private IEnumerable<LanguagePackInfo> EnumerateLanguagePask(LocalizationConfig? config)
         {
             string[] spareLanguages;
 

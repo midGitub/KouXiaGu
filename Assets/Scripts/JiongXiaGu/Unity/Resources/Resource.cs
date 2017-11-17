@@ -63,7 +63,7 @@ namespace JiongXiaGu.Unity.Resources
 
         private static LoadableContentInfo GetCore()
         {
-            return new LoadableContentInfo(ResourcePath.CoreDirectory, new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
+            return new LoadableContentInfo(new LoadableDirectory(ResourcePath.CoreDirectory), new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
         }
 
         private static List<LoadableContentInfo> GetDlc(LoadableContentReader modInfoReader)

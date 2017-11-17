@@ -35,6 +35,17 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 读取语言包;
         /// </summary>
+        public LanguagePack Deserialize(LanguagePackInfo packFileInfo)
+        {
+            using (var stream = packFileInfo.ContentConstruct.GetStream(packFileInfo.LoadableEntry))
+            {
+                return Deserialize(stream);
+            }
+        }
+
+        /// <summary>
+        /// 读取语言包;
+        /// </summary>
         public LanguagePack Deserialize(Stream stream)
         {
             LanguagePackDescription description = default(LanguagePackDescription);

@@ -15,12 +15,17 @@ namespace JiongXiaGu
         /// <summary>
         /// 路径字符串中的分隔符;
         /// </summary>
-        private const char directorySeparatorChar = '\\';
+        public const char DirectorySeparatorChar = '\\';
 
         /// <summary>
         /// 路径字符串中的分隔符;
         /// </summary>
-        private const string directorySeparatorSrting = "\\";
+        public const string DirectorySeparatorSrting = "\\";
+
+        /// <summary>
+        /// 路径字符串中的分隔符(只读);
+        /// </summary>
+        internal static char[] DirectorySeparatorChars = new char[] { '/', '\\' };
 
         /// <summary>
         /// 获取到相对路径;参考 Uri.MakeRelativeUri 方法;
@@ -35,15 +40,15 @@ namespace JiongXiaGu
                 throw new ArgumentNullException(nameof(relativeTo));
 
             absolutePath = Normalize(absolutePath);
-            if (absolutePath.EndsWith(directorySeparatorSrting))
+            if (absolutePath.EndsWith(DirectorySeparatorSrting))
             {
                 absolutePath = absolutePath.Remove(absolutePath.Length - 1);
             }
 
             relativeTo = Normalize(relativeTo);
 
-            string[] absoluteDirectories = absolutePath.Split(directorySeparatorChar);
-            string[] relativeDirectories = relativeTo.Split(directorySeparatorChar);
+            string[] absoluteDirectories = absolutePath.Split(DirectorySeparatorChar);
+            string[] relativeDirectories = relativeTo.Split(DirectorySeparatorChar);
 
             if (absoluteDirectories.Length > relativeDirectories.Length)
             {
@@ -68,7 +73,7 @@ namespace JiongXiaGu
 
             for (int index = absoluteDirectories.Length; index < relativeDirectories.Length - 1; index++)
             {
-                relativePath.Append(relativeDirectories[index] + directorySeparatorSrting);
+                relativePath.Append(relativeDirectories[index] + DirectorySeparatorSrting);
             }
 
             relativePath.Append(relativeDirectories[relativeDirectories.Length - 1]);
@@ -81,52 +86,27 @@ namespace JiongXiaGu
         /// </summary>
         private static string Normalize(string path)
         {
-            path = path.Replace('/', directorySeparatorChar);
+            path = path.Replace('/', DirectorySeparatorChar);
             return path;
         }
 
-        ///// <summary>
-        ///// 获取到相对路径;
-        ///// </summary>
-        ///// <param name="absolutePath">绝对路径</param>
-        ///// <param name="relativeTo">要对比的路径</param>
-        //public static string GetRelativePath(string absolutePath, string relativeTo)
-        //{
-        //    string[] absoluteDirectories = absolutePath.Split('\\');
-        //    string[] relativeDirectories = relativeTo.Split('\\');
-
-        //    //Get the shortest of the two paths
-        //    int length = absoluteDirectories.Length < relativeDirectories.Length ? absoluteDirectories.Length : relativeDirectories.Length;
-
-        //    //Use to determine where in the loop we exited
-        //    int lastCommonRoot = -1;
-        //    int index;
-
-        //    //Find common root
-        //    for (index = 0; index < length; index++)
-        //        if (absoluteDirectories[index] == relativeDirectories[index])
-        //            lastCommonRoot = index;
-        //        else
-        //            break;
-
-        //    //If we didn't find a common prefix then throw
-        //    if (lastCommonRoot == -1)
-        //        throw new ArgumentException("Paths do not have a common base");
-
-        //    //Build up the relative path
-        //    StringBuilder relativePath = new StringBuilder();
-
-        //    //Add on the ..
-        //    for (index = lastCommonRoot + 1; index < absoluteDirectories.Length; index++)
-        //        if (absoluteDirectories[index].Length > 0)
-        //            relativePath.Append("..\\");
-
-        //    //Add on the folders
-        //    for (index = lastCommonRoot + 1; index < relativeDirectories.Length - 1; index++)
-        //        relativePath.Append(relativeDirectories[index] + "\\");
-        //    relativePath.Append(relativeDirectories[relativeDirectories.Length - 1]);
-
-        //    return relativePath.ToString();
-        //}
+        /// <summary>
+        /// 获取到文件名;若路径以目录分隔符结尾则返回异常;
+        /// 例: path : "12345/jjjwww\\2.txt, return : 2.txt;"
+        /// 例: path : "12345/jjjwww\\2.txt\\/, throw : ArgumentException;"
+        /// </summary>
+        public static string GetFileName(string path)
+        {
+            int i = path.LastIndexOfAny(DirectorySeparatorChars);
+            if (i == path.Length - 1)
+            {
+                throw new ArgumentException(string.Format("路径[{0}]不为文件路径", path));
+            }
+            else
+            {
+                path = path.Remove(0, i + 1);
+                return path;
+            }
+        }
     }
 }

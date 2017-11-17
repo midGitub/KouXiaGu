@@ -33,7 +33,7 @@ namespace JiongXiaGu.Unity.Resources
 
             directoryInfo.Create();
             WriteDescription(directoryInfo.FullName, description);
-            LoadableContentInfo info = new LoadableContentInfo(directoryInfo, description, type);
+            LoadableContentInfo info = new LoadableContentInfo(new LoadableDirectory(directoryInfo), description, type);
             return info;
         }
 
@@ -67,7 +67,7 @@ namespace JiongXiaGu.Unity.Resources
             directoryInfo.ThrowIfDirectoryNotExisted();
 
             LoadableContentDescription description = ReadDescription(directoryInfo.FullName);
-            LoadableContentInfo info = new LoadableContentInfo(directoryInfo, description, type);
+            LoadableContentInfo info = new LoadableContentInfo(new LoadableDirectory(directoryInfo), description, type);
             return info;
         }
 
