@@ -3,6 +3,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
 using ICSharpCode.SharpZipLib.Core;
+using System;
 
 namespace JiongXiaGu.Unity
 {
@@ -21,34 +22,10 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         private void Test()
         {
-            string directory = "F:\\My_Code\\Unity5\\KouXiaGu\\NUnitTemp";
-            FastZip fast = new FastZip();
+            var path1 = new Uri(new DirectoryInfo("F:\\My_Code\\Unity5\\KouXiaGu/Assets/Scenes/1.text").FullName);
+            var path2 = new Uri(new DirectoryInfo("F:\\My_Code\\Unity5\\KouXiaGu/Assets/Scenes/").FullName);
 
-            //string fileFilter = new PathFilter(string.Empty).ToString();
-            //Debug.Log(fileFilter);
-            fast.CreateZip(@"NUnitTemp.zip", directory, true, string.Empty);
-
-            //using (ZipFile zipFile = ZipFile.Create(new FileStream(@"NUnitTemp.zip", FileMode.Create, FileAccess.ReadWrite)))
-            //{
-            //    zipFile.IsStreamOwner = true;
-
-            //    zipFile.BeginUpdate();
-
-            //    foreach (var path in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
-            //    {
-            //        zipFile.Add(path);
-            //    }
-
-            //    zipFile.CommitUpdate();
-            //}
-
-            using (ZipFile zipFile = new ZipFile(@"NUnitTemp.zip"))
-            {
-                foreach (ZipEntry zipEntry in zipFile)
-                {
-                    Debug.Log(zipEntry.Name);
-                }
-            }
+            Debug.Log(path1.MakeRelativeUri(path2));
         }
     }
 }
