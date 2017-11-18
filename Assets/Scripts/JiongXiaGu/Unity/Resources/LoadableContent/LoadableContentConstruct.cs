@@ -10,26 +10,6 @@ namespace JiongXiaGu.Unity.Resources
     public abstract class LoadableContentConstruct
     {
         /// <summary>
-        /// 是否可读?
-        /// </summary>
-        public abstract bool IsLoadable { get; }
-
-        /// <summary>
-        /// 是否存在?
-        /// </summary>
-        public abstract bool Exists { get; }
-
-        /// <summary>
-        /// 加载资源;
-        /// </summary>
-        public abstract void Load();
-
-        /// <summary>
-        /// 卸载资源;
-        /// </summary>
-        public abstract void Unload();
-
-        /// <summary>
         /// 枚举所有文件信息;
         /// </summary>
         public abstract IEnumerable<ILoadableEntry> EnumerateFiles();
@@ -41,7 +21,36 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
         public virtual IEnumerable<ILoadableEntry> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
-            throw new NotImplementedException();
+            switch (searchOption)
+            {
+                case SearchOption.AllDirectories:
+                    foreach (ILoadableEntry entry in EnumerateFiles())
+                    {
+                        string fileName = PathHelper.GetFileName(entry.RelativePath);
+                        if (PathHelper.IsMatch(fileName, searchPattern))
+                        {
+                            yield return entry;
+                        }
+                    }
+                    break;
+
+                case SearchOption.TopDirectoryOnly:
+                    foreach (ILoadableEntry entry in EnumerateFiles())
+                    {
+                        if (PathHelper.IsFileName(entry.RelativePath))
+                        {
+                            string fileName = PathHelper.GetFileName(entry.RelativePath);
+                            if (PathHelper.IsMatch(fileName, searchPattern))
+                            {
+                                yield return entry;
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentException(string.Format("未知的{0}[{1}]", nameof(SearchOption), nameof(searchOption)));
+            }
         }
 
         /// <summary>
@@ -52,7 +61,44 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
         public virtual IEnumerable<ILoadableEntry> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
-            throw new NotImplementedException();
+            directoryName = PathHelper.Normalize(directoryName);
+
+            switch (searchOption)
+            {
+                case SearchOption.AllDirectories:
+                    foreach (ILoadableEntry entry in EnumerateFiles())
+                    {
+                        if (PathHelper.IsCommonRoot(directoryName, entry.RelativePath))
+                        {
+                            string fileName = PathHelper.GetFileName(entry.RelativePath);
+                            if (PathHelper.IsMatch(fileName, searchPattern))
+                            {
+                                yield return entry;
+                            }
+                        }
+                    }
+                    break;
+
+                case SearchOption.TopDirectoryOnly:
+                    foreach (ILoadableEntry entry in EnumerateFiles())
+                    {
+                        if (PathHelper.IsCommonRoot(directoryName, entry.RelativePath))
+                        {
+                            if (PathHelper.IsFileName(entry.RelativePath))
+                            {
+                                string fileName = PathHelper.GetFileName(entry.RelativePath);
+                                if (PathHelper.IsMatch(fileName, searchPattern))
+                                {
+                                    yield return entry;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentException(string.Format("未知的{0}[{1}]", nameof(SearchOption), nameof(searchOption)));
+            }
         }
 
         /// <summary>

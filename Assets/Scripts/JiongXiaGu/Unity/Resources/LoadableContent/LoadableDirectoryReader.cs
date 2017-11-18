@@ -2,49 +2,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
-
     /// <summary>
-    /// 可加载资源信息读写器;
+    /// 可加载资源目录读取器;
     /// </summary>
-    public class LoadableContentReader
+    public class LoadableDirectoryReader
     {
         private const string DescriptionFileName = "Description";
         private readonly XmlSerializer<LoadableContentDescription> xmlSerializer;
 
-        public LoadableContentReader()
+        public LoadableDirectoryReader()
         {
             xmlSerializer = new XmlSerializer<LoadableContentDescription>();
-        }
-
-        /// <summary>
-        /// 创建一个新的模组到指定目录,若该目录已经存在,则返回异常;
-        /// </summary>
-        public LoadableContentInfo Create(DirectoryInfo directoryInfo, LoadableContentDescription description, LoadableContentType type)
-        {
-            if (directoryInfo == null)
-                throw new ArgumentNullException(nameof(directoryInfo));
-            if (directoryInfo.Exists)
-                throw new IOException(string.Format("目录 {0} 已经存在", directoryInfo.FullName));
-
-            directoryInfo.Create();
-            WriteDescription(directoryInfo.FullName, description);
-            LoadableContentInfo info = new LoadableContentInfo(new LoadableDirectory(directoryInfo), description, type);
-            return info;
-        }
-
-        /// <summary>
-        /// 将模组描述输出磁盘或更新磁盘的内容;
-        /// </summary>
-        public string WriteDescription(string directory, LoadableContentDescription description)
-        {
-            string descriptionFilePath = GetDescriptionFilePath(directory);
-            xmlSerializer.Write(descriptionFilePath, description, FileMode.Create);
-            return descriptionFilePath;
         }
 
         /// <summary>
@@ -60,7 +31,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从该目录读取到存档信息,若不存在则返回异常;
         /// </summary>
-        public LoadableContentInfo Read(DirectoryInfo directoryInfo, LoadableContentType type)
+        public LoadableContentInfo Create(DirectoryInfo directoryInfo, LoadableContentType type)
         {
             if (directoryInfo == null)
                 throw new ArgumentNullException(nameof(directoryInfo));
@@ -82,11 +53,22 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
+        /// 将模组描述输出磁盘或更新磁盘的内容;
+        /// </summary>
+        public string WriteDescription(string directory, LoadableContentDescription description)
+        {
+            string descriptionFilePath = GetDescriptionFilePath(directory);
+            xmlSerializer.Write(descriptionFilePath, description, FileMode.Create);
+            return descriptionFilePath;
+        }
+
+        /// <summary>
         /// 枚举目录下的所有模组;
         /// </summary>
         /// <param name="modsDirectory">目标目录</param>
         /// <param name="type">指定找到的模组类型</param>
         /// <returns></returns>
+        [Obsolete]
         public IEnumerable<LoadableContentInfo> EnumerateModInfos(string modsDirectory, LoadableContentType type)
         {
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory))
@@ -95,7 +77,7 @@ namespace JiongXiaGu.Unity.Resources
                 try
                 {
                     DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-                    modInfo = Read(directoryInfo, type);
+                    modInfo = Create(directoryInfo, type);
                 }
                 catch (FileNotFoundException)
                 {

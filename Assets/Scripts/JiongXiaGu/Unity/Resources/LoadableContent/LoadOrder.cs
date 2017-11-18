@@ -144,7 +144,7 @@ namespace JiongXiaGu.Unity.Resources
 
             public bool Equals(LoadableContentInfo other)
             {
-                return other.Exists && Type == other.Type && ID == other.Description.ID;
+                return Type == other.Type && ID == other.Description.ID;
             }
 
             public override int GetHashCode()

@@ -11,45 +11,19 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableZipFile : LoadableContentConstruct
     {
-        private ZipFile zipFile;
-        public FileInfo ZipFileInfo { get; private set; }
+        public ZipFile ZipFile { get; private set; }
 
-        public override bool IsLoadable
-        {
-            get { return zipFile != null; }
-        }
-
-        public override bool Exists
-        {
-            get { return ZipFileInfo.Exists; }
-        }
-
-        public LoadableZipFile(FileInfo zipFileInfo)
-        {
-            ZipFileInfo = zipFileInfo;
-        }
-
-        public override void Load()
+        public LoadableZipFile(ZipFile zipFile)
         {
             if (zipFile == null)
-            {
-                ZipFileInfo.ThrowIfFileNotExisted();
-                zipFile = new ZipFile(ZipFileInfo.OpenRead());
-            }
-        }
+                throw new ArgumentNullException(nameof(zipFile));
 
-        public override void Unload()
-        {
-            if (zipFile != null)
-            {
-                (zipFile as IDisposable).Dispose();
-                zipFile = null;
-            }
+            ZipFile = zipFile;
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()
         {
-            foreach (ZipEntry entry in zipFile)
+            foreach (ZipEntry entry in ZipFile)
             {
                 ZipLoadableEntry zipLoadableEntry = new ZipLoadableEntry(this, entry);
                 yield return zipLoadableEntry;
@@ -61,11 +35,11 @@ namespace JiongXiaGu.Unity.Resources
             if (entry is ZipLoadableEntry)
             {
                 var zipLoadableEntry = (ZipLoadableEntry)entry;
-                ZipEntry zipEntry = zipFile.GetEntry(zipLoadableEntry.RelativePath);
+                ZipEntry zipEntry = ZipFile.GetEntry(zipLoadableEntry.RelativePath);
 
                 if (zipEntry != null)
                 {
-                    return zipFile.GetInputStream(zipEntry);
+                    return ZipFile.GetInputStream(zipEntry);
                 }
                 else
                 {

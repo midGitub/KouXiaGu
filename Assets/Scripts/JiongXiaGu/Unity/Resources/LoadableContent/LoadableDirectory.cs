@@ -5,21 +5,21 @@ using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
 {
+
     /// <summary>
-    /// 可读的目录;
+    /// 可读取的目录;
     /// </summary>
     public class LoadableDirectory : LoadableContentConstruct
     {
         public DirectoryInfo DirectoryInfo { get; private set; }
 
-        public override bool IsLoadable
+        public LoadableDirectory(string directory)
         {
-            get { return true; }
-        }
+            if (string.IsNullOrWhiteSpace(directory))
+                throw new ArgumentNullException(nameof(directory));
 
-        public override bool Exists
-        {
-            get { return DirectoryInfo.Exists; }
+            PathHelper.Normalize(directory);
+            DirectoryInfo = new DirectoryInfo(directory);
         }
 
         public LoadableDirectory(DirectoryInfo directoryInfo)
@@ -27,17 +27,8 @@ namespace JiongXiaGu.Unity.Resources
             if (directoryInfo == null)
                 throw new ArgumentNullException(nameof(directoryInfo));
 
-            DirectoryInfo = directoryInfo;
-        }
-
-        public override void Load()
-        {
-            return;
-        }
-
-        public override void Unload()
-        {
-            return;
+            string path = PathHelper.Normalize(directoryInfo.FullName);
+            DirectoryInfo = new DirectoryInfo(path);
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()

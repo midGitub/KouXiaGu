@@ -25,17 +25,9 @@ namespace JiongXiaGu.Unity.Resources
         public LoadableContentType Type { get; private set; }
 
         /// <summary>
-        /// 该资源是否存在?
-        /// </summary>
-        public bool Exists
-        {
-            get { return ContentConstruct != null && ContentConstruct.Exists; }
-        }
-
-        /// <summary>
         /// 构造不存在的模组数据信息;
         /// </summary>
-        internal LoadableContentInfo(LoadableContentDescription description, LoadableContentType type)
+        public LoadableContentInfo(LoadableContentDescription description, LoadableContentType type)
         {
             Description = description;
             Type = type;
@@ -44,7 +36,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 构造模组数据信息;
         /// </summary>
-        internal LoadableContentInfo(LoadableContentConstruct contentConstruct, LoadableContentDescription description, LoadableContentType type) 
+        public LoadableContentInfo(LoadableContentConstruct contentConstruct, LoadableContentDescription description, LoadableContentType type) 
         {
             if (contentConstruct == null)
                 throw new ArgumentNullException(nameof(contentConstruct));

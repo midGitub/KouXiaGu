@@ -54,10 +54,10 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal static void Initialize()
         {
-            LoadableContentReader modInfoReader = new LoadableContentReader();
+            LoadableDirectoryReader contentReader = new LoadableDirectoryReader();
             core = GetCore();
-            dlc = GetDlc(modInfoReader);
-            mod = GetMod(modInfoReader);
+            dlc = GetDlc(contentReader);
+            mod = GetMod(contentReader);
             all = GetAll();
         }
 
@@ -66,14 +66,14 @@ namespace JiongXiaGu.Unity.Resources
             return new LoadableContentInfo(new LoadableDirectory(ResourcePath.CoreDirectory), new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
         }
 
-        private static List<LoadableContentInfo> GetDlc(LoadableContentReader modInfoReader)
+        private static List<LoadableContentInfo> GetDlc(LoadableDirectoryReader contentReader)
         {
-            return modInfoReader.EnumerateModInfos(ResourcePath.DlcDirectory.FullName, LoadableContentType.DLC).ToList();
+            return contentReader.EnumerateModInfos(ResourcePath.DlcDirectory.FullName, LoadableContentType.DLC).ToList();
         }
 
-        private static List<LoadableContentInfo> GetMod(LoadableContentReader modInfoReader)
+        private static List<LoadableContentInfo> GetMod(LoadableDirectoryReader contentReader)
         {
-            return modInfoReader.EnumerateModInfos(ResourcePath.ModDirectory.FullName, LoadableContentType.MOD).ToList();
+            return contentReader.EnumerateModInfos(ResourcePath.ModDirectory.FullName, LoadableContentType.MOD).ToList();
         }
 
         private static List<LoadableContentInfo> GetAll()

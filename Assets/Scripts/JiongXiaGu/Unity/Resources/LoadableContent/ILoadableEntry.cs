@@ -6,7 +6,7 @@
     public interface ILoadableEntry
     {
         /// <summary>
-        /// 相对路径;
+        /// 相对路径,分隔符必须为 '\';
         /// </summary>
         string RelativePath { get; }
     }

@@ -22,28 +22,8 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         private void Test()
         {
-            Debug.Log(GetFileName("123123/ddaeqwe"));
-            Debug.Log(GetFileName("123123/ddaeqwe/11.text"));
-            Debug.Log(GetFileName("123123/ddaeqwe/"));
-        }
-
-        private static char[] DirectorySeparatorChars = new char[] { '/', '\\' };
-
-        /// <summary>
-        /// 获取到文件路径;
-        /// </summary>
-        private string GetFileName(string path)
-        {
-            int i = path.LastIndexOfAny(DirectorySeparatorChars);
-            if (i == path.Length - 1)
-            {
-                throw new ArgumentException(string.Format("路径[{0}]不为文件路径", path));
-            }
-            else
-            {
-                path = path.Remove(0, i + 1);
-                return path;
-            }
+            var chars = "知道AA啊부모".ToCharArray();
+            Debug.Log(chars.ToText());
         }
     }
 }
