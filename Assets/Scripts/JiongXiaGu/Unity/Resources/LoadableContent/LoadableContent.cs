@@ -6,7 +6,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 抽象类 表示可读资源;
+    /// 抽象类 表示可读资源; 对于"获取到流"的方法为线程安全的;
     /// </summary>
     public abstract class LoadableContent
     {
@@ -126,12 +126,12 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到只读的流;
+        /// 获取到只读的流;(线程安全)
         /// </summary>
         public abstract Stream GetStream(ILoadableEntry entry);
 
         /// <summary>
-        /// 获取到 MemoryStream 类型;
+        /// 获取到 MemoryStream 类型;(线程安全)
         /// </summary>
         public virtual MemoryStream GetMemoryStream(ILoadableEntry entry)
         {

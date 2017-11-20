@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.Localizations
             var pack1 = CreatePack();
             string filePath = Path.Combine(GetTempDirectory(), "ReadWritTest.zip");
             reader.Serialize(filePath, pack1);
-            var pack2 = reader.Deserialize(filePath);
+            var pack2 = reader.Deserialize(File.OpenRead(filePath));
 
             CheckIsSame(pack1.Description, pack2.Description);
             CheckIsSame(pack1.LanguageDictionary, pack2.LanguageDictionary);
@@ -59,7 +59,7 @@ namespace JiongXiaGu.Unity.Localizations
             var pack1 = CreatePack();
             string filePath = Path.Combine(GetTempDirectory(), "ReadDescriptionTest.zip");
             reader.Serialize(filePath, pack1);
-            var desc = reader.DeserializeDesc(filePath);
+            var desc = reader.DeserializeDesc(File.OpenRead(filePath));
 
             CheckIsSame(pack1.Description, desc);
         }

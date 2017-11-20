@@ -11,13 +11,13 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// 输入组件控制;
     /// </summary>
     [DisallowMultipleComponent]
-    class KeyInputController : MonoBehaviour, IGameComponentInitializeHandle
+    class KeyInputController : MonoBehaviour, IComponentInitializeHandle
     {
         KeyInputController()
         {
         }
 
-        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
+        Task IComponentInitializeHandle.Initialize(CancellationToken token)
         {
             return Task.Run(delegate()
             {

@@ -14,9 +14,9 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// 游戏控制台控制器;
     /// </summary>
     [DisallowMultipleComponent]
-    internal sealed class GameConsoleController : MonoBehaviour, IGameComponentInitializeHandle
+    internal sealed class GameConsoleController : MonoBehaviour, IComponentInitializeHandle
     {
-        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
+        Task IComponentInitializeHandle.Initialize(CancellationToken token)
         {
             return Task.Run(delegate ()
             {

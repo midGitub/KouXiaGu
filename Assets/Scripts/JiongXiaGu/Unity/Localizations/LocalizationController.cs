@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// 提供在Unity编辑器内调整具体参数;
     /// </summary>
     [DisallowMultipleComponent]
-    internal class LocalizationController : MonoBehaviour, IGameComponentInitializeHandle
+    internal class LocalizationController : MonoBehaviour, IComponentInitializeHandle
     {
         private const string InitializerName = "本地化组件初始化";
 
@@ -48,59 +48,53 @@ namespace JiongXiaGu.Unity.Localizations
             SystemLanguage = Application.systemLanguage;
         }
 
-        Task IGameComponentInitializeHandle.Initialize(CancellationToken token)
+        Task IComponentInitializeHandle.Initialize(CancellationToken token)
         {
-            if (token.IsCancellationRequested)
-            {
-                return Task.FromCanceled(token);
-            }
+            token.ThrowIfCancellationRequested();
 
-            return Task.Run(delegate ()
-            {
-                token.ThrowIfCancellationRequested();
-                Initialize(token);
-                UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
-            });
-        }
-
-        private void Initialize(CancellationToken token)
-        {
-            availableLanguagePacks = packSearcher.FindPacks();
+            availableLanguagePacks = packSearcher.FindPacks(Resource.All);
             if (availableLanguagePacks.Count == 0)
             {
                 throw new FileNotFoundException("未找到合适的语言包文件");
             }
 
-            LocalizationConfig? config = ReadConfigFile();
-            LanguagePack languagePack = null;
-
-            foreach (var packInfo in EnumerateLanguagePask(config))
+            return Task.Run(delegate ()
             {
-                try
-                {
-                    languagePack = packSerializer.Deserialize(packInfo);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    UnityDebugHelper.LogWarning(InitializerName, "读取语言包时需要错误", ex);
-                }
                 token.ThrowIfCancellationRequested();
-            }
 
-            if (languagePack != null)
-            {
-                Localization.SetLanguage(languagePack);
-            }
-            else
-            {
-                throw new FileNotFoundException("未找到合适的语言包文件");
-            }
+                LocalizationConfig? config = ReadConfigFile();
+                LanguagePack languagePack = null;
 
-            token.ThrowIfCancellationRequested();
-            Localization.NotifyLanguageChanged();
+                foreach (var packInfo in EnumerateLanguagePask(config))
+                {
+                    try
+                    {
+                        languagePack = packSerializer.Deserialize(packInfo.ContentConstruct, packInfo.LoadableEntry);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        UnityDebugHelper.LogWarning(InitializerName, "读取语言包时需要错误", ex);
+                    }
+                    token.ThrowIfCancellationRequested();
+                }
+
+                if (languagePack != null)
+                {
+                    Localization.SetLanguage(languagePack);
+                }
+                else
+                {
+                    throw new FileNotFoundException("未找到合适的语言包文件");
+                }
+
+                token.ThrowIfCancellationRequested();
+                Localization.NotifyLanguageChanged();
+
+                UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
+            });
         }
-
+        
         /// <summary>
         /// 获取到所有可使用的语言包;
         /// </summary>
@@ -194,7 +188,8 @@ namespace JiongXiaGu.Unity.Localizations
 
         private string GetInfoLog()
         {
-            string log = "语言 : " + Localization.Language.Language
+            string log = 
+                "当前语言 : " + Localization.Language.Language
                 + ", 系统语言 : " + SystemLanguage.ToString()
                 + ", 可读语言总数 : " + Localization.AvailableLanguagePacks.Count
                 + ", 可读语言 : " + string.Join(", ", Localization.AvailableLanguagePacks.Select(item => string.Format("[Language : {0}, Name : {1}]", item.Description.Language, item.Description.Name)))

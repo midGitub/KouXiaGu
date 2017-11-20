@@ -94,20 +94,5 @@ namespace JiongXiaGu.Unity
             string text = string.Format("[{0}]Message : {1} ; Exception :{2} ;", name, message, ex);
             Debug.LogWarning(text);
         }
-
-
-
-        [Obsolete]
-        public static void WaitAll<T>(IReadOnlyList<T> initializeHandles, Func<T, Task> func, CancellationToken token)
-        {
-            Task[] tasks = new Task[initializeHandles.Count];
-            for (int i = 0; i < initializeHandles.Count; i++)
-            {
-                var initializeHandle = initializeHandles[i];
-                Task task = func(initializeHandle);
-                tasks[i] = task ?? Task.CompletedTask;
-            }
-            Task.WaitAll(tasks, token);
-        }
     }
 }

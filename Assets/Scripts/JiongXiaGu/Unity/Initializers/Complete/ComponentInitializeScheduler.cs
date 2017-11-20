@@ -1,37 +1,37 @@
 ﻿using JiongXiaGu.Unity.Resources;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Initializers
 {
-
     /// <summary>
-    /// 初始化接口;
+    /// 游戏组件初始化接口;
     /// </summary>
-    public interface IGameComponentInitializeHandle
+    public interface IComponentInitializeHandle
     {
         /// <summary>
-        /// 开始初始化;
+        /// 进行初始化,对于可进行异步的工作,通过异步Task进行;
         /// </summary>
         Task Initialize(CancellationToken token);
     }
 
     /// <summary>
-    /// 游戏组件初始化(仅初始化一次,若初始化失败意味着游戏无法运行);
+    /// 游戏组件初始化调度器(仅初始化一次,若初始化失败意味着游戏无法运行);
     /// </summary>
     [DisallowMultipleComponent]
-    internal sealed class GameComponentInitializer : MonoBehaviour
+    internal sealed class ComponentInitializeScheduler : MonoBehaviour
     {
-        private static readonly GlobalSingleton<GameComponentInitializer> singleton = new GlobalSingleton<GameComponentInitializer>();
+        private static readonly GlobalSingleton<ComponentInitializeScheduler> singleton = new GlobalSingleton<ComponentInitializeScheduler>();
 
         private const string InitializerName = "游戏组件初始化";
-        private IGameComponentInitializeHandle[] initializeHandles;
+        private IComponentInitializeHandle[] initializeHandles;
         private CancellationTokenSource initializeCancellation;
         public Task InitializeTask { get; private set; }
 
-        public static GameComponentInitializer Instance
+        public static ComponentInitializeScheduler Instance
         {
             get { return singleton.GetInstance(); }
         }
@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.Initializers
         private void Awake()
         {
             singleton.SetInstance(this);
-            initializeHandles = GetComponentsInChildren<IGameComponentInitializeHandle>();
+            initializeHandles = GetComponentsInChildren<IComponentInitializeHandle>();
             initializeCancellation = new CancellationTokenSource();
             InitializeTask = new Task(Initialize, initializeCancellation.Token);
         }
@@ -62,12 +62,13 @@ namespace JiongXiaGu.Unity.Initializers
         {
             try
             {
-                UnityDebugHelper.WaitAll(initializeHandles, item => item.Initialize(initializeCancellation.Token), initializeCancellation.Token);
+                InitializeScheduler.WaitAll(initializeHandles, item => item.Initialize(initializeCancellation.Token), initializeCancellation.Token);
                 OnCompleted();
             }
             catch (Exception ex)
             {
                 OnFaulted(ex);
+                throw ex;
             }
         }
 
@@ -79,6 +80,7 @@ namespace JiongXiaGu.Unity.Initializers
         private void OnFaulted(Exception ex)
         {
             UnityDebugHelper.FailureReport(InitializerName, ex);
+            initializeCancellation.Cancel();
         }
     }
 }

@@ -38,11 +38,11 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;
         /// </summary>
-        public List<LanguagePackInfo> FindPacks()
+        public List<LanguagePackInfo> FindPacks(IEnumerable<LoadableContent> loadableContents)
         {
             List<LanguagePackInfo> languagePacks = new List<LanguagePackInfo>();
 
-            foreach (var load in Resource.All)
+            foreach (var load in loadableContents)
             {
                 var packs = EnumeratePack(load);
                 languagePacks.AddRange(packs);
@@ -69,22 +69,8 @@ namespace JiongXiaGu.Unity.Localizations
                 LanguagePackInfo languagePack;
                 try
                 {
-                    Stream stream;
-                    if (contentConstruct is LoadableDirectory)
-                    {
-                        stream = contentConstruct.GetStream(entry);
-                    }
-                    //读取压缩文件的压缩包采用内存流;
-                    else
-                    {
-                        stream = contentConstruct.GetMemoryStream(entry);
-                    }
-
-                    using (stream)
-                    {
-                        LanguagePackDescription description = packSerializer.DeserializeDesc(stream);
-                        languagePack = new LanguagePackInfo(description, contentConstruct, entry);
-                    }
+                    LanguagePackDescription description = packSerializer.DeserializeDesc(contentConstruct, entry);
+                    languagePack = new LanguagePackInfo(description, contentConstruct, entry);
                 }
                 catch (Exception ex)
                 {

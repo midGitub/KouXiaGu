@@ -24,20 +24,9 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 读取语言包;
         /// </summary>
-        public LanguagePack Deserialize(string file)
+        public LanguagePack Deserialize(LoadableContent loadableContent, ILoadableEntry entry)
         {
-            using (var fStream = new FileStream(file, FileMode.Open, FileAccess.Read))
-            {
-                return Deserialize(fStream);
-            }
-        }
-
-        /// <summary>
-        /// 读取语言包;
-        /// </summary>
-        public LanguagePack Deserialize(LanguagePackInfo packFileInfo)
-        {
-            using (var stream = packFileInfo.ContentConstruct.GetStream(packFileInfo.LoadableEntry))
+            using (var stream = GetStream(loadableContent, entry))
             {
                 return Deserialize(stream);
             }
@@ -65,14 +54,11 @@ namespace JiongXiaGu.Unity.Localizations
             return new LanguagePack(description, dictionary);
         }
 
-        /// <summary>
-        /// 读取到描述文件;
-        /// </summary>
-        public LanguagePackDescription DeserializeDesc(string file)
+        public LanguagePackDescription DeserializeDesc(LoadableContent loadableContent, ILoadableEntry entry)
         {
-            using (var fStream = new FileStream(file, FileMode.Open, FileAccess.Read))
+            using (var stream = GetStream(loadableContent, entry))
             {
-                return DeserializeDesc(fStream);
+                return DeserializeDesc(stream);
             }
         }
 
@@ -87,6 +73,21 @@ namespace JiongXiaGu.Unity.Localizations
                 ZipContent zipContent = Check(zipFile);
                 var descStream = zipFile.GetInputStream(zipContent.Description);
                 return descriptionSerializer.Deserialize(descStream);
+            }
+        }
+
+        /// <summary>
+        /// 获取到可使用的流;
+        /// </summary>
+        private Stream GetStream(LoadableContent loadableContent, ILoadableEntry entry)
+        {
+            if (loadableContent is LoadableDirectory)
+            {
+                return loadableContent.GetStream(entry);
+            }
+            else
+            {
+                return loadableContent.GetMemoryStream(entry);
             }
         }
 

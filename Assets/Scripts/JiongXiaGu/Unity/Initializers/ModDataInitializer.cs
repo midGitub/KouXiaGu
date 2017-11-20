@@ -58,7 +58,7 @@ namespace JiongXiaGu.Unity.Initializers
         {
             try
             {
-                UnityDebugHelper.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
+                InitializeScheduler.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
                 OnCompleted();
             }
             catch (Exception ex)
