@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
+using JiongXiaGu.Unity.RectTerrain.Resources;
 
-namespace JiongXiaGu.Unity.RectTerrain.Resources
+namespace JiongXiaGu.Unity.Template
 {
 
 

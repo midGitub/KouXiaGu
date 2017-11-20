@@ -15,14 +15,14 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public LanguagePackDescription Description { get; private set; }
 
-        public LoadableContentConstruct ContentConstruct { get; private set; }
+        public LoadableContent ContentConstruct { get; private set; }
 
         public ILoadableEntry LoadableEntry { get; private set; }
 
         /// <summary>
         /// 指定语言包文件信息;
         /// </summary>
-        public LanguagePackInfo(LanguagePackDescription description, LoadableContentConstruct contentConstruct, ILoadableEntry loadableEntry)
+        public LanguagePackInfo(LanguagePackDescription description, LoadableContent contentConstruct, ILoadableEntry loadableEntry)
         {
             Description = description;
             ContentConstruct = contentConstruct;

@@ -13,35 +13,80 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableContentSearcher
     {
-        private LoadableDirectoryReader contentReader;
+        private const string IgnoreSymbol = "~!";
+        private LoadableDirectoryReader directoryReader;
+        private LoadableZipFileReader zipFileReader;
 
         public LoadableContentSearcher()
         {
-            contentReader = new LoadableDirectoryReader();
+            directoryReader = new LoadableDirectoryReader();
+            zipFileReader = new LoadableZipFileReader();
         }
 
         /// <summary>
-        /// 枚举目录下的所有模组;
+        /// 枚举目录下的所有可读资源;
         /// </summary>
         /// <param name="modsDirectory">目标目录</param>
         /// <param name="type">指定找到的模组类型</param>
         /// <returns></returns>
-        public IEnumerable<LoadableContentInfo> EnumerateModInfos(string modsDirectory, LoadableContentType type)
+        public List<LoadableContent> FindLoadableContent(string modsDirectory, LoadableContentType type)
         {
-            foreach (var directory in Directory.EnumerateDirectories(modsDirectory))
+            List<LoadableContent> list = new List<LoadableContent>();
+
+            list.AddRange(EnumerateDirectory(modsDirectory, type));
+            list.AddRange(EnumerateZipFile(modsDirectory, type));
+
+            return list;
+        }
+
+        public IEnumerable<LoadableContent> EnumerateDirectory(string modsDirectory, LoadableContentType type)
+        {
+            DirectoryInfo modsDirectoryInfo = new DirectoryInfo(modsDirectory);
+
+            foreach (var directoryInfo in modsDirectoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
-                LoadableContentInfo modInfo = null;
-                try
+                if (directoryInfo.Name.StartsWith(IgnoreSymbol))
                 {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-                    modInfo = contentReader.Create(directoryInfo, type);
-                }
-                catch (FileNotFoundException)
-                {
+                    continue;
                 }
 
-                if (modInfo != null)
-                    yield return modInfo;
+                LoadableContent info = null;
+
+                try
+                {
+                    info = directoryReader.Create(directoryInfo, type);
+                }
+                catch(FileNotFoundException)
+                {
+                    continue;
+                }
+
+                yield return info;
+            }
+        }
+
+        public IEnumerable<LoadableContent> EnumerateZipFile(string modsDirectory, LoadableContentType type)
+        {
+            foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zip", SearchOption.TopDirectoryOnly))
+            {
+                string fileName = Path.GetFileName(filePath);
+                if (fileName.StartsWith(IgnoreSymbol))
+                {
+                    continue;
+                }
+
+                LoadableContent info = null;
+
+                try
+                {
+                    info = zipFileReader.Create(filePath, type);
+                }
+                catch(FileNotFoundException)
+                {
+                    continue;
+                }
+
+                yield return info;
             }
         }
     }

@@ -12,16 +12,16 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadOrder : IEnumerable<LoadOrder.LoadableContentXmlContent>, IEquatable<LoadOrder>
     {
-        public System.Collections.Generic.LinkedList<LoadableContentInfo> Order { get; private set; }
+        public System.Collections.Generic.LinkedList<LoadableContent> Order { get; private set; }
 
         public LoadOrder()
         {
-            Order = new System.Collections.Generic.LinkedList<LoadableContentInfo>();
+            Order = new System.Collections.Generic.LinkedList<LoadableContent>();
         }
 
         public LoadOrder(LoadOrder loadOrder)
         {
-            Order = new System.Collections.Generic.LinkedList<LoadableContentInfo>(loadOrder.Order);
+            Order = new System.Collections.Generic.LinkedList<LoadableContent>(loadOrder.Order);
         }
 
         /// <summary>
@@ -29,14 +29,14 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public void Add(LoadableContentXmlContent xmlContent)
         {
-            LoadableContentInfo info = ToContentInfo(xmlContent);
+            LoadableContent info = ToContentInfo(xmlContent);
             Order.AddLast(info);
         }
 
         /// <summary>
         /// 转换成可读内容;若未找到对应的可读内容则返回异常;
         /// </summary>
-        public LoadableContentInfo ToContentInfo(LoadableContentXmlContent xmlContent)
+        public LoadableContent ToContentInfo(LoadableContentXmlContent xmlContent)
         {
             switch (xmlContent.Type)
             {
@@ -57,7 +57,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 寻找到对应的可读内容实例;若未找到对应的可读内容则返回异常;
         /// </summary>
-        private LoadableContentInfo Find(IReadOnlyCollection<LoadableContentInfo> infos, LoadableContentXmlContent xmlContent)
+        private LoadableContent Find(IReadOnlyCollection<LoadableContent> infos, LoadableContentXmlContent xmlContent)
         {
             foreach (var info in infos)
             {
@@ -100,7 +100,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override int GetHashCode()
         {
-            return -390870225 + EqualityComparer<System.Collections.Generic.LinkedList<LoadableContentInfo>>.Default.GetHashCode(Order);
+            return -390870225 + EqualityComparer<System.Collections.Generic.LinkedList<LoadableContent>>.Default.GetHashCode(Order);
         }
 
         public static bool operator ==(LoadOrder order1, LoadOrder order2)
@@ -116,7 +116,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 提供XML序列化的结构;
         /// </summary>
-        public struct LoadableContentXmlContent : IEquatable<LoadableContentInfo>, IEquatable<LoadableContentXmlContent>
+        public struct LoadableContentXmlContent : IEquatable<LoadableContent>, IEquatable<LoadableContentXmlContent>
         {
             public string ID { get; set; }
             public LoadableContentType Type { get; set; }
@@ -127,7 +127,7 @@ namespace JiongXiaGu.Unity.Resources
                 Type = type;
             }
 
-            public LoadableContentXmlContent(LoadableContentInfo info) : this(info.Description.ID, info.Type)
+            public LoadableContentXmlContent(LoadableContent info) : this(info.Description.ID, info.Type)
             {
             }
 
@@ -142,7 +142,7 @@ namespace JiongXiaGu.Unity.Resources
                        Type == other.Type;
             }
 
-            public bool Equals(LoadableContentInfo other)
+            public bool Equals(LoadableContent other)
             {
                 return Type == other.Type && ID == other.Description.ID;
             }
@@ -155,12 +155,12 @@ namespace JiongXiaGu.Unity.Resources
                 return hashCode;
             }
 
-            public static bool operator ==(LoadableContentXmlContent content, LoadableContentInfo info)
+            public static bool operator ==(LoadableContentXmlContent content, LoadableContent info)
             {
                 return content.Equals(info);
             }
 
-            public static bool operator !=(LoadableContentXmlContent content, LoadableContentInfo info)
+            public static bool operator !=(LoadableContentXmlContent content, LoadableContent info)
             {
                 return !(content == info);
             }

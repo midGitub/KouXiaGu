@@ -1,9 +1,14 @@
-﻿namespace JiongXiaGu.Unity.Resources
+﻿using System.IO;
+using UnityEngine;
+using System.Xml.Serialization;
+
+namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
     /// 可加载资源描述;
     /// </summary>
+    [XmlRoot("LoadableContentDescription")]
     public struct LoadableContentDescription
     {
         /// <summary>
@@ -19,7 +24,7 @@
         /// <summary>
         /// 版本;
         /// </summary>
-        public int Version { get; set; }
+        public string Version { get; set; }
 
         /// <summary>
         /// 标签;

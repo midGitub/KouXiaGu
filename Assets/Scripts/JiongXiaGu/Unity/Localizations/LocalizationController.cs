@@ -24,7 +24,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         [SerializeField]
         private SystemLanguage defaultLanguage = SystemLanguage.ChineseSimplified;
-        private LanguagePackSearcher fileSearcher;
+        private LanguagePackSearcher packSearcher;
         private LanguagePackSerializer packSerializer;
         private LocalizationConfigFileReader configFileReader;
         public SystemLanguage SystemLanguage { get; private set; }
@@ -42,7 +42,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         private void Awake()
         {
-            fileSearcher = new LanguagePackSearcher();
+            packSearcher = new LanguagePackSearcher();
             packSerializer = new LanguagePackSerializer();
             configFileReader = new LocalizationConfigFileReader();
             SystemLanguage = Application.systemLanguage;
@@ -65,7 +65,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         private void Initialize(CancellationToken token)
         {
-            availableLanguagePacks = GetLanguagePackAll();
+            availableLanguagePacks = packSearcher.FindPacks();
             if (availableLanguagePacks.Count == 0)
             {
                 throw new FileNotFoundException("未找到合适的语言包文件");
@@ -110,7 +110,7 @@ namespace JiongXiaGu.Unity.Localizations
 
             foreach (var load in Resource.All)
             {
-                var packs = fileSearcher.EnumeratePack(load);
+                var packs = packSearcher.EnumeratePack(load);
                 languagePacks.AddRange(packs);
             }
 

@@ -5,8 +5,9 @@ using System.Linq;
 
 namespace JiongXiaGu.Unity.Resources
 {
+
     /// <summary>
-    /// 可加载资源目录读取器;
+    /// 读取资源目录;
     /// </summary>
     public class LoadableDirectoryReader
     {
@@ -19,26 +20,16 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到目录下的描述文件路径
-        /// </summary>
-        public string GetDescriptionFilePath(string directory) 
-        {
-            string filePath = Path.Combine(directory, DescriptionFileName);
-            filePath = Path.ChangeExtension(filePath, xmlSerializer.FileExtension);
-            return filePath;
-        }
-
-        /// <summary>
         /// 从该目录读取到存档信息,若不存在则返回异常;
         /// </summary>
-        public LoadableContentInfo Create(DirectoryInfo directoryInfo, LoadableContentType type)
+        public LoadableDirectory Create(DirectoryInfo directoryInfo, LoadableContentType type)
         {
             if (directoryInfo == null)
                 throw new ArgumentNullException(nameof(directoryInfo));
             directoryInfo.ThrowIfDirectoryNotExisted();
 
             LoadableContentDescription description = ReadDescription(directoryInfo.FullName);
-            LoadableContentInfo info = new LoadableContentInfo(new LoadableDirectory(directoryInfo), description, type);
+            LoadableDirectory info = new LoadableDirectory(directoryInfo.FullName, description, type);
             return info;
         }
 
@@ -50,6 +41,16 @@ namespace JiongXiaGu.Unity.Resources
             string descriptionFilePath = GetDescriptionFilePath(directory);
             LoadableContentDescription description = xmlSerializer.Read(descriptionFilePath);
             return description;
+        }
+
+        /// <summary>
+        /// 获取到目录下的描述文件路径
+        /// </summary>
+        public string GetDescriptionFilePath(string directory)
+        {
+            string filePath = Path.Combine(directory, DescriptionFileName);
+            filePath = Path.ChangeExtension(filePath, xmlSerializer.FileExtension);
+            return filePath;
         }
 
         /// <summary>
@@ -69,11 +70,11 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="type">指定找到的模组类型</param>
         /// <returns></returns>
         [Obsolete]
-        public IEnumerable<LoadableContentInfo> EnumerateModInfos(string modsDirectory, LoadableContentType type)
+        public IEnumerable<LoadableContent> EnumerateModInfos(string modsDirectory, LoadableContentType type)
         {
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory))
             {
-                LoadableContentInfo modInfo = null;
+                LoadableDirectory modInfo = null;
                 try
                 {
                     DirectoryInfo directoryInfo = new DirectoryInfo(directory);

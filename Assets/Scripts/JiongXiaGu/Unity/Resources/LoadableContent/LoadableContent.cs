@@ -4,11 +4,37 @@ using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
 {
+
     /// <summary>
     /// 抽象类 表示可读资源;
     /// </summary>
-    public abstract class LoadableContentConstruct
+    public abstract class LoadableContent
     {
+        /// <summary>
+        /// 模组描述;
+        /// </summary>
+        public LoadableContentDescription Description { get; protected set; }
+
+        /// <summary>
+        /// 资源类型;DLC 或 MOD;
+        /// </summary>
+        public LoadableContentType Type { get; protected set; }
+
+        public LoadableContent()
+        {
+        }
+
+        public LoadableContent(LoadableContentDescription description, LoadableContentType type)
+        {
+            Description = description;
+            Type = type;
+        }
+
+        /// <summary>
+        /// 卸载此资源;
+        /// </summary>
+        public abstract void Unload();
+
         /// <summary>
         /// 枚举所有文件信息;
         /// </summary>
@@ -61,36 +87,34 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
         public virtual IEnumerable<ILoadableEntry> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
+            string fileName;
             directoryName = PathHelper.Normalize(directoryName);
 
             switch (searchOption)
             {
                 case SearchOption.AllDirectories:
-                    foreach (ILoadableEntry entry in EnumerateFiles())
+                    foreach (ILoadableEntry entry1 in EnumerateFiles())
                     {
-                        if (PathHelper.IsCommonRoot(directoryName, entry.RelativePath))
+                        if (PathHelper.IsCommonRoot(directoryName, entry1.RelativePath))
                         {
-                            string fileName = PathHelper.GetFileName(entry.RelativePath);
+                            fileName = PathHelper.GetFileName(entry1.RelativePath);
                             if (PathHelper.IsMatch(fileName, searchPattern))
                             {
-                                yield return entry;
+                                yield return entry1;
                             }
                         }
                     }
                     break;
 
                 case SearchOption.TopDirectoryOnly:
-                    foreach (ILoadableEntry entry in EnumerateFiles())
+                    foreach (ILoadableEntry entry2 in EnumerateFiles())
                     {
-                        if (PathHelper.IsCommonRoot(directoryName, entry.RelativePath))
+                        if (PathHelper.IsCommonRoot(directoryName, entry2.RelativePath))
                         {
-                            if (PathHelper.IsFileName(entry.RelativePath))
+                            fileName = PathHelper.GetFileName(entry2.RelativePath);
+                            if (PathHelper.IsMatch(fileName, searchPattern))
                             {
-                                string fileName = PathHelper.GetFileName(entry.RelativePath);
-                                if (PathHelper.IsMatch(fileName, searchPattern))
-                                {
-                                    yield return entry;
-                                }
+                                yield return entry2;
                             }
                         }
                     }
@@ -105,5 +129,18 @@ namespace JiongXiaGu.Unity.Resources
         /// 获取到只读的流;
         /// </summary>
         public abstract Stream GetStream(ILoadableEntry entry);
+
+        /// <summary>
+        /// 获取到 MemoryStream 类型;
+        /// </summary>
+        public virtual MemoryStream GetMemoryStream(ILoadableEntry entry)
+        {
+            using (Stream stream = GetStream(entry))
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                return memoryStream;
+            }
+        }
     }
 }

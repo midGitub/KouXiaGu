@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 可读取资源压缩包;
+    /// 读取资源压缩包;
     /// </summary>
     public class LoadableZipFileReader
     {
@@ -23,24 +23,25 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到目录下的描述文件路径;
+        /// 读取模组信息,若不存在则返回异常;
         /// </summary>
-        public string GetDescriptionFileName()
+        public LoadableZipFile Create(string filePath, LoadableContentType type)
         {
-            string filePath = DescriptionFileName + xmlSerializer.FileExtension;
-            return filePath;
+            var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            ZipFile zipFile = new ZipFile(stream);
+            return Create(zipFile, type);
         }
 
         /// <summary>
-        /// 从该目录读取到存档信息,若不存在则返回异常;
+        /// 读取模组信息,若不存在则返回异常;
         /// </summary>
-        public LoadableContentInfo Create(ZipFile zipFile, LoadableContentType type)
+        public LoadableZipFile Create(ZipFile zipFile, LoadableContentType type)
         {
             if (zipFile == null)
                 throw new ArgumentNullException(nameof(zipFile));
 
             LoadableContentDescription description = ReadDescription(zipFile);
-            LoadableContentInfo info = new LoadableContentInfo(new LoadableZipFile(zipFile), description, type);
+            LoadableZipFile info = new LoadableZipFile(zipFile, description, type);
             return info;
         }
 
@@ -53,9 +54,11 @@ namespace JiongXiaGu.Unity.Resources
             ZipEntry zipEntry = zipFile.GetEntry(descriptionFileName);
             if (zipEntry != null)
             {
-                var stream = zipFile.GetInputStream(zipEntry);
-                LoadableContentDescription description = xmlSerializer.Deserialize(stream);
-                return description;
+                using (var stream = zipFile.GetInputStream(zipEntry))
+                {
+                    LoadableContentDescription description = xmlSerializer.Deserialize(stream);
+                    return description;
+                }
             }
             else
             {
@@ -64,15 +67,37 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 将模组描述输出磁盘或更新磁盘的内容;
+        /// 获取到目录下的描述文件路径;
         /// </summary>
-        public string WriteDescription(ZipFile zipFile, LoadableContentDescription description)
+        public string GetDescriptionFileName()
         {
-
-
-            //string descriptionFilePath = GetDescriptionFilePath(directory);
-            //xmlSerializer.Write(descriptionFilePath, description, FileMode.Create);
-            //return descriptionFilePath;
+            string filePath = DescriptionFileName + xmlSerializer.FileExtension;
+            return filePath;
         }
+
+
+        ///// <summary>
+        ///// 将模组描述输出磁盘或更新磁盘的内容;
+        ///// </summary>
+        //public string WriteDescription(ZipFile zipFile, LoadableContentDescription description)
+        //{
+        //    if (zipFile == null)
+        //        throw new ArgumentNullException(nameof(zipFile));
+
+        //    string descriptionFileName = GetDescriptionFileName();
+        //    ZipEntry zipEntry = zipFile.GetEntry(descriptionFileName);
+        //    if (zipEntry != null)
+        //    {
+        //        using (var stream = zipFile.GetInputStream(zipEntry))
+        //        {
+        //            xmlSerializer.Serialize(stream, description);
+        //        }
+        //    }
+        //    else
+        //    {
+
+        //    }
+        //    throw new NotImplementedException();
+        //}
     }
 }

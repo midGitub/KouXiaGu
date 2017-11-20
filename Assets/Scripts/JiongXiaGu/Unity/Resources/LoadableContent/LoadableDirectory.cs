@@ -9,26 +9,22 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 可读取的目录;
     /// </summary>
-    public class LoadableDirectory : LoadableContentConstruct
+    public class LoadableDirectory : LoadableContent
     {
         public DirectoryInfo DirectoryInfo { get; private set; }
 
-        public LoadableDirectory(string directory)
+        public LoadableDirectory(string directory, LoadableContentDescription description, LoadableContentType type) : base(description, type)
         {
             if (string.IsNullOrWhiteSpace(directory))
                 throw new ArgumentNullException(nameof(directory));
 
-            PathHelper.Normalize(directory);
+            directory = PathHelper.Normalize(directory);
             DirectoryInfo = new DirectoryInfo(directory);
         }
 
-        public LoadableDirectory(DirectoryInfo directoryInfo)
+        public override void Unload()
         {
-            if (directoryInfo == null)
-                throw new ArgumentNullException(nameof(directoryInfo));
-
-            string path = PathHelper.Normalize(directoryInfo.FullName);
-            DirectoryInfo = new DirectoryInfo(path);
+            return;
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()

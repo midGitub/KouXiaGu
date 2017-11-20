@@ -8,19 +8,19 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 资源定义;
+    /// 资源定义;实例非线程安全;
     /// </summary>
     public static class Resource
     {
-        private static LoadableContentInfo core;
-        private static List<LoadableContentInfo> dlc;
-        private static List<LoadableContentInfo> mod;
-        private static List<LoadableContentInfo> all;
+        private static LoadableContent core;
+        private static List<LoadableContent> dlc;
+        private static List<LoadableContent> mod;
+        private static List<LoadableContent> all;
 
         /// <summary>
         /// 核心资源;
         /// </summary>
-        public static LoadableContentInfo Core
+        public static LoadableContent Core
         {
             get { return core; }
         }
@@ -28,7 +28,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 所有拓展资源;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContentInfo> Dlc
+        public static IReadOnlyCollection<LoadableContent> Dlc
         {
             get { return dlc; }
         }
@@ -36,7 +36,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 所有模组资源;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContentInfo> Mod
+        public static IReadOnlyCollection<LoadableContent> Mod
         {
             get { return mod; }
         }
@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 所有资源;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContentInfo> All
+        public static IReadOnlyCollection<LoadableContent> All
         {
             get { return all; }
         }
@@ -54,32 +54,32 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal static void Initialize()
         {
-            LoadableDirectoryReader contentReader = new LoadableDirectoryReader();
+            LoadableContentSearcher contentSearcher = new LoadableContentSearcher();
             core = GetCore();
-            dlc = GetDlc(contentReader);
-            mod = GetMod(contentReader);
+            dlc = GetDlc(contentSearcher);
+            mod = GetMod(contentSearcher);
             all = GetAll();
         }
 
-        private static LoadableContentInfo GetCore()
+        private static LoadableContent GetCore()
         {
-            return new LoadableContentInfo(new LoadableDirectory(ResourcePath.CoreDirectory), new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
+            return new LoadableDirectory(ResourcePath.CoreDirectory.FullName, new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
         }
 
-        private static List<LoadableContentInfo> GetDlc(LoadableDirectoryReader contentReader)
+        private static List<LoadableContent> GetDlc(LoadableContentSearcher contentSearcher)
         {
-            return contentReader.EnumerateModInfos(ResourcePath.DlcDirectory.FullName, LoadableContentType.DLC).ToList();
+            return contentSearcher.FindLoadableContent(ResourcePath.DlcDirectory.FullName, LoadableContentType.DLC);
         }
 
-        private static List<LoadableContentInfo> GetMod(LoadableDirectoryReader contentReader)
+        private static List<LoadableContent> GetMod(LoadableContentSearcher contentSearcher)
         {
-            return contentReader.EnumerateModInfos(ResourcePath.ModDirectory.FullName, LoadableContentType.MOD).ToList();
+            return contentSearcher.FindLoadableContent(ResourcePath.ModDirectory.FullName, LoadableContentType.MOD);
         }
 
-        private static List<LoadableContentInfo> GetAll()
+        private static List<LoadableContent> GetAll()
         {
             int capacity = 1 + dlc.Count + mod.Count;
-            var all = new List<LoadableContentInfo>(capacity);
+            var all = new List<LoadableContent>(capacity);
             all.Add(Core);
             all.AddRange(dlc);
             all.AddRange(mod);
