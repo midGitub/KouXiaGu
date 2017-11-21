@@ -38,39 +38,40 @@ namespace JiongXiaGu.Unity.RectMaps
                 throw new ArgumentNullException(nameof(data));
 
             MapData = data;
-            Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
+            Map = new ObservableDictionary<RectCoord, MapNode>(data.MapData.Data);
             MapChangedRecorder = new MapChangedRecorder();
             Map.Subscribe(MapChangedRecorder);
         }
 
-        public WorldMap(Map data, Map archive)
-        {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-            if (archive == null)
-                throw new ArgumentNullException(nameof(archive));
+        //public WorldMap(Map data, Map archive)
+        //{
+        //    if (data == null)
+        //        throw new ArgumentNullException(nameof(data));
+        //    if (archive == null)
+        //        throw new ArgumentNullException(nameof(archive));
 
-            data.AddArchive(archive);
-            Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-            MapChangedRecorder = new MapChangedRecorder(archive.Data.Keys);
-            Map.Subscribe(MapChangedRecorder);
-        }
+        //    data.AddArchive(archive);
+        //    Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
+        //    MapChangedRecorder = new MapChangedRecorder(archive.Data.Keys);
+        //    Map.Subscribe(MapChangedRecorder);
+        //}
 
         /// <summary>
         /// 获取到用于存档的地图数据,若不存在需要存档的内容,则返回null;
         /// </summary>
         public Map GetArchiveMap()
         {
-            if (MapChangedRecorder.ChangedPositions.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                Map archivedMap = new Map(MapData.Description);
-                UpdateChangedData(archivedMap.Data);
-                return archivedMap;
-            }
+            //if (MapChangedRecorder.ChangedPositions.Count == 0)
+            //{
+            //    return null;
+            //}
+            //else
+            //{
+            //    Map archivedMap = new Map(MapData.Description);
+            //    UpdateChangedData(archivedMap.Data);
+            //    return archivedMap;
+            //}
+            throw new NotImplementedException();
         }
 
         /// <summary>

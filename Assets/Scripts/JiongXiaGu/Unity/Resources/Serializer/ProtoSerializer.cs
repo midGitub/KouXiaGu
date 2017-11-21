@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Resources
         internal const string fileExtension = ".data";
         public static readonly ProtoSerializer<T> Default = new ProtoSerializer<T>();
 
-        private ProtoSerializer()
+        public ProtoSerializer()
         {
         }
 

@@ -163,6 +163,9 @@ namespace JiongXiaGu
         /// </summary>
         public static bool IsMatch(string input, string pattern)
         {
+            input = input.ToLower();
+            pattern = pattern.ToLower();
+
             bool matched = false;
             int inputIndex = 0;
             int patternIndex = 0;

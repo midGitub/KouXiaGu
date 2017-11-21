@@ -13,7 +13,8 @@ namespace JiongXiaGu.Unity.Localizations
         [PathDefinition(PathDefinition.DataDirectory, "本地化资源目录;")]
         internal const string LocalizationDirectoryName = "Localization";
 
-        private const string packFileExtension = ".language";
+        private const string packFilePrefix = "Language_";
+        private const string packFileExtension = ".zip";
 
         private readonly LanguagePackSerializer packSerializer;
 
@@ -22,7 +23,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         private static string LanguagePackFileSearchPattern
         {
-            get { return "*" + packFileExtension; }
+            get { return packFilePrefix + "*" + packFileExtension; }
         }
 
         public LanguagePackSearcher()
@@ -92,15 +93,15 @@ namespace JiongXiaGu.Unity.Localizations
         {
             if (string.IsNullOrWhiteSpace(pack.Description.Name))
             {
-                return pack.Description.Name + packFileExtension;
+                return packFilePrefix + pack.Description.Name + packFileExtension;
             }
             else if (string.IsNullOrWhiteSpace(pack.Description.Language))
             {
-                return pack.Description.Language + packFileExtension;
+                return packFilePrefix + pack.Description.Language + packFileExtension;
             }
             else
             {
-                return DateTime.Now.Ticks + packFileExtension;
+                return packFilePrefix + DateTime.Now.Ticks + packFileExtension;
             }
         }
     }

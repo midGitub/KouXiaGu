@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 地图读写器;
         /// </summary>
-        private readonly MapReader mapReader = new MapReader();
+        private readonly OMapReader mapReader = new OMapReader();
 
         /// <summary>
         /// 主地图文件信息;
@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
             string archiveMapFilePath = GetArchiveMapFilePath(archive);
             ArchiveMap = mapReader.Read(archiveMapFilePath);
-            MainMapFileInfo = mapReader.FindByName(ArchiveMap.Name);
+            MainMapFileInfo = mapReader.FindByName(ArchiveMap.Description.Name);
         }
 
         /// <summary>
@@ -82,7 +82,8 @@ namespace JiongXiaGu.Unity.RectMaps
             Map mainMap = mapReader.Read(MainMapFileInfo);
             if (ArchiveMap != null)
             {
-                return new WorldMap(mainMap, ArchiveMap);
+                //return new WorldMap(mainMap, ArchiveMap);
+                throw new NotImplementedException();
             }
             else
             {

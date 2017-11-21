@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public LanguagePack Deserialize(LoadableContent loadableContent, ILoadableEntry entry)
         {
-            using (var stream = GetStream(loadableContent, entry))
+            using (var stream = loadableContent.GetStream(entry))
             {
                 return Deserialize(stream);
             }
@@ -37,26 +37,48 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public LanguagePack Deserialize(Stream stream)
         {
-            LanguagePackDescription description = default(LanguagePackDescription);
-            LanguageDictionary dictionary = default(LanguageDictionary);
+            LanguagePackDescription? description = null;
+            LanguageDictionary dictionary = null;
 
-            using (ZipFile zipFile = new ZipFile(stream))
+            using (ZipInputStream zipInputStream = new ZipInputStream(stream))
             {
-                zipFile.IsStreamOwner = false;
-                ZipContent zipContent = Check(zipFile);
+                ZipEntry entry;
+                zipInputStream.IsStreamOwner = false;
+                while ((entry = zipInputStream.GetNextEntry()) != null)
+                {
+                    if (description == null && entry.Name == descriptionFileName)
+                    {
+                        description = descriptionSerializer.Deserialize(zipInputStream);
+                    }
+                    else if (dictionary == null && entry.Name == dictionaryFileName)
+                    {
+                        dictionary = dictionarySerializer.Deserialize(zipInputStream);
+                    }
+                }
 
-                var descStream = zipFile.GetInputStream(zipContent.Description);
-                description = descriptionSerializer.Deserialize(descStream);
-
-                var dictionarystream = zipFile.GetInputStream(zipContent.Dictionary);
-                dictionary = dictionarySerializer.Deserialize(dictionarystream);
+                if (description != null && dictionary != null)
+                    return new LanguagePack(description.Value, dictionary);
+                else
+                    throw new FileNotFoundException();
             }
-            return new LanguagePack(description, dictionary);
+
+            //using (ZipFile zipFile = new ZipFile(stream))
+            //{
+            //    zipFile.IsStreamOwner = false;
+            //    ZipContent zipContent = Check(zipFile);
+
+            //    var descStream = zipFile.GetInputStream(zipContent.Description);
+            //    description = descriptionSerializer.Deserialize(descStream);
+
+            //    var dictionarystream = zipFile.GetInputStream(zipContent.Dictionary);
+            //    dictionary = dictionarySerializer.Deserialize(dictionarystream);
+            //}
+            //return new LanguagePack(description, dictionary);
         }
 
         public LanguagePackDescription DeserializeDesc(LoadableContent loadableContent, ILoadableEntry entry)
         {
-            using (var stream = GetStream(loadableContent, entry))
+            using (var stream = loadableContent.GetStream(entry))
             {
                 return DeserializeDesc(stream);
             }
@@ -67,28 +89,28 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public LanguagePackDescription DeserializeDesc(Stream stream)
         {
-            using (ZipFile zipFile = new ZipFile(stream))
+            using (ZipInputStream zipInputStream = new ZipInputStream(stream))
             {
-                zipFile.IsStreamOwner = false;
-                ZipContent zipContent = Check(zipFile);
-                var descStream = zipFile.GetInputStream(zipContent.Description);
-                return descriptionSerializer.Deserialize(descStream);
+                zipInputStream.IsStreamOwner = false;
+                ZipEntry entry;
+                while ((entry = zipInputStream.GetNextEntry()) != null)
+                {
+                    if (entry.Name == descriptionFileName)
+                    {
+                        var description = descriptionSerializer.Deserialize(zipInputStream);
+                        return description;
+                    }
+                }
+                throw new FileNotFoundException();
             }
-        }
 
-        /// <summary>
-        /// 获取到可使用的流;
-        /// </summary>
-        private Stream GetStream(LoadableContent loadableContent, ILoadableEntry entry)
-        {
-            if (loadableContent is LoadableDirectory)
-            {
-                return loadableContent.GetStream(entry);
-            }
-            else
-            {
-                return loadableContent.GetMemoryStream(entry);
-            }
+            //using (ZipFile zipFile = new ZipFile(stream))
+            //{
+            //    zipFile.IsStreamOwner = false;
+            //    ZipContent zipContent = Check(zipFile);
+            //    var descStream = zipFile.GetInputStream(zipContent.Description);
+            //    return descriptionSerializer.Deserialize(descStream);
+            //}
         }
 
         /// <summary>

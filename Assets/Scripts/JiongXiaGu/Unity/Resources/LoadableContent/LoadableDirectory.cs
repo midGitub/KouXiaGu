@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 可读取的目录;
+    /// 可读取资源的目录;
     /// </summary>
     public class LoadableDirectory : LoadableContent
     {

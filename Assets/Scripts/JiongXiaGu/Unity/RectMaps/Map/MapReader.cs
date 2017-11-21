@@ -1,268 +1,157 @@
-﻿using JiongXiaGu.Unity.Resources;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml;
+using System.Linq;
+using System.Text;
 using System.Xml.Serialization;
+using JiongXiaGu.Unity.Resources;
+using System.IO;
+using System.Threading.Tasks;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
 
     /// <summary>
-    /// 提供地图读写方法;
+    /// 地图数据读取;
     /// </summary>
-    public class MapReader
+    public class MapSerializer
     {
+        private const string descriptionFileName = "Description" + XmlSerializer<MapDescription>.fileExtension;
+        private const string dictionaryFileName = "Map" + ProtoSerializer<MapData>.fileExtension;
+        private readonly XmlSerializer<MapDescription> descriptionSerializer = new XmlSerializer<MapDescription>();
+        private readonly ProtoSerializer<MapData> mapDataSerializer = new ProtoSerializer<MapData>();
+
         /// <summary>
-        /// 游戏地图存放目录;
+        /// 获取到地图;
         /// </summary>
-        [PathDefinition(PathDefinition.DataDirectory, "游戏地图存放目录;")]
-        internal const string MapsDirectoryName = "Maps";
-
-        internal const string MapRootName = "RectMap";
-        internal const string MapNameAttributeName = "Name";
-        internal const string MapVersionAttributeName = "Version";
-        internal const string MapIsArchivedAttributeName = "isArchived";
-        internal const string MapNodeElementName = "Item";
-        const string MapFilePrefix = "Map_";
-        const string MapFileExtension = ".xmap";
-
-        readonly XmlSerializer mapSerializer;
-        readonly string mapsDirectory;
-
-        public MapReader()
+        public Map Deserialize(string directory)
         {
-            mapSerializer = new XmlSerializer(typeof(Map));
-            mapsDirectory = GetMapsDirectory();
-        }
-
-        static string mapFileSearchPattern
-        {
-            get { return MapFilePrefix + "*" + MapFileExtension; }
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 获取到默认地图存储目录;
+        /// 从目录获取到地图描述;
         /// </summary>
-        string GetMapsDirectory()
+        public MapDescription DeserializeDesc(string directory)
         {
-            string directory = Path.Combine(ResourcePath.CoreDirectory.FullName, MapsDirectoryName);
-            return directory;
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 读取到地图;
+        /// 从目录获取到地图数据;
         /// </summary>
-        public Map Read(MapFileInfo mapFileInfo)
+        public MapData DeserializeData(string directory)
         {
-            return Read(mapFileInfo.FileInfo);
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// 获取到地图;
+        /// </summary>
+        public Map Deserialize(LoadableContent loadableContent, ILoadableEntry entry)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 读取到地图;
+        /// 从目录获取到地图描述;
         /// </summary>
-        public Map Read(FileInfo fileInfo)
+        public MapDescription DeserializeDesc(LoadableContent loadableContent, ILoadableEntry entry)
         {
-            return Read(fileInfo.FullName);
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 读取到地图;
+        /// 从目录获取到地图数据;
         /// </summary>
-        /// <param name="fullPath">完整的文件路径</param>
-        public Map Read(string fullPath)
+        public MapData DeserializeData(LoadableContent loadableContent, ILoadableEntry entry)
         {
-            using (Stream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
-            {
-                return Read(stream);
-            }
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// 获取到地图;
+        /// </summary>
+        public Map Deserialize(Stream stream)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 读取到地图;
+        /// 从目录获取到地图描述;
         /// </summary>
-        public Map Read(Stream stream)
+        public MapDescription DeserializeDesc(Stream stream)
         {
-            return (Map)mapSerializer.Deserialize(stream);
-        }
-
-        internal const bool DefaultIsKeepBackup = false;
-
-        /// <summary>
-        /// 输出地图到文件路径,覆盖原有;
-        /// </summary>
-        public MapFileInfo WriteToFile(string filePath, Map map, bool isKeepBackup = DefaultIsKeepBackup)
-        {
-            filePath = Path.ChangeExtension(filePath, MapFileExtension);
-            FileInfo fileInfo = new FileInfo(filePath);
-            Write(fileInfo, map, isKeepBackup);
-            return new MapFileInfo(fileInfo, map.Description);
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 输出地图到目录下,覆盖原有;
+        /// 从目录获取到地图数据;
         /// </summary>
-        public MapFileInfo WriteToDirectory(string directory, Map map, bool isKeepBackup = DefaultIsKeepBackup)
+        public MapData DeserializeData(Stream stream)
         {
-            string fileName = GetStandardMapFileName(map);
-            string filePath = Path.Combine(directory, fileName);
-            FileInfo fileInfo = new FileInfo(filePath);
-            Write(fileInfo, map, isKeepBackup);
-            return new MapFileInfo(fileInfo, map.Description);
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// 输出地图到目录;
+        /// </summary>
+        public void Serialize(string directory, Map map)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 获取到地图名;
+        /// 输出地图数据到目录;
         /// </summary>
-        string GetStandardMapFileName(Map map)
+        public void Serialize(string directory, MapData mapData)
         {
-            string fileName = MapFilePrefix + map.Name + MapFileExtension;
-            return fileName;
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 输出地图到,若路径已经存在地图,则覆盖;
+        /// 输出地图描述到目录;
         /// </summary>
-        /// <param name="mapFileInfo">地图文件信息</param>
-        /// <param name="map">需要输出的地图</param>
-        /// <param name="isKeepBackup">是否保留备份文件?</param>
-        public void Write(MapFileInfo mapFileInfo, Map map, bool isKeepBackup = DefaultIsKeepBackup)
+        public void Serialize(string directory, MapDescription description)
         {
-            Write(mapFileInfo.FileInfo, map, isKeepBackup);
-            mapFileInfo.Description = map.Description;
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// 输出地图到流;
+        /// </summary>
+        public void Serialize(Stream stream, Map map)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        ///  输出地图到,若路径已经存在地图,则覆盖;
+        /// 输出地图数据到流;
         /// </summary>
-        /// <param name="file">地图文件信息</param>
-        /// <param name="map">需要输出的地图</param>
-        /// <param name="isKeepBackup">是否保留备份文件?</param>
-        public void Write(FileInfo file, Map map, bool isKeepBackup = DefaultIsKeepBackup)
+        public void Serialize(Stream stream, MapData mapData)
         {
-            FileInfo backupFileInfo = null;
-            if (file.Exists)
-            {
-                backupFileInfo = new FileInfo(file.FullName);
-                string backupPath = file.FullName + ".backup";
-                backupFileInfo.MoveTo(backupPath);
-            }
-            try
-            {
-                using (Stream stream = new FileStream(file.FullName, FileMode.Create, FileAccess.Write))
-                {
-                    Write(stream, map);
-                }
-
-                if (!isKeepBackup)
-                    backupFileInfo?.Delete();
-            }
-            catch(Exception ex)
-            {
-                backupFileInfo?.MoveTo(file.FullName);
-                throw ex;
-            }
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 输出地图到;
+        /// 输出地图描述到流;
         /// </summary>
-        public void Write(Stream stream, Map map)
+        public void Serialize(Stream stream, MapDescription description)
         {
-            mapSerializer.SerializeXiaGu(stream, map);
+            throw new NotImplementedException();
         }
 
-
-        internal const SearchOption DefaultMapsSearchOption = SearchOption.AllDirectories;
 
         /// <summary>
-        /// 根据地图名获取到对应地图;
+        /// 对地图目录进行压缩;
         /// </summary>
-        public MapFileInfo FindByName(string mapName, SearchOption searchOption = DefaultMapsSearchOption)
+        public ZipFile Zip(string directory, FastZip fastZip)
         {
-            return FindByName(mapName, mapsDirectory, searchOption);
-        }
-
-        /// <summary>
-        /// 根据地图名获取到对应地图;
-        /// </summary>
-        public MapFileInfo FindByName(string mapName, string directory, SearchOption searchOption = DefaultMapsSearchOption)
-        {
-            IEnumerable<MapFileInfo> mapFileInfos = EnumerateMapInfos(directory, searchOption);
-            foreach (var mapFileInfo in mapFileInfos)
-            {
-                if (mapFileInfo.Description.Name == mapName)
-                {
-                    return mapFileInfo;
-                }
-            }
-            throw new FileNotFoundException(string.Format("在目录[{0}]未找到对应地图:[{1}]", directory, mapName));
-        }
-
-        /// <summary>
-        /// 迭代获取到所有地图文件信息;
-        /// </summary>
-        public IEnumerable<MapFileInfo> EnumerateMapInfos(SearchOption searchOption = DefaultMapsSearchOption)
-        {
-            string directory = GetMapsDirectory();
-            return EnumerateMapInfos(directory, searchOption);
-        }
-
-        /// <summary>
-        /// 迭代获取到所有地图文件信息;
-        /// </summary>
-        public IEnumerable<MapFileInfo> EnumerateMapInfos(string directory, SearchOption searchOption = DefaultMapsSearchOption)
-        {
-            foreach (var path in Directory.EnumerateFiles(directory, mapFileSearchPattern, searchOption))
-            {
-                MapFileInfo mapFileInfo;
-                try
-                {
-                    MapDescription description = ReadInfo(path);
-                    FileInfo fileInfo = new FileInfo(path);
-                    mapFileInfo = new MapFileInfo(fileInfo, description);
-                }
-                catch
-                {
-                    continue;
-                }
-                yield return mapFileInfo;
-                mapFileInfo = null;
-            }
-        }
-
-        /// <summary>
-        /// 读取到地图文件信息;
-        /// </summary>
-        public MapDescription ReadInfo(string filePath)
-        {
-            using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                MapDescription description = ReadInfo(stream);
-                return description;
-            }
-        }
-
-        public MapDescription ReadInfo(Stream stream)
-        {
-            using (XmlReader xmlReader = XmlReader.Create(stream))
-            {
-                xmlReader.MoveToContent();
-                if (xmlReader.IsStartElement() && xmlReader.Name == MapRootName)
-                {
-                    string name = xmlReader.GetAttribute(MapNameAttributeName);
-                    int version = Convert.ToInt32(xmlReader.GetAttribute(MapVersionAttributeName));
-                    bool isArchived = Convert.ToBoolean(xmlReader.GetAttribute(MapIsArchivedAttributeName));
-                    var info = new MapDescription()
-                    {
-                        Name = name,
-                        Version = version,
-                        IsArchived = isArchived,
-                    };
-                    return info;
-                }
-            }
-            throw new XmlException(string.Format("无法获取到详细信息;{0}", stream));
+            throw new NotImplementedException();
         }
     }
 }

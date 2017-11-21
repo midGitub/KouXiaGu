@@ -3,15 +3,16 @@ using ProtoBuf;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
+using JiongXiaGu.Collections;
 using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
 
     /// <summary>
-    /// 地图数据;
+    /// 地图数据;可通过 Proto 或 XML 进行序列化;
     /// </summary>
-    [ProtoContract(SkipConstructor = true)]
+    [ProtoContract(SkipConstructor = false)]
     public class MapData : IEnumerable<MapData.NodeItem>
     {
         /// <summary>
@@ -26,14 +27,15 @@ namespace JiongXiaGu.Unity.RectMaps
 
         public void Add(NodeItem item)
         {
-            Data.Add(item.Point, item.Node);
+            Data.AddOrUpdate(item.Point, item.Node);
         }
 
         public IEnumerator<NodeItem> GetEnumerator()
         {
             foreach (var item in Data)
             {
-                yield return item;
+                NodeItem node = new NodeItem(item.Key, item.Value);
+                yield return node;
             }
         }
 
@@ -42,11 +44,17 @@ namespace JiongXiaGu.Unity.RectMaps
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// 提供序列化使用;
+        /// </summary>\
+        [ProtoContract]
         public struct NodeItem
         {
+            [ProtoMember(0)]
             [XmlElement("Point")]
             public RectCoord Point { get; set; }
 
+            [ProtoMember(1)]
             [XmlElement("Node")]
             public MapNode Node { get; set; }
 
@@ -54,16 +62,6 @@ namespace JiongXiaGu.Unity.RectMaps
             {
                 Point = point;
                 Node = node;
-            }
-
-            public static implicit operator KeyValuePair<RectCoord, MapNode>(NodeItem item)
-            {
-                return new KeyValuePair<RectCoord, MapNode>(item.Point, item.Node);
-            }
-
-            public static implicit operator NodeItem(KeyValuePair<RectCoord, MapNode> pair)
-            {
-                return new NodeItem(pair.Key, pair.Value);
             }
         }
     }

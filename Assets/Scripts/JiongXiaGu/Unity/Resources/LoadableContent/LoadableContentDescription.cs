@@ -22,6 +22,11 @@ namespace JiongXiaGu.Unity.Resources
         public string Name { get; set; }
 
         /// <summary>
+        /// 作者;
+        /// </summary>
+        public string Author { get; set; }
+
+        /// <summary>
         /// 版本;
         /// </summary>
         public string Version { get; set; }

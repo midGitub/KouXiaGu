@@ -30,7 +30,7 @@ namespace JiongXiaGu.Unity.RectMaps
         public virtual Map Generate()
         {
             Map map = new Map(description);
-            GenerateData(map.Data);
+            GenerateData(map.MapData.Data);
             return map;
         }
 

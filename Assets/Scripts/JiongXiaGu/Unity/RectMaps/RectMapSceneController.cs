@@ -57,7 +57,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
         private string GetInfoLog()
         {
-            string log = "地图名:" + WorldMap.MapData.Name
+            string log = "地图名:" + WorldMap.MapData.Description.Name
                 + ", 地图节点数目:" + WorldMap.Map.Count;
             return log;
         }

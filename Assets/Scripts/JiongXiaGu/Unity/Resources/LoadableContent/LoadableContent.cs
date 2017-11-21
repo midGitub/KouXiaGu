@@ -130,17 +130,35 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public abstract Stream GetStream(ILoadableEntry entry);
 
-        /// <summary>
-        /// 获取到 MemoryStream 类型;(线程安全)
-        /// </summary>
-        public virtual MemoryStream GetMemoryStream(ILoadableEntry entry)
-        {
-            using (Stream stream = GetStream(entry))
-            {
-                MemoryStream memoryStream = new MemoryStream();
-                stream.CopyTo(memoryStream);
-                return memoryStream;
-            }
-        }
+        ///// <summary>
+        ///// 获取到 MemoryStream 类型;(线程安全)
+        ///// </summary>
+        //public virtual MemoryStream GetMemoryStream(ILoadableEntry entry)
+        //{
+        //    using (Stream stream = GetStream(entry))
+        //    {
+        //        MemoryStream memoryStream = new MemoryStream();
+        //        stream.CopyTo(memoryStream);
+        //        return memoryStream;
+        //    }
+        //}
+
+        ///// <summary>
+        ///// 根据类型获取到对应流;
+        ///// 若为 LoadableDirectory,则返回 GetStream();
+        ///// 若为 LoadableZipFile,则返回 GetMemoryStream();
+        ///// </summary>
+        //[Obsolete]
+        //public virtual Stream GetStreamAuto(ILoadableEntry entry)
+        //{
+        //    if (this is LoadableDirectory)
+        //    {
+        //        return GetStream(entry);
+        //    }
+        //    else
+        //    {
+        //        return GetMemoryStream(entry);
+        //    }
+        //}
     }
 }

@@ -73,7 +73,6 @@ namespace JiongXiaGu.Unity.Localizations
 
         private LanguagePack CreatePack()
         {
-            string name = SystemLanguage.ChineseSimplified.ToString();
             var languagePack = new LanguagePack(description, languageDictionary);
             return languagePack;
         }

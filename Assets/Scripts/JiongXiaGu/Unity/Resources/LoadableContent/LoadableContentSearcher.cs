@@ -13,6 +13,9 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableContentSearcher
     {
+        /// <summary>
+        /// 忽略符,置于名称前缀,用于忽略某文件/文件夹;
+        /// </summary>
         private const string IgnoreSymbol = "~!";
         private LoadableDirectoryReader directoryReader;
         private LoadableZipFileReader zipFileReader;

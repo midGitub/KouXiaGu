@@ -62,31 +62,5 @@ namespace JiongXiaGu.Unity.Resources
             xmlSerializer.Write(descriptionFilePath, description, FileMode.Create);
             return descriptionFilePath;
         }
-
-        /// <summary>
-        /// 枚举目录下的所有模组;
-        /// </summary>
-        /// <param name="modsDirectory">目标目录</param>
-        /// <param name="type">指定找到的模组类型</param>
-        /// <returns></returns>
-        [Obsolete]
-        public IEnumerable<LoadableContent> EnumerateModInfos(string modsDirectory, LoadableContentType type)
-        {
-            foreach (var directory in Directory.EnumerateDirectories(modsDirectory))
-            {
-                LoadableDirectory modInfo = null;
-                try
-                {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-                    modInfo = Create(directoryInfo, type);
-                }
-                catch (FileNotFoundException)
-                {
-                }
-
-                if (modInfo != null)
-                    yield return modInfo;
-            }
-        }
     }
 }

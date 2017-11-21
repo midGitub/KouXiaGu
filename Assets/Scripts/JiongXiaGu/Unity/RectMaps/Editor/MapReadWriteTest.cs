@@ -18,7 +18,7 @@ namespace JiongXiaGu.Unity.RectMaps
         [Obsolete]
         public void TestWriteFile()
         {
-            var reader = new MapReader();
+            var reader = new OMapReader();
             var map = Generate();
             reader.WriteToDirectory(NUnit.TempDirectory, map);
         }
@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity.RectMaps
         [Test]
         public void TestReadWrite()
         {
-            var reader = new MapReader();
+            var reader = new OMapReader();
             var map = Generate();
             using (var stream = new MemoryStream())
             {
@@ -35,14 +35,14 @@ namespace JiongXiaGu.Unity.RectMaps
                 stream.Seek(0, SeekOrigin.Begin);
                 var newMap = reader.Read(stream);
 
-                Assert.IsTrue(map.Description == newMap.Description);
-                Assert.IsTrue(map.Data.IsSameContent(newMap.Data));
+                Assert.IsTrue(map.Description.Name == newMap.Description.Name);
+                Assert.IsTrue(map.MapData.Data.IsSameContent(newMap.MapData.Data));
 
 
                 stream.Seek(0, SeekOrigin.Begin);
                 var mapDescription = reader.ReadInfo(stream);
 
-                Assert.IsTrue(map.Description == mapDescription);
+                Assert.IsTrue(map.Description.Name == mapDescription.Name);
             }
         }
 

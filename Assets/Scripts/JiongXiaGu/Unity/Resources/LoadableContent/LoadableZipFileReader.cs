@@ -74,30 +74,5 @@ namespace JiongXiaGu.Unity.Resources
             string filePath = DescriptionFileName + xmlSerializer.FileExtension;
             return filePath;
         }
-
-
-        ///// <summary>
-        ///// 将模组描述输出磁盘或更新磁盘的内容;
-        ///// </summary>
-        //public string WriteDescription(ZipFile zipFile, LoadableContentDescription description)
-        //{
-        //    if (zipFile == null)
-        //        throw new ArgumentNullException(nameof(zipFile));
-
-        //    string descriptionFileName = GetDescriptionFileName();
-        //    ZipEntry zipEntry = zipFile.GetEntry(descriptionFileName);
-        //    if (zipEntry != null)
-        //    {
-        //        using (var stream = zipFile.GetInputStream(zipEntry))
-        //        {
-        //            xmlSerializer.Serialize(stream, description);
-        //        }
-        //    }
-        //    else
-        //    {
-
-        //    }
-        //    throw new NotImplementedException();
-        //}
     }
 }
