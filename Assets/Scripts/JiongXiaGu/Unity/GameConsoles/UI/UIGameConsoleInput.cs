@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         /// <summary>
         /// 输入记录;
         /// </summary>
-        private Collections.LinkedList<string> importRecords;
+        private Collections.DoublyLinkedList<string> importRecords;
 
         /// <summary>
         /// 当前指向的记录;
@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
 
         private void Awake()
         {
-            importRecords = new Collections.LinkedList<string>();
+            importRecords = new Collections.DoublyLinkedList<string>();
         }
 
         private void Update()

@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// 语言包读写测试;
     /// </summary>
     [TestFixture]
-    class LanguagePackReadWritTest
+    public class LanguagePackSerializerTest
     {
 
         private LanguagePackDescription description = new LanguagePackDescription()
@@ -33,6 +33,7 @@ namespace JiongXiaGu.Unity.Localizations
             LanguagePack pack1 = CreatePack();
             Stream stream = new MemoryStream();
             reader.Serialize(stream, pack1);
+            stream.Seek(0, SeekOrigin.Begin);
             var pack2 = reader.Deserialize(stream);
 
             CheckIsSame(pack1.Description, pack2.Description);
@@ -43,10 +44,19 @@ namespace JiongXiaGu.Unity.Localizations
         public void ReadWriteInFile()
         {
             var reader = new LanguagePackSerializer();
-            var pack1 = CreatePack();
+            LanguagePack pack1 = CreatePack();
+            LanguagePack pack2;
             string filePath = Path.Combine(GetTempDirectory(), "ReadWritTest.zip");
-            reader.Serialize(filePath, pack1);
-            var pack2 = reader.Deserialize(File.OpenRead(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                reader.Serialize(stream, pack1);
+            }
+
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                pack2 = reader.Deserialize(stream);
+            }
 
             CheckIsSame(pack1.Description, pack2.Description);
             CheckIsSame(pack1.LanguageDictionary, pack2.LanguageDictionary);
@@ -55,11 +65,20 @@ namespace JiongXiaGu.Unity.Localizations
         [Test]
         public void ReadDescriptionInFile()
         {
+            LanguagePackDescription desc;
             var reader = new LanguagePackSerializer();
             var pack1 = CreatePack();
             string filePath = Path.Combine(GetTempDirectory(), "ReadDescriptionTest.zip");
-            reader.Serialize(filePath, pack1);
-            var desc = reader.DeserializeDesc(File.OpenRead(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                reader.Serialize(stream, pack1);
+            }
+
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                desc = reader.DeserializeDesc(stream);
+            }
 
             CheckIsSame(pack1.Description, desc);
         }

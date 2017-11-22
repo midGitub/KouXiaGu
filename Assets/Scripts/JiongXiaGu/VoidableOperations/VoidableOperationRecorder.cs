@@ -37,13 +37,13 @@ namespace JiongXiaGu.VoidableOperations
                 throw new ArgumentOutOfRangeException("maxRecord :" + maxRecord);
 
             MaxRecord = maxRecord;
-            operationQueue = new Collections.LinkedList<T>();
+            operationQueue = new Collections.DoublyLinkedList<T>();
         }
 
         /// <summary>
         /// 操作记录链;
         /// </summary>
-        readonly Collections.LinkedList<T> operationQueue;
+        readonly Collections.DoublyLinkedList<T> operationQueue;
 
         /// <summary>
         /// 最后执行的操作;

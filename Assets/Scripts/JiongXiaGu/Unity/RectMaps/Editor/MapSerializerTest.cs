@@ -11,8 +11,10 @@ namespace JiongXiaGu.Unity.RectMaps
     /// 地图读写测试;
     /// </summary>
     [TestFixture]
-    class MapReadWriteTest
+    public class MapSerializerTest
     {
+
+        
 
         [Test]
         [Obsolete]

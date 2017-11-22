@@ -6,25 +6,11 @@ namespace JiongXiaGu.Collections
 {
 
     /// <summary>
-    /// 自定义实现的双向链接(非循环);
+    /// 非循环的双向链接;
     /// </summary>
-    public class LinkedList<T> : ICollection<T>, IReadOnlyCollection<T>, IEnumerable<T>
+    public class DoublyLinkedList<T> : ICollection<T>, IReadOnlyCollection<T>, IEnumerable<T>
     {
-        public LinkedList()
-        {
-        }
-
-        public LinkedList(IEnumerable<T> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException("collection");
-
-            foreach (T item in collection)
-            {
-                AddLast(item);
-            }
-        }
-
+        private int version;
         public int Count { get; private set; }
         public LinkedListNode<T> First { get; private set; }
         public LinkedListNode<T> Last { get; private set; }
@@ -34,7 +20,25 @@ namespace JiongXiaGu.Collections
             get { return false; }
         }
 
-        void ICollection<T>.Add(T value)
+        public DoublyLinkedList()
+        {
+        }
+
+        public DoublyLinkedList(IEnumerable<T> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
+            foreach (T item in collection)
+            {
+                AddLast(item);
+            }
+        }
+
+        /// <summary>
+        /// 同 AddLast(T) 方法;
+        /// </summary>
+        public void Add(T value)
         {
             AddLast(value);
         }
@@ -46,7 +50,7 @@ namespace JiongXiaGu.Collections
         {
             ValidateNode(node);
             LinkedListNode<T> result = new LinkedListNode<T>(this, value);
-            InsertNodeAfter_internal(node, result);
+            InternalInsertNodeAfter(node, result);
             return result;
         }
 
@@ -58,7 +62,7 @@ namespace JiongXiaGu.Collections
             ValidateNode(node);
             ValidateNewNode(newNode);
             newNode.List = this;
-            InsertNodeAfter_internal(node, newNode);
+            InternalInsertNodeAfter(node, newNode);
         }
 
         /// <summary>
@@ -68,7 +72,7 @@ namespace JiongXiaGu.Collections
         {
             ValidateNode(node);
             LinkedListNode<T> result = new LinkedListNode<T>(this, value);
-            InsertNodeBefore_internal(node, result);
+            InternalInsertNodeBefore(node, result);
             return result;
         }
 
@@ -80,7 +84,7 @@ namespace JiongXiaGu.Collections
             ValidateNode(node);
             ValidateNewNode(newNode);
             newNode.List = this;
-            InsertNodeBefore_internal(node, newNode);
+            InternalInsertNodeBefore(node, newNode);
         }
 
         /// <summary>
@@ -91,11 +95,11 @@ namespace JiongXiaGu.Collections
             LinkedListNode<T> result = new LinkedListNode<T>(this, value);
             if (First == null)
             {
-                InsertNodeToEmptyList_internal(result);
+                InternalInsertNodeToEmptyList(result);
             }
             else
             {
-                InsertNodeBefore_internal(First, result);
+                InternalInsertNodeBefore(First, result);
             }
             return result;
         }
@@ -109,11 +113,11 @@ namespace JiongXiaGu.Collections
             node.List = this;
             if (First == null)
             {
-                InsertNodeToEmptyList_internal(node);
+                InternalInsertNodeToEmptyList(node);
             }
             else
             {
-                InsertNodeBefore_internal(First, node);
+                InternalInsertNodeBefore(First, node);
             }
         }
 
@@ -125,11 +129,11 @@ namespace JiongXiaGu.Collections
             LinkedListNode<T> result = new LinkedListNode<T>(this, value);
             if (Last == null)
             {
-                InsertNodeToEmptyList_internal(result);
+                InternalInsertNodeToEmptyList(result);
             }
             else
             {
-                InsertNodeAfter_internal(Last, result);
+                InternalInsertNodeAfter(Last, result);
             }
             return result;
         }
@@ -143,11 +147,11 @@ namespace JiongXiaGu.Collections
             node.List = this;
             if (Last == null)
             {
-                InsertNodeToEmptyList_internal(node);
+                InternalInsertNodeToEmptyList(node);
             }
             else
             {
-                InsertNodeAfter_internal(Last, node);
+                InternalInsertNodeAfter(Last, node);
             }
         }
 
@@ -159,7 +163,7 @@ namespace JiongXiaGu.Collections
             LinkedListNode<T> node = Find(value);
             if (node != null)
             {
-                RemoveNode_internal(node);
+                InternalRemoveNode(node);
                 return true;
             }
             return false;
@@ -171,7 +175,7 @@ namespace JiongXiaGu.Collections
         public void Remove(LinkedListNode<T> node)
         {
             ValidateNode(node);
-            RemoveNode_internal(node);
+            InternalRemoveNode(node);
         }
 
         /// <summary>
@@ -181,7 +185,7 @@ namespace JiongXiaGu.Collections
         {
             if (First == null)
                 throw new InvalidOperationException();
-            RemoveNode_internal(First);
+            InternalRemoveNode(First);
         }
 
         /// <summary>
@@ -191,7 +195,7 @@ namespace JiongXiaGu.Collections
         {
             if (Last == null)
                 throw new InvalidOperationException();
-            RemoveNode_internal(Last);
+            InternalRemoveNode(Last);
         }
 
         /// <summary>
@@ -315,12 +319,12 @@ namespace JiongXiaGu.Collections
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
 
             if (index < 0 || index > array.Length)
             {
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
             if (array.Length - index < Count)
@@ -355,13 +359,7 @@ namespace JiongXiaGu.Collections
 
         public IEnumerator<T> GetEnumerator()
         {
-            LinkedListNode<T> current = First;
-            while (current != null)
-            {
-                LinkedListNode<T> temp = current;
-                current = current.Next;
-                yield return temp.Value;
-            }
+            return new Enumerator(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -369,7 +367,10 @@ namespace JiongXiaGu.Collections
             return GetEnumerator();
         }
 
-        void InsertNodeAfter_internal(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        /// <summary>
+        /// 在次节点之后插入节点;
+        /// </summary>
+        private void InternalInsertNodeAfter(LinkedListNode<T> node, LinkedListNode<T> newNode)
         {
             if (node.Next == null)
             {
@@ -383,9 +384,10 @@ namespace JiongXiaGu.Collections
             newNode.Previous = node;
             node.Next = newNode;
             Count++;
+            version++;
         }
 
-        void InsertNodeBefore_internal(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        private void InternalInsertNodeBefore(LinkedListNode<T> node, LinkedListNode<T> newNode)
         {
             if (node.Previous == null)
             {
@@ -399,16 +401,18 @@ namespace JiongXiaGu.Collections
             newNode.Previous = node.Previous;
             node.Previous = newNode;
             Count++;
+            version++;
         }
 
-        void InsertNodeToEmptyList_internal(LinkedListNode<T> newNode)
+        private void InternalInsertNodeToEmptyList(LinkedListNode<T> newNode)
         {
             First = newNode;
             Last = newNode;
             Count++;
+            version++;
         }
 
-        void RemoveNode_internal(LinkedListNode<T> node)
+        private void InternalRemoveNode(LinkedListNode<T> node)
         {
             if (node.Next == null)
             {
@@ -430,13 +434,14 @@ namespace JiongXiaGu.Collections
 
             node.Invalidate();
             Count--;
+            version++;
         }
 
-        void ValidateNode(LinkedListNode<T> node)
+        private void ValidateNode(LinkedListNode<T> node)
         {
             if (node == null)
             {
-                throw new ArgumentNullException("node");
+                throw new ArgumentNullException(nameof(node));
             }
             if (node.List != this)
             {
@@ -444,45 +449,80 @@ namespace JiongXiaGu.Collections
             }
         }
 
-        void ValidateNewNode(LinkedListNode<T> node)
+        private void ValidateNewNode(LinkedListNode<T> node)
         {
             if (node == null)
             {
-                throw new ArgumentNullException("node");
+                throw new ArgumentNullException(nameof(node));
             }
             if (node.List != null)
             {
                 throw new InvalidOperationException();
             }
         }
-    }
 
-    public sealed class LinkedListNode<T>
-    {
-        public LinkedListNode(T value)
+        public struct Enumerator : IEnumerator<T>
         {
-            Value = value;
-        }
+            private DoublyLinkedList<T> list;
+            private LinkedListNode<T> node;
+            private int version;
+            private T current;
 
-        internal LinkedListNode(LinkedList<T> list, T value)
-        {
-            List = list;
-            Value = value;
-        }
+            public T Current
+            {
+                get { return current; }
+            }
 
-        public LinkedList<T> List { get; internal set; }
-        public LinkedListNode<T> Next { get; internal set; }
-        public LinkedListNode<T> Previous { get; internal set; }
-        public T Value { get; internal set; }
+            object IEnumerator.Current
+            {
+                get { return current; }
+            }
 
-        /// <summary>
-        /// 重置链表数据;
-        /// </summary>
-        internal void Invalidate()
-        {
-            List = null;
-            Next = null;
-            Previous = null;
+            internal Enumerator(DoublyLinkedList<T> list)
+            {
+                this.list = list;
+                version = list.version;
+                node = list.First;
+                current = default(T);
+            }
+
+            /// <summary>
+            /// 当迭代实例与合集版本不同时抛出异常;
+            /// </summary>
+            private void ThrowIfVersionChanged()
+            {
+                if (version != list.version)
+                {
+                    throw new InvalidOperationException("合集已经发生变化;");
+                }
+            }
+
+            public bool MoveNext()
+            {
+                ThrowIfVersionChanged();
+
+                if (node == null)
+                {
+                    return false;
+                }
+
+                current = node.Value;
+                node = node.Next;
+                return true;
+            }
+
+            public void Reset()
+            {
+                ThrowIfVersionChanged();
+
+                node = list.First;
+                current = default(T);
+            }
+
+            public void Dispose()
+            {
+                return;
+            }
         }
     }
 }

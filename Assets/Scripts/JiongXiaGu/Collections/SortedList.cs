@@ -10,7 +10,6 @@ namespace JiongXiaGu.Collections
     /// </summary>
     public class SortedList<T> : ICollection<T>, IEnumerable<T>, IReadOnlyCollection<T>, IReadOnlyList<T>
     {
-
         public SortedList()
         {
             Comparer = Comparer<T>.Default;

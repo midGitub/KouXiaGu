@@ -7,91 +7,88 @@
 //namespace JiongXiaGu
 //{
 
-//    /// <summary>
-//    /// 在合集内寻找多个对象;
-//    /// </summary>
-//    public static class SearchItemsExtesions
+//    public interface IAction<T>
+//    {
+//        void Invoke(T value);
+//    }
+
+//    public static class ForEachExtesions
 //    {
 
-//        /// <summary>
-//        /// 在合集内寻找多个对象;
-//        /// </summary>
-//        /// <param name="collection">目标合集</param>
-//        /// <param name="searchItems">需要寻找的对象,该合集会在寻找过程中更改,寻找结束后未找到的对象为该合集对象</param>
-//        public static void Search<T>(this IEnumerable<T> collection, LinkedList<SearchItem<T>> searchItems)
+//        public static void ForEach<TAction, T>(this IEnumerable<T> collection, TAction action)
+//            where TAction : IAction<T>
 //        {
 //            if (collection == null)
 //                throw new ArgumentNullException(nameof(collection));
-//            if (searchItems == null)
-//                throw new ArgumentNullException(nameof(searchItems));
+//            if (action == null)
+//                throw new ArgumentNullException(nameof(action));
 
 //            foreach (var item in collection)
 //            {
-//                LinkedListNode<SearchItem<T>> node = searchItems.First;
-//                while (node != null)
+//                action.Invoke(item);
+//            }
+//        }
+
+//        public static void ForEach<TAction, T>(this IEnumerable<T> collection, ICollection<TAction> actions)
+//            where TAction: IAction<T>
+//        {
+//            if (collection == null)
+//                throw new ArgumentNullException(nameof(collection));
+//            if (actions == null)
+//                throw new ArgumentNullException(nameof(actions));
+
+//            foreach (var item in collection)
+//            {
+//                foreach (var action in actions)
 //                {
-//                    SearchItem<T> searchItem = node.Value;
-//                    if (node.Value.Compare(item))
-//                    {
-//                        searchItem.OnComplete(item);
-
-//                        //一个对象对应多个结果;
-//                        //var temp = node;
-//                        //node = node.Next;
-//                        //searchItems.Remove(temp);
-
-//                        //一个对象对应一个结果;
-//                        searchItems.Remove(node);
-//                        break;
-//                    }
-//                    else
-//                    {
-//                        node = node.Next;
-//                    }
+//                    action.Invoke(item);
 //                }
 //            }
 //        }
 //    }
 
 //    /// <summary>
-//    /// 需要寻找到的对象,和寻找到之后的操作;
+//    /// 搜索项目,需要寻找到的对象;
 //    /// </summary>
-//    public class SearchItem<T>
+//    public struct SearchAction<T> : IAction<T>
 //    {
-//        public T Item { get; private set; }
+//        /// <summary>
+//        /// 搜索元素对比器;
+//        /// </summary>
 //        private Func<T, bool> comparator;
+
+//        /// <summary>
+//        /// 找到时进行的操作;
+//        /// </summary>
 //        private Action<T> onComplete;
 
-//        public SearchItem(T item, Action<T> onComplete)
-//        {
-//            if (onComplete == null)
-//                throw new ArgumentNullException(nameof(onComplete));
-
-//            Item = item;
-//            comparator = value => EqualityComparer<T>.Default.Equals(value, item);
-//            this.onComplete = onComplete;
-//        }
-
-//        public SearchItem(T item, Func<T, bool> comparator, Action<T> onComplete)
+//        /// <summary>
+//        /// 是否已经寻找到?
+//        /// </summary>
+//        public bool IsFind { get; private set; }
+         
+//        public SearchAction(Func<T, bool> comparator, Action<T> onComplete) : this()
 //        {
 //            if (comparator == null)
 //                throw new ArgumentNullException(nameof(comparator));
 //            if (onComplete == null)
 //                throw new ArgumentNullException(nameof(onComplete));
 
-//            Item = item;
 //            this.comparator = comparator;
 //            this.onComplete = onComplete;
 //        }
 
-//        public bool Compare(T item)
+//        public void Reset()
 //        {
-//            return comparator.Invoke(item);
+//            IsFind = false;
 //        }
 
-//        public void OnComplete(T item)
+//        public void Invoke(T value)
 //        {
-//            onComplete.Invoke(item);
+//            if (!IsFind && comparator.Invoke(value))
+//            {
+//                onComplete.Invoke(value);
+//            }
 //        }
 //    }
 //}
