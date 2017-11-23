@@ -11,6 +11,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// <summary>
     /// 提供地图读写方法;
     /// </summary>
+    [Obsolete]
     public class OMapReader
     {
         /// <summary>
@@ -55,7 +56,8 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public Map Read(MapFileInfo mapFileInfo)
         {
-            return Read(mapFileInfo.FileInfo);
+            //return Read(mapFileInfo.FileInfo);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -96,7 +98,8 @@ namespace JiongXiaGu.Unity.RectMaps
             filePath = Path.ChangeExtension(filePath, MapFileExtension);
             FileInfo fileInfo = new FileInfo(filePath);
             Write(fileInfo, map, isKeepBackup);
-            return new MapFileInfo(fileInfo, map.Description);
+            //return new MapFileInfo(fileInfo, map.Description);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -108,7 +111,8 @@ namespace JiongXiaGu.Unity.RectMaps
             string filePath = Path.Combine(directory, fileName);
             FileInfo fileInfo = new FileInfo(filePath);
             Write(fileInfo, map, isKeepBackup);
-            return new MapFileInfo(fileInfo, map.Description);
+            //return new MapFileInfo(fileInfo, map.Description);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -128,8 +132,9 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <param name="isKeepBackup">是否保留备份文件?</param>
         public void Write(MapFileInfo mapFileInfo, Map map, bool isKeepBackup = DefaultIsKeepBackup)
         {
-            Write(mapFileInfo.FileInfo, map, isKeepBackup);
-            mapFileInfo.Description = map.Description;
+            //Write(mapFileInfo.FileInfo, map, isKeepBackup);
+            //mapFileInfo.Description = map.Description;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -157,7 +162,7 @@ namespace JiongXiaGu.Unity.RectMaps
                 if (!isKeepBackup)
                     backupFileInfo?.Delete();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 backupFileInfo?.MoveTo(file.FullName);
                 throw ex;
@@ -220,7 +225,8 @@ namespace JiongXiaGu.Unity.RectMaps
                 {
                     MapDescription description = ReadInfo(path);
                     FileInfo fileInfo = new FileInfo(path);
-                    mapFileInfo = new MapFileInfo(fileInfo, description);
+                    //mapFileInfo = new MapFileInfo(fileInfo, description);
+                    throw new NotImplementedException();
                 }
                 catch
                 {

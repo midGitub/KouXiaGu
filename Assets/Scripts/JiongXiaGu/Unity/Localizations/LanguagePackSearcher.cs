@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Localizations
         private const string packFilePrefix = "Language_";
         private const string packFileExtension = ".zip";
 
-        private readonly LanguagePackSerializer packSerializer;
+        private readonly LanguagePackSerializer packSerializer = new LanguagePackSerializer();
 
         /// <summary>
         /// 语言包搜索模式;
@@ -24,16 +24,6 @@ namespace JiongXiaGu.Unity.Localizations
         private static string LanguagePackFileSearchPattern
         {
             get { return packFilePrefix + "*" + packFileExtension; }
-        }
-
-        public LanguagePackSearcher()
-        {
-            packSerializer = new LanguagePackSerializer();
-        }
-
-        public LanguagePackSearcher(LanguagePackSerializer packSerializer)
-        {
-            this.packSerializer = packSerializer;
         }
 
         /// <summary>

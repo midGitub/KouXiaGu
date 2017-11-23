@@ -50,11 +50,11 @@ namespace JiongXiaGu.Unity.RectMaps
         [ProtoContract]
         public struct NodeItem
         {
-            [ProtoMember(0)]
+            [ProtoMember(1)]
             [XmlElement("Point")]
             public RectCoord Point { get; set; }
 
-            [ProtoMember(1)]
+            [ProtoMember(2)]
             [XmlElement("Node")]
             public MapNode Node { get; set; }
 

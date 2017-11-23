@@ -29,7 +29,8 @@ namespace JiongXiaGu.Grids
     /// <summary>
     /// 矩形网格的坐标;
     /// </summary>
-    [Serializable, ProtoContract]
+    [Serializable]
+    [ProtoContract]
     public struct RectCoord : IEquatable<RectCoord>, IGrid, IGrid<RectCoord, RecDirections>
     {
 
@@ -100,13 +101,14 @@ namespace JiongXiaGu.Grids
             RecDirections.North,
         };
 
-        [ProtoMember(1), SerializeField]
+        [SerializeField]
         int x;
 
-        [ProtoMember(2), SerializeField]
+        [SerializeField]
         int y;
 
         [XmlAttribute("x")]
+        [ProtoMember(1)]
         public int X
         {
             get { return x; }
@@ -114,6 +116,7 @@ namespace JiongXiaGu.Grids
         }
 
         [XmlAttribute("y")]
+        [ProtoMember(2)]
         public int Y
         {
             get { return y; }

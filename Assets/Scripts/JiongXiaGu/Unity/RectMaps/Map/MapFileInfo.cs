@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using JiongXiaGu.Unity.Resources;
+using System.IO;
+using System;
 
 namespace JiongXiaGu.Unity.RectMaps
 {
@@ -8,20 +10,20 @@ namespace JiongXiaGu.Unity.RectMaps
     /// </summary>
     public class MapFileInfo
     {
-        /// <summary>
-        /// 地图文件描述信息;
-        /// </summary>
         public MapDescription Description { get; internal set; }
+        public LoadableContent Content { get; internal set; }
+        public ILoadableEntry Entry { get; internal set; }
 
-        /// <summary>
-        /// 地图文件路径;
-        /// </summary>
-        public FileInfo FileInfo { get; private set; }
-
-        public MapFileInfo(FileInfo file, MapDescription description)
+        public MapFileInfo(MapDescription description, LoadableContent content, ILoadableEntry entry)
         {
-            FileInfo = file;
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
             Description = description;
+            Content = content;
+            Entry = entry;
         }
     }
 }

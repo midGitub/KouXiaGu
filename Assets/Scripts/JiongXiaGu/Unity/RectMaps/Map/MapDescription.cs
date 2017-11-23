@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// 作者;
         /// </summary>
         [XmlElement]
-        public int Author { get; set; }
+        public string Author { get; set; }
 
         /// <summary>
         /// 版本;

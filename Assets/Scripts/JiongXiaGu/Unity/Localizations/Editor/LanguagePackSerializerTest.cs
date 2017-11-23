@@ -27,7 +27,7 @@ namespace JiongXiaGu.Unity.Localizations
         };
 
         [Test]
-        public void ReadWriteInMemory()
+        public void SerializeInMemory()
         {
             var reader = new LanguagePackSerializer();
             LanguagePack pack1 = CreatePack();
@@ -41,7 +41,7 @@ namespace JiongXiaGu.Unity.Localizations
         }
 
         [Test]
-        public void ReadWriteInFile()
+        public void SerializeInFile()
         {
             var reader = new LanguagePackSerializer();
             LanguagePack pack1 = CreatePack();
@@ -63,7 +63,7 @@ namespace JiongXiaGu.Unity.Localizations
         }
 
         [Test]
-        public void ReadDescriptionInFile()
+        public void SerializeDescInFile()
         {
             LanguagePackDescription desc;
             var reader = new LanguagePackSerializer();
