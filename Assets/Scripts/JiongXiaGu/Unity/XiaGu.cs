@@ -1,5 +1,4 @@
-﻿using JiongXiaGu.Unity.GameConsoles;
-using System;
+﻿using System;
 using System.Threading;
 using UnityEngine;
 
@@ -8,12 +7,10 @@ namespace JiongXiaGu.Unity
 
     public static class XiaGu
     {
-        static XiaGu()
-        {
-            IsDeveloperMode = true;
-        }
-
-        static int mainThreadId;
+        /// <summary>
+        /// Unity线程ID;
+        /// </summary>
+        public static int UnityThreadId { get; private set; }
 
         /// <summary>
         /// 是否在Unity主线程?
@@ -23,7 +20,7 @@ namespace JiongXiaGu.Unity
             get
             {
 #if UNITY_EDITOR
-                return !IsPlaying || Thread.CurrentThread.ManagedThreadId == mainThreadId;
+                return !IsPlaying || Thread.CurrentThread.ManagedThreadId == UnityThreadId;
 #else
                 return Thread.CurrentThread.ManagedThreadId == mainThreadId;
 #endif
@@ -31,18 +28,20 @@ namespace JiongXiaGu.Unity
         }
 
         /// <summary>
-        /// 是否不在编辑器内运行;
+        /// Unity线程的SynchronizationContext;
         /// </summary>
-        public static bool IsPlaying { get; private set; }
+        public static SynchronizationContext UnitySynchronizationContext { get; private set; }
 
         /// <summary>
-        /// 是否为开发者模式?
+        /// 是否不在编辑器内运行;
         /// </summary>
-        public static bool IsDeveloperMode { get; set; }
+        public static bool IsPlaying { get; private set; } = false;
 
-        internal static void Initialize()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Initialize()
         {
-            mainThreadId = Thread.CurrentThread.ManagedThreadId;
+            UnityThreadId = Thread.CurrentThread.ManagedThreadId;
+            UnitySynchronizationContext = SynchronizationContext.Current;
             IsPlaying = true;
         }
 

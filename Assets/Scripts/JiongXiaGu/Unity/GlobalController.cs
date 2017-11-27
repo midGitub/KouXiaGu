@@ -4,6 +4,8 @@ using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
 using ICSharpCode.SharpZipLib.Core;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace JiongXiaGu.Unity
 {
@@ -24,6 +26,16 @@ namespace JiongXiaGu.Unity
         {
             var chars = "知道AA啊부모".ToCharArray();
             Debug.Log(chars.ToText());
+        }
+
+        private async void Start()
+        {
+            await Task.Run(delegate ()
+            {
+                XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread), null);
+                Debug.Log("1 : " + XiaGu.IsUnityThread);
+            });
+            Debug.Log("2 : " + XiaGu.IsUnityThread);
         }
     }
 }

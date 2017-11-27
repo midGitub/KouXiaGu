@@ -61,7 +61,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override Stream GetStream(ILoadableEntry entry)
+        public override Stream GetInputStream(ILoadableEntry entry)
         {
             if (entry is FileEntry)
             {

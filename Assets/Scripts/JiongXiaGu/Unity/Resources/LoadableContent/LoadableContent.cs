@@ -128,7 +128,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到只读的流;(线程安全)
         /// </summary>
-        public abstract Stream GetStream(ILoadableEntry entry);
+        public abstract Stream GetInputStream(ILoadableEntry entry);
 
         ///// <summary>
         ///// 获取到 MemoryStream 类型;(线程安全)

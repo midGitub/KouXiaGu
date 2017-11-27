@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 读取存档;
         /// </summary>
-        public static Task<SceneArchivalData> Read(Archive archive, IEnumerable<ISceneArchiveHandle> sceneArchiveHandles, CancellationToken cancellationToken)
+        public static Task<SceneArchivalData> Read(ArchiveInfo archive, IEnumerable<ISceneArchiveHandle> sceneArchiveHandles, CancellationToken cancellationToken)
         {
             return Task.Run(delegate ()
             {
@@ -79,7 +79,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 进行存档内容收集,并且进行输出;
         /// </summary>
-        public async Task<SceneArchivalData> Write(Archive archive, IEnumerable<ISceneArchiveHandle> sceneArchiveHandles, CancellationToken cancellationToken)
+        public async Task<SceneArchivalData> Write(ArchiveInfo archive, IEnumerable<ISceneArchiveHandle> sceneArchiveHandles, CancellationToken cancellationToken)
         {
             SceneArchivalData sceneArchivalData = await Collect(sceneArchiveHandles, cancellationToken);
             await Write(archive, sceneArchivalData, cancellationToken);
@@ -89,7 +89,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 输出存档;
         /// </summary>
-        public Task Write(Archive archive, SceneArchivalData sceneArchivalData, CancellationToken cancellationToken)
+        public Task Write(ArchiveInfo archive, SceneArchivalData sceneArchivalData, CancellationToken cancellationToken)
         {
             return Task.Run(delegate ()
             {
@@ -133,16 +133,16 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 迭代获取到所有存档文件;
         /// </summary>
-        public IEnumerable<Archive> EnumerateArchives(string directory, SearchOption searchOption)
+        public IEnumerable<ArchiveInfo> EnumerateArchives(string directory, SearchOption searchOption)
         {
             foreach (var dir in Directory.EnumerateDirectories(directory, ArchiveDirectorySearchPattern, searchOption))
             {
-                Archive archiveInfo;
+                ArchiveInfo archiveInfo;
                 try
                 {
                     ArchiveDescription description = archiveDescriptionReader.Read(dir);
                     DirectoryInfo directoryInfo = new DirectoryInfo(dir);
-                    archiveInfo = new Archive(description, directoryInfo);
+                    archiveInfo = new ArchiveInfo(description, directoryInfo);
                 }
                 catch
                 {

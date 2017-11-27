@@ -36,6 +36,14 @@ namespace JiongXiaGu.Unity.Initializers
             get { return singleton.GetInstance(); }
         }
 
+        /// <summary>
+        /// 初始化内容数目,若还未初始化则返回 -1;
+        /// </summary>
+        public int InitializeHandleCount
+        {
+            get { return initializeHandles != null ? initializeHandles.Length : -1; }
+        }
+
         private void Awake()
         {
             singleton.SetInstance(this);

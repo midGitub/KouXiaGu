@@ -28,13 +28,13 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举所有符合要求的语言文件;
         /// </summary>
-        public List<T> FindPacks(IEnumerable<LoadableContent> loadableContents)
+        public List<T> Find(IEnumerable<LoadableContent> loadableContents)
         {
             List<T> items = new List<T>();
 
             foreach (var load in loadableContents)
             {
-                var packs = EnumeratePack(load);
+                var packs = Enumerate(load);
                 items.AddRange(packs);
             }
 
@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        public IEnumerable<T> EnumeratePack(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public IEnumerable<T> Enumerate(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             foreach (ILoadableEntry entry in contentConstruct.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
             {
@@ -56,7 +56,7 @@ namespace JiongXiaGu.Unity.Resources
                     item = Deserialize(contentConstruct, entry);
                     isSuccess = true;
 
-                    using (var stream = contentConstruct.GetStream(entry))
+                    using (var stream = contentConstruct.GetInputStream(entry))
                     {
                         item = Deserialize(contentConstruct, entry);
                         isSuccess = true;

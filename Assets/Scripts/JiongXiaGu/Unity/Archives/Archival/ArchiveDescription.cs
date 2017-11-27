@@ -18,7 +18,7 @@ namespace JiongXiaGu.Unity.Archives
         public string Name { get; set; }
 
         /// <summary>
-        /// 是否为自动保存存档?
+        /// 是否为自动保存的存档?
         /// </summary>
         [XmlElement]
         public bool IsAutoSave { get; set; }
@@ -35,6 +35,15 @@ namespace JiongXiaGu.Unity.Archives
         [XmlElement]
         public string ProgramVersion{ get; set; }
 
+        /// <summary>
+        /// 存档最后修改时间;
+        /// </summary>
+        [XmlIgnore]
+        public DateTime Time
+        {
+            get { return new DateTime(TimeTicks); }
+        }
+
         public ArchiveDescription(string name) : this(name, false)
         {
         }
@@ -43,14 +52,6 @@ namespace JiongXiaGu.Unity.Archives
         {
             Name = name;
             IsAutoSave = isAutoSave;
-        }
-
-        /// <summary>
-        /// 存档最后修改时间;
-        /// </summary>
-        public DateTime Time
-        {
-            get { return new DateTime(TimeTicks); }
         }
 
         /// <summary>

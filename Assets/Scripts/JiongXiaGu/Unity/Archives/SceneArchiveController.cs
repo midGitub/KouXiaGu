@@ -52,7 +52,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 将存档内容输出到存档目录(仅在Unity线程调用);
         /// </summary>
-        public async Task WriteArchive(Archive archive)
+        public async Task WriteArchive(ArchiveInfo archive)
         {
             if (IsWriting)
                 throw new ArgumentException("正在进行存档任务;");

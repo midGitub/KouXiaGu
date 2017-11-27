@@ -15,13 +15,30 @@ namespace JiongXiaGu.Unity.Initializers
         /// </summary>
         public static void WaitAll<T>(IReadOnlyList<T> initializeHandles, Func<T, Task> func, CancellationToken token)
         {
+            Task task;
             Task[] tasks = new Task[initializeHandles.Count];
             for (int i = 0; i < initializeHandles.Count; i++)
             {
                 token.ThrowIfCancellationRequested();
                 var initializeHandle = initializeHandles[i];
-                Task task = func(initializeHandle);
+                task = func(initializeHandle);
                 tasks[i] = task ?? Task.CompletedTask;
+
+                for (int taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
+                {
+                    task = tasks[taskIndex];
+                    if (task != null)
+                    {
+                        if (task.IsFaulted)
+                        {
+                            throw task.Exception;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             Task.WaitAll(tasks, token);
         }

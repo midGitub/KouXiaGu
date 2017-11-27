@@ -12,16 +12,16 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadOrder : IEnumerable<LoadOrder.LoadableContentXmlContent>, IEquatable<LoadOrder>
     {
-        public System.Collections.Generic.LinkedList<LoadableContent> Order { get; private set; }
+        public LinkedList<LoadableContent> Order { get; private set; }
 
         public LoadOrder()
         {
-            Order = new System.Collections.Generic.LinkedList<LoadableContent>();
+            Order = new LinkedList<LoadableContent>();
         }
 
         public LoadOrder(LoadOrder loadOrder)
         {
-            Order = new System.Collections.Generic.LinkedList<LoadableContent>(loadOrder.Order);
+            Order = new LinkedList<LoadableContent>(loadOrder.Order);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override int GetHashCode()
         {
-            return -390870225 + EqualityComparer<System.Collections.Generic.LinkedList<LoadableContent>>.Default.GetHashCode(Order);
+            return -390870225 + EqualityComparer<LinkedList<LoadableContent>>.Default.GetHashCode(Order);
         }
 
         public static bool operator ==(LoadOrder order1, LoadOrder order2)

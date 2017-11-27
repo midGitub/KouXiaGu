@@ -18,29 +18,19 @@ namespace JiongXiaGu
             return new ReaderWriterLockSlimReadLock(readerWriterLockSlim);
         }
 
-        class ReaderWriterLockSlimReadLock : IDisposable
+        private class ReaderWriterLockSlimReadLock : IDisposable
         {
-            private bool isDisposed = false;
-            ReaderWriterLockSlim readerWriterLockSlim;
+            private bool isDisposed;
+            private ReaderWriterLockSlim readerWriterLockSlim;
 
             public ReaderWriterLockSlimReadLock(ReaderWriterLockSlim readerWriterLockSlim)
             {
+                isDisposed = false;
                 this.readerWriterLockSlim = readerWriterLockSlim;
                 readerWriterLockSlim.EnterReadLock();
             }
 
-            //~ReaderWriterLockSlimReadLock()
-            //{
-            //    Dispose(false);
-            //}
-
             public void Dispose()
-            {
-                Dispose(true);
-                //GC.SuppressFinalize(this);
-            }
-
-            void Dispose(bool disposing)
             {
                 if (!isDisposed)
                 {
@@ -59,29 +49,19 @@ namespace JiongXiaGu
             return new ReaderWriterLockSlimUpgradeableReadLock(readerWriterLockSlim);
         }
 
-        class ReaderWriterLockSlimUpgradeableReadLock : IDisposable
+        private class ReaderWriterLockSlimUpgradeableReadLock : IDisposable
         {
-            private bool isDisposed = false;
-            ReaderWriterLockSlim readerWriterLockSlim;
+            private bool isDisposed;
+            private ReaderWriterLockSlim readerWriterLockSlim;
 
             public ReaderWriterLockSlimUpgradeableReadLock(ReaderWriterLockSlim readerWriterLockSlim)
             {
+                isDisposed = false;
                 this.readerWriterLockSlim = readerWriterLockSlim;
                 readerWriterLockSlim.EnterUpgradeableReadLock();
             }
 
-            //~ReaderWriterLockSlimUpgradeableReadLock()
-            //{
-            //    Dispose(false);
-            //}
-
             public void Dispose()
-            {
-                Dispose(true);
-                //GC.SuppressFinalize(this);
-            }
-
-            void Dispose(bool disposing)
             {
                 if (!isDisposed)
                 {
@@ -100,29 +80,19 @@ namespace JiongXiaGu
             return new ReaderWriterLockSlimWriteLock(readerWriterLockSlim);
         }
 
-        class ReaderWriterLockSlimWriteLock : IDisposable
+        private class ReaderWriterLockSlimWriteLock : IDisposable
         {
-            private bool isDisposed = false;
+            private bool isDisposed;
             ReaderWriterLockSlim readerWriterLockSlim;
 
             public ReaderWriterLockSlimWriteLock(ReaderWriterLockSlim readerWriterLockSlim)
             {
+                isDisposed = false;
                 this.readerWriterLockSlim = readerWriterLockSlim;
                 readerWriterLockSlim.EnterWriteLock();
             }
 
-            //~ReaderWriterLockSlimWriteLock()
-            //{
-            //    Dispose(false);
-            //}
-
             public void Dispose()
-            {
-                Dispose(true);
-                //GC.SuppressFinalize(this);
-            }
-
-            void Dispose(bool disposing)
             {
                 if (!isDisposed)
                 {

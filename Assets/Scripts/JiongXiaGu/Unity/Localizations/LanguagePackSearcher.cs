@@ -60,7 +60,7 @@ namespace JiongXiaGu.Unity.Localizations
                 LanguagePackInfo languagePack;
                 try
                 {
-                    using (var stream = contentConstruct.GetStream(entry))
+                    using (var stream = contentConstruct.GetInputStream(entry))
                     {
                         var description = packSerializer.DeserializeDesc(stream);
                         languagePack = new LanguagePackInfo(description, contentConstruct, entry);

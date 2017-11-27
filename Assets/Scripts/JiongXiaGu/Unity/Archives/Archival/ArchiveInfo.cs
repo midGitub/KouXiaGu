@@ -23,7 +23,7 @@ namespace JiongXiaGu.Unity.Archives
     /// <summary>
     /// 表示一个存档;
     /// </summary>
-    public class Archive : IArchiveFileInfo
+    public class ArchiveInfo : IArchiveFileInfo
     {
         /// <summary>
         /// 存档信息;
@@ -38,14 +38,14 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 指定存档路径,信息,但不进行创建存档;
         /// </summary>
-        public Archive(ArchiveDescription description, string directory) : this(description, new DirectoryInfo(directory))
+        public ArchiveInfo(ArchiveDescription description, string directory) : this(description, new DirectoryInfo(directory))
         {
         }
 
         /// <summary>
         /// 指定存档路径,信息,但不进行创建存档;
         /// </summary>
-        public Archive(ArchiveDescription description, DirectoryInfo directoryInfo)
+        public ArchiveInfo(ArchiveDescription description, DirectoryInfo directoryInfo)
         {
             DirectoryInfo = directoryInfo;
             Description = description;
@@ -89,9 +89,9 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 根据时间升序的对比器;存档时间由早到晚;
         /// </summary>
-        public class OrderByTimeAscendingComparer : Comparer<Archive>
+        public class OrderByTimeAscendingComparer : Comparer<ArchiveInfo>
         {
-            public override int Compare(Archive x, Archive y)
+            public override int Compare(ArchiveInfo x, ArchiveInfo y)
             {
                 return x.Description.Time.CompareTo(y.Description.Time);
             }
@@ -100,9 +100,9 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 根据时间降序的对比器;存档时间由晚到早;
         /// </summary>
-        public class OrderByTimeDescendingComparer : Comparer<Archive>
+        public class OrderByTimeDescendingComparer : Comparer<ArchiveInfo>
         {
-            public override int Compare(Archive x, Archive y)
+            public override int Compare(ArchiveInfo x, ArchiveInfo y)
             {
                 return -x.Description.Time.CompareTo(y.Description.Time);
             }

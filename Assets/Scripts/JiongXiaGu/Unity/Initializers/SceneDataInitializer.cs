@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity.Initializers
     internal sealed class SceneDataInitializer : InitializerBase<SceneDataInitializer>
     {
         static bool isInitializing;
-        static Archive archive;
+        static ArchiveInfo archive;
         static SceneArchivalData archivalData;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 存档信息,在初始化之前赋值,若为Null则表示不通过存档初始化;
         /// </summary>
-        public static Archive Archive
+        public static ArchiveInfo Archive
         {
             get { return archive; }
             set

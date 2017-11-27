@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 自动存档合集;
         /// </summary>
-        List<Archive> autoArchives;
+        List<ArchiveInfo> autoArchives;
 
         /// <summary>
         /// 场景存档控制器;
@@ -77,14 +77,14 @@ namespace JiongXiaGu.Unity.Archives
             return Task.Run(delegate ()
             {
                 token.ThrowIfCancellationRequested();
-                autoArchives = new List<Archive>(EnumerateAutoArchives());
+                autoArchives = new List<ArchiveInfo>(EnumerateAutoArchives());
             });
         }
 
         /// <summary>
         /// 获取到所有自动存档;
         /// </summary>
-        IEnumerable<Archive> EnumerateAutoArchives()
+        IEnumerable<ArchiveInfo> EnumerateAutoArchives()
         {
             const int maxArchiveCount = 3;
             for (int i = 1; i <= maxArchiveCount; i++)
@@ -92,7 +92,7 @@ namespace JiongXiaGu.Unity.Archives
                 string archiveName = "AutoSave" + i;
                 string archivePath = Path.Combine(ResourcePath.ArchiveDirectory.FullName, archiveName);
                 ArchiveDescription description = new ArchiveDescription(archiveName, true);
-                Archive archive = new Archive(description, archivePath);
+                ArchiveInfo archive = new ArchiveInfo(description, archivePath);
                 yield return archive;
             }
         }
@@ -173,8 +173,8 @@ namespace JiongXiaGu.Unity.Archives
         /// </summary>
         Task WriteArchive()
         {
-            autoArchives.Sort(new Archive.OrderByTimeAscendingComparer());
-            Archive archive = autoArchives[0];
+            autoArchives.Sort(new ArchiveInfo.OrderByTimeAscendingComparer());
+            ArchiveInfo archive = autoArchives[0];
             lastAutoSaveTime = Time.realtimeSinceStartup;
             return archiveController.WriteArchive(archive);
         }

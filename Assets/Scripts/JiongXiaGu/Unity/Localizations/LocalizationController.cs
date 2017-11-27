@@ -42,14 +42,15 @@ namespace JiongXiaGu.Unity.Localizations
 
         private void Awake()
         {
-            packSearcher = new LanguagePackSearcher();
-            packSerializer = new LanguagePackSerializer();
-            configFileReader = new LocalizationConfigFileReader();
             SystemLanguage = Application.systemLanguage;
         }
 
         Task IComponentInitializeHandle.Initialize(CancellationToken token)
         {
+            packSearcher = new LanguagePackSearcher();
+            packSerializer = new LanguagePackSerializer();
+            configFileReader = new LocalizationConfigFileReader();
+
             token.ThrowIfCancellationRequested();
 
             availableLanguagePacks = packSearcher.FindPacks(Resource.All);
@@ -69,7 +70,7 @@ namespace JiongXiaGu.Unity.Localizations
                 {
                     try
                     {
-                        using (var stream = packInfo.ContentConstruct.GetStream(packInfo.LoadableEntry))
+                        using (var stream = packInfo.ContentConstruct.GetInputStream(packInfo.LoadableEntry))
                         {
                             languagePack = packSerializer.Deserialize(stream);
                             break;
@@ -98,22 +99,6 @@ namespace JiongXiaGu.Unity.Localizations
             });
         }
         
-        /// <summary>
-        /// 获取到所有可使用的语言包;
-        /// </summary>
-        private List<LanguagePackInfo> GetLanguagePackAll()
-        {
-            List<LanguagePackInfo> languagePacks = new List<LanguagePackInfo>();
-
-            foreach (var load in Resource.All)
-            {
-                var packs = packSearcher.EnumeratePack(load);
-                languagePacks.AddRange(packs);
-            }
-
-            return languagePacks;
-        }
-
         /// <summary>
         /// 读取到配置文件;
         /// </summary>

@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
         protected override MapFileInfo Deserialize(LoadableContent content, ILoadableEntry entry)
         {
-            using (var stream = content.GetStream(entry))
+            using (var stream = content.GetInputStream(entry))
             {
                 MapDescription description = mapSerializer.DeserializeDesc(stream);
                 MapFileInfo mapFileInfo = new MapFileInfo(description, content, entry);

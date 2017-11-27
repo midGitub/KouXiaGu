@@ -15,20 +15,18 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 游戏程序初始化器;
     /// </summary>
-    [DisallowMultipleComponent]
-    internal class GameInitializer : MonoBehaviour
+    public static class GameInitializer
     {
-        private GameInitializer()
-        {
-        }
-
         private const string InitializerName = "程序初始化";
+        public static bool IsCompleted { get; private set; }
+        public static bool IsFaulted { get; private set; }
+        public static Exception Exception { get; private set; }
 
-        private void Awake()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Initialize()
         {
             try
             {
-                XiaGu.Initialize();
                 ResourcePath.Initialize();
                 Resource.Initialize();
                 OnCompleted();
@@ -39,13 +37,21 @@ namespace JiongXiaGu.Unity.Initializers
             }
         }
 
-        private void OnCompleted()
+        private static void OnCompleted()
         {
+            IsCompleted = true;
+            IsFaulted = false;
+            Exception = null;
+
             UnityDebugHelper.SuccessfulReport(InitializerName);
         }
 
-        private void OnFaulted(Exception ex)
+        private static void OnFaulted(Exception ex)
         {
+            IsCompleted = true;
+            IsFaulted = true;
+            Exception = ex;
+
             UnityDebugHelper.FailureReport(InitializerName, ex);
         }
     }
