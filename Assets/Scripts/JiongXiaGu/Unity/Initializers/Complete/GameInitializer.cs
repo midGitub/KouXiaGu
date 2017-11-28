@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 游戏程序初始化器;
     /// </summary>
-    public static class GameInitializer
+    public class GameInitializer : MonoBehaviour
     {
         private const string InitializerName = "程序初始化";
         public static bool IsCompleted { get; private set; }
@@ -35,6 +35,11 @@ namespace JiongXiaGu.Unity.Initializers
             {
                 OnFaulted(ex);
             }
+        }
+
+        private void OnDestroy()
+        {
+            Resource.Quit();
         }
 
         private static void OnCompleted()

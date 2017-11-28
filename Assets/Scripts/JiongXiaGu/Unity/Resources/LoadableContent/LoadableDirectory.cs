@@ -13,6 +13,11 @@ namespace JiongXiaGu.Unity.Resources
     {
         public DirectoryInfo DirectoryInfo { get; private set; }
 
+        public override bool Compressed
+        {
+            get { return false; }
+        }
+
         public LoadableDirectory(string directory, LoadableContentDescription description, LoadableContentType type) : base(description, type)
         {
             if (string.IsNullOrWhiteSpace(directory))
@@ -63,7 +68,11 @@ namespace JiongXiaGu.Unity.Resources
 
         public override Stream GetInputStream(ILoadableEntry entry)
         {
-            if (entry is FileEntry)
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+            else if (entry is FileEntry)
             {
                 string filePath = Path.Combine(DirectoryInfo.FullName, entry.RelativePath);
                 return new FileStream(filePath, FileMode.Open, FileAccess.Read);
@@ -72,6 +81,15 @@ namespace JiongXiaGu.Unity.Resources
             {
                 throw new ArgumentException(string.Format("参数[{0}]不为类[{1}]", nameof(entry), nameof(FileEntry)));
             }
+        }
+
+        public override string GetFile(ILoadableEntry entry)
+        {
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+            return Path.Combine(DirectoryInfo.FullName, entry.RelativePath);
         }
 
         private struct FileEntry : ILoadableEntry

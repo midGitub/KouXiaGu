@@ -28,14 +28,14 @@ namespace JiongXiaGu.Unity
             Debug.Log(chars.ToText());
         }
 
-        private async void Start()
-        {
-            await Task.Run(delegate ()
-            {
-                XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread), null);
-                Debug.Log("1 : " + XiaGu.IsUnityThread);
-            });
-            Debug.Log("2 : " + XiaGu.IsUnityThread);
-        }
+        //private async Task Update()
+        //{
+        //    await Task.Run(delegate ()
+        //    {
+        //        XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread), null);
+        //        Debug.Log("1 : " + XiaGu.IsUnityThread);
+        //    });
+        //    Debug.Log("2 : " + XiaGu.IsUnityThread);
+        //}
     }
 }

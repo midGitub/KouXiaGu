@@ -61,6 +61,21 @@ namespace JiongXiaGu.Unity.Resources
             all = GetAll();
         }
 
+        internal static void Quit()
+        {
+            foreach (var item in all)
+            {
+                try
+                {
+                    item.Unload();
+                }
+                catch (Exception ex)
+                {
+                    UnityEngine.Debug.LogError(ex);
+                }
+            }
+        }
+
         private static LoadableContent GetCore()
         {
             return new LoadableDirectory(ResourcePath.CoreDirectory.FullName, new LoadableContentDescription("0", "Core"), LoadableContentType.Core);

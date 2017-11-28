@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -10,7 +12,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
 {
 
     /// <summary>
-    /// 贴图资源;
+    /// 贴图资源信息;
     /// </summary>
     [XmlRoot("TextureInfo")]
     public class TextureInfo
@@ -24,7 +26,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
             Name = name;
         }
 
-        [XmlAttribute("name")]
+        [XmlElement("name")]
         public string Name { get; set; }
 
         [XmlIgnore]
@@ -48,4 +50,5 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
             return info.Texture;
         }
     }
+
 }

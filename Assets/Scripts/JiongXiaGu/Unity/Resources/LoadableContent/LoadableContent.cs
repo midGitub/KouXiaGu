@@ -20,6 +20,11 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public LoadableContentType Type { get; protected set; }
 
+        /// <summary>
+        /// 该资源是否为压缩的?
+        /// </summary>
+        public abstract bool Compressed { get; }
+
         public LoadableContent()
         {
         }
@@ -130,35 +135,9 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public abstract Stream GetInputStream(ILoadableEntry entry);
 
-        ///// <summary>
-        ///// 获取到 MemoryStream 类型;(线程安全)
-        ///// </summary>
-        //public virtual MemoryStream GetMemoryStream(ILoadableEntry entry)
-        //{
-        //    using (Stream stream = GetStream(entry))
-        //    {
-        //        MemoryStream memoryStream = new MemoryStream();
-        //        stream.CopyTo(memoryStream);
-        //        return memoryStream;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 根据类型获取到对应流;
-        ///// 若为 LoadableDirectory,则返回 GetStream();
-        ///// 若为 LoadableZipFile,则返回 GetMemoryStream();
-        ///// </summary>
-        //[Obsolete]
-        //public virtual Stream GetStreamAuto(ILoadableEntry entry)
-        //{
-        //    if (this is LoadableDirectory)
-        //    {
-        //        return GetStream(entry);
-        //    }
-        //    else
-        //    {
-        //        return GetMemoryStream(entry);
-        //    }
-        //}
+        /// <summary>
+        /// 获取到完整的文件路径;(线程安全)
+        /// </summary>
+        public abstract string GetFile(ILoadableEntry entry);
     }
 }

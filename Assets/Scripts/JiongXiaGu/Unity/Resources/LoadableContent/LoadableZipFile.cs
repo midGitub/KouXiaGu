@@ -13,6 +13,12 @@ namespace JiongXiaGu.Unity.Resources
     public class LoadableZipFile : LoadableContent
     {
         public ZipFile ZipFile { get; private set; }
+        private DirectoryInfo tempDirectoryInfo;
+
+        public override bool Compressed
+        {
+            get { return true; }
+        }
 
         public LoadableZipFile(ZipFile zipFile, LoadableContentDescription description, LoadableContentType type) : base(description, type)
         {
@@ -20,11 +26,21 @@ namespace JiongXiaGu.Unity.Resources
                 throw new ArgumentNullException(nameof(zipFile));
 
             ZipFile = zipFile;
+            string directoryName = Path.GetDirectoryName(ZipFile.Name);
+            string fileName = "temp_" + Path.GetFileNameWithoutExtension(ZipFile.Name) + "_" + description.Version;
+            string tempDirectoryName = Path.Combine(directoryName, fileName);
+            tempDirectoryInfo = new DirectoryInfo(tempDirectoryName);
+
+            if (tempDirectoryInfo.Exists)
+            {
+                tempDirectoryInfo.Delete(true);
+            }
         }
 
         public override void Unload()
         {
             ZipFile.Close();
+            tempDirectoryInfo?.Delete(true);
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()
@@ -41,7 +57,11 @@ namespace JiongXiaGu.Unity.Resources
 
         public override Stream GetInputStream(ILoadableEntry entry)
         {
-            if (entry is ZipLoadableEntry)
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+            else if (entry is ZipLoadableEntry)
             {
                 var zipLoadableEntry = (ZipLoadableEntry)entry;
                 return ZipFile.GetInputStream(zipLoadableEntry.ZipEntry);
@@ -50,6 +70,37 @@ namespace JiongXiaGu.Unity.Resources
             {
                 throw new ArgumentException(string.Format("参数[{0}]不为类[{1}]", nameof(entry), nameof(ZipLoadableEntry)));
             }
+        }
+
+        /// <summary>
+        /// 获取到临时的文件路径;
+        /// </summary>
+        public override string GetFile(ILoadableEntry entry)
+        {
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+
+            if (!tempDirectoryInfo.Exists)
+            {
+                tempDirectoryInfo.Create();
+            }
+
+            string filePath = Path.Combine(tempDirectoryInfo.FullName, entry.RelativePath);
+
+            if (!File.Exists(filePath))
+            {
+                string directoryName = Path.GetDirectoryName(filePath);
+                Directory.CreateDirectory(directoryName);
+
+                using (Stream fileStream = new FileStream(filePath, FileMode.CreateNew, FileAccess.Write), inputStream = GetInputStream(entry))
+                {
+                    inputStream.CopyTo(fileStream);
+                }
+            }
+
+            return filePath;
         }
 
         private class ZipLoadableEntry : ILoadableEntry

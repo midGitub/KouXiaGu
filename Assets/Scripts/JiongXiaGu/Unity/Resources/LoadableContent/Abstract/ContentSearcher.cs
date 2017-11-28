@@ -55,12 +55,6 @@ namespace JiongXiaGu.Unity.Resources
                 {
                     item = Deserialize(contentConstruct, entry);
                     isSuccess = true;
-
-                    using (var stream = contentConstruct.GetInputStream(entry))
-                    {
-                        item = Deserialize(contentConstruct, entry);
-                        isSuccess = true;
-                    }
                 }
                 catch
                 {
