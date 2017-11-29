@@ -131,6 +131,21 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
+        /// 获取到对应入口,若不存在则返回null;
+        /// </summary>
+        public virtual ILoadableEntry GetEntry(string relativePath)
+        {
+            foreach (var entry in EnumerateFiles())
+            {
+                if (entry.RelativePath == relativePath)
+                {
+                    return entry;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// 获取到只读的流;(线程安全)
         /// </summary>
         public abstract Stream GetInputStream(ILoadableEntry entry);

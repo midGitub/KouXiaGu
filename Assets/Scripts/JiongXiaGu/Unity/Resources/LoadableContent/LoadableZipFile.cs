@@ -20,27 +20,18 @@ namespace JiongXiaGu.Unity.Resources
             get { return true; }
         }
 
-        public LoadableZipFile(ZipFile zipFile, LoadableContentDescription description, LoadableContentType type) : base(description, type)
+        internal LoadableZipFile(ZipFile zipFile, DirectoryInfo tempDirectoryInfo, LoadableContentDescription description, LoadableContentType type) : base(description, type)
         {
             if (zipFile == null)
                 throw new ArgumentNullException(nameof(zipFile));
 
             ZipFile = zipFile;
-            string directoryName = Path.GetDirectoryName(ZipFile.Name);
-            string fileName = "temp_" + Path.GetFileNameWithoutExtension(ZipFile.Name) + "_" + description.Version;
-            string tempDirectoryName = Path.Combine(directoryName, fileName);
-            tempDirectoryInfo = new DirectoryInfo(tempDirectoryName);
-
-            if (tempDirectoryInfo.Exists)
-            {
-                tempDirectoryInfo.Delete(true);
-            }
+            this.tempDirectoryInfo = tempDirectoryInfo;
         }
 
         public override void Unload()
         {
             ZipFile.Close();
-            tempDirectoryInfo?.Delete(true);
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()
@@ -73,7 +64,8 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到临时的文件路径;
+        /// 将需要获取的文件解压到一个临时的文件夹内,返回其路径;
+        /// 在资源文件发生变化时,都会重新解压,保证文件最新;
         /// </summary>
         public override string GetFile(ILoadableEntry entry)
         {
@@ -103,6 +95,9 @@ namespace JiongXiaGu.Unity.Resources
             return filePath;
         }
 
+        /// <summary>
+        /// 文件入口;
+        /// </summary>
         private class ZipLoadableEntry : ILoadableEntry
         {
             public LoadableZipFile Parent { get; private set; }

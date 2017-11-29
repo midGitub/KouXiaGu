@@ -31,7 +31,6 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             using (var stream = content.GetInputStream(entry))
             {
-                UnityEngine.Debug.Log(content.GetFile(entry));
                 MapDescription description = mapSerializer.DeserializeDesc(stream);
                 MapFileInfo mapFileInfo = new MapFileInfo(description, content, entry);
                 return mapFileInfo;

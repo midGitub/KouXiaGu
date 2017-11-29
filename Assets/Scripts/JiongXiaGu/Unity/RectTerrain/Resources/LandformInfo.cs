@@ -1,15 +1,32 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.RectTerrain.Resources
 {
 
-    [XmlRoot("LandformResourceInfo")]
-    public struct LandformResourceInfo
+    public class LandformInfo
+    {
+        public LoadableContent Content { get; private set; }
+        public LandformDescription Description { get; private set; }
+        public Texture HeightTex { get; private set; }
+        public Texture HeightBlendTex { get; private set; }
+        public Texture DiffuseTex { get; set; }
+        public Texture DiffuseBlendTex { get; set; }
+
+        public LandformInfo(LandformDescription description)
+        {
+            Description = description;
+        }
+    }
+
+    [XmlRoot("LandformDescription")]
+    public struct LandformDescription
     {
         /// <summary>
         /// 唯一标识ID;
@@ -27,24 +44,24 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
         /// 高度调整贴图;
         /// </summary>
         [XmlElement("HeightTex")]
-        public TextureInfo HeightTex { get; set; }
+        public AssetInfo HeightTex { get; set; }
 
         /// <summary>
         /// 高度调整的权重贴图;
         /// </summary>
         [XmlElement("HeightBlendTex")]
-        public TextureInfo HeightBlendTex { get; set; }
+        public AssetInfo HeightBlendTex { get; set; }
 
         /// <summary>
         /// 漫反射贴图名;
         /// </summary>
         [XmlElement("DiffuseTex")]
-        public TextureInfo DiffuseTex { get; set; }
+        public AssetInfo DiffuseTex { get; set; }
 
         /// <summary>
         /// 漫反射混合贴图名;
         /// </summary>
         [XmlElement("DiffuseBlendTex")]
-        public TextureInfo DiffuseBlendTex { get; set; }
+        public AssetInfo DiffuseBlendTex { get; set; }
     }
 }

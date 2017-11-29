@@ -6,6 +6,7 @@ using ICSharpCode.SharpZipLib.Core;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace JiongXiaGu.Unity
 {
@@ -24,8 +25,20 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test")]
         private void Test()
         {
-            var chars = "知道AA啊부모".ToCharArray();
-            Debug.Log(chars.ToText());
+            MD5CryptoServiceProvider mD5CryptoServiceProvider = new MD5CryptoServiceProvider();
+            using (var stream = new FileStream(@"1.zip", FileMode.Open, FileAccess.Read))
+            {
+                var md5 = mD5CryptoServiceProvider.ComputeHash(stream);
+                string md5Str = string.Join(string.Empty, md5);
+                Debug.Log("0 : " + md5Str);
+
+                ZipFile zipFile = new ZipFile(stream);
+
+                stream.Seek(0, SeekOrigin.Begin);
+                md5 = mD5CryptoServiceProvider.ComputeHash(stream);
+                md5Str = string.Join(string.Empty, md5);
+                Debug.Log("1 : " + md5Str);
+            }
         }
 
         //private async Task Update()
