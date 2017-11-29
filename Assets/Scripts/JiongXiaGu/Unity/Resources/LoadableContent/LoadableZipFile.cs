@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
+using System.Security.Cryptography;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -12,26 +13,51 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableZipFile : LoadableContent
     {
-        public ZipFile ZipFile { get; private set; }
-        private DirectoryInfo tempDirectoryInfo;
+        /// <summary>
+        /// 压缩文件;
+        /// </summary>
+        internal ZipFile ZipFile { get; private set; }
+
+        /// <summary>
+        /// 压缩文件流;
+        /// </summary>
+        internal Stream Stream { get; private set; }
+
+        /// <summary>
+        /// 用于存放临时文件的目录;
+        /// </summary>
+        internal DirectoryInfo CacheDirectoryInfo { get; private set; }
+
+        /// <summary>
+        /// 压缩文件的MD5值,在没创建临时目录前都为NULL;
+        /// </summary>
+        internal string MD5 { get; private set; }
+
+        internal string ZipFilePath
+        {
+            get { return ZipFile.Name; }
+        }
 
         public override bool Compressed
         {
             get { return true; }
         }
 
-        internal LoadableZipFile(ZipFile zipFile, DirectoryInfo tempDirectoryInfo, LoadableContentDescription description, LoadableContentType type) : base(description, type)
+        internal LoadableZipFile(ZipFile zipFile, Stream stream, LoadableContentDescription description, LoadableContentType type) : base(description, type)
         {
             if (zipFile == null)
                 throw new ArgumentNullException(nameof(zipFile));
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
 
             ZipFile = zipFile;
-            this.tempDirectoryInfo = tempDirectoryInfo;
+            Stream = stream;
         }
 
         public override void Unload()
         {
             ZipFile.Close();
+            Stream.Dispose();
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()
@@ -73,13 +99,12 @@ namespace JiongXiaGu.Unity.Resources
             {
                 throw new ArgumentNullException(nameof(entry));
             }
-
-            if (!tempDirectoryInfo.Exists)
+            if (CacheDirectoryInfo == null)
             {
-                tempDirectoryInfo.Create();
+                CacheDirectoryInfo = CreateCacheDirectory();
             }
 
-            string filePath = Path.Combine(tempDirectoryInfo.FullName, entry.RelativePath);
+            string filePath = Path.Combine(CacheDirectoryInfo.FullName, entry.RelativePath);
 
             if (!File.Exists(filePath))
             {
@@ -95,10 +120,97 @@ namespace JiongXiaGu.Unity.Resources
             return filePath;
         }
 
+        private const string CacheDirectoryDescriptionFileName = "ZipFileDescr";
+        private XmlSerializer<ZipTempDirectoryDescription> descrXmlSerializer;
+        private MD5CryptoServiceProvider mD5CryptoServiceProvider;
+
+        /// <summary>
+        /// 创建临时目录;
+        /// </summary>
+        internal DirectoryInfo CreateCacheDirectory()
+        {
+            if (descrXmlSerializer == null)
+            {
+                descrXmlSerializer = new XmlSerializer<ZipTempDirectoryDescription>();
+                mD5CryptoServiceProvider = new MD5CryptoServiceProvider();
+            }
+
+            string cacheDirectory = GetCacheDirectory();
+            DirectoryInfo cacheDirectoryInfo = new DirectoryInfo(cacheDirectory);
+            MD5 = ComputeMD5(Stream);
+
+            if (cacheDirectoryInfo.Exists)
+            {
+                try
+                {
+                    ZipTempDirectoryDescription zipTempDirectoryDescription = ReadCacheDescr(cacheDirectory);
+                    if (zipTempDirectoryDescription.MD5 == MD5)
+                    {
+                        return cacheDirectoryInfo;
+                    }
+                    else
+                    {
+                        cacheDirectoryInfo.Delete(true);
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            cacheDirectoryInfo.Create();
+            WriteCacheDescr(cacheDirectory, new ZipTempDirectoryDescription()
+            {
+                MD5 = MD5,
+            });
+
+            return cacheDirectoryInfo;
+        }
+
+        private string ComputeMD5(Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            var md5 = mD5CryptoServiceProvider.ComputeHash(stream);
+            var md5Str = string.Join(string.Empty, md5);
+            return md5Str;
+        }
+
+        /// <summary>
+        /// 读取目录的描述;
+        /// </summary>
+        private ZipTempDirectoryDescription ReadCacheDescr(string tempDirectory)
+        {
+            string filePath = GetCacheDescrPath(tempDirectory);
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                var descr = descrXmlSerializer.Deserialize(stream);
+                return descr;
+            }
+        }
+
+        /// <summary>
+        /// 输出描述文件到目录;
+        /// </summary>
+        private void WriteCacheDescr(string tempDirectory, ZipTempDirectoryDescription descr)
+        {
+            string filePath = GetCacheDescrPath(tempDirectory);
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                descrXmlSerializer.Serialize(stream, descr);
+            }
+        }
+
+        private string GetCacheDescrPath(string tempDirectory)
+        {
+            string descriptionFileName = CacheDirectoryDescriptionFileName + descrXmlSerializer.FileExtension;
+            string filePath = Path.Combine(tempDirectory, descriptionFileName);
+            return filePath;
+        }
+
         /// <summary>
         /// 文件入口;
         /// </summary>
-        private class ZipLoadableEntry : ILoadableEntry
+        public class ZipLoadableEntry : ILoadableEntry
         {
             public LoadableZipFile Parent { get; private set; }
             public ZipEntry ZipEntry { get; private set; }
@@ -113,6 +225,17 @@ namespace JiongXiaGu.Unity.Resources
                 Parent = parent;
                 ZipEntry = zipEntry;
             }
+        }
+
+        /// <summary>
+        /// 临时文件夹描述;
+        /// </summary>
+        public struct ZipTempDirectoryDescription
+        {
+            /// <summary>
+            /// 资源文件的DM5值;
+            /// </summary>
+            public string MD5 { get; set; }
         }
     }
 }

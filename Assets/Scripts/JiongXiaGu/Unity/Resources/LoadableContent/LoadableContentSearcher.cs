@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 忽略符,置于名称前缀,用于忽略某文件/文件夹;
         /// </summary>
-        private const string IgnoreSymbol = "~!";
+        private const string IgnoreSymbol = "#ignore_";
         private LoadableDirectoryReader directoryReader;
         private LoadableZipFileReader zipFileReader;
 
@@ -48,7 +48,7 @@ namespace JiongXiaGu.Unity.Resources
 
             foreach (var directoryInfo in modsDirectoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
-                if (directoryInfo.Name.StartsWith(IgnoreSymbol))
+                if (directoryInfo.Name.StartsWith(IgnoreSymbol, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -73,7 +73,8 @@ namespace JiongXiaGu.Unity.Resources
             foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zip", SearchOption.TopDirectoryOnly))
             {
                 string fileName = Path.GetFileName(filePath);
-                if (fileName.StartsWith(IgnoreSymbol))
+
+                if (fileName.StartsWith(IgnoreSymbol, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

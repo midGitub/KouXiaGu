@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override string GetFilePathWithoutExtension()
         {
-            return Path.Combine(ResourcePath.CoreDirectory.FullName, DataOrderRecordFileName);
+            return Path.Combine(ResourcePath.CoreDirectory, DataOrderRecordFileName);
         }
     }
 }

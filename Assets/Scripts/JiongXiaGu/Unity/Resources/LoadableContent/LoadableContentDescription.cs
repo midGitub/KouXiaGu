@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.Resources
     public struct LoadableContentDescription
     {
         /// <summary>
-        /// 唯一标识;
+        /// 唯一标识,只允许数字,字母,下划线组成;
         /// </summary>
         public string ID { get; set; }
 

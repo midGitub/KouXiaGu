@@ -78,17 +78,17 @@ namespace JiongXiaGu.Unity.Resources
 
         private static LoadableContent GetCore()
         {
-            return new LoadableDirectory(ResourcePath.CoreDirectory.FullName, new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
+            return new LoadableDirectory(ResourcePath.CoreDirectory, new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
         }
 
         private static List<LoadableContent> GetDlc(LoadableContentSearcher contentSearcher)
         {
-            return contentSearcher.FindLoadableContent(ResourcePath.DlcDirectory.FullName, LoadableContentType.DLC);
+            return contentSearcher.FindLoadableContent(ResourcePath.DlcDirectory, LoadableContentType.DLC);
         }
 
         private static List<LoadableContent> GetMod(LoadableContentSearcher contentSearcher)
         {
-            return contentSearcher.FindLoadableContent(ResourcePath.ModDirectory.FullName, LoadableContentType.MOD);
+            return contentSearcher.FindLoadableContent(ResourcePath.ModDirectory, LoadableContentType.MOD);
         }
 
         private static List<LoadableContent> GetAll()

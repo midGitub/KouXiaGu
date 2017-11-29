@@ -90,7 +90,7 @@ namespace JiongXiaGu.Unity.Archives
             for (int i = 1; i <= maxArchiveCount; i++)
             {
                 string archiveName = "AutoSave" + i;
-                string archivePath = Path.Combine(ResourcePath.ArchiveDirectory.FullName, archiveName);
+                string archivePath = Path.Combine(ResourcePath.ArchiveDirectory, archiveName);
                 ArchiveDescription description = new ArchiveDescription(archiveName, true);
                 ArchiveInfo archive = new ArchiveInfo(description, archivePath);
                 yield return archive;

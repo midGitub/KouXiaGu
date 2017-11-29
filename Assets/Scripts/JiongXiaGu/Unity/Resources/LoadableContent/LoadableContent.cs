@@ -25,11 +25,11 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public abstract bool Compressed { get; }
 
-        public LoadableContent()
+        protected LoadableContent()
         {
         }
 
-        public LoadableContent(LoadableContentDescription description, LoadableContentType type)
+        protected LoadableContent(LoadableContentDescription description, LoadableContentType type)
         {
             Description = description;
             Type = type;
@@ -154,5 +154,24 @@ namespace JiongXiaGu.Unity.Resources
         /// 获取到完整的文件路径;(线程安全)
         /// </summary>
         public abstract string GetFile(ILoadableEntry entry);
+
+        /// <summary>
+        /// 获取到唯一的缓存目录;
+        /// </summary>
+        public string GetCacheDirectory()
+        {
+            string name = "MOD_" + Description.ID;
+            string cacheDirectory = Path.Combine(ResourcePath.CacheDirectory, name);
+            return cacheDirectory;
+        }
+
+        ///// <summary>
+        ///// 移除临时目录;
+        ///// </summary>
+        //public void DeleteCacheDirectory()
+        //{
+        //    string cacheDirectory = GetCacheDirectory();
+        //    Directory.Delete(cacheDirectory, true);
+        //}
     }
 }

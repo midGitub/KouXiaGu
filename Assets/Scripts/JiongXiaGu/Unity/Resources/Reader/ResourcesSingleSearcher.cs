@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.Resources
 
         string GetFilePath(string fileExtension)
         {
-            string filePath = Path.Combine(ResourcePath.CoreDirectory.FullName, ResourceName + fileExtension);
+            string filePath = Path.Combine(ResourcePath.CoreDirectory, ResourceName + fileExtension);
             return filePath;
         }
 

@@ -17,27 +17,32 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 存放核心数据和配置文件的文件夹;
         /// </summary>
-        public static DirectoryInfo CoreDirectory { get; private set; }
+        public static string CoreDirectory { get; private set; }
 
         /// <summary>
         /// 存放用户配置的文件夹;
         /// </summary>
-        public static DirectoryInfo UserConfigDirectory { get; private set; }
+        public static string UserConfigDirectory { get; private set; }
 
         /// <summary>
         /// 存放存档的文件夹路径;
         /// </summary>
-        public static DirectoryInfo ArchiveDirectory { get; private set; }
+        public static string ArchiveDirectory { get; private set; }
 
         /// <summary>
         /// 存放模组的文件夹;
         /// </summary>
-        public static DirectoryInfo ModDirectory { get; private set; }
+        public static string ModDirectory { get; private set; }
 
         /// <summary>
         /// 存放拓展内容的文件夹;
         /// </summary>
-        public static DirectoryInfo DlcDirectory { get; private set; }
+        public static string DlcDirectory { get; private set; }
+
+        /// <summary>
+        /// 缓存目录;
+        /// </summary>
+        public static string CacheDirectory { get; private set; }
 
         /// <summary>
         /// 初始化路径信息(仅在Unity线程调用);
@@ -49,63 +54,84 @@ namespace JiongXiaGu.Unity.Resources
             ArchiveDirectory = GetArchiveDirectoryInfo();
             ModDirectory = GetModsDirectoryInfo();
             DlcDirectory = GetDlcDirectoryInfo();
+            CacheDirectory = GetCacheDirectory();
         }
 
         /// <summary>
         /// 获取存放核心数据和配置文件的文件夹;
         /// </summary>
-        public static DirectoryInfo GetCoreDirectoryInfo()
+        public static string GetCoreDirectoryInfo()
         {
             string directory = Path.Combine(Application.streamingAssetsPath, "Data");
-            DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-            directoryInfo.ThrowIfDirectoryNotExisted();
-            return directoryInfo;
+            if (!Directory.Exists(directory))
+            {
+                throw new DirectoryNotFoundException();
+            }
+            return directory;
         }
 
         /// <summary>
         /// 获取到存放用户配置的文件夹;
         /// </summary>
-        public static DirectoryInfo GetUserConfigDirectoryInfo()
+        public static string GetUserConfigDirectoryInfo()
         {
             string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.productName);
-            DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-            directoryInfo.Create();
-            return directoryInfo;
+            Directory.CreateDirectory(directory);
+            return directory;
         }
 
         /// <summary>
         /// 获取到存放存档的文件夹路径;
         /// </summary>
-        public static DirectoryInfo GetArchiveDirectoryInfo()
+        public static string GetArchiveDirectoryInfo()
         {
             var userConfigDirectory = UserConfigDirectory;
-            string directory = Path.Combine(userConfigDirectory.FullName, "Save");
-            DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-            directoryInfo.Create();
-            return directoryInfo;
+
+            if (string.IsNullOrEmpty(userConfigDirectory))
+            {
+                userConfigDirectory = GetUserConfigDirectoryInfo();
+            }
+
+            string directory = Path.Combine(userConfigDirectory, "Save");
+            Directory.CreateDirectory(directory);
+            return directory;
         }
 
         /// <summary>
         /// 获取到存放模组的文件夹;
         /// </summary>
-        public static DirectoryInfo GetModsDirectoryInfo()
+        public static string GetModsDirectoryInfo()
         {
             var userConfigDirectory = UserConfigDirectory;
-            string directory = Path.Combine(userConfigDirectory.FullName, "MOD");
-            DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-            directoryInfo.Create();
-            return directoryInfo;
+
+            if (string.IsNullOrEmpty(userConfigDirectory))
+            {
+                userConfigDirectory = GetUserConfigDirectoryInfo();
+            }
+
+            string directory = Path.Combine(userConfigDirectory, "MOD");
+            Directory.CreateDirectory(directory);
+            return directory;
         }
 
         /// <summary>
         /// 获取到存放拓展内容的文件夹;
         /// </summary>
-        public static DirectoryInfo GetDlcDirectoryInfo()
+        public static string GetDlcDirectoryInfo()
         {
             string directory = Path.Combine(Application.streamingAssetsPath, "DLC");
-            DirectoryInfo directoryInfo = new DirectoryInfo(directory);
-            directoryInfo.Create();
-            return directoryInfo;
+            Directory.CreateDirectory(directory);
+            return directory;
+        }
+
+        /// <summary>
+        /// 缓存目录;
+        /// </summary>
+        public static string GetCacheDirectory()
+        {
+            string directory = Application.temporaryCachePath;
+            Directory.CreateDirectory(directory);
+            return directory;
         }
     }
 }
