@@ -6,7 +6,8 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 抽象类 表示可读资源; 对于"获取到流"的方法为线程安全的;
+    /// 抽象类 表示可读资源;
+    /// 每一个资源只允许拥有一个AssetBundle;
     /// </summary>
     public abstract class LoadableContent
     {
@@ -19,6 +20,11 @@ namespace JiongXiaGu.Unity.Resources
         /// 资源类型;DLC 或 MOD;
         /// </summary>
         public LoadableContentType Type { get; protected set; }
+
+        /// <summary>
+        /// AssetBundle 文件;
+        /// </summary>
+        protected abstract FileInfo AssetBundleFileInfo { get; }
 
         /// <summary>
         /// 该资源是否为压缩的?
@@ -150,28 +156,36 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public abstract Stream GetInputStream(ILoadableEntry entry);
 
-        /// <summary>
-        /// 获取到完整的文件路径;(线程安全)
-        /// </summary>
-        public abstract string GetFile(ILoadableEntry entry);
-
-        /// <summary>
-        /// 获取到唯一的缓存目录;
-        /// </summary>
-        public string GetCacheDirectory()
-        {
-            string name = "MOD_" + Description.ID;
-            string cacheDirectory = Path.Combine(ResourcePath.CacheDirectory, name);
-            return cacheDirectory;
-        }
+        ///// <summary>
+        ///// 获取到完整的文件路径;(线程安全)
+        ///// </summary>
+        //[Obsolete]
+        //public abstract string GetFile(ILoadableEntry entry);
 
         ///// <summary>
-        ///// 移除临时目录;
+        ///// 获取到唯一的缓存目录;
         ///// </summary>
-        //public void DeleteCacheDirectory()
+        //[Obsolete]
+        //public string GetCacheDirectory()
         //{
-        //    string cacheDirectory = GetCacheDirectory();
-        //    Directory.Delete(cacheDirectory, true);
+        //    string name = "MOD_" + Description.ID;
+        //    string cacheDirectory = Path.Combine(ResourcePath.CacheDirectory, name);
+        //    return cacheDirectory;
         //}
+
+        /// <summary>
+        /// 获取该资源的 AssetBundles 路径,若不存在,则返回null;
+        /// </summary>
+        public virtual string GetAssetBundles()
+        {
+            if (AssetBundleFileInfo != null && AssetBundleFileInfo.Exists)
+            {
+                return AssetBundleFileInfo.Name;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

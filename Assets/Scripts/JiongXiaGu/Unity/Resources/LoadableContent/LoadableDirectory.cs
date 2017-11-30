@@ -11,7 +11,13 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableDirectory : LoadableContent
     {
-        public DirectoryInfo DirectoryInfo { get; private set; }
+        private FileInfo assetBundleFileInfo;
+        internal DirectoryInfo DirectoryInfo { get; private set; }
+
+        protected override FileInfo AssetBundleFileInfo
+        {
+            get { return assetBundleFileInfo; }
+        }
 
         public override bool Compressed
         {
@@ -25,6 +31,7 @@ namespace JiongXiaGu.Unity.Resources
 
             directory = PathHelper.Normalize(directory);
             DirectoryInfo = new DirectoryInfo(directory);
+            assetBundleFileInfo = new FileInfo(InternalGetAssetBundle());
         }
 
         public override void Unload()
@@ -83,13 +90,10 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override string GetFile(ILoadableEntry entry)
+        private string InternalGetAssetBundle()
         {
-            if (entry == null)
-            {
-                throw new ArgumentNullException(nameof(entry));
-            }
-            return Path.Combine(DirectoryInfo.FullName, entry.RelativePath);
+            string assetBundlePath = Path.Combine(DirectoryInfo.Name, "AssetBundles", "assetBundle");
+            return assetBundlePath;
         }
 
         private struct FileEntry : ILoadableEntry

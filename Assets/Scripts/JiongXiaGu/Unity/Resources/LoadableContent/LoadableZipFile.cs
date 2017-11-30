@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
@@ -22,6 +21,16 @@ namespace JiongXiaGu.Unity.Resources
         /// 压缩文件流;
         /// </summary>
         internal Stream Stream { get; private set; }
+
+        private FileInfo assetBundleFileInfo;
+
+        /// <summary>
+        /// AssetBundle 文件路径;
+        /// </summary>
+        protected override FileInfo AssetBundleFileInfo
+        {
+            get { return assetBundleFileInfo; }
+        }
 
         /// <summary>
         /// 用于存放临时文件的目录;
@@ -52,6 +61,7 @@ namespace JiongXiaGu.Unity.Resources
 
             ZipFile = zipFile;
             Stream = stream;
+            assetBundleFileInfo = new FileInfo(InternalGetAssetBundle());
         }
 
         public override void Unload()
@@ -89,122 +99,10 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        /// <summary>
-        /// 将需要获取的文件解压到一个临时的文件夹内,返回其路径;
-        /// 在资源文件发生变化时,都会重新解压,保证文件最新;
-        /// </summary>
-        public override string GetFile(ILoadableEntry entry)
+        private string InternalGetAssetBundle()
         {
-            if (entry == null)
-            {
-                throw new ArgumentNullException(nameof(entry));
-            }
-            if (CacheDirectoryInfo == null)
-            {
-                CacheDirectoryInfo = CreateCacheDirectory();
-            }
-
-            string filePath = Path.Combine(CacheDirectoryInfo.FullName, entry.RelativePath);
-
-            if (!File.Exists(filePath))
-            {
-                string directoryName = Path.GetDirectoryName(filePath);
-                Directory.CreateDirectory(directoryName);
-
-                using (Stream fileStream = new FileStream(filePath, FileMode.CreateNew, FileAccess.Write), inputStream = GetInputStream(entry))
-                {
-                    inputStream.CopyTo(fileStream);
-                }
-            }
-
-            return filePath;
-        }
-
-        private const string CacheDirectoryDescriptionFileName = "ZipFileDescr";
-        private XmlSerializer<ZipTempDirectoryDescription> descrXmlSerializer;
-        private MD5CryptoServiceProvider mD5CryptoServiceProvider;
-
-        /// <summary>
-        /// 创建临时目录;
-        /// </summary>
-        internal DirectoryInfo CreateCacheDirectory()
-        {
-            if (descrXmlSerializer == null)
-            {
-                descrXmlSerializer = new XmlSerializer<ZipTempDirectoryDescription>();
-                mD5CryptoServiceProvider = new MD5CryptoServiceProvider();
-            }
-
-            string cacheDirectory = GetCacheDirectory();
-            DirectoryInfo cacheDirectoryInfo = new DirectoryInfo(cacheDirectory);
-            MD5 = ComputeMD5(Stream);
-
-            if (cacheDirectoryInfo.Exists)
-            {
-                try
-                {
-                    ZipTempDirectoryDescription zipTempDirectoryDescription = ReadCacheDescr(cacheDirectory);
-                    if (zipTempDirectoryDescription.MD5 == MD5)
-                    {
-                        return cacheDirectoryInfo;
-                    }
-                    else
-                    {
-                        cacheDirectoryInfo.Delete(true);
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            cacheDirectoryInfo.Create();
-            WriteCacheDescr(cacheDirectory, new ZipTempDirectoryDescription()
-            {
-                MD5 = MD5,
-            });
-
-            return cacheDirectoryInfo;
-        }
-
-        private string ComputeMD5(Stream stream)
-        {
-            stream.Seek(0, SeekOrigin.Begin);
-            var md5 = mD5CryptoServiceProvider.ComputeHash(stream);
-            var md5Str = string.Join(string.Empty, md5);
-            return md5Str;
-        }
-
-        /// <summary>
-        /// 读取目录的描述;
-        /// </summary>
-        private ZipTempDirectoryDescription ReadCacheDescr(string tempDirectory)
-        {
-            string filePath = GetCacheDescrPath(tempDirectory);
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                var descr = descrXmlSerializer.Deserialize(stream);
-                return descr;
-            }
-        }
-
-        /// <summary>
-        /// 输出描述文件到目录;
-        /// </summary>
-        private void WriteCacheDescr(string tempDirectory, ZipTempDirectoryDescription descr)
-        {
-            string filePath = GetCacheDescrPath(tempDirectory);
-            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-            {
-                descrXmlSerializer.Serialize(stream, descr);
-            }
-        }
-
-        private string GetCacheDescrPath(string tempDirectory)
-        {
-            string descriptionFileName = CacheDirectoryDescriptionFileName + descrXmlSerializer.FileExtension;
-            string filePath = Path.Combine(tempDirectory, descriptionFileName);
-            return filePath;
+            string assetBundlePath = Path.ChangeExtension(ZipFilePath, ResourcePath.AssetBundleExtension);
+            return assetBundlePath;
         }
 
         /// <summary>
@@ -225,17 +123,6 @@ namespace JiongXiaGu.Unity.Resources
                 Parent = parent;
                 ZipEntry = zipEntry;
             }
-        }
-
-        /// <summary>
-        /// 临时文件夹描述;
-        /// </summary>
-        public struct ZipTempDirectoryDescription
-        {
-            /// <summary>
-            /// 资源文件的DM5值;
-            /// </summary>
-            public string MD5 { get; set; }
         }
     }
 }

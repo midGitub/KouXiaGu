@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity
 #if UNITY_EDITOR
                 return !IsPlaying || Thread.CurrentThread.ManagedThreadId == UnityThreadId;
 #else
-                return Thread.CurrentThread.ManagedThreadId == mainThreadId;
+                return Thread.CurrentThread.ManagedThreadId == UnityThreadId;
 #endif
             }
         }

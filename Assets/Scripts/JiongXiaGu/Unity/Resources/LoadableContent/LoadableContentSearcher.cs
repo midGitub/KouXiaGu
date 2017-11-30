@@ -70,7 +70,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public IEnumerable<LoadableContent> EnumerateZipFile(string modsDirectory, LoadableContentType type)
         {
-            foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zip", SearchOption.TopDirectoryOnly))
+            foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zmod", SearchOption.AllDirectories))
             {
                 string fileName = Path.GetFileName(filePath);
 

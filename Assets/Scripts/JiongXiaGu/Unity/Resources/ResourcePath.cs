@@ -15,6 +15,11 @@ namespace JiongXiaGu.Unity.Resources
     public static class ResourcePath
     {
         /// <summary>
+        /// 自定义的 AssetBundle 后缀名,因为Unity构建的 AssetBundle 没有后缀名;
+        /// </summary>
+        public const string AssetBundleExtension = ".assetbundle";
+
+        /// <summary>
         /// 存放核心数据和配置文件的文件夹;
         /// </summary>
         public static string CoreDirectory { get; private set; }
