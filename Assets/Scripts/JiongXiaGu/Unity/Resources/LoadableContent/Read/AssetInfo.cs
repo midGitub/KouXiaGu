@@ -2,25 +2,21 @@
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
+    /// <summary>
+    /// 表示资源;
+    /// </summary>
     [XmlRoot("AssetInfo")]
     public struct AssetInfo : IXmlSerializable
     {
-        internal const string LoadModeAttributeName = "loadMode";
-        internal const string AssetBundleAttributeName = "assetBundle";
+        internal const string LoadModeAttributeName = "from";
 
         /// <summary>
         /// 读取方式,默认从文件读取;
         /// </summary>
         public LoadMode Mode { get; set; }
-
-        /// <summary>
-        /// 若从资源包读取,则置为所在的资源包名;
-        /// </summary>
-        public string AssetBundleName { get; set; }
 
         /// <summary>
         /// 若从 AssetBundle 读取,则为文件名;
@@ -37,27 +33,21 @@ namespace JiongXiaGu.Unity.Resources
         {
             Name = reader.Value;
             string loadMode = reader.GetAttribute(LoadModeAttributeName);
-            Mode = (LoadMode)Enum.Parse(typeof(LoadMode), loadMode, true);
-
-            switch (Mode)
+            if (string.IsNullOrEmpty(loadMode))
             {
-                case LoadMode.AssetBundle:
-                    AssetBundleName = reader.GetAttribute(AssetBundleAttributeName);
-                    break;
+                Mode = LoadMode.AssetBundle;
             }
+            else
+            {
+                Mode = (LoadMode)Enum.Parse(typeof(LoadMode), loadMode, true);
+            }
+            reader.ReadEndElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
             writer.WriteValue(Name);
             writer.WriteAttributeString(LoadModeAttributeName, Mode.ToString());
-
-            switch (Mode)
-            {
-                case LoadMode.AssetBundle:
-                    writer.WriteAttributeString(AssetBundleAttributeName, AssetBundleName);
-                    break;
-            }
         }
     }
 

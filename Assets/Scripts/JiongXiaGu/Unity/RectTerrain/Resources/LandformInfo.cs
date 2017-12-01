@@ -4,64 +4,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.RectTerrain.Resources
 {
 
+    /// <summary>
+    /// 地形资源;
+    /// </summary>
     public class LandformInfo
     {
-        public LoadableContent Content { get; private set; }
+        public LoadableContent LoadableContent { get; private set; }
         public LandformDescription Description { get; private set; }
-        public Texture HeightTex { get; private set; }
-        public Texture HeightBlendTex { get; private set; }
-        public Texture DiffuseTex { get; set; }
-        public Texture DiffuseBlendTex { get; set; }
+        public Texture2D HeightTex { get; private set; }
+        public Texture2D HeightBlendTex { get; private set; }
+        public Texture2D DiffuseTex { get; private set; }
+        public Texture2D DiffuseBlendTex { get; private set; }
 
-        public LandformInfo(LandformDescription description)
+        public LandformInfo(LoadableContent loadableContent, LandformDescription description)
         {
+            if (loadableContent == null)
+                throw new ArgumentNullException(nameof(loadableContent));
+
+            LoadableContent = loadableContent;
             Description = description;
+            HeightTex = GetTexture2D(Description.HeightTex);
+            HeightBlendTex = GetTexture2D(Description.HeightBlendTex);
+            DiffuseTex = GetTexture2D(Description.DiffuseTex);
+            DiffuseBlendTex = GetTexture2D(Description.DiffuseBlendTex);
         }
-    }
 
-    [XmlRoot("LandformDescription")]
-    public struct LandformDescription
-    {
-        /// <summary>
-        /// 唯一标识ID;
-        /// </summary>
-        [XmlAttribute("id")]
-        public int ID { get; set; }
-
-        /// <summary>
-        /// 地形名;
-        /// </summary>
-        [XmlAttribute("name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 高度调整贴图;
-        /// </summary>
-        [XmlElement("HeightTex")]
-        public AssetInfo HeightTex { get; set; }
-
-        /// <summary>
-        /// 高度调整的权重贴图;
-        /// </summary>
-        [XmlElement("HeightBlendTex")]
-        public AssetInfo HeightBlendTex { get; set; }
-
-        /// <summary>
-        /// 漫反射贴图名;
-        /// </summary>
-        [XmlElement("DiffuseTex")]
-        public AssetInfo DiffuseTex { get; set; }
-
-        /// <summary>
-        /// 漫反射混合贴图名;
-        /// </summary>
-        [XmlElement("DiffuseBlendTex")]
-        public AssetInfo DiffuseBlendTex { get; set; }
+        private Texture2D GetTexture2D(AssetInfo assetInfo)
+        {
+            return LoadableContent.GetAsset<Texture2D>(assetInfo);
+        }
     }
 }

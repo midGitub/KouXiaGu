@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity
@@ -33,6 +34,11 @@ namespace JiongXiaGu.Unity
         public static SynchronizationContext UnitySynchronizationContext { get; private set; }
 
         /// <summary>
+        /// Unity线程的TaskScheduler;
+        /// </summary>
+        public static TaskScheduler UnityTaskScheduler { get; private set; }
+
+        /// <summary>
         /// 是否不在编辑器内运行;
         /// </summary>
         public static bool IsPlaying { get; private set; } = false;
@@ -42,6 +48,7 @@ namespace JiongXiaGu.Unity
         {
             UnityThreadId = Thread.CurrentThread.ManagedThreadId;
             UnitySynchronizationContext = SynchronizationContext.Current;
+            UnityTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             IsPlaying = true;
         }
 

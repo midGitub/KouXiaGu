@@ -41,6 +41,42 @@ namespace JiongXiaGu.Unity
             }
         }
 
+        private async Task Start()
+        {
+            await TaskHelper.Run(() => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), XiaGu.UnityTaskScheduler);
+            await Task.Delay(1000);
+            await TaskHelper.Run(() => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), XiaGu.UnityTaskScheduler);
+
+            //var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            //Task task0 = new Task(() => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time));
+            //Task task1 = new Task(() => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time));
+
+            //task0.Start(scheduler);
+            //await Task.Delay(1000);
+            //task1.Start(scheduler);
+
+            //Task task = new Task(delegate ()
+            //{
+            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
+
+            //    Thread.Sleep(1000);
+
+            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
+            //});
+
+            //task.Start(scheduler);
+            //await task;
+
+            //await Task.Run(delegate()
+            //{
+            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
+
+            //    Thread.Sleep(1000);
+
+            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
+            //});
+        }
+
         //private async Task Update()
         //{
         //    await Task.Run(delegate ()

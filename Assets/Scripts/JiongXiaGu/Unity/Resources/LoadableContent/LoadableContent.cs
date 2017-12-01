@@ -156,23 +156,6 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public abstract Stream GetInputStream(ILoadableEntry entry);
 
-        ///// <summary>
-        ///// 获取到完整的文件路径;(线程安全)
-        ///// </summary>
-        //[Obsolete]
-        //public abstract string GetFile(ILoadableEntry entry);
-
-        ///// <summary>
-        ///// 获取到唯一的缓存目录;
-        ///// </summary>
-        //[Obsolete]
-        //public string GetCacheDirectory()
-        //{
-        //    string name = "MOD_" + Description.ID;
-        //    string cacheDirectory = Path.Combine(ResourcePath.CacheDirectory, name);
-        //    return cacheDirectory;
-        //}
-
         /// <summary>
         /// 获取该资源的 AssetBundles 路径,若不存在,则返回null;
         /// </summary>
