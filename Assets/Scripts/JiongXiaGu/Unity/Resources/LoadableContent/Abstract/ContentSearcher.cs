@@ -5,7 +5,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 对应内容搜索;
+    /// 多个内容搜索;
     /// </summary>
     public abstract class ContentSearcher<T>
     {

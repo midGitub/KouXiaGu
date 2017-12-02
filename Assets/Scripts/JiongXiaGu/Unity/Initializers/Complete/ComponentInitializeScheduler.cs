@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// 游戏组件初始化调度器(仅初始化一次,若初始化失败意味着游戏无法运行);
     /// </summary>
     [DisallowMultipleComponent]
-    internal sealed class ComponentInitializeScheduler : MonoBehaviour
+    internal sealed class ComponentInitializeScheduler : InitializeScheduler
     {
         private static readonly GlobalSingleton<ComponentInitializeScheduler> singleton = new GlobalSingleton<ComponentInitializeScheduler>();
 

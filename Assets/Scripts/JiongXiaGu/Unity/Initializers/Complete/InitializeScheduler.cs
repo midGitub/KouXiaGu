@@ -2,13 +2,27 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Initializers
 {
 
 
-    internal static class InitializeScheduler
+    public class InitializeScheduler : MonoBehaviour
     {
+
+        /// <summary>
+        /// 并发执行数;
+        /// </summary>
+        [Range(1, 10)]
+        [SerializeField]
+        private int concurrencyNumber = 3;
+
+
+
+        protected InitializeScheduler()
+        {
+        }
 
         /// <summary>
         /// 等待所有工作完成,

@@ -25,6 +25,14 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
             Description = description;
         }
 
+        public void Destroy()
+        {
+            UnityEngine.Object.Destroy(HeightTex);
+            UnityEngine.Object.Destroy(HeightBlendTex);
+            UnityEngine.Object.Destroy(DiffuseTex);
+            UnityEngine.Object.Destroy(DiffuseBlendTex);
+        }
+
         public static async Task<LandformInfo> CreateAsync(LoadableContent loadableContent, LandformDescription description)
         {
             if (loadableContent == null)
