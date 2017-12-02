@@ -8,36 +8,48 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Unity.RectTerrain.Resources
 {
 
-    //public class LandformInfoPool
-    //{
-    //    private Dictionary<string, LandformInfo> infos = new Dictionary<string, LandformInfo>();
-    //    private IReadOnlyDictionary<string, Description<LandformDescription>> descriptions;
-
-    //    public LandformInfo GetOrLoad(string key)
-    //    {
-    //        LandformInfo info;
-    //        if (!infos.TryGetValue(key, out info))
-    //        {
-    //            info = Load(key);
-    //        }
-    //        return info;
-    //    }
-
-    //    private LandformInfo Load(string key)
-    //    {
-    //        Description<LandformDescription> description;
-    //        if (descriptions.TryGetValue(key, out description))
-    //        {
-    //            LandformInfo info = new LandformInfo(description.Content, description.Value);
-    //            return info;
-    //        }
-    //        return default(LandformInfo);
-    //    }
-    //}
-
     public class RectTerrainInfo
     {
         public IReadOnlyDictionary<string, LandformInfo> Landform { get; private set; }
 
     }
+
+    public class LandformInfoPool
+    {
+        private Dictionary<string, Task<LandformInfo>> infos = new Dictionary<string, Task<LandformInfo>>();
+        private IReadOnlyDictionary<string, Description<LandformDescription>> descriptions;
+
+        /// <summary>
+        /// 准备对应资源;
+        /// </summary>
+        public bool Prepare(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 准备所有资源;
+        /// </summary>
+        public void PrepareAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 尝试获取到对应资源,若还未加载完成则返回false;
+        /// </summary>
+        public bool TryGet(string key, out LandformInfo info)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 获取到对应资源,若还未创建则创建到,若不存在此 key,则返回异常;
+        /// </summary>
+        public Task<LandformInfo> GetOrLoad(string key)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

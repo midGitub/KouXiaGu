@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
 
         private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo)
         {
-            return loadableContent.ReadAsTexture(assetInfo);
+            return loadableContent.ReadAsTexture2D(assetInfo);
         }
     }
 }
