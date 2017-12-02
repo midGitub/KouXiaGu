@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Security.Cryptography;
+using JiongXiaGu.Unity.RectTerrain.Resources;
 
 namespace JiongXiaGu.Unity
 {
@@ -41,50 +42,38 @@ namespace JiongXiaGu.Unity
             }
         }
 
-        private async Task Start()
+        public MeshRenderer meshRenderer;
+
+        private async void Start()
         {
-            await TaskHelper.Run(() => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), XiaGu.UnityTaskScheduler);
-            await Task.Delay(1000);
-            await TaskHelper.Run(() => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), XiaGu.UnityTaskScheduler);
+            LandformDescription description = new LandformDescription()
+            {
+                HeightTex = new AssetInfo("HeightMap_85"),
+                HeightBlendTex = new AssetInfo("HeightMap_Blend"),
+                DiffuseTex = new AssetInfo(LoadMode.File, @"Terrain\Landforms\SoilCracked2.jpg"),
+                DiffuseBlendTex = new AssetInfo("HeightMap_Blend"),
+            };
 
-            //var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            //Task task0 = new Task(() => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time));
-            //Task task1 = new Task(() => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time));
+            Task<LandformInfo> infoTask = null;
+            await Task.Run(delegate ()
+            {
+                infoTask = LandformInfo.CreateAsync(Resource.Core, description);
+            });
 
-            //task0.Start(scheduler);
-            //await Task.Delay(1000);
-            //task1.Start(scheduler);
+            await infoTask;
+            meshRenderer.material.mainTexture = infoTask.Result.DiffuseTex;
 
-            //Task task = new Task(delegate ()
-            //{
-            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
-
-            //    Thread.Sleep(1000);
-
-            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
-            //});
-
-            //task.Start(scheduler);
+            //var task = Resource.Core.ReadAsTextureAsync(new AssetInfo("HeightMap_Blend"));
             //await task;
-
-            //await Task.Run(delegate()
-            //{
-            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
-
-            //    Thread.Sleep(1000);
-
-            //    XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), null);
-            //});
+            //Debug.Log(task.Result.texelSize);
+            //meshRenderer.material.mainTexture = task.Result;
         }
 
-        //private async Task Update()
+        //private async Task Start()
         //{
-        //    await Task.Run(delegate ()
-        //    {
-        //        XiaGu.UnitySynchronizationContext.Post(_ => Debug.Log("0 : " + XiaGu.IsUnityThread), null);
-        //        Debug.Log("1 : " + XiaGu.IsUnityThread);
-        //    });
-        //    Debug.Log("2 : " + XiaGu.IsUnityThread);
+        //    await TaskHelper.Run(() => Debug.Log("0 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), XiaGu.UnityTaskScheduler);
+        //    await Task.Delay(1000);
+        //    await TaskHelper.Run(() => Debug.Log("1 : " + XiaGu.IsUnityThread + ",Time:" + Time.time), XiaGu.UnityTaskScheduler);
         //}
     }
 }

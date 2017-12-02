@@ -11,18 +11,31 @@ namespace JiongXiaGu.Unity.Resources
     [XmlRoot("AssetInfo")]
     public struct AssetInfo : IXmlSerializable
     {
+        internal const LoadMode DefaultLoadMode = LoadMode.AssetBundle;
         internal const string LoadModeAttributeName = "from";
 
         /// <summary>
         /// 读取方式,默认从文件读取;
         /// </summary>
-        public LoadMode Mode { get; set; }
+        public LoadMode From { get; set; }
 
         /// <summary>
         /// 若从 AssetBundle 读取,则为文件名;
         /// 若从 File 读取,则为相对路径;
         /// </summary>
         public string Name { get; set; }
+
+        public AssetInfo(string name)
+        {
+            From = DefaultLoadMode;
+            Name = name;
+        }
+
+        public AssetInfo(LoadMode from, string name)
+        {
+            From = from;
+            Name = name;
+        }
 
         XmlSchema IXmlSerializable.GetSchema()
         {
@@ -35,11 +48,11 @@ namespace JiongXiaGu.Unity.Resources
             string loadMode = reader.GetAttribute(LoadModeAttributeName);
             if (string.IsNullOrEmpty(loadMode))
             {
-                Mode = LoadMode.AssetBundle;
+                From = DefaultLoadMode;
             }
             else
             {
-                Mode = (LoadMode)Enum.Parse(typeof(LoadMode), loadMode, true);
+                From = (LoadMode)Enum.Parse(typeof(LoadMode), loadMode, true);
             }
             reader.ReadEndElement();
         }
@@ -47,7 +60,7 @@ namespace JiongXiaGu.Unity.Resources
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
             writer.WriteValue(Name);
-            writer.WriteAttributeString(LoadModeAttributeName, Mode.ToString());
+            writer.WriteAttributeString(LoadModeAttributeName, From.ToString());
         }
     }
 

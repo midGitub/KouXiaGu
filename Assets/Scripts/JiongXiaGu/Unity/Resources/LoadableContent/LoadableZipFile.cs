@@ -14,14 +14,22 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 压缩文件;
         /// </summary>
-        internal ZipFile ZipFile { get; private set; }
+        internal readonly ZipFile zipFile;
+
+        /// <summary>
+        /// 所有地址入口;
+        /// </summary>
+        internal readonly List<ZipLoadableEntry> entrys;
 
         /// <summary>
         /// 压缩文件流;
         /// </summary>
-        internal Stream Stream { get; private set; }
+        internal readonly Stream stream;
 
-        private FileInfo assetBundleFileInfo;
+        /// <summary>
+        /// AssetBundle 文件路径;
+        /// </summary>
+        internal readonly FileInfo assetBundleFileInfo;
 
         /// <summary>
         /// AssetBundle 文件路径;
@@ -31,19 +39,9 @@ namespace JiongXiaGu.Unity.Resources
             get { return assetBundleFileInfo; }
         }
 
-        /// <summary>
-        /// 用于存放临时文件的目录;
-        /// </summary>
-        internal DirectoryInfo CacheDirectoryInfo { get; private set; }
-
-        /// <summary>
-        /// 压缩文件的MD5值,在没创建临时目录前都为NULL;
-        /// </summary>
-        internal string MD5 { get; private set; }
-
         internal string ZipFilePath
         {
-            get { return ZipFile.Name; }
+            get { return zipFile.Name; }
         }
 
         public override bool Compressed
@@ -58,27 +56,37 @@ namespace JiongXiaGu.Unity.Resources
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            ZipFile = zipFile;
-            Stream = stream;
+            this.zipFile = zipFile;
+            this.stream = stream;
             assetBundleFileInfo = new FileInfo(InternalGetAssetBundle());
+            entrys = GetEntryAll();
         }
 
         public override void Unload()
         {
-            ZipFile.Close();
-            Stream.Dispose();
+            zipFile.Close();
+            stream.Dispose();
+        }
+
+        private List<ZipLoadableEntry> GetEntryAll()
+        {
+            List<ZipLoadableEntry> entrys = new List<ZipLoadableEntry>();
+
+            foreach (ZipEntry entry in zipFile)
+            {
+                if (entry.IsFile)
+                {
+                    var zipLoadableEntry = new ZipLoadableEntry(this, entry);
+                    entrys.Add(zipLoadableEntry);
+                }
+            }
+
+            return entrys;
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()
         {
-            foreach (ZipEntry entry in ZipFile)
-            {
-                if (entry.IsFile)
-                {
-                    ILoadableEntry zipLoadableEntry = new ZipLoadableEntry(this, entry);
-                    yield return zipLoadableEntry;
-                }
-            }
+            return entrys;
         }
 
         public override Stream GetInputStream(ILoadableEntry entry)
@@ -90,7 +98,7 @@ namespace JiongXiaGu.Unity.Resources
             else if (entry is ZipLoadableEntry)
             {
                 var zipLoadableEntry = (ZipLoadableEntry)entry;
-                return ZipFile.GetInputStream(zipLoadableEntry.ZipEntry);
+                return zipFile.GetInputStream(zipLoadableEntry.ZipEntry);
             }
             else
             {

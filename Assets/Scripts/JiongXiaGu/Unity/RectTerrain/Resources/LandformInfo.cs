@@ -1,8 +1,6 @@
 ﻿using JiongXiaGu.Unity.Resources;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -21,22 +19,32 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
         public Texture2D DiffuseTex { get; private set; }
         public Texture2D DiffuseBlendTex { get; private set; }
 
-        public LandformInfo(LoadableContent loadableContent, LandformDescription description)
+        private LandformInfo(LoadableContent loadableContent, LandformDescription description)
+        {
+            LoadableContent = loadableContent;
+            Description = description;
+        }
+
+        public static async Task<LandformInfo> CreateAsync(LoadableContent loadableContent, LandformDescription description)
         {
             if (loadableContent == null)
                 throw new ArgumentNullException(nameof(loadableContent));
 
-            LoadableContent = loadableContent;
-            Description = description;
-            HeightTex = GetTexture2D(Description.HeightTex);
-            HeightBlendTex = GetTexture2D(Description.HeightBlendTex);
-            DiffuseTex = GetTexture2D(Description.DiffuseTex);
-            DiffuseBlendTex = GetTexture2D(Description.DiffuseBlendTex);
+            LandformInfo info = new LandformInfo(loadableContent, description);
+            List<Task> tasks = new List<Task>();
+
+            tasks.Add(GetTexture2DAsync(loadableContent, description.HeightTex).ContinueWith(task => info.HeightTex = task.Result));
+            tasks.Add(GetTexture2DAsync(loadableContent, description.HeightBlendTex).ContinueWith(task => info.HeightBlendTex = task.Result));
+            tasks.Add(GetTexture2DAsync(loadableContent, description.DiffuseTex).ContinueWith(task => info.DiffuseTex = task.Result));
+            tasks.Add(GetTexture2DAsync(loadableContent, description.DiffuseBlendTex).ContinueWith(task => info.DiffuseBlendTex = task.Result));
+
+            await Task.WhenAll(tasks);
+            return info;
         }
 
-        private Texture2D GetTexture2D(AssetInfo assetInfo)
+        private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo)
         {
-            return LoadableContent.GetAsset<Texture2D>(assetInfo);
+            return loadableContent.ReadAsTexture(assetInfo);
         }
     }
 }

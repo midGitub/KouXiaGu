@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 抽象类 表示可读资源;
+    /// 抽象类 表示可读资源(线程安全);
     /// 每一个资源只允许拥有一个AssetBundle;
     /// </summary>
     public abstract class LoadableContent
@@ -25,6 +26,14 @@ namespace JiongXiaGu.Unity.Resources
         /// AssetBundle 文件;
         /// </summary>
         protected abstract FileInfo AssetBundleFileInfo { get; }
+
+        /// <summary>
+        /// 是否存在 AssetBundle;
+        /// </summary>
+        public bool ExistAssetBundle
+        {
+            get { return AssetBundleFileInfo != null && AssetBundleFileInfo.Exists; }
+        }
 
         /// <summary>
         /// 该资源是否为压缩的?
@@ -156,19 +165,22 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public abstract Stream GetInputStream(ILoadableEntry entry);
 
+
+        private AssetBundle assetBundle;
+
         /// <summary>
-        /// 获取该资源的 AssetBundles 路径,若不存在,则返回null;
+        /// 获取到AssetBundle,仅在Unity线程调用;
         /// </summary>
-        public virtual string GetAssetBundles()
+        public AssetBundle GetAssetBundle()
         {
-            if (AssetBundleFileInfo != null && AssetBundleFileInfo.Exists)
+            XiaGu.ThrowIfNotUnityThread();
+
+            if (assetBundle == null && ExistAssetBundle)
             {
-                return AssetBundleFileInfo.Name;
+                assetBundle = AssetBundle.LoadFromFile(AssetBundleFileInfo.FullName);
             }
-            else
-            {
-                return null;
-            }
+
+            return assetBundle;
         }
     }
 }

@@ -92,7 +92,7 @@ namespace JiongXiaGu.Unity.Resources
 
         private string InternalGetAssetBundle()
         {
-            string assetBundlePath = Path.Combine(DirectoryInfo.Name, "AssetBundles", "assetBundle");
+            string assetBundlePath = Path.Combine(DirectoryInfo.FullName, "AssetBundles", "assetBundle");
             return assetBundlePath;
         }
 
