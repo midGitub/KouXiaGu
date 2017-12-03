@@ -9,7 +9,7 @@ using UnityEngine;
 using System.Diagnostics;
 using JiongXiaGu.Unity.Initializers;
 
-namespace JiongXiaGu.Unity.RectTerrain.Resources
+namespace JiongXiaGu.Unity.RectTerrain
 {
 
     /// <summary>

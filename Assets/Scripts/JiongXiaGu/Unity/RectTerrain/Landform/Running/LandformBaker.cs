@@ -1,6 +1,5 @@
 ﻿using JiongXiaGu.Concurrent;
 using JiongXiaGu.Grids;
-using JiongXiaGu.Unity.RectTerrain.Resources;
 using JiongXiaGu.Unity.RectMaps;
 using System;
 using System.Collections.Generic;

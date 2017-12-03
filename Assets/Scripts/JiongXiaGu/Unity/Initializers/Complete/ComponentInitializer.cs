@@ -19,7 +19,7 @@ namespace JiongXiaGu.Unity.Initializers
     }
 
     /// <summary>
-    /// 游戏组件初始化调度器(仅初始化一次,若初始化失败意味着游戏无法运行);
+    /// 游戏组件初始化器(仅初始化一次,若初始化失败意味着游戏无法运行);
     /// </summary>
     [DisallowMultipleComponent]
     internal sealed class ComponentInitializer : InitializeScheduler

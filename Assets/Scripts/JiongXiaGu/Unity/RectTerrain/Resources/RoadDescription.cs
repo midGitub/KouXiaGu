@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace JiongXiaGu.Unity.RectTerrain.Resources
+namespace JiongXiaGu.Unity.RectTerrain
 {
 
     [XmlRoot("RoadDescription")]

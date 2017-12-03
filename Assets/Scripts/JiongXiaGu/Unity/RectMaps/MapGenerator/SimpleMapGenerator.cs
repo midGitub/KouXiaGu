@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JiongXiaGu.Unity.RectTerrain.Resources;
 using JiongXiaGu.Grids;
 using JiongXiaGu.Collections;
+using JiongXiaGu.Unity.RectTerrain;
 
 namespace JiongXiaGu.Unity.RectMaps
 {

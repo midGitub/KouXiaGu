@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JiongXiaGu.Unity.Resources;
 
-namespace JiongXiaGu.Unity.RectTerrain.Resources
+namespace JiongXiaGu.Unity.RectTerrain
 {
 
     /// <summary>

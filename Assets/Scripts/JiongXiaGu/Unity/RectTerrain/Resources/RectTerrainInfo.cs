@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JiongXiaGu.Unity.RectTerrain.Resources
+namespace JiongXiaGu.Unity.RectTerrain
 {
 
-    public class RectTerrainInfo
+    public class RectTerrainRes
     {
-        public IReadOnlyDictionary<string, LandformInfo> Landform { get; private set; }
+        public IReadOnlyDictionary<string, LandformRes> Landform { get; private set; }
 
     }
 

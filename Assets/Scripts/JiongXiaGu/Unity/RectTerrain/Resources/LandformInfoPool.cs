@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.Unity.RectTerrain.Resources
+namespace JiongXiaGu.Unity.RectTerrain
 {
 
     public abstract class InfoPool<T>
@@ -41,16 +41,16 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
     }
 
 
-    public class LandformInfoPool : InfoPool<LandformInfo>
+    public class LandformResPool : InfoPool<LandformRes>
     {
         private IReadOnlyDictionary<string, Description<LandformDescription>> descriptions;
 
-        protected override Task<LandformInfo> Create(string key)
+        protected override Task<LandformRes> Create(string key)
         {
             Description<LandformDescription> description;
             if (descriptions.TryGetValue(key, out description))
             {
-                var info = LandformInfo.CreateAsync(description.Content, description.Value);
+                var info = LandformRes.CreateAsync(description.Content, description.Value);
                 return info;
             }
             else
@@ -59,7 +59,7 @@ namespace JiongXiaGu.Unity.RectTerrain.Resources
             }
         }
 
-        protected override void Release(string key, Task<LandformInfo> info)
+        protected override void Release(string key, Task<LandformRes> info)
         {
             throw new NotImplementedException();
         }

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.RectTerrain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
-using JiongXiaGu.Unity.RectTerrain.Resources;
 
 namespace JiongXiaGu.Unity.Template
 {

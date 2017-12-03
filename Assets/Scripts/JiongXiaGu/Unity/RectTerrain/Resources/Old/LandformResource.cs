@@ -7,7 +7,7 @@ using System.IO;
 using JiongXiaGu.Unity.Resources;
 using System.Linq;
 
-namespace JiongXiaGu.Unity.RectTerrain.Resources
+namespace JiongXiaGu.Unity.RectTerrain
 {
 
     /// <summary>

@@ -7,7 +7,7 @@ using System;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Security.Cryptography;
-using JiongXiaGu.Unity.RectTerrain.Resources;
+using JiongXiaGu.Unity.RectTerrain;
 
 namespace JiongXiaGu.Unity
 {
@@ -54,10 +54,10 @@ namespace JiongXiaGu.Unity
                 DiffuseBlendTex = new AssetInfo("HeightMap_Blend"),
             };
 
-            Task<LandformInfo> infoTask = null;
+            Task<LandformRes> infoTask = null;
             await Task.Run(delegate ()
             {
-                infoTask = LandformInfo.CreateAsync(Resource.Core, description);
+                infoTask = LandformRes.CreateAsync(Resource.Core, description);
             });
 
             await infoTask;

@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.Initializers
     }
 
     /// <summary>
-    /// 游戏数据初始化调度器(在游戏开始时进行初始化,若初始化失败意味着游戏无法开始);
+    /// 游戏数据初始化器(在游戏开始时进行初始化,若初始化失败意味着游戏无法开始);
     /// </summary>
     [DisallowMultipleComponent]
     public class DataInitializeScheduler : MonoBehaviour
