@@ -56,15 +56,15 @@ namespace JiongXiaGu.Unity.Initializers
 
         public void Initialize()
         {
-            try
-            {
-                InitializeScheduler.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
-                OnCompleted();
-            }
-            catch (Exception ex)
-            {
-                OnFaulted(ex);
-            }
+            //try
+            //{
+            //    InitializeScheduler.WaitAll(initializeHandles, item => item.Initialize(InitializeCancellation.Token), InitializeCancellation.Token);
+            //    OnCompleted();
+            //}
+            //catch (Exception ex)
+            //{
+            //    OnFaulted(ex);
+            //}
         }
 
         private void OnCompleted()
