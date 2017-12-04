@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             mapSearcher = new MapSearcher();
 
-            availableMaps = mapSearcher.Find(Resource.All);
+            availableMaps = mapSearcher.Find(LoadableResource.All);
             if (availableMaps.Count == 0)
             {
                 throw new FileNotFoundException("未找到可用的文件");

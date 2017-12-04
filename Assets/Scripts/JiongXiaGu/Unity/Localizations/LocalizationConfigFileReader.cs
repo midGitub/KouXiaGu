@@ -19,7 +19,7 @@ namespace JiongXiaGu.Unity.Localizations
 
         public override string GetFilePathWithoutExtension()
         {
-            string path = Path.Combine(ResourcePath.UserConfigDirectory, FileName);
+            string path = Path.Combine(Resource.UserConfigDirectory, FileName);
             return path;
         }
     }

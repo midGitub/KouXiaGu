@@ -53,7 +53,7 @@ namespace JiongXiaGu.Unity.Localizations
 
             token.ThrowIfCancellationRequested();
 
-            availableLanguagePacks = packSearcher.FindPacks(Resource.All);
+            availableLanguagePacks = packSearcher.FindPacks(LoadableResource.All);
             if (availableLanguagePacks.Count == 0)
             {
                 throw new FileNotFoundException("未找到合适的语言包文件");

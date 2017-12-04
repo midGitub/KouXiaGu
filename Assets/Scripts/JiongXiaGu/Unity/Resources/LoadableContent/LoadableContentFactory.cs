@@ -21,6 +21,7 @@ namespace JiongXiaGu.Unity.Resources
             if (Directory.Exists(directory))
                 throw new IOException(string.Format("目录[{0}]已经存在;", directory));
 
+            Directory.CreateDirectory(directory);
             LoadableDirectory loadableDirectory = new LoadableDirectory(directory, description);
             loadableDirectory.BeginUpdate();
             WriteDescription(loadableDirectory, description);

@@ -1,104 +1,142 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.GameConsoles;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 资源定义;实例非线程安全;
+    /// 资源路径定义;
     /// </summary>
     public static class Resource
     {
-        private static LoadableContent core;
-        private static List<LoadableContent> dlc;
-        private static List<LoadableContent> mod;
-        private static List<LoadableContent> all;
-
         /// <summary>
-        /// 核心资源;
+        /// 自定义的 AssetBundle 后缀名,因为Unity构建的 AssetBundle 没有后缀名;
         /// </summary>
-        public static LoadableContent Core
-        {
-            get { return core; }
-        }
+        public const string AssetBundleExtension = ".assetbundle";
 
         /// <summary>
-        /// 所有拓展资源;
+        /// 存放核心数据和配置文件的文件夹;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContent> Dlc
-        {
-            get { return dlc; }
-        }
+        public static string CoreDirectory { get; private set; }
 
         /// <summary>
-        /// 所有模组资源;
+        /// 存放用户配置的文件夹;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContent> Mod
-        {
-            get { return mod; }
-        }
+        public static string UserConfigDirectory { get; private set; }
 
         /// <summary>
-        /// 所有资源;
+        /// 存放存档的文件夹路径;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContent> All
-        {
-            get { return all; }
-        }
+        public static string ArchiveDirectory { get; private set; }
 
         /// <summary>
-        /// 初始化资源信息;
+        /// 存放模组的文件夹;
+        /// </summary>
+        public static string ModDirectory { get; private set; }
+
+        /// <summary>
+        /// 存放拓展内容的文件夹;
+        /// </summary>
+        public static string DlcDirectory { get; private set; }
+
+        /// <summary>
+        /// 缓存目录;
+        /// </summary>
+        public static string CacheDirectory { get; private set; }
+
+        /// <summary>
+        /// 初始化路径信息(仅在Unity线程调用);
         /// </summary>
         internal static void Initialize()
         {
-            LoadableContentSearcher contentSearcher = new LoadableContentSearcher();
-            core = GetCore();
-            dlc = GetDlc(contentSearcher);
-            mod = GetMod(contentSearcher);
-            all = GetAll();
+            CoreDirectory = GetCoreDirectoryInfo();
+            UserConfigDirectory = GetUserConfigDirectoryInfo();
+            ArchiveDirectory = GetArchiveDirectoryInfo();
+            ModDirectory = GetModsDirectoryInfo();
+            DlcDirectory = GetDlcDirectoryInfo();
+            CacheDirectory = GetCacheDirectory();
         }
 
-        internal static void Quit()
+        /// <summary>
+        /// 获取存放核心数据和配置文件的文件夹;
+        /// </summary>
+        public static string GetCoreDirectoryInfo()
         {
-            foreach (var item in all)
+            string directory = Path.Combine(Application.streamingAssetsPath, "Data");
+            if (!Directory.Exists(directory))
             {
-                try
-                {
-                    item.Unload();
-                }
-                catch (Exception ex)
-                {
-                    UnityEngine.Debug.LogError(ex);
-                }
+                throw new DirectoryNotFoundException();
             }
+            return directory;
         }
 
-        private static LoadableContent GetCore()
+        /// <summary>
+        /// 获取到存放用户配置的文件夹;
+        /// </summary>
+        public static string GetUserConfigDirectoryInfo()
         {
-            return new LoadableDirectory(ResourcePath.CoreDirectory, new LoadableContentDescription("0", "Core"), LoadableContentType.Core);
+            string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.productName);
+            Directory.CreateDirectory(directory);
+            return directory;
         }
 
-        private static List<LoadableContent> GetDlc(LoadableContentSearcher contentSearcher)
+        /// <summary>
+        /// 获取到存放存档的文件夹路径;
+        /// </summary>
+        public static string GetArchiveDirectoryInfo()
         {
-            return contentSearcher.FindLoadableContent(ResourcePath.DlcDirectory, LoadableContentType.DLC);
+            var userConfigDirectory = UserConfigDirectory;
+
+            if (string.IsNullOrEmpty(userConfigDirectory))
+            {
+                userConfigDirectory = GetUserConfigDirectoryInfo();
+            }
+
+            string directory = Path.Combine(userConfigDirectory, "Save");
+            Directory.CreateDirectory(directory);
+            return directory;
         }
 
-        private static List<LoadableContent> GetMod(LoadableContentSearcher contentSearcher)
+        /// <summary>
+        /// 获取到存放模组的文件夹;
+        /// </summary>
+        public static string GetModsDirectoryInfo()
         {
-            return contentSearcher.FindLoadableContent(ResourcePath.ModDirectory, LoadableContentType.MOD);
+            var userConfigDirectory = UserConfigDirectory;
+
+            if (string.IsNullOrEmpty(userConfigDirectory))
+            {
+                userConfigDirectory = GetUserConfigDirectoryInfo();
+            }
+
+            string directory = Path.Combine(userConfigDirectory, "MOD");
+            Directory.CreateDirectory(directory);
+            return directory;
         }
 
-        private static List<LoadableContent> GetAll()
+        /// <summary>
+        /// 获取到存放拓展内容的文件夹;
+        /// </summary>
+        public static string GetDlcDirectoryInfo()
         {
-            int capacity = 1 + dlc.Count + mod.Count;
-            var all = new List<LoadableContent>(capacity);
-            all.Add(Core);
-            all.AddRange(dlc);
-            all.AddRange(mod);
-            return all;
+            string directory = Path.Combine(Application.streamingAssetsPath, "DLC");
+            Directory.CreateDirectory(directory);
+            return directory;
+        }
+
+        /// <summary>
+        /// 缓存目录;
+        /// </summary>
+        public static string GetCacheDirectory()
+        {
+            string directory = Application.temporaryCachePath;
+            Directory.CreateDirectory(directory);
+            return directory;
         }
     }
 }

@@ -3673,8 +3673,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bf2823feb577864ba4df2e2c4bef005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  concurrencyNumber: 3
-  options: 252
+  concurrencyNumber: 1
+  options: 248
 --- !u!1 &1232613480
 GameObject:
   m_ObjectHideFlags: 0

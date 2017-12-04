@@ -27,8 +27,8 @@ namespace JiongXiaGu.Unity.Initializers
         {
             try
             {
-                ResourcePath.Initialize();
                 Resource.Initialize();
+                LoadableResource.Initialize();
                 OnCompleted();
             }
             catch (Exception ex)
@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.Initializers
 
         private void OnDestroy()
         {
-            Resource.Quit();
+            LoadableResource.Quit();
         }
 
         private static void OnCompleted()

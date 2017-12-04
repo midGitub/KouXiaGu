@@ -57,7 +57,7 @@ namespace JiongXiaGu.Unity
             Task<LandformRes> infoTask = null;
             await Task.Run(delegate ()
             {
-                infoTask = LandformRes.CreateAsync(Resource.Core, description);
+                infoTask = LandformRes.CreateAsync(LoadableResource.Core, description);
             });
 
             await infoTask;

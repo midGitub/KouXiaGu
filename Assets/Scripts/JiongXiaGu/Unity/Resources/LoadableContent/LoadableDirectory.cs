@@ -15,7 +15,10 @@ namespace JiongXiaGu.Unity.Resources
 
         public LoadableDirectory(string directory, LoadableContentDescription description) : base(description, InternalGetAssetBundle(directory))
         {
-            directoryInfo = Directory.CreateDirectory(directory);
+            if (!Directory.Exists(directory))
+                throw new DirectoryNotFoundException(directory);
+
+            directoryInfo = new DirectoryInfo(directory);
         }
 
         [Obsolete]

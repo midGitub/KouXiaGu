@@ -17,10 +17,10 @@ namespace JiongXiaGu.Unity.Resources
         public static void ShowPaths()
         {
             string message =
-                "游戏配置的文件夹 : " + ResourcePath.CoreDirectory + ";" + Environment.NewLine +
-                "用户配置的文件夹 : " + ResourcePath.UserConfigDirectory + ";" + Environment.NewLine +
-                "用户存档的文件夹 : " + ResourcePath.ArchiveDirectory + ";" + Environment.NewLine +
-                "用户模组的文件夹 : " + ResourcePath.ModDirectory + ";";
+                "游戏配置的文件夹 : " + Resource.CoreDirectory + ";" + Environment.NewLine +
+                "用户配置的文件夹 : " + Resource.UserConfigDirectory + ";" + Environment.NewLine +
+                "用户存档的文件夹 : " + Resource.ArchiveDirectory + ";" + Environment.NewLine +
+                "用户模组的文件夹 : " + Resource.ModDirectory + ";";
 
             GameConsole.Write(message);
         }

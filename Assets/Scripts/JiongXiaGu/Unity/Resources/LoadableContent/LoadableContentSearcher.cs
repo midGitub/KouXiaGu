@@ -30,17 +30,17 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="modsDirectory">目标目录</param>
         /// <param name="type">指定找到的模组类型</param>
         /// <returns></returns>
-        public List<LoadableContent> FindLoadableContent(string modsDirectory, LoadableContentType type)
+        public List<LoadableContent> FindLoadableContent(string modsDirectory)
         {
             List<LoadableContent> list = new List<LoadableContent>();
 
-            list.AddRange(EnumerateDirectory(modsDirectory, type));
-            list.AddRange(EnumerateZipFile(modsDirectory, type));
+            list.AddRange(EnumerateDirectory(modsDirectory));
+            list.AddRange(EnumerateZipFile(modsDirectory));
 
             return list;
         }
 
-        public IEnumerable<LoadableContent> EnumerateDirectory(string modsDirectory, LoadableContentType type)
+        public IEnumerable<LoadableContent> EnumerateDirectory(string modsDirectory)
         {
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory, "*", SearchOption.TopDirectoryOnly))
             {
@@ -65,7 +65,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public IEnumerable<LoadableContent> EnumerateZipFile(string modsDirectory, LoadableContentType type)
+        public IEnumerable<LoadableContent> EnumerateZipFile(string modsDirectory)
         {
             foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zmod", SearchOption.AllDirectories))
             {

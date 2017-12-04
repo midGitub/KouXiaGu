@@ -136,7 +136,7 @@ namespace JiongXiaGu.Unity.Resources
 
         private static string InternalGetAssetBundle(string fileName)
         {
-            string assetBundlePath = Path.ChangeExtension(fileName, ResourcePath.AssetBundleExtension);
+            string assetBundlePath = Path.ChangeExtension(fileName, Resource.AssetBundleExtension);
             return assetBundlePath;
         }
 
