@@ -11,27 +11,21 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableDirectory : LoadableContent
     {
-        private FileInfo assetBundleFileInfo;
-        internal DirectoryInfo DirectoryInfo { get; private set; }
+        internal readonly DirectoryInfo directoryInfo;
 
-        protected override FileInfo AssetBundleFileInfo
+        public LoadableDirectory(string directory, LoadableContentDescription description) : base(description, InternalGetAssetBundle(directory))
         {
-            get { return assetBundleFileInfo; }
+            directoryInfo = Directory.CreateDirectory(directory);
         }
 
-        public override bool Compressed
-        {
-            get { return false; }
-        }
-
-        public LoadableDirectory(string directory, LoadableContentDescription description, LoadableContentType type) : base(description, type)
+        [Obsolete]
+        public LoadableDirectory(string directory, LoadableContentDescription description, LoadableContentType type) : base(description, InternalGetAssetBundle(directory))
         {
             if (string.IsNullOrWhiteSpace(directory))
                 throw new ArgumentNullException(nameof(directory));
 
             directory = PathHelper.Normalize(directory);
-            DirectoryInfo = new DirectoryInfo(directory);
-            assetBundleFileInfo = new FileInfo(InternalGetAssetBundle());
+            directoryInfo = Directory.CreateDirectory(directory);
         }
 
         public override void Unload()
@@ -41,30 +35,30 @@ namespace JiongXiaGu.Unity.Resources
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()
         {
-            return DirectoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(delegate (FileInfo fileInfo)
+            return directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(delegate (FileInfo fileInfo)
             {
-                return (ILoadableEntry)new FileEntry(this, DirectoryInfo, fileInfo);
+                return (ILoadableEntry)new FileEntry(this, directoryInfo, fileInfo);
             });
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
-            return DirectoryInfo.EnumerateFiles(searchPattern, searchOption).Select(delegate (FileInfo fileInfo)
+            return directoryInfo.EnumerateFiles(searchPattern, searchOption).Select(delegate (FileInfo fileInfo)
             {
-                return (ILoadableEntry)new FileEntry(this, DirectoryInfo, fileInfo);
+                return (ILoadableEntry)new FileEntry(this, directoryInfo, fileInfo);
             });
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
-            string directory = Path.Combine(DirectoryInfo.FullName, directoryName);
+            string directory = Path.Combine(this.directoryInfo.FullName, directoryName);
             var directoryInfo = new DirectoryInfo(directory);
 
             if (directoryInfo.Exists)
             {
                 return directoryInfo.EnumerateFiles(searchPattern, searchOption).Select(delegate (FileInfo fileInfo)
                 {
-                    return (ILoadableEntry)new FileEntry(this, DirectoryInfo, fileInfo);
+                    return (ILoadableEntry)new FileEntry(this, this.directoryInfo, fileInfo);
                 });
             }
             else
@@ -81,7 +75,7 @@ namespace JiongXiaGu.Unity.Resources
             }
             else if (entry is FileEntry)
             {
-                string filePath = Path.Combine(DirectoryInfo.FullName, entry.RelativePath);
+                string filePath = Path.Combine(directoryInfo.FullName, entry.RelativePath);
                 return new FileStream(filePath, FileMode.Open, FileAccess.Read);
             }
             else
@@ -90,10 +84,35 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private string InternalGetAssetBundle()
+        private static string InternalGetAssetBundle(string directory)
         {
-            string assetBundlePath = Path.Combine(DirectoryInfo.FullName, "AssetBundles", "assetBundle");
+            string assetBundlePath = Path.Combine(directory, "AssetBundles", "assetBundle");
             return assetBundlePath;
+        }
+
+        public override void AddOrUpdate(string relativePath, Stream stream)
+        {
+            string filePath = GetFullPath(relativePath);
+            var fStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
+            stream.CopyTo(fStream);
+        }
+
+        public override Stream GetOutStream(string relativePath)
+        {
+            string filePath = GetFullPath(relativePath);
+            return new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        }
+
+        public override Stream CreateOutStream(string relativePath)
+        {
+            string filePath = GetFullPath(relativePath);
+            return new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
+        }
+
+        private string GetFullPath(string relativePath)
+        {
+            string filePath = Path.Combine(directoryInfo.FullName, relativePath);
+            return filePath;
         }
 
         private struct FileEntry : ILoadableEntry

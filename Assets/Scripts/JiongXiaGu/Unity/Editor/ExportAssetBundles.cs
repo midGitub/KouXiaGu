@@ -25,9 +25,8 @@ namespace JiongXiaGu.EditorTool
                 Directory.CreateDirectory(directoryPath);
             }
 
-            var assetBundleManifest = BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.UncompressedAssetBundle,
+            BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.UncompressedAssetBundle,
                 BuildTarget.StandaloneWindows);
-            //ChangeExtension(directoryPath, assetBundleManifest);
         }
 
         [MenuItem("Assets/Rebuild AssetBundles")]
@@ -39,36 +38,8 @@ namespace JiongXiaGu.EditorTool
                 Directory.CreateDirectory(directoryPath);
             }
 
-            var assetBundleManifest = BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle,
+            BuildPipeline.BuildAssetBundles(directoryPath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle,
                 BuildTarget.StandaloneWindows);
-            //ChangeExtension(directoryPath, assetBundleManifest);
         }
-
-        //private static void ChangeExtension(string directory, AssetBundleManifest assetBundleManifest)
-        //{
-        //    var names = assetBundleManifest.GetAllAssetBundles();
-        //    foreach (var name in names)
-        //    {
-        //        ChangeExtension(directory, name);
-        //    }
-        //}
-
-        //private static void ChangeExtension(string directory, string name)
-        //{
-        //    string filePath = Path.Combine(directory, name);
-        //    string newFilePath = Path.ChangeExtension(filePath, AssetBundleExtension);
-        //    FileInfo fileInfo = new FileInfo(filePath);
-        //    if (fileInfo.Exists)
-        //    {
-        //        fileInfo.MoveTo(newFilePath);
-        //    }
-        //    else
-        //    {
-        //        if (!File.Exists(newFilePath))
-        //        {
-        //            throw new FileNotFoundException(newFilePath);
-        //        }
-        //    }
-        //}
     }
 }

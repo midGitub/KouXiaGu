@@ -17,13 +17,11 @@ namespace JiongXiaGu.Unity.Resources
         /// 忽略符,置于名称前缀,用于忽略某文件/文件夹;
         /// </summary>
         private const string IgnoreSymbol = "#ignore_";
-        private LoadableDirectoryReader directoryReader;
-        private LoadableZipFileReader zipFileReader;
+        private LoadableContentFactory factory;
 
         public LoadableContentSearcher()
         {
-            directoryReader = new LoadableDirectoryReader();
-            zipFileReader = new LoadableZipFileReader();
+            factory = new LoadableContentFactory();
         }
 
         /// <summary>
@@ -44,11 +42,10 @@ namespace JiongXiaGu.Unity.Resources
 
         public IEnumerable<LoadableContent> EnumerateDirectory(string modsDirectory, LoadableContentType type)
         {
-            DirectoryInfo modsDirectoryInfo = new DirectoryInfo(modsDirectory);
-
-            foreach (var directoryInfo in modsDirectoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+            foreach (var directory in Directory.EnumerateDirectories(modsDirectory, "*", SearchOption.TopDirectoryOnly))
             {
-                if (directoryInfo.Name.StartsWith(IgnoreSymbol, StringComparison.OrdinalIgnoreCase))
+                string directoryName = Path.GetDirectoryName(directory);
+                if (directoryName.StartsWith(IgnoreSymbol, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -57,9 +54,9 @@ namespace JiongXiaGu.Unity.Resources
 
                 try
                 {
-                    info = directoryReader.Create(directoryInfo, type);
+                    info = factory.Read(directory);
                 }
-                catch(FileNotFoundException)
+                catch(Exception)
                 {
                     continue;
                 }
@@ -73,7 +70,6 @@ namespace JiongXiaGu.Unity.Resources
             foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zmod", SearchOption.AllDirectories))
             {
                 string fileName = Path.GetFileName(filePath);
-
                 if (fileName.StartsWith(IgnoreSymbol, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
@@ -83,9 +79,9 @@ namespace JiongXiaGu.Unity.Resources
 
                 try
                 {
-                    info = zipFileReader.Create(filePath, type);
+                    info = factory.ReadZip(filePath);
                 }
-                catch(FileNotFoundException)
+                catch(Exception)
                 {
                     continue;
                 }

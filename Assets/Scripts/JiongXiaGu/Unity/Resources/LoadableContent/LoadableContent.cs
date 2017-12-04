@@ -7,47 +7,27 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 抽象类 表示可读资源(线程安全);
+    /// 抽象类 表示可读资源;
     /// 每一个资源只允许拥有一个AssetBundle;
     /// </summary>
     public abstract class LoadableContent
     {
         /// <summary>
-        /// 模组描述;
+        /// 描述信息;
         /// </summary>
         public LoadableContentDescription Description { get; protected set; }
 
         /// <summary>
-        /// 资源类型;DLC 或 MOD;
-        /// </summary>
-        public LoadableContentType Type { get; protected set; }
-
-        /// <summary>
         /// AssetBundle 文件;
         /// </summary>
-        protected abstract FileInfo AssetBundleFileInfo { get; }
+        protected FileInfo AssetBundleFileInfo { get; private set; }
 
-        /// <summary>
-        /// 是否存在 AssetBundle;
-        /// </summary>
-        public bool ExistAssetBundle
-        {
-            get { return AssetBundleFileInfo != null && AssetBundleFileInfo.Exists; }
-        }
+        private AssetBundle assetBundle;
 
-        /// <summary>
-        /// 该资源是否为压缩的?
-        /// </summary>
-        public abstract bool Compressed { get; }
-
-        protected LoadableContent()
-        {
-        }
-
-        protected LoadableContent(LoadableContentDescription description, LoadableContentType type)
+        protected LoadableContent(LoadableContentDescription description, string assetBundleFile)
         {
             Description = description;
-            Type = type;
+            AssetBundleFileInfo = new FileInfo(assetBundleFile);
         }
 
         /// <summary>
@@ -159,14 +139,64 @@ namespace JiongXiaGu.Unity.Resources
             }
             return null;
         }
+        
+        /// <summary>
+        /// 获取到只读的流;
+        /// </summary>
+        public virtual Stream GetInputStream(string relativePath)
+        {
+            ILoadableEntry entry = GetEntry(relativePath);
+            if (entry != null)
+            {
+                return GetInputStream(entry);
+            }
+            else
+            {
+                throw new FileNotFoundException(relativePath);
+            }
+        }
 
         /// <summary>
-        /// 获取到只读的流;(线程安全)
+        /// 获取到只读的流;
         /// </summary>
         public abstract Stream GetInputStream(ILoadableEntry entry);
 
+        /// <summary>
+        /// 在更改内容之前需要先调用;
+        /// </summary>
+        public virtual void BeginUpdate()
+        {
+        }
 
-        private AssetBundle assetBundle;
+        /// <summary>
+        /// 在更改内容之后,需要调用此方法来完成内容更新;
+        /// </summary>
+        public virtual void CommitUpdate()
+        {
+        }
+
+        /// <summary>
+        /// 根据资源更新实例信息,若无法更新则返回异常;
+        /// </summary>
+        public virtual void Update(LoadableContentFactory factory)
+        {
+            Description = factory.ReadDescription(this);
+        }
+
+        /// <summary>
+        /// 添加流到资源,若不存在该文件则加入到,若已经存在该文件,则更新其;
+        /// </summary>
+        public abstract void AddOrUpdate(string relativePath, Stream stream);
+
+        /// <summary>
+        /// 获取到输出流,若文件已经存在则返回该流,否则返回空的用于写的流;
+        /// </summary>
+        public abstract Stream GetOutStream(string relativePath);
+
+        /// <summary>
+        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;
+        /// </summary>
+        public abstract Stream CreateOutStream(string relativePath);
 
         /// <summary>
         /// 获取到AssetBundle,仅在Unity线程调用;
@@ -175,7 +205,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             XiaGu.ThrowIfNotUnityThread();
 
-            if (assetBundle == null && ExistAssetBundle)
+            if (assetBundle == null && AssetBundleFileInfo.Exists)
             {
                 assetBundle = AssetBundle.LoadFromFile(AssetBundleFileInfo.FullName);
             }

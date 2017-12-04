@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
 
-    public abstract class InfoPool<T>
+    public abstract class ResPool<T>
         where T : class
     {
         private readonly Dictionary<string, Task<T>> infos;
 
-        public InfoPool()
+        public ResPool()
         {
             infos = new Dictionary<string, Task<T>>();
         }
@@ -37,31 +36,6 @@ namespace JiongXiaGu.Unity.RectTerrain
                 }
                 return info;
             }
-        }
-    }
-
-
-    public class LandformResPool : InfoPool<LandformRes>
-    {
-        private IReadOnlyDictionary<string, Description<LandformDescription>> descriptions;
-
-        protected override Task<LandformRes> Create(string key)
-        {
-            Description<LandformDescription> description;
-            if (descriptions.TryGetValue(key, out description))
-            {
-                var info = LandformRes.CreateAsync(description.Content, description.Value);
-                return info;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        protected override void Release(string key, Task<LandformRes> info)
-        {
-            throw new NotImplementedException();
         }
     }
 

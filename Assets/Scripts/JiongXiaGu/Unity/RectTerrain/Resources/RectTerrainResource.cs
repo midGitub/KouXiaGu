@@ -8,8 +8,8 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.RectTerrain
 {
 
-    //public class RectTerrainResources : MonoBehaviour
-    //{
+    public class RectTerrainResource : MonoBehaviour
+    {
 
-    //}
+    }
 }
