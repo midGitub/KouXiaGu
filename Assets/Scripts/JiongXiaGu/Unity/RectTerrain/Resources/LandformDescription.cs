@@ -17,7 +17,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     public struct LandformDescription
     {
         [XmlAttribute("id")]
-        public int ID { get; set; }
+        public string ID { get; set; }
 
         [XmlAttribute("name")]
         public string Name { get; set; }

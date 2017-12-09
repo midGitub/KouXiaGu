@@ -26,16 +26,19 @@ namespace JiongXiaGu.Unity.Resources
         protected abstract T Deserialize(LoadableContent content, ILoadableEntry entry);
 
         /// <summary>
-        /// 枚举所有符合要求的语言文件;
+        /// 枚举所有符合要求的文件;
         /// </summary>
         public List<T> Find(IEnumerable<LoadableContent> loadableContents)
         {
             List<T> items = new List<T>();
 
-            foreach (var load in loadableContents)
+            foreach (var content in loadableContents)
             {
-                var packs = Enumerate(load);
-                items.AddRange(packs);
+                lock (content.AsyncLock)
+                {
+                    var packs = Enumerate(content);
+                    items.AddRange(packs);
+                }
             }
 
             return items;
@@ -44,7 +47,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        public IEnumerable<T> Enumerate(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        internal IEnumerable<T> Enumerate(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             foreach (ILoadableEntry entry in contentConstruct.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
             {

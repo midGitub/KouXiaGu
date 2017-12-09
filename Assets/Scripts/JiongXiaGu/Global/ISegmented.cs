@@ -26,7 +26,7 @@ namespace JiongXiaGu
     [Serializable]
     public class Stopwatch : ISegmented
     {
-        Stopwatch()
+        private Stopwatch()
         {
         }
 
@@ -39,8 +39,8 @@ namespace JiongXiaGu
         /// 用于的执行时间;
         /// </summary>
         [SerializeField]
-        float idleSeconds;
-        float before;
+        private float idleSeconds;
+        private float before;
 
         public void Restart()
         {

@@ -1,7 +1,4 @@
-﻿using JiongXiaGu.Unity.Resources;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.RectTerrain
@@ -10,49 +7,67 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// <summary>
     /// 地形资源;
     /// </summary>
+    [Serializable]
     public class LandformRes
     {
-        public LoadableContent LoadableContent { get; private set; }
-        public LandformDescription Description { get; private set; }
-        public Texture2D HeightTex { get; private set; }
-        public Texture2D HeightBlendTex { get; private set; }
-        public Texture2D DiffuseTex { get; private set; }
-        public Texture2D DiffuseBlendTex { get; private set; }
+        [SerializeField]
+        private Texture2D heightTex;
+        [SerializeField]
+        private Texture2D heightBlendTex;
+        [SerializeField]
+        private Texture2D diffuseTex;
+        [SerializeField]
+        private Texture2D diffuseBlendTex;
 
-        private LandformRes(LoadableContent loadableContent, LandformDescription description)
+        public Texture2D HeightTex
         {
-            LoadableContent = loadableContent;
-            Description = description;
+            get { return heightTex; }
+            internal set { heightTex = value; }
+        }
+
+        public Texture2D HeightBlendTex
+        {
+            get { return heightBlendTex; }
+            internal set { heightBlendTex = value; }
+        }
+
+        public Texture2D DiffuseTex
+        {
+            get { return diffuseTex; }
+            internal set { diffuseTex = value; }
+        }
+
+        public Texture2D DiffuseBlendTex
+        {
+            get { return diffuseBlendTex; }
+            internal set { diffuseBlendTex = value; }
         }
 
         public void Destroy()
         {
-            UnityEngine.Object.Destroy(HeightTex);
-            UnityEngine.Object.Destroy(HeightBlendTex);
-            UnityEngine.Object.Destroy(DiffuseTex);
-            UnityEngine.Object.Destroy(DiffuseBlendTex);
-        }
+            if (heightTex != null)
+            {
+                UnityEngine.Object.Destroy(heightTex);
+                heightTex = null;
+            }
 
-        public static async Task<LandformRes> CreateAsync(LoadableContent loadableContent, LandformDescription description)
-        {
-            if (loadableContent == null)
-                throw new ArgumentNullException(nameof(loadableContent));
+            if (heightBlendTex != null)
+            {
+                UnityEngine.Object.Destroy(heightBlendTex);
+                heightBlendTex = null;
+            }
 
-            LandformRes info = new LandformRes(loadableContent, description);
-            List<Task> tasks = new List<Task>();
+            if (diffuseTex != null)
+            {
+                UnityEngine.Object.Destroy(diffuseTex);
+                diffuseTex = null;
+            }
 
-            tasks.Add(GetTexture2DAsync(loadableContent, description.HeightTex).ContinueWith(task => info.HeightTex = task.Result));
-            tasks.Add(GetTexture2DAsync(loadableContent, description.HeightBlendTex).ContinueWith(task => info.HeightBlendTex = task.Result));
-            tasks.Add(GetTexture2DAsync(loadableContent, description.DiffuseTex).ContinueWith(task => info.DiffuseTex = task.Result));
-            tasks.Add(GetTexture2DAsync(loadableContent, description.DiffuseBlendTex).ContinueWith(task => info.DiffuseBlendTex = task.Result));
-
-            await Task.WhenAll(tasks);
-            return info;
-        }
-
-        private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo)
-        {
-            return loadableContent.ReadAsTexture2D(assetInfo);
+            if (diffuseBlendTex != null)
+            {
+                UnityEngine.Object.Destroy(diffuseBlendTex);
+                diffuseBlendTex = null;
+            }
         }
     }
 }

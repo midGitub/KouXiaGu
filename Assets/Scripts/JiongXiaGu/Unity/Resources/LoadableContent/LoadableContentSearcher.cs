@@ -17,11 +17,11 @@ namespace JiongXiaGu.Unity.Resources
         /// 忽略符,置于名称前缀,用于忽略某文件/文件夹;
         /// </summary>
         private const string IgnoreSymbol = "#ignore_";
-        private LoadableContentFactory factory;
+        public LoadableContentFactory Factory { get; private set; }
 
         public LoadableContentSearcher()
         {
-            factory = new LoadableContentFactory();
+            Factory = new LoadableContentFactory();
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace JiongXiaGu.Unity.Resources
 
                 try
                 {
-                    info = factory.Read(directory);
+                    info = Factory.Read(directory);
                 }
                 catch(Exception)
                 {
@@ -79,7 +79,7 @@ namespace JiongXiaGu.Unity.Resources
 
                 try
                 {
-                    info = factory.ReadZip(filePath);
+                    info = Factory.ReadZip(filePath);
                 }
                 catch(Exception)
                 {

@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.Resources
     {
         internal readonly DirectoryInfo directoryInfo;
 
-        public LoadableDirectory(string directory, LoadableContentDescription description) : base(description, InternalGetAssetBundle(directory))
+        public LoadableDirectory(string directory, LoadableContentDescription description) : base(description)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
@@ -21,19 +21,9 @@ namespace JiongXiaGu.Unity.Resources
             directoryInfo = new DirectoryInfo(directory);
         }
 
-        [Obsolete]
-        public LoadableDirectory(string directory, LoadableContentDescription description, LoadableContentType type) : base(description, InternalGetAssetBundle(directory))
-        {
-            if (string.IsNullOrWhiteSpace(directory))
-                throw new ArgumentNullException(nameof(directory));
-
-            directory = PathHelper.Normalize(directory);
-            directoryInfo = Directory.CreateDirectory(directory);
-        }
-
         public override void Unload()
         {
-            return;
+            base.Unload();
         }
 
         public override IEnumerable<ILoadableEntry> EnumerateFiles()
@@ -72,25 +62,17 @@ namespace JiongXiaGu.Unity.Resources
 
         public override Stream GetInputStream(ILoadableEntry entry)
         {
-            if (entry == null)
-            {
-                throw new ArgumentNullException(nameof(entry));
-            }
-            else if (entry is FileEntry)
-            {
-                string filePath = Path.Combine(directoryInfo.FullName, entry.RelativePath);
-                return new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            }
-            else
-            {
-                throw new ArgumentException(string.Format("参数[{0}]不为类[{1}]", nameof(entry), nameof(FileEntry)));
-            }
+            var fileEntry = TypeOfFileEntry(entry);
+            string filePath = Path.Combine(directoryInfo.FullName, entry.RelativePath);
+            return new FileStream(filePath, FileMode.Open, FileAccess.Read);
         }
 
-        private static string InternalGetAssetBundle(string directory)
+        public override void BeginUpdate()
         {
-            string assetBundlePath = Path.Combine(directory, "AssetBundles", "assetBundle");
-            return assetBundlePath;
+        }
+
+        public override void CommitUpdate()
+        {
         }
 
         public override void AddOrUpdate(string relativePath, Stream stream)
@@ -98,6 +80,27 @@ namespace JiongXiaGu.Unity.Resources
             string filePath = GetFullPath(relativePath);
             var fStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
             stream.CopyTo(fStream);
+        }
+
+        public override bool Remove(string relativePath)
+        {
+            string filePath = Path.Combine(directoryInfo.FullName, relativePath);
+            if (File.Exists(relativePath))
+            {
+                File.Delete(filePath);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override void Remove(ILoadableEntry entry)
+        {
+            var fileEntry = TypeOfFileEntry(entry);
+            string filePath = Path.Combine(directoryInfo.FullName, entry.RelativePath);
+            File.Delete(filePath);
         }
 
         public override Stream GetOutStream(string relativePath)
@@ -116,6 +119,33 @@ namespace JiongXiaGu.Unity.Resources
         {
             string filePath = Path.Combine(directoryInfo.FullName, relativePath);
             return filePath;
+        }
+
+        private FileEntry TypeOfFileEntry(ILoadableEntry entry)
+        {
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+            else if (entry is FileEntry)
+            {
+                return (FileEntry)entry;
+            }
+            else
+            {
+                throw new ArgumentException(string.Format("参数[{0}]不为类[{1}]", nameof(entry), nameof(FileEntry)));
+            }
+        }
+
+        protected override IEnumerable<AssetBundleDescription> GetAssetBundlesDescription()
+        {
+            AssetBundleDescription[] assetBundleDescriptions = Description.AssetBundles;
+            foreach (var assetBundleDescription in assetBundleDescriptions)
+            {
+                var newDescr = assetBundleDescription;
+                newDescr.Path = Path.Combine(directoryInfo.FullName, assetBundleDescription.Path);
+                yield return newDescr;
+            }
         }
 
         private struct FileEntry : ILoadableEntry

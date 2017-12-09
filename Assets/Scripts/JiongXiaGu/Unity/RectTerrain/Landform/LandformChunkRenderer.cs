@@ -9,22 +9,24 @@ using UnityEngine.Rendering;
 namespace JiongXiaGu.Unity.RectTerrain
 {
 
-
+    /// <summary>
+    /// 地形块渲染;
+    /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshRenderer))]
     public sealed class LandformChunkRenderer : MonoBehaviour
     {
-        LandformChunkRenderer()
+        private LandformChunkRenderer()
         {
         }
 
         public const string tessellationName = "_LandformTess";
         public const string DisplacementName = "_LandformDisplacement";
-        MeshRenderer meshRenderer;
-        event Action<LandformChunkRenderer> onHeightChanged;
-        bool isHeightChanged;
+        private MeshRenderer meshRenderer;
+        private event Action<LandformChunkRenderer> onHeightChanged;
+        private bool isHeightChanged;
 
-        Material material
+        private Material material
         {
             get { return meshRenderer.material; }
         }
@@ -53,7 +55,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             remove { onHeightChanged -= value; }
         }
 
-        void Awake()
+        private void Awake()
         {
             meshRenderer = GetComponent<MeshRenderer>();
         }

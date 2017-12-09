@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         [ProtoMember(1)]
         [XmlAttribute("id")]
-        public int TypeID { get; set; }
+        public string TypeID { get; set; }
 
         /// <summary>
         /// 地形旋转角度;
@@ -34,7 +34,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public bool Exist()
         {
-            return TypeID != 0;
+            return !string.IsNullOrWhiteSpace(TypeID);
         }
 
         public bool Equals(NodeLandformInfo other)

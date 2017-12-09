@@ -8,29 +8,32 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.RectTerrain
 {
 
+    /// <summary>
+    /// 地形碰撞,提供射线使用;
+    /// </summary>
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshCollider), typeof(LandformChunkRenderer))]
     public class LandformChunkTrigger : MonoBehaviour
     {
-        LandformChunkTrigger()
+        private LandformChunkTrigger()
         {
         }
 
-        const string MeshName = "Terrain Collision Mesh";
+        public const string MeshName = "Terrain Collision Mesh";
 
         //网格细分程度;
-        const int sub_x = 4;
-        const int sub_z = 4;
+        private const int sub_x = 4;
+        private const int sub_z = 4;
 
-        static readonly List<KeyValuePair<Vector3, Vector2>> vertices = GetVerticesAndUV();
-        static readonly int[] triangles = GetTriangles();
+        private static readonly List<KeyValuePair<Vector3, Vector2>> vertices = GetVerticesAndUV();
+        private static readonly int[] triangles = GetTriangles();
 
-        MeshCollider meshCollider;
-        LandformChunkRenderer landformRenderer;
-        Mesh collisionMesh;
+        private MeshCollider meshCollider;
+        private LandformChunkRenderer landformRenderer;
+        private Mesh collisionMesh;
 
-        void Awake()
+        private void Awake()
         {
             meshCollider = GetComponent<MeshCollider>();
             landformRenderer = GetComponent<LandformChunkRenderer>();
@@ -38,12 +41,12 @@ namespace JiongXiaGu.Unity.RectTerrain
             landformRenderer.OnHeightChanged += UpdateMesh;
         }
 
-        void Reset()
+        private void Reset()
         {
             UpdateMesh(null);
         }
 
-        Mesh CreateMesh()
+        private Mesh CreateMesh()
         {
             var collisionMesh = new Mesh();
             collisionMesh.name = MeshName;
@@ -51,7 +54,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             return collisionMesh;
         }
 
-        void UpdateMesh(LandformChunkRenderer renderer)
+        private void UpdateMesh(LandformChunkRenderer renderer)
         {
             if (collisionMesh == null)
             {
@@ -64,7 +67,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             }
         }
 
-        void UpdateMesh(ref Mesh collisionMesh)
+        private void UpdateMesh(ref Mesh collisionMesh)
         {
             collisionMesh.Clear();
             collisionMesh.vertices = GetVertices();
@@ -74,7 +77,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 获取到高度对应的顶点坐标;
         /// </summary>
-        Vector3[] GetVertices()
+        private Vector3[] GetVertices()
         {
             List<Vector3> vertices = new List<Vector3>();
             foreach (var pair in LandformChunkTrigger.vertices)
@@ -90,20 +93,20 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 获取到细分到的顶点坐标 和 对应的UV坐标;
         /// </summary>
-        static List<KeyValuePair<Vector3, Vector2>> GetVerticesAndUV()
+        private static List<KeyValuePair<Vector3, Vector2>> GetVerticesAndUV()
         {
             List<KeyValuePair<Vector3, Vector2>> list = new List<KeyValuePair<Vector3, Vector2>>();
 
-            float lengthX = LandformInfo.ChunkWidth / sub_x;
-            float lengthZ = LandformInfo.ChunkHeight / sub_z;
+            float lengthX = LandformChunkInfo.ChunkWidth / sub_x;
+            float lengthZ = LandformChunkInfo.ChunkHeight / sub_z;
 
             for (int z = 0; z <= sub_z; z++)
             {
                 for (int x = 0; x <= sub_x; x++)
                 {
                     Vector3 vertice = new Vector3(x * lengthX, 0, z * lengthZ);
-                    vertice.x -= LandformInfo.ChunkHalfWidth;
-                    vertice.z -= LandformInfo.ChunkHalfHeight;
+                    vertice.x -= LandformChunkInfo.ChunkHalfWidth;
+                    vertice.z -= LandformChunkInfo.ChunkHalfHeight;
 
                     Vector2 uv = new Vector2(x / (float)sub_x, z / (float)sub_z);
                     KeyValuePair<Vector3, Vector2> pair = new KeyValuePair<Vector3, Vector2>(vertice, uv);
@@ -114,7 +117,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             return list;
         }
 
-        static int[] GetTriangles()
+        private static int[] GetTriangles()
         {
             List<int> triangles = new List<int>();
             int SUB_X1 = sub_x + 1;

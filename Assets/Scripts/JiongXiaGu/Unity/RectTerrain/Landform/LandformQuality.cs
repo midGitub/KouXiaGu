@@ -26,14 +26,14 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// 完整预览整个地图块的摄像机大小;
         /// </summary>
         public static readonly float CameraSize =
-            ((LandformInfo.ChunkHeight + (LandformInfo.ChunkHeight * OutlineScale)) / 2);
+            ((LandformChunkInfo.ChunkHeight + (LandformChunkInfo.ChunkHeight * OutlineScale)) / 2);
 
         /// <summary>
         /// 完整预览整个地图块的摄像机比例(W/H);
         /// </summary>
         public static readonly float CameraAspect =
-            (LandformInfo.ChunkWidth + LandformInfo.ChunkWidth * OutlineScale) /
-            (LandformInfo.ChunkHeight + LandformInfo.ChunkHeight * OutlineScale);
+            (LandformChunkInfo.ChunkWidth + LandformChunkInfo.ChunkWidth * OutlineScale) /
+            (LandformChunkInfo.ChunkHeight + LandformChunkInfo.ChunkHeight * OutlineScale);
 
 
         public LandformQuality(float textureSize, float diffuseMapRatios, float heightMapRatios)
@@ -92,8 +92,8 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// </summary>
         public void Updata()
         {
-            int chunkWidth = (int)Math.Round(LandformInfo.ChunkWidth * textureSize);
-            int chunkHeight = (int)Math.Round(LandformInfo.ChunkHeight * textureSize);
+            int chunkWidth = (int)Math.Round(LandformChunkInfo.ChunkWidth * textureSize);
+            int chunkHeight = (int)Math.Round(LandformChunkInfo.ChunkHeight * textureSize);
 
             LandformDiffuseMap = new BakeTextureInfo(chunkWidth, chunkHeight, diffuseMapRatios, OutlineScale);
             LandformHeightMap = new BakeTextureInfo(chunkWidth, chunkHeight, heightMapRatios, OutlineScale);

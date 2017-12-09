@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// </summary>
     public class LanguagePackSearcher
     {
-        [PathDefinition(PathDefinition.DataDirectory, "本地化资源目录;")]
+        [PathDefinition(PathDefinitionType.DataDirectory, "本地化资源目录;")]
         internal const string LocalizationDirectoryName = "Localization";
 
         private const string packFilePrefix = "Language_";
@@ -33,10 +33,13 @@ namespace JiongXiaGu.Unity.Localizations
         {
             List<LanguagePackInfo> languagePacks = new List<LanguagePackInfo>();
 
-            foreach (var load in loadableContents)
+            foreach (var content in loadableContents)
             {
-                var packs = EnumeratePack(load);
-                languagePacks.AddRange(packs);
+                lock (content.AsyncLock)
+                {
+                    var packs = EnumeratePack(content);
+                    languagePacks.AddRange(packs);
+                }
             }
 
             return languagePacks;

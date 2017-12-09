@@ -11,8 +11,9 @@ namespace JiongXiaGu.Unity.Resources
     [XmlRoot("AssetInfo")]
     public struct AssetInfo : IXmlSerializable
     {
-        internal const LoadMode DefaultLoadMode = LoadMode.AssetBundle;
-        internal const string LoadModeAttributeName = "from";
+        internal const LoadMode DefaultLoadMode = LoadMode.File;
+        internal const string LoadModeAttribute = "from";
+        internal const string AssetBundleNameAttribute = "assetBundle";
 
         /// <summary>
         /// 读取方式,默认从文件读取;
@@ -20,20 +21,26 @@ namespace JiongXiaGu.Unity.Resources
         public LoadMode From { get; set; }
 
         /// <summary>
-        /// 若从 AssetBundle 读取,则为文件名;
+        /// 若为 AssetBundle 的资源,则为 AssetBundleName,否则为null;
+        /// </summary>
+        public string AssetBundleName { get; set; }
+
+        /// <summary>
+        /// 若从 AssetBundle 读取,则为文件名,忽略拓展名;
         /// 若从 File 读取,则为相对路径;
         /// </summary>
         public string Name { get; set; }
 
-        public AssetInfo(string name)
+        public AssetInfo(string name) : this()
         {
             From = DefaultLoadMode;
             Name = name;
         }
 
-        public AssetInfo(LoadMode from, string name)
+        public AssetInfo(string assteBundleName, string name) : this()
         {
-            From = from;
+            From = LoadMode.AssetBundle;
+            AssetBundleName = assteBundleName;
             Name = name;
         }
 
@@ -45,22 +52,46 @@ namespace JiongXiaGu.Unity.Resources
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
             Name = reader.Value;
-            string loadMode = reader.GetAttribute(LoadModeAttributeName);
-            if (string.IsNullOrEmpty(loadMode))
+            string fromStr = reader.GetAttribute(LoadModeAttribute);
+            try
             {
-                From = DefaultLoadMode;
+                From = (LoadMode)Enum.Parse(typeof(LoadMode), fromStr, true);
+
+                switch (From)
+                {
+                    case LoadMode.AssetBundle:
+                        AssetBundleName = reader.GetAttribute(AssetBundleNameAttribute);
+                        break;
+
+                    default:
+                        break;
+                }
             }
-            else
+            catch (ArgumentException)
             {
-                From = (LoadMode)Enum.Parse(typeof(LoadMode), loadMode, true);
+                From = LoadMode.Unknown;
             }
             reader.ReadEndElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
-            writer.WriteValue(Name);
-            writer.WriteAttributeString(LoadModeAttributeName, From.ToString());
+            switch (From)
+            {
+                case LoadMode.File:
+                    writer.WriteAttributeString(LoadModeAttribute, From.ToString());
+                    writer.WriteValue(Name);
+                    break;
+
+                case LoadMode.AssetBundle:
+                    writer.WriteAttributeString(LoadModeAttribute, From.ToString());
+                    writer.WriteAttributeString(AssetBundleNameAttribute, AssetBundleName);
+                    writer.WriteValue(Name);
+                    break;
+
+                default:
+                    throw new NotSupportedException(From.ToString());
+            }
         }
     }
 

@@ -23,50 +23,90 @@ namespace JiongXiaGu.Unity
             DontDestroyOnLoad(gameObject);
         }
 
+        [ContextMenu("Test2")]
+        private async void Test2()
+        {
+            CancellationTokenSource source = new CancellationTokenSource();
+            Action action = delegate ()
+            {
+                Debug.Log(string.Format("ThreadId : [{0}]", Thread.CurrentThread.ManagedThreadId));
+            };
+
+            action.Invoke();
+            Task task0 = Task.Run(action, source.Token);
+            await task0;
+            action.Invoke();
+            await task0.ContinueWith(task => action.Invoke(), source.Token);
+            await task0.ContinueWith(task => action.Invoke(), source.Token);
+            await task0.ContinueWith(task => action.Invoke(), source.Token);
+            await task0.ContinueWith(task => action.Invoke(), source.Token);
+        }
+
+        [ContextMenu("Test1")]
+        private async void Test1()
+        {
+            CancellationTokenSource source = new CancellationTokenSource();
+            for (int i = 0; i < 50; i++)
+            {
+                int temp = i;
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                TaskHelper.Run(delegate ()
+                {
+                    Debug.Log(temp);
+                    Thread.Sleep(100);
+                }, source.Token, UnityTaskScheduler.TaskScheduler).ContinueWith(task => Debug.Log(temp + "ContinueWith"), source.Token);
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+            }
+            await Task.Delay(1000);
+            source.Cancel();
+        }
+
+
         [ContextMenu("Test")]
         private void Test()
         {
-            MD5CryptoServiceProvider mD5CryptoServiceProvider = new MD5CryptoServiceProvider();
-            using (var stream = new FileStream(@"1.zip", FileMode.Open, FileAccess.Read))
-            {
-                var md5 = mD5CryptoServiceProvider.ComputeHash(stream);
-                string md5Str = string.Join(string.Empty, md5);
-                Debug.Log("0 : " + md5Str);
+            //object asyncLock = new object();
+            //Monitor.Enter(asyncLock);
 
-                ZipFile zipFile = new ZipFile(stream);
+            //Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
 
-                stream.Seek(0, SeekOrigin.Begin);
-                md5 = mD5CryptoServiceProvider.ComputeHash(stream);
-                md5Str = string.Join(string.Empty, md5);
-                Debug.Log("1 : " + md5Str);
-            }
+            //await Task.Run(delegate ()
+            //{
+            //    Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
+            //});
+
+            //Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
+            //Monitor.Exit(asyncLock);
+
+            //await Task.Run(delegate ()
+            //{
+            //    lock (asyncLock)
+            //    {
+            //        Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
+            //    }
+            //});
         }
 
         public MeshRenderer meshRenderer;
 
-        private async void Start()
+        private async void Test0()
         {
             LandformDescription description = new LandformDescription()
             {
-                HeightTex = new AssetInfo("HeightMap_85"),
-                HeightBlendTex = new AssetInfo("HeightMap_Blend"),
-                DiffuseTex = new AssetInfo(LoadMode.File, @"Terrain\Landforms\SoilCracked2.jpg"),
-                DiffuseBlendTex = new AssetInfo("HeightMap_Blend"),
+                HeightTex = new AssetInfo("terrain", "HeightMap_85"),
+                HeightBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
+                DiffuseTex = new AssetInfo(@"Terrain\Landforms\SoilCracked2.jpg"),
+                DiffuseBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
             };
 
             Task<LandformRes> infoTask = null;
             await Task.Run(delegate ()
             {
-                infoTask = LandformRes.CreateAsync(LoadableResource.Core, description);
+                infoTask = LandformResPool.Create(LoadableResource.Core, description, default(CancellationToken));
             });
 
             await infoTask;
             meshRenderer.material.mainTexture = infoTask.Result.DiffuseTex;
-
-            //var task = Resource.Core.ReadAsTextureAsync(new AssetInfo("HeightMap_Blend"));
-            //await task;
-            //Debug.Log(task.Result.texelSize);
-            //meshRenderer.material.mainTexture = task.Result;
         }
 
         //private async Task Start()

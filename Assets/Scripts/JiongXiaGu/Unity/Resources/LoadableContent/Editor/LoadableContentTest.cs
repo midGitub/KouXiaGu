@@ -22,7 +22,11 @@ namespace JiongXiaGu.Unity.Resources
             Tags = LoadableContentDescription.JoinTags("map", "terrain"),
             Author = "One",
             Version = "1.22",
-            Message = "..."
+            Message = "...",
+            AssetBundles = new AssetBundleDescription[] 
+            {
+                new AssetBundleDescription("terrain", @"AssetBundles\terrain")
+            },
         };
 
 

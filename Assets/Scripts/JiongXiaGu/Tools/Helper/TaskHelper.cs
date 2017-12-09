@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +22,7 @@ namespace JiongXiaGu
         /// </summary>
         public static Task Run(Action action, CancellationToken cancellation, TaskScheduler scheduler)
         {
+            cancellation.ThrowIfCancellationRequested();
             Task task = new Task(action, cancellation);
             task.Start(scheduler);
             return task;
@@ -43,6 +43,7 @@ namespace JiongXiaGu
         /// </summary>
         public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellation, TaskScheduler scheduler)
         {
+            cancellation.ThrowIfCancellationRequested();
             Task<TResult> task = new Task<TResult>(function, cancellation);
             task.Start(scheduler);
             return task;

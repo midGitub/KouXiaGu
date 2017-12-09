@@ -49,6 +49,11 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public string Message { get; set; }
 
+        /// <summary>
+        /// AssetBundle 描述;
+        /// </summary>
+        public AssetBundleDescription[] AssetBundles { get; set; }
+
         internal LoadableContentDescription(string id, string name) : this()
         {
             ID = id;

@@ -8,15 +8,18 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.Resources
 {
 
+
     public interface IContentLoadHandler
     {
         /// <summary>
-        /// 
+        /// 读取到对应资源,同步方法;
         /// </summary>
-        Task Add(LoadableContent content);
+        void Add(LoadableContent content);
 
-
-        void Remove(LoadableContent content);
+        /// <summary>
+        /// 清除所有已经读取的资源;
+        /// </summary>
+        void Clear();
     }
 
     /// <summary>

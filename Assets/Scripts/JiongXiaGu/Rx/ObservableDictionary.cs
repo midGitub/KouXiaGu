@@ -1,10 +1,7 @@
-﻿using System;
+﻿using JiongXiaGu.Collections;
+using System;
 using System.Collections;
-using System.Threading;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using JiongXiaGu.Collections;
 
 namespace JiongXiaGu
 {
@@ -27,11 +24,10 @@ namespace JiongXiaGu
     }
 
     /// <summary>
-    /// 可订阅的字典结构(线程安全); 
+    /// 可订阅的字典结构; 
     /// </summary>
     public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, IObservable<DictionaryEvent<TKey, TValue>>
     {
-        private readonly object asyncLock = new object();
         private readonly IDictionary<TKey, TValue> dictionary;
         private readonly ObserverCollection<DictionaryEvent<TKey, TValue>> observers;
 
@@ -83,8 +79,8 @@ namespace JiongXiaGu
                 TValue original;
                 if (dictionary.TryGetValue(key, out original))
                 {
-                    dictionary[key] = value;
                     NotifyUpdate(key, original, value);
+                    dictionary[key] = value;
                 }
                 else
                 {
@@ -108,11 +104,8 @@ namespace JiongXiaGu
         /// </summary>
         public void Add(TKey key, TValue value)
         {
-            lock (asyncLock)
-            {
-                NotifyAdd(key, value);
-                dictionary.Add(key, value);
-            }
+            NotifyAdd(key, value);
+            dictionary.Add(key, value);
         }
 
         /// <summary>
@@ -120,21 +113,18 @@ namespace JiongXiaGu
         /// </summary>
         public AddOrUpdateStatus AddOrUpdate(TKey key, TValue value)
         {
-            lock (asyncLock)
+            TValue originalValue;
+            if (dictionary.TryGetValue(key, out originalValue))
             {
-                TValue originalValue;
-                if (dictionary.TryGetValue(key, out originalValue))
-                {
-                    NotifyUpdate(key, originalValue, value);
-                    dictionary[key] = value;
-                    return AddOrUpdateStatus.Updated;
-                }
-                else
-                {
-                    NotifyAdd(key, value);
-                    dictionary.Add(key, value);
-                    return AddOrUpdateStatus.Added;
-                }
+                NotifyUpdate(key, originalValue, value);
+                dictionary[key] = value;
+                return AddOrUpdateStatus.Updated;
+            }
+            else
+            {
+                NotifyAdd(key, value);
+                dictionary.Add(key, value);
+                return AddOrUpdateStatus.Added;
             }
         }
 
@@ -148,8 +138,8 @@ namespace JiongXiaGu
             TValue original;
             if (dictionary.TryGetValue(key, out original))
             {
-                dictionary.Remove(key);
                 NotifyRemove(key, original);
+                dictionary.Remove(key);
                 return true;
             }
             else

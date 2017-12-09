@@ -13,19 +13,19 @@ namespace JiongXiaGu.Unity.RectTerrain
     [RequireComponent(typeof(MeshFilter))]
     public sealed class LandformBakeDrawingBoardMesh : MonoBehaviour
     {
-        LandformBakeDrawingBoardMesh()
+        private LandformBakeDrawingBoardMesh()
         {
         }
 
-        const string meshName = "LandformBakeDrawingBoardMesh";
-        static readonly float chunkHalfWidth = RectTerrainInfo.NodeWidth / 2 + (RectTerrainInfo.NodeWidth / 3);
-        static readonly float chunkHalfHeight = RectTerrainInfo.NodeHeight / 2 + (RectTerrainInfo.NodeHeight / 3);
-        const float altitude = 0;
+        public const string MeshName = "LandformBakeDrawingBoardMesh";
+        private static readonly float chunkHalfWidth = RectTerrainInfo.NodeWidth / 2 + (RectTerrainInfo.NodeWidth / 3);
+        private static readonly float chunkHalfHeight = RectTerrainInfo.NodeHeight / 2 + (RectTerrainInfo.NodeHeight / 3);
+        private const float altitude = 0;
 
         /// <summary>
         /// 网格顶点数据;
         /// </summary>
-        static readonly Vector3[] vertices = new Vector3[]
+        private static readonly Vector3[] vertices = new Vector3[]
             {
                 new Vector3(-chunkHalfWidth , altitude, chunkHalfHeight),
                 new Vector3(chunkHalfWidth, altitude, chunkHalfHeight),
@@ -36,7 +36,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 网格三角形数据;
         /// </summary>
-        static readonly int[] triangles = new int[]
+        private static readonly int[] triangles = new int[]
            {
                 0,1,2,
                 0,2,3,
@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 网格UV坐标数据;
         /// </summary>
-        static readonly Vector2[] uvs = new Vector2[]
+        private static readonly Vector2[] uvs = new Vector2[]
            {
                 new Vector2(0f, 1f),
                 new Vector2(1f, 1f),
@@ -53,16 +53,16 @@ namespace JiongXiaGu.Unity.RectTerrain
                 new Vector2(0f, 0f),
            };
 
-        MeshFilter meshFilter;
-        static Mesh landformMesh;
+        private MeshFilter meshFilter;
+        private static Mesh landformMesh;
 
-        void Awake()
+        private void Awake()
         {
             meshFilter = GetComponent<MeshFilter>();
             meshFilter.sharedMesh = GetPublicMesh();
         }
 
-        void Reset()
+        private void Reset()
         {
             Mesh mesh = landformMesh;
             if (mesh == null)
@@ -80,24 +80,24 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 创建一个新的地形块网格结构;
         /// </summary>
-        static Mesh CreateMesh()
+        private static Mesh CreateMesh()
         {
             Mesh mesh = new Mesh();
             UpdateMesh(ref mesh);
             return mesh;
         }
 
-        static void UpdateMesh(ref Mesh mesh)
+        private static void UpdateMesh(ref Mesh mesh)
         {
             mesh.Clear();
-            mesh.name = meshName;
+            mesh.name = MeshName;
             mesh.vertices = vertices;
             mesh.triangles = triangles;
             mesh.uv = uvs;
             mesh.RecalculateNormals();
         }
 
-        static Mesh GetPublicMesh()
+        private static Mesh GetPublicMesh()
         {
             if (landformMesh == null)
             {

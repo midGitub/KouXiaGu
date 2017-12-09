@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 资源定义;实例非线程安全;
     /// </summary>
-    public static class LoadableResource
+    public class LoadableResource
     {
         private static LoadableContent core;
         private static List<LoadableContent> dlc;
@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.Resources
         internal static void Initialize()
         {
             LoadableContentSearcher contentSearcher = new LoadableContentSearcher();
-            core = GetCore();
+            core = GetCore(contentSearcher.Factory);
             dlc = GetDlc(contentSearcher);
             mod = GetMod(contentSearcher);
             all = GetAll();
@@ -76,9 +76,10 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private static LoadableContent GetCore()
+        private static LoadableContent GetCore(LoadableContentFactory factory)
         {
-            return new LoadableDirectory(Resource.CoreDirectory, new LoadableContentDescription("0", "Core"));
+            return factory.Read(Resource.CoreDirectory);
+            //return new LoadableDirectory(Resource.CoreDirectory, new LoadableContentDescription("0", "Core"));
         }
 
         private static List<LoadableContent> GetDlc(LoadableContentSearcher contentSearcher)

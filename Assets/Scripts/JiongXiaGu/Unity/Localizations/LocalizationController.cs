@@ -47,20 +47,18 @@ namespace JiongXiaGu.Unity.Localizations
 
         Task IComponentInitializeHandle.Initialize(CancellationToken token)
         {
-            packSearcher = new LanguagePackSearcher();
-            packSerializer = new LanguagePackSerializer();
-            configFileReader = new LocalizationConfigFileReader();
-
-            token.ThrowIfCancellationRequested();
-
-            availableLanguagePacks = packSearcher.FindPacks(LoadableResource.All);
-            if (availableLanguagePacks.Count == 0)
-            {
-                throw new FileNotFoundException("未找到合适的语言包文件");
-            }
-
             return Task.Run(delegate ()
             {
+                packSearcher = new LanguagePackSearcher();
+                packSerializer = new LanguagePackSerializer();
+                configFileReader = new LocalizationConfigFileReader();
+
+                availableLanguagePacks = packSearcher.FindPacks(LoadableResource.All);
+                if (availableLanguagePacks.Count == 0)
+                {
+                    throw new FileNotFoundException("未找到合适的语言包文件");
+                }
+
                 token.ThrowIfCancellationRequested();
 
                 LocalizationConfig? config = ReadConfigFile();
@@ -70,10 +68,14 @@ namespace JiongXiaGu.Unity.Localizations
                 {
                     try
                     {
-                        using (var stream = packInfo.ContentConstruct.GetInputStream(packInfo.LoadableEntry))
+                        LoadableContent content = packInfo.ContentConstruct;
+                        lock (content.AsyncLock)
                         {
-                            languagePack = packSerializer.Deserialize(stream);
-                            break;
+                            using (var stream = content.GetInputStream(packInfo.LoadableEntry))
+                            {
+                                languagePack = packSerializer.Deserialize(stream);
+                                break;
+                            }
                         }
                     }
                     catch (Exception ex)

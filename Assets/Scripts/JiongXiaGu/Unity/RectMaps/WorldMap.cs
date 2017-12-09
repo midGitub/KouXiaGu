@@ -13,14 +13,35 @@ namespace JiongXiaGu.Unity.RectMaps
     public class WorldMap
     {
         /// <summary>
+        /// 可观察的地图字典结构,提供修改的地图结构;
+        /// </summary>
+        private ObservableDictionary<RectCoord, MapNode> map;
+
+        /// <summary>
         /// 当前地图数据;
         /// </summary>
         public Map MapData { get; private set; }
 
         /// <summary>
-        /// 可观察的地图字典结构,提供修改的地图结构;
+        /// 地图字典结构;
         /// </summary>
-        public ObservableDictionary<RectCoord, MapNode> Map { get; private set; }
+        public IDictionary<RectCoord, MapNode> Map
+        {
+            get { return map; }
+        }
+
+        /// <summary>
+        /// 地图变化观察接口;
+        /// </summary>
+        public IObservable<DictionaryEvent<RectCoord, MapNode>> MapChangedTracker
+        {
+            get { return map; }
+        }
+
+        /// <summary>
+        /// 地图读写锁,不支持递归;根据对地图进行读写操作进行对应的锁;
+        /// </summary>
+        public ReaderWriterLockSlim Lock { get; private set; } = new ReaderWriterLockSlim();
 
         /// <summary>
         /// 地图变化记录;
@@ -38,9 +59,9 @@ namespace JiongXiaGu.Unity.RectMaps
                 throw new ArgumentNullException(nameof(data));
 
             MapData = data;
-            Map = new ObservableDictionary<RectCoord, MapNode>(data.MapData.Data);
+            map = new ObservableDictionary<RectCoord, MapNode>(data.MapData.Data);
             MapChangedRecorder = new MapChangedRecorder();
-            Map.Subscribe(MapChangedRecorder);
+            map.Subscribe(MapChangedRecorder);
         }
 
         //public WorldMap(Map data, Map archive)

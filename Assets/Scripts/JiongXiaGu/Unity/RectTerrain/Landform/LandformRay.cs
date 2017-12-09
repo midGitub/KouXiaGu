@@ -13,24 +13,36 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 对地形的射线;
     /// </summary>
     [DisallowMultipleComponent]
-    public class LandformRay : SceneSington<LandformRay>
+    public class LandformRay : MonoBehaviour
     {
-        LandformRay()
+        private LandformRay()
         {
         }
 
-        const float DefaultRayMaxDistance = 8000f;
+        private static readonly GlobalSingleton<LandformRay> singleton = new GlobalSingleton<LandformRay>();
+
+        public const float DefaultRayMaxDistance = 8000f;
         [SerializeField]
-        LayerMask rayLayerMask;
+        private LayerMask rayLayerMask;
 
         public LayerMask RayLayerMask
         {
             get { return rayLayerMask; }
         }
 
-        void Awake()
+        public static LandformRay Instance
         {
-            SetInstance(this);
+            get { return singleton.GetInstance(); }
+        }
+
+        private void Awake()
+        {
+            singleton.SetInstance(this);
+        }
+
+        private void OnDestroy()
+        {
+            singleton.RemoveInstance(this);
         }
 
         public bool Raycast(Ray ray, out RaycastHit raycastHit)

@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// <summary>
     /// 地形块信息;
     /// </summary>
-    public static class LandformInfo 
+    public static class LandformChunkInfo 
     {
         /// <summary>
         /// 地形块范围;

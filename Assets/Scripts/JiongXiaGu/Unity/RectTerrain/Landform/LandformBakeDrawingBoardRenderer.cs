@@ -18,35 +18,28 @@ namespace JiongXiaGu.Unity.RectTerrain
     [RequireComponent(typeof(MeshRenderer))]
     public sealed class LandformBakeDrawingBoardRenderer : MonoBehaviour
     {
-        LandformBakeDrawingBoardRenderer()
+        private LandformBakeDrawingBoardRenderer()
         {
         }
 
         [SerializeField]
-        Shader displayInBakeDrawingBoardShader = null;
-        MeshRenderer meshRenderer;
-        Material meterial;
-        public LandformResource landformResource { get; private set; }
+        private Shader displayInBakeDrawingBoardShader = null;
+        private MeshRenderer meshRenderer;
+        private Material meterial;
 
-        void Awake()
+        private void Awake()
         {
             meshRenderer = GetComponent<MeshRenderer>();
             meshRenderer.material = meterial = new Material(displayInBakeDrawingBoardShader);
         }
 
-        public void Initialize(Vector3 pos, Quaternion rotation, LandformResource resource)
+        public void SetValue(Vector3 pos, Quaternion rotation)
         {
             transform.position = pos;
             transform.rotation = rotation;
-            landformResource = resource;
         }
 
-        public void Reset()
-        {
-            landformResource = null;
-        }
-
-        public void DisplayDiffuse()
+        public void DisplayDiffuse(LandformRes landformResource)
         {
             if (landformResource == null)
                 throw new ArgumentNullException("landformResource");
@@ -55,7 +48,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             meterial.SetTexture("_BlendTex", landformResource.DiffuseBlendTex);
         }
 
-        public void DisplayHeight()
+        public void DisplayHeight(LandformRes landformResource)
         {
             if (landformResource == null)
                 throw new ArgumentNullException("landformResource");

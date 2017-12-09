@@ -13,14 +13,14 @@ namespace JiongXiaGu.Unity.RectMaps
     /// </summary>
     public class SimpleMapGenerator : RandomMapGenerator
     {
-        int[] landformTypes;
+        string[] landformTypes;
 
-        public SimpleMapGenerator(MapDescription description, RectTerrainResources resources, IEnumerable<RectCoord> points) : base(description, points)
+        public SimpleMapGenerator(MapDescription description, RectTerrainResource resources, IEnumerable<RectCoord> points) : base(description, points)
         {
             if (resources == null)
                 throw new ArgumentNullException(nameof(resources));
 
-            landformTypes = resources.Landform.Values.ToArray(item => item.ID);
+            landformTypes = resources.LandformDescrs.Descriptions.Values.ToArray(item => item.Value.ID);
         }
 
         public override void GenerateData(IDictionary<RectCoord, MapNode> map)

@@ -11,7 +11,15 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableZip : LoadableContent
     {
-        internal readonly string filePath;
+        /// <summary>
+        /// 压缩包文件路径;
+        /// </summary>
+        internal readonly string zipFilePath;
+
+        /// <summary>
+        /// 压缩包所在的文件夹;
+        /// </summary>
+        internal readonly string dirPath;
 
         /// <summary>
         /// 压缩文件;
@@ -23,32 +31,22 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal readonly Stream stream;
 
-        internal LoadableZip(string filePath, Stream stream, ZipFile zipFile, LoadableContentDescription description) : base(description, InternalGetAssetBundle(filePath))
+        internal LoadableZip(string zipFilePath, Stream stream, ZipFile zipFile, LoadableContentDescription description) : base(description)
         {
             if (zipFile == null)
                 throw new ArgumentNullException(nameof(zipFile));
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            this.filePath = filePath;
+            this.zipFilePath = zipFilePath;
+            dirPath = Path.GetDirectoryName(zipFilePath);
             this.stream = stream;
             this.zipFile = zipFile;
-        }
-
-        [Obsolete]
-        internal LoadableZip(ZipFile zipFile, Stream stream, LoadableContentDescription description, LoadableContentType type) : base(description, InternalGetAssetBundle(zipFile.Name))
-        {
-            if (zipFile == null)
-                throw new ArgumentNullException(nameof(zipFile));
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            this.zipFile = zipFile;
-            this.stream = stream;
         }
 
         public override void Unload()
         {
+            base.Unload();
             zipFile.Close();
             stream.Dispose();
         }
@@ -67,30 +65,17 @@ namespace JiongXiaGu.Unity.Resources
 
         public override Stream GetInputStream(ILoadableEntry entry)
         {
-            if (entry == null)
-            {
-                throw new ArgumentNullException(nameof(entry));
-            }
-            else if (entry is ZipLoadableEntry)
-            {
-                var zipLoadableEntry = (ZipLoadableEntry)entry;
-                return zipFile.GetInputStream(zipLoadableEntry.ZipEntry);
-            }
-            else
-            {
-                throw new ArgumentException(string.Format("参数[{0}]不为类[{1}]", nameof(entry), nameof(ZipLoadableEntry)));
-            }
+            var zipLoadableEntry = TypeOfZipLoadableEntry(entry);
+            return zipFile.GetInputStream(zipLoadableEntry.ZipEntry);
         }
 
         public override void BeginUpdate()
         {
-            base.BeginUpdate();
             zipFile.BeginUpdate();
         }
 
         public override void CommitUpdate()
         {
-            base.CommitUpdate();
             zipFile.CommitUpdate();
         }
 
@@ -104,6 +89,34 @@ namespace JiongXiaGu.Unity.Resources
 
             ZipUpdate zipUpdate = new ZipUpdate(stream);
             zipFile.Add(zipUpdate, relativePath);
+        }
+
+        public override bool Remove(string relativePath)
+        {
+            return zipFile.Delete(relativePath);
+        }
+
+        public override void Remove(ILoadableEntry entry)
+        {
+            var zipLoadableEntry = TypeOfZipLoadableEntry(entry);
+            zipFile.Delete(zipLoadableEntry.ZipEntry);
+        }
+
+        private ZipLoadableEntry TypeOfZipLoadableEntry(ILoadableEntry entry)
+        {
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+            else if (entry is ZipLoadableEntry)
+            {
+                var zipLoadableEntry = (ZipLoadableEntry)entry;
+                return zipLoadableEntry;
+            }
+            else
+            {
+                throw new ArgumentException(string.Format("参数[{0}]不为类[{1}]", nameof(entry), nameof(ZipLoadableEntry)));
+            }
         }
 
         /// <summary>
@@ -134,10 +147,15 @@ namespace JiongXiaGu.Unity.Resources
             return update;
         }
 
-        private static string InternalGetAssetBundle(string fileName)
+        protected override IEnumerable<AssetBundleDescription> GetAssetBundlesDescription()
         {
-            string assetBundlePath = Path.ChangeExtension(fileName, Resource.AssetBundleExtension);
-            return assetBundlePath;
+            AssetBundleDescription[] assetBundleDescriptions = Description.AssetBundles;
+            foreach (var assetBundleDescription in assetBundleDescriptions)
+            {
+                var newDescr = assetBundleDescription;
+                newDescr.Path = Path.Combine(dirPath, assetBundleDescription.Path);
+                yield return newDescr;
+            }
         }
 
         /// <summary>

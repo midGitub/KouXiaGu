@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
     public class MapSearcher : ContentSearcher<MapFileInfo>
     {
-        [PathDefinition(PathDefinition.DataDirectory, "地图资源目录;")]
+        [PathDefinition(PathDefinitionType.DataDirectory, "地图资源目录;")]
         internal const string directoryName = "Maps";
 
         private MapSerializer mapSerializer = new MapSerializer();

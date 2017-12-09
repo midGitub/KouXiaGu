@@ -43,29 +43,31 @@ namespace JiongXiaGu.Unity.RectMaps
 
         public override void GenerateData(IDictionary<RectCoord, MapNode> map)
         {
-            foreach (var point in points)
-            {
-                MapNode node = new MapNode()
-                {
-                    Landform = new NodeLandformInfo()
-                    {
-                        TypeID = random.Next(),
-                        Angle = Angle(),
-                    },
+            throw new NotImplementedException();
 
-                    Building = new NodeBuildingInfo()
-                    {
-                        TypeID = random.Next(),
-                        Angle = Angle(),
-                    },
+            //foreach (var point in points)
+            //{
+            //    MapNode node = new MapNode()
+            //    {
+            //        Landform = new NodeLandformInfo()
+            //        {
+            //            TypeID = random.Next(),
+            //            Angle = Angle(),
+            //        },
 
-                    Road = new NodeRoadInfo()
-                    {
-                        TypeID = random.Next(),
-                    },
-                };
-                map.AddOrUpdate(point, node);
-            }
+            //        Building = new NodeBuildingInfo()
+            //        {
+            //            TypeID = random.Next(),
+            //            Angle = Angle(),
+            //        },
+
+            //        Road = new NodeRoadInfo()
+            //        {
+            //            TypeID = random.Next(),
+            //        },
+            //    };
+            //    map.AddOrUpdate(point, node);
+            //}
         }
 
         /// <summary>
