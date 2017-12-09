@@ -83,7 +83,7 @@ namespace JiongXiaGu
         private class ReaderWriterLockSlimWriteLock : IDisposable
         {
             private bool isDisposed;
-            ReaderWriterLockSlim readerWriterLockSlim;
+            private ReaderWriterLockSlim readerWriterLockSlim;
 
             public ReaderWriterLockSlimWriteLock(ReaderWriterLockSlim readerWriterLockSlim)
             {

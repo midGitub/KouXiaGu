@@ -33,8 +33,8 @@ namespace JiongXiaGu.Unity.RectTerrain
             Description<LandformDescription> description;
             if (descrDictionary.Descriptions.TryGetValue(key, out description))
             {
-                var info = Create(description.Content, description.Value, token);
-                return info;
+                var task = CreateAsync(description.Content, description.Value, token);
+                return task;
             }
             else
             {
@@ -42,32 +42,37 @@ namespace JiongXiaGu.Unity.RectTerrain
             }
         }
 
-        protected override void Release(LandformRes res)
+        protected override Task Release(LandformRes res)
         {
-            res.Destroy();
+            return TaskHelper.Run(delegate ()
+            {
+                res.Destroy();
+            }, UnityTaskScheduler.TaskScheduler);
         }
 
-        public static Task<LandformRes> Create(LoadableContent loadableContent, LandformDescription description, CancellationToken token)
+        public static async Task<LandformRes> CreateAsync(LoadableContent loadableContent, LandformDescription description, CancellationToken token)
         {
-            throw new NotImplementedException();
-            //if (loadableContent == null)
-            //    throw new ArgumentNullException(nameof(loadableContent));
+            var tasks = new Task<Texture2D>[]
+            {
+                GetTexture2DAsync(loadableContent, description.HeightTex, token),
+                GetTexture2DAsync(loadableContent, description.HeightBlendTex, token),
+                GetTexture2DAsync(loadableContent, description.DiffuseTex, token),
+                GetTexture2DAsync(loadableContent, description.DiffuseBlendTex, token),
+            };
 
-            //LandformRes info = new LandformRes();
-            //List<Task> tasks = new List<Task>();
+            await Task.WhenAll(tasks);
 
-            //tasks.Add(GetTexture2DAsync(loadableContent, description.HeightTex, token).ContinueWith(task => info.HeightTex = task.Result, token));
-            //tasks.Add(GetTexture2DAsync(loadableContent, description.HeightBlendTex, token).ContinueWith(task => info.HeightBlendTex = task.Result, token));
-            //tasks.Add(GetTexture2DAsync(loadableContent, description.DiffuseTex, token).ContinueWith(task => info.DiffuseTex = task.Result, token));
-            //tasks.Add(GetTexture2DAsync(loadableContent, description.DiffuseBlendTex, token).ContinueWith(task => info.DiffuseBlendTex = task.Result, token));
-
-            //await Task.WhenAll(tasks);
-            //return info;
+            LandformRes info = new LandformRes();
+            info.HeightTex = tasks[0].Result;
+            info.HeightBlendTex = tasks[1].Result;
+            info.DiffuseTex = tasks[2].Result;
+            info.DiffuseBlendTex = tasks[3].Result;
+            return info;
         }
 
-        //private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo, CancellationToken token)
-        //{
-        //    return loadableContent.ReadAsTexture2D(assetInfo);
-        //}
+        private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo, CancellationToken token)
+        {
+            return AssetPool.Default.ReadAsTexture2D(loadableContent, assetInfo, token);
+        }
     }
 }

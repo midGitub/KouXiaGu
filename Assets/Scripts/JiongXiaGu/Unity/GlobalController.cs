@@ -63,32 +63,29 @@ namespace JiongXiaGu.Unity
 
 
         [ContextMenu("Test")]
-        private void Test()
+        private async void Test()
         {
-            //object asyncLock = new object();
-            //Monitor.Enter(asyncLock);
+            CancellationTokenSource source = new CancellationTokenSource();
+            Task task0 = TaskHelper.Run(delegate ()
+            {
+                Thread.Sleep(1000);
+            }, source.Token, UnityTaskScheduler.TaskScheduler);
 
-            //Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
+            Debug.Log(task0.Status);
 
-            //await Task.Run(delegate ()
-            //{
-            //    Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
-            //});
+            await Task.Run(delegate ()
+            {
+                Thread.Sleep(200);
+                Debug.Log(task0.Status);
+            });
 
-            //Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
-            //Monitor.Exit(asyncLock);
-
-            //await Task.Run(delegate ()
-            //{
-            //    lock (asyncLock)
-            //    {
-            //        Debug.Log(string.Format("[{0}]IsEntered:{1}!", Thread.CurrentThread.ManagedThreadId, Monitor.IsEntered(asyncLock)));
-            //    }
-            //});
+            await task0;
+            Debug.Log(task0.Status);
         }
 
         public MeshRenderer meshRenderer;
 
+        [ContextMenu("Test0")]
         private async void Test0()
         {
             LandformDescription description = new LandformDescription()
@@ -102,7 +99,7 @@ namespace JiongXiaGu.Unity
             Task<LandformRes> infoTask = null;
             await Task.Run(delegate ()
             {
-                infoTask = LandformResPool.Create(LoadableResource.Core, description, default(CancellationToken));
+                infoTask = LandformResPool.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
             });
 
             await infoTask;

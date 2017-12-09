@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
@@ -7,7 +8,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 因为涉及到UnityAPI操作,所以都需要在Unity线程调用;
     /// </summary>
-    public static class AssetReader
+    internal static class AssetReader
     {
         /// <summary>
         /// 不支持读取方式异常;
@@ -22,6 +23,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public static Texture2D ReadAsTexture2D(this LoadableContent content, AssetInfo assetInfo)
         {
+            XiaGu.ThrowIfNotUnityThread();
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
@@ -47,9 +49,19 @@ namespace JiongXiaGu.Unity.Resources
             if (assetBundle != null)
             {
                 var texture = assetBundle.LoadAsset<Texture2D>(assetInfo.Name);
-                return texture;
+                if (texture == null)
+                {
+                    throw new ArgumentException();
+                }
+                else
+                {
+                    return texture;
+                }
             }
-            return default(Texture2D);
+            else
+            {
+                throw new FileNotFoundException(string.Format("AssetBundle :{0}, {1}", assetInfo.AssetBundleName, assetInfo.Name));
+            }
         }
 
         /// <summary>

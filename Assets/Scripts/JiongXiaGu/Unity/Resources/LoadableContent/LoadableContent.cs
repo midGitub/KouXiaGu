@@ -262,7 +262,15 @@ namespace JiongXiaGu.Unity.Resources
                 if (descr.Name == name)
                 {
                     AssetBundle assetBundle = AssetBundle.LoadFromFile(descr.Path);
-                    return assetBundle;
+                    if (assetBundles != null)
+                    {
+                        assetBundles.Add(new KeyValuePair<string, AssetBundle>(name, assetBundle));
+                        return assetBundle;
+                    }
+                    else
+                    {
+                        Debug.Log("无法加载AssetBundle;");
+                    }
                 }
             }
             return null;

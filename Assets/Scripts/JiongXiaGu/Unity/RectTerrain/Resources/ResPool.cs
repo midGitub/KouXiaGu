@@ -27,7 +27,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 释放资源;
         /// </summary>
-        protected abstract void Release(T res);
+        protected abstract Task Release(T res);
 
         /// <summary>
         /// 获取到默认的资源;
