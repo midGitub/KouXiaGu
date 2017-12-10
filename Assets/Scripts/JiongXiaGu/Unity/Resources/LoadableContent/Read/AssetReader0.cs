@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 因为涉及到UnityAPI操作,所以都需要在Unity线程调用;
     /// </summary>
-    internal static class AssetReader
+    internal static class AssetReader0
     {
         /// <summary>
         /// 不支持读取方式异常;

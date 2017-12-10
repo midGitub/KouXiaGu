@@ -23,70 +23,24 @@ namespace JiongXiaGu.Unity
             DontDestroyOnLoad(gameObject);
         }
 
-        [ContextMenu("Test2")]
-        private async void Test2()
+        [ContextMenu("Test0")]
+        private void Test0()
         {
-            CancellationTokenSource source = new CancellationTokenSource();
-            Action action = delegate ()
-            {
-                Debug.Log(string.Format("ThreadId : [{0}]", Thread.CurrentThread.ManagedThreadId));
-            };
+            var v1 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
+            var v2 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
+            Debug.Log(v1 != null);
+            Debug.Log(v1 == v2);
 
-            action.Invoke();
-            Task task0 = Task.Run(action, source.Token);
-            await task0;
-            action.Invoke();
-            await task0.ContinueWith(task => action.Invoke(), source.Token);
-            await task0.ContinueWith(task => action.Invoke(), source.Token);
-            await task0.ContinueWith(task => action.Invoke(), source.Token);
-            await task0.ContinueWith(task => action.Invoke(), source.Token);
-        }
-
-        [ContextMenu("Test1")]
-        private async void Test1()
-        {
-            CancellationTokenSource source = new CancellationTokenSource();
-            for (int i = 0; i < 50; i++)
-            {
-                int temp = i;
-#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-                TaskHelper.Run(delegate ()
-                {
-                    Debug.Log(temp);
-                    Thread.Sleep(100);
-                }, source.Token, UnityTaskScheduler.TaskScheduler).ContinueWith(task => Debug.Log(temp + "ContinueWith"), source.Token);
-#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-            }
-            await Task.Delay(1000);
-            source.Cancel();
-        }
-
-
-        [ContextMenu("Test")]
-        private async void Test()
-        {
-            CancellationTokenSource source = new CancellationTokenSource();
-            Task task0 = TaskHelper.Run(delegate ()
-            {
-                Thread.Sleep(1000);
-            }, source.Token, UnityTaskScheduler.TaskScheduler);
-
-            Debug.Log(task0.Status);
-
-            await Task.Run(delegate ()
-            {
-                Thread.Sleep(200);
-                Debug.Log(task0.Status);
-            });
-
-            await task0;
-            Debug.Log(task0.Status);
+            v1 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
+            v2 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
+            Debug.Log(v1 != null);
+            Debug.Log(v1 == v2);
         }
 
         public MeshRenderer meshRenderer;
 
-        [ContextMenu("Test0")]
-        private async void Test0()
+        [ContextMenu("Test1")]
+        private async void Test1()
         {
             LandformDescription description = new LandformDescription()
             {
@@ -105,6 +59,42 @@ namespace JiongXiaGu.Unity
             await infoTask;
             meshRenderer.material.mainTexture = infoTask.Result.DiffuseTex;
         }
+
+        [ContextMenu("Test2")]
+        private async void Test2()
+        {
+            CancellationTokenSource source = new CancellationTokenSource();
+            for (int i = 0; i < 50; i++)
+            {
+                int temp = i;
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                TaskHelper.Run(delegate ()
+                {
+                    Debug.Log(temp);
+                    Thread.Sleep(100);
+                }, source.Token, UnityTaskScheduler.TaskScheduler).ContinueWith(task => Debug.Log(temp + "ContinueWith"), source.Token);
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+            }
+            await Task.Delay(1000);
+            source.Cancel();
+        }
+
+        [ContextMenu("Test3")]
+        private void Test3()
+        {
+            using (MemoryStream memoryStream = new MemoryStream(new byte[10], false))
+            {
+                try
+                {
+                    var task = memoryStream.WriteAsync(new byte[5], 0, 5);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+            }
+        }
+
 
         //private async Task Start()
         //{

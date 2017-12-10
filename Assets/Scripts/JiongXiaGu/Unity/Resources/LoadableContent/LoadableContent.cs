@@ -176,7 +176,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到只读的流;(支持多线程操作)
+        /// 获取到只读的流;
         /// </summary>
         public abstract Stream GetInputStream(ILoadableEntry entry);
 
@@ -221,8 +221,6 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public AssetBundle GetAssetBundle(string name)
         {
-            XiaGu.ThrowIfNotUnityThread();
-
             int index = assetBundles.FindIndex(pair => pair.Key == name);
             if (index >= 0)
             {
@@ -235,12 +233,10 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取,则读取并返回,若不存在则返回null;(仅在Unity线程调用,无需异步锁)
+        /// 获取到对应的 AssetBundle,若还未读取,则读取并返回,若不存在 AssetBundle 或读取失败则返回异常;(仅在Unity线程调用,无需异步锁)
         /// </summary>
         public AssetBundle GetOrLoadAssetBundle(string name)
         {
-            XiaGu.ThrowIfNotUnityThread();
-
             int index = assetBundles.FindIndex(pair => pair.Key == name);
             if (index >= 0)
             {
@@ -248,14 +244,14 @@ namespace JiongXiaGu.Unity.Resources
             }
             else
             {
-                return InternalLoadAssetBundle(name);
+                return LoadAssetBundle(name);
             }
         }
 
         /// <summary>
-        /// 读取到 AssetBundle,若未找到,则返回null;
+        /// 读取到 AssetBundle;
         /// </summary>
-        private AssetBundle InternalLoadAssetBundle(string name)
+        public AssetBundle LoadAssetBundle(string name)
         {
             foreach (var descr in GetAssetBundlesDescription())
             {
@@ -269,11 +265,11 @@ namespace JiongXiaGu.Unity.Resources
                     }
                     else
                     {
-                        Debug.Log("无法加载AssetBundle;");
+                        throw new IOException(string.Format("无法加载 AssetBundle[Name:{0}]", name));
                     }
                 }
             }
-            return null;
+            throw new ArgumentException(string.Format("未找到 AssetBundle[Name:{0}]的定义信息", name));
         }
 
         /// <summary>

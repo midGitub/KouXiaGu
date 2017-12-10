@@ -33,7 +33,7 @@ namespace JiongXiaGu.Unity
             singleton.SetInstance(this);
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             runtimeStopwatch.Restart();
             while (taskScheduler.MoveNext())
