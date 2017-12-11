@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 资源读取抽象类;
     /// </summary>
-    public abstract class AssetReader<T>
+    public abstract class AssetLoader<T>
         where T : class
     {
         /// <summary>

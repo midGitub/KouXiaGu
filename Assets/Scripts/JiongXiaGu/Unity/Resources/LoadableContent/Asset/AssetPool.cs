@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
@@ -10,36 +11,86 @@ namespace JiongXiaGu.Unity.Resources
     public class AssetPool : WeakReferenceObjectPool
     {
         internal static AssetPool Default { get; private set; } = new AssetPool();
-        internal static TaskScheduler TaskScheduler => UnityTaskScheduler.TaskScheduler;
+        internal static TaskScheduler DefalutTaskScheduler => UnityTaskScheduler.TaskScheduler;
 
         /// <summary>
         /// 读取到对应资源;
         /// </summary>
-        public T Load<T>(AssetReader<T> assetReader, LoadableContent content, AssetInfo assetInfo)
+        public T Load<T>(AssetLoader<T> assetReader, LoadableContent content, AssetInfo assetInfo)
             where T :class
         {
-            string key = GetKey(content, assetInfo);
-            return Load(key, () => assetReader.Load(content, assetInfo));
+            if (assetReader == null)
+                throw new ArgumentNullException(nameof(assetReader));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            string key = GetKey<T>(content, assetInfo);
+            return Load(key, GetLoader(assetReader, content, assetInfo));
         }
 
-        public string GetKey(LoadableContent content, AssetInfo assetInfo)
+        /// <summary>
+        /// 重新读取到对应资源;
+        /// </summary>
+        public T Reload<T>(AssetLoader<T> assetReader, LoadableContent content, AssetInfo assetInfo)
+            where T : class
         {
-            return GetKey(content.Description, assetInfo);
+            if (assetReader == null)
+                throw new ArgumentNullException(nameof(assetReader));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            string key = GetKey<T>(content, assetInfo);
+            return Reload(key, GetLoader(assetReader, content, assetInfo));
         }
 
-        public string GetKey(LoadableContentDescription description, AssetInfo assetInfo)
+        /// <summary>
+        /// 异步读取到对应资源;
+        /// </summary>
+        public Task<T> LoadAsync<T>(AssetLoader<T> assetReader, LoadableContent content, AssetInfo assetInfo, CancellationToken token)
+            where T : class
         {
-            const string separator = ":";
+            if (assetReader == null)
+                throw new ArgumentNullException(nameof(assetReader));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            string key = GetKey<T>(content, assetInfo);
+            return LoadAsync(key, GetLoader(assetReader, content, assetInfo), token, DefalutTaskScheduler);
+        }
+
+        /// <summary>
+        /// 重新读取到对应资源;
+        /// </summary>
+        public Task<T> ReloadAsync<T>(AssetLoader<T> assetReader, LoadableContent content, AssetInfo assetInfo, CancellationToken token = default(CancellationToken))
+            where T : class
+        {
+            if (assetReader == null)
+                throw new ArgumentNullException(nameof(assetReader));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            string key = GetKey<T>(content, assetInfo);
+            return ReloadAsync(key, GetLoader(assetReader, content, assetInfo));
+        }
+
+
+        public string GetKey<T>(LoadableContent content, AssetInfo assetInfo)
+        {
+            return GetKey<T>(content.Description, assetInfo);
+        }
+
+        public string GetKey<T>(LoadableContentDescription description, AssetInfo assetInfo)
+        {
             string key;
 
             switch (assetInfo.From)
             {
                 case AssetLoadModes.AssetBundle:
-                    key = string.Join(separator, description.ID, assetInfo.AssetBundleName, assetInfo.Name);
+                    key = GetKey<T, LoadableContent>(description.ID, assetInfo.AssetBundleName, assetInfo.Name);
                     break;
 
                 case AssetLoadModes.File:
-                    key = string.Join(separator, description.ID, assetInfo.Name);
+                    key = GetKey<T, LoadableContent>(description.ID, assetInfo.Name);
                     break;
 
                 default:
@@ -47,6 +98,12 @@ namespace JiongXiaGu.Unity.Resources
             }
 
             return key;
+        }
+
+        private Func<T> GetLoader<T>(AssetLoader<T> assetReader, LoadableContent content, AssetInfo assetInfo)
+            where T : class
+        {
+            return () => assetReader.Load(content, assetInfo);
         }
     }
 }

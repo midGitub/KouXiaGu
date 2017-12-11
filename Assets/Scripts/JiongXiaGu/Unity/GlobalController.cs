@@ -26,13 +26,13 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test0")]
         private void Test0()
         {
-            var v1 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
-            var v2 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
+            var v1 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
+            var v2 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
             Debug.Log(v1 != null);
             Debug.Log(v1 == v2);
 
-            v1 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
-            v2 = Texture2DAssetReader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
+            v1 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
+            v2 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
             Debug.Log(v1 != null);
             Debug.Log(v1 == v2);
         }
@@ -82,17 +82,7 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test3")]
         private void Test3()
         {
-            using (MemoryStream memoryStream = new MemoryStream(new byte[10], false))
-            {
-                try
-                {
-                    var task = memoryStream.WriteAsync(new byte[5], 0, 5);
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-            }
+            Debug.Log(WeakReferenceObjectPool.GetKey<Texture2D, ContextMenu>("1","2"));
         }
 
 
