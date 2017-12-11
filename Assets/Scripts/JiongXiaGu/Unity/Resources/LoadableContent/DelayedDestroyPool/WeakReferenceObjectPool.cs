@@ -12,8 +12,13 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class WeakReferenceObjectPool
     {
-        private Dictionary<string, WeakReferenceObject> objectCollection;
-        private ReaderWriterLockSlim objectCollectionLock;
+        internal readonly Dictionary<string, WeakReferenceObject> objectCollection;
+        internal readonly ReaderWriterLockSlim objectCollectionLock;
+
+        /// <summary>
+        /// 对象总数;
+        /// </summary>
+        public int Count => objectCollection.Count;
 
         public WeakReferenceObjectPool()
         {
@@ -169,7 +174,6 @@ namespace JiongXiaGu.Unity.Resources
                         T asset;
                         if (weakReferenceObject.TryGetTarget(out asset))
                         {
-                            RequestObject(weakReferenceObject);
                             return asset;
                         }
                         else
@@ -215,6 +219,17 @@ namespace JiongXiaGu.Unity.Resources
                 {
                     return InternalAdd(key, loader);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 获取到合集快照;
+        /// </summary>
+        public KeyValuePair<string, WeakReferenceObject>[] Copy()
+        {
+            using (objectCollectionLock.ReadLock())
+            {
+                return objectCollection.ToArray();
             }
         }
 
@@ -290,7 +305,6 @@ namespace JiongXiaGu.Unity.Resources
         {
             T asset = loader.Invoke();
             var weakReferenceObject = new WeakReferenceObject<T>(asset, old);
-            RequestObject(weakReferenceObject);
             using (objectCollectionLock.WriteLock())
             {
                 objectCollection[key] = weakReferenceObject;
@@ -311,15 +325,6 @@ namespace JiongXiaGu.Unity.Resources
                 objectCollection.Add(key, weakReferenceObject);
             }
             return asset;
-        }
-
-        /// <summary>
-        /// 当对资源发起请求时调用;
-        /// </summary>
-        private T RequestObject<T>(T obj)
-            where T : WeakReferenceObject
-        {
-            return obj;
         }
     }
 }
