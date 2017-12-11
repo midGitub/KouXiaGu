@@ -53,13 +53,13 @@ namespace JiongXiaGu.Unity.Initializers
         {
             if ((options & InitializeOptions.MoveToUnityThread) > InitializeOptions.None)
             {
-                if (XiaGu.IsUnityThread)
+                if (UnityThread.IsUnityThread)
                 {
                     InitializeTask.Start();
                 }
                 else
                 {
-                    InitializeTask.Start(XiaGu.UnityTaskScheduler);
+                    InitializeTask.Start(UnityThread.TaskScheduler);
                 }
             }
             else

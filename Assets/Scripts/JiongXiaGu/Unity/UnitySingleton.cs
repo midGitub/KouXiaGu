@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity
         /// </summary>
         public T GetInstance()
         {
-            if (XiaGu.IsUnityThread)
+            if (UnityThread.IsUnityThread)
             {
 #if UNITY_EDITOR
                 if (!Application.isPlaying)

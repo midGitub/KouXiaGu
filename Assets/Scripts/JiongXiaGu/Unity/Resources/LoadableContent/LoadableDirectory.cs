@@ -21,11 +21,6 @@ namespace JiongXiaGu.Unity.Resources
             directoryInfo = new DirectoryInfo(directory);
         }
 
-        public override void Unload()
-        {
-            base.Unload();
-        }
-
         public override IEnumerable<string> EnumerateFiles()
         {
             return Directory.EnumerateFiles(directoryInfo.FullName, "*", SearchOption.AllDirectories).Select(delegate (string filePath)

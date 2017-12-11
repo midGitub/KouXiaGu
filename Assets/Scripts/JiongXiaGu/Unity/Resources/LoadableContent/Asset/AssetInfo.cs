@@ -5,20 +5,21 @@ using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.Resources
 {
+
     /// <summary>
     /// 表示资源;
     /// </summary>
     [XmlRoot("AssetInfo")]
     public struct AssetInfo : IXmlSerializable
     {
-        internal const LoadMode DefaultLoadMode = LoadMode.File;
+        internal const AssetLoadModes DefaultLoadMode = AssetLoadModes.File;
         internal const string LoadModeAttribute = "from";
         internal const string AssetBundleNameAttribute = "assetBundle";
 
         /// <summary>
         /// 读取方式,默认从文件读取;
         /// </summary>
-        public LoadMode From { get; set; }
+        public AssetLoadModes From { get; set; }
 
         /// <summary>
         /// 若为 AssetBundle 的资源,则为 AssetBundleName,否则为null;
@@ -39,7 +40,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public AssetInfo(string assteBundleName, string name) : this()
         {
-            From = LoadMode.AssetBundle;
+            From = AssetLoadModes.AssetBundle;
             AssetBundleName = assteBundleName;
             Name = name;
         }
@@ -55,11 +56,11 @@ namespace JiongXiaGu.Unity.Resources
             string fromStr = reader.GetAttribute(LoadModeAttribute);
             try
             {
-                From = (LoadMode)Enum.Parse(typeof(LoadMode), fromStr, true);
+                From = (AssetLoadModes)Enum.Parse(typeof(AssetLoadModes), fromStr, true);
 
                 switch (From)
                 {
-                    case LoadMode.AssetBundle:
+                    case AssetLoadModes.AssetBundle:
                         AssetBundleName = reader.GetAttribute(AssetBundleNameAttribute);
                         break;
 
@@ -69,7 +70,7 @@ namespace JiongXiaGu.Unity.Resources
             }
             catch (ArgumentException)
             {
-                From = LoadMode.Unknown;
+                From = AssetLoadModes.Unknown;
             }
             reader.ReadEndElement();
         }
@@ -78,12 +79,12 @@ namespace JiongXiaGu.Unity.Resources
         {
             switch (From)
             {
-                case LoadMode.File:
+                case AssetLoadModes.File:
                     writer.WriteAttributeString(LoadModeAttribute, From.ToString());
                     writer.WriteValue(Name);
                     break;
 
-                case LoadMode.AssetBundle:
+                case AssetLoadModes.AssetBundle:
                     writer.WriteAttributeString(LoadModeAttribute, From.ToString());
                     writer.WriteAttributeString(AssetBundleNameAttribute, AssetBundleName);
                     writer.WriteValue(Name);
@@ -93,12 +94,5 @@ namespace JiongXiaGu.Unity.Resources
                     throw new NotSupportedException(From.ToString());
             }
         }
-    }
-
-    public enum LoadMode
-    {
-        Unknown,
-        AssetBundle,
-        File,
     }
 }

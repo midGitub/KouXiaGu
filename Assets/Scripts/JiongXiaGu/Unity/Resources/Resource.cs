@@ -1,9 +1,5 @@
-﻿using JiongXiaGu.Unity.GameConsoles;
-using System;
+﻿using System;
 using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
@@ -19,47 +15,66 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public const string AssetBundleExtension = ".assetbundle";
 
+
+        private static string coreDirectory;
+
         /// <summary>
         /// 存放核心数据和配置文件的文件夹;
         /// </summary>
-        public static string CoreDirectory { get; private set; }
+        public static string CoreDirectory => coreDirectory ?? (coreDirectory = GetCoreDirectoryInfo());
+
+
+        private static string userConfigDirectory;
 
         /// <summary>
         /// 存放用户配置的文件夹;
         /// </summary>
-        public static string UserConfigDirectory { get; private set; }
+        public static string UserConfigDirectory => userConfigDirectory ?? (userConfigDirectory = GetUserConfigDirectoryInfo());
+
+
+        private static string archiveDirectory;
 
         /// <summary>
         /// 存放存档的文件夹路径;
         /// </summary>
-        public static string ArchiveDirectory { get; private set; }
+        public static string ArchiveDirectory => archiveDirectory ?? (archiveDirectory = GetArchiveDirectoryInfo());
+
+
+        private static string modDirectory;
 
         /// <summary>
         /// 存放模组的文件夹;
         /// </summary>
-        public static string ModDirectory { get; private set; }
+        public static string ModDirectory => modDirectory ?? (modDirectory = GetModsDirectoryInfo());
+
+
+        private static string dlcDirectory;
 
         /// <summary>
         /// 存放拓展内容的文件夹;
         /// </summary>
-        public static string DlcDirectory { get; private set; }
+        public static string DlcDirectory => dlcDirectory ?? (dlcDirectory = GetDlcDirectoryInfo());
+
+
+        private static string cacheDirectory;
 
         /// <summary>
         /// 缓存目录;
         /// </summary>
-        public static string CacheDirectory { get; private set; }
+        public static string CacheDirectory => cacheDirectory ?? (cacheDirectory = GetCacheDirectory());
+
 
         /// <summary>
         /// 初始化路径信息(仅在Unity线程调用);
         /// </summary>
         internal static void Initialize()
         {
-            CoreDirectory = GetCoreDirectoryInfo();
-            UserConfigDirectory = GetUserConfigDirectoryInfo();
-            ArchiveDirectory = GetArchiveDirectoryInfo();
-            ModDirectory = GetModsDirectoryInfo();
-            DlcDirectory = GetDlcDirectoryInfo();
-            CacheDirectory = GetCacheDirectory();
+            CoreDirectory.Initialization();
+            UserConfigDirectory.Initialization();
+            ArchiveDirectory.Initialization();
+            ModDirectory.Initialization();
+            DlcDirectory.Initialization();
+            CacheDirectory.Initialization();
         }
 
         /// <summary>

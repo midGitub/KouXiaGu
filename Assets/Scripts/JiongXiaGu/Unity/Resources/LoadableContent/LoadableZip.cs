@@ -19,12 +19,12 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 压缩文件;
         /// </summary>
-        internal readonly ZipFile zipFile;
+        internal ZipFile zipFile;
 
         /// <summary>
         /// 压缩文件流;
         /// </summary>
-        internal readonly Stream stream;
+        internal Stream stream;
 
         internal LoadableZip(string zipFilePath, Stream stream, ZipFile zipFile, LoadableContentDescription description) : base(description)
         {
@@ -38,16 +38,25 @@ namespace JiongXiaGu.Unity.Resources
             this.zipFile = zipFile;
         }
 
-        public override void Unload()
+        protected override void Dispose(bool disposing)
         {
-            base.Unload();
-            zipFile.Close();
-            stream.Dispose();
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    zipFile.Close();
+                    stream.Dispose();
+                }
+                zipFile = null;
+                stream = null;
+            }
+            base.Dispose(disposing);
         }
-
 
         public override IEnumerable<string> EnumerateFiles()
         {
+            ThrowIfObjectDisposed();
+
             foreach (ZipEntry entry in zipFile)
             {
                 if (entry.IsFile)
@@ -59,6 +68,8 @@ namespace JiongXiaGu.Unity.Resources
 
         public override Stream GetInputStream(string relativePath)
         {
+            ThrowIfObjectDisposed();
+
             ZipEntry entry = zipFile.GetEntry(relativePath); zipFile.GetEntry(relativePath);
             if (entry != null && entry.IsFile)
             {
@@ -73,11 +84,15 @@ namespace JiongXiaGu.Unity.Resources
 
         public override void BeginUpdate()
         {
+            ThrowIfObjectDisposed();
+
             zipFile.BeginUpdate();
         }
 
         public override void CommitUpdate()
         {
+            ThrowIfObjectDisposed();
+
             zipFile.CommitUpdate();
         }
 
@@ -86,6 +101,8 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public override void AddOrUpdate(string relativePath, Stream stream)
         {
+            ThrowIfObjectDisposed();
+
             if (!stream.CanRead)
                 throw new NotSupportedException(string.Format("[{0}]不可读;", nameof(stream)));
 
@@ -103,6 +120,8 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public override Stream GetOutStream(string relativePath)
         {
+            ThrowIfObjectDisposed();
+
             ZipEntry entry = zipFile.GetEntry(relativePath);
             if (entry != null)
             {
@@ -122,6 +141,8 @@ namespace JiongXiaGu.Unity.Resources
 
         public override Stream CreateOutStream(string relativePath)
         {
+            ThrowIfObjectDisposed();
+
             ZipUpdateStream update = new ZipUpdateStream(zipFile, relativePath);
             return update;
         }

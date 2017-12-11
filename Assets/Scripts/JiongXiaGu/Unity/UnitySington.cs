@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity
             get
             {
 #if UNITY_EDITOR
-                if (!XiaGu.IsPlaying)
+                if (!UnityThread.IsPlaying)
                 {
                     Debug.LogWarning("在编辑模式下进行了单例访问;");
                     return Find_safe();
@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity
 
         static T Find_safe()
         {
-            if (XiaGu.IsUnityThread)
+            if (UnityThread.IsUnityThread)
             {
                 _instance = Find();
                 return _instance;

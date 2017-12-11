@@ -67,7 +67,7 @@ namespace JiongXiaGu.Unity.Resources
             {
                 try
                 {
-                    item.Unload();
+                    item.Dispose();
                 }
                 catch (Exception ex)
                 {
@@ -76,18 +76,17 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private static LoadableContent GetCore(LoadableContentFactory factory)
+        public static LoadableContent GetCore(LoadableContentFactory factory)
         {
             return factory.Read(Resource.CoreDirectory);
-            //return new LoadableDirectory(Resource.CoreDirectory, new LoadableContentDescription("0", "Core"));
         }
 
-        private static List<LoadableContent> GetDlc(LoadableContentSearcher contentSearcher)
+        public static List<LoadableContent> GetDlc(LoadableContentSearcher contentSearcher)
         {
             return contentSearcher.FindLoadableContent(Resource.DlcDirectory);
         }
 
-        private static List<LoadableContent> GetMod(LoadableContentSearcher contentSearcher)
+        public static List<LoadableContent> GetMod(LoadableContentSearcher contentSearcher)
         {
             return contentSearcher.FindLoadableContent(Resource.ModDirectory);
         }

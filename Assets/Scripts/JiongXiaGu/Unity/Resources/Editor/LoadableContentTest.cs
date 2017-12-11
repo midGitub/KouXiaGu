@@ -34,15 +34,20 @@ namespace JiongXiaGu.Unity.Resources
         [Test]
         public void TestDirectory()
         {
+            LoadableContentDescription descr;
             string directory = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Directory0");
             TryDeleteDirectory(directory);
 
-            var v1 = factory.CreateNew(directory, description0);
-            ContentReadWriteTest(v1);
+            using (var v1 = factory.CreateNew(directory, description0))
+            {
+                descr = v1.Description;
+                ContentReadWriteTest(v1);
+            }
 
-            v1.Unload();
-            var v2 = factory.Read(directory);
-            Assert.AreEqual(v1.Description, v2.Description);
+            using (var v2 = factory.Read(directory))
+            {
+                Assert.AreEqual(descr, v2.Description);
+            }
         }
 
         private bool TryDeleteDirectory(string directory)
@@ -61,15 +66,20 @@ namespace JiongXiaGu.Unity.Resources
         [Test]
         public void TestZip()
         {
+            LoadableContentDescription descr;
             string file = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Zip0.zip");
             TryDeleteFile(file);
 
-            var v1 = factory.CreateNewZip(file, description0);
-            ContentReadWriteTest(v1);
+            using (var v1 = factory.CreateNewZip(file, description0))
+            {
+                descr = v1.Description;
+                ContentReadWriteTest(v1);
+            }
 
-            v1.Unload();
-            var v2 = factory.ReadZip(file);
-            Assert.AreEqual(v1.Description, v2.Description);
+            using (var v2 = factory.ReadZip(file))
+            {
+                Assert.AreEqual(descr, v2.Description);
+            }
         }
 
         private bool TryDeleteFile(string file)
@@ -84,6 +94,7 @@ namespace JiongXiaGu.Unity.Resources
                 return false;
             }
         }
+
 
 
         private readonly string description1Path = "d1.xml";
@@ -137,15 +148,23 @@ namespace JiongXiaGu.Unity.Resources
                 var d3 = xmlSerializer.Deserialize(stream3);
                 AreEqual(d3, description3);
             }
-
         }
-
 
         private void AreEqual(LoadableContentDescription v1, LoadableContentDescription v2)
         {
             Assert.AreEqual(v1.ID, v2.ID);
             Assert.AreEqual(v1.Name, v2.Name);
             Assert.AreEqual(v1.Tags, v2.Tags);
+        }
+
+        [Test]
+        public void AssetBundleLoadTest()
+        {
+            using (LoadableContent loadableContent = LoadableResource.GetCore(factory))
+            {
+                var assetBundle = loadableContent.GetOrLoadAssetBundle("terrain");
+                Assert.NotNull(assetBundle);
+            }
         }
     }
 }

@@ -1,48 +1,180 @@
 ﻿using System;
 using System.Collections.Generic;
+using JiongXiaGu.Collections;
 using System.Threading;
+using System.Linq;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 弱引用池;
+    /// 弱引用对象池;(线程安全)
     /// </summary>
-    public abstract class WeakReferenceObjectPool
+    public class WeakReferenceObjectPool
     {
-        protected Dictionary<string, WeakReferenceObject> ObjectCollection { get; private set; } = new Dictionary<string, WeakReferenceObject>();
-        protected ReaderWriterLockSlim ObjectCollectionLock { get; private set; } = new ReaderWriterLockSlim();
+        private Dictionary<string, WeakReferenceObject> objectCollection;
+        private ReaderWriterLockSlim objectCollectionLock;
 
-        protected T GetOrLoad<T>(string key, AssetLoadOptions options, Func<T> loader)
+        public WeakReferenceObjectPool()
+        {
+            objectCollection = new Dictionary<string, WeakReferenceObject>();
+            objectCollectionLock = new ReaderWriterLockSlim();
+        }
+
+        /// <summary>
+        /// 添加内容到合集;
+        /// </summary>
+        public void Add<T>(string key, WeakReferenceObject<T> value)
             where T : class
         {
-            using (ObjectCollectionLock.UpgradeableReadLock())
+            using (objectCollectionLock.UpgradeableReadLock())
+            {
+                if (objectCollection.ContainsKey(key))
+                {
+                    using (objectCollectionLock.WriteLock())
+                    {
+                        objectCollection.Add(key, value);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 添加或更新合集内容;
+        /// </summary>
+        public AddOrUpdateStatus AddOrUpdate<T>(string key, WeakReferenceObject<T> value)
+            where T : class
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException(nameof(key));
+
+            using (objectCollectionLock.WriteLock())
+            {
+                if (objectCollection.ContainsKey(key))
+                {
+                    objectCollection[key] = value;
+                    return AddOrUpdateStatus.Updated;
+                }
+                else
+                {
+                    objectCollection.Add(key, value);
+                    return AddOrUpdateStatus.Added;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 移除对应资源引用;
+        /// </summary>
+        public bool Remove(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException(nameof(key));
+
+            using (objectCollectionLock.UpgradeableReadLock())
+            {
+                if (objectCollection.ContainsKey(key))
+                {
+                    using (objectCollectionLock.WriteLock())
+                    {
+                        return objectCollection.Remove(key);
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 确认是否存在该资源,若资源类型不同 或 已经被回收 都返回 false;
+        /// </summary>
+        public bool Contains<T>(string key)
+            where T :class
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException(nameof(key));
+
+            using (objectCollectionLock.ReadLock())
             {
                 WeakReferenceObject obj;
-                if (ObjectCollection.TryGetValue(key, out obj))
+                if (objectCollection.TryGetValue(key, out obj))
+                {
+                    WeakReferenceObject<T> weakReferenceObject = obj as WeakReferenceObject<T>;
+                    if (weakReferenceObject != null)
+                    {
+                        return weakReferenceObject.IsAlive();
+                    }
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取到对应资源,若不存在则返回异常;
+        /// </summary>
+        public T Get<T>(string key)
+            where T : class
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException(nameof(key));
+
+            using (objectCollectionLock.ReadLock())
+            {
+                WeakReferenceObject obj;
+                if (objectCollection.TryGetValue(key, out obj))
                 {
                     WeakReferenceObject<T> weakReferenceObject = obj as WeakReferenceObject<T>;
                     if (weakReferenceObject != null)
                     {
                         T asset;
-                        if (weakReferenceObject.Reference.TryGetTarget(out asset))
+                        if (weakReferenceObject.TryGetTarget(out asset))
                         {
+                            return asset;
+                        }
+                    }
+                }
+                throw new KeyNotFoundException(key);
+            }
+        }
+
+        /// <summary>
+        /// 读取到资源,若已经存在则直接返回;
+        /// </summary>
+        public T Load<T>(string key, Func<T> loader)
+            where T : class
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException(nameof(key));
+            if (loader == null)
+                throw new ArgumentNullException(nameof(loader));
+
+            using (objectCollectionLock.UpgradeableReadLock())
+            {
+                WeakReferenceObject obj;
+                if (objectCollection.TryGetValue(key, out obj))
+                {
+                    WeakReferenceObject<T> weakReferenceObject = obj as WeakReferenceObject<T>;
+                    if (weakReferenceObject == null)
+                    {
+                        throw new ArgumentException(string.Format("合集内已经存在相同key[{0}],不同资源类型的实例", key));
+                    }
+                    else
+                    {
+                        T asset;
+                        if (weakReferenceObject.TryGetTarget(out asset))
+                        {
+                            RequestObject(weakReferenceObject);
                             return asset;
                         }
                         else
                         {
-                            return InternalReplace(key, loader);
-                        }
-                    }
-                    else
-                    {
-                        if ((options & AssetLoadOptions.RereadOrReplace) > AssetLoadOptions.None)
-                        {
-                            return InternalReplace(key, loader);
-                        }
-                        else
-                        {
-                            throw new ArgumentException("资源格式错误");
+                            return InternalReplace(key, obj, loader);
                         }
                     }
                 }
@@ -54,16 +186,114 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 读取数据,并且将它加入到资源合集;
+        /// 重新读取到资源;
+        /// </summary>
+        public T Reload<T>(string key, Func<T> loader)
+            where T :class
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException(nameof(key));
+            if (loader == null)
+                throw new ArgumentNullException(nameof(loader));
+
+            using (objectCollectionLock.UpgradeableReadLock())
+            {
+                WeakReferenceObject obj;
+                if (objectCollection.TryGetValue(key, out obj))
+                {
+                    WeakReferenceObject<T> weakReferenceObject = obj as WeakReferenceObject<T>;
+                    if (weakReferenceObject == null)
+                    {
+                        return InternalReplace(key, loader);
+                    }
+                    else
+                    {
+                        return InternalReplace(key, obj, loader);
+                    }
+                }
+                else
+                {
+                    return InternalAdd(key, loader);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 清空合集;
+        /// </summary>
+        public void Clear()
+        {
+            objectCollection.Clear();
+        }
+
+        /// <summary>
+        /// 清除所有已经被回收的对象,返回移除的对象个数;(不用经常调用)
+        /// </summary>
+        public int ClearInvalidObject(CancellationToken token = default(CancellationToken))
+        {
+            int removed = 0;
+
+            token.ThrowIfCancellationRequested();
+
+            string[] keys;
+            using (objectCollectionLock.ReadLock())
+            {
+                keys = objectCollection.Keys.ToArray();
+            }
+
+            token.ThrowIfCancellationRequested();
+
+            foreach (var key in keys)
+            {
+                using (objectCollectionLock.UpgradeableReadLock())
+                {
+                    WeakReferenceObject weakReferenceObject;
+                    if (objectCollection.TryGetValue(key, out weakReferenceObject))
+                    {
+                        if (!weakReferenceObject.IsAlive())
+                        {
+                            using (objectCollectionLock.WriteLock())
+                            {
+                                objectCollection.Remove(key);
+                                removed++;
+                            }
+                        }
+                    }
+                }
+
+                token.ThrowIfCancellationRequested();
+            }
+
+            return removed;
+        }
+
+        /// <summary>
+        /// 读取数据,并且替换合集对应资源;
         /// </summary>
         private T InternalReplace<T>(string key, Func<T> loader)
             where T : class
         {
             T asset = loader.Invoke();
             var weakReferenceObject = new WeakReferenceObject<T>(asset);
-            using (ObjectCollectionLock.WriteLock())
+            using (objectCollectionLock.WriteLock())
             {
-                ObjectCollection[key] = weakReferenceObject;
+                objectCollection[key] = weakReferenceObject;
+            }
+            return asset;
+        }
+
+        /// <summary>
+        /// 读取数据,并且替换合集对应资源;
+        /// </summary>
+        private T InternalReplace<T>(string key, WeakReferenceObject old, Func<T> loader)
+            where T : class
+        {
+            T asset = loader.Invoke();
+            var weakReferenceObject = new WeakReferenceObject<T>(asset, old);
+            RequestObject(weakReferenceObject);
+            using (objectCollectionLock.WriteLock())
+            {
+                objectCollection[key] = weakReferenceObject;
             }
             return asset;
         }
@@ -76,20 +306,20 @@ namespace JiongXiaGu.Unity.Resources
         {
             T asset = loader.Invoke();
             var weakReferenceObject = new WeakReferenceObject<T>(asset);
-            using (ObjectCollectionLock.WriteLock())
+            using (objectCollectionLock.WriteLock())
             {
-                ObjectCollection.Add(key, weakReferenceObject);
+                objectCollection.Add(key, weakReferenceObject);
             }
             return asset;
         }
 
-
         /// <summary>
         /// 当对资源发起请求时调用;
         /// </summary>
-        protected void RequestObject(WeakReferenceObject obj)
+        private T RequestObject<T>(T obj)
+            where T : WeakReferenceObject
         {
-            throw new NotImplementedException();
+            return obj;
         }
     }
 }

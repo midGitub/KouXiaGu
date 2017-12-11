@@ -9,12 +9,14 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 抽象类 表示可读资源;(线程安全)
     /// </summary>
-    public abstract class LoadableContent
+    public abstract class LoadableContent : IDisposable
     {
         /// <summary>
         /// 实例锁,对该类进行操作之前需要上锁;
         /// </summary>
         public object AsyncLock { get; private set; } = new object();
+
+        protected bool IsDisposed { get; private set; } = false;
 
         /// <summary>
         /// 描述信息;
@@ -24,33 +26,65 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 所有已经加载的AssetBundle;
         /// </summary>
-        private readonly List<KeyValuePair<string, AssetBundle>> assetBundles = new List<KeyValuePair<string, AssetBundle>>();
+        private List<KeyValuePair<string, AssetBundle>> assetBundles = new List<KeyValuePair<string, AssetBundle>>();
 
         protected LoadableContent(LoadableContentDescription description)
         {
             Description = description;
         }
 
+
+        /// <summary>
+        /// 需要在Unity线程处理的线程;
+        /// </summary>
+        protected virtual void DisposeInUnityThread()
+        {
+            List<KeyValuePair<string, AssetBundle>> _assetBundles = assetBundles;
+            foreach (var assetBundle in _assetBundles)
+            {
+                assetBundle.Value.Unload(true);
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    UnityThread.RunInUnityThread(DisposeInUnityThread);
+                }
+                assetBundles = null;
+                IsDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected void ThrowIfObjectDisposed()
+        {
+            if (IsDisposed)
+            {
+                throw new ObjectDisposedException(ToString());
+            }
+        }
+
+
+
         /// <summary>
         /// 根据资源更新实例信息,若无法更新则返回异常;
         /// </summary>
         public virtual void Update(LoadableContentFactory factory)
         {
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+
             Description = factory.ReadDescription(this);
         }
 
-        /// <summary>
-        /// 卸载此资源,仅在Unity线程调用;
-        /// </summary>
-        public virtual void Unload()
-        {
-            XiaGu.ThrowIfNotUnityThread();
-
-            foreach (var assetBundle in assetBundles)
-            {
-                assetBundle.Value.Unload(true);
-            }
-        }
 
 
         /// <summary>
@@ -65,6 +99,10 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
         public virtual IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
+            ThrowIfObjectDisposed();
+            if (searchPattern == null)
+                throw new ArgumentNullException(nameof(searchPattern));
+
             switch (searchOption)
             {
                 case SearchOption.AllDirectories:
@@ -105,6 +143,10 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
         public virtual IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
+            ThrowIfObjectDisposed();
+            if (searchPattern == null)
+                throw new ArgumentNullException(nameof(searchPattern));
+
             string fileName;
             directoryName = PathHelper.Normalize(directoryName);
 
@@ -186,6 +228,10 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public AssetBundle GetAssetBundle(string name)
         {
+            ThrowIfObjectDisposed();
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(nameof(name));
+
             int index = assetBundles.FindIndex(pair => pair.Key == name);
             if (index >= 0)
             {
@@ -202,6 +248,10 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public AssetBundle GetOrLoadAssetBundle(string name)
         {
+            ThrowIfObjectDisposed();
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(nameof(name));
+
             int index = assetBundles.FindIndex(pair => pair.Key == name);
             if (index >= 0)
             {
@@ -218,6 +268,10 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public AssetBundle LoadAssetBundle(string name)
         {
+            ThrowIfObjectDisposed();
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(nameof(name));
+
             var assetBundleDescrs = Description.AssetBundles;
             if (assetBundleDescrs != null)
             {

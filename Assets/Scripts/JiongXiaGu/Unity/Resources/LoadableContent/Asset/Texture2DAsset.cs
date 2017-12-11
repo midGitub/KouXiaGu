@@ -10,39 +10,22 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.Resources
 {
 
-    internal class Texture2DAsset : UnityAsset<Texture2D>
-    {
-        public Texture2DAsset(Texture2D value) : base(value)
-        {
-        }
-    }
-
     internal class Texture2DAssetReader : AssetReader<Texture2D>
     {
         public static Texture2DAssetReader Default { get; private set; } = new Texture2DAssetReader();
 
-        public override AssetTypes AssetType
-        {
-            get { return AssetTypes.Texture2D; }
-        }
-
-        public override WeakReferenceObject<Texture2D> AsWeakReferenceObject(Texture2D value)
-        {
-            return new Texture2DAsset(value);
-        }
-
         public override Texture2D Load(LoadableContent content, AssetInfo assetInfo)
         {
-            XiaGu.ThrowIfNotUnityThread();
+            UnityThread.ThrowIfNotUnityThread();
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
             switch (assetInfo.From)
             {
-                case LoadMode.AssetBundle:
+                case AssetLoadModes.AssetBundle:
                     return InternalFromAssetBundleReadTexture2D(content, assetInfo);
 
-                case LoadMode.File:
+                case AssetLoadModes.File:
                     return InternalFromFileReadTexture2D(content, assetInfo);
 
                 default:
@@ -88,11 +71,6 @@ namespace JiongXiaGu.Unity.Resources
     public static class Texture2DAssetExtensions
     {
         public static Task<Texture2D> ReadAsTexture2D(this AssetPool assetPool, LoadableContent content, AssetInfo assetInfo, CancellationToken token = default(CancellationToken))
-        {
-            throw new NotImplementedException();
-        }
-
-        public static Task<Texture2D> ReadAsTexture2D(this AssetPool assetPool, LoadableContent content, AssetInfo assetInfo, AssetLoadOptions options, CancellationToken token)
         {
             throw new NotImplementedException();
         }

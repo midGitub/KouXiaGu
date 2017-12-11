@@ -122,7 +122,7 @@ namespace JiongXiaGu.Unity
             /// </summary>
             protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
             {
-                if (!XiaGu.IsUnityThread)
+                if (!UnityThread.IsUnityThread)
                 {
                     return false;
                 }
