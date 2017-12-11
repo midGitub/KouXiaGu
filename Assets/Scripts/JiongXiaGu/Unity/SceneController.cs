@@ -12,20 +12,8 @@ namespace JiongXiaGu.Unity
     /// 场景控制器;
     /// </summary>
     [DisallowMultipleComponent]
-    public abstract class SceneController : SceneSington<SceneController>
+    public abstract class SceneController : MonoBehaviour
     {
 
-        /// <summary>
-        /// 获取到挂载在场景控制器上面的组件;
-        /// </summary>
-        public static TComponent GetSington<TComponent>()
-            where TComponent : class
-        {
-            if (Instance != null)
-            {
-                return Instance.GetComponentInChildren<TComponent>();
-            }
-            return default(TComponent);
-        }
     }
 }

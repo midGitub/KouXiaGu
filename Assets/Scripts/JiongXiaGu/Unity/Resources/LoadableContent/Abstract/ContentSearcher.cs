@@ -23,7 +23,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 反序列化内容;
         /// </summary>
-        protected abstract T Deserialize(LoadableContent content, ILoadableEntry entry);
+        protected abstract T Deserialize(LoadableContent content, string entry);
 
         /// <summary>
         /// 枚举所有符合要求的文件;
@@ -49,7 +49,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal IEnumerable<T> Enumerate(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            foreach (ILoadableEntry entry in contentConstruct.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
+            foreach (string entry in contentConstruct.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
             {
                 T item = default(T);
                 bool isSuccess = false;

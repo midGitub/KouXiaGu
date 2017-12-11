@@ -12,9 +12,9 @@ namespace JiongXiaGu.Unity.RectMaps
     {
         public MapDescription Description { get; internal set; }
         public LoadableContent Content { get; internal set; }
-        public ILoadableEntry Entry { get; internal set; }
+        public string Entry { get; internal set; }
 
-        public MapFileInfo(MapDescription description, LoadableContent content, ILoadableEntry entry)
+        public MapFileInfo(MapDescription description, LoadableContent content, string entry)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));

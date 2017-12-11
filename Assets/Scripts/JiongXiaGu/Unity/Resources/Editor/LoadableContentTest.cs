@@ -15,9 +15,11 @@ namespace JiongXiaGu.Unity.Resources
 
         private readonly LoadableContentFactory factory = new LoadableContentFactory();
 
-        private readonly LoadableContentDescription description = new LoadableContentDescription()
+        private readonly XmlSerializer<LoadableContentDescription> xmlSerializer = new XmlSerializer<LoadableContentDescription>();
+
+        private readonly LoadableContentDescription description0 = new LoadableContentDescription()
         {
-            ID = "001",
+            ID = "000",
             Name = "Test",
             Tags = LoadableContentDescription.JoinTags("map", "terrain"),
             Author = "One",
@@ -29,13 +31,15 @@ namespace JiongXiaGu.Unity.Resources
             },
         };
 
-
         [Test]
         public void TestDirectory()
         {
             string directory = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Directory0");
             TryDeleteDirectory(directory);
-            var v1 = factory.CreateNew(directory, description);
+
+            var v1 = factory.CreateNew(directory, description0);
+            ContentReadWriteTest(v1);
+
             v1.Unload();
             var v2 = factory.Read(directory);
             Assert.AreEqual(v1.Description, v2.Description);
@@ -54,13 +58,15 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-
         [Test]
         public void TestZip()
         {
             string file = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Zip0.zip");
             TryDeleteFile(file);
-            var v1 = factory.CreateNewZip(file, description);
+
+            var v1 = factory.CreateNewZip(file, description0);
+            ContentReadWriteTest(v1);
+
             v1.Unload();
             var v2 = factory.ReadZip(file);
             Assert.AreEqual(v1.Description, v2.Description);
@@ -77,6 +83,69 @@ namespace JiongXiaGu.Unity.Resources
             {
                 return false;
             }
+        }
+
+
+        private readonly string description1Path = "d1.xml";
+        private readonly LoadableContentDescription description1 = new LoadableContentDescription()
+        {
+            ID = "001",
+            Tags = LoadableContentDescription.JoinTags("map", "terrain"),
+        };
+
+        private readonly string description2Path = "d2.xml";
+        private readonly LoadableContentDescription description2 = new LoadableContentDescription()
+        {
+            ID = "002",
+            Name = "Test",
+        };
+
+        private readonly string description3Path = "d3.xml";
+        private readonly LoadableContentDescription description3 = new LoadableContentDescription()
+        {
+            ID = "003",
+        };
+
+        /// <summary>
+        /// 添加内容;
+        /// </summary>
+        private void ContentReadWriteTest(LoadableContent loadableContent)
+        {
+            loadableContent.BeginUpdate();
+            using (Stream stream1 = loadableContent.GetOutStream(description1Path),
+                stream2 = loadableContent.GetOutStream(description2Path),
+                stream3 = loadableContent.GetOutStream(description3Path))
+            {
+                xmlSerializer.Serialize(stream1, description1);
+                xmlSerializer.Serialize(stream2, description2);
+                xmlSerializer.Serialize(stream3, description3);
+            }
+            loadableContent.CommitUpdate();
+
+            Assert.AreEqual(loadableContent.EnumerateFiles().Count(), 4);
+
+            using (Stream stream1 = loadableContent.GetInputStream(description1Path), 
+                stream2 = loadableContent.GetInputStream(description2Path), 
+                stream3 = loadableContent.GetInputStream(description3Path))
+            {
+                var d1 = xmlSerializer.Deserialize(stream1);
+                AreEqual(d1, description1);
+
+                var d2 = xmlSerializer.Deserialize(stream2);
+                AreEqual(d2, description2);
+
+                var d3 = xmlSerializer.Deserialize(stream3);
+                AreEqual(d3, description3);
+            }
+
+        }
+
+
+        private void AreEqual(LoadableContentDescription v1, LoadableContentDescription v2)
+        {
+            Assert.AreEqual(v1.ID, v2.ID);
+            Assert.AreEqual(v1.Name, v2.Name);
+            Assert.AreEqual(v1.Tags, v2.Tags);
         }
     }
 }

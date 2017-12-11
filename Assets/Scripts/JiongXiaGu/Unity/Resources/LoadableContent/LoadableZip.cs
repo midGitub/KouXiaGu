@@ -17,11 +17,6 @@ namespace JiongXiaGu.Unity.Resources
         internal readonly string zipFilePath;
 
         /// <summary>
-        /// 压缩包所在的文件夹;
-        /// </summary>
-        internal readonly string dirPath;
-
-        /// <summary>
         /// 压缩文件;
         /// </summary>
         internal readonly ZipFile zipFile;
@@ -39,7 +34,6 @@ namespace JiongXiaGu.Unity.Resources
                 throw new ArgumentNullException(nameof(stream));
 
             this.zipFilePath = zipFilePath;
-            dirPath = Path.GetDirectoryName(zipFilePath);
             this.stream = stream;
             this.zipFile = zipFile;
         }
@@ -51,23 +45,31 @@ namespace JiongXiaGu.Unity.Resources
             stream.Dispose();
         }
 
-        public override IEnumerable<ILoadableEntry> EnumerateFiles()
+
+        public override IEnumerable<string> EnumerateFiles()
         {
             foreach (ZipEntry entry in zipFile)
             {
                 if (entry.IsFile)
                 {
-                    var zipLoadableEntry = new ZipLoadableEntry(this, entry);
-                    yield return zipLoadableEntry;
+                    yield return entry.Name;
                 }
             }
         }
 
-        public override Stream GetInputStream(ILoadableEntry entry)
+        public override Stream GetInputStream(string relativePath)
         {
-            var zipLoadableEntry = TypeOfZipLoadableEntry(entry);
-            return zipFile.GetInputStream(zipLoadableEntry.ZipEntry);
+            ZipEntry entry = zipFile.GetEntry(relativePath); zipFile.GetEntry(relativePath);
+            if (entry != null && entry.IsFile)
+            {
+                return zipFile.GetInputStream(entry);
+            }
+            else
+            {
+                throw new FileNotFoundException(relativePath);
+            }
         }
+
 
         public override void BeginUpdate()
         {
@@ -94,29 +96,6 @@ namespace JiongXiaGu.Unity.Resources
         public override bool Remove(string relativePath)
         {
             return zipFile.Delete(relativePath);
-        }
-
-        public override void Remove(ILoadableEntry entry)
-        {
-            var zipLoadableEntry = TypeOfZipLoadableEntry(entry);
-            zipFile.Delete(zipLoadableEntry.ZipEntry);
-        }
-
-        private ZipLoadableEntry TypeOfZipLoadableEntry(ILoadableEntry entry)
-        {
-            if (entry == null)
-            {
-                throw new ArgumentNullException(nameof(entry));
-            }
-            else if (entry is ZipLoadableEntry)
-            {
-                var zipLoadableEntry = (ZipLoadableEntry)entry;
-                return zipLoadableEntry;
-            }
-            else
-            {
-                throw new ArgumentException(string.Format("参数[{0}]不为类[{1}]", nameof(entry), nameof(ZipLoadableEntry)));
-            }
         }
 
         /// <summary>
@@ -147,36 +126,6 @@ namespace JiongXiaGu.Unity.Resources
             return update;
         }
 
-        protected override IEnumerable<AssetBundleDescription> GetAssetBundlesDescription()
-        {
-            AssetBundleDescription[] assetBundleDescriptions = Description.AssetBundles;
-            foreach (var assetBundleDescription in assetBundleDescriptions)
-            {
-                var newDescr = assetBundleDescription;
-                newDescr.Path = Path.Combine(dirPath, assetBundleDescription.Path);
-                yield return newDescr;
-            }
-        }
-
-        /// <summary>
-        /// 文件入口;
-        /// </summary>
-        public class ZipLoadableEntry : ILoadableEntry
-        {
-            public LoadableZip Parent { get; private set; }
-            public ZipEntry ZipEntry { get; private set; }
-
-            public string RelativePath
-            {
-                get { return ZipEntry.Name; }
-            }
-
-            public ZipLoadableEntry(LoadableZip parent, ZipEntry zipEntry)
-            {
-                Parent = parent;
-                ZipEntry = zipEntry;
-            }
-        }
 
         private class ZipUpdate : IStaticDataSource
         {

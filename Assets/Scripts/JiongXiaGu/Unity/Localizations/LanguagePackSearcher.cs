@@ -58,7 +58,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public IEnumerable<LanguagePackInfo> EnumeratePack(LoadableContent contentConstruct, SearchOption searchOption)
         {
-            foreach (ILoadableEntry entry in contentConstruct.EnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
+            foreach (string entry in contentConstruct.EnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
             {
                 LanguagePackInfo languagePack;
                 try

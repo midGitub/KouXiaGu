@@ -23,12 +23,12 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 资源入口;
         /// </summary>
-        public ILoadableEntry LoadableEntry { get; private set; }
+        public string LoadableEntry { get; private set; }
 
         /// <summary>
         /// 指定语言包文件信息;
         /// </summary>
-        public LanguagePackInfo(LanguagePackDescription description, LoadableContent contentConstruct, ILoadableEntry loadableEntry)
+        public LanguagePackInfo(LanguagePackDescription description, LoadableContent contentConstruct, string loadableEntry)
         {
             Description = description;
             ContentConstruct = contentConstruct;

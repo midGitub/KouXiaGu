@@ -12,13 +12,20 @@ namespace JiongXiaGu.Unity.Resources
     {
         internal const string NameAttribute = "name";
 
+        /// <summary>
+        /// 指定的唯一名;
+        /// </summary>
         public string Name { get; set; }
-        public string Path { get; set; }
+
+        /// <summary>
+        /// 相对路径;
+        /// </summary>
+        public string RelativePath { get; set; }
 
         public AssetBundleDescription(string name, string path)
         {
             Name = name;
-            Path = path;
+            RelativePath = path;
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -29,14 +36,14 @@ namespace JiongXiaGu.Unity.Resources
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
             Name = reader.GetAttribute(NameAttribute);
-            Path = reader.ReadElementContentAsString();
+            RelativePath = reader.ReadElementContentAsString();
             reader.ReadEndElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
             writer.WriteAttributeString(NameAttribute, Name);
-            writer.WriteValue(Path);
+            writer.WriteValue(RelativePath);
         }
     }
 }
