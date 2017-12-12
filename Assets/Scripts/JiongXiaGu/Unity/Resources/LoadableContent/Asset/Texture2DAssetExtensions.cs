@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.Resources
 
     public static class Texture2DAssetExtensions
     {
-        public static Task<Texture2D> ReadAsTexture2D(this AssetPool assetPool, LoadableContent content, AssetInfo assetInfo, CancellationToken token = default(CancellationToken))
+        public static Task<Texture2D> ReadAsTexture2D(this AssetDictionary assetPool, LoadableContent content, AssetInfo assetInfo, CancellationToken token = default(CancellationToken))
         {
             throw new NotImplementedException();
         }

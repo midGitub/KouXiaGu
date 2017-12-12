@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     [TestFixture]
     public class AssetPoolTest
     {
-        private readonly AssetPool assetPool = new AssetPool();
+        private readonly AssetDictionary assetPool = new AssetDictionary();
 
 
     }

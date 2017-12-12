@@ -38,19 +38,15 @@ namespace JiongXiaGu.Unity.Resources
             this.zipFile = zipFile;
         }
 
-        protected override void Dispose(bool disposing)
+        public override void Dispose()
         {
             if (!IsDisposed)
             {
-                if (disposing)
-                {
-                    zipFile.Close();
-                    stream.Dispose();
-                }
+                zipFile.Close();
+                stream.Dispose();
                 zipFile = null;
                 stream = null;
             }
-            base.Dispose(disposing);
         }
 
         public override IEnumerable<string> EnumerateFiles()

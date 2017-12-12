@@ -8,7 +8,7 @@ namespace JiongXiaGu.Collections
     /// <summary>
     /// 合集拓展方法;
     /// </summary>
-    public static class CollectionExtensions
+    public static partial class CollectionExtensions
     {
 
         #region AddRange

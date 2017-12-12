@@ -7,61 +7,49 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 抽象类 表示可读资源;(线程安全)
+    /// 抽象类 表示游戏可读资源;
     /// </summary>
     public abstract class LoadableContent : IDisposable
     {
         /// <summary>
+        /// 提供公共存储 AssetBundle;
+        /// </summary>
+        private static readonly WeakReferenceObjectDictionary DefaultAssetBundleDictionary = new WeakReferenceObjectDictionary();
+
+        /// <summary>
         /// 实例锁,对该类进行操作之前需要上锁;
         /// </summary>
+        [Obsolete]
         public object AsyncLock { get; private set; } = new object();
 
-        protected bool IsDisposed { get; private set; } = false;
+        /// <summary>
+        /// 是否已经销毁;
+        /// </summary>
+        public bool IsDisposed { get; private set; } = false;
 
         /// <summary>
-        /// 描述信息;
+        /// 在创建时使用的描述;
         /// </summary>
-        public LoadableContentDescription Description { get; protected set; }
+        public LoadableContentDescription Description { get; private set; }
 
         /// <summary>
-        /// 所有已经加载的AssetBundle;
+        /// 最新的描述;
         /// </summary>
-        private List<KeyValuePair<string, AssetBundle>> assetBundles = new List<KeyValuePair<string, AssetBundle>>();
+        public LoadableContentDescription? NewDescription { get; private set; }
 
         protected LoadableContent(LoadableContentDescription description)
         {
             Description = description;
         }
 
-
-        /// <summary>
-        /// 需要在Unity线程处理的线程;
-        /// </summary>
-        protected virtual void DisposeInUnityThread()
+        protected LoadableContent(LoadableContentDescription description, WeakReferenceObjectDictionary assetBundleDictionary)
         {
-            List<KeyValuePair<string, AssetBundle>> _assetBundles = assetBundles;
-            foreach (var assetBundle in _assetBundles)
-            {
-                assetBundle.Value.Unload(true);
-            }
+            Description = description;
         }
 
-        protected virtual void Dispose(bool disposing)
+        public virtual void Dispose()
         {
-            if (!IsDisposed)
-            {
-                if (disposing)
-                {
-                    UnityThread.RunInUnityThread(DisposeInUnityThread);
-                }
-                assetBundles = null;
-                IsDisposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
+            IsDisposed = true;
         }
 
         protected void ThrowIfObjectDisposed()
@@ -71,7 +59,6 @@ namespace JiongXiaGu.Unity.Resources
                 throw new ObjectDisposedException(ToString());
             }
         }
-
 
 
         /// <summary>
@@ -84,7 +71,6 @@ namespace JiongXiaGu.Unity.Resources
 
             Description = factory.ReadDescription(this);
         }
-
 
 
         /// <summary>
@@ -131,7 +117,7 @@ namespace JiongXiaGu.Unity.Resources
                     break;
 
                 default:
-                    throw new ArgumentException(string.Format("未知的{0}[{1}]", nameof(SearchOption), nameof(searchOption)));
+                    throw new IndexOutOfRangeException(string.Format("未知的{0}[{1}]", nameof(SearchOption), nameof(searchOption)));
             }
         }
 
@@ -181,8 +167,27 @@ namespace JiongXiaGu.Unity.Resources
                     break;
 
                 default:
-                    throw new ArgumentException(string.Format("未知的{0}[{1}]", nameof(SearchOption), nameof(searchOption)));
+                    throw new IndexOutOfRangeException(string.Format("未知的{0}[{1}]", nameof(SearchOption), nameof(searchOption)));
             }
+        }
+
+        /// <summary>
+        /// 搜索指定路径,直到返回true停止,若未找到则返回 null;
+        /// </summary>
+        public string Find(Func<string, bool> func)
+        {
+            ThrowIfObjectDisposed();
+            if (func == null)
+                throw new ArgumentNullException(nameof(func));
+
+            foreach (var file in EnumerateFiles())
+            {
+                if (func.Invoke(file))
+                {
+                    return file;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -224,18 +229,17 @@ namespace JiongXiaGu.Unity.Resources
 
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取或不存在则返回null;(仅在Unity线程调用,无需异步锁)
+        /// 获取到对应的 AssetBundle,若还未读取或不存在则返回null;
         /// </summary>
-        public AssetBundle GetAssetBundle(string name)
+        public static AssetBundle GetAssetBundlePublic(string key)
         {
-            ThrowIfObjectDisposed();
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException(nameof(name));
+            if (!IsAssetBundleKey(key))
+                throw new ArgumentException(key);
 
-            int index = assetBundles.FindIndex(pair => pair.Key == name);
-            if (index >= 0)
+            AssetBundle assetBundle;
+            if (DefaultAssetBundleDictionary.TryGet(key, out assetBundle))
             {
-                return assetBundles[index].Value;
+                return assetBundle;
             }
             else
             {
@@ -244,34 +248,52 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取,则读取并返回,若不存在 AssetBundle 或读取失败则返回异常;(仅在Unity线程调用,无需异步锁)
+        /// 获取到对应的 AssetBundle,若还未读取或不存在则返回null;
         /// </summary>
-        public AssetBundle GetOrLoadAssetBundle(string name)
+        public AssetBundle GetAssetBundle(string assetBundleName)
         {
             ThrowIfObjectDisposed();
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException(nameof(name));
+            if (string.IsNullOrWhiteSpace(assetBundleName))
+                throw new ArgumentException(nameof(assetBundleName));
 
-            int index = assetBundles.FindIndex(pair => pair.Key == name);
-            if (index >= 0)
+            string key = GetAssetBundleKey(assetBundleName);
+            AssetBundle assetBundle;
+            if (DefaultAssetBundleDictionary.TryGet(key, out assetBundle))
             {
-                return assetBundles[index].Value;
+                return assetBundle;
             }
             else
             {
-                return LoadAssetBundle(name);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 获取到对应的 AssetBundle,若还未读取,则读取并返回,若不存在 AssetBundle 或读取失败则返回异常;
+        /// </summary>
+        public AssetBundle GetOrLoadAssetBundle(string assetBundleName)
+        {
+            ThrowIfObjectDisposed();
+            if (string.IsNullOrWhiteSpace(assetBundleName))
+                throw new ArgumentException(nameof(assetBundleName));
+
+            string key = GetAssetBundleKey(assetBundleName);
+            AssetBundle assetBundle;
+            if (DefaultAssetBundleDictionary.TryGet(key, out assetBundle))
+            {
+                return assetBundle;
+            }
+            else
+            {
+                return DefaultAssetBundleDictionary.Load(key, () => InternalAssetBundle(assetBundleName));
             }
         }
 
         /// <summary>
         /// 读取到 AssetBundle;
         /// </summary>
-        public AssetBundle LoadAssetBundle(string name)
+        private AssetBundle InternalAssetBundle(string name)
         {
-            ThrowIfObjectDisposed();
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException(nameof(name));
-
             var assetBundleDescrs = Description.AssetBundles;
             if (assetBundleDescrs != null)
             {
@@ -282,9 +304,8 @@ namespace JiongXiaGu.Unity.Resources
                         using (var stream = GetInputStream(descr.RelativePath))
                         {
                             AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
-                            if (assetBundles != null)
+                            if (assetBundle != null)
                             {
-                                assetBundles.Add(new KeyValuePair<string, AssetBundle>(name, assetBundle));
                                 return assetBundle;
                             }
                             else
@@ -296,6 +317,72 @@ namespace JiongXiaGu.Unity.Resources
                 }
             }
             throw new ArgumentException(string.Format("未找到 AssetBundle[Name:{0}]的定义信息", name));
+        }
+
+
+
+        private const char AssetBundleKeyFristChar = '@';
+        private const char AssetBundleKeySeparator = ':';
+
+        /// <summary>
+        /// 确认是否为 AssetBundle 字典结构的 key;
+        /// </summary>
+        public static bool IsAssetBundleKey(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(name);
+
+            return name[0] == AssetBundleKeyFristChar;
+        }
+
+        /// <summary>
+        /// 获取到存放 AssetBundle 字典结构的 key;
+        /// </summary>
+        public string GetAssetBundleKey(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(name);
+
+            if (name[0] == AssetBundleKeyFristChar)
+            {
+                return name;
+            }
+            else
+            {
+                string key = InternalGetAssetBundleKey(name);
+                return key;
+            }
+        }
+
+        /// <summary>
+        /// 转换为 AssetBundle 字典结构的 key;若已经为key,则返回true,需要转换则返回false;
+        /// </summary>
+        public bool TryGetAssetBundleKey(string name, out string key)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(name);
+
+            if (name[0] == AssetBundleKeyFristChar)
+            {
+                key = name;
+                return true;
+            }
+            else
+            {
+                key = InternalGetAssetBundleKey(name);
+                return false;
+            }
+        }
+
+        private string InternalGetAssetBundleKey(string assetBundleName)
+        {
+            string key = string.Concat(AssetBundleKeyFristChar, Description.ID, AssetBundleKeySeparator, assetBundleName);
+            return key;
+        }
+
+        public static void Remove()
+        {
+
         }
     }
 }

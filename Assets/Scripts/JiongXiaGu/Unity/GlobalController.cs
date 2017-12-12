@@ -82,7 +82,6 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test3")]
         private void Test3()
         {
-            Debug.Log(WeakReferenceObjectPool.GetKey<Texture2D, ContextMenu>("1","2"));
         }
 
 

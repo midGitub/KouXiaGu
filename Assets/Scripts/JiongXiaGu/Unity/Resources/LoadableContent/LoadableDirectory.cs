@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Collections.Concurrent;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -11,43 +12,56 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class LoadableDirectory : LoadableContent
     {
-        internal readonly DirectoryInfo directoryInfo;
+        /// <summary>
+        /// 存放实例;
+        /// </summary>
+        private static readonly BlockingCollection<WeakReference<LoadableDirectory>> InstanceCollection;
 
-        public LoadableDirectory(string directory, LoadableContentDescription description) : base(description)
+        public DirectoryInfo DirectoryInfo { get; private set; }
+
+        internal LoadableDirectory(string directory, LoadableContentDescription description) : base(description)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
 
-            directoryInfo = new DirectoryInfo(directory);
+            DirectoryInfo = new DirectoryInfo(directory);
+        }
+
+        /// <summary>
+        /// 创建资源目录实例,若该目录已经创建了对应实例,则直接返回;
+        /// </summary>
+        public static LoadableDirectory Create(string directory, LoadableContentDescription description)
+        {
+            throw new NotImplementedException();
         }
 
         public override IEnumerable<string> EnumerateFiles()
         {
-            return Directory.EnumerateFiles(directoryInfo.FullName, "*", SearchOption.AllDirectories).Select(delegate (string filePath)
+            return Directory.EnumerateFiles(DirectoryInfo.FullName, "*", SearchOption.AllDirectories).Select(delegate (string filePath)
             {
-                string relativePath = PathHelper.GetRelativePath(directoryInfo.FullName, filePath);
+                string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
                 return relativePath;
             });
         }
 
         public override IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
-            return Directory.EnumerateFiles(directoryInfo.FullName, searchPattern, searchOption).Select(delegate (string filePath)
+            return Directory.EnumerateFiles(DirectoryInfo.FullName, searchPattern, searchOption).Select(delegate (string filePath)
             {
-                string relativePath = PathHelper.GetRelativePath(directoryInfo.FullName, filePath);
+                string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
                 return relativePath;
             });
         }
 
         public override IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
-            string directory = Path.Combine(this.directoryInfo.FullName, directoryName);
+            string directory = Path.Combine(this.DirectoryInfo.FullName, directoryName);
 
-            if (directoryInfo.Exists)
+            if (DirectoryInfo.Exists)
             {
                 return Directory.EnumerateFiles(directory, searchPattern, searchOption).Select(delegate (string filePath)
                 {
-                    string relativePath = PathHelper.GetRelativePath(directoryInfo.FullName, filePath);
+                    string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
                     return relativePath;
                 });
             }
@@ -59,7 +73,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override Stream GetInputStream(string relativePath)
         {
-            string filePath = Path.Combine(directoryInfo.FullName, relativePath);
+            string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
             if (File.Exists(filePath))
             {
                 return new FileStream(filePath, FileMode.Open, FileAccess.Read);
@@ -88,7 +102,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override bool Remove(string relativePath)
         {
-            string filePath = Path.Combine(directoryInfo.FullName, relativePath);
+            string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
             if (File.Exists(relativePath))
             {
                 File.Delete(filePath);
@@ -114,7 +128,7 @@ namespace JiongXiaGu.Unity.Resources
 
         private string GetFullPath(string relativePath)
         {
-            string filePath = Path.Combine(directoryInfo.FullName, relativePath);
+            string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
             return filePath;
         }
     }

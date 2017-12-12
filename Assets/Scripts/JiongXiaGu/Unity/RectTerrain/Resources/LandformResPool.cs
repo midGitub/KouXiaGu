@@ -72,7 +72,7 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo, CancellationToken token)
         {
-            return AssetPool.Default.ReadAsTexture2D(loadableContent, assetInfo, token);
+            return AssetDictionary.Default.ReadAsTexture2D(loadableContent, assetInfo, token);
         }
     }
 }

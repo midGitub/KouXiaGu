@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
@@ -8,9 +9,21 @@ namespace JiongXiaGu.Unity.Resources
     {
         public static Texture2DLoader Default { get; private set; } = new Texture2DLoader();
 
+        private static readonly AssetLoadModes[] supportedLoadModes = new AssetLoadModes[]
+            {
+                AssetLoadModes.AssetBundle,
+                AssetLoadModes.File,
+            };
+
+        public override IReadOnlyList<AssetLoadModes> SupportedLoadModes
+        {
+            get { return supportedLoadModes; }
+        }
+
         public override Texture2D Load(LoadableContent content, AssetInfo assetInfo)
         {
             UnityThread.ThrowIfNotUnityThread();
+            ThrowIfNotSupportedLoadMode(assetInfo.From);
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
@@ -23,7 +36,7 @@ namespace JiongXiaGu.Unity.Resources
                     return InternalFromFileReadTexture2D(content, assetInfo);
 
                 default:
-                    throw InvalidLoadModeException(nameof(Texture2D), assetInfo.From);
+                    throw NotSupportedLoadModeException(assetInfo.From);
             }
         }
 

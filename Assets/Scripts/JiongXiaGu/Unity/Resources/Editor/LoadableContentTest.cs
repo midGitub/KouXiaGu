@@ -1,10 +1,6 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -12,7 +8,6 @@ namespace JiongXiaGu.Unity.Resources
     [TestFixture]
     public class LoadableContentTest
     {
-
         private readonly LoadableContentFactory factory = new LoadableContentFactory();
 
         private readonly XmlSerializer<LoadableContentDescription> xmlSerializer = new XmlSerializer<LoadableContentDescription>();

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using JiongXiaGu.Collections;
+using System;
 using System.Collections.Generic;
-using JiongXiaGu.Collections;
-using System.Threading;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Collections;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -12,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 弱引用对象池;(线程安全)
     /// </summary>
-    public class WeakReferenceObjectPool
+    public class WeakReferenceObjectDictionary
     {
         internal readonly Dictionary<string, WeakReferenceObject> objectCollection;
         internal readonly ReaderWriterLockSlim objectCollectionLock;
@@ -22,7 +21,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public int Count => objectCollection.Count;
 
-        public WeakReferenceObjectPool()
+        public WeakReferenceObjectDictionary()
         {
             objectCollection = new Dictionary<string, WeakReferenceObject>();
             objectCollectionLock = new ReaderWriterLockSlim();
@@ -101,6 +100,33 @@ namespace JiongXiaGu.Unity.Resources
                     return false;
                 }
             }
+        }
+
+        /// <summary>
+        /// 移除指定的内容;
+        /// </summary>
+        public int RemoveAll(Func<string, bool> func)
+        {
+            if (func == null)
+                throw new ArgumentNullException(nameof(func));
+
+            int removed = 0;
+            using (objectCollectionLock.UpgradeableReadLock())
+            {
+                string[] keys = objectCollection.Keys.ToArray();
+                foreach (var key in keys)
+                {
+                    if (func.Invoke(key))
+                    {
+                        removed++;
+                        using (objectCollectionLock.WriteLock())
+                        {
+                            objectCollection.Remove(key);
+                        }
+                    }
+                }
+            }
+            return removed;
         }
 
         /// <summary>
@@ -487,10 +513,6 @@ namespace JiongXiaGu.Unity.Resources
             return false;
         }
 
-
-
-        internal const string KeySeparator = ":";
-
         /// <summary>
         /// 当Key定义不符合要求时抛出;
         /// </summary>
@@ -500,60 +522,6 @@ namespace JiongXiaGu.Unity.Resources
             {
                 throw new ArgumentException(string.Format("Key定义不符合要求;Key[{1}]", key));
             }
-
-            string name = typeof(T).FullName;
-            if (!key.StartsWith(typeof(T).FullName, StringComparison.Ordinal))
-            {
-                throw new ArgumentException(string.Format("Key定义不符合要求;请求类型为[{0}],Key[{1}]", name, key));
-            }
-        }
-
-        /// <summary>
-        /// 生成唯一的Key;
-        /// </summary>
-        /// <typeparam name="T">表示资源类型</typeparam>
-        /// <typeparam name="TFrom">来自的文件</typeparam>
-        /// <param name="types">其它不变的参数</param>
-        public static string GetKey<T, TFrom>(string p0)
-        {
-            string key = string.Join(KeySeparator, typeof(T).FullName, typeof(TFrom).FullName, p0);
-            return key;
-        }
-
-        /// <summary>
-        /// 生成唯一的Key;
-        /// </summary>
-        /// <typeparam name="T">表示资源类型</typeparam>
-        /// <typeparam name="TFrom">来自的文件</typeparam>
-        /// <param name="types">其它不变的参数</param>
-        public static string GetKey<T, TFrom>(string p0, string p1)
-        {
-            string key = string.Join(KeySeparator, typeof(T).FullName, typeof(TFrom).FullName, p0, p1);
-            return key;
-        }
-
-        /// <summary>
-        /// 生成唯一的Key;
-        /// </summary>
-        /// <typeparam name="T">表示资源类型</typeparam>
-        /// <typeparam name="TFrom">来自的文件</typeparam>
-        /// <param name="types">其它不变的参数</param>
-        public static string GetKey<T, TFrom>(string p0, string p1, string p2)
-        {
-            string key = string.Join(KeySeparator, typeof(T).FullName, typeof(TFrom).FullName, p0, p1, p2);
-            return key;
-        }
-
-        /// <summary>
-        /// 生成唯一的Key;
-        /// </summary>
-        /// <typeparam name="T">表示资源类型</typeparam>
-        /// <typeparam name="TFrom">来自的文件</typeparam>
-        /// <param name="types">其它不变的参数</param>
-        public static string GetKey<T, TFrom>(string p0, string p1, string p2, string p3)
-        {
-            string key = string.Join(KeySeparator, typeof(T).FullName, typeof(TFrom).FullName, p0, p1, p2, p3);
-            return key;
         }
     }
 }
