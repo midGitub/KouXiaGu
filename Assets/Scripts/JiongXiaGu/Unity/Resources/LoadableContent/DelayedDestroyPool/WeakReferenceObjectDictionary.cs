@@ -520,7 +520,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new ArgumentException(string.Format("Key定义不符合要求;Key[{1}]", key));
+                throw new ArgumentException(string.Format("Key定义不符合要求;Key[{0}]", key));
             }
         }
     }

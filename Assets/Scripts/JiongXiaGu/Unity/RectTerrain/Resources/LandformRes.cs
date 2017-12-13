@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 地形资源;
     /// </summary>
     [Serializable]
-    public class LandformRes
+    public struct LandformRes
     {
         [SerializeField]
         private Texture2D heightTex;
@@ -41,33 +41,6 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
             get { return diffuseBlendTex; }
             internal set { diffuseBlendTex = value; }
-        }
-
-        public void Destroy()
-        {
-            if (heightTex != null)
-            {
-                UnityEngine.Object.Destroy(heightTex);
-                heightTex = null;
-            }
-
-            if (heightBlendTex != null)
-            {
-                UnityEngine.Object.Destroy(heightBlendTex);
-                heightBlendTex = null;
-            }
-
-            if (diffuseTex != null)
-            {
-                UnityEngine.Object.Destroy(diffuseTex);
-                diffuseTex = null;
-            }
-
-            if (diffuseBlendTex != null)
-            {
-                UnityEngine.Object.Destroy(diffuseBlendTex);
-                diffuseBlendTex = null;
-            }
         }
     }
 }

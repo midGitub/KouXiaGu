@@ -202,7 +202,7 @@ namespace JiongXiaGu.Unity.RectTerrain
                 MapNode mapNode;
                 if (map.Map.TryGetValue(childPoint, out mapNode))
                 {
-                    Task task = landformResPool.GetOrLoad(mapNode.Landform.TypeID).ContinueWith(delegate (Task<LandformRes> res)
+                    Task task = landformResPool.Get(mapNode.Landform.TypeID).ContinueWith(delegate (Task<LandformRes> res)
                     {
                         LandformBakeNode node = new LandformBakeNode()
                         {

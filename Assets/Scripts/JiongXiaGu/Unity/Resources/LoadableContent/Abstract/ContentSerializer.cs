@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public virtual T Deserialize(LoadableContent content)
         {
-            using (var stream = content.GetInputStream(RelativePath))
+            using (var stream = content.ConcurrentGetInputStream(RelativePath))
             {
                 var item = Serializer.Deserialize(stream);
                 return item;

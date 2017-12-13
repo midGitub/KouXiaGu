@@ -9,7 +9,6 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 表示资源;
     /// </summary>
-    [XmlRoot("AssetInfo")]
     public struct AssetInfo : IXmlSerializable
     {
         internal const AssetLoadModes DefaultLoadMode = AssetLoadModes.File;
@@ -19,30 +18,35 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取方式,默认从文件读取;
         /// </summary>
-        public AssetLoadModes From { get; set; }
+        public AssetLoadModes From { get; private set; }
 
         /// <summary>
         /// 若为 AssetBundle 的资源,则为 AssetBundleName,否则为null;
         /// </summary>
-        public string AssetBundleName { get; set; }
+        public AssetPath AssetBundleName { get; private set; }
 
         /// <summary>
         /// 若从 AssetBundle 读取,则为文件名,忽略拓展名;
         /// 若从 File 读取,则为相对路径;
         /// </summary>
-        public string Name { get; set; }
+        public AssetPath Name { get; private set; }
 
-        public AssetInfo(string name) : this()
+        public AssetInfo(AssetPath name) : this()
         {
-            From = DefaultLoadMode;
+            From = AssetLoadModes.File;
             Name = name;
         }
 
-        public AssetInfo(string assteBundleName, string name) : this()
+        public AssetInfo(AssetPath assteBundleName, string name) : this()
         {
             From = AssetLoadModes.AssetBundle;
             AssetBundleName = assteBundleName;
             Name = name;
+
+            if (Name.IsReferencePath())
+            {
+                throw new ArgumentException();
+            }
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -72,7 +76,6 @@ namespace JiongXiaGu.Unity.Resources
             {
                 From = AssetLoadModes.Unknown;
             }
-            reader.ReadEndElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
@@ -86,7 +89,7 @@ namespace JiongXiaGu.Unity.Resources
 
                 case AssetLoadModes.AssetBundle:
                     writer.WriteAttributeString(LoadModeAttribute, From.ToString());
-                    writer.WriteAttributeString(AssetBundleNameAttribute, AssetBundleName);
+                    writer.WriteAttributeString(AssetBundleNameAttribute, AssetBundleName.Name);
                     writer.WriteValue(Name);
                     break;
 

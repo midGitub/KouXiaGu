@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -128,11 +129,11 @@ namespace JiongXiaGu.Unity.Resources
             }
             loadableContent.CommitUpdate();
 
-            Assert.AreEqual(loadableContent.EnumerateFiles().Count(), 4);
+            Assert.AreEqual(loadableContent.ConcurrentEnumerateFiles().Count(), 4);
 
-            using (Stream stream1 = loadableContent.GetInputStream(description1Path), 
-                stream2 = loadableContent.GetInputStream(description2Path), 
-                stream3 = loadableContent.GetInputStream(description3Path))
+            using (Stream stream1 = loadableContent.ConcurrentGetInputStream(description1Path), 
+                stream2 = loadableContent.ConcurrentGetInputStream(description2Path), 
+                stream3 = loadableContent.ConcurrentGetInputStream(description3Path))
             {
                 var d1 = xmlSerializer.Deserialize(stream1);
                 AreEqual(d1, description1);
@@ -159,6 +160,7 @@ namespace JiongXiaGu.Unity.Resources
             {
                 var assetBundle = loadableContent.GetOrLoadAssetBundle("terrain");
                 Assert.NotNull(assetBundle);
+                assetBundle.LoadAsset<Texture2D>("HeightMap_85");
             }
         }
     }

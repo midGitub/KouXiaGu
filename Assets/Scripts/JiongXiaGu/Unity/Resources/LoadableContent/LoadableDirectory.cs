@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 存放实例;
         /// </summary>
-        private static readonly BlockingCollection<WeakReference<LoadableDirectory>> InstanceCollection;
+        private static readonly BlockingCollection<string> instancedDirectory = new BlockingCollection<string>();
 
         public DirectoryInfo DirectoryInfo { get; private set; }
 
@@ -23,18 +23,47 @@ namespace JiongXiaGu.Unity.Resources
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
+            if (IsInstanced(directory))
+                throw new ArgumentException(string.Format("路径[{0}]已经创建为可读取资源;", directory));
 
             DirectoryInfo = new DirectoryInfo(directory);
         }
 
-        /// <summary>
-        /// 创建资源目录实例,若该目录已经创建了对应实例,则直接返回;
-        /// </summary>
-        public static LoadableDirectory Create(string directory, LoadableContentDescription description)
+        private bool IsInstanced(string directory)
         {
-            throw new NotImplementedException();
+            return instancedDirectory.Contains(directory);
         }
 
+
+        public override IEnumerable<string> ConcurrentEnumerateFiles()
+        {
+            return EnumerateFiles();
+        }
+
+        public override IEnumerable<string> ConcurrentEnumerateFiles(string searchPattern, SearchOption searchOption)
+        {
+            return EnumerateFiles(searchPattern, searchOption);
+        }
+
+        public override IEnumerable<string> ConcurrentEnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        {
+            return EnumerateFiles(directoryName, searchPattern, searchOption);
+        }
+
+        public override string ConcurrentFind(Func<string, bool> func)
+        {
+            return Find(func);
+        }
+
+        public override Stream ConcurrentGetInputStream(string relativePath)
+        {
+            return GetInputStream(relativePath);
+        }
+
+
+        /// <summary>
+        /// 枚举所有文件路径;
+        /// </summary>
         public override IEnumerable<string> EnumerateFiles()
         {
             return Directory.EnumerateFiles(DirectoryInfo.FullName, "*", SearchOption.AllDirectories).Select(delegate (string filePath)
@@ -55,7 +84,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
-            string directory = Path.Combine(this.DirectoryInfo.FullName, directoryName);
+            string directory = Path.Combine(DirectoryInfo.FullName, directoryName);
 
             if (DirectoryInfo.Exists)
             {
@@ -83,6 +112,7 @@ namespace JiongXiaGu.Unity.Resources
                 throw new FileNotFoundException(filePath);
             }
         }
+
 
 
         public override void BeginUpdate()

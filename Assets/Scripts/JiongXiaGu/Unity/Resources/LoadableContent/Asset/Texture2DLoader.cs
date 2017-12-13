@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.Resources
             get { return supportedLoadModes; }
         }
 
-        public override Texture2D Load(LoadableContent content, AssetInfo assetInfo)
+        public override Texture2D Load(ILoadableContent content, AssetInfo assetInfo)
         {
             UnityThread.ThrowIfNotUnityThread();
             ThrowIfNotSupportedLoadMode(assetInfo.From);
@@ -43,10 +43,10 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从 AssetBundle 读取 Texture2D
         /// </summary>
-        private static Texture2D InternalFromAssetBundleReadTexture2D(LoadableContent content, AssetInfo assetInfo)
+        private static Texture2D InternalFromAssetBundleReadTexture2D(ILoadableContent content, AssetInfo assetInfo)
         {
             AssetBundle assetBundle = content.GetOrLoadAssetBundle(assetInfo.AssetBundleName);
-            var texture = assetBundle.LoadAsset<Texture2D>(assetInfo.Name);
+            var texture = assetBundle.LoadAsset<Texture2D>(assetInfo.Name.Name);
             if (texture == null)
             {
                 throw new ArgumentException(string.Format("在AssetBundle[{0}]内未找到资源[{1}]", assetInfo.AssetBundleName, assetInfo.Name));
@@ -60,18 +60,15 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从 文件 读取 Texture2D;
         /// </summary>
-        private static Texture2D InternalFromFileReadTexture2D(LoadableContent content, AssetInfo assetInfo)
+        private static Texture2D InternalFromFileReadTexture2D(ILoadableContent content, AssetInfo assetInfo)
         {
-            lock (content.AsyncLock)
-            {
-                var stream = content.GetInputStream(assetInfo.Name);
-                byte[] imageData = new byte[stream.Length];
-                stream.Read(imageData, 0, (int)stream.Length);
+            var stream = content.ConcurrentGetInputStream(assetInfo.Name.Name);
+            byte[] imageData = new byte[stream.Length];
+            stream.Read(imageData, 0, (int)stream.Length);
 
-                var texture = new Texture2D(2, 2);
-                texture.LoadImage(imageData);
-                return texture;
-            }
+            var texture = new Texture2D(2, 2);
+            texture.LoadImage(imageData);
+            return texture;
         }
     }
 }

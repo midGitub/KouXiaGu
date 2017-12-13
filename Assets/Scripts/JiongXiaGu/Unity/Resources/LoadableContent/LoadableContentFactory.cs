@@ -133,7 +133,7 @@ namespace JiongXiaGu.Unity.Resources
 
         internal LoadableContentDescription ReadDescription(LoadableContent content)
         {
-            using (var stream = content.GetInputStream(DescriptionPath))
+            using (var stream = content.ConcurrentGetInputStream(DescriptionPath))
             {
                 var descr = descriptionSerializer.Deserialize(stream);
                 return descr;

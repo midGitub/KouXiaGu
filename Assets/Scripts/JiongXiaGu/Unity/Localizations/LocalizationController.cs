@@ -69,13 +69,10 @@ namespace JiongXiaGu.Unity.Localizations
                     try
                     {
                         LoadableContent content = packInfo.ContentConstruct;
-                        lock (content.AsyncLock)
+                        using (var stream = content.ConcurrentGetInputStream(packInfo.LoadableEntry))
                         {
-                            using (var stream = content.GetInputStream(packInfo.LoadableEntry))
-                            {
-                                languagePack = packSerializer.Deserialize(stream);
-                                break;
-                            }
+                            languagePack = packSerializer.Deserialize(stream);
+                            break;
                         }
                     }
                     catch (Exception ex)

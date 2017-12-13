@@ -32,7 +32,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             lock (asyncLock)
             {
-                return LoadableContent.EnumerateFiles().ToList();
+                return LoadableContent.ConcurrentEnumerateFiles().ToList();
             }
         }
 
@@ -50,7 +50,7 @@ namespace JiongXiaGu.Unity.Resources
 
             lock (asyncLock)
             {
-                return LoadableContent.EnumerateFiles(searchPattern, searchOption).ToList();
+                return LoadableContent.ConcurrentEnumerateFiles(searchPattern, searchOption).ToList();
             }
         }
 
@@ -71,7 +71,7 @@ namespace JiongXiaGu.Unity.Resources
 
             lock (asyncLock)
             {
-                return LoadableContent.EnumerateFiles(directoryName, searchPattern, searchOption).ToList();
+                return LoadableContent.ConcurrentEnumerateFiles(directoryName, searchPattern, searchOption).ToList();
             }
         }
 
@@ -82,7 +82,7 @@ namespace JiongXiaGu.Unity.Resources
 
             lock (asyncLock)
             {
-                return LoadableContent.Find(func);
+                return LoadableContent.ConcurrentFind(func);
             }
         }
 
@@ -96,29 +96,29 @@ namespace JiongXiaGu.Unity.Resources
 
             lock (asyncLock)
             {
-                return LoadableContent.GetInputStream(relativePath);
+                return LoadableContent.ConcurrentGetInputStream(relativePath);
             }
         }
 
         /// <summary>
         /// 获取到对应的 AssetBundle,若还未读取或不存在则返回null;
         /// </summary>
-        public AssetBundle GetAssetBundle(string assetBundleName)
+        public AssetBundle GetAssetBundle(AssetPath path)
         {
             lock (asyncLock)
             {
-                return LoadableContent.GetAssetBundle(assetBundleName);
+                return LoadableContent.GetAssetBundle(path);
             }
         }
 
         /// <summary>
         /// 获取到对应的 AssetBundle,若还未读取,则读取并返回,若不存在 AssetBundle 或读取失败则返回异常;
         /// </summary>
-        public AssetBundle GetOrLoadAssetBundle(string assetBundleName)
+        public AssetBundle GetOrLoadAssetBundle(AssetPath path)
         {
             lock (asyncLock)
             {
-                return LoadableContent.GetOrLoadAssetBundle(assetBundleName);
+                return LoadableContent.GetOrLoadAssetBundle(path);
             }
         }
     }

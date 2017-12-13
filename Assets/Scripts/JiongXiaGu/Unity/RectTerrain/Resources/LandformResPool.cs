@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 负责提供地形资源;
     /// </summary>
     [Serializable]
-    public class LandformResPool : ResPool<LandformRes>
+    public class LandformResPool
     {
         [SerializeField]
         private LandformRes defaultLandformRes;
@@ -23,31 +23,31 @@ namespace JiongXiaGu.Unity.RectTerrain
             this.descrDictionary = descrDictionary;
         }
 
-        public override LandformRes Default()
+        public LandformRes Default()
         {
             return defaultLandformRes;
         }
 
-        protected override Task<LandformRes> Create(string key, CancellationToken token)
+        /// <summary>
+        /// 获取到对应资源,若未加载,则开始加载并返回;
+        /// </summary>
+        public Task<LandformRes> Get(string key, CancellationToken token = default(CancellationToken))
         {
-            Description<LandformDescription> description;
-            if (descrDictionary.Descriptions.TryGetValue(key, out description))
-            {
-                var task = CreateAsync(description.Content, description.Value, token);
-                return task;
-            }
-            else
-            {
-                return Task.FromException<LandformRes>(new KeyNotFoundException(key));
-            }
-        }
-
-        protected override Task Release(LandformRes res)
-        {
-            return TaskHelper.Run(delegate ()
-            {
-                res.Destroy();
-            }, UnityTaskScheduler.TaskScheduler);
+            throw new NotImplementedException();
+            //Task<T> info;
+            //if (infos.TryGetValue(key, out info))
+            //{
+            //    return info.ContinueWith(task => task.Result, token);
+            //}
+            //else
+            //{
+            //    info = Create(key, token);
+            //    if (!info.IsFaulted)
+            //    {
+            //        infos.Add(key, info);
+            //    }
+            //    return info;
+            //}
         }
 
         public static async Task<LandformRes> CreateAsync(LoadableContent loadableContent, LandformDescription description, CancellationToken token)
@@ -62,17 +62,19 @@ namespace JiongXiaGu.Unity.RectTerrain
 
             await Task.WhenAll(tasks);
 
-            LandformRes info = new LandformRes();
-            info.HeightTex = tasks[0].Result;
-            info.HeightBlendTex = tasks[1].Result;
-            info.DiffuseTex = tasks[2].Result;
-            info.DiffuseBlendTex = tasks[3].Result;
+            LandformRes info = new LandformRes()
+            {
+                HeightTex = tasks[0].Result,
+                HeightBlendTex = tasks[1].Result,
+                DiffuseTex = tasks[2].Result,
+                DiffuseBlendTex = tasks[3].Result,
+            };
             return info;
         }
 
         private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo, CancellationToken token)
         {
-            return AssetDictionary.Default.ReadAsTexture2D(loadableContent, assetInfo, token);
+            return AssetDictionary.Default.LoadAsync(Texture2DLoader.Default, loadableContent, assetInfo, token);
         }
     }
 }

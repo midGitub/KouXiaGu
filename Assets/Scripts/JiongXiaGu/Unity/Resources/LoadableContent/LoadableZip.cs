@@ -38,16 +38,18 @@ namespace JiongXiaGu.Unity.Resources
             this.zipFile = zipFile;
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool isDisposing)
         {
-            if (!IsDisposed)
+            if (isDisposing)
             {
                 zipFile.Close();
-                stream.Dispose();
                 zipFile = null;
+
+                stream.Dispose();
                 stream = null;
             }
         }
+
 
         public override IEnumerable<string> EnumerateFiles()
         {
@@ -66,7 +68,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            ZipEntry entry = zipFile.GetEntry(relativePath); zipFile.GetEntry(relativePath);
+            ZipEntry entry = zipFile.GetEntry(relativePath);
             if (entry != null && entry.IsFile)
             {
                 return zipFile.GetInputStream(entry);
@@ -76,6 +78,7 @@ namespace JiongXiaGu.Unity.Resources
                 throw new FileNotFoundException(relativePath);
             }
         }
+
 
 
         public override void BeginUpdate()

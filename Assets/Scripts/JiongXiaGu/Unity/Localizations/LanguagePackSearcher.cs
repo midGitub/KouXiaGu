@@ -5,6 +5,7 @@ using System.IO;
 
 namespace JiongXiaGu.Unity.Localizations
 {
+
     /// <summary>
     /// 搜索可使用的语言文件;
     /// </summary>
@@ -35,11 +36,8 @@ namespace JiongXiaGu.Unity.Localizations
 
             foreach (var content in loadableContents)
             {
-                lock (content.AsyncLock)
-                {
-                    var packs = EnumeratePack(content);
-                    languagePacks.AddRange(packs);
-                }
+                var packs = EnumeratePack(content);
+                languagePacks.AddRange(packs);
             }
 
             return languagePacks;
@@ -58,12 +56,12 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public IEnumerable<LanguagePackInfo> EnumeratePack(LoadableContent contentConstruct, SearchOption searchOption)
         {
-            foreach (string entry in contentConstruct.EnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
+            foreach (string entry in contentConstruct.ConcurrentEnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
             {
                 LanguagePackInfo languagePack;
                 try
                 {
-                    using (var stream = contentConstruct.GetInputStream(entry))
+                    using (var stream = contentConstruct.ConcurrentGetInputStream(entry))
                     {
                         var description = packSerializer.DeserializeDesc(stream);
                         languagePack = new LanguagePackInfo(description, contentConstruct, entry);

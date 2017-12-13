@@ -41,7 +41,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到资源,若无法读取则返回异常;
         /// </summary>
-        public abstract T Load(LoadableContent content, AssetInfo assetInfo);
+        public abstract T Load(ILoadableContent content, AssetInfo assetInfo);
 
         /// <summary>
         /// 不支持读取方式异常;

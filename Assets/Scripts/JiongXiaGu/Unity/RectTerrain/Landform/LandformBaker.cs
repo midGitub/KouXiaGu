@@ -100,11 +100,6 @@ namespace JiongXiaGu.Unity.RectTerrain
                 var board = boardList[i];
                 var bakePoint = bakePoints[i];
 
-                if (bakePoint.Res == null)
-                {
-                    throw new ArgumentNullException(nameof(bakePoint.Res));
-                }
-
                 var drawingBoardPoint = landformBoardCollection.GetDrawingBoardPoint(chunkCoord, bakePoint.Position).ChangedY(-i);
                 var rotation = Quaternion.Euler(0, bakePoint.Node.Angle, 0);
                 board.SetValue(drawingBoardPoint, rotation);

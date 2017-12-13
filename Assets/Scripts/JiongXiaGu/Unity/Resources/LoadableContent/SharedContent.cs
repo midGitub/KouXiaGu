@@ -1,70 +1,243 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.IO;
 using UnityEngine;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 关联的资源,处理资源共享的 AssetBundle 和 其它资源;(线程安全);
+    /// 表示进行分享的资源;(非线程安全)
     /// </summary>
-    public class SharedContent
+    public sealed class SharedContent : IDisposable
     {
-        /// <summary>
-        /// 所有关联的资源;
-        /// </summary>
-        private BlockingCollection<Content> contentCollection = new BlockingCollection<Content>();
+        private bool isDisposed = false;
+        internal SharedContentSource Parent { get; private set; }
+        public LoadableContent LoadableContent { get; private set; }
+        private ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
 
         /// <summary>
-        /// 添加新的资源;
+        /// 延迟实例化,若不存在AssetBundle则为Null;
         /// </summary>
-        internal Content Add(LoadableContent loadableContent)
+        internal List<KeyValuePair<string, AssetBundle>> AssetBundles { get; private set; }
+
+        public string ID
         {
-            throw new NotImplementedException();
+            get { return LoadableContent.Description.ID; }
         }
 
-        /// <summary>
-        /// 移除资源,若移除成功则返回true;
-        /// </summary>
-        internal bool Remove(LoadableContent loadableContent)
+        internal SharedContent(LoadableContent loadableContent)
         {
-            throw new NotImplementedException();
+            LoadableContent = loadableContent;
         }
 
-
-        /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取或不存在则返回null;
-        /// </summary>
-        public AssetBundle GetAssetBundle(string key)
+        internal SharedContent(SharedContentSource parent, LoadableContent loadableContent)
         {
-            throw new NotImplementedException();
+            Parent = parent;
+            LoadableContent = loadableContent;
         }
 
-        private const char AssetBundleKeyFristChar = '@';
-        private const char AssetBundleKeySeparator = ':';
-
-
-        public class Content
+        public void Dispose()
         {
-            public LoadableContent LoadableContent { get; private set; }
-
-            /// <summary>
-            /// 延迟实例化,若不存在AssetBundle则为Null;
-            /// </summary>
-            public List<KeyValuePair<string, AssetBundle>> AssetBundles { get; private set; }
-
-            public Content(LoadableContent loadableContent)
+            using (readerWriterLock.WriteLock())
             {
-                LoadableContent = loadableContent;
+                if (!isDisposed)
+                {
+                    isDisposed = true;
+
+                    Parent?.Remove(LoadableContent);
+                    Parent = null;
+
+                    //readerWriterLock.Dispose();
+                    readerWriterLock = null;
+
+                    UnloadAssetBundles();
+                }
             }
+        }
 
-            public void Add(string name, AssetBundle assetBundle)
+        private void UnloadAssetBundles()
+        {
+            if (AssetBundles != null)
             {
-                throw new NotImplementedException();
+                if (AssetBundles.Count > 0)
+                {
+                    var _assetBundles = AssetBundles;
+                    AssetBundles = null;
+                    UnityThread.RunInUnityThread(delegate ()
+                    {
+                        foreach (var assetBundle in _assetBundles)
+                        {
+                            assetBundle.Value.Unload(false);
+                        }
+                    });
+                }
+                else
+                {
+                    AssetBundles = null;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 获取到对应的 AssetBundle,若还未读取则返回异常;
+        /// </summary>
+        public AssetBundle GetAssetBundle(AssetPath path)
+        {
+            string contentID;
+            string assetBundleName;
+
+            if (path.GetRelativePath(out contentID, out assetBundleName))
+            {
+                return GetAssetBundle(assetBundleName);
+            }
+            else
+            {
+                if (Parent == null)
+                {
+                    throw new FileNotFoundException();
+                }
+                else
+                {
+                    var sharedContent = Parent.Find(contentID);
+                    return sharedContent.GetAssetBundle(assetBundleName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 读取到指定的 AssetBundle,若未找到则返回异常;
+        /// </summary>
+        public AssetBundle GetOrLoadAssetBundle(AssetPath path)
+        {
+            string contentID;
+            string assetBundleName;
+
+            if (path.GetRelativePath(out contentID, out assetBundleName))
+            {
+                return GetOrLoadAssetBundle(assetBundleName);
+            }
+            else
+            {
+                if (Parent == null)
+                {
+                    throw new FileNotFoundException();
+                }
+                else
+                {
+                    var sharedContent = Parent.Find(contentID);
+                    return sharedContent.GetOrLoadAssetBundle(assetBundleName);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 获取到对应的 AssetBundle,若还未读取则返回异常;
+        /// </summary>
+        public AssetBundle GetAssetBundle(string assetBundleName)
+        {
+            using (readerWriterLock.ReadLock())
+            {
+                ThrowIfObjectDisposed();
+
+                AssetBundle assetBundle;
+                if (InternalTryGetAssetBundle(assetBundleName, out assetBundle))
+                {
+                    return assetBundle;
+                }
+                else
+                {
+                    throw new FileNotFoundException(string.Format("未找到AssetBundle[Name : {0}]", assetBundleName));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 读取到指定的 AssetBundle,若未找到则返回异常;
+        /// </summary>
+        public AssetBundle GetOrLoadAssetBundle(string assetBundleName)
+        {
+            using (readerWriterLock.UpgradeableReadLock())
+            {
+                ThrowIfObjectDisposed();
+
+                AssetBundle assetBundle;
+                if (InternalTryGetAssetBundle(assetBundleName, out assetBundle))
+                {
+                    return assetBundle;
+                }
+                else
+                {
+                    assetBundle = InternalLoadAssetBundle(assetBundleName);
+                    using (readerWriterLock.WriteLock())
+                    {
+                        if (AssetBundles == null)
+                            AssetBundles = new List<KeyValuePair<string, AssetBundle>>();
+
+                        AssetBundles.Add(new KeyValuePair<string, AssetBundle>(assetBundleName, assetBundle));
+                    }
+                    return assetBundle;
+                }
+            }
+        }
+
+        private bool InternalTryGetAssetBundle(string assetBundleName, out AssetBundle assetBundle)
+        {
+            if (AssetBundles != null)
+            {
+                int index = AssetBundles.FindIndex(item => item.Key == assetBundleName);
+                if (index >= 0)
+                {
+                    assetBundle = AssetBundles[index].Value;
+                    return true;
+                }
+            }
+            assetBundle = default(AssetBundle);
+            return false;
+        }
+
+        /// <summary>
+        /// 读取到 AssetBundle;
+        /// </summary>
+        private AssetBundle InternalLoadAssetBundle(string name)
+        {
+            var assetBundleDescrs = LoadableContent.Description.AssetBundles;
+            if (assetBundleDescrs != null)
+            {
+                foreach (var descr in assetBundleDescrs)
+                {
+                    if (descr.Name == name)
+                    {
+                        var stream = LoadableContent.ConcurrentGetInputStream(descr.RelativePath);
+                        {
+                            AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
+                            if (assetBundle != null)
+                            {
+                                return assetBundle;
+                            }
+                            else
+                            {
+                                stream.Dispose();
+                                throw new IOException(string.Format("无法加载 AssetBundle[Name:{0}]", name));
+                            }
+                        }
+                    }
+                }
+            }
+            throw new ArgumentException(string.Format("未找到 AssetBundle[Name:{0}]的定义信息", name));
+        }
+
+        /// <summary>
+        /// 若该实例已经被销毁,则返回异常;
+        /// </summary>
+        private void ThrowIfObjectDisposed()
+        {
+            if (isDisposed)
+            {
+                throw new ObjectDisposedException(ToString());
             }
         }
     }

@@ -41,18 +41,12 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         public void DisplayDiffuse(LandformRes landformResource)
         {
-            if (landformResource == null)
-                throw new ArgumentNullException("landformResource");
-
             meterial.SetTexture("_MainTex", landformResource.DiffuseTex);
             meterial.SetTexture("_BlendTex", landformResource.DiffuseBlendTex);
         }
 
         public void DisplayHeight(LandformRes landformResource)
         {
-            if (landformResource == null)
-                throw new ArgumentNullException("landformResource");
-
             meterial.SetTexture("_MainTex", landformResource.HeightTex);
             meterial.SetTexture("_BlendTex", landformResource.HeightBlendTex);
         }

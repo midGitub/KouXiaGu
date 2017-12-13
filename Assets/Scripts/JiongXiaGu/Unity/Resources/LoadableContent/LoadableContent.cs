@@ -1,31 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 抽象类 表示游戏可读资源;
+    /// 抽象类 表示可读写资源;(部分方法线程安全)
     /// </summary>
-    public abstract class LoadableContent : IDisposable
+    public abstract class LoadableContent : ILoadableContent, IDisposable
     {
-        /// <summary>
-        /// 提供公共存储 AssetBundle;
-        /// </summary>
-        private static readonly WeakReferenceObjectDictionary DefaultAssetBundleDictionary = new WeakReferenceObjectDictionary();
-
-        /// <summary>
-        /// 实例锁,对该类进行操作之前需要上锁;
-        /// </summary>
-        [Obsolete]
-        public object AsyncLock { get; private set; } = new object();
+        private readonly object asyncLock = new object();
 
         /// <summary>
         /// 是否已经销毁;
         /// </summary>
-        public bool IsDisposed { get; private set; } = false;
+        private volatile bool isDisposed;
 
         /// <summary>
         /// 在创建时使用的描述;
@@ -37,27 +29,39 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public LoadableContentDescription? NewDescription { get; private set; }
 
+        /// <summary>
+        /// 分享资源;
+        /// </summary>
+        internal SharedContent SharedContent { get; private set; }
+
         protected LoadableContent(LoadableContentDescription description)
         {
             Description = description;
+            SharedContent = new SharedContent(this);
         }
 
-        protected LoadableContent(LoadableContentDescription description, WeakReferenceObjectDictionary assetBundleDictionary)
+        protected LoadableContent(LoadableContentDescription description, SharedContentSource sharedContentSource)
         {
             Description = description;
+            SharedContent = sharedContentSource.Add(this);
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
-            IsDisposed = true;
-        }
-
-        protected void ThrowIfObjectDisposed()
-        {
-            if (IsDisposed)
+            lock (asyncLock)
             {
-                throw new ObjectDisposedException(ToString());
+                if (!isDisposed)
+                {
+                    isDisposed = true;
+                    Dispose(true);
+                }
             }
+        }
+
+        protected virtual void Dispose(bool isDisposing)
+        {
+            SharedContent.Dispose();
+            SharedContent = null;
         }
 
 
@@ -69,20 +73,91 @@ namespace JiongXiaGu.Unity.Resources
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
 
-            Description = factory.ReadDescription(this);
+            NewDescription = factory.ReadDescription(this);
+        }
+
+
+
+        /// <summary>
+        /// 枚举所有文件信息;(线程安全)
+        /// </summary>
+        public virtual IEnumerable<string> ConcurrentEnumerateFiles()
+        {
+            lock (asyncLock)
+            {
+                return EnumerateFiles().ToList();
+            }
+        }
+
+        /// <summary>
+        /// 枚举所有文件;(线程安全)
+        /// </summary>
+        /// <param name="searchPattern">可以是文本和通配符的组合字符，但不支持正则表达式</param>
+        /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
+        public virtual IEnumerable<string> ConcurrentEnumerateFiles(string searchPattern, SearchOption searchOption)
+        {
+            if (searchPattern == null)
+                throw new ArgumentNullException(nameof(searchPattern));
+
+            lock (asyncLock)
+            {
+                return EnumerateFiles(searchPattern, searchOption).ToList();
+            }
+        }
+
+        /// <summary>
+        /// 枚举所有文件;(线程安全)
+        /// </summary>
+        /// <param name="directoryName">指定目录名称</param>
+        /// <param name="searchPattern">可以是文本和通配符的组合字符，但不支持正则表达式</param>
+        /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
+        public virtual IEnumerable<string> ConcurrentEnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        {
+            if(directoryName == null)
+                throw new ArgumentNullException(nameof(directoryName));
+            if (searchPattern == null)
+                throw new ArgumentNullException(nameof(searchPattern));
+
+            lock (asyncLock)
+            {
+                return EnumerateFiles(directoryName, searchPattern, searchOption).ToList();
+            }
+        }
+
+        /// <summary>
+        /// 搜索指定路径,直到返回true停止,若未找到则返回 null;(线程安全)
+        /// </summary>
+        public virtual string ConcurrentFind(Func<string, bool> func)
+        {
+            if (func == null)
+                throw new ArgumentNullException(nameof(func));
+
+            lock (asyncLock)
+            {
+                return Find(func);
+            }
+        }
+
+        /// <summary>
+        /// 获取到只读的流,若未能获取到则返回 FileNotFoundException 异常;(线程安全)
+        /// </summary>
+        public virtual Stream ConcurrentGetInputStream(string relativePath)
+        {
+            lock (asyncLock)
+            {
+                return GetInputStream(relativePath);
+            }
         }
 
 
         /// <summary>
-        /// 枚举所有文件信息;
+        /// 枚举所有文件路径;(允许为非线程安全方法)
         /// </summary>
         public abstract IEnumerable<string> EnumerateFiles();
 
         /// <summary>
-        /// 枚举所有文件;(参考 DirectoryInfo.EnumerateFiles 方法 (String, SearchOption))
+        /// 枚举所有文件路径;(允许为非线程安全方法)
         /// </summary>
-        /// <param name="searchPattern">可以是文本和通配符的组合字符，但不支持正则表达式</param>
-        /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
         public virtual IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
             ThrowIfObjectDisposed();
@@ -122,14 +197,13 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 枚举所有文件;(参考 DirectoryInfo.EnumerateFiles 方法 (String, SearchOption))
+        /// 枚举所有文件路径;(允许为非线程安全方法)
         /// </summary>
-        /// <param name="directoryName">指定目录名称</param>
-        /// <param name="searchPattern">可以是文本和通配符的组合字符，但不支持正则表达式</param>
-        /// <param name="searchOption">指定搜索操作是应仅包含当前目录还是应包含所有子目录的枚举值之一</param>
         public virtual IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
             ThrowIfObjectDisposed();
+            if (directoryName == null)
+                throw new ArgumentNullException(nameof(directoryName));
             if (searchPattern == null)
                 throw new ArgumentNullException(nameof(searchPattern));
 
@@ -172,9 +246,9 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 搜索指定路径,直到返回true停止,若未找到则返回 null;
+        /// 搜索指定路径,直到返回true停止,若未找到则返回 null;(允许为非线程安全方法)
         /// </summary>
-        public string Find(Func<string, bool> func)
+        public virtual string Find(Func<string, bool> func)
         {
             ThrowIfObjectDisposed();
             if (func == null)
@@ -191,198 +265,86 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到只读的流,若未能获取到则返回 FileNotFound 异常;
+        /// 获取到只读的流,若未能获取到则返回 FileNotFoundException 异常;(允许为非线程安全方法)
         /// </summary>
         public abstract Stream GetInputStream(string relativePath);
 
 
+
         /// <summary>
-        /// 在更改内容之前需要先调用;
+        /// 在更改内容之前需要先调用;(非线程安全)
         /// </summary>
         public abstract void BeginUpdate();
 
         /// <summary>
-        /// 在更改内容之后,需要调用此方法来完成内容更新;
+        /// 在更改内容之后,需要调用此方法来完成内容更新;(非线程安全)
         /// </summary>
         public abstract void CommitUpdate();
 
         /// <summary>
-        /// 添加到资源,若不存在该文件则加入到,若已经存在该文件,则更新其;
+        /// 添加到资源,若不存在该文件则加入到,若已经存在该文件,则更新其;(非线程安全)
         /// </summary>
         public abstract void AddOrUpdate(string relativePath, Stream stream);
 
         /// <summary>
-        /// 移除指定资源;
+        /// 移除指定资源;(非线程安全)
         /// </summary>
         public abstract bool Remove(string relativePath);
 
         /// <summary>
-        /// 获取到输出流,若文件已经存在则返回该流,否则返回空的用于写的流;
+        /// 获取到输出流,若文件已经存在则返回该流,否则返回空的用于写的流;(非线程安全)
         /// </summary>
         public abstract Stream GetOutStream(string relativePath);
 
         /// <summary>
-        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;
+        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;(非线程安全)
         /// </summary>
         public abstract Stream CreateOutStream(string relativePath);
 
 
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取或不存在则返回null;
+        /// 获取到对应的 AssetBundle,若还未读取则返回异常;(线程安全)
         /// </summary>
-        public static AssetBundle GetAssetBundlePublic(string key)
+        public AssetBundle GetAssetBundle(AssetPath path)
         {
-            if (!IsAssetBundleKey(key))
-                throw new ArgumentException(key);
-
-            AssetBundle assetBundle;
-            if (DefaultAssetBundleDictionary.TryGet(key, out assetBundle))
-            {
-                return assetBundle;
-            }
-            else
-            {
-                return null;
-            }
+            return SharedContent.GetAssetBundle(path);
         }
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取或不存在则返回null;
+        /// 获取到对应的 AssetBundle,若还未读取,则读取并返回,若不存在 AssetBundle 或读取失败则返回异常;(线程安全)
+        /// </summary>
+        public AssetBundle GetOrLoadAssetBundle(AssetPath path)
+        {
+            return SharedContent.GetOrLoadAssetBundle(path);
+        }
+
+        /// <summary>
+        /// 获取到对应的 AssetBundle,若还未读取则返回异常;(线程安全)
         /// </summary>
         public AssetBundle GetAssetBundle(string assetBundleName)
         {
-            ThrowIfObjectDisposed();
-            if (string.IsNullOrWhiteSpace(assetBundleName))
-                throw new ArgumentException(nameof(assetBundleName));
-
-            string key = GetAssetBundleKey(assetBundleName);
-            AssetBundle assetBundle;
-            if (DefaultAssetBundleDictionary.TryGet(key, out assetBundle))
-            {
-                return assetBundle;
-            }
-            else
-            {
-                return null;
-            }
+            return SharedContent.GetAssetBundle(assetBundleName);
         }
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取,则读取并返回,若不存在 AssetBundle 或读取失败则返回异常;
+        /// 读取到指定的 AssetBundle,若未找到则返回异常;(线程安全)
         /// </summary>
         public AssetBundle GetOrLoadAssetBundle(string assetBundleName)
         {
-            ThrowIfObjectDisposed();
-            if (string.IsNullOrWhiteSpace(assetBundleName))
-                throw new ArgumentException(nameof(assetBundleName));
-
-            string key = GetAssetBundleKey(assetBundleName);
-            AssetBundle assetBundle;
-            if (DefaultAssetBundleDictionary.TryGet(key, out assetBundle))
-            {
-                return assetBundle;
-            }
-            else
-            {
-                return DefaultAssetBundleDictionary.Load(key, () => InternalAssetBundle(assetBundleName));
-            }
+            return SharedContent.GetOrLoadAssetBundle(assetBundleName);
         }
+
 
         /// <summary>
-        /// 读取到 AssetBundle;
+        /// 若该实例已经被销毁,则返回异常;
         /// </summary>
-        private AssetBundle InternalAssetBundle(string name)
+        protected void ThrowIfObjectDisposed()
         {
-            var assetBundleDescrs = Description.AssetBundles;
-            if (assetBundleDescrs != null)
+            if (isDisposed)
             {
-                foreach (var descr in assetBundleDescrs)
-                {
-                    if (descr.Name == name)
-                    {
-                        using (var stream = GetInputStream(descr.RelativePath))
-                        {
-                            AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
-                            if (assetBundle != null)
-                            {
-                                return assetBundle;
-                            }
-                            else
-                            {
-                                throw new IOException(string.Format("无法加载 AssetBundle[Name:{0}]", name));
-                            }
-                        }
-                    }
-                }
+                throw new ObjectDisposedException(ToString());
             }
-            throw new ArgumentException(string.Format("未找到 AssetBundle[Name:{0}]的定义信息", name));
-        }
-
-
-
-        private const char AssetBundleKeyFristChar = '@';
-        private const char AssetBundleKeySeparator = ':';
-
-        /// <summary>
-        /// 确认是否为 AssetBundle 字典结构的 key;
-        /// </summary>
-        public static bool IsAssetBundleKey(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException(name);
-
-            return name[0] == AssetBundleKeyFristChar;
-        }
-
-        /// <summary>
-        /// 获取到存放 AssetBundle 字典结构的 key;
-        /// </summary>
-        public string GetAssetBundleKey(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException(name);
-
-            if (name[0] == AssetBundleKeyFristChar)
-            {
-                return name;
-            }
-            else
-            {
-                string key = InternalGetAssetBundleKey(name);
-                return key;
-            }
-        }
-
-        /// <summary>
-        /// 转换为 AssetBundle 字典结构的 key;若已经为key,则返回true,需要转换则返回false;
-        /// </summary>
-        public bool TryGetAssetBundleKey(string name, out string key)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException(name);
-
-            if (name[0] == AssetBundleKeyFristChar)
-            {
-                key = name;
-                return true;
-            }
-            else
-            {
-                key = InternalGetAssetBundleKey(name);
-                return false;
-            }
-        }
-
-        private string InternalGetAssetBundleKey(string assetBundleName)
-        {
-            string key = string.Concat(AssetBundleKeyFristChar, Description.ID, AssetBundleKeySeparator, assetBundleName);
-            return key;
-        }
-
-        public static void Remove()
-        {
-
         }
     }
 }

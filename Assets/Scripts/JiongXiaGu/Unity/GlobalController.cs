@@ -50,14 +50,8 @@ namespace JiongXiaGu.Unity
                 DiffuseBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
             };
 
-            Task<LandformRes> infoTask = null;
-            await Task.Run(delegate ()
-            {
-                infoTask = LandformResPool.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
-            });
-
-            await infoTask;
-            meshRenderer.material.mainTexture = infoTask.Result.DiffuseTex;
+            LandformRes res = await LandformResPool.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
+            meshRenderer.material.mainTexture = res.DiffuseTex;
         }
 
         [ContextMenu("Test2")]
@@ -82,6 +76,19 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test3")]
         private void Test3()
         {
+            TT tt = new TT();
+            SetNull(ref tt);
+            Debug.Log(tt == null);
+        }
+
+        private void SetNull(ref TT tt)
+        {
+            tt = null;
+        }
+
+        private class TT
+        {
+
         }
 
 
