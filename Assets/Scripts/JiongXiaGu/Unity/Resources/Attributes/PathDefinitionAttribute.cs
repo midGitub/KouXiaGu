@@ -18,6 +18,11 @@ namespace JiongXiaGu.Unity.Resources
         Data,
 
         /// <summary>
+        /// 配置数据;
+        /// </summary>
+        Config,
+
+        /// <summary>
         /// 用户数据;
         /// </summary>
         UserConfig,

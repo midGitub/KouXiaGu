@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Unity.Resources
 {
 
-
+    /// <summary>
+    /// 内容序列化器;
+    /// </summary>
     public abstract class ContentSerializer<T>
     {
         /// <summary>
@@ -26,7 +28,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public virtual void AddOrUpdate(LoadableContent content, T item)
         {
-            using (var stream = content.CreateOutStream(RelativePath))
+            using (var stream = content.InternaltCreateOutStream(RelativePath))
             {
                 Serializer.Serialize(stream, item);
             }
@@ -37,10 +39,30 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public virtual T Deserialize(LoadableContent content)
         {
-            using (var stream = content.ConcurrentGetInputStream(RelativePath))
+            using (var stream = content.GetInputStream(RelativePath))
             {
                 var item = Serializer.Deserialize(stream);
                 return item;
+            }
+        }
+
+        /// <summary>
+        /// 获取到对应资源,若未能获取到则返回false;
+        /// </summary>
+        public bool TryDeserialize(LoadableContent content, out T item)
+        {
+            try
+            {
+                using (var stream = content.GetInputStream(RelativePath))
+                {
+                    item = Serializer.Deserialize(stream);
+                    return true;
+                }
+            }
+            catch
+            {
+                item = default(T);
+                return false;
             }
         }
     }

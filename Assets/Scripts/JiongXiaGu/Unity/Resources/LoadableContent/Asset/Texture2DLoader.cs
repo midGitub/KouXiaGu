@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.Resources
             get { return supportedLoadModes; }
         }
 
-        public override Texture2D Load(ILoadableContent content, AssetInfo assetInfo)
+        public override Texture2D Load(LoadableContent content, AssetInfo assetInfo)
         {
             UnityThread.ThrowIfNotUnityThread();
             ThrowIfNotSupportedLoadMode(assetInfo.From);
@@ -43,7 +43,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从 AssetBundle 读取 Texture2D
         /// </summary>
-        private static Texture2D InternalFromAssetBundleReadTexture2D(ILoadableContent content, AssetInfo assetInfo)
+        private static Texture2D InternalFromAssetBundleReadTexture2D(LoadableContent content, AssetInfo assetInfo)
         {
             AssetBundle assetBundle = content.GetOrLoadAssetBundle(assetInfo.AssetBundleName);
             var texture = assetBundle.LoadAsset<Texture2D>(assetInfo.Name.Name);
@@ -60,9 +60,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从 文件 读取 Texture2D;
         /// </summary>
-        private static Texture2D InternalFromFileReadTexture2D(ILoadableContent content, AssetInfo assetInfo)
+        private static Texture2D InternalFromFileReadTexture2D(LoadableContent content, AssetInfo assetInfo)
         {
-            var stream = content.ConcurrentGetInputStream(assetInfo.Name.Name);
+            var stream = content.GetInputStream(assetInfo.Name.Name);
             byte[] imageData = new byte[stream.Length];
             stream.Read(imageData, 0, (int)stream.Length);
 

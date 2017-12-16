@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到对应资源;
         /// </summary>
-        public T Load<T>(AssetLoader<T> loader, ILoadableContent content, AssetInfo assetInfo)
+        public T Load<T>(AssetLoader<T> loader, LoadableContent content, AssetInfo assetInfo)
             where T :class
         {
             if (loader == null)
@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 重新读取到对应资源;
         /// </summary>
-        public T Reload<T>(AssetLoader<T> loader, ILoadableContent content, AssetInfo assetInfo)
+        public T Reload<T>(AssetLoader<T> loader, LoadableContent content, AssetInfo assetInfo)
             where T : class
         {
             if (loader == null)
@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 异步读取到对应资源;
         /// </summary>
-        public Task<T> LoadAsync<T>(AssetLoader<T> loader, ILoadableContent content, AssetInfo assetInfo, CancellationToken token)
+        public Task<T> LoadAsync<T>(AssetLoader<T> loader, LoadableContent content, AssetInfo assetInfo, CancellationToken token)
             where T : class
         {
             if (loader == null)
@@ -61,7 +61,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 重新读取到对应资源;
         /// </summary>
-        public Task<T> ReloadAsync<T>(AssetLoader<T> loader, ILoadableContent content, AssetInfo assetInfo, CancellationToken token = default(CancellationToken))
+        public Task<T> ReloadAsync<T>(AssetLoader<T> loader, LoadableContent content, AssetInfo assetInfo, CancellationToken token = default(CancellationToken))
             where T : class
         {
             if (loader == null)
@@ -74,7 +74,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-        public string GetKey<T>(ILoadableContent content, AssetInfo assetInfo)
+        public string GetKey<T>(LoadableContent content, AssetInfo assetInfo)
         {
             return GetKey<T>(content.Description, assetInfo);
         }
@@ -87,11 +87,11 @@ namespace JiongXiaGu.Unity.Resources
             switch (assetInfo.From)
             {
                 case AssetLoadModes.AssetBundle:
-                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(ILoadableContent).FullName, description.ID, assetInfo.AssetBundleName, assetInfo.Name);
+                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(LoadableContent).FullName, description.ID, assetInfo.AssetBundleName, assetInfo.Name);
                     break;
 
                 case AssetLoadModes.File:
-                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(ILoadableContent).FullName, description.ID, assetInfo.Name);
+                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(LoadableContent).FullName, description.ID, assetInfo.Name);
                     break;
 
                 default:
@@ -101,7 +101,7 @@ namespace JiongXiaGu.Unity.Resources
             return key;
         }
 
-        private Func<T> GetLoader<T>(AssetLoader<T> assetReader, ILoadableContent content, AssetInfo assetInfo)
+        private Func<T> GetLoader<T>(AssetLoader<T> assetReader, LoadableContent content, AssetInfo assetInfo)
             where T : class
         {
             return () => assetReader.Load(content, assetInfo);

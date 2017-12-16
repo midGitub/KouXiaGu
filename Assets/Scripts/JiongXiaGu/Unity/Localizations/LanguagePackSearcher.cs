@@ -56,12 +56,12 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public IEnumerable<LanguagePackInfo> EnumeratePack(LoadableContent contentConstruct, SearchOption searchOption)
         {
-            foreach (string entry in contentConstruct.ConcurrentEnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
+            foreach (string entry in contentConstruct.EnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
             {
                 LanguagePackInfo languagePack;
                 try
                 {
-                    using (var stream = contentConstruct.ConcurrentGetInputStream(entry))
+                    using (var stream = contentConstruct.GetInputStream(entry))
                     {
                         var description = packSerializer.DeserializeDesc(stream);
                         languagePack = new LanguagePackInfo(description, contentConstruct, entry);

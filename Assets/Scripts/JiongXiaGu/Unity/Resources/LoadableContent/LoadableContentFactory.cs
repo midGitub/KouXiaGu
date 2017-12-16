@@ -16,57 +16,72 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 创建可读内容,若目录已经存在则返回异常;
         /// </summary>
-        public LoadableDirectory CreateNew(string directory, LoadableContentDescription description)
+        public LoadableDirectory CreateNew(string directory, LoadableContentDescription description, bool isCore = false)
         {
             if (Directory.Exists(directory))
                 throw new IOException(string.Format("目录[{0}]已经存在;", directory));
 
             Directory.CreateDirectory(directory);
             LoadableDirectory loadableDirectory = new LoadableDirectory(directory, description);
-            loadableDirectory.BeginUpdate();
-            WriteDescription(loadableDirectory, description);
-            loadableDirectory.CommitUpdate();
+            loadableDirectory.InternaltBeginUpdate();
+            InternalWriteDescription(loadableDirectory, description);
+            loadableDirectory.InternaltCommitUpdate();
+            loadableDirectory.IsCoreContent = isCore;
             return loadableDirectory;
         }
 
         /// <summary>
         /// 创建可读内容,若文件已经存在则返回异常;
         /// </summary>
-        public LoadableZip CreateNewZip(string file, LoadableContentDescription description)
+        public LoadableZip CreateNewZip(string file, LoadableContentDescription description, bool isCore = false)
         {
             Stream stream = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite);
             ZipFile zipFile = ZipFile.Create(stream);
             LoadableZip loadableZip = new LoadableZip(file, stream, zipFile, description);
-            loadableZip.BeginUpdate();
-            WriteDescription(loadableZip, description);
-            loadableZip.CommitUpdate();
+            loadableZip.InternaltBeginUpdate();
+            InternalWriteDescription(loadableZip, description);
+            loadableZip.InternaltCommitUpdate();
+            loadableZip.IsCoreContent = isCore;
             return loadableZip;
         }
 
         /// <summary>
         /// 读取内容,若目录不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
-        public LoadableDirectory Read(string directory)
+        public LoadableDirectory Read(string directory, bool isCore = false)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
 
-            LoadableContentDescription description = ReadDescriptionFromDirectory(directory);
+            LoadableContentDescription description = InternalReadDescriptionFromDirectory(directory);
             LoadableDirectory loadableDirectory = new LoadableDirectory(directory, description);
+            loadableDirectory.IsCoreContent = isCore;
             return loadableDirectory;
         }
 
         /// <summary>
         /// 读取内容,若文件不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
-        public LoadableZip ReadZip(string file)
+        public LoadableZip ReadZip(string file, bool isCore = false)
         {
             Stream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite);
             ZipFile zipFile = new ZipFile(stream);
-            LoadableContentDescription description = ReadDescriptionFromZip(zipFile);
+            LoadableContentDescription description = InternalReadDescriptionFromZip(zipFile);
             LoadableZip loadableZip = new LoadableZip(file, stream, zipFile, description);
+            loadableZip.IsCoreContent = isCore;
             return loadableZip;
         }
+
+        /// <summary>
+        /// 从内容读取到描述,并且更新实例;
+        /// </summary>
+        public void UpdateDescription(LoadableContent content)
+        {
+            LoadableContentDescription description = InternalReadDescription(content);
+            content.NewDescription = description;
+        }
+
+
 
 
         private const string DescriptionFileName = "LoadableContentDescr";
@@ -78,15 +93,18 @@ namespace JiongXiaGu.Unity.Resources
             get { return descriptionPath ?? (descriptionPath = DescriptionFileName + descriptionSerializer.FileExtension); }
         }
 
-        internal void WriteDescription(LoadableContent content, LoadableContentDescription description)
+        /// <summary>
+        /// 输出新的描述到实例;
+        /// </summary>
+        internal void InternalWriteDescription(LoadableContent content, LoadableContentDescription description)
         {
-            using (var stream = content.CreateOutStream(DescriptionPath))
+            using (var stream = content.InternaltCreateOutStream(DescriptionPath))
             {
                 descriptionSerializer.Serialize(stream, description);
             }
         }
 
-        internal LoadableContentDescription ReadDescriptionFromDirectory(string directory)
+        internal LoadableContentDescription InternalReadDescriptionFromDirectory(string directory)
         {
             string filePath = Path.Combine(directory, DescriptionPath);
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -96,7 +114,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        internal LoadableContentDescription ReadDescriptionFromZip(Stream fStream)
+        internal LoadableContentDescription InternalReadDescriptionFromZip(Stream fStream)
         {
             using (var zipInputStream = new ZipInputStream(fStream))
             {
@@ -110,11 +128,11 @@ namespace JiongXiaGu.Unity.Resources
                         return descr;
                     }
                 }
-                throw new FileNotFoundException(string.Format("未找到描述文件{1}", DescriptionPath));
+                throw new FileNotFoundException(string.Format("未找到描述文件{0}", DescriptionPath));
             }
         }
 
-        internal LoadableContentDescription ReadDescriptionFromZip(ZipFile zipFile)
+        internal LoadableContentDescription InternalReadDescriptionFromZip(ZipFile zipFile)
         {
             ZipEntry entry = zipFile.GetEntry(DescriptionPath);
             if (entry != null)
@@ -127,13 +145,16 @@ namespace JiongXiaGu.Unity.Resources
             }
             else
             {
-                throw new FileNotFoundException(string.Format("未找到描述文件{1}", DescriptionPath));
+                throw new FileNotFoundException(string.Format("未找到描述文件{0}", DescriptionPath));
             }
         }
 
-        internal LoadableContentDescription ReadDescription(LoadableContent content)
+        /// <summary>
+        /// 读取到描述;
+        /// </summary>
+        internal LoadableContentDescription InternalReadDescription(LoadableContent content)
         {
-            using (var stream = content.ConcurrentGetInputStream(DescriptionPath))
+            using (var stream = content.GetInputStream(DescriptionPath))
             {
                 var descr = descriptionSerializer.Deserialize(stream);
                 return descr;

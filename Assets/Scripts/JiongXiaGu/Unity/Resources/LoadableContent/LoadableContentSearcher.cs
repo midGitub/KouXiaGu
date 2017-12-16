@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -18,19 +15,45 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         private const string IgnoreSymbol = "#ignore_";
         public LoadableContentFactory Factory { get; private set; }
+        public LoadOrderDefinitionSerializer LoadOrderSerializer { get; private set; }
 
         public LoadableContentSearcher()
         {
             Factory = new LoadableContentFactory();
+            LoadOrderSerializer = new LoadOrderDefinitionSerializer();
         }
 
+        public LoadableContentSearcher(LoadableContentFactory factory)
+        {
+            Factory = factory;
+        }
+
+
+        ///// <summary>
+        ///// 获取到所以可读资源和资源读取顺序;
+        ///// </summary>
+        //public LoadableContents FindAll()
+        //{
+        //    var core = Factory.Read(Resource.CoreDirectory, true);
+        //    var dlc = Find(Resource.DlcDirectory);
+        //    var mod = Find(Resource.ModDirectory);
+        //    var contents = new List<LoadableContent>();
+        //    contents.Add(core);
+        //    contents.AddRange(dlc);
+        //    contents.AddRange(mod);
+
+        //    LoadableContents loadableResource = new LoadableContents(contents);
+        //    return loadableResource;
+        //}
+
+
         /// <summary>
-        /// 枚举目录下的所有可读资源;
+        /// 获取目录下的所有可读资源;
         /// </summary>
         /// <param name="modsDirectory">目标目录</param>
         /// <param name="type">指定找到的模组类型</param>
         /// <returns></returns>
-        public List<LoadableContent> FindLoadableContent(string modsDirectory)
+        public List<LoadableContent> Find(string modsDirectory)
         {
             List<LoadableContent> list = new List<LoadableContent>();
 
@@ -40,6 +63,9 @@ namespace JiongXiaGu.Unity.Resources
             return list;
         }
 
+        /// <summary>
+        /// 枚举目录下所有 目录 类型的资源;
+        /// </summary>
         public IEnumerable<LoadableContent> EnumerateDirectory(string modsDirectory)
         {
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory, "*", SearchOption.TopDirectoryOnly))
@@ -65,6 +91,9 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
+        /// <summary>
+        /// 枚举目录下所有 压缩包 类型的资源;
+        /// </summary>
         public IEnumerable<LoadableContent> EnumerateZipFile(string modsDirectory)
         {
             foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zmod", SearchOption.AllDirectories))

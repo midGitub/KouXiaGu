@@ -51,7 +51,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-        public override IEnumerable<string> EnumerateFiles()
+        internal override IEnumerable<string> InternalEnumerateFiles()
         {
             ThrowIfObjectDisposed();
 
@@ -64,7 +64,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override Stream GetInputStream(string relativePath)
+        internal override Stream InternaltInputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
@@ -81,14 +81,14 @@ namespace JiongXiaGu.Unity.Resources
 
 
 
-        public override void BeginUpdate()
+        internal override void InternaltBeginUpdate()
         {
             ThrowIfObjectDisposed();
 
             zipFile.BeginUpdate();
         }
 
-        public override void CommitUpdate()
+        internal override void InternaltCommitUpdate()
         {
             ThrowIfObjectDisposed();
 
@@ -98,7 +98,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 在 CommitUpdate() 之后才会应用变化;
         /// </summary>
-        public override void AddOrUpdate(string relativePath, Stream stream)
+        internal override void InternaltAddOrUpdate(string relativePath, Stream stream)
         {
             ThrowIfObjectDisposed();
 
@@ -109,7 +109,7 @@ namespace JiongXiaGu.Unity.Resources
             zipFile.Add(zipUpdate, relativePath);
         }
 
-        public override bool Remove(string relativePath)
+        internal override bool InternaltRemove(string relativePath)
         {
             return zipFile.Delete(relativePath);
         }
@@ -117,7 +117,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 写完毕后需要关闭流,在 CommitUpdate() 之后才会应用变化;
         /// </summary>
-        public override Stream GetOutStream(string relativePath)
+        internal override Stream InternaltGetOutStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
@@ -138,7 +138,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override Stream CreateOutStream(string relativePath)
+        internal override Stream InternaltCreateOutStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 

@@ -10,11 +10,6 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public static class Resource
     {
-        /// <summary>
-        /// 自定义的 AssetBundle 后缀名,因为Unity构建的 AssetBundle 没有后缀名;
-        /// </summary>
-        public const string AssetBundleExtension = ".assetbundle";
-
 
         private static string coreDirectory;
 
@@ -67,7 +62,8 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 初始化路径信息(仅在Unity线程调用);
         /// </summary>
-        internal static void Initialize()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void InitializeOnLoad()
         {
             CoreDirectory.Initialization();
             UserConfigDirectory.Initialization();

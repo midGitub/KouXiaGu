@@ -211,7 +211,7 @@ namespace JiongXiaGu.Unity.Resources
                 {
                     if (descr.Name == name)
                     {
-                        var stream = LoadableContent.ConcurrentGetInputStream(descr.RelativePath);
+                        var stream = LoadableContent.GetInputStream(descr.RelativePath);
                         {
                             AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
                             if (assetBundle != null)

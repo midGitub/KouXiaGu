@@ -9,7 +9,6 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public abstract class ContentSearcher<T>
     {
-
         /// <summary>
         /// 相对目录名;
         /// </summary>
@@ -23,7 +22,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 反序列化内容;
         /// </summary>
-        protected abstract T Deserialize(ILoadableContent content, string entry);
+        protected abstract T Deserialize(LoadableContent content, string entry);
 
         /// <summary>
         /// 枚举所有符合要求的文件;
@@ -44,9 +43,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        internal IEnumerable<T> Enumerate(ILoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        internal IEnumerable<T> Enumerate(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            foreach (string entry in contentConstruct.ConcurrentEnumerateFiles(DirectoryName, SearchPattern, searchOption))
+            foreach (string entry in contentConstruct.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
             {
                 T item = default(T);
                 bool isSuccess = false;

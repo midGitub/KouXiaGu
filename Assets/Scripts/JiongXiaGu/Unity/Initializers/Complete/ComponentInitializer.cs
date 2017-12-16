@@ -12,9 +12,6 @@ namespace JiongXiaGu.Unity.Initializers
     /// </summary>
     public interface IComponentInitializeHandle
     {
-        /// <summary>
-        /// 进行初始化,对于可进行异步的工作,通过异步Task进行;
-        /// </summary>
         Task Initialize(CancellationToken token);
     }
 
@@ -49,6 +46,14 @@ namespace JiongXiaGu.Unity.Initializers
         {
             base.OnDestroy();
             singleton.RemoveInstance(this);
+        }
+
+        protected override Task First()
+        {
+            return Task.Run(delegate ()
+            {
+                LoadableResource.Initialize();
+            });
         }
 
         protected override IEnumerable<Task> EnumerateInitializeHandler()
