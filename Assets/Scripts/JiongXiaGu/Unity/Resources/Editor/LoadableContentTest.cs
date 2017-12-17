@@ -36,13 +36,13 @@ namespace JiongXiaGu.Unity.Resources
 
             using (var v1 = factory.CreateNew(directory, description0))
             {
-                descr = v1.Description;
+                descr = v1.OriginalDescription;
                 ContentReadWriteTest(v1);
             }
 
             using (var v2 = factory.Read(directory))
             {
-                Assert.AreEqual(descr, v2.Description);
+                Assert.AreEqual(descr, v2.OriginalDescription);
             }
         }
 
@@ -68,13 +68,13 @@ namespace JiongXiaGu.Unity.Resources
 
             using (var v1 = factory.CreateNewZip(file, description0))
             {
-                descr = v1.Description;
+                descr = v1.OriginalDescription;
                 ContentReadWriteTest(v1);
             }
 
             using (var v2 = factory.ReadZip(file))
             {
-                Assert.AreEqual(descr, v2.Description);
+                Assert.AreEqual(descr, v2.OriginalDescription);
             }
         }
 
@@ -116,13 +116,13 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 添加内容;
         /// </summary>
-        private void ContentReadWriteTest(LoadableContent loadableContent)
+        private void ContentReadWriteTest(Content content)
         {
-            using (var dis = loadableContent.BeginUpdate())
+            using (var dis = content.BeginUpdate())
             {
-                using (Stream stream1 = loadableContent.GetOutStream(description1Path),
-                    stream2 = loadableContent.GetOutStream(description2Path),
-                    stream3 = loadableContent.GetOutStream(description3Path))
+                using (Stream stream1 = content.GetOutStream(description1Path),
+                    stream2 = content.GetOutStream(description2Path),
+                    stream3 = content.GetOutStream(description3Path))
                 {
                     xmlSerializer.Serialize(stream1, description1);
                     xmlSerializer.Serialize(stream2, description2);
@@ -130,11 +130,11 @@ namespace JiongXiaGu.Unity.Resources
                 }
             }
 
-            Assert.AreEqual(loadableContent.EnumerateFiles().Count(), 4);
+            Assert.AreEqual(content.EnumerateFiles().Count(), 4);
 
-            using (Stream stream1 = loadableContent.GetInputStream(description1Path), 
-                stream2 = loadableContent.GetInputStream(description2Path), 
-                stream3 = loadableContent.GetInputStream(description3Path))
+            using (Stream stream1 = content.GetInputStream(description1Path), 
+                stream2 = content.GetInputStream(description2Path), 
+                stream3 = content.GetInputStream(description3Path))
             {
                 var d1 = xmlSerializer.Deserialize(stream1);
                 AreEqual(d1, description1);

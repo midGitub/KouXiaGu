@@ -22,8 +22,8 @@ namespace JiongXiaGu.Unity.Initializers
         [EnumFlags]
         [SerializeField]
         private InitializeOptions options;
-
         private TaskCompletionSource<object> taskCompletionSource;
+        public bool IsInitialized { get; private set; }
 
         public Task InitializeTask
         {
@@ -56,26 +56,30 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 开始进行初始化;
         /// </summary>
-        public async void StartInitialize()
+        protected async void StartInitialize()
         {
-            try
+            if (!IsInitialized)
             {
-                if ((options & InitializeOptions.RunInUnityThread) > InitializeOptions.None && !UnityThread.IsUnityThread)
+                IsInitialized = true;
+                try
                 {
-                    await TaskHelper.Run(InternalInitialize, UnityThread.TaskScheduler);
+                    if ((options & InitializeOptions.RunInUnityThread) > InitializeOptions.None && !UnityThread.IsUnityThread)
+                    {
+                        await TaskHelper.Run(InternalInitialize, UnityThread.TaskScheduler);
+                    }
+                    else
+                    {
+                        await InternalInitialize();
+                    }
+                    taskCompletionSource.SetResult(null);
+                    OnCompleted();
                 }
-                else
+                catch (Exception ex)
                 {
-                    await InternalInitialize();
+                    taskCompletionSource.SetException(ex);
+                    CancellationTokenSource.Cancel();
+                    OnFaulted(ex);
                 }
-                taskCompletionSource.SetResult(null);
-                OnCompleted();
-            }
-            catch (Exception ex)
-            {
-                taskCompletionSource.SetException(ex);
-                CancellationTokenSource.Cancel();
-                OnFaulted(ex);
             }
         }
 
@@ -144,7 +148,7 @@ namespace JiongXiaGu.Unity.Initializers
         protected abstract IEnumerable<Task> EnumerateInitializeHandler();
 
         /// <summary>
-        /// 在初始化过程中出现异常;
+        /// 在初始化过程中出现异常,若要中断初始化则返回异常;
         /// </summary>
         protected virtual void OnFaulted(Task task)
         {

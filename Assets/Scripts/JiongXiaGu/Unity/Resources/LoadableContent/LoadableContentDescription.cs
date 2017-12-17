@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 可加载资源描述;
+    /// 通用的描述;
     /// </summary>
     [XmlRoot("LoadableContentDescription")]
     public struct LoadableContentDescription : IEquatable<LoadableContentDescription>

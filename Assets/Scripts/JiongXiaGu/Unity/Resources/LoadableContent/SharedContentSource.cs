@@ -12,28 +12,26 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class SharedContentSource
     {
-        private List<SharedContent> contentCollection = new List<SharedContent>();
+        private List<LoadableContent> contentCollection = new List<LoadableContent>();
         private ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
 
         /// <summary>
         /// 添加新的资源,若重复加入则返回false;
         /// </summary>
-        internal SharedContent Add(LoadableContent loadableContent)
+        internal void Add(LoadableContent loadableContent)
         {
             using (readerWriterLock.UpgradeableReadLock())
             {
-                if (contentCollection.Contains(item => item.ID == loadableContent.Description.ID))
+                if (contentCollection.Contains(item => item.ID == loadableContent.OriginalDescription.ID))
                 {
                     throw new ArgumentException("重复加入");
                 }
                 else
                 {
-                    SharedContent sharedContent = new SharedContent(this, loadableContent);
                     using (readerWriterLock.WriteLock())
                     {
-                        contentCollection.Add(sharedContent);
+                        contentCollection.Add(loadableContent);
                     }
-                    return sharedContent;
                 }
             }
         }
@@ -45,24 +43,24 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (readerWriterLock.WriteLock())
             {
-                return contentCollection.Remove(item => item.ID == loadableContent.Description.ID);
+                return contentCollection.Remove(item => item.ID == loadableContent.OriginalDescription.ID);
             }
         }
 
         /// <summary>
         /// 获取到自定资源,若不存在则返回异常;
         /// </summary>
-        public SharedContent Find(string contentID)
+        public LoadableContent Find(string contentID)
         {
             if (string.IsNullOrWhiteSpace(contentID))
                 throw new ArgumentNullException(nameof(contentID));
 
             using (readerWriterLock.ReadLock())
             {
-                var sharedContent = contentCollection.Find(item => item.ID == contentID);
-                if (sharedContent != null)
+                var content = contentCollection.Find(item => item.ID == contentID);
+                if (content != null)
                 {
-                    return sharedContent;
+                    return content;
                 }
                 else
                 {
@@ -74,15 +72,15 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到自定资源,若不存在则返回异常;
         /// </summary>
-        public SharedContent FindOrDefault(string contentID)
+        public LoadableContent FindOrDefault(string contentID)
         {
             if (string.IsNullOrWhiteSpace(contentID))
                 throw new ArgumentNullException(nameof(contentID));
 
             using (readerWriterLock.ReadLock())
             {
-                var sharedContent = contentCollection.Find(item => item.ID == contentID);
-                return sharedContent;
+                var content = contentCollection.Find(item => item.ID == contentID);
+                return content;
             }
         }
 

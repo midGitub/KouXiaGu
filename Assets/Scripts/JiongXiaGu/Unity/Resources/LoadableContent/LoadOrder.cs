@@ -14,7 +14,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             foreach (var definition in orderDefinition)
             {
-                LoadableContent content = LoadableResource.All.FirstOrDefault(item => item.NewDescription.ID == definition);
+                LoadableContent content = LoadableResource.All.FirstOrDefault(item => item.Description.ID == definition);
                 if (content != null)
                 {
                     AddLast(content);
@@ -24,7 +24,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public LoadOrderDefinition ToDefinition()
         {
-            LoadOrderDefinition definition = new LoadOrderDefinition(this.Select(content => content.Description.ID));
+            LoadOrderDefinition definition = new LoadOrderDefinition(this.Select(content => content.OriginalDescription.ID));
             return definition;
         }
     }

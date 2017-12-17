@@ -26,9 +26,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 添加对应资源;
         /// </summary>
-        public virtual void AddOrUpdate(LoadableContent content, T item)
+        public virtual void AddOrUpdate(Content content, T item)
         {
-            using (var stream = content.InternaltCreateOutStream(RelativePath))
+            using (var stream = content.CreateOutStream(RelativePath))
             {
                 Serializer.Serialize(stream, item);
             }
@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到对应资源,若未能获取到则返回异常;
         /// </summary>
-        public virtual T Deserialize(LoadableContent content)
+        public virtual T Deserialize(Content content)
         {
             using (var stream = content.GetInputStream(RelativePath))
             {
@@ -49,7 +49,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到对应资源,若未能获取到则返回false;
         /// </summary>
-        public bool TryDeserialize(LoadableContent content, out T item)
+        public bool TryDeserialize(Content content, out T item)
         {
             try
             {

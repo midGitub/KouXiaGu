@@ -76,7 +76,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public string GetKey<T>(LoadableContent content, AssetInfo assetInfo)
         {
-            return GetKey<T>(content.Description, assetInfo);
+            return GetKey<T>(content.OriginalDescription, assetInfo);
         }
 
         public string GetKey<T>(LoadableContentDescription description, AssetInfo assetInfo)

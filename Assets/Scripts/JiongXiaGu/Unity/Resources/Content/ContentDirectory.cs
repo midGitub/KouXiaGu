@@ -8,18 +8,25 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 可读取资源的目录;
+    /// 资源目录;
     /// </summary>
-    public class LoadableDirectory : LoadableContent
+    public class ContentDirectory : Content
     {
         /// <summary>
         /// 存放实例;
         /// </summary>
         private static readonly BlockingCollection<string> instancedDirectory = new BlockingCollection<string>();
 
+        private bool isUpdating;
+        private bool isDisposed;
         public DirectoryInfo DirectoryInfo { get; private set; }
 
-        internal LoadableDirectory(string directory, LoadableContentDescription description) : base(description)
+        public override bool IsUpdating => isUpdating;
+        public override bool IsDisposed => isDisposed;
+        public override bool CanRead => !isDisposed;
+        public override bool CanWrite => !isDisposed;
+
+        internal ContentDirectory(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
@@ -29,43 +36,17 @@ namespace JiongXiaGu.Unity.Resources
             DirectoryInfo = new DirectoryInfo(directory);
         }
 
-        private bool IsInstanced(string directory)
+        private static bool IsInstanced(string directory)
         {
             return instancedDirectory.Contains(directory);
         }
 
-
-        //public override IEnumerable<string> EnumerateFiles()
-        //{
-        //    return InternalEnumerateFiles();
-        //}
-
-        //public override IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
-        //{
-        //    return InternalEnumerateFiles(searchPattern, searchOption);
-        //}
-
-        //public override IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
-        //{
-        //    return InternalEnumerateFiles(directoryName, searchPattern, searchOption);
-        //}
-
-        //public override string Find(Func<string, bool> func)
-        //{
-        //    return InternalFind(func);
-        //}
-
-        //public override Stream GetInputStream(string relativePath)
-        //{
-        //    return InternaltInputStream(relativePath);
-        //}
-
-
         /// <summary>
         /// 枚举所有文件路径;
         /// </summary>
-        internal override IEnumerable<string> InternalEnumerateFiles()
+        public override IEnumerable<string> EnumerateFiles()
         {
+            ThrowIfObjectDisposed();
             return Directory.EnumerateFiles(DirectoryInfo.FullName, "*", SearchOption.AllDirectories).Select(delegate (string filePath)
             {
                 string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
@@ -73,8 +54,9 @@ namespace JiongXiaGu.Unity.Resources
             });
         }
 
-        internal override IEnumerable<string> InternalEnumerateFiles(string searchPattern, SearchOption searchOption)
+        public override IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
+            ThrowIfObjectDisposed();
             return Directory.EnumerateFiles(DirectoryInfo.FullName, searchPattern, searchOption).Select(delegate (string filePath)
             {
                 string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
@@ -82,10 +64,10 @@ namespace JiongXiaGu.Unity.Resources
             });
         }
 
-        internal override IEnumerable<string> InternalEnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        public override IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
         {
+            ThrowIfObjectDisposed();
             string directory = Path.Combine(DirectoryInfo.FullName, directoryName);
-
             if (DirectoryInfo.Exists)
             {
                 return Directory.EnumerateFiles(directory, searchPattern, searchOption).Select(delegate (string filePath)
@@ -100,8 +82,9 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        internal override Stream InternaltInputStream(string relativePath)
+        public override Stream GetInputStream(string relativePath)
         {
+            ThrowIfObjectDisposed();
             string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
             if (File.Exists(filePath))
             {
@@ -114,24 +97,30 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-
-        internal override void InternaltBeginUpdate()
+        public override IDisposable BeginUpdate()
         {
+            ThrowIfObjectDisposed();
+            isUpdating = true;
+            return new CommitUpdateDisposer(this);
         }
 
-        internal override void InternaltCommitUpdate()
+        public override void CommitUpdate()
         {
+            ThrowIfObjectDisposed();
+            isUpdating = false;
         }
 
-        internal override void InternaltAddOrUpdate(string relativePath, Stream stream)
+        public override void AddOrUpdate(string relativePath, Stream stream)
         {
+            ThrowIfObjectDisposed();
             string filePath = GetFullPath(relativePath);
             var fStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
             stream.CopyTo(fStream);
         }
 
-        internal override bool InternaltRemove(string relativePath)
+        public override bool Remove(string relativePath)
         {
+            ThrowIfObjectDisposed();
             string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
             if (File.Exists(relativePath))
             {
@@ -144,22 +133,29 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        internal override Stream InternaltGetOutStream(string relativePath)
+        public override Stream GetOutStream(string relativePath)
         {
+            ThrowIfObjectDisposed();
             string filePath = GetFullPath(relativePath);
             return new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 
-        internal override Stream InternaltCreateOutStream(string relativePath)
+        public override Stream CreateOutStream(string relativePath)
         {
+            ThrowIfObjectDisposed();
             string filePath = GetFullPath(relativePath);
             return new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
         }
 
-        internal string GetFullPath(string relativePath)
+        private string GetFullPath(string relativePath)
         {
             string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
             return filePath;
+        }
+
+        public override void Dispose()
+        {
+            isDisposed = true;
         }
     }
 }

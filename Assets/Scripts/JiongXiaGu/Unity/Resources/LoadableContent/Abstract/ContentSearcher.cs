@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal IEnumerable<T> Enumerate(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            foreach (string entry in contentConstruct.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
+            foreach (string entry in contentConstruct.Content.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
             {
                 T item = default(T);
                 bool isSuccess = false;

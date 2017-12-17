@@ -62,7 +62,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         private static Texture2D InternalFromFileReadTexture2D(LoadableContent content, AssetInfo assetInfo)
         {
-            var stream = content.GetInputStream(assetInfo.Name.Name);
+            var stream = content.Content.GetInputStream(assetInfo.Name.Name);
             byte[] imageData = new byte[stream.Length];
             stream.Read(imageData, 0, (int)stream.Length);
 

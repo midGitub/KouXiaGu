@@ -7,9 +7,9 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 可读的Zip文件;
+    /// 资源Zip文件;
     /// </summary>
-    public class LoadableZip : LoadableContent
+    public class ContentZip : Content
     {
         /// <summary>
         /// 压缩包文件路径;
@@ -26,7 +26,18 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal Stream stream;
 
-        internal LoadableZip(string zipFilePath, Stream stream, ZipFile zipFile, LoadableContentDescription description) : base(description)
+        private bool isDisposed;
+
+        public override bool IsUpdating
+        {
+            get { return zipFile.IsUpdating; }
+        }
+
+        public override bool CanRead => !isDisposed;
+        public override bool CanWrite => !isDisposed;
+        public override bool IsDisposed => isDisposed;
+
+        public ContentZip(string zipFilePath, Stream stream, ZipFile zipFile)
         {
             if (zipFile == null)
                 throw new ArgumentNullException(nameof(zipFile));
@@ -38,20 +49,22 @@ namespace JiongXiaGu.Unity.Resources
             this.zipFile = zipFile;
         }
 
-        protected override void Dispose(bool isDisposing)
+        public override void Dispose()
         {
-            if (isDisposing)
+            if (!isDisposed)
             {
                 zipFile.Close();
                 zipFile = null;
 
                 stream.Dispose();
                 stream = null;
+
+                isDisposed = true;
             }
         }
 
 
-        internal override IEnumerable<string> InternalEnumerateFiles()
+        public override IEnumerable<string> EnumerateFiles()
         {
             ThrowIfObjectDisposed();
 
@@ -64,7 +77,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        internal override Stream InternaltInputStream(string relativePath)
+        public override Stream GetInputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
@@ -81,24 +94,23 @@ namespace JiongXiaGu.Unity.Resources
 
 
 
-        internal override void InternaltBeginUpdate()
+        public override IDisposable BeginUpdate()
         {
             ThrowIfObjectDisposed();
-
             zipFile.BeginUpdate();
+            return new CommitUpdateDisposer(this);
         }
 
-        internal override void InternaltCommitUpdate()
+        public override void CommitUpdate()
         {
             ThrowIfObjectDisposed();
-
             zipFile.CommitUpdate();
         }
 
         /// <summary>
         /// 在 CommitUpdate() 之后才会应用变化;
         /// </summary>
-        internal override void InternaltAddOrUpdate(string relativePath, Stream stream)
+        public override void AddOrUpdate(string relativePath, Stream stream)
         {
             ThrowIfObjectDisposed();
 
@@ -109,7 +121,7 @@ namespace JiongXiaGu.Unity.Resources
             zipFile.Add(zipUpdate, relativePath);
         }
 
-        internal override bool InternaltRemove(string relativePath)
+        public override bool Remove(string relativePath)
         {
             return zipFile.Delete(relativePath);
         }
@@ -117,7 +129,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 写完毕后需要关闭流,在 CommitUpdate() 之后才会应用变化;
         /// </summary>
-        internal override Stream InternaltGetOutStream(string relativePath)
+        public override Stream GetOutStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
@@ -138,14 +150,13 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        internal override Stream InternaltCreateOutStream(string relativePath)
+        public override Stream CreateOutStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
             ZipUpdateStream update = new ZipUpdateStream(zipFile, relativePath);
             return update;
         }
-
 
         private class ZipUpdate : IStaticDataSource
         {
