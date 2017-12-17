@@ -14,25 +14,20 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 压缩包文件路径;
         /// </summary>
-        internal readonly string zipFilePath;
+        private readonly string zipFilePath;
 
         /// <summary>
         /// 压缩文件;
         /// </summary>
-        internal ZipFile zipFile;
+        private ZipFile zipFile;
 
         /// <summary>
         /// 压缩文件流;
         /// </summary>
-        internal Stream stream;
+        private Stream stream;
 
         private bool isDisposed;
-
-        public override bool IsUpdating
-        {
-            get { return zipFile.IsUpdating; }
-        }
-
+        public override bool IsUpdating => zipFile.IsUpdating;
         public override bool CanRead => !isDisposed;
         public override bool CanWrite => !isDisposed;
         public override bool IsDisposed => isDisposed;
@@ -98,7 +93,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             zipFile.BeginUpdate();
-            return new CommitUpdateDisposer(this);
+            return new ContentCommitUpdateDisposer(this);
         }
 
         public override void CommitUpdate()

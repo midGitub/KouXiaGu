@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// </summary>
         public void Add(LoadableContent content)
         {
-            var descrs = serializer.Deserialize(content);
+            var descrs = serializer.Deserialize(content.Content);
             foreach (var descr in descrs)
             {
                 string key = descr.ID;

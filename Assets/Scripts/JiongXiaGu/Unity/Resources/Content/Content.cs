@@ -173,7 +173,6 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public abstract Stream CreateOutStream(string relativePath);
 
-
         /// <summary>
         /// 若该实例已经被销毁,则返回异常;
         /// </summary>
@@ -182,28 +181,6 @@ namespace JiongXiaGu.Unity.Resources
             if (IsDisposed)
             {
                 throw new ObjectDisposedException(ToString());
-            }
-        }
-
-        /// <summary>
-        /// 提供调用 CommitUpdate() 方法的处置接口;
-        /// </summary>
-        protected struct CommitUpdateDisposer : IDisposable
-        {
-            public Content Parent { get; private set; }
-
-            public CommitUpdateDisposer(Content loadableContent)
-            {
-                Parent = loadableContent;
-            }
-
-            public void Dispose()
-            {
-                if (Parent != null)
-                {
-                    Parent.CommitUpdate();
-                    Parent = null;
-                }
             }
         }
     }

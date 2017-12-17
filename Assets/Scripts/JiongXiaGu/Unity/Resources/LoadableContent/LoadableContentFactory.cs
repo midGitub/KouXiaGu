@@ -44,8 +44,8 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public LoadableContent CreateNew(Content content, LoadableContentDescription description, bool isCore = DefaultIsCoreContent)
         {
+            WriteDescription(content, description);
             LoadableContent loadableDirectory = new LoadableContent(new ConcurrentContent(content), description);
-            WriteDescription(loadableDirectory, description);
             loadableDirectory.IsCoreContent = isCore;
             return loadableDirectory;
         }

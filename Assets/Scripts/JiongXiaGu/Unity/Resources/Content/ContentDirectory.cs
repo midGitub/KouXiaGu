@@ -101,7 +101,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             isUpdating = true;
-            return new CommitUpdateDisposer(this);
+            return new ContentCommitUpdateDisposer(this);
         }
 
         public override void CommitUpdate()
