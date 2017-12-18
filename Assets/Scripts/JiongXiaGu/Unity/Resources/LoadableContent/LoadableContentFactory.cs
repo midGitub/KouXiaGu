@@ -14,17 +14,14 @@ namespace JiongXiaGu.Unity.Resources
     {
 
         private const bool DefaultIsCoreContent = false;
+        private ContentFactory contentFactory = new ContentFactory();
 
         /// <summary>
         /// 创建可读内容,若目录已经存在则返回异常;
         /// </summary>
         public LoadableContent CreateNew(string directory, LoadableContentDescription description, bool isCore = DefaultIsCoreContent)
         {
-            if (Directory.Exists(directory))
-                throw new IOException(string.Format("目录[{0}]已经存在;", directory));
-
-            Directory.CreateDirectory(directory);
-            ContentDirectory contentDirectory = new ContentDirectory(directory);
+            Content contentDirectory = contentFactory.CreateNew(directory);
             return CreateNew(contentDirectory, description, isCore);
         }
 
@@ -50,6 +47,7 @@ namespace JiongXiaGu.Unity.Resources
             return loadableDirectory;
         }
 
+
         /// <summary>
         /// 读取内容,若目录不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
@@ -58,8 +56,8 @@ namespace JiongXiaGu.Unity.Resources
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
 
-            ContentDirectory contentDirectory = new ContentDirectory(directory);
-            return Read(contentDirectory, isCore);
+            Content content = contentFactory.Read(directory);
+            return Read(content, isCore);
         }
 
         /// <summary>
@@ -67,14 +65,18 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public LoadableContent ReadZip(string file, bool isCore = false)
         {
-            Stream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite);
-            ZipFile zipFile = new ZipFile(stream);
-            ContentZip contentZip = new ContentZip(file, stream, zipFile);
-            return Read(contentZip, isCore);
+            Content content = contentFactory.ReadZip(file);
+            return Read(content, isCore);
         }
 
+        /// <summary>
+        /// 创建为可读内容,若未能创建则返回异常;
+        /// </summary>
         public LoadableContent Read(Content content, bool isCore = false)
         {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
             LoadableContentDescription description = ReadDescription(content);
             LoadableContent loadableContent = new LoadableContent(new ConcurrentContent(content), description);
             loadableContent.IsCoreContent = isCore;
@@ -109,7 +111,10 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (content.BeginUpdate())
             {
-                InternalWriteDescription(content, description);
+                using (var stream = content.CreateOutStream(DescriptionPath))
+                {
+                    descriptionSerializer.Serialize(stream, description);
+                }
             }
         }
 
@@ -122,17 +127,6 @@ namespace JiongXiaGu.Unity.Resources
             {
                 var descr = descriptionSerializer.Deserialize(stream);
                 return descr;
-            }
-        }
-
-        /// <summary>
-        /// 输出新的描述到;
-        /// </summary>
-        private void InternalWriteDescription(Content content, LoadableContentDescription description)
-        {
-            using (var stream = content.CreateOutStream(DescriptionPath))
-            {
-                descriptionSerializer.Serialize(stream, description);
             }
         }
     }

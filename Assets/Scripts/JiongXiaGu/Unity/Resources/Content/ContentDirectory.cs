@@ -12,11 +12,6 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class ContentDirectory : Content
     {
-        /// <summary>
-        /// 存放实例;
-        /// </summary>
-        private static readonly BlockingCollection<string> instancedDirectory = new BlockingCollection<string>();
-
         private bool isUpdating;
         private bool isDisposed;
         public DirectoryInfo DirectoryInfo { get; private set; }
@@ -26,19 +21,16 @@ namespace JiongXiaGu.Unity.Resources
         public override bool CanRead => !isDisposed;
         public override bool CanWrite => !isDisposed;
 
+        /// <summary>
+        /// 构造函数;
+        /// </summary>
+        /// <param name="directory">必须存在的目录,否则返回异常</param>
         internal ContentDirectory(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
-            if (IsInstanced(directory))
-                throw new ArgumentException(string.Format("路径[{0}]已经创建为可读取资源;", directory));
 
             DirectoryInfo = new DirectoryInfo(directory);
-        }
-
-        private static bool IsInstanced(string directory)
-        {
-            return instancedDirectory.Contains(directory);
         }
 
         /// <summary>
@@ -137,6 +129,11 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             string filePath = GetFullPath(relativePath);
+            string directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrWhiteSpace(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
             return new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 

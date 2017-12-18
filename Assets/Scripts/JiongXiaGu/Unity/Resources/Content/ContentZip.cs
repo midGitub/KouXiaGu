@@ -75,8 +75,9 @@ namespace JiongXiaGu.Unity.Resources
         public override Stream GetInputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
-
+            relativePath = Normalize(relativePath);
             ZipEntry entry = zipFile.GetEntry(relativePath);
+
             if (entry != null && entry.IsFile)
             {
                 return zipFile.GetInputStream(entry);
@@ -87,6 +88,14 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
+        /// <summary>
+        /// 统一目录分隔符 为 "/";
+        /// </summary>
+        public static string Normalize(string path)
+        {
+            path = path.Replace('\\', '/');
+            return path;
+        }
 
 
         public override IDisposable BeginUpdate()

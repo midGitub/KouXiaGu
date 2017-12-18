@@ -43,16 +43,16 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        internal IEnumerable<T> Enumerate(LoadableContent contentConstruct, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        internal IEnumerable<T> Enumerate(LoadableContent loadableContent, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            foreach (string entry in contentConstruct.Content.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
+            foreach (string entry in loadableContent.Content.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
             {
                 T item = default(T);
                 bool isSuccess = false;
 
                 try
                 {
-                    item = Deserialize(contentConstruct, entry);
+                    item = Deserialize(loadableContent, entry);
                     isSuccess = true;
                 }
                 catch

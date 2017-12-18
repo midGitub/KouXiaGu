@@ -107,7 +107,7 @@ namespace JiongXiaGu.Unity.Resources
             Name = "Test",
         };
 
-        private readonly string description3Path = "d3.xml";
+        private readonly string description3Path = @"D3\d3.xml";
         private readonly LoadableContentDescription description3 = new LoadableContentDescription()
         {
             ID = "003",
@@ -120,9 +120,9 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (var dis = content.BeginUpdate())
             {
-                using (Stream stream1 = content.GetOutStream(description1Path),
-                    stream2 = content.GetOutStream(description2Path),
-                    stream3 = content.GetOutStream(description3Path))
+                using (Stream stream1 = content.CreateOutStream(description1Path),
+                    stream2 = content.CreateOutStream(description2Path),
+                    stream3 = content.CreateOutStream(description3Path))
                 {
                     xmlSerializer.Serialize(stream1, description1);
                     xmlSerializer.Serialize(stream2, description2);
