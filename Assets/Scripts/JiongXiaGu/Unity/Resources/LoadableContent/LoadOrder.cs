@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Unity.Resources
 {
 
-
+    /// <summary>
+    /// 资源读取顺序,不包括核心资源;
+    /// </summary>
     public class LoadOrder : LinkedList<LoadableContent>
     {
         public LoadOrder(LoadOrderDefinition orderDefinition) : base()

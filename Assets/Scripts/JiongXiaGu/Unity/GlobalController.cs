@@ -27,13 +27,13 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test0")]
         private void Test0()
         {
-            var v1 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
-            var v2 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
+            var v1 = Texture2DLoader.Default.Load(LoadableResource.Core.Value, new AssetInfo("terrain", "HeightMap_85"));
+            var v2 = Texture2DLoader.Default.Load(LoadableResource.Core.Value, new AssetInfo("terrain", "HeightMap_85"));
             Debug.Log(v1 != null);
             Debug.Log(v1 == v2);
 
-            v1 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
-            v2 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
+            v1 = Texture2DLoader.Default.Load(LoadableResource.Core.Value, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
+            v2 = Texture2DLoader.Default.Load(LoadableResource.Core.Value, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
             Debug.Log(v1 != null);
             Debug.Log(v1 == v2);
         }
@@ -51,7 +51,7 @@ namespace JiongXiaGu.Unity
                 DiffuseBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
             };
 
-            LandformRes res = await LandformResCreater.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
+            LandformRes res = await LandformResCreater.CreateAsync(LoadableResource.Core.Value, description, default(CancellationToken));
             meshRenderer.material.mainTexture = res.DiffuseTex;
         }
 

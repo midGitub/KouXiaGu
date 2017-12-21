@@ -28,12 +28,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 资源;
         /// </summary>
-        public ConcurrentContent Content { get; private set; }
-
-        /// <summary>
-        /// 分享的资源;
-        /// </summary>
-        internal SharedContentSource SharedContentSource { get; private set; }
+        public Content Content { get; private set; }
 
         /// <summary>
         /// 在创建时使用的描述;
@@ -56,19 +51,10 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public string ID => OriginalDescription.ID;
 
-        public LoadableContent(ConcurrentContent content, LoadableContentDescription description)
+        public LoadableContent(Content content, LoadableContentDescription description)
         {
             Content = content;
             OriginalDescription = description;
-            SharedContentSource = null;
-        }
-
-        public LoadableContent(ConcurrentContent content, LoadableContentDescription description, SharedContentSource sharedContentSource)
-        {
-            Content = content;
-            OriginalDescription = description;
-            SharedContentSource = sharedContentSource;
-            sharedContentSource.Add(this);
         }
 
         public void Dispose()
@@ -80,9 +66,6 @@ namespace JiongXiaGu.Unity.Resources
                     if (!isDisposed)
                     {
                         isDisposed = true;
-
-                        SharedContentSource?.Remove(this);
-                        SharedContentSource = null;
 
                         //readerWriterLock.Dispose();
                         readerWriterLock = null;
@@ -120,61 +103,6 @@ namespace JiongXiaGu.Unity.Resources
                 }
             }
         }
-
-        /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取则返回异常;
-        /// </summary>
-        public AssetBundle GetAssetBundle(AssetPath path)
-        {
-            ThrowIfObjectDisposed();
-            string contentID;
-            string assetBundleName;
-
-            if (path.GetRelativePath(out contentID, out assetBundleName))
-            {
-                return GetAssetBundle(assetBundleName);
-            }
-            else
-            {
-                if (SharedContentSource == null)
-                {
-                    throw new FileNotFoundException();
-                }
-                else
-                {
-                    var sharedContent = SharedContentSource.Find(contentID);
-                    return sharedContent.GetAssetBundle(assetBundleName);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 读取到指定的 AssetBundle,若未找到则返回异常;
-        /// </summary>
-        public AssetBundle GetOrLoadAssetBundle(AssetPath path)
-        {
-            ThrowIfObjectDisposed();
-            string contentID;
-            string assetBundleName;
-
-            if (path.GetRelativePath(out contentID, out assetBundleName))
-            {
-                return GetOrLoadAssetBundle(assetBundleName);
-            }
-            else
-            {
-                if (SharedContentSource == null)
-                {
-                    throw new FileNotFoundException();
-                }
-                else
-                {
-                    var sharedContent = SharedContentSource.Find(contentID);
-                    return sharedContent.GetOrLoadAssetBundle(assetBundleName);
-                }
-            }
-        }
-
 
         /// <summary>
         /// 获取到对应的 AssetBundle,若还未读取则返回异常;

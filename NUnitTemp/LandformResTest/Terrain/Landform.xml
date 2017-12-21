@@ -12,7 +12,7 @@
     <LandformDescription id="2" name="Unknow2">
       <HeightTex from="File">HeightTex2</HeightTex>
       <HeightBlendTex from="File">HeightBlendTex2</HeightBlendTex>
-      <DiffuseTex from="File">DiffuseTex2</DiffuseTex>
+      <DiffuseTex from="File">@000:DiffuseTex2</DiffuseTex>
       <DiffuseBlendTex from="File">DiffuseBlendTex2</DiffuseBlendTex>
     </LandformDescription>
   </Descriptions>

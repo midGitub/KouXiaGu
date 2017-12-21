@@ -12,7 +12,6 @@ namespace JiongXiaGu.Unity.Resources
 
     public class LoadableContentFactory
     {
-
         private const bool DefaultIsCoreContent = false;
         private ContentFactory contentFactory = new ContentFactory();
 
@@ -48,6 +47,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
+
         /// <summary>
         /// 读取内容,若目录不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
@@ -57,7 +57,8 @@ namespace JiongXiaGu.Unity.Resources
                 throw new DirectoryNotFoundException(directory);
 
             Content content = contentFactory.Read(directory);
-            return Read(content, isCore);
+            ConcurrentContent concurrentContent = new ConcurrentContent(content);
+            return Read(concurrentContent, isCore);
         }
 
         /// <summary>
@@ -66,19 +67,20 @@ namespace JiongXiaGu.Unity.Resources
         public LoadableContent ReadZip(string file, bool isCore = false)
         {
             Content content = contentFactory.ReadZip(file);
-            return Read(content, isCore);
+            ConcurrentContent concurrentContent = new ConcurrentContent(content);
+            return Read(concurrentContent, isCore);
         }
 
         /// <summary>
         /// 创建为可读内容,若未能创建则返回异常;
         /// </summary>
-        public LoadableContent Read(Content content, bool isCore = false)
+        public LoadableContent Read(ConcurrentContent content, bool isCore = false)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
             LoadableContentDescription description = ReadDescription(content);
-            LoadableContent loadableContent = new LoadableContent(new ConcurrentContent(content), description);
+            LoadableContent loadableContent = new LoadableContent(content, description);
             loadableContent.IsCoreContent = isCore;
             return loadableContent;
         }

@@ -17,12 +17,17 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 读取到对应内容;
         /// </summary>
-        void Read(LoadableContent content, ITypeDictionary info, CancellationToken token);
+        void Read(LoadableContent loadableContent, ITypeDictionary info, CancellationToken token);
 
         /// <summary>
         /// 准备内容;
         /// </summary>
-        void Prepare(IEnumerable<ITypeDictionary> infos, CancellationToken token);
+        void Prepare(ITypeDictionary info, CancellationToken token);
+
+        /// <summary>
+        /// 清除所有内容;
+        /// </summary>
+        void Clear();
     }
 
     /// <summary>

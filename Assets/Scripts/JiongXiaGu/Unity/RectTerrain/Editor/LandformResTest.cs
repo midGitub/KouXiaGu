@@ -1,11 +1,7 @@
 ﻿using JiongXiaGu.Unity.Resources;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
@@ -39,7 +35,7 @@ namespace JiongXiaGu.Unity.RectTerrain
                 {
                     ID = "2",
                     Name = "Unknow2",
-                    DiffuseTex = new AssetInfo("DiffuseTex2"),
+                    DiffuseTex = new AssetInfo(new AssetPath("000", "DiffuseTex2")),
                     DiffuseBlendTex = new AssetInfo("DiffuseBlendTex2"),
                     HeightTex = new AssetInfo("HeightTex2"),
                     HeightBlendTex = new AssetInfo("HeightBlendTex2"),

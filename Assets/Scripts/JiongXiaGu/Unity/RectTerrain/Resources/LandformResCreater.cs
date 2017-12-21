@@ -1,4 +1,5 @@
-﻿using JiongXiaGu.Unity.Resources;
+﻿using JiongXiaGu.Collections;
+using JiongXiaGu.Unity.Resources;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,11 +17,30 @@ namespace JiongXiaGu.Unity.RectTerrain
     {
         [SerializeField]
         private LandformRes defaultLandformRes;
-        private LandformDescriptionDictionary descrDictionary;
+        public Dictionary<string, LandformDescription> Descriptions { get; private set; }
 
-        public LandformResCreater(LandformDescriptionDictionary descrDictionary)
+        public LandformResCreater()
         {
-            this.descrDictionary = descrDictionary;
+            Descriptions = new Dictionary<string, LandformDescription>();
+        }
+
+        /// <summary>
+        /// 添加可读取的资源;
+        /// </summary>
+        public void Add(IEnumerable<LandformDescription> descriptions)
+        {
+            foreach (var description in descriptions)
+            {
+                Descriptions.AddOrUpdate(description.ID, description);
+            }
+        }
+
+        /// <summary>
+        /// 清空描述;
+        /// </summary>
+        public void Clear()
+        {
+            Descriptions.Clear();
         }
 
         public LandformRes Default()

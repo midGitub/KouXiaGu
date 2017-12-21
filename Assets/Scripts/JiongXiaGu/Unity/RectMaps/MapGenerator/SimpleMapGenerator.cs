@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.RectMaps
             if (resources == null)
                 throw new ArgumentNullException(nameof(resources));
 
-            landformTypes = resources.LandformDescrs.Descriptions.Values.ToArray(item => item.Value.ID);
+            landformTypes = resources.LandformResCreater.Descriptions.Values.ToArray(item => item.ID);
         }
 
         public override void GenerateData(IDictionary<RectCoord, MapNode> map)

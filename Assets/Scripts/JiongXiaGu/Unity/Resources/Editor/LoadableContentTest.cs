@@ -157,7 +157,7 @@ namespace JiongXiaGu.Unity.Resources
         [Test]
         public void AssetBundleLoadTest()
         {
-            using (LoadableContent loadableContent = LoadableResource.GetCore(factory))
+            using (LoadableContent loadableContent = LoadableResource.Core.Value)
             {
                 var assetBundle = loadableContent.GetOrLoadAssetBundle("terrain");
                 Assert.NotNull(assetBundle);
