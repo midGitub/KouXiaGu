@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.Resources
         /// 构造函数;
         /// </summary>
         /// <param name="directory">必须存在的目录,否则返回异常</param>
-        internal ContentDirectory(string directory)
+        public ContentDirectory(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
@@ -141,6 +141,11 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             string filePath = GetFullPath(relativePath);
+            string directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrWhiteSpace(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
             return new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
         }
 

@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.RectMaps
             set { RectMap.AvailableMaps = value; }
         }
 
-        Task IComponentInitializeHandle.Initialize(CancellationToken token)
+        void IComponentInitializeHandle.Initialize(CancellationToken token)
         {
             mapSearcher = new MapSearcher();
 
@@ -36,7 +36,6 @@ namespace JiongXiaGu.Unity.RectMaps
             }
 
             UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
-            return Task.CompletedTask;
         }
 
         [ContextMenu("报告详细信息")]

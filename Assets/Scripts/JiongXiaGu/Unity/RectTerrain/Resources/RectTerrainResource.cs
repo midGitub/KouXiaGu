@@ -1,8 +1,11 @@
-﻿using JiongXiaGu.Unity.Resources;
+﻿using JiongXiaGu.Collections;
+using JiongXiaGu.Unity.Initializers;
+using JiongXiaGu.Unity.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -10,25 +13,25 @@ namespace JiongXiaGu.Unity.RectTerrain
 {
 
     [DisallowMultipleComponent]
-    public class RectTerrainResource : MonoBehaviour, IContentLoadHandler
+    public class RectTerrainResource : MonoBehaviour, IDataInitializeHandle
     {
-        public LandformDescrDictionary LandformDescrs { get; private set; }
-        public LandformResPool LandformRes { get; private set; }
+        public LandformDescriptionDictionary LandformDescrs { get; private set; }
+        public LandformResCreater LandformRes { get; private set; }
 
         private void Awake()
         {
-            LandformDescrs = new LandformDescrDictionary();
-            LandformRes = new LandformResPool(LandformDescrs);
+            LandformDescrs = new LandformDescriptionDictionary();
+            LandformRes = new LandformResCreater(LandformDescrs);
         }
 
-        void IContentLoadHandler.Add(LoadableContent content)
+        void IDataInitializeHandle.Read(LoadableContent content, ITypeDictionary info, CancellationToken token)
         {
-            LandformDescrs.Add(content);
+            throw new NotImplementedException();
         }
 
-        void IContentLoadHandler.Clear()
+        void IDataInitializeHandle.Prepare(IEnumerable<ITypeDictionary> infos, CancellationToken token)
         {
-            LandformDescrs.Clear();
+            throw new NotImplementedException();
         }
     }
 }

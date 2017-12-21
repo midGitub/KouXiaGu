@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// </summary>
     public interface IComponentInitializeHandle
     {
-        Task Initialize(CancellationToken token);
+        void Initialize(CancellationToken token);
     }
 
     /// <summary>
@@ -37,9 +37,9 @@ namespace JiongXiaGu.Unity.Initializers
             initializeHandles = GetComponentsInChildren<IComponentInitializeHandle>();
         }
 
-        private void Start()
+        private Task Start()
         {
-            StartInitialize();
+           return StartInitialize();
         }
 
         protected override void OnDestroy()
@@ -48,28 +48,16 @@ namespace JiongXiaGu.Unity.Initializers
             singleton.RemoveInstance(this);
         }
 
-        protected override Task First()
+        protected override void OnFirst(CancellationToken token)
         {
-            return Task.Run(delegate ()
-            {
-                LoadableResource.Initialize();
-            });
+            LoadableResource.Initialize();
         }
 
-        protected override IEnumerable<Task> EnumerateInitializeHandler()
+        protected override IEnumerable<Action> EnumerateInitializeHandler(CancellationToken token)
         {
             foreach (var initializeHandle in initializeHandles)
             {
-                Task task = default(Task);
-                try
-                {
-                    task = initializeHandle.Initialize(CancellationTokenSource.Token);
-                }
-                catch (Exception ex)
-                {
-                    task = Task.FromException(ex);
-                }
-                yield return task;
+                yield return () => initializeHandle.Initialize(token);
             }
         }
 
@@ -79,7 +67,7 @@ namespace JiongXiaGu.Unity.Initializers
             UnityDebugHelper.SuccessfulReport(InitializerName);
         }
 
-        protected override void OnFaulted(Exception ex)
+        protected override void OnFaulted(AggregateException ex)
         {
             base.OnFaulted(ex);
             UnityDebugHelper.FailureReport(InitializerName, ex);

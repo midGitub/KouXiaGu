@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -98,7 +99,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return EqualityComparer<string>.Default.GetHashCode(Name);
         }
 
         XmlSchema IXmlSerializable.GetSchema()

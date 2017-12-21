@@ -21,12 +21,12 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 序列化方法;
         /// </summary>
-        protected abstract ISerializer<T> Serializer { get; }
+        public abstract ISerializer<T> Serializer { get; }
 
         /// <summary>
-        /// 添加对应资源;
+        /// 添加对应资源,若已经存在则覆盖;
         /// </summary>
-        public virtual void AddOrUpdate(Content content, T item)
+        public virtual void Serialize(Content content, T item)
         {
             using (var stream = content.CreateOutStream(RelativePath))
             {

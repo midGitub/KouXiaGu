@@ -15,32 +15,15 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 并发执行数;
         /// </summary>
-        [Range(1, 10)]
+        [Range(-1, 10)]
         [SerializeField]
-        private int concurrencyNumber = 3;
-
-        [EnumFlags]
-        [SerializeField]
-        private InitializeOptions options;
+        private int maxDegreeOfParallelism = -1;
         private TaskCompletionSource<object> taskCompletionSource;
         public bool IsInitialized { get; private set; }
-
-        public Task InitializeTask
-        {
-            get { return taskCompletionSource.Task; }
-        }
-
-        public CancellationTokenSource CancellationTokenSource { get; private set; }
-
-        public int ConcurrencyNumber
-        {
-            get { return concurrencyNumber; }
-        }
-
-        public InitializeOptions Options
-        {
-            get { return options; }
-        }
+        public Task InitializeTask => taskCompletionSource.Task;
+        private CancellationTokenSource CancellationTokenSource;
+        private CancellationToken CancellationToken => CancellationTokenSource.Token;
+        public int MaxDegreeOfParallelism => maxDegreeOfParallelism;
 
         protected virtual void Awake()
         {
@@ -56,25 +39,18 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 开始进行初始化;
         /// </summary>
-        protected async void StartInitialize()
+        protected async Task StartInitialize()
         {
             if (!IsInitialized)
             {
                 IsInitialized = true;
                 try
                 {
-                    if ((options & InitializeOptions.RunInUnityThread) > InitializeOptions.None && !UnityThread.IsUnityThread)
-                    {
-                        await TaskHelper.Run(InternalInitialize, UnityThread.TaskScheduler);
-                    }
-                    else
-                    {
-                        await InternalInitialize();
-                    }
+                    await Task.Run((Action)InternalInitialize);
                     taskCompletionSource.SetResult(null);
                     OnCompleted();
                 }
-                catch (Exception ex)
+                catch (AggregateException ex)
                 {
                     taskCompletionSource.SetException(ex);
                     CancellationTokenSource.Cancel();
@@ -83,49 +59,17 @@ namespace JiongXiaGu.Unity.Initializers
             }
         }
 
-        private async Task InternalInitialize()
+        private void InternalInitialize()
         {
-            await First();
+            OnFirst(CancellationToken);
+            CancellationToken.ThrowIfCancellationRequested();
 
-            using (IEnumerator<Task> initializeHandlers = EnumerateInitializeHandler().GetEnumerator())
+            ParallelOptions parallelOptions = new ParallelOptions()
             {
-                List<Task> waitedOnTaskArray = new List<Task>(ConcurrencyNumber);
-
-                while (initializeHandlers.MoveNext())
-                {
-                    Task task = initializeHandlers.Current;
-                    if (task != null)
-                    {
-                        if (task.IsFaulted)
-                        {
-                            OnFaulted(task);
-                        }
-                        else
-                        {
-                            waitedOnTaskArray.Add(task);
-
-                            if (waitedOnTaskArray.Count == waitedOnTaskArray.Capacity)
-                            {
-                                //等待操作完成, 并移除完成的操作
-                                await Task.WhenAny(waitedOnTaskArray);
-                                waitedOnTaskArray.RemoveAll(delegate (Task item)
-                                {
-                                    if (item.IsCompleted)
-                                    {
-                                        if (task.IsFaulted)
-                                        {
-                                            OnFaulted(task);
-                                        }
-                                        return true;
-                                    }
-                                    return false;
-                                });
-                            }
-                        }
-                    }
-                }
-                await Task.WhenAll(waitedOnTaskArray);
-            }
+                CancellationToken = CancellationToken,
+                MaxDegreeOfParallelism = maxDegreeOfParallelism,
+            };
+            Parallel.ForEach(EnumerateInitializeHandler(CancellationToken), parallelOptions, action => action.Invoke());
         }
 
         /// <summary>
@@ -137,36 +81,22 @@ namespace JiongXiaGu.Unity.Initializers
             taskCompletionSource.TrySetCanceled();
         }
 
-        protected virtual Task First()
+        /// <summary>
+        /// 在初始化之前调用的方法;
+        /// </summary>
+        protected virtual void OnFirst(CancellationToken token)
         {
-            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// 获取到初始化内容;
+        /// 获取到初始化方法;
         /// </summary>
-        protected abstract IEnumerable<Task> EnumerateInitializeHandler();
-
-        /// <summary>
-        /// 在初始化过程中出现异常,若要中断初始化则返回异常;
-        /// </summary>
-        protected virtual void OnFaulted(Task task)
-        {
-            bool ignoreException = (Options & InitializeOptions.IgnoreException) > InitializeOptions.None;
-            if (ignoreException)
-            {
-                Debug.LogWarning(task.Exception);
-            }
-            else
-            {
-                throw task.Exception;
-            }
-        }
+        protected abstract IEnumerable<Action> EnumerateInitializeHandler(CancellationToken token);
 
         /// <summary>
         /// 当初始化完毕后遇到错误调用;
         /// </summary>
-        protected virtual void OnFaulted(Exception ex)
+        protected virtual void OnFaulted(AggregateException ex)
         {
         }
 

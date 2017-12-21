@@ -12,7 +12,6 @@ namespace JiongXiaGu.Unity.Resources
 
     public class ContentFactory
     {
-
         /// <summary>
         /// 创建可读内容,若目录已经存在则返回异常;
         /// </summary>

@@ -10,7 +10,7 @@
 
         private readonly XmlSerializer<LoadOrderDefinition> xmlSerializer = new XmlSerializer<LoadOrderDefinition>();
 
-        protected override ISerializer<LoadOrderDefinition> Serializer
+        public override ISerializer<LoadOrderDefinition> Serializer
         {
             get { return xmlSerializer; }
         }

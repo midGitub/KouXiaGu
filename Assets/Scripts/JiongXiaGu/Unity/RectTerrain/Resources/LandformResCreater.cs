@@ -12,13 +12,13 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 负责提供地形资源;
     /// </summary>
     [Serializable]
-    public class LandformResPool
+    public class LandformResCreater
     {
         [SerializeField]
         private LandformRes defaultLandformRes;
-        private LandformDescrDictionary descrDictionary;
+        private LandformDescriptionDictionary descrDictionary;
 
-        public LandformResPool(LandformDescrDictionary descrDictionary)
+        public LandformResCreater(LandformDescriptionDictionary descrDictionary)
         {
             this.descrDictionary = descrDictionary;
         }

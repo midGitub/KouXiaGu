@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DescriptionCollectionOfLandformDescription>
+  <Version>0.01</Version>
+  <Message>Test</Message>
+  <Descriptions>
+    <LandformDescription id="1" name="Unknow1">
+      <HeightTex from="AssetBundle" assetBundle="terrain">HeightTex1</HeightTex>
+      <HeightBlendTex from="AssetBundle" assetBundle="terrain">HeightBlendTex1</HeightBlendTex>
+      <DiffuseTex from="AssetBundle" assetBundle="terrain">DiffuseTex1</DiffuseTex>
+      <DiffuseBlendTex from="AssetBundle" assetBundle="terrain">DiffuseBlendTex1</DiffuseBlendTex>
+    </LandformDescription>
+    <LandformDescription id="2" name="Unknow2">
+      <HeightTex from="File">HeightTex2</HeightTex>
+      <HeightBlendTex from="File">HeightBlendTex2</HeightBlendTex>
+      <DiffuseTex from="File">DiffuseTex2</DiffuseTex>
+      <DiffuseBlendTex from="File">DiffuseBlendTex2</DiffuseBlendTex>
+    </LandformDescription>
+  </Descriptions>
+</DescriptionCollectionOfLandformDescription>

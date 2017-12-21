@@ -17,15 +17,12 @@ namespace JiongXiaGu.Unity.KeyInputs
         {
         }
 
-        Task IComponentInitializeHandle.Initialize(CancellationToken token)
+        void IComponentInitializeHandle.Initialize(CancellationToken token)
         {
-            return Task.Run(delegate()
-            {
-                token.ThrowIfCancellationRequested();
-                KeyMapReader keyMapReader = new KeyMapReader();
-                KeyInput.CurrentKeyMap = keyMapReader.Read();
-                OnInitializeCompleted();
-            }, token);
+            token.ThrowIfCancellationRequested();
+            KeyMapReader keyMapReader = new KeyMapReader();
+            KeyInput.CurrentKeyMap = keyMapReader.Read();
+            OnInitializeCompleted();
         }
 
         [System.Diagnostics.Conditional("EDITOR_LOG")]

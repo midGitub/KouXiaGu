@@ -45,57 +45,54 @@ namespace JiongXiaGu.Unity.Localizations
             SystemLanguage = Application.systemLanguage;
         }
 
-        Task IComponentInitializeHandle.Initialize(CancellationToken token)
+        void IComponentInitializeHandle.Initialize(CancellationToken token)
         {
-            return Task.Run(delegate ()
+            packSearcher = new LanguagePackSearcher();
+            packSerializer = new LanguagePackSerializer();
+            configFileReader = new LocalizationConfigFileReader();
+
+            availableLanguagePacks = packSearcher.FindPacks(LoadableResource.All);
+            if (availableLanguagePacks.Count == 0)
             {
-                packSearcher = new LanguagePackSearcher();
-                packSerializer = new LanguagePackSerializer();
-                configFileReader = new LocalizationConfigFileReader();
+                throw new FileNotFoundException("未找到合适的语言包文件");
+            }
 
-                availableLanguagePacks = packSearcher.FindPacks(LoadableResource.All);
-                if (availableLanguagePacks.Count == 0)
+            token.ThrowIfCancellationRequested();
+
+            LocalizationConfig? config = ReadConfigFile();
+            LanguagePack languagePack = null;
+
+            foreach (var packInfo in EnumerateLanguagePask(config))
+            {
+                try
                 {
-                    throw new FileNotFoundException("未找到合适的语言包文件");
-                }
-
-                token.ThrowIfCancellationRequested();
-
-                LocalizationConfig? config = ReadConfigFile();
-                LanguagePack languagePack = null;
-
-                foreach (var packInfo in EnumerateLanguagePask(config))
-                {
-                    try
+                    LoadableContent content = packInfo.ContentConstruct;
+                    using (var stream = content.Content.GetInputStream(packInfo.LoadableEntry))
                     {
-                        LoadableContent content = packInfo.ContentConstruct;
-                        using (var stream = content.Content.GetInputStream(packInfo.LoadableEntry))
-                        {
-                            languagePack = packSerializer.Deserialize(stream);
-                            break;
-                        }
+                        languagePack = packSerializer.Deserialize(stream);
+                        break;
                     }
-                    catch (Exception ex)
-                    {
-                        UnityDebugHelper.LogWarning(InitializerName, "读取语言包时需要错误", ex);
-                    }
-                    token.ThrowIfCancellationRequested();
                 }
-
-                if (languagePack != null)
+                catch (Exception ex)
                 {
-                    Localization.SetLanguage(languagePack);
+                    UnityDebugHelper.LogWarning(InitializerName, "读取语言包时需要错误", ex);
                 }
-                else
-                {
-                    throw new FileNotFoundException("未找到合适的语言包文件");
-                }
-
                 token.ThrowIfCancellationRequested();
-                Localization.NotifyLanguageChanged();
+            }
 
-                UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
-            });
+            if (languagePack != null)
+            {
+                Localization.SetLanguage(languagePack);
+            }
+            else
+            {
+                throw new FileNotFoundException("未找到合适的语言包文件");
+            }
+
+            token.ThrowIfCancellationRequested();
+            Localization.NotifyLanguageChanged();
+
+            UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
         }
         
         /// <summary>

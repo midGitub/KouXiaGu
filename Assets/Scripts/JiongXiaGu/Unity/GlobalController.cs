@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Security.Cryptography;
+using System.Collections.Generic;
 using JiongXiaGu.Unity.RectTerrain;
 
 namespace JiongXiaGu.Unity
@@ -50,7 +51,7 @@ namespace JiongXiaGu.Unity
                 DiffuseBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
             };
 
-            LandformRes res = await LandformResPool.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
+            LandformRes res = await LandformResCreater.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
             meshRenderer.material.mainTexture = res.DiffuseTex;
         }
 
@@ -76,21 +77,32 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test3")]
         private void Test3()
         {
-            TT tt = new TT();
-            SetNull(ref tt);
-            Debug.Log(tt == null);
+            ParallelOptions parallelOptions = new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = -1,
+            };
+
+            Parallel.ForEach(GetValues(), parallelOptions, delegate (string value)
+            {
+                if (value == "2")
+                {
+                    throw new ArgumentException("错误2!");
+                }
+                if (value == "3")
+                {
+                    throw new ArgumentException("错误3!");
+                }
+                Debug.Log(string.Format("ThreadID : {0}, Value : {1}", Thread.CurrentThread.ManagedThreadId, value));
+            });
         }
 
-        private void SetNull(ref TT tt)
+        private IEnumerable<string> GetValues()
         {
-            tt = null;
+            yield return "1";
+            yield return "2";
+            yield return "3";
+            yield return "4";
         }
-
-        private class TT
-        {
-
-        }
-
 
         //private async Task Start()
         //{

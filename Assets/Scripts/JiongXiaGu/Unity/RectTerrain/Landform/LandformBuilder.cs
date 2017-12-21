@@ -17,7 +17,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     {
         private LandformBaker baker;
         private LandformChunkPool landformChunkPool;
-        private LandformResPool landformResPool;
+        private LandformResCreater landformResPool;
         private WorldMap map;
         private readonly ObservedBuff<DictionaryEvent<RectCoord, MapNode>> mapChanged;
         private readonly Dictionary<RectCoord, ChunkInfo> chunks;
