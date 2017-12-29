@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 抽象类 初始化器;
     /// </summary>
-    public abstract class InitializeScheduler : MonoBehaviour
+    internal abstract class InitializeScheduler : MonoBehaviour
     {
         /// <summary>
         /// 并发执行数;
@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 开始进行初始化;
         /// </summary>
-        protected async Task StartInitialize()
+        public async Task StartInitialize()
         {
             if (!IsInitialized)
             {
@@ -61,7 +61,6 @@ namespace JiongXiaGu.Unity.Initializers
 
         private void InternalInitialize()
         {
-            OnFirst(CancellationToken);
             CancellationToken.ThrowIfCancellationRequested();
 
             ParallelOptions parallelOptions = new ParallelOptions()
@@ -69,6 +68,7 @@ namespace JiongXiaGu.Unity.Initializers
                 CancellationToken = CancellationToken,
                 MaxDegreeOfParallelism = maxDegreeOfParallelism,
             };
+
             Parallel.ForEach(EnumerateInitializeHandler(CancellationToken), parallelOptions, action => action.Invoke());
         }
 
@@ -79,13 +79,6 @@ namespace JiongXiaGu.Unity.Initializers
         {
             CancellationTokenSource.Cancel();
             taskCompletionSource.TrySetCanceled();
-        }
-
-        /// <summary>
-        /// 在初始化之前调用的方法;
-        /// </summary>
-        protected virtual void OnFirst(CancellationToken token)
-        {
         }
 
         /// <summary>

@@ -21,14 +21,9 @@ namespace JiongXiaGu.Unity.Resources
         private List<KeyValuePair<string, AssetBundle>> assetBundles;
 
         /// <summary>
-        /// 是否为核心内容?
-        /// </summary>
-        internal bool IsCoreContent { get; set; }
-
-        /// <summary>
         /// 资源;
         /// </summary>
-        public Content Content { get; private set; }
+        public ConcurrentContent Content { get; private set; }
 
         /// <summary>
         /// 在创建时使用的描述;
@@ -51,7 +46,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public string ID => OriginalDescription.ID;
 
-        public LoadableContent(Content content, LoadableContentDescription description)
+        public LoadableContent(ConcurrentContent content, LoadableContentDescription description)
         {
             Content = content;
             OriginalDescription = description;
@@ -141,15 +136,15 @@ namespace JiongXiaGu.Unity.Resources
                 }
                 else
                 {
-                    assetBundle = InternalLoadAssetBundle(assetBundleName);
                     using (readerWriterLock.WriteLock())
                     {
+                        assetBundle = InternalLoadAssetBundle(assetBundleName);
                         if (assetBundles == null)
                             assetBundles = new List<KeyValuePair<string, AssetBundle>>();
 
                         assetBundles.Add(new KeyValuePair<string, AssetBundle>(assetBundleName, assetBundle));
+                        return assetBundle;
                     }
-                    return assetBundle;
                 }
             }
         }

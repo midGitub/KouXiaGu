@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Initializers
     }
 
     /// <summary>
-    /// 游戏组件初始化器(仅初始化一次,若初始化失败意味着游戏无法运行);
+    /// 游戏组件初始化器;
     /// </summary>
     [DisallowMultipleComponent]
     internal sealed class ComponentInitializer : InitializeScheduler
@@ -37,20 +37,10 @@ namespace JiongXiaGu.Unity.Initializers
             initializeHandles = GetComponentsInChildren<IComponentInitializeHandle>();
         }
 
-        private Task Start()
-        {
-           return StartInitialize();
-        }
-
         protected override void OnDestroy()
         {
             base.OnDestroy();
             singleton.RemoveInstance(this);
-        }
-
-        protected override void OnFirst(CancellationToken token)
-        {
-            LoadableResource.Initialize();
         }
 
         protected override IEnumerable<Action> EnumerateInitializeHandler(CancellationToken token)

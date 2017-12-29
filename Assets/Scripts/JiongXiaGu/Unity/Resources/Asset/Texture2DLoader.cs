@@ -45,11 +45,11 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         private static Texture2D InternalFromAssetBundleReadTexture2D(LoadableContent content, AssetInfo assetInfo)
         {
-            AssetBundle assetBundle = LoadableResource.SharedContent.GetOrLoadAssetBundle(content, assetInfo.AssetBundleName);
+            AssetBundle assetBundle = LoadableResource.SharedContent.GetOrLoadAssetBundle(content, assetInfo.BundleName);
             var texture = assetBundle.LoadAsset<Texture2D>(assetInfo.Name.Name);
             if (texture == null)
             {
-                throw new ArgumentException(string.Format("在AssetBundle[{0}]内未找到资源[{1}]", assetInfo.AssetBundleName, assetInfo.Name));
+                throw new ArgumentException(string.Format("在AssetBundle[{0}]内未找到资源[{1}]", assetInfo.BundleName, assetInfo.Name));
             }
             else
             {

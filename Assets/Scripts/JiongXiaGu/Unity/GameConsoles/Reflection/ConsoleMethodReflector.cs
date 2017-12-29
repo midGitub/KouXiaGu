@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.GameConsoles
 {
 
     /// <summary>
-    /// 反射控制台方法反射器(非线程安全);
+    /// 反射控制台方法反射器;
     /// </summary>
     public class ConsoleMethodReflector
     {

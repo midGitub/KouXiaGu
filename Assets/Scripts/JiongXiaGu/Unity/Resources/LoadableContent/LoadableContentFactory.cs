@@ -18,31 +18,32 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 创建可读内容,若目录已经存在则返回异常;
         /// </summary>
-        public LoadableContent CreateNew(string directory, LoadableContentDescription description, bool isCore = DefaultIsCoreContent)
+        public LoadableContent CreateNew(string directory, LoadableContentDescription description)
         {
-            Content contentDirectory = contentFactory.CreateNew(directory);
-            return CreateNew(contentDirectory, description, isCore);
+            Content content = contentFactory.CreateNew(directory);
+            ConcurrentContent concurrentContent = new ConcurrentContent(content);
+            return CreateNew(concurrentContent, description);
         }
 
         /// <summary>
         /// 创建可读内容,若文件已经存在则返回异常;
         /// </summary>
-        public LoadableContent CreateNewZip(string file, LoadableContentDescription description, bool isCore = DefaultIsCoreContent)
+        public LoadableContent CreateNewZip(string file, LoadableContentDescription description)
         {
             Stream stream = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite);
             ZipFile zipFile = ZipFile.Create(stream);
             ContentZip contentZip = new ContentZip(file, stream, zipFile);
-            return CreateNew(contentZip, description, isCore);
+            ConcurrentContent concurrentContent = new ConcurrentContent(contentZip);
+            return CreateNew(concurrentContent, description);
         }
 
         /// <summary>
         /// 创建一个新的可读内容类型;
         /// </summary>
-        public LoadableContent CreateNew(Content content, LoadableContentDescription description, bool isCore = DefaultIsCoreContent)
+        public LoadableContent CreateNew(ConcurrentContent content, LoadableContentDescription description)
         {
             WriteDescription(content, description);
-            LoadableContent loadableDirectory = new LoadableContent(new ConcurrentContent(content), description);
-            loadableDirectory.IsCoreContent = isCore;
+            LoadableContent loadableDirectory = new LoadableContent(content, description);
             return loadableDirectory;
         }
 
@@ -51,37 +52,36 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取内容,若目录不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
-        public LoadableContent Read(string directory, bool isCore = false)
+        public LoadableContent Read(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
 
             Content content = contentFactory.Read(directory);
             ConcurrentContent concurrentContent = new ConcurrentContent(content);
-            return Read(concurrentContent, isCore);
+            return Read(concurrentContent);
         }
 
         /// <summary>
         /// 读取内容,若文件不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
-        public LoadableContent ReadZip(string file, bool isCore = false)
+        public LoadableContent ReadZip(string file)
         {
             Content content = contentFactory.ReadZip(file);
             ConcurrentContent concurrentContent = new ConcurrentContent(content);
-            return Read(concurrentContent, isCore);
+            return Read(concurrentContent);
         }
 
         /// <summary>
         /// 创建为可读内容,若未能创建则返回异常;
         /// </summary>
-        public LoadableContent Read(ConcurrentContent content, bool isCore = false)
+        public LoadableContent Read(ConcurrentContent content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
             LoadableContentDescription description = ReadDescription(content);
             LoadableContent loadableContent = new LoadableContent(content, description);
-            loadableContent.IsCoreContent = isCore;
             return loadableContent;
         }
 

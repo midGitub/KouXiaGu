@@ -12,8 +12,6 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public static class LoadableResource
     {
-        private static LoadableContentSearcher contentSearcher = new LoadableContentSearcher();
-
         /// <summary>
         /// 资源共享合集;
         /// </summary>
@@ -22,30 +20,43 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 核心资源;
         /// </summary>
-        public static Lazy<LoadableContent> Core { get; private set; } = new Lazy<LoadableContent>(() => contentSearcher.Factory.Read(Resource.CoreDirectory, true), true);
+        public static Lazy<LoadableContent> Core { get; private set; } = new Lazy<LoadableContent>(delegate()
+        {
+            LoadableContentFactory factory = new LoadableContentFactory();
+            var core = factory.Read(Resource.CoreDirectory);
+            SharedContent.Add(core);
+            return core;
+        }, true);
 
         /// <summary>
         /// 用户配置文件;
         /// </summary>
         public static Lazy<Content> UserConfig { get; private set; } = new Lazy<Content>(() => new ContentDirectory(Resource.UserConfigDirectory), true);
 
-        private static List<LoadableContent> contents;
+        private static List<LoadableContent> all;
 
         /// <summary>
         /// 所有自定义的资源;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContent> All => contents;
+        public static IReadOnlyCollection<LoadableContent> All => all;
 
-        /// <summary>
-        /// 初始化资源信息;
-        /// </summary>
         internal static void Initialize()
         {
+
+        }
+
+        /// <summary>
+        /// 找到所有可以读取的资源;
+        /// </summary>
+        internal static void FindResource()
+        {
+            LoadableContentSearcher contentSearcher = new LoadableContentSearcher();
             var dlc = contentSearcher.Find(Resource.DlcDirectory);
             var mod = contentSearcher.Find(Resource.ModDirectory);
-            contents = new List<LoadableContent>();
-            contents.AddRange(dlc);
-            contents.AddRange(mod);
+            all = new List<LoadableContent>();
+            all.Add(Core.Value);
+            all.AddRange(dlc);
+            all.AddRange(mod);
         }
     }
 }

@@ -4,10 +4,10 @@
   <Message>Test</Message>
   <Descriptions>
     <LandformDescription id="1" name="Unknow1">
-      <HeightTex from="AssetBundle" assetBundle="terrain">HeightTex1</HeightTex>
-      <HeightBlendTex from="AssetBundle" assetBundle="terrain">HeightBlendTex1</HeightBlendTex>
-      <DiffuseTex from="AssetBundle" assetBundle="terrain">DiffuseTex1</DiffuseTex>
-      <DiffuseBlendTex from="AssetBundle" assetBundle="terrain">DiffuseBlendTex1</DiffuseBlendTex>
+      <HeightTex from="AssetBundle" bundle="terrain">HeightTex1</HeightTex>
+      <HeightBlendTex from="AssetBundle" bundle="terrain">HeightBlendTex1</HeightBlendTex>
+      <DiffuseTex from="AssetBundle" bundle="terrain">DiffuseTex1</DiffuseTex>
+      <DiffuseBlendTex from="AssetBundle" bundle="terrain">DiffuseBlendTex1</DiffuseBlendTex>
     </LandformDescription>
     <LandformDescription id="2" name="Unknow2">
       <HeightTex from="File">HeightTex2</HeightTex>

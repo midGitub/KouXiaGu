@@ -14,7 +14,7 @@ namespace JiongXiaGu.Unity.Resources
     {
         internal const AssetLoadModes DefaultLoadMode = AssetLoadModes.File;
         internal const string LoadModeAttribute = "from";
-        internal const string AssetBundleNameAttribute = "assetBundle";
+        internal const string AssetBundleNameAttribute = "bundle";
 
         /// <summary>
         /// 读取方式,默认从文件读取;
@@ -24,7 +24,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 若为 AssetBundle 的资源,则为 AssetBundleName,否则为null;
         /// </summary>
-        public AssetPath AssetBundleName { get; private set; }
+        public AssetPath BundleName { get; private set; }
 
         /// <summary>
         /// 若从 AssetBundle 读取,则为文件名,忽略拓展名;
@@ -41,7 +41,7 @@ namespace JiongXiaGu.Unity.Resources
         public AssetInfo(AssetPath assteBundleName, string name) : this()
         {
             From = AssetLoadModes.AssetBundle;
-            AssetBundleName = assteBundleName;
+            BundleName = assteBundleName;
             Name = name;
 
             if (Name.IsReferencePath())
@@ -66,7 +66,7 @@ namespace JiongXiaGu.Unity.Resources
                 switch (From)
                 {
                     case AssetLoadModes.AssetBundle:
-                        AssetBundleName = reader.GetAttribute(AssetBundleNameAttribute);
+                        BundleName = reader.GetAttribute(AssetBundleNameAttribute);
                         break;
 
                     default:
@@ -90,7 +90,7 @@ namespace JiongXiaGu.Unity.Resources
 
                 case AssetLoadModes.AssetBundle:
                     writer.WriteAttributeString(LoadModeAttribute, From.ToString());
-                    writer.WriteAttributeString(AssetBundleNameAttribute, AssetBundleName.Name);
+                    writer.WriteAttributeString(AssetBundleNameAttribute, BundleName.Name);
                     writer.WriteValue(Name.ToString());
                     break;
 
@@ -107,7 +107,7 @@ namespace JiongXiaGu.Unity.Resources
         public bool Equals(AssetInfo other)
         {
             return From == other.From &&
-                   AssetBundleName.Equals(other.AssetBundleName) &&
+                   BundleName.Equals(other.BundleName) &&
                    Name.Equals(other.Name);
         }
 
@@ -115,7 +115,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             var hashCode = -167635157;
             hashCode = hashCode * -1521134295 + From.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(AssetBundleName);
+            hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(BundleName);
             hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(Name);
             return hashCode;
         }

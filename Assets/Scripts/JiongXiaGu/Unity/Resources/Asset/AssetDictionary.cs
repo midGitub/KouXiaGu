@@ -87,7 +87,7 @@ namespace JiongXiaGu.Unity.Resources
             switch (assetInfo.From)
             {
                 case AssetLoadModes.AssetBundle:
-                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(LoadableContent).FullName, description.ID, assetInfo.AssetBundleName, assetInfo.Name);
+                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(LoadableContent).FullName, description.ID, assetInfo.BundleName, assetInfo.Name);
                     break;
 
                 case AssetLoadModes.File:

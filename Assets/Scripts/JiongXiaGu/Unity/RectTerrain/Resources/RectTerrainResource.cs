@@ -10,7 +10,7 @@ namespace JiongXiaGu.Unity.RectTerrain
 {
 
     [DisallowMultipleComponent]
-    public class RectTerrainResource : MonoBehaviour, IDataInitializeHandle
+    public class RectTerrainResource : MonoBehaviour
     {
         [SerializeField]
         private LandformResCreater landformResCreater;
@@ -22,27 +22,13 @@ namespace JiongXiaGu.Unity.RectTerrain
             landformDescriptionSerializer = new LandformDescriptionSerializer();
         }
 
-        void IDataInitializeHandle.Read(LoadableContent loadableContent, ITypeDictionary info, CancellationToken token)
-        {
-            DescriptionCollection<LandformDescription> landform;
-            if (landformDescriptionSerializer.TryDeserialize(loadableContent.Content, out landform))
-            {
-                info.AddOrUpdate(landform);
-            }
-        }
-
-        void IDataInitializeHandle.Prepare(ITypeDictionary info, CancellationToken token)
-        {
-            DescriptionCollection<LandformDescription> landform;
-            if (info.TryGetValue(out landform))
-            {
-                landformResCreater.Add(landform.Descriptions);
-            }
-        }
-
-        void IDataInitializeHandle.Clear()
-        {
-            landformResCreater.Clear();
-        }
+        //void IResourceLoadHandle.Read(LoadableContent loadableContent, ITypeDictionary info, CancellationToken token)
+        //{
+        //    DescriptionCollection<LandformDescription> landform;
+        //    if (landformDescriptionSerializer.TryDeserialize(loadableContent.Content, out landform))
+        //    {
+        //        info.AddOrUpdate(landform);
+        //    }
+        //}
     }
 }

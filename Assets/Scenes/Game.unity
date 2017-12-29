@@ -337,6 +337,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c853b02d1089d6c45a1f5dae91afedec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  landformResCreater:
+    defaultLandformRes:
+      heightTex: {fileID: 0}
+      heightBlendTex: {fileID: 0}
+      diffuseTex: {fileID: 0}
+      diffuseBlendTex: {fileID: 0}
 --- !u!1 &155567654
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,7 +565,7 @@ Transform:
   - {fileID: 1334407780}
   - {fileID: 1152577948}
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &235677719
 GameObject:
@@ -589,7 +595,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!124 &235677722
 Behaviour:
@@ -965,6 +971,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c853b02d1089d6c45a1f5dae91afedec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  landformResCreater:
+    defaultLandformRes:
+      heightTex: {fileID: 0}
+      heightBlendTex: {fileID: 0}
+      diffuseTex: {fileID: 0}
+      diffuseBlendTex: {fileID: 0}
 --- !u!114 &315898481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3181,7 +3193,7 @@ Transform:
   m_Children:
   - {fileID: 315898479}
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1031467389
 MonoBehaviour:
@@ -3536,6 +3548,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 2090947209}
   - {fileID: 1207921727}
   - {fileID: 1031467388}
   - {fileID: 232342806}
@@ -3669,7 +3682,7 @@ Transform:
   - {fileID: 1268072289}
   - {fileID: 230599007}
   m_Father: {fileID: 1187234277}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1207921728
 MonoBehaviour:
@@ -3682,8 +3695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bf2823feb577864ba4df2e2c4bef005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  concurrencyNumber: 3
-  options: 0
+  maxDegreeOfParallelism: -1
 --- !u!1 &1232613480
 GameObject:
   m_ObjectHideFlags: 0
@@ -6784,6 +6796,51 @@ MonoBehaviour:
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   onBlur:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!1 &2090947208
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 2090947209}
+  - component: {fileID: 2090947210}
+  m_Layer: 0
+  m_Name: StageController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2090947209
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2090947208}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1187234277}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2090947210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2090947208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6384bc5005e2ddd4b9e17ac215ea394c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onProgramCompleted:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
