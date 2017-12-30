@@ -120,9 +120,9 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (var dis = content.BeginUpdate())
             {
-                using (Stream stream1 = content.CreateOutStream(description1Path),
-                    stream2 = content.CreateOutStream(description2Path),
-                    stream3 = content.CreateOutStream(description3Path))
+                using (Stream stream1 = content.CreateOutputStream(description1Path),
+                    stream2 = content.CreateOutputStream(description2Path),
+                    stream3 = content.CreateOutputStream(description3Path))
                 {
                     xmlSerializer.Serialize(stream1, description1);
                     xmlSerializer.Serialize(stream2, description2);

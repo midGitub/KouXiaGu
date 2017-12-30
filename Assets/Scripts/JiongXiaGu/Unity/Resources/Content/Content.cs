@@ -138,7 +138,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到对应数据的流,若未能获取到则返回异常;
+        /// 获取到对应数据的流,若未能获取到则返回异常;(推荐在using语法内使用)
         /// </summary>
         public abstract Stream GetInputStream(string relativePath);
 
@@ -154,6 +154,16 @@ namespace JiongXiaGu.Unity.Resources
         public abstract void CommitUpdate();
 
         /// <summary>
+        /// 获取到输出流,若文件已经存在则返回该流,否则返回空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
+        /// </summary>
+        public abstract Stream GetOutputStream(string relativePath);
+
+        /// <summary>
+        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
+        /// </summary>
+        public abstract Stream CreateOutputStream(string relativePath);
+
+        /// <summary>
         /// 添加到资源,若不存在该文件则加入到,若已经存在该文件,则更新其;在使用该方法之前需要调用 BeginUpdate();
         /// </summary>
         public abstract void AddOrUpdate(string relativePath, Stream stream);
@@ -162,16 +172,6 @@ namespace JiongXiaGu.Unity.Resources
         /// 移除指定资源;在使用该方法之前需要调用 BeginUpdate();
         /// </summary>
         public abstract bool Remove(string relativePath);
-
-        /// <summary>
-        /// 获取到输出流,若文件已经存在则返回该流,否则返回空的用于写的流;在使用该方法之前需要调用 BeginUpdate();
-        /// </summary>
-        public abstract Stream GetOutStream(string relativePath);
-
-        /// <summary>
-        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;在使用该方法之前需要调用 BeginUpdate();
-        /// </summary>
-        public abstract Stream CreateOutStream(string relativePath);
 
         /// <summary>
         /// 若该实例已经被销毁,则返回异常;

@@ -13,14 +13,14 @@ namespace JiongXiaGu.Unity.Resources
     public class LoadableContentFactory
     {
         private const bool DefaultIsCoreContent = false;
-        private ContentFactory contentFactory = new ContentFactory();
+        //private ContentFactory contentFactory = new ContentFactory();
 
         /// <summary>
         /// 创建可读内容,若目录已经存在则返回异常;
         /// </summary>
         public LoadableContent CreateNew(string directory, LoadableContentDescription description)
         {
-            Content content = contentFactory.CreateNew(directory);
+            Content content = new DirectoryContent(directory);
             ConcurrentContent concurrentContent = new ConcurrentContent(content);
             return CreateNew(concurrentContent, description);
         }
@@ -32,7 +32,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             Stream stream = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite);
             ZipFile zipFile = ZipFile.Create(stream);
-            ContentZip contentZip = new ContentZip(file, stream, zipFile);
+            ZipContent contentZip = new ZipContent(file, stream, zipFile);
             ConcurrentContent concurrentContent = new ConcurrentContent(contentZip);
             return CreateNew(concurrentContent, description);
         }
@@ -57,7 +57,7 @@ namespace JiongXiaGu.Unity.Resources
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
 
-            Content content = contentFactory.Read(directory);
+            Content content = new DirectoryContent(directory);
             ConcurrentContent concurrentContent = new ConcurrentContent(content);
             return Read(concurrentContent);
         }
@@ -67,7 +67,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public LoadableContent ReadZip(string file)
         {
-            Content content = contentFactory.ReadZip(file);
+            Content content = new ZipContent(file);
             ConcurrentContent concurrentContent = new ConcurrentContent(content);
             return Read(concurrentContent);
         }
@@ -113,7 +113,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (content.BeginUpdate())
             {
-                using (var stream = content.CreateOutStream(DescriptionPath))
+                using (var stream = content.CreateOutputStream(DescriptionPath))
                 {
                     descriptionSerializer.Serialize(stream, description);
                 }

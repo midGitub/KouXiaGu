@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 用户配置文件;
         /// </summary>
-        public static Lazy<Content> UserConfig { get; private set; } = new Lazy<Content>(() => new ContentDirectory(Resource.UserConfigDirectory), true);
+        public static Lazy<Content> UserConfig { get; private set; } = new Lazy<Content>(() => new DirectoryContent(Resource.UserConfigDirectory), true);
 
         private static List<LoadableContent> all;
 

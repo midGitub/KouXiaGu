@@ -9,7 +9,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 资源Zip文件;
     /// </summary>
-    public class ContentZip : Content
+    public class ZipContent : Content
     {
         /// <summary>
         /// 压缩包文件路径;
@@ -32,7 +32,20 @@ namespace JiongXiaGu.Unity.Resources
         public override bool CanWrite => !isDisposed;
         public override bool IsDisposed => isDisposed;
 
-        public ContentZip(string zipFilePath, Stream stream, ZipFile zipFile)
+        /// <summary>
+        /// 指定压缩文件路径构建,若路径不存在则返回异常;
+        /// </summary>
+        public ZipContent(string zipFilePath)
+        {
+            this.zipFilePath = zipFilePath;
+            stream = new FileStream(zipFilePath, FileMode.Open, FileAccess.ReadWrite);
+            zipFile = new ZipFile(stream);
+        }
+
+        /// <summary>
+        /// 指定参数构建;
+        /// </summary>
+        public ZipContent(string zipFilePath, Stream stream, ZipFile zipFile)
         {
             if (zipFile == null)
                 throw new ArgumentNullException(nameof(zipFile));
@@ -42,6 +55,17 @@ namespace JiongXiaGu.Unity.Resources
             this.zipFilePath = zipFilePath;
             this.stream = stream;
             this.zipFile = zipFile;
+        }
+
+        /// <summary>
+        /// 创建新的压缩文件,若文件已经存在则返回异常;
+        /// </summary>
+        public static ZipContent CreateNew(string zipFilePath)
+        {
+            Stream stream = new FileStream(zipFilePath, FileMode.CreateNew, FileAccess.ReadWrite);
+            ZipFile zip = ZipFile.Create(stream);
+            ZipContent contentZip = new ZipContent(zipFilePath, stream, zip);
+            return contentZip;
         }
 
         public override void Dispose()
@@ -133,7 +157,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 写完毕后需要关闭流,在 CommitUpdate() 之后才会应用变化;
         /// </summary>
-        public override Stream GetOutStream(string relativePath)
+        public override Stream GetOutputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
@@ -154,7 +178,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override Stream CreateOutStream(string relativePath)
+        public override Stream CreateOutputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 

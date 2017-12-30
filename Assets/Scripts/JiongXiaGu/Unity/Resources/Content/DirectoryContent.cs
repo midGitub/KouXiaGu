@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using System.Collections.Concurrent;
+using System.Linq;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -10,7 +9,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 资源目录;
     /// </summary>
-    public class ContentDirectory : Content
+    public class DirectoryContent : Content
     {
         private bool isUpdating;
         private bool isDisposed;
@@ -22,15 +21,13 @@ namespace JiongXiaGu.Unity.Resources
         public override bool CanWrite => !isDisposed;
 
         /// <summary>
-        /// 构造函数;
+        /// 创建目录或者指定目录;
         /// </summary>
-        /// <param name="directory">必须存在的目录,否则返回异常</param>
-        public ContentDirectory(string directory)
+        /// <param name="directory">若目录不存在则创建</param>
+        public DirectoryContent(string directory)
         {
-            if (!Directory.Exists(directory))
-                throw new DirectoryNotFoundException(directory);
-
             DirectoryInfo = new DirectoryInfo(directory);
+            DirectoryInfo.Create();
         }
 
         /// <summary>
@@ -125,7 +122,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override Stream GetOutStream(string relativePath)
+        public override Stream GetOutputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
             string filePath = GetFullPath(relativePath);
@@ -137,7 +134,7 @@ namespace JiongXiaGu.Unity.Resources
             return new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 
-        public override Stream CreateOutStream(string relativePath)
+        public override Stream CreateOutputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
             string filePath = GetFullPath(relativePath);

@@ -62,7 +62,7 @@ namespace JiongXiaGu.Unity.RectTerrain
                 Directory.Delete(directory, true);
             }
             Directory.CreateDirectory(directory);
-            return new ContentDirectory(directory);
+            return new DirectoryContent(directory);
         }
 
         private void AreEqual(DescriptionCollection<LandformDescription> v1, DescriptionCollection<LandformDescription> v2)

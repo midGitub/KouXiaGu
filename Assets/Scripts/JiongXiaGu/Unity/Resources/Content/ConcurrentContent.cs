@@ -147,19 +147,19 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(该stream推荐放在using语句内使用)
         /// </summary>
-        public override Stream CreateOutStream(string relativePath)
+        public override Stream CreateOutputStream(string relativePath)
         {
             ThrowIfSynchronizationLockException();
-            return Main.CreateOutStream(relativePath);
+            return Main.CreateOutputStream(relativePath);
         }
 
         /// <summary>
         /// 获取到输出流,若文件已经存在则返回该流,否则返回空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(该stream推荐放在using语句内使用)
         /// </summary>
-        public override Stream GetOutStream(string relativePath)
+        public override Stream GetOutputStream(string relativePath)
         {
             ThrowIfSynchronizationLockException();
-            return Main.GetOutStream(relativePath);
+            return Main.GetOutputStream(relativePath);
         }
 
         /// <summary>
