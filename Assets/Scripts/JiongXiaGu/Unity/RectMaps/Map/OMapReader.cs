@@ -28,12 +28,12 @@ namespace JiongXiaGu.Unity.RectMaps
         const string MapFilePrefix = "Map_";
         const string MapFileExtension = ".xmap";
 
-        readonly XmlSerializer mapSerializer;
+        readonly System.Xml.Serialization.XmlSerializer mapSerializer;
         readonly string mapsDirectory;
 
         public OMapReader()
         {
-            mapSerializer = new XmlSerializer(typeof(Map));
+            mapSerializer = new System.Xml.Serialization.XmlSerializer(typeof(Map));
             mapsDirectory = GetMapsDirectory();
         }
 

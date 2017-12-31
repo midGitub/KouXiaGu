@@ -1,7 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
 {
+
+    [Obsolete("似乎非线程安全")]
     public sealed class ProtoSerializer<T> : ISerializer<T>
     {
         internal const string fileExtension = ".data";

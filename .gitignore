@@ -287,7 +287,7 @@ sysinfo.txt
 
 /*.xlsx
 
-/NUnitTemp
+/[Nn]UnitTemp/
 
 /Assets/*
 !/Assets/Scripts
