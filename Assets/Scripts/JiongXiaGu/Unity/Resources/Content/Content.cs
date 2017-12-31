@@ -119,6 +119,21 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
+        /// 确定是否存在该路径;
+        /// </summary>
+        public virtual bool Contains(string relativePath)
+        {
+            foreach (var path in EnumerateFiles())
+            {
+                if (path == relativePath)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 搜索指定路径,直到返回true停止,若未找到则返回 null;
         /// </summary>
         public virtual string Find(Func<string, bool> func)
@@ -138,7 +153,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到对应数据的流,若未能获取到则返回异常;(推荐在using语法内使用)
+        /// 获取到对应数据的流,若未能获取到则返回异常 FileNotFoundException;(推荐在using语法内使用)
         /// </summary>
         public abstract Stream GetInputStream(string relativePath);
 

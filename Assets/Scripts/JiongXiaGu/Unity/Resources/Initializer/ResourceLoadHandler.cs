@@ -9,12 +9,17 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 游戏数据初始化接口;
     /// </summary>
-    public interface IResourceLoadHandle
+    public interface IResourceHandle
     {
         /// <summary>
         /// 读取到对应内容;
         /// </summary>
         void Read(LoadableContent content, ITypeDictionary data, CancellationToken token);
+
+        /// <summary>
+        /// 输出对应内容;
+        /// </summary>
+        void Write(LoadableContent content, ITypeDictionary data, CancellationToken token);
     }
 
     /// <summary>
@@ -25,7 +30,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 设置新的数据数据;
         /// </summary>
-        void SetNew(ITypeDictionary[] data);
+        void SetNew(ITypeDictionary[] data, CancellationToken token);
 
         /// <summary>
         /// 清空所有数据;
@@ -39,7 +44,7 @@ namespace JiongXiaGu.Unity.Resources
     internal class ResourceLoadHandler
     {
         private ICollection<LoadableContent> LoadOrder { get; set; }
-        public IResourceLoadHandle[] LoadHandlers { get; set; }
+        public IResourceHandle[] LoadHandlers { get; set; }
         public IResourceIntegrateHandle[] IntegrateHandlers { get; set; }
 
         private ITypeDictionary coreData;
@@ -123,13 +128,13 @@ namespace JiongXiaGu.Unity.Resources
             LoadDataInternal(LoadOrder, otherData, token);
 
             //进行整合;
-            IntegrateData();
+            IntegrateData(token);
         }
 
         /// <summary>
         /// 整合数据;
         /// </summary>
-        private void IntegrateData()
+        private void IntegrateData(CancellationToken token)
         {
             int i = 0;
             ITypeDictionary[] datas = new ITypeDictionary[LoadOrder.Count];
@@ -150,7 +155,7 @@ namespace JiongXiaGu.Unity.Resources
 
             foreach (var integrateHandler in IntegrateHandlers)
             {
-                integrateHandler.SetNew(datas);
+                integrateHandler.SetNew(datas, token);
             }
         }
 

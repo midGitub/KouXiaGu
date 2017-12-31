@@ -4,6 +4,7 @@ using System.IO;
 namespace JiongXiaGu.Unity.Resources
 {
 
+    [Obsolete]
     public static class SerializerExtensions
     {
         public static T Read<T>(this ISerializer<T> serializer, string file)

@@ -41,13 +41,27 @@ namespace JiongXiaGu.Unity.Resources
             return content.Keys;
         }
 
+        public override bool Contains(string relativePath)
+        {
+            ThrowIfObjectDisposed();
+
+            return content.ContainsKey(relativePath);
+        }
+
         public override Stream GetInputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
-            var stream = content[relativePath];
-            var inputStream = new InputStream(stream);
-            return inputStream;
+            Stream stream;
+            if (content.TryGetValue(relativePath, out stream))
+            {
+                var inputStream = new InputStream(stream);
+                return inputStream;
+            }
+            else
+            {
+                throw new FileNotFoundException(relativePath);
+            }
         }
 
         public override IDisposable BeginUpdate()
@@ -83,8 +97,15 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            var stream = new MemoryStream();
-            content.Add(relativePath, stream);
+            Stream stream = new MemoryStream();
+            if (content.ContainsKey(relativePath))
+            {
+                content[relativePath] = stream;
+            }
+            else
+            {
+                content.Add(relativePath, stream);
+            }
             var outputStream = new OutputStream(stream);
             return outputStream;
         }

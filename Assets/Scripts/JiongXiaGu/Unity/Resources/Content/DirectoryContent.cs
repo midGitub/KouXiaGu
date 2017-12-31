@@ -71,9 +71,18 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
+        public override bool Contains(string relativePath)
+        {
+            ThrowIfObjectDisposed();
+
+            string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
+            return File.Exists(filePath);
+        }
+
         public override Stream GetInputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
+
             string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
             if (File.Exists(filePath))
             {

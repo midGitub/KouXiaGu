@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public void Serialize(Stream stream, object item)
         {
-            Serializer.Serialize(stream, item);
+            Serializer.SerializeXiaGu(stream, item);
         }
 
         public object Deserialize(Stream stream)
