@@ -25,26 +25,12 @@ namespace JiongXiaGu.Unity.Resources.Binding
             Assert.True(content.Contains("v2"));
 
             var value = reader.Deserialize(content) as File;
-            AreEqual(DefalutFile, value);
-        }
-
-        private void AreEqual(File v1, File v2)
-        {
-            AreEqual(v1.v0, v2.v0);
-            AreEqual(v1.v1, v2.v1);
-            AreEqual(v1.v2, v2.v2);
-        }
-
-        private void AreEqual(Description v1, Description v2)
-        {
-            Assert.AreEqual(v1.ID, v2.ID);
-            Assert.AreEqual(v1.Name, v2.Name);
-            Assert.AreEqual(v1.Tags, v2.Tags);
+            Assert.AreEqual(DefalutFile, value);
         }
 
         private File DefalutFile => new File();
 
-        public class File
+        public class File : IEquatable<File>
         {
             [XmlAsset("v0", false)]
             public Description v0;
@@ -84,13 +70,79 @@ namespace JiongXiaGu.Unity.Resources.Binding
                     Name = "v3",
                 },
             };
+
+            public override bool Equals(object obj)
+            {
+                return Equals(obj as File);
+            }
+
+            public bool Equals(File other)
+            {
+                return other != null &&
+                       v0.Equals(other.v0) &&
+                       v1.Equals(other.v1) &&
+                       v2.Equals(other.v2) &&
+                       v3.Equals(other.v3);
+            }
+
+            public override int GetHashCode()
+            {
+                var hashCode = -318127454;
+                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v0);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v1);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v2);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v3);
+                return hashCode;
+            }
+
+            public static bool operator ==(File file1, File file2)
+            {
+                return EqualityComparer<File>.Default.Equals(file1, file2);
+            }
+
+            public static bool operator !=(File file1, File file2)
+            {
+                return !(file1 == file2);
+            }
         }
 
-        public struct Description
+        public struct Description : IEquatable<Description>
         {
             public string ID { get; set; }
             public string Name { get; set; }
             public string Tags { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Description && Equals((Description)obj);
+            }
+
+            public bool Equals(Description other)
+            {
+                return ID == other.ID &&
+                       Name == other.Name &&
+                       Tags == other.Tags;
+            }
+
+            public override int GetHashCode()
+            {
+                var hashCode = -1159439338;
+                hashCode = hashCode * -1521134295 + base.GetHashCode();
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(ID);
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Tags);
+                return hashCode;
+            }
+
+            public static bool operator ==(Description description1, Description description2)
+            {
+                return description1.Equals(description2);
+            }
+
+            public static bool operator !=(Description description1, Description description2)
+            {
+                return !(description1 == description2);
+            }
         }
     }
 }

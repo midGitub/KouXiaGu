@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using System.Threading.Tasks;
 using JiongXiaGu.Unity.Resources;
@@ -10,24 +11,21 @@ using JiongXiaGu.Unity.Resources;
 namespace JiongXiaGu.Unity.Initializers
 {
 
-    /// <summary>
-    /// 游戏程序阶段控制器;
-    /// </summary>
-    public class StageController : MonoBehaviour
+    public class StageEntrance : MonoBehaviour
     {
         /// <summary>
         /// 当程序初始化完成后调用;
         /// </summary>
-        public UnityEvent OnProgramInitialized => onProgramInitialized;
+        public UnityEvent OnProgramCompleted => onProgramCompleted;
         [SerializeField]
-        private UnityEvent onProgramInitialized;
+        private UnityEvent onProgramCompleted;
 
         /// <summary>
         /// 当资源加载完毕后调用(可能调用多次);
         /// </summary>
-        public UnityEvent OnResourceLoaded => onResourceLoaded;
+        public UnityEvent OnResourceCompleted => onResourceCompleted;
         [SerializeField]
-        private UnityEvent onResourceLoaded;
+        private UnityEvent onResourceCompleted;
 
         /// <summary>
         /// 当进行游戏时调用;
@@ -35,6 +33,35 @@ namespace JiongXiaGu.Unity.Initializers
         public UnityEvent OnJoinedGame => onJoinedGame;
         [SerializeField]
         private UnityEvent onJoinedGame;
+
+        private void Awake()
+        {
+            
+        }
+
+        /// <summary>
+        /// 转到主菜单场景;
+        /// </summary>
+        public void GoMainMenuScene()
+        {
+            Stage.GoMainMenuScene();
+        }
+
+        /// <summary>
+        /// 转到游戏场景;
+        /// </summary>
+        public void GoGameScene()
+        {
+            Stage.GoGameScene();
+        }
+
+
+        ///// <summary>
+        ///// 当前进行的阶段;
+        ///// </summary>
+        //public StageState Stage { get; private set; } = StageState.Default;
+        public bool IsProgramCompleted { get; private set; }
+        public bool IsResourceCompleted { get; private set; }
 
         /// <summary>
         /// UnityAPI,在程序开始时调用;
@@ -51,7 +78,7 @@ namespace JiongXiaGu.Unity.Initializers
         {
             await Task.Run(() => LoadableResource.FindResource());
             await ComponentInitializer.Instance.StartInitialize();
-            Invoke(onProgramInitialized);
+            Invoke(onProgramCompleted);
         }
 
         /// <summary>
@@ -62,13 +89,12 @@ namespace JiongXiaGu.Unity.Initializers
             throw new NotImplementedException();
         }
 
-
         /// <summary>
         /// 在程序初始化完毕后,自动调用的资源初始化;
         /// </summary>
         public Task LoadResource()
         {
-            throw new NotImplementedException();
+            return ResourceInitializer.Instance.LoadResource();
         }
 
         /// <summary>
@@ -76,7 +102,7 @@ namespace JiongXiaGu.Unity.Initializers
         /// </summary>
         public Task LoadResource(LoadOrder loadOrder)
         {
-            throw new NotImplementedException();
+            return ResourceInitializer.Instance.LoadResource(loadOrder);
         }
 
         /// <summary>
@@ -105,23 +131,31 @@ namespace JiongXiaGu.Unity.Initializers
                 unityEvent.Invoke();
             }
         }
-    }
-    
-    public enum StageType
-    {
-        /// <summary>
-        /// 程序初始化,若未能初始化成功,则代表游戏不能正常运行;
-        /// </summary>
-        ProgramInitialization,
 
-        /// <summary>
-        /// 资源初始化,在开始游戏之前需要初始化完毕;
-        /// </summary>
-        ResourceInitialization,
+        [Serializable]
+        private class SceneDefinition
+        {
+            [SerializeField]
+            private UnityEngine.Object InitializationScene;
+            [SerializeField]
+            private UnityEngine.Object MainMenuScene;
+            [SerializeField]
+            private UnityEngine.Object GameScene;
 
-        /// <summary>
-        /// 游戏状态;
-        /// </summary>
-        Game,
+            public void LoadInitializationScene()
+            {
+                SceneManager.LoadScene(InitializationScene.name, LoadSceneMode.Single);
+            }
+
+            public void LoadMainMenuScene()
+            {
+                SceneManager.LoadScene(MainMenuScene.name, LoadSceneMode.Single);
+            }
+
+            public void LoadGameScene()
+            {
+                SceneManager.LoadScene(GameScene.name, LoadSceneMode.Single);
+            }
+        }
     }
 }

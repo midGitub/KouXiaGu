@@ -13,38 +13,48 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 静态单例;
         /// </summary>
-        private static T instance;
-
-        public UnitySingleton()
-        {
-        }
+        private volatile static T instance;
 
         /// <summary>
         /// 控制器标签;
         /// </summary>
         public abstract string ControllerTagName { get; }
 
+        private static readonly object asyncLock = new object();
+
         /// <summary>
         /// 获取到单例;
         /// </summary>
         public T GetInstance()
         {
-            if (UnityThread.IsUnityThread)
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                {
-                    Debug.LogWarning("在编辑模式下进行了单例访问;");
-                    return Find();
-                }
-#endif
-                return instance ?? Find();
-            }
-            else
-            {
+            if (instance != null)
                 return instance;
-            }
 
+            lock (asyncLock)
+            {
+                if (UnityThread.IsUnityThread)
+                {
+#if UNITY_EDITOR
+                    if (!UnityThread.IsPlaying)
+                    {
+                        Debug.LogWarning("在编辑模式下进行了单例访问;");
+                        return Find();
+                    }
+#endif
+                    return instance ?? (instance = Find());
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    if (!UnityThread.IsPlaying)
+                    {
+                        Debug.LogWarning("在编辑模式下进行了单例访问;");
+                        return UnityThread.RunInUnityThread(Find).Result;
+                    }
+#endif
+                    return instance ?? (instance = UnityThread.RunInUnityThread(Find).Result);
+                }
+            }
         }
 
         /// <summary>
@@ -55,7 +65,7 @@ namespace JiongXiaGu.Unity
             GameObject sceneController = GameObject.FindWithTag(ControllerTagName);
             if (sceneController != null)
             {
-                instance = sceneController.GetComponentInChildren<T>();
+                var instance = sceneController.GetComponentInChildren<T>();
                 return instance;
             }
             return null;
@@ -64,40 +74,46 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 设置到单例;
         /// </summary>
-        public void SetInstance(T currentInstance)
+        public void SetInstance(T newInstance)
         {
-            if (currentInstance == null)
+            lock (asyncLock)
             {
-                throw new ArgumentNullException(nameof(currentInstance));
-            }
-            else if (instance != null && instance != currentInstance)
-            {
-                string message = string.Format("重复设置单例{0},当前:{1},传入:{2}", nameof(T), instance, currentInstance);
-                throw new InvalidOperationException(message);
-            }
-            else
-            {
-                instance = currentInstance;
+                if (newInstance == null)
+                {
+                    throw new ArgumentNullException(nameof(newInstance));
+                }
+                else if (instance != null && instance != newInstance)
+                {
+                    string message = string.Format("重复设置单例{0},当前:{1},传入:{2}", nameof(T), instance, newInstance);
+                    throw new InvalidOperationException(message);
+                }
+                else
+                {
+                    instance = newInstance;
+                }
             }
         }
 
         /// <summary>
         /// 当单例销毁时调用;
         /// </summary>
-        public void RemoveInstance(T currentInstance)
+        public void RemoveInstance(T newInstance)
         {
-            if (currentInstance == null)
+            lock (asyncLock)
             {
-                throw new ArgumentNullException(nameof(currentInstance));
-            }
-            if (instance != null && instance != currentInstance)
-            {
-                string message = string.Format("当前单例 {0} 不等于传入的 {1};", instance, currentInstance);
-                throw new InvalidOperationException(message);
-            }
-            else
-            {
-                instance = null;
+                if (newInstance == null)
+                {
+                    throw new ArgumentNullException(nameof(newInstance));
+                }
+                if (instance != null && instance != newInstance)
+                {
+                    string message = string.Format("当前单例 {0} 不等于传入的 {1};", instance, newInstance);
+                    throw new InvalidOperationException(message);
+                }
+                else
+                {
+                    instance = null;
+                }
             }
         }
     }
@@ -110,11 +126,7 @@ namespace JiongXiaGu.Unity
     {
         [CustomUnityTag("场景控制器;")]
         public const string SceneControllerTagName = "SceneController";
-
-        public override string ControllerTagName
-        {
-            get { return SceneControllerTagName; }
-        }
+        public override string ControllerTagName => SceneControllerTagName;
     }
 
     /// <summary>
@@ -125,10 +137,6 @@ namespace JiongXiaGu.Unity
     {
         [CustomUnityTag("全局控制器")]
         public const string GlobalControllerTagName = "GlobalController";
-
-        public override string ControllerTagName
-        {
-            get { return GlobalControllerTagName; }
-        }
+        public override string ControllerTagName => GlobalControllerTagName;
     }
 }

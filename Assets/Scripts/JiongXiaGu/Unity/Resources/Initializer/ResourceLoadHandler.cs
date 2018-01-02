@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Unity.Resources
 {
     /// <summary>
-    /// 游戏数据初始化接口;
+    /// 数据整合处理接口;
     /// </summary>
-    public interface IResourceHandle
+    public interface IResourceIntegrateHandle
     {
         /// <summary>
         /// 读取到对应内容;
@@ -20,13 +20,7 @@ namespace JiongXiaGu.Unity.Resources
         /// 输出对应内容;
         /// </summary>
         void Write(LoadableContent content, ITypeDictionary data, CancellationToken token);
-    }
 
-    /// <summary>
-    /// 数据整合处理接口;
-    /// </summary>
-    public interface IResourceIntegrateHandle
-    {
         /// <summary>
         /// 设置新的数据数据;
         /// </summary>
@@ -43,12 +37,10 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     internal class ResourceLoadHandler
     {
-        private ICollection<LoadableContent> LoadOrder { get; set; }
-        public IResourceHandle[] LoadHandlers { get; set; }
-        public IResourceIntegrateHandle[] IntegrateHandlers { get; set; }
-
         private ITypeDictionary coreData;
         private List<ContentData> otherData;
+        private LoadOrder LoadOrder { get; set; }
+        public IResourceIntegrateHandle[] IntegrateHandlers { get; set; }
 
         private Task worker;
         private CancellationTokenSource workerCancellationTokenSource;
@@ -61,39 +53,36 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
+        /// 取消读取;
+        /// </summary>
+        private void Cancel()
+        {
+            workerCancellationTokenSource?.Cancel();
+        }
+
+        /// <summary>
         /// 异步读取所有数据并且应用到;
         /// </summary>
-        public Task LoadAsync(CancellationToken token)
+        public Task LoadAsync()
         {
             if (LoadOrder == null)
                 throw new ArgumentNullException(nameof(LoadOrder));
-            if (LoadHandlers == null)
-                throw new ArgumentNullException(nameof(LoadHandlers));
             if (IntegrateHandlers == null)
                 throw new ArgumentNullException(nameof(IntegrateHandlers));
-            token.ThrowIfCancellationRequested();
 
             if (worker == null)
             {
-                CancellationToken cancellationToken = CreateLinkedTokenSource(token);
+                workerCancellationTokenSource = new CancellationTokenSource();
+                var cancellationToken = workerCancellationTokenSource.Token;
                 return worker = Task.Run(() => LoadInternal(cancellationToken), cancellationToken);
             }
             else
             {
                 workerCancellationTokenSource.Cancel();
-                CancellationToken cancellationToken = CreateLinkedTokenSource(token);
-                return worker = worker.ContinueWith(_ => LoadInternal(token), cancellationToken);
+                workerCancellationTokenSource = new CancellationTokenSource();
+                var cancellationToken = workerCancellationTokenSource.Token;
+                return worker = worker.ContinueWith(_ => LoadInternal(cancellationToken), cancellationToken);
             }
-        }
-
-        /// <summary>
-        /// 创建新的关联的取消控制器;
-        /// </summary>
-        private CancellationToken CreateLinkedTokenSource(CancellationToken token)
-        {
-            workerCancellationTokenSource = new CancellationTokenSource();
-            var currentCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, workerCancellationTokenSource.Token);
-            return currentCancellationTokenSource.Token;
         }
 
         /// <summary>
@@ -103,8 +92,6 @@ namespace JiongXiaGu.Unity.Resources
         {
             if (LoadOrder == null)
                 throw new ArgumentNullException(nameof(LoadOrder));
-            if (LoadHandlers == null)
-                throw new ArgumentNullException(nameof(LoadHandlers));
             if (IntegrateHandlers == null)
                 throw new ArgumentNullException(nameof(IntegrateHandlers));
 
@@ -204,10 +191,10 @@ namespace JiongXiaGu.Unity.Resources
             token.ThrowIfCancellationRequested();
 
             var data = new TypeDictionary();
-            foreach (var loader in LoadHandlers)
+            foreach (var handler in IntegrateHandlers)
             {
                 token.ThrowIfCancellationRequested();
-                loader.Read(content, data, token);
+                handler.Read(content, data, token);
             }
             return data;
         }

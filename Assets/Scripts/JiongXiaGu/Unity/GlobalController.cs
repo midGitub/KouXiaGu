@@ -19,6 +19,9 @@ namespace JiongXiaGu.Unity
     [DisallowMultipleComponent]
     public sealed class GlobalController :MonoBehaviour
     {
+        private static readonly GlobalSingleton<GlobalController> singleton = new GlobalSingleton<GlobalController>();
+        public static GlobalController Instance => singleton.GetInstance();
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);

@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     }
 
     [DisallowMultipleComponent]
-    public class RectTerrainResource : MonoBehaviour, IResourceHandle, IResourceIntegrateHandle
+    public class RectTerrainResource : MonoBehaviour, IResourceIntegrateHandle
     {
         [SerializeField]
         private LandformResCreater landformResCreater;
@@ -34,7 +34,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             bindingSerializer = new BindingSerializer(typeof(RectTerrainResourceDescription));
         }
 
-        void IResourceHandle.Read(LoadableContent content, ITypeDictionary data, CancellationToken token)
+        void IResourceIntegrateHandle.Read(LoadableContent content, ITypeDictionary data, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -42,7 +42,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             data.Add(description);
         }
 
-        void IResourceHandle.Write(LoadableContent content, ITypeDictionary data, CancellationToken token)
+        void IResourceIntegrateHandle.Write(LoadableContent content, ITypeDictionary data, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -62,14 +62,5 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
             throw new NotImplementedException();
         }
-
-        //void IResourceLoadHandle.Read(LoadableContent loadableContent, ITypeDictionary info, CancellationToken token)
-        //{
-        //    DescriptionCollection<LandformDescription> landform;
-        //    if (landformDescriptionSerializer.TryDeserialize(loadableContent.Content, out landform))
-        //    {
-        //        info.AddOrUpdate(landform);
-        //    }
-        //}
     }
 }
