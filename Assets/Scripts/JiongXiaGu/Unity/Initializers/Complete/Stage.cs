@@ -56,30 +56,6 @@ namespace JiongXiaGu.Unity.Initializers
             SceneType = SceneType.GameScene;
             return Task.CompletedTask;
         }
-
-        /// <summary>
-        /// 退出游戏程序;
-        /// </summary>
-        public static void QuitProgram()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 开始游戏,进入到游戏场景;
-        /// </summary>
-        public static void StartGameScene()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 退出游戏界面,即返回游戏主页面;
-        /// </summary>
-        public static void QuitGameScene()
-        {
-            throw new NotImplementedException();
-        }
     }
 
     //public enum StageType

@@ -20,8 +20,7 @@ namespace JiongXiaGu.Unity.Resources
         public LoadableContent CreateNew(string directory, LoadableContentDescription description)
         {
             Content content = new DirectoryContent(directory);
-            ConcurrentContent concurrentContent = new ConcurrentContent(content);
-            return CreateNew(concurrentContent, description);
+            return CreateNew(content, description);
         }
 
         /// <summary>
@@ -32,14 +31,13 @@ namespace JiongXiaGu.Unity.Resources
             Stream stream = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite);
             ZipFile zipFile = ZipFile.Create(stream);
             ZipContent contentZip = new ZipContent(file, stream, zipFile);
-            ConcurrentContent concurrentContent = new ConcurrentContent(contentZip);
-            return CreateNew(concurrentContent, description);
+            return CreateNew(contentZip, description);
         }
 
         /// <summary>
         /// 创建一个新的可读内容类型;
         /// </summary>
-        public LoadableContent CreateNew(ConcurrentContent content, LoadableContentDescription description)
+        public LoadableContent CreateNew(Content content, LoadableContentDescription description)
         {
             WriteDescription(content, description);
             LoadableContent loadableDirectory = new LoadableContent(content, description);
@@ -57,8 +55,7 @@ namespace JiongXiaGu.Unity.Resources
                 throw new DirectoryNotFoundException(directory);
 
             Content content = new DirectoryContent(directory);
-            ConcurrentContent concurrentContent = new ConcurrentContent(content);
-            return Read(concurrentContent);
+            return Read(content);
         }
 
         /// <summary>
@@ -67,14 +64,13 @@ namespace JiongXiaGu.Unity.Resources
         public LoadableContent ReadZip(string file)
         {
             Content content = new ZipContent(file);
-            ConcurrentContent concurrentContent = new ConcurrentContent(content);
-            return Read(concurrentContent);
+            return Read(content);
         }
 
         /// <summary>
         /// 创建为可读内容,若未能创建则返回异常;
         /// </summary>
-        public LoadableContent Read(ConcurrentContent content)
+        public LoadableContent Read(Content content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -112,7 +108,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (content.BeginUpdate())
             {
-                using (var stream = content.CreateOutputStream(DescriptionPath))
+                using (var stream = content.GetOutputStream(DescriptionPath))
                 {
                     descriptionSerializer.Serialize(stream, description);
                 }

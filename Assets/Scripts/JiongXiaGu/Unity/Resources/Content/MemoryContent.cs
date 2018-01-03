@@ -1,6 +1,7 @@
 ﻿using JiongXiaGu.Collections;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
@@ -13,8 +14,7 @@ namespace JiongXiaGu.Unity.Resources
     {
         private bool isDisposed = false;
         private bool isUpdating = false;
-        private Dictionary<string, Stream> content;
-
+        private Dictionary<string, ExclusiveStream> contents;
         public override bool IsUpdating => isUpdating;
         public override bool CanRead => !isDisposed;
         public override bool CanWrite => !isDisposed;
@@ -22,14 +22,19 @@ namespace JiongXiaGu.Unity.Resources
 
         public MemoryContent()
         {
-            content = new Dictionary<string, Stream>();
+            contents = new Dictionary<string, ExclusiveStream>();
         }
 
         public override void Dispose()
         {
             if (!isDisposed)
             {
-                content = null;
+                foreach (var content in contents.Values)
+                {
+                    content.Dispose();
+                }
+                contents = null;
+
                 isDisposed = true;
             }
         }
@@ -38,24 +43,24 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            return content.Keys;
+            return contents.Keys;
         }
 
         public override bool Contains(string relativePath)
         {
             ThrowIfObjectDisposed();
 
-            return content.ContainsKey(relativePath);
+            return contents.ContainsKey(relativePath);
         }
 
         public override Stream GetInputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
-            Stream stream;
-            if (content.TryGetValue(relativePath, out stream))
+            ExclusiveStream stream;
+            if (contents.TryGetValue(relativePath, out stream))
             {
-                var inputStream = new InputStream(stream);
+                var inputStream = stream.GetInputStream();
                 return inputStream;
             }
             else
@@ -83,145 +88,204 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            Stream stream;
-            if (!content.TryGetValue(relativePath, out stream))
+            ExclusiveStream stream;
+            if (!contents.TryGetValue(relativePath, out stream))
             {
-                stream = new MemoryStream();
-                content.Add(relativePath, stream);
+                stream = new ExclusiveStream();
+                contents.Add(relativePath, stream);
             }
-            var outputStream = new OutputStream(stream);
+            var outputStream = stream.GetOutputStream();
             return outputStream;
-        }
-
-        public override Stream CreateOutputStream(string relativePath)
-        {
-            ThrowIfObjectDisposed();
-
-            Stream stream = new MemoryStream();
-            if (content.ContainsKey(relativePath))
-            {
-                content[relativePath] = stream;
-            }
-            else
-            {
-                content.Add(relativePath, stream);
-            }
-            var outputStream = new OutputStream(stream);
-            return outputStream;
-        }
-
-        public override void AddOrUpdate(string relativePath, Stream stream)
-        {
-            ThrowIfObjectDisposed();
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            content.AddOrUpdate(relativePath, stream);
         }
 
         public override bool Remove(string relativePath)
         {
             ThrowIfObjectDisposed();
 
-            return content.Remove(relativePath);
+            ExclusiveStream exclusiveStream;
+            if (contents.TryGetValue(relativePath, out exclusiveStream))
+            {
+                exclusiveStream.ThrowIfStreamOccupied();
+                return contents.Remove(relativePath);
+            }
+            return false;
         }
 
-        /// <summary>
-        /// 提供读使用的流;
-        /// </summary>
-        private class InputStream : Stream
+
+        private class ExclusiveStream : IDisposable
         {
-            private Stream stream;
+            private bool isDisposed = false;
+            private MemoryStream stream;
+            public bool IsOccupancy { get; private set; }
 
-            public override bool CanRead => stream.CanRead;
-            public override bool CanSeek => stream.CanSeek;
-            public override bool CanWrite => false;
-            public override long Length => stream.Length;
-
-            public override long Position
+            public ExclusiveStream()
             {
-                get { return stream.Position; }
-                set { stream.Position = value; }
+                stream = new MemoryStream();
+                IsOccupancy = false;
             }
 
-            public InputStream(Stream stream)
+            public ExclusiveStream(Stream stream)
             {
+                this.stream = new MemoryStream();
                 stream.Seek(0, SeekOrigin.Begin);
-                this.stream = stream;
+                stream.CopyTo(this.stream);
             }
 
-            public override void Flush()
+            public Stream GetInputStream()
             {
-                stream.Flush();
+                return new InputStream(this);
             }
 
-            public override int Read(byte[] buffer, int offset, int count)
+            public Stream GetOutputStream()
             {
-                return stream.Read(buffer, offset, count);
+                return new OutputStream(this);
             }
 
-            public override long Seek(long offset, SeekOrigin origin)
+            public void ThrowIfStreamOccupied()
             {
-                return stream.Seek(offset, origin);
+                if (IsOccupancy)
+                {
+                    throw new IOException("Stream已经被占用");
+                }
             }
 
-            public override void SetLength(long value)
+            public void Dispose()
             {
-                stream.SetLength(value);
+                if (!isDisposed)
+                {
+                    stream.Dispose();
+                    stream = null;
+
+                    isDisposed = true;
+                }
             }
 
-            public override void Write(byte[] buffer, int offset, int count)
+            /// <summary>
+            /// 提供读使用的流;
+            /// </summary>
+            private class InputStream : Stream
             {
-                throw new NotSupportedException();
+                private bool isDisposed = false;
+                private ExclusiveStream exclusiveStream;
+                private Stream stream => exclusiveStream.stream;
+                public override bool CanRead => stream.CanRead;
+                public override bool CanSeek => stream.CanSeek;
+                public override bool CanWrite => false;
+                public override long Length => stream.Length;
+
+                public override long Position
+                {
+                    get { return stream.Position; }
+                    set { stream.Position = value; }
+                }
+
+                public InputStream(ExclusiveStream exclusiveStream)
+                {
+                    exclusiveStream.ThrowIfStreamOccupied();
+                    exclusiveStream.IsOccupancy = true;
+
+                    this.exclusiveStream = exclusiveStream;
+                    stream.Seek(0, SeekOrigin.Begin);
+                }
+
+                protected override void Dispose(bool disposing)
+                {
+                    base.Dispose(disposing);
+                    if (!isDisposed)
+                    {
+                        exclusiveStream.IsOccupancy = false;
+                        isDisposed = true;
+                    }
+                }
+
+                public override void Flush()
+                {
+                    stream.Flush();
+                }
+
+                public override int Read(byte[] buffer, int offset, int count)
+                {
+                    return stream.Read(buffer, offset, count);
+                }
+
+                public override long Seek(long offset, SeekOrigin origin)
+                {
+                    return stream.Seek(offset, origin);
+                }
+
+                public override void SetLength(long value)
+                {
+                    stream.SetLength(value);
+                }
+
+                public override void Write(byte[] buffer, int offset, int count)
+                {
+                    throw new NotSupportedException();
+                }
             }
-        }
 
-        /// <summary>
-        /// 提供写入使用的流;
-        /// </summary>
-        private class OutputStream : Stream
-        {
-            private Stream stream;
-            public override bool CanRead => stream.CanRead;
-            public override bool CanSeek => stream.CanSeek;
-            public override bool CanWrite => stream.CanWrite;
-            public override long Length => stream.Length;
-
-            public override long Position
+            /// <summary>
+            /// 提供写入使用的流;
+            /// </summary>
+            private class OutputStream : Stream
             {
-                get { return stream.Position; }
-                set { stream.Position = value; }
-            }
+                private bool isDisposed = false;
+                private ExclusiveStream exclusiveStream;
+                private Stream stream => exclusiveStream.stream;
+                public override bool CanRead => stream.CanRead;
+                public override bool CanSeek => stream.CanSeek;
+                public override bool CanWrite => stream.CanWrite;
+                public override long Length => stream.Length;
 
-            public OutputStream(Stream stream)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-                this.stream = stream;
-            }
+                public override long Position
+                {
+                    get { return stream.Position; }
+                    set { stream.Position = value; }
+                }
 
-            public override void Flush()
-            {
-                stream.Flush();
-            }
+                public OutputStream(ExclusiveStream exclusiveStream)
+                {
+                    exclusiveStream.ThrowIfStreamOccupied();
+                    exclusiveStream.IsOccupancy = true;
 
-            public override int Read(byte[] buffer, int offset, int count)
-            {
-                return stream.Read(buffer, offset, count);
-            }
+                    this.exclusiveStream = exclusiveStream;
+                    stream.Seek(0, SeekOrigin.Begin);
+                }
 
-            public override long Seek(long offset, SeekOrigin origin)
-            {
-                return stream.Seek(offset, origin);
-            }
+                protected override void Dispose(bool disposing)
+                {
+                    base.Dispose(disposing);
+                    if (!isDisposed)
+                    {
+                        exclusiveStream.IsOccupancy = false;
+                        isDisposed = true;
+                    }
+                }
 
-            public override void SetLength(long value)
-            {
-                stream.SetLength(value);
-            }
+                public override void Flush()
+                {
+                    stream.Flush();
+                }
 
-            public override void Write(byte[] buffer, int offset, int count)
-            {
-                stream.Write(buffer, offset, count);
+                public override int Read(byte[] buffer, int offset, int count)
+                {
+                    return stream.Read(buffer, offset, count);
+                }
+
+                public override long Seek(long offset, SeekOrigin origin)
+                {
+                    return stream.Seek(offset, origin);
+                }
+
+                public override void SetLength(long value)
+                {
+                    stream.SetLength(value);
+                }
+
+                public override void Write(byte[] buffer, int offset, int count)
+                {
+                    stream.Write(buffer, offset, count);
+                }
             }
         }
     }

@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
             var members = GetMembersInternal();
             foreach (var member in members)
             {
-                using (var stream = content.CreateOutputStream(member.RelativePath))
+                using (var stream = content.GetOutputStream(member.RelativePath))
                 {
                     var value = member.GetValue(instance);
                     member.Serializer.Serialize(stream, value);

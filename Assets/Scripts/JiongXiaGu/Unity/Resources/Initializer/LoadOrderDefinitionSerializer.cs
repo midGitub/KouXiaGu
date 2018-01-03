@@ -2,7 +2,7 @@
 {
     public class LoadOrderDefinitionSerializer : ContentSerializer<LoadOrderDefinition>
     {
-        [PathDefinition(PathDefinitionType.Config, "地形资源定义")]
+        [PathDefinition(PathDefinitionType.Config, "资源读取顺序定义")]
         public override string RelativePath
         {
             get { return "Configs/ContentLoadOrder"; }

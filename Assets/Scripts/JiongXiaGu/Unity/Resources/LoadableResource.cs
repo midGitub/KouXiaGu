@@ -8,10 +8,15 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 可读资源定义;
+    /// 可读资源定义(非线程安全);
     /// </summary>
     public static class LoadableResource
     {
+        /// <summary>
+        /// 类操作异步锁;
+        /// </summary>
+        public static object AsyncLock { get; private set; }
+
         /// <summary>
         /// 资源共享合集;
         /// </summary>
@@ -39,11 +44,6 @@ namespace JiongXiaGu.Unity.Resources
         /// 所有自定义的资源;
         /// </summary>
         public static IReadOnlyCollection<LoadableContent> All => all;
-
-        internal static void Initialize()
-        {
-
-        }
 
         /// <summary>
         /// 找到所有可以读取的资源;

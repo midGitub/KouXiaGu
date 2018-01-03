@@ -10,11 +10,9 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 转到主菜单场景;
         /// </summary>
-        public void GoMainMenuScene()
+        public async void GoMainMenuScene()
         {
-#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-            Stage.GoMainMenuScene();
-#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+            await Stage.GoMainMenuScene();
         }
 
         /// <summary>

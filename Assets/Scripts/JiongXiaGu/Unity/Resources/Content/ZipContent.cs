@@ -26,6 +26,11 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         private Stream stream;
 
+        /// <summary>
+        /// 正在更新的路径;
+        /// </summary>
+        private Lazy<List<string>> updatingPath = new Lazy<List<string>>();
+
         private bool isDisposed;
         public override bool IsUpdating => zipFile.IsUpdating;
         public override bool CanRead => !isDisposed;
@@ -78,10 +83,11 @@ namespace JiongXiaGu.Unity.Resources
                 stream.Dispose();
                 stream = null;
 
+                updatingPath = null;
+
                 isDisposed = true;
             }
         }
-
 
         public override IEnumerable<string> EnumerateFiles()
         {
@@ -99,6 +105,7 @@ namespace JiongXiaGu.Unity.Resources
         public override Stream GetInputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
+
             relativePath = Normalize(relativePath);
             ZipEntry entry = zipFile.GetEntry(relativePath);
 
@@ -112,19 +119,10 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        /// <summary>
-        /// 统一目录分隔符 为 "/";
-        /// </summary>
-        public static string Normalize(string path)
-        {
-            path = path.Replace('\\', '/');
-            return path;
-        }
-
-
         public override IDisposable BeginUpdate()
         {
             ThrowIfObjectDisposed();
+
             zipFile.BeginUpdate();
             return new ContentCommitUpdateDisposer(this);
         }
@@ -132,76 +130,32 @@ namespace JiongXiaGu.Unity.Resources
         public override void CommitUpdate()
         {
             ThrowIfObjectDisposed();
+
             zipFile.CommitUpdate();
         }
 
-        /// <summary>
-        /// 在 CommitUpdate() 之后才会应用变化;
-        /// </summary>
-        public override void AddOrUpdate(string relativePath, Stream stream)
-        {
-            ThrowIfObjectDisposed();
-
-            if (!stream.CanRead)
-                throw new NotSupportedException(string.Format("[{0}]不可读;", nameof(stream)));
-
-            ZipUpdate zipUpdate = new ZipUpdate(stream);
-            zipFile.Add(zipUpdate, relativePath);
-        }
-
-        public override bool Remove(string relativePath)
-        {
-            return zipFile.Delete(relativePath);
-        }
-
-        /// <summary>
-        /// 写完毕后需要关闭流,在 CommitUpdate() 之后才会应用变化;
-        /// </summary>
         public override Stream GetOutputStream(string relativePath)
         {
             ThrowIfObjectDisposed();
 
-            ZipEntry entry = zipFile.GetEntry(relativePath);
-            if (entry != null)
-            {
-                var inputSream = zipFile.GetInputStream(entry);
-                MemoryStream stream = new MemoryStream();
-                inputSream.CopyTo(stream);
-                stream.Seek(0, SeekOrigin.Begin);
-                ZipUpdateStream update = new ZipUpdateStream(stream, zipFile, relativePath);
-                return update;
-            }
-            else
-            {
-                ZipUpdateStream update = new ZipUpdateStream(zipFile, relativePath);
-                return update;
-            }
-        }
+            relativePath = Normalize(relativePath);
 
-        public override Stream CreateOutputStream(string relativePath)
-        {
-            ThrowIfObjectDisposed();
+            if (updatingPath.Value.Contains(relativePath))
+            {
+                throw new IOException(string.Format("该相对路径[{0}]已经被占用", relativePath));
+            }
 
-            ZipUpdateStream update = new ZipUpdateStream(zipFile, relativePath);
+            updatingPath.Value.Add(relativePath);
+            ZipUpdateStream update = new ZipUpdateStream(this, relativePath);
             return update;
         }
 
-        private class ZipUpdate : IStaticDataSource
+        public override bool Remove(string relativePath)
         {
-            private Stream stream;
+            ThrowIfObjectDisposed();
 
-            public ZipUpdate(Stream stream)
-            {
-                if (!stream.CanRead)
-                    throw new NotSupportedException(string.Format("[{0}]不可读;", nameof(stream)));
-
-                this.stream = stream;
-            }
-
-            public Stream GetSource()
-            {
-                return stream;
-            }
+            relativePath = Normalize(relativePath);
+            return zipFile.Delete(relativePath);
         }
 
         /// <summary>
@@ -211,23 +165,12 @@ namespace JiongXiaGu.Unity.Resources
         {
             private bool isDisposed = false;
             private readonly Stream stream;
-            private readonly ZipFile zipFile;
+            private readonly ZipContent zipContent;
             private readonly string relativePath;
-
-            public override bool CanRead
-            {
-                get { return !isDisposed && stream.CanRead; }
-            }
-
-            public override bool CanSeek
-            {
-                get { return !isDisposed && stream.CanSeek; }
-            }
-
-            public override bool CanWrite
-            {
-                get { return !isDisposed && stream.CanWrite; }
-            }
+            private ZipFile zipFile => zipContent.zipFile;
+            public override bool CanRead => !isDisposed && stream.CanRead;
+            public override bool CanSeek => !isDisposed && stream.CanSeek;
+            public override bool CanWrite => !isDisposed && stream.CanWrite;
 
             public override long Length
             {
@@ -252,14 +195,10 @@ namespace JiongXiaGu.Unity.Resources
                 }
             }
 
-            public ZipUpdateStream(ZipFile zipFile, string relativePath) : this(new MemoryStream(), zipFile, relativePath)
+            public ZipUpdateStream(ZipContent zipContent, string relativePath)
             {
-            }
-
-            public ZipUpdateStream(Stream stream, ZipFile zipFile, string relativePath)
-            {
-                this.stream = stream;
-                this.zipFile = zipFile;
+                stream = new MemoryStream();
+                this.zipContent = zipContent;
                 this.relativePath = relativePath;
             }
 
@@ -284,6 +223,7 @@ namespace JiongXiaGu.Unity.Resources
                 {
                     stream.Seek(0, SeekOrigin.Begin);
                     zipFile.Add(this, relativePath);
+                    zipContent.updatingPath.Value.Remove(relativePath);
                     isDisposed = true;
                 }
             }
@@ -291,30 +231,35 @@ namespace JiongXiaGu.Unity.Resources
             public override void Flush()
             {
                 ThrowIfObjectDisposed();
+
                 stream.Flush();
             }
 
             public override long Seek(long offset, SeekOrigin origin)
             {
                 ThrowIfObjectDisposed();
+
                 return stream.Seek(offset, origin);
             }
 
             public override void SetLength(long value)
             {
                 ThrowIfObjectDisposed();
+
                 stream.SetLength(value);
             }
 
             public override int Read(byte[] buffer, int offset, int count)
             {
                 ThrowIfObjectDisposed();
+
                 return stream.Read(buffer, offset, count);
             }
 
             public override void Write(byte[] buffer, int offset, int count)
             {
                 ThrowIfObjectDisposed();
+
                 stream.Write(buffer, offset, count);
             }
         }

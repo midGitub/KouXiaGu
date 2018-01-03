@@ -24,23 +24,54 @@ namespace JiongXiaGu.Unity.Resources
         public abstract void Dispose();
 
         /// <summary>
-        /// 枚举所有文件路径;
+        /// 获取到所有文件相对路径;
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
         public abstract IEnumerable<string> EnumerateFiles();
 
         /// <summary>
-        /// 枚举所有文件路径;
+        /// 获取到所有文件相对路径;
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
         public virtual IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
             ThrowIfObjectDisposed();
+
+            return EnumerateFiles(EnumerateFiles(), searchPattern, searchOption);
+        }
+
+        /// <summary>
+        /// 获取到所有文件相对路径;
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
+        public virtual IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        {
+            ThrowIfObjectDisposed();
+
+            return EnumerateFiles(EnumerateFiles(), directoryName, searchPattern, searchOption);
+        }
+
+        /// <summary>
+        /// 获取到所有文件相对路径;
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
+        public static IEnumerable<string> EnumerateFiles(IEnumerable<string> fileNames, string searchPattern, SearchOption searchOption)
+        {
+            if (fileNames == null)
+                throw new ArgumentNullException(nameof(fileNames));
             if (searchPattern == null)
                 throw new ArgumentNullException(nameof(searchPattern));
 
             switch (searchOption)
             {
                 case SearchOption.AllDirectories:
-                    foreach (string entry in EnumerateFiles())
+                    foreach (string entry in fileNames)
                     {
                         string fileName = PathHelper.GetFileName(entry);
                         if (PathHelper.IsMatch(fileName, searchPattern))
@@ -51,7 +82,7 @@ namespace JiongXiaGu.Unity.Resources
                     break;
 
                 case SearchOption.TopDirectoryOnly:
-                    foreach (string entry in EnumerateFiles())
+                    foreach (string entry in fileNames)
                     {
                         if (PathHelper.IsFileName(entry))
                         {
@@ -70,11 +101,15 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 枚举所有文件路径;
+        /// 获取到所有文件相对路径;
         /// </summary>
-        public virtual IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
+        public static IEnumerable<string> EnumerateFiles(IEnumerable<string> fileNames, string directoryName, string searchPattern, SearchOption searchOption)
         {
-            ThrowIfObjectDisposed();
+            if (fileNames == null)
+                throw new ArgumentNullException(nameof(fileNames));
             if (directoryName == null)
                 throw new ArgumentNullException(nameof(directoryName));
             if (searchPattern == null)
@@ -86,7 +121,7 @@ namespace JiongXiaGu.Unity.Resources
             switch (searchOption)
             {
                 case SearchOption.AllDirectories:
-                    foreach (var entry in EnumerateFiles())
+                    foreach (var entry in fileNames)
                     {
                         if (PathHelper.IsCommonRoot(directoryName, entry))
                         {
@@ -100,7 +135,7 @@ namespace JiongXiaGu.Unity.Resources
                     break;
 
                 case SearchOption.TopDirectoryOnly:
-                    foreach (var entry in EnumerateFiles())
+                    foreach (var entry in fileNames)
                     {
                         if (PathHelper.IsCommonRoot(directoryName, entry))
                         {
@@ -121,6 +156,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 确定是否存在该路径;
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
         public virtual bool Contains(string relativePath)
         {
             foreach (var path in EnumerateFiles())
@@ -136,6 +172,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 搜索指定路径,直到返回true停止,若未找到则返回 null;
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
         public virtual string Find(Func<string, bool> func)
         {
             ThrowIfObjectDisposed();
@@ -153,8 +190,11 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到对应数据的流,若未能获取到则返回异常 FileNotFoundException;(推荐在using语法内使用)
+        /// 获取到对应数据的流,在使用完毕之后需要手动释放;(推荐在using语法内使用)
         /// </summary>
+        /// <exception cref="FileNotFoundException">未找到指定路径的流</exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        /// <exception cref="ObjectDisposedException"></exception>
         public abstract Stream GetInputStream(string relativePath);
 
 
@@ -166,26 +206,21 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 在更改内容之后,需要调用此方法来完成内容更新;在使用该方法之前需要调用 BeginUpdate();
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
         public abstract void CommitUpdate();
-
-        /// <summary>
-        /// 获取到输出流,若文件已经存在则返回该流,否则返回空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
-        /// </summary>
-        public abstract Stream GetOutputStream(string relativePath);
 
         /// <summary>
         /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
         /// </summary>
-        public abstract Stream CreateOutputStream(string relativePath);
-
-        /// <summary>
-        /// 添加到资源,若不存在该文件则加入到,若已经存在该文件,则更新其;在使用该方法之前需要调用 BeginUpdate();
-        /// </summary>
-        public abstract void AddOrUpdate(string relativePath, Stream stream);
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        public abstract Stream GetOutputStream(string relativePath);
 
         /// <summary>
         /// 移除指定资源;在使用该方法之前需要调用 BeginUpdate();
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="IOException">文件被占用</exception>
         public abstract bool Remove(string relativePath);
 
         /// <summary>
@@ -196,6 +231,37 @@ namespace JiongXiaGu.Unity.Resources
             if (IsDisposed)
             {
                 throw new ObjectDisposedException(ToString());
+            }
+        }
+
+        /// <summary>
+        /// 统一目录分隔符 为 "/";
+        /// </summary>
+        public static string Normalize(string relativePath)
+        {
+            relativePath = relativePath.Replace('\\', '/');
+            return relativePath;
+        }
+
+        /// <summary>
+        /// 提供调用 CommitUpdate() 方法的处置接口;
+        /// </summary>
+        protected struct ContentCommitUpdateDisposer : IDisposable
+        {
+            public Content Content { get; private set; }
+
+            public ContentCommitUpdateDisposer(Content content)
+            {
+                Content = content;
+            }
+
+            public void Dispose()
+            {
+                if (Content != null)
+                {
+                    Content.CommitUpdate();
+                    Content = null;
+                }
             }
         }
     }

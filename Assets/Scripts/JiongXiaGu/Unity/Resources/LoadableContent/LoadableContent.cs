@@ -18,20 +18,17 @@ namespace JiongXiaGu.Unity.Resources
         /// 在创建时使用的描述;
         /// </summary>
         public LoadableContentDescription OriginalDescription { get; private set; }
-        private LoadableContentDescription? description;
+        private LoadableContentDescription? newDescription;
 
         /// <summary>
         /// 最新的描述;
         /// </summary>
         public LoadableContentDescription Description
         {
-            get { return description.HasValue ? description.Value : OriginalDescription; }
-            internal set { description = value; }
+            get { return newDescription.HasValue ? newDescription.Value : OriginalDescription; }
+            internal set { newDescription = value; }
         }
 
-        /// <summary>
-        /// 创建该实例时指定的ID;
-        /// </summary>
         public string ID => OriginalDescription.ID;
 
         public LoadableContent(Content content, LoadableContentDescription description) : base(content)
@@ -53,26 +50,19 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 卸载所有 AssetBundle;
         /// </summary>
-        private async void UnloadAssetBundles()
+        private void UnloadAssetBundles()
         {
             if (assetBundles.IsValueCreated)
             {
                 if (assetBundles.Value.Count > 0)
                 {
-                    var _assetBundles = assetBundles.Value;
-                    assetBundles = null;
-                    await UnityThread.RunInUnityThread(delegate ()
+                    foreach (var assetBundle in assetBundles.Value)
                     {
-                        foreach (var assetBundle in _assetBundles)
-                        {
-                            assetBundle.Value.Unload(false);
-                        }
-                    });
+                        assetBundle.Value.Unload(false);
+                    }
                 }
-                else
-                {
-                    assetBundles = null;
-                }
+
+                assetBundles = null;
             }
         }
 

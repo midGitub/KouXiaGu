@@ -28,7 +28,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public virtual void Serialize(Content content, T item)
         {
-            using (var stream = content.CreateOutputStream(RelativePath))
+            using (var stream = content.GetOutputStream(RelativePath))
             {
                 Serializer.Serialize(stream, item);
             }

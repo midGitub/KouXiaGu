@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
+using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -74,23 +76,39 @@ namespace JiongXiaGu.Unity.Resources
         };
 
         /// <summary>
-        /// 添加内容;
+        /// 内容读写测试;
         /// </summary>
         private void ContentReadWriteTest(Content content)
         {
             using (var dis = content.BeginUpdate())
             {
-                using (Stream stream1 = content.CreateOutputStream(description1Path),
-                    stream2 = content.CreateOutputStream(description2Path),
-                    stream3 = content.CreateOutputStream(description3Path))
+                using (Stream stream1 = content.GetOutputStream(description1Path))
                 {
                     xmlSerializer.Serialize(stream1, description1);
+                }
+
+                using (Stream stream2 = content.GetOutputStream(description2Path),
+                    stream3 = content.GetOutputStream(description3Path))
+                {
                     xmlSerializer.Serialize(stream2, description2);
                     xmlSerializer.Serialize(stream3, description3);
+
+                    try
+                    {
+                        using (Stream stream4 = content.GetOutputStream(description2Path))
+                        {
+                            xmlSerializer.Serialize(stream4, description3);
+                        }
+                        Assert.Fail("应该抛出异常;");
+                    }
+                    catch (IOException)
+                    {
+                    }
                 }
             }
 
             Assert.AreEqual(content.EnumerateFiles().Count(), 3);
+            Assert.True(content.Contains(description1Path));
 
             using (Stream stream1 = content.GetInputStream(description1Path),
                 stream2 = content.GetInputStream(description2Path),
@@ -104,6 +122,13 @@ namespace JiongXiaGu.Unity.Resources
 
                 var d3 = xmlSerializer.Deserialize(stream3);
                 AreEqual(d3, description3);
+            }
+
+            using (var dis = content.BeginUpdate())
+            {
+                content.Remove(description1Path);
+                content.Remove(description2Path);
+                content.Remove(description3Path);
             }
         }
 

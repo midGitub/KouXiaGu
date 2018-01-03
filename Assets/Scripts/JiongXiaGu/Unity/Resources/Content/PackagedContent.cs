@@ -5,6 +5,9 @@ using System.IO;
 namespace JiongXiaGu.Unity.Resources
 {
 
+    /// <summary>
+    /// 包装资源合集,用于继承的结构;
+    /// </summary>
     public class PackagedContent : Content
     {
         protected Content MainContent { get; private set; }
@@ -61,19 +64,9 @@ namespace JiongXiaGu.Unity.Resources
             MainContent.CommitUpdate();
         }
 
-        public override void AddOrUpdate(string relativePath, Stream stream)
-        {
-            MainContent.AddOrUpdate(relativePath, stream);
-        }
-
         public override bool Remove(string relativePath)
         {
             return MainContent.Remove(relativePath);
-        }
-
-        public override Stream CreateOutputStream(string relativePath)
-        {
-            return MainContent.CreateOutputStream(relativePath);
         }
 
         public override Stream GetOutputStream(string relativePath)
