@@ -6,31 +6,6 @@ using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
-    /// <summary>
-    /// 数据整合处理接口;
-    /// </summary>
-    public interface IResourceIntegrateHandle
-    {
-        /// <summary>
-        /// 读取到对应内容;
-        /// </summary>
-        void Read(LoadableContent content, ITypeDictionary data, CancellationToken token);
-
-        /// <summary>
-        /// 输出对应内容;
-        /// </summary>
-        void Write(LoadableContent content, ITypeDictionary data, CancellationToken token);
-
-        /// <summary>
-        /// 设置新的数据数据;
-        /// </summary>
-        void SetNew(ITypeDictionary[] data, CancellationToken token);
-
-        /// <summary>
-        /// 清空所有数据;
-        /// </summary>
-        void Clear();
-    }
 
     /// <summary>
     /// 组件资源读取操作;
@@ -39,13 +14,11 @@ namespace JiongXiaGu.Unity.Resources
     {
         private ITypeDictionary coreData;
         private List<ContentData> otherData;
-        private LoadOrder LoadOrder { get; set; }
-        public IResourceIntegrateHandle[] IntegrateHandlers { get; set; }
 
         private Task worker;
         private CancellationTokenSource workerCancellationTokenSource;
         public bool IsRunning => worker != null && worker.Status != TaskStatus.RanToCompletion;
-        public bool IsCompleted => worker != null && worker.IsCompleted;
+        public bool IsCompleted => worker != null && worker.IsCompleted && worker.Status == TaskStatus.RanToCompletion;
 
         public ResourceLoadHandler()
         {
@@ -55,7 +28,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 取消读取;
         /// </summary>
-        private void Cancel()
+        public void Cancel()
         {
             workerCancellationTokenSource?.Cancel();
         }
@@ -63,69 +36,59 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 异步读取所有数据并且应用到;
         /// </summary>
-        public Task LoadAsync()
+        public Task LoadAsync(LoadOrder contents, IResourceIntegrateHandle[] integrateHandlers)
         {
-            if (LoadOrder == null)
-                throw new ArgumentNullException(nameof(LoadOrder));
-            if (IntegrateHandlers == null)
-                throw new ArgumentNullException(nameof(IntegrateHandlers));
+            if (contents == null)
+                throw new ArgumentNullException(nameof(contents));
+            ThrowIfCollectionhasNull(contents);
+            if (integrateHandlers == null)
+                throw new ArgumentNullException(nameof(integrateHandlers));
+            if (integrateHandlers.Length == 0)
+                throw new ArgumentException(nameof(integrateHandlers));
 
             if (worker == null)
             {
                 workerCancellationTokenSource = new CancellationTokenSource();
                 var cancellationToken = workerCancellationTokenSource.Token;
-                return worker = Task.Run(() => LoadInternal(cancellationToken), cancellationToken);
+                return worker = Task.Run(() => LoadInternal(contents, integrateHandlers, cancellationToken), cancellationToken);
             }
             else
             {
                 workerCancellationTokenSource.Cancel();
                 workerCancellationTokenSource = new CancellationTokenSource();
                 var cancellationToken = workerCancellationTokenSource.Token;
-                return worker = worker.ContinueWith(_ => LoadInternal(cancellationToken), cancellationToken);
+                return worker = worker.ContinueWith(_ => LoadInternal(contents, integrateHandlers, cancellationToken), cancellationToken);
             }
-        }
-
-        /// <summary>
-        /// 读取所有数据并且应用到;
-        /// </summary>
-        public void Load()
-        {
-            if (LoadOrder == null)
-                throw new ArgumentNullException(nameof(LoadOrder));
-            if (IntegrateHandlers == null)
-                throw new ArgumentNullException(nameof(IntegrateHandlers));
-
-            LoadInternal(default(CancellationToken));
         }
 
         /// <summary>
         /// 读取所有数据;
         /// </summary>
-        private void LoadInternal(CancellationToken token)
+        private void LoadInternal(LoadOrder contents, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
             //读取主要数据;
             if (coreData == null)
             {
-                coreData = LoadDataInternal(LoadableResource.Core.Value, token);
+                coreData = LoadDataInternal(LoadableResource.Core.Value, integrateHandlers, token);
             }
 
             //读取附加的数据;
-            LoadDataInternal(LoadOrder, otherData, token);
+            LoadDataInternal(contents, otherData, integrateHandlers, token);
 
             //进行整合;
-            IntegrateData(token);
+            IntegrateData(contents, integrateHandlers, token);
         }
 
         /// <summary>
         /// 整合数据;
         /// </summary>
-        private void IntegrateData(CancellationToken token)
+        private void IntegrateData(LoadOrder contents, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             int i = 0;
-            ITypeDictionary[] datas = new ITypeDictionary[LoadOrder.Count];
-            foreach (var content in LoadOrder)
+            ITypeDictionary[] datas = new ITypeDictionary[contents.Count];
+            foreach (var content in contents)
             {
                 var dataIndex = FindIndex(otherData, content);
                 if (dataIndex >= 0)
@@ -140,7 +103,7 @@ namespace JiongXiaGu.Unity.Resources
                 i++;
             }
 
-            foreach (var integrateHandler in IntegrateHandlers)
+            foreach (var integrateHandler in integrateHandlers)
             {
                 integrateHandler.SetNew(datas, token);
             }
@@ -149,10 +112,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到数据,若数据已经存在则跳过;
         /// </summary>
-        private void LoadDataInternal(IEnumerable<LoadableContent> contents, IList<ContentData> datas, CancellationToken token)
+        private void LoadDataInternal(IEnumerable<LoadableContent> contents, IList<ContentData> datas, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            ThrowIfCollectionhasNull(contents);
 
             foreach (var content in contents)
             {
@@ -160,11 +122,27 @@ namespace JiongXiaGu.Unity.Resources
                 if (FindIndex(datas, content) >= 0)
                 {
                     token.ThrowIfCancellationRequested();
-                    var data = LoadDataInternal(content, token);
+                    var data = LoadDataInternal(content, integrateHandlers, token);
                     var value = new ContentData(content, data);
                     datas.Add(value);
                 }
             }
+        }
+
+        /// <summary>
+        /// 读取所有数据,并且返回;
+        /// </summary>
+        private ITypeDictionary LoadDataInternal(LoadableContent content, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            var data = new TypeDictionary();
+            foreach (var handler in integrateHandlers)
+            {
+                token.ThrowIfCancellationRequested();
+                handler.Read(content, data, token);
+            }
+            return data;
         }
 
         /// <summary>
@@ -181,22 +159,6 @@ namespace JiongXiaGu.Unity.Resources
                 if (item == null)
                     throw new ArgumentNullException("合集其中元素为null;");
             }
-        }
-
-        /// <summary>
-        /// 读取所有数据,并且返回;
-        /// </summary>
-        private ITypeDictionary LoadDataInternal(LoadableContent content, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-
-            var data = new TypeDictionary();
-            foreach (var handler in IntegrateHandlers)
-            {
-                token.ThrowIfCancellationRequested();
-                handler.Read(content, data, token);
-            }
-            return data;
         }
 
         /// <summary>

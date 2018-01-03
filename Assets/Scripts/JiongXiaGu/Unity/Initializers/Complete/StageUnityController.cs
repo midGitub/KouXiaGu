@@ -22,6 +22,10 @@ namespace JiongXiaGu.Unity.Initializers
         [SerializeField]
         private UnityEngine.Object GameScene;
 
+        public string InitializationSceneName => InitializationScene.name;
+        public string MainMenuSceneName => MainMenuScene.name;
+        public string GameSceneName => GameScene.name;
+
         private void Awake()
         {
             singleton.SetInstance(this);
@@ -30,21 +34,6 @@ namespace JiongXiaGu.Unity.Initializers
         private Task Start()
         {
             return Stage.OnProgramStart();
-        }
-
-        public void LoadInitializationScene()
-        {
-            SceneManager.LoadScene(InitializationScene.name, LoadSceneMode.Single);
-        }
-
-        public void LoadMainMenuScene()
-        {
-            SceneManager.LoadScene(MainMenuScene.name, LoadSceneMode.Single);
-        }
-
-        public void LoadGameScene()
-        {
-            SceneManager.LoadScene(GameScene.name, LoadSceneMode.Single);
         }
     }
 }

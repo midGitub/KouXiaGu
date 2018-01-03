@@ -13,7 +13,6 @@ namespace JiongXiaGu.Unity.Resources
     public class LoadableContentFactory
     {
         private const bool DefaultIsCoreContent = false;
-        //private ContentFactory contentFactory = new ContentFactory();
 
         /// <summary>
         /// 创建可读内容,若目录已经存在则返回异常;
@@ -90,7 +89,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public void UpdateDescription(LoadableContent loadableContent)
         {
-            LoadableContentDescription description = ReadDescription(loadableContent.Content);
+            LoadableContentDescription description = ReadDescription(loadableContent);
             loadableContent.Description = description;
         }
 

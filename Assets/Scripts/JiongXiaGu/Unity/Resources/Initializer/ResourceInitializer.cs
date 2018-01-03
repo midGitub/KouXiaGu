@@ -15,22 +15,28 @@ namespace JiongXiaGu.Unity.Resources
     {
         private static readonly GlobalSingleton<ResourceInitializer> singleton = new GlobalSingleton<ResourceInitializer>();
         public static ResourceInitializer Instance => singleton.GetInstance();
+        private IResourceIntegrateHandle[] integrateHandlers;
         private ResourceLoadHandler loadHandler;
 
         private void Awake()
         {
-            loadHandler = new ResourceLoadHandler()
-            {
-                IntegrateHandlers = GetComponentsInChildren<IResourceIntegrateHandle>(),
-            };
+            integrateHandlers = GetComponentsInChildren<IResourceIntegrateHandle>();
+            loadHandler = new ResourceLoadHandler();
         }
 
-        public Task LoadResource()
+        /// <summary>
+        /// 读取资源,若已经读取完毕则或正在读取则不进行任何操作;
+        /// </summary>
+        public Task Load()
         {
+            //return loadHandler.LoadAsync(integrateHandlers);
             throw new NotImplementedException();
         }
 
-        public Task LoadResource(LoadOrder loadOrder)
+        /// <summary>
+        /// 按照指定顺序读取资源,若已经读取完毕则或正在读取重新读取;
+        /// </summary>
+        public Task Reload(LoadOrder loadOrder)
         {
             throw new NotImplementedException();
         }

@@ -38,7 +38,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
             token.ThrowIfCancellationRequested();
 
-            RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content.Content);
+            RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content);
             data.Add(description);
         }
 
@@ -49,7 +49,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             RectTerrainResourceDescription description;
             if (data.TryGetValue(out description))
             {
-                bindingSerializer.Serialize(content.Content, description);
+                bindingSerializer.Serialize(content, description);
             }
         }
 

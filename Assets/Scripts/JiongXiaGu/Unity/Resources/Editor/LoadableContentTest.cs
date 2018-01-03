@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity.Resources
             using (var v1 = factory.CreateNew(directory, description0))
             {
                 descr = v1.OriginalDescription;
-                ContentReadWriteTest(v1.Content);
+                ContentReadWriteTest(v1);
             }
 
             using (var v2 = factory.Read(directory))
@@ -69,7 +69,7 @@ namespace JiongXiaGu.Unity.Resources
             using (var v1 = factory.CreateNewZip(file, description0))
             {
                 descr = v1.OriginalDescription;
-                ContentReadWriteTest(v1.Content);
+                ContentReadWriteTest(v1);
             }
 
             using (var v2 = factory.ReadZip(file))

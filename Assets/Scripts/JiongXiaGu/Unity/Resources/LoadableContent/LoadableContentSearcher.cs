@@ -15,37 +15,16 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         private const string IgnoreSymbol = "#ignore_";
         public LoadableContentFactory Factory { get; private set; }
-        public LoadOrderDefinitionSerializer LoadOrderSerializer { get; private set; }
 
         public LoadableContentSearcher()
         {
             Factory = new LoadableContentFactory();
-            LoadOrderSerializer = new LoadOrderDefinitionSerializer();
         }
 
         public LoadableContentSearcher(LoadableContentFactory factory)
         {
             Factory = factory;
         }
-
-
-        ///// <summary>
-        ///// 获取到所以可读资源和资源读取顺序;
-        ///// </summary>
-        //public LoadableContents FindAll()
-        //{
-        //    var core = Factory.Read(Resource.CoreDirectory, true);
-        //    var dlc = Find(Resource.DlcDirectory);
-        //    var mod = Find(Resource.ModDirectory);
-        //    var contents = new List<LoadableContent>();
-        //    contents.Add(core);
-        //    contents.AddRange(dlc);
-        //    contents.AddRange(mod);
-
-        //    LoadableContents loadableResource = new LoadableContents(contents);
-        //    return loadableResource;
-        //}
-
 
         /// <summary>
         /// 获取目录下的所有可读资源;
