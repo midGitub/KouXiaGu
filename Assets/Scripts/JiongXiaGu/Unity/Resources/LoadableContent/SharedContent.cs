@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (readerWriterLock.ReadLock())
             {
-                int index = contents.FindIndex(item => item.ID == contentID);
+                int index = contents.FindIndex(item => item.OriginalDescription.ID == contentID);
                 if (index >= 0)
                 {
                     return contents[index];

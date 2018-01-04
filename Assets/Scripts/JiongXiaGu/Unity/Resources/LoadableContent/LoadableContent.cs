@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
@@ -9,10 +10,11 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 表示可读写游戏资源;
     /// </summary>
-    public class LoadableContent : PackagedContent, IDisposable
+    public class LoadableContent : BlockingContent, IDisposable
     {
         private bool isDisposed = false;
-        private Lazy<List<KeyValuePair<string, AssetBundle>>> assetBundles;
+        private readonly ReaderWriterLockSlim assetBundleLock = new ReaderWriterLockSlim();
+        private Lazy<List<KeyValuePair<string, AssetBundle>>> assetBundles = new Lazy<List<KeyValuePair<string, AssetBundle>>>();
 
         /// <summary>
         /// 在创建时使用的描述;
@@ -29,20 +31,22 @@ namespace JiongXiaGu.Unity.Resources
             internal set { newDescription = value; }
         }
 
-        public string ID => OriginalDescription.ID;
-
         public LoadableContent(Content content, LoadableContentDescription description) : base(content)
         {
             OriginalDescription = description;
-            assetBundles = new Lazy<List<KeyValuePair<string, AssetBundle>>>(() => new List<KeyValuePair<string, AssetBundle>>());
         }
 
+        /// <summary>
+        /// 卸载所有资源;
+        /// </summary>
         public override void Dispose()
         {
             base.Dispose();
             if (!isDisposed)
             {
                 UnloadAssetBundles();
+                assetBundles = null;
+
                 isDisposed = true;
             }
         }
@@ -50,46 +54,52 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 卸载所有 AssetBundle;
         /// </summary>
-        private void UnloadAssetBundles()
+        public void UnloadAssetBundles()
         {
-            if (assetBundles.IsValueCreated)
+            if (assetBundles.IsValueCreated && assetBundles.Value.Count > 0)
             {
-                if (assetBundles.Value.Count > 0)
+                foreach (var assetBundle in assetBundles.Value)
                 {
-                    foreach (var assetBundle in assetBundles.Value)
-                    {
-                        assetBundle.Value.Unload(false);
-                    }
+                    assetBundle.Value.Unload(false);
                 }
-
-                assetBundles = null;
             }
         }
 
         /// <summary>
         /// 获取到对应的 AssetBundle,若还未读取则返回异常;
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public AssetBundle GetAssetBundle(string assetBundleName)
         {
             ThrowIfObjectDisposed();
 
-            AssetBundle assetBundle;
-            if (InternalTryGetAssetBundle(assetBundleName, out assetBundle))
+            using (assetBundleLock.ReadLock())
             {
-                return assetBundle;
-            }
-            else
-            {
-                throw new FileNotFoundException(string.Format("未找到AssetBundle[Name : {0}]", assetBundleName));
+                AssetBundle assetBundle;
+                if (InternalTryGetAssetBundle(assetBundleName, out assetBundle))
+                {
+                    return assetBundle;
+                }
+                else
+                {
+                    throw new FileNotFoundException(string.Format("未找到AssetBundle[Name : {0}]", assetBundleName));
+                }
             }
         }
 
         /// <summary>
         /// 读取到指定的 AssetBundle,若未找到则返回异常;
         /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public AssetBundle GetOrLoadAssetBundle(string assetBundleName)
         {
             ThrowIfObjectDisposed();
+            UnityThread.ThrowIfNotUnityThread();
 
             AssetBundle assetBundle;
             if (InternalTryGetAssetBundle(assetBundleName, out assetBundle))
@@ -104,6 +114,9 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
+        /// <summary>
+        /// 尝试获取到 AssetBundle ,若不存在则返回false,否则返回true;
+        /// </summary>
         private bool InternalTryGetAssetBundle(string assetBundleName, out AssetBundle assetBundle)
         {
             if (assetBundles != null)
@@ -122,9 +135,11 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到 AssetBundle;
         /// </summary>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         private AssetBundle InternalLoadAssetBundle(string name)
         {
-            var assetBundleDescrs = OriginalDescription.AssetBundles;
+            var assetBundleDescrs = Description.AssetBundles;
             if (assetBundleDescrs != null)
             {
                 foreach (var descr in assetBundleDescrs)

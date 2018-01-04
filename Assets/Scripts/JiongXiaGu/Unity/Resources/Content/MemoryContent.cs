@@ -1,7 +1,5 @@
-﻿using JiongXiaGu.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
@@ -116,12 +114,12 @@ namespace JiongXiaGu.Unity.Resources
         {
             private bool isDisposed = false;
             private MemoryStream stream;
-            public bool IsOccupancy { get; private set; }
+            private volatile int readerCount = 0;
+            private volatile bool isWrite = false;
 
             public ExclusiveStream()
             {
                 stream = new MemoryStream();
-                IsOccupancy = false;
             }
 
             public ExclusiveStream(Stream stream)
@@ -133,17 +131,29 @@ namespace JiongXiaGu.Unity.Resources
 
             public Stream GetInputStream()
             {
-                return new InputStream(this);
+                if(isWrite)
+                    throw new IOException("Stream已经被占用");
+
+                readerCount++;
+                var synchronizedStream = Stream.Synchronized(stream);
+                var inputeStream = new InputStream(synchronizedStream, () => readerCount--);
+                inputeStream.Seek(0, SeekOrigin.Begin);
+                return inputeStream;
             }
 
             public Stream GetOutputStream()
             {
-                return new OutputStream(this);
+                ThrowIfStreamOccupied();
+
+                isWrite = true;
+                var outputStream = new OutputStream(stream, () => isWrite = false);
+                outputStream.Seek(0, SeekOrigin.Begin);
+                return outputStream;
             }
 
             public void ThrowIfStreamOccupied()
             {
-                if (IsOccupancy)
+                if (readerCount > 0 || isWrite)
                 {
                     throw new IOException("Stream已经被占用");
                 }
@@ -166,8 +176,8 @@ namespace JiongXiaGu.Unity.Resources
             private class InputStream : Stream
             {
                 private bool isDisposed = false;
-                private ExclusiveStream exclusiveStream;
-                private Stream stream => exclusiveStream.stream;
+                private Stream stream;
+                private Action callback;
                 public override bool CanRead => stream.CanRead;
                 public override bool CanSeek => stream.CanSeek;
                 public override bool CanWrite => false;
@@ -179,13 +189,10 @@ namespace JiongXiaGu.Unity.Resources
                     set { stream.Position = value; }
                 }
 
-                public InputStream(ExclusiveStream exclusiveStream)
+                public InputStream(Stream stream, Action callback)
                 {
-                    exclusiveStream.ThrowIfStreamOccupied();
-                    exclusiveStream.IsOccupancy = true;
-
-                    this.exclusiveStream = exclusiveStream;
-                    stream.Seek(0, SeekOrigin.Begin);
+                    this.stream = stream;
+                    this.callback = callback;
                 }
 
                 protected override void Dispose(bool disposing)
@@ -193,7 +200,7 @@ namespace JiongXiaGu.Unity.Resources
                     base.Dispose(disposing);
                     if (!isDisposed)
                     {
-                        exclusiveStream.IsOccupancy = false;
+                        callback.Invoke();
                         isDisposed = true;
                     }
                 }
@@ -230,8 +237,8 @@ namespace JiongXiaGu.Unity.Resources
             private class OutputStream : Stream
             {
                 private bool isDisposed = false;
-                private ExclusiveStream exclusiveStream;
-                private Stream stream => exclusiveStream.stream;
+                private Stream stream;
+                private Action callback;
                 public override bool CanRead => stream.CanRead;
                 public override bool CanSeek => stream.CanSeek;
                 public override bool CanWrite => stream.CanWrite;
@@ -243,13 +250,10 @@ namespace JiongXiaGu.Unity.Resources
                     set { stream.Position = value; }
                 }
 
-                public OutputStream(ExclusiveStream exclusiveStream)
+                public OutputStream(Stream stream, Action callback)
                 {
-                    exclusiveStream.ThrowIfStreamOccupied();
-                    exclusiveStream.IsOccupancy = true;
-
-                    this.exclusiveStream = exclusiveStream;
-                    stream.Seek(0, SeekOrigin.Begin);
+                    this.stream = stream;
+                    this.callback = callback;
                 }
 
                 protected override void Dispose(bool disposing)
@@ -257,7 +261,7 @@ namespace JiongXiaGu.Unity.Resources
                     base.Dispose(disposing);
                     if (!isDisposed)
                     {
-                        exclusiveStream.IsOccupancy = false;
+                        callback.Invoke();
                         isDisposed = true;
                     }
                 }

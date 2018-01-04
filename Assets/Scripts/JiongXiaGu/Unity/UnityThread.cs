@@ -55,6 +55,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 若不是Unity线程则抛出异常;
         /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         public static void ThrowIfNotUnityThread()
         {
             if (!IsUnityThread)
