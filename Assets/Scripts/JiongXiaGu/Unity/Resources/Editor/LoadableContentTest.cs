@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.Resources
             Author = "One",
             Version = "1.22",
             Message = "...",
-            AssetBundles = new AssetBundleDescription[] 
+            MainAssetBundles = new AssetBundleDescription[] 
             {
                 new AssetBundleDescription("terrain", @"AssetBundles\terrain")
             },
@@ -154,13 +154,16 @@ namespace JiongXiaGu.Unity.Resources
             Assert.AreEqual(v1.Tags, v2.Tags);
         }
 
-        [Test]
-        public void AssetBundleLoadTest()
-        {
-            LoadableContent loadableContent = LoadableResource.Core.Value;
-            var assetBundle = loadableContent.GetOrLoadAssetBundle("terrain");
-            Assert.NotNull(assetBundle);
-            assetBundle.LoadAsset<Texture2D>("HeightMap_85");
-        }
+        //[Test]
+        //public void AssetBundleLoadTest()
+        //{
+        //    LoadableContentFactory factory = new LoadableContentFactory();
+        //    using (LoadableContent loadableContent = LoadableResource.GetCore(factory))
+        //    {
+        //        var assetBundle = loadableContent.GetOrLoadAssetBundle("terrain");
+        //        Assert.NotNull(assetBundle);
+        //        assetBundle.LoadAsset<Texture2D>("HeightMap_85");
+        //    }
+        //}
     }
 }

@@ -103,7 +103,7 @@ namespace JiongXiaGu.Unity.Resources
             ExclusiveStream exclusiveStream;
             if (contents.TryGetValue(relativePath, out exclusiveStream))
             {
-                exclusiveStream.ThrowIfStreamOccupied();
+                exclusiveStream.Dispose();
                 return contents.Remove(relativePath);
             }
             return false;
@@ -136,35 +136,45 @@ namespace JiongXiaGu.Unity.Resources
 
                 readerCount++;
                 var synchronizedStream = Stream.Synchronized(stream);
-                var inputeStream = new InputStream(synchronizedStream, () => readerCount--);
+                var inputeStream = new InputStream(synchronizedStream, delegate()
+                {
+                    readerCount--;
+                    if (isDisposed && readerCount == 0)
+                    {
+                        stream.Dispose();
+                    }
+                });
                 inputeStream.Seek(0, SeekOrigin.Begin);
                 return inputeStream;
             }
 
             public Stream GetOutputStream()
             {
-                ThrowIfStreamOccupied();
+                if (readerCount > 0 || isWrite)
+                    throw new IOException("Stream已经被占用");
 
                 isWrite = true;
-                var outputStream = new OutputStream(stream, () => isWrite = false);
+                var outputStream = new OutputStream(stream, delegate ()
+                {
+                    isWrite = false;
+                    if (isDisposed)
+                    {
+                        stream.Dispose();
+                    }
+                });
                 outputStream.Seek(0, SeekOrigin.Begin);
                 return outputStream;
-            }
-
-            public void ThrowIfStreamOccupied()
-            {
-                if (readerCount > 0 || isWrite)
-                {
-                    throw new IOException("Stream已经被占用");
-                }
             }
 
             public void Dispose()
             {
                 if (!isDisposed)
                 {
-                    stream.Dispose();
-                    stream = null;
+                    if (!isWrite || readerCount == 0)
+                    {
+                        stream.Dispose();
+                        stream = null;
+                    }
 
                     isDisposed = true;
                 }
@@ -177,7 +187,7 @@ namespace JiongXiaGu.Unity.Resources
             {
                 private bool isDisposed = false;
                 private Stream stream;
-                private Action callback;
+                private Action onDispose;
                 public override bool CanRead => stream.CanRead;
                 public override bool CanSeek => stream.CanSeek;
                 public override bool CanWrite => false;
@@ -189,10 +199,10 @@ namespace JiongXiaGu.Unity.Resources
                     set { stream.Position = value; }
                 }
 
-                public InputStream(Stream stream, Action callback)
+                public InputStream(Stream stream, Action onDispose)
                 {
                     this.stream = stream;
-                    this.callback = callback;
+                    this.onDispose = onDispose;
                 }
 
                 protected override void Dispose(bool disposing)
@@ -200,7 +210,7 @@ namespace JiongXiaGu.Unity.Resources
                     base.Dispose(disposing);
                     if (!isDisposed)
                     {
-                        callback.Invoke();
+                        onDispose.Invoke();
                         isDisposed = true;
                     }
                 }
@@ -238,7 +248,7 @@ namespace JiongXiaGu.Unity.Resources
             {
                 private bool isDisposed = false;
                 private Stream stream;
-                private Action callback;
+                private Action onDispose;
                 public override bool CanRead => stream.CanRead;
                 public override bool CanSeek => stream.CanSeek;
                 public override bool CanWrite => stream.CanWrite;
@@ -250,10 +260,10 @@ namespace JiongXiaGu.Unity.Resources
                     set { stream.Position = value; }
                 }
 
-                public OutputStream(Stream stream, Action callback)
+                public OutputStream(Stream stream, Action onDispose)
                 {
                     this.stream = stream;
-                    this.callback = callback;
+                    this.onDispose = onDispose;
                 }
 
                 protected override void Dispose(bool disposing)
@@ -261,7 +271,7 @@ namespace JiongXiaGu.Unity.Resources
                     base.Dispose(disposing);
                     if (!isDisposed)
                     {
-                        callback.Invoke();
+                        onDispose.Invoke();
                         isDisposed = true;
                     }
                 }

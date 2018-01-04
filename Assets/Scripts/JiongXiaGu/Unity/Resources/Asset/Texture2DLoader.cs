@@ -41,11 +41,11 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 从 AssetBundle 读取 Texture2D
+        /// 从 AssetBundle 读取 Texture2D;
         /// </summary>
         private static Texture2D InternalFromAssetBundleReadTexture2D(LoadableContent content, AssetInfo assetInfo)
         {
-            AssetBundle assetBundle = LoadableResource.SharedContent.GetOrLoadAssetBundle(content, assetInfo.BundleName);
+            AssetBundle assetBundle = LoadableResource.SharedContent.GetAssetBundle(content, assetInfo.BundleName);
             var texture = assetBundle.LoadAsset<Texture2D>(assetInfo.Name.Name);
             if (texture == null)
             {

@@ -28,7 +28,7 @@ namespace JiongXiaGu.Unity.Initializers
         {
             UnityThread.ThrowIfNotUnityThread();
 
-            await Task.Run(() => LoadableResource.FindResource());
+            await LoadableResource.Initialize();
             await ComponentInitializer.Instance.StartInitialize();
             OnProgramCompleted?.Invoke();
         }
@@ -57,52 +57,4 @@ namespace JiongXiaGu.Unity.Initializers
             return Task.CompletedTask;
         }
     }
-
-    //public enum StageType
-    //{
-    //    /// <summary>
-    //    /// 无任何状态;
-    //    /// </summary>
-    //    Default,
-
-    //    /// <summary>
-    //    /// 程序初始化中;
-    //    /// </summary>
-    //    ProgramInitialize,
-
-    //    /// <summary>
-    //    /// 程序初始化完毕;
-    //    /// </summary>
-    //    ProgramComplete,
-
-    //    /// <summary>
-    //    /// 程序退出中;
-    //    /// </summary>
-    //    ProgramQuitting,
-
-    //    /// <summary>
-    //    /// 资源初始化中;
-    //    /// </summary>
-    //    ResourceInitialize,
-
-    //    /// <summary>
-    //    /// 资源读取完毕;
-    //    /// </summary>
-    //    ResourceComplete,
-
-    //    /// <summary>
-    //    /// 游戏初始化中;
-    //    /// </summary>
-    //    GameInitialize,
-
-    //    /// <summary>
-    //    /// 游戏正在运行中;
-    //    /// </summary>
-    //    GameRunning,
-
-    //    /// <summary>
-    //    /// 游戏退出中;
-    //    /// </summary>
-    //    GameQuitting,
-    //}
 }

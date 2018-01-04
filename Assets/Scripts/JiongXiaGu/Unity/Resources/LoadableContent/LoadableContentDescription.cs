@@ -50,9 +50,14 @@ namespace JiongXiaGu.Unity.Resources
         public string Message { get; set; }
 
         /// <summary>
-        /// AssetBundle 描述;
+        /// 主要的 AssetBundle 描述;
         /// </summary>
-        public AssetBundleDescription[] AssetBundles { get; set; }
+        public AssetBundleDescription[] MainAssetBundles { get; set; }
+
+        /// <summary>
+        /// 次要的 AssetBundle 描述;
+        /// </summary>
+        public AssetBundleDescription[] SecondaryAssetBundles { get; set; }
 
         internal LoadableContentDescription(string id, string name) : this()
         {

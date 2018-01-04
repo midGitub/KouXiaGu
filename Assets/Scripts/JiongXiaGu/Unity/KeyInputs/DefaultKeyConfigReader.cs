@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.KeyInputs
 
         public override string GetFilePathWithoutExtension()
         {
-            string path = Path.Combine(Resource.CoreDirectory, ConfigFileName);
+            string path = Path.Combine(Resource.ConfigDirectory, ConfigFileName);
             return path;
         }
     }

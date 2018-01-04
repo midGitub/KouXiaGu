@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
@@ -9,12 +10,18 @@ namespace JiongXiaGu.Unity.Resources
 
     /// <summary>
     /// 表示可读写游戏资源;
+    /// 关于 AssetBundle 读取方式,推荐在加载游戏时异步加载所有 AssetBundle,在游戏运行中,若在游戏允许中还需要加载 AssetBundle,则使用 GetOrLoad 进行同步加载;
     /// </summary>
     public class LoadableContent : BlockingContent, IDisposable
     {
+        /// <summary>
+        /// 仅提供工厂类使用!用于指定最新描述使用;
+        /// </summary>
+        internal readonly object AsyncLock = new object();
+
         private bool isDisposed = false;
         private readonly ReaderWriterLockSlim assetBundleLock = new ReaderWriterLockSlim();
-        private Lazy<List<KeyValuePair<string, AssetBundle>>> assetBundles = new Lazy<List<KeyValuePair<string, AssetBundle>>>();
+        private Lazy<List<AssetBundlePack>> assetBundles = new Lazy<List<AssetBundlePack>>();
 
         /// <summary>
         /// 在创建时使用的描述;
@@ -37,50 +44,80 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 卸载所有资源;
+        /// 读取所有AssetBundle,在读取过程中会锁本实例;
         /// </summary>
-        public override void Dispose()
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="IOException"></exception>
+        public void LoadAllAssetBundles(AssetBundleLoadOption options = AssetBundleLoadOption.Main)
         {
-            base.Dispose();
-            if (!isDisposed)
-            {
-                UnloadAssetBundles();
-                assetBundles = null;
+            ThrowIfObjectDisposed();
 
-                isDisposed = true;
-            }
-        }
-
-        /// <summary>
-        /// 卸载所有 AssetBundle;
-        /// </summary>
-        public void UnloadAssetBundles()
-        {
-            if (assetBundles.IsValueCreated && assetBundles.Value.Count > 0)
+            using (assetBundleLock.WriteLock())
             {
-                foreach (var assetBundle in assetBundles.Value)
+                foreach (var descr in GetAssetBundleDescription(Description, options))
                 {
-                    assetBundle.Value.Unload(false);
+                    var pack = InternalLoadAssetBundle(descr);
+                    assetBundles.Value.Add(pack);
                 }
             }
         }
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若还未读取则返回异常;
+        /// 异步读取所有AssetBundle,在读取过程中会锁本实例;
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="IOException"></exception>
+        public async Task LoadAllAssetBundlesAsync(AssetBundleLoadOption options = AssetBundleLoadOption.Main)
+        {
+            ThrowIfObjectDisposed();
+
+            using (assetBundleLock.WriteLock())
+            {
+                foreach (var descr in GetAssetBundleDescription(Description, options))
+                {
+                    var task = InternalLoadAssetBundleAsync(descr);
+                    await task;
+                    assetBundles.Value.Add(task.Result);
+                }
+            }
+        }
+
+        private IEnumerable<AssetBundleDescription> GetAssetBundleDescription(LoadableContentDescription description, AssetBundleLoadOption options)
+        {
+            if ((options & AssetBundleLoadOption.Main) > 0 && description.MainAssetBundles != null)
+            {
+                foreach (var item in description.MainAssetBundles)
+                {
+                    yield return item;
+                }
+            }
+            if ((options & AssetBundleLoadOption.Secondary) > 0 && description.SecondaryAssetBundles != null)
+            {
+                foreach (var item in description.SecondaryAssetBundles)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到对应的 AssetBundle,若正在读取则阻塞线程;
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public AssetBundle GetAssetBundle(string assetBundleName)
+        public AssetBundle GetAssetBundle(string assetBundleName, bool waitComplete = false)
         {
             ThrowIfObjectDisposed();
 
             using (assetBundleLock.ReadLock())
             {
-                AssetBundle assetBundle;
-                if (InternalTryGetAssetBundle(assetBundleName, out assetBundle))
+                AssetBundlePack assetBundlePack;
+                if (InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
                 {
-                    return assetBundle;
+                    return assetBundlePack.AssetBundle;
                 }
                 else
                 {
@@ -90,45 +127,48 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 读取到指定的 AssetBundle,若未找到则返回异常;
+        /// 获取到指定 AssetBundle,若还未读取则异步读取到;
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="IOException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
         public AssetBundle GetOrLoadAssetBundle(string assetBundleName)
         {
             ThrowIfObjectDisposed();
-            UnityThread.ThrowIfNotUnityThread();
 
-            AssetBundle assetBundle;
-            if (InternalTryGetAssetBundle(assetBundleName, out assetBundle))
+            using (assetBundleLock.UpgradeableReadLock())
             {
-                return assetBundle;
-            }
-            else
-            {
-                assetBundle = InternalLoadAssetBundle(assetBundleName);
-                assetBundles.Value.Add(new KeyValuePair<string, AssetBundle>(assetBundleName, assetBundle));
-                return assetBundle;
+                AssetBundlePack assetBundlePack;
+                if (!InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
+                {
+                    var description = InternalFindAssetBundleDescription(assetBundleName);
+                    assetBundlePack = InternalLoadAssetBundle(description);
+                    using (assetBundleLock.WriteLock())
+                    {
+                        assetBundles.Value.Add(assetBundlePack);
+                    }
+                }
+                return assetBundlePack.AssetBundle;
             }
         }
 
         /// <summary>
         /// 尝试获取到 AssetBundle ,若不存在则返回false,否则返回true;
         /// </summary>
-        private bool InternalTryGetAssetBundle(string assetBundleName, out AssetBundle assetBundle)
+        private bool InternalTryGetAssetBundle(string assetBundleName, out AssetBundlePack assetBundle)
         {
             if (assetBundles != null)
             {
-                int index = assetBundles.Value.FindIndex(item => item.Key == assetBundleName);
+                int index = assetBundles.Value.FindIndex(item => item.Name == assetBundleName);
                 if (index >= 0)
                 {
-                    assetBundle = assetBundles.Value[index].Value;
+                    assetBundle = assetBundles.Value[index];
                     return true;
                 }
             }
-            assetBundle = default(AssetBundle);
+            assetBundle = default(AssetBundlePack);
             return false;
         }
 
@@ -137,32 +177,102 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         /// <exception cref="IOException"></exception>
         /// <exception cref="ArgumentException"></exception>
-        private AssetBundle InternalLoadAssetBundle(string name)
+        /// <exception cref="FileNotFoundException"></exception>
+        private AssetBundleDescription InternalFindAssetBundleDescription(string name)
         {
-            var assetBundleDescrs = Description.AssetBundles;
+            var assetBundleDescrs = Description.MainAssetBundles;
             if (assetBundleDescrs != null)
             {
                 foreach (var descr in assetBundleDescrs)
                 {
                     if (descr.Name == name)
                     {
-                        var stream = GetInputStream(descr.RelativePath);
-                        {
-                            AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
-                            if (assetBundle != null)
-                            {
-                                return assetBundle;
-                            }
-                            else
-                            {
-                                stream.Dispose();
-                                throw new IOException(string.Format("无法加载 AssetBundle[Name:{0}]", name));
-                            }
-                        }
+                        return descr;
                     }
                 }
             }
             throw new ArgumentException(string.Format("未找到 AssetBundle[Name:{0}]的定义信息", name));
+        }
+
+        /// <summary>
+        /// 读取到 AssetBundle;
+        /// </summary>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        private AssetBundlePack InternalLoadAssetBundle(AssetBundleDescription description)
+        {
+            var stream = GetInputStream(description.RelativePath);
+            {
+                AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
+                if (assetBundle != null)
+                {
+                    var pack = new AssetBundlePack(description.Name, assetBundle, stream);
+                    return pack;
+                }
+                else
+                {
+                    stream.Dispose();
+                    throw new IOException(string.Format("无法加载 AssetBundle[Name:{0}]", description.Name));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 异步读取到 AssetBundle;
+        /// </summary>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        private Task<AssetBundlePack> InternalLoadAssetBundleAsync(AssetBundleDescription description)
+        {
+            var stream = GetInputStream(description.RelativePath);
+            {
+                var taskCompletionSource = new TaskCompletionSource<AssetBundlePack>();
+
+                //Unity线程执行;
+                UnityThread.RunInUnityThread(delegate ()
+                {
+                    AssetBundleCreateRequest request = AssetBundle.LoadFromStreamAsync(stream);
+                    request.completed += delegate (AsyncOperation asyncOperation)
+                    {
+                        var assetBundle = request.assetBundle;
+                        if (assetBundle == null)
+                        {
+                            stream.Dispose();
+                            taskCompletionSource.SetException(new IOException("无法读取到 AssetBundle;"));
+                        }
+                        else
+                        {
+                            taskCompletionSource.SetResult(new AssetBundlePack(description.Name, assetBundle, stream));
+                        }
+                    };
+
+                });
+
+                return taskCompletionSource.Task;
+            }
+        }
+
+        private struct AssetBundlePack
+        {
+            public string Name { get; private set; }
+            public AssetBundle AssetBundle { get; private set; }
+            public Stream Stream { get; private set; }
+
+            public AssetBundlePack(string name, AssetBundle assetBundle, Stream stream)
+            {
+                Name = name;
+                AssetBundle = assetBundle;
+                Stream = stream;
+            }
+        }
+
+        [Flags]
+        public enum AssetBundleLoadOption
+        {
+            None = 0,
+            Main = 1 << 0,
+            Secondary = 1 << 1,
         }
     }
 }

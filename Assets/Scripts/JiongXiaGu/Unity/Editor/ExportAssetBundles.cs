@@ -19,7 +19,7 @@ namespace JiongXiaGu.EditorTool
         [MenuItem("Assets/Build AssetBundles")]
         public static void BuildAssetBundleAll()
         {
-            string directoryPath = Path.Combine(Resource.GetCoreDirectoryInfo(), "AssetBundles");
+            string directoryPath = Path.Combine(Resource.ConfigDirectory, "AssetBundles");
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
@@ -32,7 +32,7 @@ namespace JiongXiaGu.EditorTool
         [MenuItem("Assets/Rebuild AssetBundles")]
         public static void RebuildAssetBundleAll()
         {
-            string directoryPath = Path.Combine(Resource.GetCoreDirectoryInfo(), "AssetBundles");
+            string directoryPath = Path.Combine(Resource.ConfigDirectory, "AssetBundles");
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);

@@ -6,7 +6,7 @@
   <Version>1.22</Version>
   <Tags>map,terrain</Tags>
   <Message>...</Message>
-  <AssetBundles>
+  <MainAssetBundles>
     <AssetBundleDescription name="terrain">AssetBundles\terrain</AssetBundleDescription>
-  </AssetBundles>
+  </MainAssetBundles>
 </LoadableContentDescription>

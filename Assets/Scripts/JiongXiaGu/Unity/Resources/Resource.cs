@@ -11,52 +11,102 @@ namespace JiongXiaGu.Unity.Resources
     public static class Resource
     {
 
-        private static string coreDirectory;
+        public static string StreamingAssetsPath => streamingAssetsPath.Value;
+
+        private static readonly Lazy<string> streamingAssetsPath = new Lazy<string>(delegate ()
+        {
+            return Application.streamingAssetsPath;
+        }, true);
+
+
 
         /// <summary>
-        /// 存放核心数据和配置文件的文件夹;
+        /// 存放配置文件的文件夹;
         /// </summary>
-        public static string CoreDirectory => coreDirectory ?? (coreDirectory = GetCoreDirectoryInfo());
+        public static string ConfigDirectory => configDirectory.Value;
+        public static BlockingContent ConfigContent => configContent.Value;
+
+        private static readonly Lazy<string> configDirectory = new Lazy<string>(delegate ()
+        {
+            string directory = Path.Combine(StreamingAssetsPath, "Configs");
+            if (!Directory.Exists(directory))
+            {
+                throw new DirectoryNotFoundException();
+            }
+            return directory;
+        }, true);
+
+        private static readonly Lazy<BlockingContent> configContent = new Lazy<BlockingContent>(delegate ()
+        {
+            var content = new DirectoryContent(ConfigDirectory);
+            var blockingContent = new BlockingContent(content);
+            return blockingContent;
+        }, true);
 
 
-        private static string userConfigDirectory;
 
         /// <summary>
         /// 存放用户配置的文件夹;
         /// </summary>
-        public static string UserConfigDirectory => userConfigDirectory ?? (userConfigDirectory = GetUserConfigDirectoryInfo());
+        public static string UserConfigDirectory => userConfigDirectory.Value;
+        public static BlockingContent UserConfigContent => userConfigContent.Value;
+
+        private static readonly Lazy<string> userConfigDirectory = new Lazy<string>(delegate ()
+        {
+            string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.productName);
+            Directory.CreateDirectory(directory);
+            return directory;
+        }, true);
+
+        private static readonly Lazy<BlockingContent> userConfigContent = new Lazy<BlockingContent>(delegate()
+        {
+            var content = new DirectoryContent(UserConfigDirectory);
+            var blockingContent = new BlockingContent(content);
+            return blockingContent;
+        }, true);
 
 
-        private static string archiveDirectory;
 
         /// <summary>
         /// 存放存档的文件夹路径;
         /// </summary>
-        public static string ArchiveDirectory => archiveDirectory ?? (archiveDirectory = GetArchiveDirectoryInfo());
+        public static string ArchiveDirectory => archiveDirectory.Value;
+
+        private static readonly Lazy<string> archiveDirectory = new Lazy<string>(delegate ()
+        {
+            string directory = Path.Combine(UserConfigDirectory, "Save");
+            Directory.CreateDirectory(directory);
+            return directory;
+        }, true);
 
 
-        private static string modDirectory;
+
+        /// <summary>
+        /// 用户存放模组的文件夹;
+        /// </summary>
+        public static string UserModDirectory => userModDirectory.Value;
+
+        private static readonly Lazy<string> userModDirectory = new Lazy<string>(delegate ()
+        {
+            string directory = Path.Combine(UserConfigDirectory, "MOD");
+            Directory.CreateDirectory(directory);
+            return directory;
+        });
+
+
 
         /// <summary>
         /// 存放模组的文件夹;
         /// </summary>
-        public static string ModDirectory => modDirectory ?? (modDirectory = GetModsDirectoryInfo());
+        public static string ModDirectory => modDirectory.Value;
 
+        private static Lazy<string> modDirectory = new Lazy<string>(delegate ()
+        {
+            string directory = Path.Combine(StreamingAssetsPath, "MOD");
+            Directory.CreateDirectory(directory);
+            return directory;
+        }, true);
 
-        private static string dlcDirectory;
-
-        /// <summary>
-        /// 存放拓展内容的文件夹;
-        /// </summary>
-        public static string DlcDirectory => dlcDirectory ?? (dlcDirectory = GetDlcDirectoryInfo());
-
-
-        private static string cacheDirectory;
-
-        /// <summary>
-        /// 缓存目录;
-        /// </summary>
-        public static string CacheDirectory => cacheDirectory ?? (cacheDirectory = GetCacheDirectory());
 
 
         /// <summary>
@@ -65,89 +115,12 @@ namespace JiongXiaGu.Unity.Resources
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeOnLoad()
         {
-            CoreDirectory.Initialization();
-            UserConfigDirectory.Initialization();
-            ArchiveDirectory.Initialization();
-            ModDirectory.Initialization();
-            DlcDirectory.Initialization();
-            CacheDirectory.Initialization();
-        }
-
-        /// <summary>
-        /// 获取存放核心数据和配置文件的文件夹;
-        /// </summary>
-        public static string GetCoreDirectoryInfo()
-        {
-            string directory = Path.Combine(Application.streamingAssetsPath, "Data");
-            if (!Directory.Exists(directory))
-            {
-                throw new DirectoryNotFoundException();
-            }
-            return directory;
-        }
-
-        /// <summary>
-        /// 获取到存放用户配置的文件夹;
-        /// </summary>
-        public static string GetUserConfigDirectoryInfo()
-        {
-            string directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", Application.productName);
-            Directory.CreateDirectory(directory);
-            return directory;
-        }
-
-        /// <summary>
-        /// 获取到存放存档的文件夹路径;
-        /// </summary>
-        public static string GetArchiveDirectoryInfo()
-        {
-            var userConfigDirectory = UserConfigDirectory;
-
-            if (string.IsNullOrEmpty(userConfigDirectory))
-            {
-                userConfigDirectory = GetUserConfigDirectoryInfo();
-            }
-
-            string directory = Path.Combine(userConfigDirectory, "Save");
-            Directory.CreateDirectory(directory);
-            return directory;
-        }
-
-        /// <summary>
-        /// 获取到存放模组的文件夹;
-        /// </summary>
-        public static string GetModsDirectoryInfo()
-        {
-            var userConfigDirectory = UserConfigDirectory;
-
-            if (string.IsNullOrEmpty(userConfigDirectory))
-            {
-                userConfigDirectory = GetUserConfigDirectoryInfo();
-            }
-
-            string directory = Path.Combine(userConfigDirectory, "MOD");
-            Directory.CreateDirectory(directory);
-            return directory;
-        }
-
-        /// <summary>
-        /// 获取到存放拓展内容的文件夹;
-        /// </summary>
-        public static string GetDlcDirectoryInfo()
-        {
-            string directory = Path.Combine(Application.streamingAssetsPath, "DLC");
-            Directory.CreateDirectory(directory);
-            return directory;
-        }
-
-        /// <summary>
-        /// 缓存目录;
-        /// </summary>
-        public static string GetCacheDirectory()
-        {
-            string directory = Application.temporaryCachePath;
-            Directory.CreateDirectory(directory);
-            return directory;
+            streamingAssetsPath.Initialization();
+            configContent.Initialization();
+            userConfigContent.Initialization();
+            archiveDirectory.Initialization();
+            userModDirectory.Initialization();
+            modDirectory.Initialization();
         }
     }
 }

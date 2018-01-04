@@ -70,6 +70,7 @@ namespace JiongXiaGu.Unity
         public static Task RunInUnityThread(Action action, CancellationToken token = default(CancellationToken))
         {
             token.ThrowIfCancellationRequested();
+
             if (IsUnityThread)
             {
                 action.Invoke();
@@ -87,10 +88,11 @@ namespace JiongXiaGu.Unity
         public static Task<T> RunInUnityThread<T>(Func<T> func, CancellationToken token = default(CancellationToken))
         {
             token.ThrowIfCancellationRequested();
+
             if (IsUnityThread)
             {
                 T item = func.Invoke();
-                return Task.FromResult<T>(item);
+                return Task.FromResult(item);
             }
             else
             {

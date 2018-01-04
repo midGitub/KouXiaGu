@@ -13,8 +13,9 @@ namespace JiongXiaGu
         /// <summary>
         /// 不进行任何操作;
         /// </summary>
-        public static void Initialization<T>(this T obj)
+        public static T Initialization<T>(this Lazy<T> obj)
         {
+            return obj.Value;
         }
     }
 }

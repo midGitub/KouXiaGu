@@ -71,7 +71,7 @@ namespace JiongXiaGu.Unity.Resources
             //读取主要数据;
             if (coreData == null)
             {
-                coreData = LoadDataInternal(LoadableResource.Core.Value, integrateHandlers, token);
+                coreData = LoadDataInternal(LoadableResource.Core, integrateHandlers, token);
             }
 
             //读取附加的数据;

@@ -85,10 +85,24 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public void UpdateDescription(LoadableContent loadableContent)
         {
-            LoadableContentDescription description = ReadDescription(loadableContent);
-            loadableContent.Description = description;
+            lock (loadableContent.AsyncLock)
+            {
+                LoadableContentDescription description = ReadDescription(loadableContent);
+                loadableContent.Description = description;
+            }
         }
 
+        /// <summary>
+        /// 写入资源描述;
+        /// </summary>
+        public void UpdateDescription(LoadableContent loadableContent, LoadableContentDescription description)
+        {
+            lock (loadableContent.AsyncLock)
+            {
+                WriteDescription(loadableContent, description);
+                loadableContent.Description = description;
+            }
+        }
 
 
 
