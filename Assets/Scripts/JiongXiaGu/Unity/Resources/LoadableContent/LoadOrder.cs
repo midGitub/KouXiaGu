@@ -13,12 +13,12 @@ namespace JiongXiaGu.Unity.Resources
         public LinkedList<LoadableContent> List { get; private set; }
         public int Count => List.Count;
 
-        public LoadOrder(LoadOrderDefinition orderDefinition) : base()
+        public LoadOrder(IReadOnlyCollection<LoadableContent> contents, LoadOrderDefinition orderDefinition) : base()
         {
             List = new LinkedList<LoadableContent>();
             foreach (var definition in orderDefinition)
             {
-                LoadableContent content = LoadableResource.All.FirstOrDefault(item => item.Description.ID == definition);
+                LoadableContent content = contents.FirstOrDefault(item => item.Description.ID == definition);
                 if (content != null)
                 {
                     List.AddLast(content);

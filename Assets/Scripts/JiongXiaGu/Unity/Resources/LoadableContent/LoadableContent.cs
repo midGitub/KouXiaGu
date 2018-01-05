@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -20,7 +19,6 @@ namespace JiongXiaGu.Unity.Resources
         internal readonly object AsyncLock = new object();
 
         private bool isDisposed = false;
-        private readonly ReaderWriterLockSlim assetBundleLock = new ReaderWriterLockSlim();
         private Lazy<List<AssetBundlePack>> assetBundles = new Lazy<List<AssetBundlePack>>();
 
         /// <summary>
@@ -44,7 +42,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 读取所有AssetBundle,在读取过程中会锁本实例;
+        /// 读取所有AssetBundle,在读取过程中会锁本实例;(仅Unity线程调用)
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
@@ -52,19 +50,17 @@ namespace JiongXiaGu.Unity.Resources
         public void LoadAllAssetBundles(AssetBundleLoadOption options = AssetBundleLoadOption.Main)
         {
             ThrowIfObjectDisposed();
+            UnityThread.ThrowIfNotUnityThread();
 
-            using (assetBundleLock.WriteLock())
+            foreach (var descr in GetAssetBundleDescription(Description, options))
             {
-                foreach (var descr in GetAssetBundleDescription(Description, options))
-                {
-                    var pack = InternalLoadAssetBundle(descr);
-                    assetBundles.Value.Add(pack);
-                }
+                var pack = InternalLoadAssetBundle(descr);
+                assetBundles.Value.Add(pack);
             }
         }
 
         /// <summary>
-        /// 异步读取所有AssetBundle,在读取过程中会锁本实例;
+        /// 异步读取所有AssetBundle,在读取过程中会锁本实例;(仅Unity线程调用)
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
@@ -72,15 +68,33 @@ namespace JiongXiaGu.Unity.Resources
         public async Task LoadAllAssetBundlesAsync(AssetBundleLoadOption options = AssetBundleLoadOption.Main)
         {
             ThrowIfObjectDisposed();
+            UnityThread.ThrowIfNotUnityThread();
 
-            using (assetBundleLock.WriteLock())
+            foreach (var descr in GetAssetBundleDescription(Description, options))
             {
-                foreach (var descr in GetAssetBundleDescription(Description, options))
+                var task = InternalLoadAssetBundleAsync(descr);
+                await task;
+                assetBundles.Value.Add(task.Result);
+            }
+        }
+
+        /// <summary>
+        /// 卸载所有 AssetBundles;(仅Unity线程调用)
+        /// </summary>
+        public void UnloadAssetBundlesAll()
+        {
+            ThrowIfObjectDisposed();
+            UnityThread.ThrowIfNotUnityThread();
+
+            if (assetBundles.IsValueCreated)
+            {
+                foreach (var assetBundle in assetBundles.Value)
                 {
-                    var task = InternalLoadAssetBundleAsync(descr);
-                    await task;
-                    assetBundles.Value.Add(task.Result);
+                    assetBundle.AssetBundle.Unload(false);
+                    assetBundle.Stream.Dispose();
                 }
+                assetBundles.Value.Clear();
+
             }
         }
 
@@ -103,7 +117,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到对应的 AssetBundle,若正在读取则阻塞线程;
+        /// 获取到对应的 AssetBundle;(仅Unity线程调用)
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
@@ -112,22 +126,19 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            using (assetBundleLock.ReadLock())
+            AssetBundlePack assetBundlePack;
+            if (InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
             {
-                AssetBundlePack assetBundlePack;
-                if (InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
-                {
-                    return assetBundlePack.AssetBundle;
-                }
-                else
-                {
-                    throw new FileNotFoundException(string.Format("未找到AssetBundle[Name : {0}]", assetBundleName));
-                }
+                return assetBundlePack.AssetBundle;
+            }
+            else
+            {
+                throw new FileNotFoundException(string.Format("未找到AssetBundle[Name : {0}]", assetBundleName));
             }
         }
 
         /// <summary>
-        /// 获取到指定 AssetBundle,若还未读取则异步读取到;
+        /// 获取到指定 AssetBundle,若还未读取则异步读取到;(仅Unity线程调用)
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="IOException"></exception>
@@ -138,20 +149,14 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            using (assetBundleLock.UpgradeableReadLock())
+            AssetBundlePack assetBundlePack;
+            if (!InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
             {
-                AssetBundlePack assetBundlePack;
-                if (!InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
-                {
-                    var description = InternalFindAssetBundleDescription(assetBundleName);
-                    assetBundlePack = InternalLoadAssetBundle(description);
-                    using (assetBundleLock.WriteLock())
-                    {
-                        assetBundles.Value.Add(assetBundlePack);
-                    }
-                }
-                return assetBundlePack.AssetBundle;
+                var description = InternalFindAssetBundleDescription(assetBundleName);
+                assetBundlePack = InternalLoadAssetBundle(description);
+                assetBundles.Value.Add(assetBundlePack);
             }
+            return assetBundlePack.AssetBundle;
         }
 
         /// <summary>

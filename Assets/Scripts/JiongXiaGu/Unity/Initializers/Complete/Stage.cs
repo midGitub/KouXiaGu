@@ -56,5 +56,14 @@ namespace JiongXiaGu.Unity.Initializers
             SceneType = SceneType.GameScene;
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// 设置新的资源读取顺序;
+        /// </summary>
+        public static async Task SetOrder(LoadOrder order)
+        {
+            UnityThread.ThrowIfNotUnityThread();
+            await ResourceInitializer.Instance.Reload(order);
+        }
     }
 }
