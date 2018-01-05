@@ -60,10 +60,11 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 设置新的资源读取顺序;
         /// </summary>
-        public static async Task SetOrder(LoadOrder order)
+        public static Task SetOrder(LoadOrder order)
         {
             UnityThread.ThrowIfNotUnityThread();
-            await ResourceInitializer.Instance.Reload(order);
+
+            return ResourceInitializer.Instance.Reload(order);
         }
     }
 }

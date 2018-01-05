@@ -32,11 +32,6 @@ namespace JiongXiaGu.Unity.Resources
         public static IReadOnlyCollection<LoadableContent> All => all;
 
         /// <summary>
-        /// 资源读取顺序;
-        /// </summary>
-        public static LoadOrder Order { get; private set; }
-
-        /// <summary>
         /// 获取到所有可读取的资源;
         /// </summary>
         internal static async Task Initialize()
@@ -55,7 +50,6 @@ namespace JiongXiaGu.Unity.Resources
             });
 
             await Core.LoadAllAssetBundlesAsync();
-            Order = ReadLoadOrder();
         }
 
         /// <summary>
@@ -66,32 +60,6 @@ namespace JiongXiaGu.Unity.Resources
             string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
             var core = factory.Read(directory);
             return core;
-        }
-
-        /// <summary>
-        /// 读取到定义的资源读取顺序,若不存在则返回null;
-        /// </summary>
-        private static LoadOrder ReadLoadOrder()
-        {
-            LoadOrderDefinitionSerializer definitionSerializer = new LoadOrderDefinitionSerializer();
-            try
-            {
-                var definitions = definitionSerializer.Deserialize(Core);
-                var order = new LoadOrder(all, definitions);
-                return order;
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// 设置资源读取顺序;
-        /// </summary>
-        internal static void SetOrder(LoadOrder order)
-        {
-            Order = order;
         }
     }
 }

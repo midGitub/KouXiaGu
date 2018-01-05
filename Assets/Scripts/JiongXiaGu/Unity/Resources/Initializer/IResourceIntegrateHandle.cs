@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 设置新的数据数据;
         /// </summary>
-        void SetNew(ITypeDictionary[] data, CancellationToken token);
+        void SetNew(ITypeDictionary[] collection, CancellationToken token);
 
         /// <summary>
         /// 清空所有数据;

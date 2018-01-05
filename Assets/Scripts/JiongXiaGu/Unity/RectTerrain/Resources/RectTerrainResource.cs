@@ -31,6 +31,7 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         private void Awake()
         {
+            landformResCreater = new LandformResCreater();
             bindingSerializer = new BindingSerializer(typeof(RectTerrainResourceDescription));
         }
 
@@ -53,14 +54,19 @@ namespace JiongXiaGu.Unity.RectTerrain
             }
         }
 
-        void IResourceIntegrateHandle.SetNew(ITypeDictionary[] data, CancellationToken token)
+        void IResourceIntegrateHandle.SetNew(ITypeDictionary[] collection, CancellationToken token)
         {
-            throw new NotImplementedException();
+            foreach (var data in collection)
+            {
+                var rectTerrainResource = data.Get<RectTerrainResourceDescription>();
+
+                landformResCreater.Add(rectTerrainResource.Landform.EnumerateDescription());
+            }
         }
 
         void IResourceIntegrateHandle.Clear()
         {
-            throw new NotImplementedException();
+            landformResCreater.Clear();
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace JiongXiaGu.Collections
+namespace JiongXiaGu
 {
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace JiongXiaGu.Collections
             return this;
         }
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return this;
         }
