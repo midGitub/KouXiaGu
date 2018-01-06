@@ -159,6 +159,35 @@ Prefab:
     - target: {fileID: 224416758811591206, guid: aeebafc78a41c10479d65e9692c38358,
         type: 2}
       propertyPath: m_SizeDelta.y
+      value: 17.578125
+      objectReference: {fileID: 0}
+    - target: {fileID: 224995194351035268, guid: aeebafc78a41c10479d65e9692c38358,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224995194351035268, guid: aeebafc78a41c10479d65e9692c38358,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224325027236822918, guid: aeebafc78a41c10479d65e9692c38358,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224325027236822918, guid: aeebafc78a41c10479d65e9692c38358,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224325027236822918, guid: aeebafc78a41c10479d65e9692c38358,
+        type: 2}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1958834800292134, guid: aeebafc78a41c10479d65e9692c38358, type: 2}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

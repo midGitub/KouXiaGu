@@ -1,4 +1,5 @@
-﻿using JiongXiaGu.Collections;
+﻿using System;
+using JiongXiaGu.Collections;
 using System.Threading;
 
 namespace JiongXiaGu.Unity.Resources
@@ -16,12 +17,13 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 输出对应内容;
         /// </summary>
+        /// <exception cref="InvalidOperationException">未找到指定资源</exception>
         void Write(LoadableContent content, ITypeDictionary data, CancellationToken token);
 
         /// <summary>
         /// 设置新的数据数据;
         /// </summary>
-        void SetNew(ITypeDictionary[] collection, CancellationToken token);
+        void SetNew(LoadableData[] collection, CancellationToken token);
 
         /// <summary>
         /// 清空所有数据;

@@ -48,10 +48,10 @@ namespace JiongXiaGu.Unity.RectTerrain
                     {
                         ID = "2",
                         Name = "Unknow2",
-                        DiffuseTex = new AssetInfo(new AssetPath("000", "DiffuseTex2")),
-                        DiffuseBlendTex = new AssetInfo("DiffuseBlendTex2"),
-                        HeightTex = new AssetInfo("HeightTex2"),
-                        HeightBlendTex = new AssetInfo("HeightBlendTex2"),
+                        DiffuseTex = new AssetInfo(new AssetPath("000", "assetBundleName"), "DiffuseTex2"),
+                        DiffuseBlendTex = new AssetInfo(assetBundleName, "DiffuseBlendTex2"),
+                        HeightTex = new AssetInfo(assetBundleName, "HeightTex2"),
+                        HeightBlendTex = new AssetInfo(assetBundleName, "HeightBlendTex2"),
                     }
                 },
             },

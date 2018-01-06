@@ -17,21 +17,34 @@ namespace JiongXiaGu.Unity.RectTerrain
     {
         [SerializeField]
         private LandformRes defaultLandformRes;
-        public Dictionary<string, LandformDescription> Descriptions { get; private set; }
+        private Dictionary<string, DescriptionInfo> descriptionDictionary;
 
         public LandformResCreater()
         {
-            Descriptions = new Dictionary<string, LandformDescription>();
+            descriptionDictionary = new Dictionary<string, DescriptionInfo>();
         }
 
         /// <summary>
-        /// 添加可读取的资源;
+        /// 添加描述信息;
         /// </summary>
-        public void Add(IEnumerable<LandformDescription> descriptions)
+        public void Add(LoadableContent content, DescriptionCollection<LandformDescription> descriptions)
         {
-            foreach (var description in descriptions)
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            foreach (var description in descriptions.EnumerateDescription())
             {
-                Descriptions.AddOrUpdate(description.ID, description);
+                string key = description.ID;
+                DescriptionInfo info;
+                if (descriptionDictionary.TryGetValue(key, out info))
+                {
+                    descriptionDictionary[key] = new DescriptionInfo(content, description);
+                }
+                else
+                {
+                    info = new DescriptionInfo(content, description);
+                    descriptionDictionary.Add(key, info);
+                }
             }
         }
 
@@ -40,7 +53,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// </summary>
         public void Clear()
         {
-            Descriptions.Clear();
+            descriptionDictionary.Clear();
         }
 
         public LandformRes Default()
@@ -53,31 +66,25 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// </summary>
         public Task<LandformRes> Get(string key, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
-            //Task<T> info;
-            //if (infos.TryGetValue(key, out info))
-            //{
-            //    return info.ContinueWith(task => task.Result, token);
-            //}
-            //else
-            //{
-            //    info = Create(key, token);
-            //    if (!info.IsFaulted)
-            //    {
-            //        infos.Add(key, info);
-            //    }
-            //    return info;
-            //}
+            DescriptionInfo info;
+            if (descriptionDictionary.TryGetValue(key, out info))
+            {
+                return CreateAsync(info.Content, info.Description, token);
+            }
+            else
+            {
+                throw new KeyNotFoundException(key);
+            }
         }
 
-        public static async Task<LandformRes> CreateAsync(LoadableContent loadableContent, LandformDescription description, CancellationToken token)
+        public static async Task<LandformRes> CreateAsync(LoadableContent content, LandformDescription description, CancellationToken token)
         {
             var tasks = new Task<Texture2D>[]
             {
-                GetTexture2DAsync(loadableContent, description.HeightTex, token),
-                GetTexture2DAsync(loadableContent, description.HeightBlendTex, token),
-                GetTexture2DAsync(loadableContent, description.DiffuseTex, token),
-                GetTexture2DAsync(loadableContent, description.DiffuseBlendTex, token),
+                GetTexture2DAsync(content, description.HeightTex, token),
+                GetTexture2DAsync(content, description.HeightBlendTex, token),
+                GetTexture2DAsync(content, description.DiffuseTex, token),
+                GetTexture2DAsync(content, description.DiffuseBlendTex, token),
             };
 
             await Task.WhenAll(tasks);
@@ -95,6 +102,18 @@ namespace JiongXiaGu.Unity.RectTerrain
         private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo, CancellationToken token)
         {
             return AssetDictionary.Default.LoadAsync(Texture2DLoader.Default, loadableContent, assetInfo, token);
+        }
+
+        private struct DescriptionInfo
+        {
+            public LoadableContent Content { get; private set; }
+            public LandformDescription Description { get; private set; }
+
+            public DescriptionInfo(LoadableContent content, LandformDescription description)
+            {
+                Content = content;
+                Description = description;
+            }
         }
     }
 }

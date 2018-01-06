@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using JiongXiaGu.Collections;
+﻿using JiongXiaGu.Collections;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -13,8 +12,8 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     internal class ResourceLoadHandler
     {
-        private ITypeDictionary coreData;
-        private List<ContentData> otherData;
+        private Resources.LoadableData? coreData;
+        private List<Resources.LoadableData> otherData;
         public LoadOrder Order { get; private set; }
 
         private Task worker;
@@ -24,7 +23,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public ResourceLoadHandler()
         {
-            otherData = new List<ContentData>();
+            otherData = new List<LoadableData>();
         }
 
         /// <summary>
@@ -85,16 +84,16 @@ namespace JiongXiaGu.Unity.Resources
             }
             else
             {
-                IntegrateData(coreData, integrateHandlers, token);
+                IntegrateData(coreData.Value, integrateHandlers, token);
             }
         }
 
         /// <summary>
         /// 仅读取到核心数据;
         /// </summary>
-        private void IntegrateData(ITypeDictionary core, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        private void IntegrateData(LoadableData core, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
-            ITypeDictionary[] datas = new ITypeDictionary[1];
+            LoadableData[] datas = new LoadableData[1];
             datas[0] = core;
 
             foreach (var integrateHandler in integrateHandlers)
@@ -109,8 +108,8 @@ namespace JiongXiaGu.Unity.Resources
         private void IntegrateData(LoadOrder order, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             int i = 1;
-            ITypeDictionary[] datas = new ITypeDictionary[order.Count + 1];
-            datas[0] = coreData;
+            LoadableData[] datas = new LoadableData[order.Count + 1];
+            datas[0] = coreData.Value;
 
             foreach (var content in order)
             {
@@ -118,7 +117,7 @@ namespace JiongXiaGu.Unity.Resources
                 if (dataIndex >= 0)
                 {
                     var data = otherData[dataIndex];
-                    datas[i] = data.Data;
+                    datas[i] = data;
                 }
                 else
                 {
@@ -136,7 +135,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到数据,若数据已经存在则跳过;
         /// </summary>
-        private void InternalLoadData(IEnumerable<LoadableContent> contents, IList<ContentData> datas, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        private void InternalLoadData(IEnumerable<LoadableContent> contents, IList<LoadableData> datas, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -147,8 +146,7 @@ namespace JiongXiaGu.Unity.Resources
                 {
                     token.ThrowIfCancellationRequested();
                     var data = InternalLoadData(content, integrateHandlers, token);
-                    var value = new ContentData(content, data);
-                    datas.Add(value);
+                    datas.Add(data);
                 }
             }
         }
@@ -156,7 +154,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取所有数据,并且返回;
         /// </summary>
-        private ITypeDictionary InternalLoadData(LoadableContent content, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        private LoadableData InternalLoadData(LoadableContent content, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -166,7 +164,7 @@ namespace JiongXiaGu.Unity.Resources
                 token.ThrowIfCancellationRequested();
                 handler.Read(content, data, token);
             }
-            return data;
+            return new Resources.LoadableData(content, data);
         }
 
         /// <summary>
@@ -188,21 +186,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到对应数据下标;
         /// </summary>
-        private int FindIndex(IList<ContentData> datas, LoadableContent content)
+        private int FindIndex(IList<LoadableData> datas, LoadableContent content)
         {
             return datas.FindIndex(item => item.Content == content);
-        }
-
-        private struct ContentData
-        {
-            public LoadableContent Content { get; private set; }
-            public ITypeDictionary Data { get; private set; }
-
-            public ContentData(LoadableContent content, ITypeDictionary data)
-            {
-                Content = content;
-                Data = data;
-            }
         }
     }
 }

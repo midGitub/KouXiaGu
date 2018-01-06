@@ -31,8 +31,8 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         private void Awake()
         {
-            landformResCreater = new LandformResCreater();
             bindingSerializer = new BindingSerializer(typeof(RectTerrainResourceDescription));
+            landformResCreater = new LandformResCreater();
         }
 
         void IResourceIntegrateHandle.Read(LoadableContent content, ITypeDictionary data, CancellationToken token)
@@ -43,6 +43,10 @@ namespace JiongXiaGu.Unity.RectTerrain
             data.Add(description);
         }
 
+        /// <summary>
+        /// 输出指定资源到目录;
+        /// </summary>
+        /// <exception cref="InvalidOperationException">未找到指定资源</exception>
         void IResourceIntegrateHandle.Write(LoadableContent content, ITypeDictionary data, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
@@ -52,15 +56,19 @@ namespace JiongXiaGu.Unity.RectTerrain
             {
                 bindingSerializer.Serialize(content, description);
             }
+            else
+            {
+                throw new InvalidOperationException("未找到对应");
+            }
         }
 
-        void IResourceIntegrateHandle.SetNew(ITypeDictionary[] collection, CancellationToken token)
+        void IResourceIntegrateHandle.SetNew(LoadableData[] collection, CancellationToken token)
         {
             foreach (var data in collection)
             {
-                var rectTerrainResource = data.Get<RectTerrainResourceDescription>();
+                var rectTerrainResource = data.Data.Get<RectTerrainResourceDescription>();
 
-                landformResCreater.Add(rectTerrainResource.Landform.EnumerateDescription());
+                landformResCreater.Add(data.Content, rectTerrainResource.Landform);
             }
         }
 

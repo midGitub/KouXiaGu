@@ -99,5 +99,31 @@ namespace JiongXiaGu.Unity
                 return TaskHelper.Run(func, token, TaskScheduler);
             }
         }
+
+
+        /// <summary>
+        /// 转换成 Task 格式;
+        /// </summary>
+        public static Task AsTask(this AsyncOperation asyncOperation)
+        {
+            if (asyncOperation == null)
+                throw new ArgumentNullException(nameof(asyncOperation));
+            if (asyncOperation.isDone)
+                return Task.CompletedTask;
+
+            var taskCompletionSource = new TaskCompletionSource<object>();
+            asyncOperation.completed += delegate (AsyncOperation operation)
+            {
+                if (operation.isDone)
+                {
+                    taskCompletionSource.SetResult(null);
+                }
+                else
+                {
+                    taskCompletionSource.SetException(new NotImplementedException());
+                }
+            };
+            return taskCompletionSource.Task;
+        }
     }
 }

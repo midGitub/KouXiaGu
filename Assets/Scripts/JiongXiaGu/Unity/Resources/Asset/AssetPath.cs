@@ -53,6 +53,12 @@ namespace JiongXiaGu.Unity.Resources
             return !string.IsNullOrWhiteSpace(Name) && Name[0] == PathReferenceSymbol;
         }
 
+        public void ThrowIfEmpty()
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+                throw new ArgumentNullException(nameof(Name));
+        }
+
         /// <summary>
         /// 获取到相对路径;若引用到其它资源则返回false,返回内容ID和相对路径;若为本地目录,则返回true,仅返回相对路径;
         /// </summary>

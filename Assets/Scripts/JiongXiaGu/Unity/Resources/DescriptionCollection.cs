@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 提供序列化的描述合集;
     /// </summary>
-    public class DescriptionCollection<T>
+    public struct DescriptionCollection<T>
     {
         /// <summary>
         /// 版本;

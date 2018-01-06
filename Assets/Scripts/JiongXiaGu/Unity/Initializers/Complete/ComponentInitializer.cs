@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Initializers
 {
     /// <summary>
-    /// 游戏组件初始化接口;
+    /// 游戏组件初始化接口;如 按键配置,基础语言包
     /// </summary>
     public interface IComponentInitializeHandle
     {
@@ -14,7 +15,7 @@ namespace JiongXiaGu.Unity.Initializers
     }
 
     /// <summary>
-    /// 游戏组件初始化器;
+    /// 游戏底层组件初始化器;
     /// </summary>
     [DisallowMultipleComponent]
     internal sealed class ComponentInitializer : InitializeScheduler
@@ -39,6 +40,11 @@ namespace JiongXiaGu.Unity.Initializers
         {
             base.OnDestroy();
             singleton.RemoveInstance(this);
+        }
+
+        public static Task Initialize()
+        {
+            return Instance.StartInitialize();
         }
 
         protected override IEnumerable<Action> EnumerateInitializeHandler(CancellationToken token)

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Linq;
-using JiongXiaGu.Collections;
-using System.Threading;
-using UnityEngine;
-using System.Threading.Tasks;
 using System.IO;
+using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -30,28 +27,50 @@ namespace JiongXiaGu.Unity.Resources
             loadHandler = new ResourceLoadHandler();
         }
 
-        /// <summary>
-        /// 读取资源,若已经读取完毕则或正在读取则不进行任何操作;
-        /// </summary>
-        public Task Load()
+        public static Task Initialize()
         {
-            var order = ReadLoadOrderFromFile();
-            return loadHandler.LoadAsync(order, integrateHandlers);
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 读取核心资源;
+        /// </summary>
+        public static Task LoadCore()
+        {
+            //var order = ReadLoadOrderFromFile();
+            //return loadHandler.LoadAsync(order, integrateHandlers);
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// 按照指定顺序读取资源,若已经读取完毕则或正在读取重新读取;
         /// </summary>
-        public Task Reload(LoadOrder order)
+        public Task Load(LoadOrder order)
         {
             return loadHandler.LoadAsync(order, integrateHandlers);
+        }
+
+        /// <summary>
+        /// 根据读取顺序
+        /// </summary>
+        public static Task Prepare()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 读取其它资源;
+        /// </summary>
+        public static Task LoadOther(LoadOrder order)
+        {
+            throw new NotImplementedException();
         }
 
 
         /// <summary>
         /// 读取到定义的资源读取顺序,若不存在则返回null;
         /// </summary>
-        private LoadOrder ReadLoadOrderFromFile()
+        private static LoadOrder ReadLoadOrderFromFile()
         {
             LoadOrderDefinitionSerializer definitionSerializer = new LoadOrderDefinitionSerializer();
             try

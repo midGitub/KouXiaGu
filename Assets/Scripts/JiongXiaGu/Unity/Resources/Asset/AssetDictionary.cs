@@ -14,10 +14,30 @@ namespace JiongXiaGu.Unity.Resources
         internal static TaskScheduler DefalutTaskScheduler => UnityTaskScheduler.TaskScheduler;
 
         /// <summary>
+        /// 读取资源;
+        /// </summary>
+        public T Load<T>(LoadableContent content, AssetInfo assetInfo)
+            where T :UnityEngine.Object
+        {
+            //var assetBundle = LoadableResource.SharedContent.GetAssetBundle()
+
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 异步读取资源;
+        /// </summary>
+        public T LoadAsync<T>(LoadableContent content, AssetInfo assetInfo)
+            where T : UnityEngine.Object
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// 读取到对应资源;
         /// </summary>
         public T Load<T>(AssetLoader<T> loader, LoadableContent content, AssetInfo assetInfo)
-            where T :class
+            where T : class
         {
             if (loader == null)
                 throw new ArgumentNullException(nameof(loader));
@@ -82,22 +102,7 @@ namespace JiongXiaGu.Unity.Resources
         public string GetKey<T>(LoadableContentDescription description, AssetInfo assetInfo)
         {
             const string KeySeparator = ":";
-            string key;
-
-            switch (assetInfo.From)
-            {
-                case AssetLoadModes.AssetBundle:
-                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(LoadableContent).FullName, description.ID, assetInfo.BundleName, assetInfo.Name);
-                    break;
-
-                case AssetLoadModes.File:
-                    key = string.Join(KeySeparator, typeof(T).FullName, typeof(LoadableContent).FullName, description.ID, assetInfo.Name);
-                    break;
-
-                default:
-                    throw new NotSupportedException(assetInfo.From.ToString());
-            }
-
+            string key = string.Join(KeySeparator, typeof(T).FullName, typeof(LoadableContent).FullName, description.ID, assetInfo.From, assetInfo.Name);
             return key;
         }
 

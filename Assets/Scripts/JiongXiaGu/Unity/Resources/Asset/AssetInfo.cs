@@ -8,46 +8,27 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 表示资源;
+    /// 表示Unity资源;
     /// </summary>
     public struct AssetInfo : IXmlSerializable, IEquatable<AssetInfo>
     {
-        internal const AssetLoadModes DefaultLoadMode = AssetLoadModes.File;
-        internal const string LoadModeAttribute = "from";
-        internal const string AssetBundleNameAttribute = "bundle";
+        internal const string AssetFromAttribute = "from";
 
         /// <summary>
-        /// 读取方式,默认从文件读取;
+        /// 来自的文件;
         /// </summary>
-        public AssetLoadModes From { get; private set; }
-
-        /// <summary>
-        /// 若为 AssetBundle 的资源,则为 AssetBundleName,否则为null;
-        /// </summary>
-        public AssetPath BundleName { get; private set; }
+        public AssetPath From { get; private set; }
 
         /// <summary>
         /// 若从 AssetBundle 读取,则为文件名,忽略拓展名;
         /// 若从 File 读取,则为相对路径;
         /// </summary>
-        public AssetPath Name { get; private set; }
-
-        public AssetInfo(AssetPath name) : this()
-        {
-            From = AssetLoadModes.File;
-            Name = name;
-        }
+        public string Name { get; private set; }
 
         public AssetInfo(AssetPath assteBundleName, string name) : this()
         {
-            From = AssetLoadModes.AssetBundle;
-            BundleName = assteBundleName;
+            From = assteBundleName;
             Name = name;
-
-            if (Name.IsReferencePath())
-            {
-                throw new ArgumentException();
-            }
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -57,46 +38,31 @@ namespace JiongXiaGu.Unity.Resources
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            Name = reader.ReadElementContentAsString();
-            string fromStr = reader.GetAttribute(LoadModeAttribute);
-            try
+            string from = reader.GetAttribute(AssetFromAttribute);
+            if (string.IsNullOrWhiteSpace(from))
             {
-                From = (AssetLoadModes)Enum.Parse(typeof(AssetLoadModes), fromStr, true);
-
-                switch (From)
-                {
-                    case AssetLoadModes.AssetBundle:
-                        BundleName = reader.GetAttribute(AssetBundleNameAttribute);
-                        break;
-
-                    default:
-                        break;
-                }
+                throw new ArgumentNullException(nameof(from));
             }
-            catch (ArgumentException)
+            else
             {
-                From = AssetLoadModes.Unknown;
+                From = from;
+            }
+
+            string name = reader.ReadElementContentAsString();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            else
+            {
+                Name = name;
             }
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
-            switch (From)
-            {
-                case AssetLoadModes.File:
-                    writer.WriteAttributeString(LoadModeAttribute, From.ToString());
-                    writer.WriteValue(Name.ToString());
-                    break;
-
-                case AssetLoadModes.AssetBundle:
-                    writer.WriteAttributeString(LoadModeAttribute, From.ToString());
-                    writer.WriteAttributeString(AssetBundleNameAttribute, BundleName.Name);
-                    writer.WriteValue(Name.ToString());
-                    break;
-
-                default:
-                    throw new NotSupportedException(From.ToString());
-            }
+            writer.WriteAttributeString(AssetFromAttribute, From.Name);
+            writer.WriteValue(Name.ToString());
         }
 
         public override bool Equals(object obj)
@@ -106,16 +72,14 @@ namespace JiongXiaGu.Unity.Resources
 
         public bool Equals(AssetInfo other)
         {
-            return From == other.From &&
-                   BundleName.Equals(other.BundleName) &&
+            return From.Equals(other.From) &&
                    Name.Equals(other.Name);
         }
 
         public override int GetHashCode()
         {
             var hashCode = -167635157;
-            hashCode = hashCode * -1521134295 + From.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(BundleName);
+            hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(From);
             hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(Name);
             return hashCode;
         }
