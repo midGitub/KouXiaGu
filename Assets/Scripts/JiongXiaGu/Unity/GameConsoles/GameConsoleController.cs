@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.GameConsoles
     [DisallowMultipleComponent]
     internal sealed class GameConsoleController : MonoBehaviour, IComponentInitializeHandle
     {
-        void IComponentInitializeHandle.Initialize(CancellationToken token)
+        void IComponentInitializeHandle.Initialize()
         {
             ConsoleMethodReflector reflector = new ConsoleMethodReflector();
             var consoleMethodStates = reflector.Search(typeof(GameConsoleController).Assembly);

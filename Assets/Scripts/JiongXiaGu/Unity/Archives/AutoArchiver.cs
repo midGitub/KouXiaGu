@@ -17,7 +17,7 @@ namespace JiongXiaGu.Unity.Archives
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SceneArchiveController))]
-    public class AutoArchiver : MonoBehaviour, ISceneComponentInitializeHandle, ISceneCompletedHandle
+    public class AutoArchiver : MonoBehaviour
     {
         /// <summary>
         /// 是否启用自动存档?
@@ -72,14 +72,14 @@ namespace JiongXiaGu.Unity.Archives
             archiveController = GetComponent<SceneArchiveController>();
         }
 
-        Task ISceneComponentInitializeHandle.Initialize(CancellationToken token)
-        {
-            return Task.Run(delegate ()
-            {
-                token.ThrowIfCancellationRequested();
-                autoArchives = new List<ArchiveInfo>(EnumerateAutoArchives());
-            });
-        }
+        //Task ISceneComponentInitializeHandle.Initialize(CancellationToken token)
+        //{
+        //    return Task.Run(delegate ()
+        //    {
+        //        token.ThrowIfCancellationRequested();
+        //        autoArchives = new List<ArchiveInfo>(EnumerateAutoArchives());
+        //    });
+        //}
 
         /// <summary>
         /// 获取到所有自动存档;
@@ -97,13 +97,13 @@ namespace JiongXiaGu.Unity.Archives
             }
         }
 
-        void ISceneCompletedHandle.OnSceneCompleted()
-        {
-            if (isActivate)
-            {
-                StartAutoArchive();
-            }
-        }
+        //void ISceneCompletedHandle.OnSceneCompleted()
+        //{
+        //    if (isActivate)
+        //    {
+        //        StartAutoArchive();
+        //    }
+        //}
 
         /// <summary>
         /// 设置是否启用自动存档;

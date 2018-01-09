@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Initializers
 {
 
     /// <summary>
-    /// 游戏可配置模组化资源初始化;
+    /// 欢迎界面
     /// </summary>
-    public class BasicResourceInitializer
+    public class WelcomeSceneController : MonoBehaviour
     {
-
-        public static Task Initialize(CancellationToken token)
+        private async void Start()
         {
-            throw new NotImplementedException();
+            await Stage.GoInitializationScene();
         }
     }
 }

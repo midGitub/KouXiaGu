@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Unity;
+using JiongXiaGu.Unity.Initializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,5 @@ namespace JiongXiaGu.Unity
 
     public class WorldSceneController : SceneController
     {
-
-
     }
 }

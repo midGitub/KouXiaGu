@@ -124,9 +124,7 @@ namespace JiongXiaGu.Unity
     public class SceneSingleton<T> : UnitySingleton<T>
          where T : MonoBehaviour
     {
-        [CustomUnityTag("场景控制器;")]
-        public const string SceneControllerTagName = "SceneController";
-        public override string ControllerTagName => SceneControllerTagName;
+        public override string ControllerTagName => UnityTagDefinition.SceneController.ToString();
     }
 
     /// <summary>
@@ -135,8 +133,6 @@ namespace JiongXiaGu.Unity
     public class GlobalSingleton<T> : UnitySingleton<T>
         where T : MonoBehaviour
     {
-        [CustomUnityTag("全局控制器")]
-        public const string GlobalControllerTagName = "GlobalController";
-        public override string ControllerTagName => GlobalControllerTagName;
+        public override string ControllerTagName => UnityTagDefinition.GlobalController.ToString();
     }
 }

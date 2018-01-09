@@ -17,9 +17,8 @@ namespace JiongXiaGu.Unity.KeyInputs
         {
         }
 
-        void IComponentInitializeHandle.Initialize(CancellationToken token)
+        void IComponentInitializeHandle.Initialize()
         {
-            token.ThrowIfCancellationRequested();
             KeyMapReader keyMapReader = new KeyMapReader();
             KeyInput.CurrentKeyMap = keyMapReader.Read();
             OnInitializeCompleted();

@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 负责地形组件更新;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectTerrainUpdater : MonoBehaviour, IScenePreparationHandle
+    public sealed class RectTerrainUpdater : MonoBehaviour
     {
         RectTerrainUpdater()
         {
@@ -46,26 +46,26 @@ namespace JiongXiaGu.Unity.RectTerrain
             rectTerrainUpdateHandles = GetComponentsInChildren<IRectTerrainUpdateHandle>();
         }
 
-        Task IScenePreparationHandle.Prepare(CancellationToken token)
-        {
-            StartUpdate();
-            return Task.Run(delegate ()
-            {
-                while (UpdateTimes < 1)
-                {
-                    token.ThrowIfCancellationRequested();
-                }
+        //Task IScenePreparationHandle.Prepare(CancellationToken token)
+        //{
+        //    StartUpdate();
+        //    return Task.Run(delegate ()
+        //    {
+        //        while (UpdateTimes < 1)
+        //        {
+        //            token.ThrowIfCancellationRequested();
+        //        }
 
-                foreach (var rectTerrainUpdateHandle in rectTerrainUpdateHandles)
-                {
-                    while (!rectTerrainUpdateHandle.IsCompleted)
-                    {
-                        token.ThrowIfCancellationRequested();
-                    }
-                }
-                Debug.Log("[地形更新器]更新完成;");
-            }, token);
-        }
+        //        foreach (var rectTerrainUpdateHandle in rectTerrainUpdateHandles)
+        //        {
+        //            while (!rectTerrainUpdateHandle.IsCompleted)
+        //            {
+        //                token.ThrowIfCancellationRequested();
+        //            }
+        //        }
+        //        Debug.Log("[地形更新器]更新完成;");
+        //    }, token);
+        //}
 
         /// <summary>
         /// 开始更新;

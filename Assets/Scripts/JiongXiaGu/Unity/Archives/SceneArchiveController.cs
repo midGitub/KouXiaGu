@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.Archives
     /// 挂载在场景中,控制存档输出输入;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class SceneArchiveController : MonoBehaviour, IQuitSceneHandle
+    public sealed class SceneArchiveController : MonoBehaviour
     {
         SceneArchiveController()
         {
@@ -76,14 +76,6 @@ namespace JiongXiaGu.Unity.Archives
         public void Cancele()
         {
             tokenSource?.Cancel();
-        }
-
-        /// <summary>
-        /// 等待存档保存完成才允许退出;
-        /// </summary>
-        Task IQuitSceneHandle.OnQuitScene()
-        {
-            return WriteArchiveTask;
         }
     }
 }

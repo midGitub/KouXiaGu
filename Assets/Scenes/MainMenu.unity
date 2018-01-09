@@ -285,7 +285,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2040915217}
+      - m_Target: {fileID: 0}
         m_MethodName: GoGameScene
         m_Mode: 1
         m_Arguments:
@@ -825,12 +825,11 @@ Transform:
 --- !u!114 &2040915217
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114992489166783190, guid: d60bb6207d9a85c478ba5c494acf72f4,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2040915215}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6384bc5005e2ddd4b9e17ac215ea394c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0df99d77e7b961a459d6d1c863ce5b0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

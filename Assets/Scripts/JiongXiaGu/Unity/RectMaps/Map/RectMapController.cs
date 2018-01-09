@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.RectMaps
             set { RectMap.AvailableMaps = value; }
         }
 
-        void IComponentInitializeHandle.Initialize(CancellationToken token)
+        void IComponentInitializeHandle.Initialize()
         {
             mapSearcher = new MapSearcher();
 

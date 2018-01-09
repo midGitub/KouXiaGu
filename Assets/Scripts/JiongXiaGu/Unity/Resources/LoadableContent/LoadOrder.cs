@@ -6,9 +6,16 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
+    /// 资源读取顺序;
+    /// </summary>
+    public interface ILoadOrder : IEnumerable<LoadableContent>
+    {
+    }
+
+    /// <summary>
     /// 资源读取顺序,不包括核心资源;
     /// </summary>
-    public class LoadOrder : IEnumerable<LoadableContent>
+    public class LoadOrder : ILoadOrder, IEnumerable<LoadableContent>
     {
         public LinkedList<LoadableContent> List { get; private set; }
         public int Count => List.Count;

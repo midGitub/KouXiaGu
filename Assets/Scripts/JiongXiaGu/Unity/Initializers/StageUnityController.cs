@@ -16,12 +16,15 @@ namespace JiongXiaGu.Unity.Initializers
         public static StageUnityController Instance => singleton.GetInstance();
 
         [SerializeField]
+        private UnityEngine.Object WelcomeScene;
+        [SerializeField]
         private UnityEngine.Object InitializationScene;
         [SerializeField]
         private UnityEngine.Object MainMenuScene;
         [SerializeField]
         private UnityEngine.Object GameScene;
 
+        public string WelcomeSceneName => WelcomeScene.name;
         public string InitializationSceneName => InitializationScene.name;
         public string MainMenuSceneName => MainMenuScene.name;
         public string GameSceneName => GameScene.name;

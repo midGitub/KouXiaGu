@@ -18,17 +18,17 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 将鼠标所指向地图节点的内容输出为文本;
     /// </summary>
     [DisallowMultipleComponent]
-    class MapContentDisplayer : MonoBehaviour, ISceneCompletedHandle
+    class MapContentDisplayer : MonoBehaviour
     {
 
         [SerializeField]
         Text textObject;
         IDictionary<RectCoord, MapNode> map;
 
-        void ISceneCompletedHandle.OnSceneCompleted()
-        {
-            map = RectMapSceneController.WorldMap.Map;
-        }
+        //void ISceneCompletedHandle.OnSceneCompleted()
+        //{
+        //    map = RectMapSceneController.WorldMap.Map;
+        //}
 
         void Update()
         {

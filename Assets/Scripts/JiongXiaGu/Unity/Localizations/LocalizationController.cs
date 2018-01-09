@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.Localizations
             SystemLanguage = Application.systemLanguage;
         }
 
-        void IComponentInitializeHandle.Initialize(CancellationToken token)
+        void IComponentInitializeHandle.Initialize()
         {
             packSearcher = new LanguagePackSearcher();
             packSerializer = new LanguagePackSerializer();
@@ -56,8 +56,6 @@ namespace JiongXiaGu.Unity.Localizations
             {
                 throw new FileNotFoundException("未找到合适的语言包文件");
             }
-
-            token.ThrowIfCancellationRequested();
 
             LocalizationConfig? config = ReadConfigFile();
             LanguagePack languagePack = null;
@@ -77,7 +75,6 @@ namespace JiongXiaGu.Unity.Localizations
                 {
                     UnityDebugHelper.LogWarning(InitializerName, "读取语言包时需要错误", ex);
                 }
-                token.ThrowIfCancellationRequested();
             }
 
             if (languagePack != null)
@@ -89,7 +86,6 @@ namespace JiongXiaGu.Unity.Localizations
                 throw new FileNotFoundException("未找到合适的语言包文件");
             }
 
-            token.ThrowIfCancellationRequested();
             Localization.NotifyLanguageChanged();
 
             UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());

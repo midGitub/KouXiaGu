@@ -12,35 +12,35 @@ namespace JiongXiaGu.Unity.RectMaps
     /// 地图场景控制器;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class RectMapSceneController : MonoBehaviour, ISceneDataInitializeHandle
+    public sealed class RectMapSceneController : MonoBehaviour
     {
         /// <summary>
         /// 当前场景使用的地图;
         /// </summary>
         public static WorldMap WorldMap { get; private set; }
 
-        Task ISceneDataInitializeHandle.Initialize(SceneArchivalData archivalData, CancellationToken token)
-        {
-            return Task.Run(delegate ()
-            {
-                MapSceneArchivalData mapSceneArchivalData = archivalData.Get<MapSceneArchivalData>();
+        //Task ISceneDataInitializeHandle.Initialize(SceneArchivalData archivalData, CancellationToken token)
+        //{
+        //    return Task.Run(delegate ()
+        //    {
+        //        MapSceneArchivalData mapSceneArchivalData = archivalData.Get<MapSceneArchivalData>();
 
-                if (mapSceneArchivalData == null)
-                    throw new ArgumentException(string.Format("{0}未定义地图数据;", nameof(archivalData)));
+        //        if (mapSceneArchivalData == null)
+        //            throw new ArgumentException(string.Format("{0}未定义地图数据;", nameof(archivalData)));
 
-                WorldMap = mapSceneArchivalData.CreateMap();
-                OnCompleted();
-            });
-        }
+        //        WorldMap = mapSceneArchivalData.CreateMap();
+        //        OnCompleted();
+        //    });
+        //}
 
-        Task ISceneDataInitializeHandle.Read(IArchiveFileInfo archive, SceneArchivalData archivalData, CancellationToken cancellationToken)
-        {
-            return Task.Run(delegate ()
-            {
-                MapSceneArchivalData sceneArchivalData = new MapSceneArchivalData(archive);
-                archivalData.Add(sceneArchivalData);
-            });
-        }
+        //Task ISceneDataInitializeHandle.Read(IArchiveFileInfo archive, SceneArchivalData archivalData, CancellationToken cancellationToken)
+        //{
+        //    return Task.Run(delegate ()
+        //    {
+        //        MapSceneArchivalData sceneArchivalData = new MapSceneArchivalData(archive);
+        //        archivalData.Add(sceneArchivalData);
+        //    });
+        //}
 
         private void OnDestroy()
         {
