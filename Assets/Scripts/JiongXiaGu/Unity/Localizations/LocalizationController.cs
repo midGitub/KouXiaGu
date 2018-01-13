@@ -64,7 +64,7 @@ namespace JiongXiaGu.Unity.Localizations
             {
                 try
                 {
-                    LoadableContent content = packInfo.ContentConstruct;
+                    ModificationContent content = packInfo.ContentConstruct;
                     using (var stream = content.GetInputStream(packInfo.LoadableEntry))
                     {
                         languagePack = packSerializer.Deserialize(stream);

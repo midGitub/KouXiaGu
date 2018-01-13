@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 程序初始化;
     /// </summary>
-    public static class ProgramInitializer
+    public static class Program
     {
         private static TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
         public static Task WorkTask => taskCompletionSource.Task;

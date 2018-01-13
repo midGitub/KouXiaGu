@@ -35,7 +35,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             landformResCreater = new LandformResCreater();
         }
 
-        void IResourceIntegrateHandle.Read(LoadableContent content, ITypeDictionary data, CancellationToken token)
+        void IResourceIntegrateHandle.Read(ModificationContent content, ITypeDictionary data, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -47,7 +47,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// 输出指定资源到目录;
         /// </summary>
         /// <exception cref="InvalidOperationException">未找到指定资源</exception>
-        void IResourceIntegrateHandle.Write(LoadableContent content, ITypeDictionary data, CancellationToken token)
+        void IResourceIntegrateHandle.Write(ModificationContent content, ITypeDictionary data, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 

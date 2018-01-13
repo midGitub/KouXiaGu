@@ -135,7 +135,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到数据,若数据已经存在则跳过;
         /// </summary>
-        private void InternalLoadData(IEnumerable<LoadableContent> contents, IList<LoadableData> datas, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        private void InternalLoadData(IEnumerable<ModificationContent> contents, IList<LoadableData> datas, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -154,7 +154,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取所有数据,并且返回;
         /// </summary>
-        private LoadableData InternalLoadData(LoadableContent content, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        private LoadableData InternalLoadData(ModificationContent content, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -186,7 +186,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到对应数据下标;
         /// </summary>
-        private int FindIndex(IList<LoadableData> datas, LoadableContent content)
+        private int FindIndex(IList<LoadableData> datas, ModificationContent content)
         {
             return datas.FindIndex(item => item.Content == content);
         }

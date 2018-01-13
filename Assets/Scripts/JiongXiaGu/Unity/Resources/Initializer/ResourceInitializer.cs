@@ -1,10 +1,13 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.UI;
+using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
+
     /// <summary>
     /// 游戏数据初始化器(在游戏开始前进行初始化,若初始化失败意味着游戏无法开始);
     /// </summary>
@@ -27,7 +30,7 @@ namespace JiongXiaGu.Unity.Resources
             loadHandler = new ResourceLoadHandler();
         }
 
-        public static Task Initialize()
+        public static Task Initialize(IProgress<ProgressInfo> progress, CancellationToken token)
         {
             throw new NotImplementedException();
         }

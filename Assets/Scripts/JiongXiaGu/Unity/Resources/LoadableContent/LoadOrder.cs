@@ -6,26 +6,26 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 资源读取顺序;
+    /// 资源读取顺序(包括核心资源);
     /// </summary>
-    public interface ILoadOrder : IEnumerable<LoadableContent>
+    public interface ILoadOrder : IEnumerable<ModificationContent>
     {
     }
 
     /// <summary>
     /// 资源读取顺序,不包括核心资源;
     /// </summary>
-    public class LoadOrder : ILoadOrder, IEnumerable<LoadableContent>
+    public class LoadOrder : ILoadOrder, IEnumerable<ModificationContent>
     {
-        public LinkedList<LoadableContent> List { get; private set; }
+        public LinkedList<ModificationContent> List { get; private set; }
         public int Count => List.Count;
 
-        public LoadOrder(IReadOnlyCollection<LoadableContent> contents, LoadOrderDefinition orderDefinition) : base()
+        public LoadOrder(IReadOnlyCollection<ModificationContent> contents, LoadOrderDefinition orderDefinition) : base()
         {
-            List = new LinkedList<LoadableContent>();
+            List = new LinkedList<ModificationContent>();
             foreach (var definition in orderDefinition)
             {
-                LoadableContent content = contents.FirstOrDefault(item => item.Description.ID == definition);
+                ModificationContent content = contents.FirstOrDefault(item => item.Description.ID == definition);
                 if (content != null)
                 {
                     List.AddLast(content);
@@ -39,14 +39,14 @@ namespace JiongXiaGu.Unity.Resources
             return definition;
         }
 
-        public IEnumerator<LoadableContent> GetEnumerator()
+        public IEnumerator<ModificationContent> GetEnumerator()
         {
-            return ((IEnumerable<LoadableContent>)List).GetEnumerator();
+            return ((IEnumerable<ModificationContent>)List).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<LoadableContent>)List).GetEnumerator();
+            return ((IEnumerable<ModificationContent>)List).GetEnumerator();
         }
     }
 }

@@ -23,9 +23,14 @@ namespace JiongXiaGu.Unity.Initializers
 
         public bool AutoGoMainMenuScene { get; private set; } = false;
 
+        private async void Start()
+        {
+            await Modification.Initialize(progressBar.Progress).BasicInitializationTask;
+        }
+
         Task ISceneController.QuitScene()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         private void Test()

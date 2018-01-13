@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     /// 表示可读写游戏资源;
     /// 关于 AssetBundle 读取方式,推荐在加载游戏时异步加载所有 AssetBundle,在游戏运行中,若在游戏允许中还需要加载 AssetBundle,则使用 GetOrLoad 进行同步加载;
     /// </summary>
-    public class LoadableContent : BlockingContent, IDisposable
+    public class ModificationContent : BlockingContent, IDisposable
     {
         /// <summary>
         /// 仅提供工厂类使用!用于指定最新描述使用;
@@ -24,19 +24,19 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 在创建时使用的描述;
         /// </summary>
-        public LoadableContentDescription OriginalDescription { get; private set; }
-        private LoadableContentDescription? newDescription;
+        public ModificationDescription OriginalDescription { get; private set; }
+        private ModificationDescription? newDescription;
 
         /// <summary>
         /// 最新的描述;
         /// </summary>
-        public LoadableContentDescription Description
+        public ModificationDescription Description
         {
             get { return newDescription.HasValue ? newDescription.Value : OriginalDescription; }
             internal set { newDescription = value; }
         }
 
-        public LoadableContent(Content content, LoadableContentDescription description) : base(content)
+        public ModificationContent(Content content, ModificationDescription description) : base(content)
         {
             OriginalDescription = description;
         }
@@ -81,7 +81,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 卸载所有 AssetBundles;(仅Unity线程调用)
         /// </summary>
-        public void UnloadAssetBundlesAll()
+        public void UnloadAssetBundlesAll(bool unloadAllLoadedObjects)
         {
             ThrowIfObjectDisposed();
             UnityThread.ThrowIfNotUnityThread();
@@ -90,7 +90,7 @@ namespace JiongXiaGu.Unity.Resources
             {
                 foreach (var assetBundle in assetBundles.Value)
                 {
-                    assetBundle.AssetBundle.Unload(false);
+                    assetBundle.AssetBundle.Unload(unloadAllLoadedObjects);
                     assetBundle.Stream.Dispose();
                 }
                 assetBundles.Value.Clear();
@@ -98,7 +98,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private IEnumerable<AssetBundleDescription> GetAssetBundleDescription(LoadableContentDescription description, AssetBundleLoadOption options)
+        private IEnumerable<AssetBundleDescription> GetAssetBundleDescription(ModificationDescription description, AssetBundleLoadOption options)
         {
             if ((options & AssetBundleLoadOption.Main) > 0 && description.MainAssetBundles != null)
             {

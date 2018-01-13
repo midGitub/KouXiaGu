@@ -12,16 +12,16 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class SharedContent
     {
-        private List<LoadableContent> contents;
+        private List<ModificationContent> contents;
         private ReaderWriterLockSlim readerWriterLock;
 
         public SharedContent()
         {
-            contents = new List<LoadableContent>();
+            contents = new List<ModificationContent>();
             readerWriterLock = new ReaderWriterLockSlim();
         }
 
-        public void Add(LoadableContent content)
+        public void Add(ModificationContent content)
         {
             using (readerWriterLock.UpgradeableReadLock())
             {
@@ -35,7 +35,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public bool Remove(LoadableContent content)
+        public bool Remove(ModificationContent content)
         {
             using (readerWriterLock.UpgradeableReadLock())
             {
@@ -52,7 +52,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public LoadableContent Find(string contentID)
+        public ModificationContent Find(string contentID)
         {
             using (readerWriterLock.ReadLock())
             {
@@ -68,7 +68,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到读取流;
         /// </summary>
-        public Stream GetInputStream(LoadableContent main, AssetPath path)
+        public Stream GetInputStream(ModificationContent main, AssetPath path)
         {
             string contentID;
             string relativePath;
@@ -87,7 +87,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到对应的 AssetBundle,若还未读取则返回异常;
         /// </summary>
-        public AssetBundle GetAssetBundle(LoadableContent main, AssetPath path)
+        public AssetBundle GetAssetBundle(ModificationContent main, AssetPath path)
         {
             string contentID;
             string assetBundleName;
@@ -106,7 +106,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到指定的 AssetBundle,若未找到则返回异常;
         /// </summary>
-        public AssetBundle GetOrLoadAssetBundle(LoadableContent main, AssetPath path)
+        public AssetBundle GetOrLoadAssetBundle(ModificationContent main, AssetPath path)
         {
             string contentID;
             string assetBundleName;

@@ -8,13 +8,13 @@ namespace JiongXiaGu.Unity.UI
 {
 
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(Scrollbar))]
     public class ProgressBar : MonoBehaviour
     {
         private ProgressBar()
         {
         }
 
+        [SerializeField]
         private Scrollbar scrollbar;
         [SerializeField]
         private Text messageControl;
@@ -22,13 +22,18 @@ namespace JiongXiaGu.Unity.UI
 
         private void Awake()
         {
-            scrollbar = GetComponent<Scrollbar>();
+            if (scrollbar == null)
+                Debug.LogWarning("丢失 scrollbar!");
+
             Progress = new Progress<ProgressInfo>(OnReport);
         }
 
         private void OnReport(ProgressInfo progress)
         {
-            scrollbar.size = progress.Progress;
+            if (scrollbar != null)
+            {
+                scrollbar.size = progress.Progress;
+            }
             if (messageControl != null && progress.Message != null)
             {
                 messageControl.text = progress.Message;

@@ -18,7 +18,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 资源;
         /// </summary>
-        public LoadableContent ContentConstruct { get; private set; }
+        public ModificationContent ContentConstruct { get; private set; }
 
         /// <summary>
         /// 资源入口;
@@ -28,7 +28,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 指定语言包文件信息;
         /// </summary>
-        public LanguagePackInfo(LanguagePackDescription description, LoadableContent contentConstruct, string loadableEntry)
+        public LanguagePackInfo(LanguagePackDescription description, ModificationContent contentConstruct, string loadableEntry)
         {
             Description = description;
             ContentConstruct = contentConstruct;

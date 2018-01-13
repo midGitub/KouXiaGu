@@ -9,15 +9,15 @@ namespace JiongXiaGu.Unity.Resources
     [TestFixture]
     public class LoadableContentTest
     {
-        private readonly LoadableContentFactory factory = new LoadableContentFactory();
+        private readonly ModificationFactory factory = new ModificationFactory();
 
-        private readonly XmlSerializer<LoadableContentDescription> xmlSerializer = new XmlSerializer<LoadableContentDescription>();
+        private readonly XmlSerializer<ModificationDescription> xmlSerializer = new XmlSerializer<ModificationDescription>();
 
-        private readonly LoadableContentDescription description0 = new LoadableContentDescription()
+        private readonly ModificationDescription description0 = new ModificationDescription()
         {
             ID = "000",
             Name = "Test",
-            Tags = LoadableContentDescription.JoinTags("map", "terrain"),
+            Tags = ModificationDescription.JoinTags("map", "terrain"),
             Author = "One",
             Version = "1.22",
             Message = "...",
@@ -30,7 +30,7 @@ namespace JiongXiaGu.Unity.Resources
         [Test]
         public void TestDirectory()
         {
-            LoadableContentDescription descr;
+            ModificationDescription descr;
             string directory = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Directory0");
             TryDeleteDirectory(directory);
 
@@ -62,7 +62,7 @@ namespace JiongXiaGu.Unity.Resources
         [Test]
         public void TestZip()
         {
-            LoadableContentDescription descr;
+            ModificationDescription descr;
             string file = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Zip0.zip");
             TryDeleteFile(file);
 
@@ -94,21 +94,21 @@ namespace JiongXiaGu.Unity.Resources
 
 
         private readonly string description1Path = "d1.xml";
-        private readonly LoadableContentDescription description1 = new LoadableContentDescription()
+        private readonly ModificationDescription description1 = new ModificationDescription()
         {
             ID = "001",
-            Tags = LoadableContentDescription.JoinTags("map", "terrain"),
+            Tags = ModificationDescription.JoinTags("map", "terrain"),
         };
 
         private readonly string description2Path = "d2.xml";
-        private readonly LoadableContentDescription description2 = new LoadableContentDescription()
+        private readonly ModificationDescription description2 = new ModificationDescription()
         {
             ID = "002",
             Name = "Test",
         };
 
         private readonly string description3Path = @"D3\d3.xml";
-        private readonly LoadableContentDescription description3 = new LoadableContentDescription()
+        private readonly ModificationDescription description3 = new ModificationDescription()
         {
             ID = "003",
         };
@@ -147,7 +147,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private void AreEqual(LoadableContentDescription v1, LoadableContentDescription v2)
+        private void AreEqual(ModificationDescription v1, ModificationDescription v2)
         {
             Assert.AreEqual(v1.ID, v2.ID);
             Assert.AreEqual(v1.Name, v2.Name);

@@ -27,7 +27,7 @@ namespace JiongXiaGu.Unity.RectMaps
             get { return "Map_*.zip"; }
         }
 
-        protected override MapFileInfo Deserialize(LoadableContent content, string entry)
+        protected override MapFileInfo Deserialize(ModificationContent content, string entry)
         {
             using (var stream = content.GetInputStream(entry))
             {

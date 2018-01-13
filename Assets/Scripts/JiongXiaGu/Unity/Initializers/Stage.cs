@@ -51,12 +51,13 @@ namespace JiongXiaGu.Unity.Initializers
         /// </summary>
         internal static Task OnProgramStart()
         {
-            return ProgramInitializer.Initialize();
+            return Program.Initialize();
         }
 
         /// <summary>
         /// 转到游戏初始化场景;
         /// </summary>
+        [Obsolete]
         public static async Task GoInitializationScene()
         {
             UnityThread.ThrowIfNotUnityThread();
@@ -140,24 +141,18 @@ namespace JiongXiaGu.Unity.Initializers
             }
         }
 
-
         private static IDisposable StartRun()
         {
-            ThrowIfIsRunning();
+            if (IsRunning)
+            {
+                throw new InvalidOperationException();
+            }
             IsRunning = true;
 
             return Helper.CreateDisposer(delegate ()
             {
                 IsRunning = false;
             });
-        }
-
-        private static void ThrowIfIsRunning()
-        {
-            if (IsRunning)
-            {
-                throw new InvalidOperationException();
-            }
         }
 
         private static Task LoadSceneAsync(string scene, LoadSceneMode mode)

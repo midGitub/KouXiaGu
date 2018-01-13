@@ -27,7 +27,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 添加描述信息;
         /// </summary>
-        public void Add(LoadableContent content, DescriptionCollection<LandformDescription> descriptions)
+        public void Add(ModificationContent content, DescriptionCollection<LandformDescription> descriptions)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -77,7 +77,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             }
         }
 
-        public static async Task<LandformRes> CreateAsync(LoadableContent content, LandformDescription description, CancellationToken token)
+        public static async Task<LandformRes> CreateAsync(ModificationContent content, LandformDescription description, CancellationToken token)
         {
             var tasks = new Task<Texture2D>[]
             {
@@ -99,17 +99,17 @@ namespace JiongXiaGu.Unity.RectTerrain
             return info;
         }
 
-        private static Task<Texture2D> GetTexture2DAsync(LoadableContent loadableContent, AssetInfo assetInfo, CancellationToken token)
+        private static Task<Texture2D> GetTexture2DAsync(ModificationContent loadableContent, AssetInfo assetInfo, CancellationToken token)
         {
             return AssetDictionary.Default.LoadAsync(Texture2DLoader.Default, loadableContent, assetInfo, token);
         }
 
         private struct DescriptionInfo
         {
-            public LoadableContent Content { get; private set; }
+            public ModificationContent Content { get; private set; }
             public LandformDescription Description { get; private set; }
 
-            public DescriptionInfo(LoadableContent content, LandformDescription description)
+            public DescriptionInfo(ModificationContent content, LandformDescription description)
             {
                 Content = content;
                 Description = description;

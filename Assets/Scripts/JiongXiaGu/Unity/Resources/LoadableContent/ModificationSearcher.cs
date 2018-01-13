@@ -8,20 +8,20 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 负责对可读的资源进行搜索;
     /// </summary>
-    public class LoadableContentSearcher
+    public class ModificationSearcher
     {
         /// <summary>
         /// 忽略符,置于名称前缀,用于忽略某文件/文件夹;
         /// </summary>
         private const string IgnoreSymbol = "#ignore_";
-        public LoadableContentFactory Factory { get; private set; }
+        public ModificationFactory Factory { get; private set; }
 
-        public LoadableContentSearcher()
+        public ModificationSearcher()
         {
-            Factory = new LoadableContentFactory();
+            Factory = new ModificationFactory();
         }
 
-        public LoadableContentSearcher(LoadableContentFactory factory)
+        public ModificationSearcher(ModificationFactory factory)
         {
             Factory = factory;
         }
@@ -32,9 +32,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="modsDirectory">目标目录</param>
         /// <param name="type">指定找到的模组类型</param>
         /// <returns></returns>
-        public List<LoadableContent> Find(string modsDirectory)
+        public List<ModificationContent> Find(string modsDirectory)
         {
-            List<LoadableContent> list = new List<LoadableContent>();
+            List<ModificationContent> list = new List<ModificationContent>();
 
             list.AddRange(EnumerateDirectory(modsDirectory));
             list.AddRange(EnumerateZipFile(modsDirectory));
@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举目录下所有 目录 类型的资源;
         /// </summary>
-        public IEnumerable<LoadableContent> EnumerateDirectory(string modsDirectory)
+        public IEnumerable<ModificationContent> EnumerateDirectory(string modsDirectory)
         {
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory, "*", SearchOption.TopDirectoryOnly))
             {
@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.Resources
                     continue;
                 }
 
-                LoadableContent info = null;
+                ModificationContent info = null;
 
                 try
                 {
@@ -73,7 +73,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举目录下所有 压缩包 类型的资源;
         /// </summary>
-        public IEnumerable<LoadableContent> EnumerateZipFile(string modsDirectory)
+        public IEnumerable<ModificationContent> EnumerateZipFile(string modsDirectory)
         {
             foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zmod", SearchOption.AllDirectories))
             {
@@ -83,7 +83,7 @@ namespace JiongXiaGu.Unity.Resources
                     continue;
                 }
 
-                LoadableContent info = null;
+                ModificationContent info = null;
 
                 try
                 {

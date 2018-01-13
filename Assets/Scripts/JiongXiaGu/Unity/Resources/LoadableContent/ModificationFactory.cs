@@ -10,14 +10,12 @@ namespace JiongXiaGu.Unity.Resources
 {
 
 
-    public class LoadableContentFactory
+    public class ModificationFactory
     {
-        private const bool DefaultIsCoreContent = false;
-
         /// <summary>
         /// 创建可读内容,若目录已经存在则返回异常;
         /// </summary>
-        public LoadableContent CreateNew(string directory, LoadableContentDescription description)
+        public ModificationContent CreateNew(string directory, ModificationDescription description)
         {
             Content content = new DirectoryContent(directory);
             return CreateNew(content, description);
@@ -26,7 +24,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 创建可读内容,若文件已经存在则返回异常;
         /// </summary>
-        public LoadableContent CreateNewZip(string file, LoadableContentDescription description)
+        public ModificationContent CreateNewZip(string file, ModificationDescription description)
         {
             Stream stream = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite);
             ZipFile zipFile = ZipFile.Create(stream);
@@ -37,10 +35,10 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 创建一个新的可读内容类型;
         /// </summary>
-        public LoadableContent CreateNew(Content content, LoadableContentDescription description)
+        public ModificationContent CreateNew(Content content, ModificationDescription description)
         {
             WriteDescription(content, description);
-            LoadableContent loadableDirectory = new LoadableContent(content, description);
+            ModificationContent loadableDirectory = new ModificationContent(content, description);
             return loadableDirectory;
         }
 
@@ -49,7 +47,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取内容,若目录不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
-        public LoadableContent Read(string directory)
+        public ModificationContent Read(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
@@ -61,7 +59,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取内容,若文件不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
-        public LoadableContent ReadZip(string file)
+        public ModificationContent ReadZip(string file)
         {
             Content content = new ZipContent(file);
             return Read(content);
@@ -70,24 +68,39 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 创建为可读内容,若未能创建则返回异常;
         /// </summary>
-        public LoadableContent Read(Content content)
+        public ModificationContent Read(Content content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
-            LoadableContentDescription description = ReadDescription(content);
-            LoadableContent loadableContent = new LoadableContent(content, description);
+            ModificationDescription description = ReadDescription(content);
+            ModificationContent loadableContent = new ModificationContent(content, description);
             return loadableContent;
         }
+
+
+        /// <summary>
+        /// 获取到模组信息;
+        /// </summary>
+        public ModificationInfo ReadInfo(Content content)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            var description = ReadDescription(content);
+            var info = new ModificationInfo(content, description);
+            return info;
+        }
+
 
         /// <summary>
         /// 从内容读取到描述,并且更新实例;
         /// </summary>
-        public void UpdateDescription(LoadableContent loadableContent)
+        public void UpdateDescription(ModificationContent loadableContent)
         {
             lock (loadableContent.AsyncLock)
             {
-                LoadableContentDescription description = ReadDescription(loadableContent);
+                ModificationDescription description = ReadDescription(loadableContent);
                 loadableContent.Description = description;
             }
         }
@@ -95,7 +108,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 写入资源描述;
         /// </summary>
-        public void UpdateDescription(LoadableContent loadableContent, LoadableContentDescription description)
+        public void UpdateDescription(ModificationContent loadableContent, ModificationDescription description)
         {
             lock (loadableContent.AsyncLock)
             {
@@ -106,8 +119,8 @@ namespace JiongXiaGu.Unity.Resources
 
 
 
-        private const string DescriptionFileName = "ContentDescription";
-        private readonly XmlSerializer<LoadableContentDescription> descriptionSerializer = new XmlSerializer<LoadableContentDescription>();
+        private const string DescriptionFileName = "ModDescription";
+        private readonly XmlSerializer<ModificationDescription> descriptionSerializer = new XmlSerializer<ModificationDescription>();
         private string descriptionPath;
 
         private string DescriptionPath
@@ -118,7 +131,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 输出新的描述到;
         /// </summary>
-        private void WriteDescription(Content content, LoadableContentDescription description)
+        private void WriteDescription(Content content, ModificationDescription description)
         {
             using (content.BeginUpdate())
             {
@@ -132,7 +145,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到描述;
         /// </summary>
-        private LoadableContentDescription ReadDescription(Content content)
+        private ModificationDescription ReadDescription(Content content)
         {
             using (var stream = content.GetInputStream(DescriptionPath))
             {

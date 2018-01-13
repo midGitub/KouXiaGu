@@ -8,10 +8,10 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 通用的描述;
+    /// 模组描述信息;
     /// </summary>
-    [XmlRoot("LoadableContentDescription")]
-    public struct LoadableContentDescription : IEquatable<LoadableContentDescription>
+    [XmlRoot("Modification")]
+    public struct ModificationDescription : IEquatable<ModificationDescription>
     {
         /// <summary>
         /// 唯一标识,只允许数字,字母,下划线组成;
@@ -59,7 +59,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public AssetBundleDescription[] SecondaryAssetBundles { get; set; }
 
-        internal LoadableContentDescription(string id, string name) : this()
+        internal ModificationDescription(string id, string name) : this()
         {
             ID = id;
             Name = name;
@@ -84,10 +84,10 @@ namespace JiongXiaGu.Unity.Resources
 
         public override bool Equals(object obj)
         {
-            return obj is LoadableContentDescription && Equals((LoadableContentDescription)obj);
+            return obj is ModificationDescription && Equals((ModificationDescription)obj);
         }
 
-        public bool Equals(LoadableContentDescription other)
+        public bool Equals(ModificationDescription other)
         {
             return ID == other.ID &&
                    Name == other.Name &&
@@ -109,12 +109,12 @@ namespace JiongXiaGu.Unity.Resources
             return hashCode;
         }
 
-        public static bool operator ==(LoadableContentDescription description1, LoadableContentDescription description2)
+        public static bool operator ==(ModificationDescription description1, ModificationDescription description2)
         {
             return description1.Equals(description2);
         }
 
-        public static bool operator !=(LoadableContentDescription description1, LoadableContentDescription description2)
+        public static bool operator !=(ModificationDescription description1, ModificationDescription description2)
         {
             return !(description1 == description2);
         }

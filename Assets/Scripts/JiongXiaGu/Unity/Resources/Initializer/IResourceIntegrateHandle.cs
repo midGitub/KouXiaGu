@@ -12,13 +12,13 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到对应内容;
         /// </summary>
-        void Read(LoadableContent content, ITypeDictionary data, CancellationToken token);
+        void Read(ModificationContent content, ITypeDictionary data, CancellationToken token);
 
         /// <summary>
         /// 输出对应内容;
         /// </summary>
         /// <exception cref="InvalidOperationException">未找到指定资源</exception>
-        void Write(LoadableContent content, ITypeDictionary data, CancellationToken token);
+        void Write(ModificationContent content, ITypeDictionary data, CancellationToken token);
 
         /// <summary>
         /// 设置新的数据数据;

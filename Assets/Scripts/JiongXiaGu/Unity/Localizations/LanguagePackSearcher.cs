@@ -30,7 +30,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;
         /// </summary>
-        public List<LanguagePackInfo> FindPacks(IEnumerable<LoadableContent> loadableContents)
+        public List<LanguagePackInfo> FindPacks(IEnumerable<ModificationContent> loadableContents)
         {
             List<LanguagePackInfo> languagePacks = new List<LanguagePackInfo>();
 
@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;
         /// </summary>
-        public IEnumerable<LanguagePackInfo> EnumeratePack(LoadableContent loadableContentInfo)
+        public IEnumerable<LanguagePackInfo> EnumeratePack(ModificationContent loadableContentInfo)
         {
             return EnumeratePack(loadableContentInfo, SearchOption.TopDirectoryOnly);
         }
@@ -54,7 +54,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        public IEnumerable<LanguagePackInfo> EnumeratePack(LoadableContent contentConstruct, SearchOption searchOption)
+        public IEnumerable<LanguagePackInfo> EnumeratePack(ModificationContent contentConstruct, SearchOption searchOption)
         {
             foreach (string entry in contentConstruct.EnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
             {

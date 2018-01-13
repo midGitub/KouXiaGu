@@ -47,6 +47,8 @@ namespace JiongXiaGu.Unity.Initializers
         private Task InternalInitialize(ILoadOrder order, IProgress<ProgressInfo> progress, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
+            if (initializeHandlers.Length == 0)
+                return Task.CompletedTask;
 
             return Task.Run(delegate ()
             {

@@ -22,12 +22,12 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 反序列化内容;
         /// </summary>
-        protected abstract T Deserialize(LoadableContent content, string entry);
+        protected abstract T Deserialize(ModificationContent content, string entry);
 
         /// <summary>
         /// 枚举所有符合要求的文件;
         /// </summary>
-        public List<T> Find(IEnumerable<LoadableContent> loadableContents)
+        public List<T> Find(IEnumerable<ModificationContent> loadableContents)
         {
             List<T> items = new List<T>();
 
@@ -43,7 +43,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        internal IEnumerable<T> Enumerate(LoadableContent loadableContent, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        internal IEnumerable<T> Enumerate(ModificationContent loadableContent, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             foreach (string entry in loadableContent.EnumerateFiles(DirectoryName, SearchPattern, searchOption))
             {

@@ -16,17 +16,17 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 核心资源;
         /// </summary>
-        public static LoadableContent Core { get; private set; }
+        public static ModificationContent Core { get; private set; }
 
         /// <summary>
         /// 所有资源;
         /// </summary>
-        private static readonly List<LoadableContent> all = new List<LoadableContent>();
+        private static readonly List<ModificationContent> all = new List<ModificationContent>();
 
         /// <summary>
         /// 所有资源;
         /// </summary>
-        public static IReadOnlyCollection<LoadableContent> All => all;
+        public static IReadOnlyCollection<ModificationContent> All => all;
 
         /// <summary>
         /// 获取到所有可读取的资源;
@@ -35,7 +35,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             await Task.Run(delegate ()
             {
-                LoadableContentSearcher contentSearcher = new LoadableContentSearcher();
+                ModificationSearcher contentSearcher = new ModificationSearcher();
                 Core = GetCore(contentSearcher.Factory);
                 all.Add(Core);
 
@@ -52,7 +52,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到核心资源;
         /// </summary>
-        private static LoadableContent GetCore(LoadableContentFactory factory)
+        private static ModificationContent GetCore(ModificationFactory factory)
         {
             string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
             var core = factory.Read(directory);

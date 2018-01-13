@@ -10,10 +10,10 @@ namespace JiongXiaGu.Unity.Resources
 
     public struct LoadableData
     {
-        public LoadableContent Content { get; private set; }
+        public ModificationContent Content { get; private set; }
         public ITypeDictionary Data { get; private set; }
 
-        public LoadableData(LoadableContent content, ITypeDictionary data)
+        public LoadableData(ModificationContent content, ITypeDictionary data)
         {
             Content = content;
             Data = data;
