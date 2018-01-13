@@ -37,6 +37,7 @@ namespace JiongXiaGu.Unity.Initializers
             try
             {
                 IsInitialized = true;
+                await Task.Run(() => Modification.SearcheAll());
                 await LoadableResource.SearcheAll();
                 await ComponentInitializer.Initialize();
                 taskCompletionSource.SetResult(null);

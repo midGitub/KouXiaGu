@@ -69,17 +69,17 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 资源读取顺序,由 阶段控制器控制;
         /// </summary>
-        public static LoadOrder Order { get; private set; }
+        public static ModificationOrder Order { get; private set; }
 
         /// <summary>
         /// 获取到资源读取顺序;
         /// </summary>
-        internal static LoadOrder GetOrLoadOrderConfig()
+        internal static ModificationOrder GetOrLoadOrderConfig()
         {
             throw new NotImplementedException();
         }
 
-        internal static void SetLoadOrder(LoadOrder order)
+        internal static void SetLoadOrder(ModificationOrder order)
         {
 
         }

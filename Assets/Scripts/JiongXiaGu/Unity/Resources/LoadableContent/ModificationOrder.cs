@@ -10,17 +10,18 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public interface ILoadOrder : IEnumerable<ModificationContent>
     {
+        int Count { get; }
     }
 
     /// <summary>
     /// 资源读取顺序,不包括核心资源;
     /// </summary>
-    public class LoadOrder : ILoadOrder, IEnumerable<ModificationContent>
+    public class ModificationOrder : ILoadOrder, IEnumerable<ModificationContent>
     {
         public LinkedList<ModificationContent> List { get; private set; }
         public int Count => List.Count;
 
-        public LoadOrder(IReadOnlyCollection<ModificationContent> contents, LoadOrderDefinition orderDefinition) : base()
+        public ModificationOrder(IReadOnlyCollection<ModificationContent> contents, LoadOrderDefinition orderDefinition) : base()
         {
             List = new LinkedList<ModificationContent>();
             foreach (var definition in orderDefinition)

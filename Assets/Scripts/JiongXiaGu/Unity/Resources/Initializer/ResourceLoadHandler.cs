@@ -14,7 +14,7 @@ namespace JiongXiaGu.Unity.Resources
     {
         private Resources.LoadableData? coreData;
         private List<Resources.LoadableData> otherData;
-        public LoadOrder Order { get; private set; }
+        public ModificationOrder Order { get; private set; }
 
         private Task worker;
         private CancellationTokenSource workerCancellationTokenSource;
@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 异步读取所有数据并且应用到;
         /// </summary>
-        public Task LoadAsync(LoadOrder order, IResourceIntegrateHandle[] integrateHandlers)
+        public Task LoadAsync(ModificationOrder order, IResourceIntegrateHandle[] integrateHandlers)
         {
             if (order != null)
                 ThrowIfCollectionhasNull(order);
@@ -64,7 +64,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取所有数据;
         /// </summary>
-        private void LoadInternal(LoadOrder order, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        private void LoadInternal(ModificationOrder order, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -105,7 +105,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 整合数据;
         /// </summary>
-        private void IntegrateData(LoadOrder order, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
+        private void IntegrateData(ModificationOrder order, IResourceIntegrateHandle[] integrateHandlers, CancellationToken token)
         {
             int i = 1;
             LoadableData[] datas = new LoadableData[order.Count + 1];

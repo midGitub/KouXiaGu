@@ -25,7 +25,6 @@ namespace JiongXiaGu.Unity.Resources
         public static IReadOnlyCollection<ModificationContent> All { get; private set; }
         public static SharedContent SharedContent { get; private set; }
 
-
         public static bool IsInitializing { get; private set; } = false;
         public static bool IsComplete { get; private set; } = false;
 
@@ -136,6 +135,11 @@ namespace JiongXiaGu.Unity.Resources
                 await ResourceInitializer.Initialize(resourceProgress, token);
 
                 IsComplete = true;
+            }
+            catch (Exception ex)
+            {
+                basicInitializationTask.SetException(ex);
+                throw ex;
             }
             finally
             {

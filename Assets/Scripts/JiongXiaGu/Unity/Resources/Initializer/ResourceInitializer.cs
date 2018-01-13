@@ -22,7 +22,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 当前资源读取顺序;
         /// </summary>
-        public LoadOrder Order => loadHandler.Order;
+        public ModificationOrder Order => loadHandler.Order;
 
         private void Awake()
         {
@@ -48,7 +48,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 按照指定顺序读取资源,若已经读取完毕则或正在读取重新读取;
         /// </summary>
-        public Task Load(LoadOrder order)
+        public Task Load(ModificationOrder order)
         {
             return loadHandler.LoadAsync(order, integrateHandlers);
         }
@@ -64,7 +64,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取其它资源;
         /// </summary>
-        public static Task LoadOther(LoadOrder order)
+        public static Task LoadOther(ModificationOrder order)
         {
             throw new NotImplementedException();
         }
@@ -73,13 +73,13 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到定义的资源读取顺序,若不存在则返回null;
         /// </summary>
-        private static LoadOrder ReadLoadOrderFromFile()
+        private static ModificationOrder ReadLoadOrderFromFile()
         {
             LoadOrderDefinitionSerializer definitionSerializer = new LoadOrderDefinitionSerializer();
             try
             {
                 var definitions = definitionSerializer.Deserialize(Resource.ConfigContent);
-                var order = new LoadOrder(LoadableResource.All, definitions);
+                var order = new ModificationOrder(LoadableResource.All, definitions);
                 return order;
             }
             catch (FileNotFoundException)

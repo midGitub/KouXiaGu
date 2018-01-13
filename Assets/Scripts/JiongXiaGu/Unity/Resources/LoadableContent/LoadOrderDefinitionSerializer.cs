@@ -5,7 +5,7 @@
         [PathDefinition(PathDefinitionType.Config, "资源读取顺序定义")]
         public override string RelativePath
         {
-            get { return "ContentLoadOrder"; }
+            get { return "ModificationOrder"; }
         }
 
         private readonly XmlSerializer<LoadOrderDefinition> xmlSerializer = new XmlSerializer<LoadOrderDefinition>();

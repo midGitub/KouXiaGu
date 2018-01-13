@@ -80,20 +80,6 @@ namespace JiongXiaGu.Unity.Resources
 
 
         /// <summary>
-        /// 获取到模组信息;
-        /// </summary>
-        public ModificationInfo ReadInfo(Content content)
-        {
-            if (content == null)
-                throw new ArgumentNullException(nameof(content));
-
-            var description = ReadDescription(content);
-            var info = new ModificationInfo(content, description);
-            return info;
-        }
-
-
-        /// <summary>
         /// 从内容读取到描述,并且更新实例;
         /// </summary>
         public void UpdateDescription(ModificationContent loadableContent)
