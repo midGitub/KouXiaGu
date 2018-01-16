@@ -21,6 +21,12 @@ namespace JiongXiaGu.Unity.Resources
             readerWriterLock = new ReaderWriterLockSlim();
         }
 
+        public SharedContent(IEnumerable<ModificationContent> contents)
+        {
+            contents = new List<ModificationContent>(contents);
+            readerWriterLock = new ReaderWriterLockSlim();
+        }
+
         public void Add(ModificationContent content)
         {
             using (readerWriterLock.UpgradeableReadLock())

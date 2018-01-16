@@ -24,6 +24,10 @@ namespace JiongXiaGu.Unity.Resources
         /// 存放配置文件的文件夹;
         /// </summary>
         public static string ConfigDirectory => configDirectory.Value;
+
+        /// <summary>
+        /// 存放配置文件的文件夹;
+        /// </summary>
         public static BlockingContent ConfigContent => configContent.Value;
 
         private static readonly Lazy<string> configDirectory = new Lazy<string>(delegate ()
@@ -49,6 +53,10 @@ namespace JiongXiaGu.Unity.Resources
         /// 存放用户配置的文件夹;
         /// </summary>
         public static string UserConfigDirectory => userConfigDirectory.Value;
+
+        /// <summary>
+        /// 存放用户配置的文件夹;
+        /// </summary>
         public static BlockingContent UserConfigContent => userConfigContent.Value;
 
         private static readonly Lazy<string> userConfigDirectory = new Lazy<string>(delegate ()

@@ -1,28 +1,44 @@
 ﻿using JiongXiaGu.Unity.Initializers;
-using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Linq;
+using JiongXiaGu.Collections;
 using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 模组初始化;
+    /// 模组;(仅Unity线程操作)
     /// </summary>
     public static class Modification
     {
         /// <summary>
+        /// 核心资源;
+        /// </summary>
+        public static ModificationContent Core { get; private set; }
+
+        /// <summary>
+        /// 所有模组信息,不包括核心资源;
+        /// </summary>
+        public static List<ModificationInfo> All { get; private set; }
+
+        /// <summary>
+        /// 需要读取的模组资源,包括核心资源;
+        /// </summary>
+        internal static List<ModificationContent> Mods { get; private set; }
+
+        /// <summary>
         /// 默认的读取顺序,若为Null,则从配置获取;
         /// </summary>
-        public static ILoadOrder Order { get; private set; }
+        public static ModificationOrder Order { get; private set; }
 
-        public static ModificationContent Core { get; private set; }
-        private static List<ModificationContent> all;
-        public static IReadOnlyCollection<ModificationContent> All { get; private set; }
+        /// <summary>
+        /// 资源合集;
+        /// </summary>
         public static SharedContent SharedContent { get; private set; }
 
         public static bool IsInitializing { get; private set; } = false;
@@ -38,23 +54,23 @@ namespace JiongXiaGu.Unity.Resources
         internal static void SearcheAll()
         {
             ModificationSearcher contentSearcher = new ModificationSearcher();
-            all = new List<ModificationContent>();
+            All = new List<ModificationInfo>();
 
             string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
             Core = contentSearcher.Factory.Read(directory);
-            all.Add(Core);
 
-            var mods = contentSearcher.Find(Resource.ModDirectory);
-            all.AddRange(mods);
+            var mods = contentSearcher.Searche(Resource.ModDirectory);
+            All.AddRange(mods);
 
-            var userMods = contentSearcher.Find(Resource.UserModDirectory);
-            all.AddRange(userMods);
+            var userMods = contentSearcher.Searche(Resource.UserModDirectory);
+            All.AddRange(userMods);
         }
+
 
         /// <summary>
         /// 设置读取顺序;
         /// </summary>
-        public static void SetOrder(ILoadOrder order)
+        public static void SetOrder(ModificationOrder order)
         {
             UnityThread.ThrowIfNotUnityThread();
             if (IsInitializing)
@@ -123,22 +139,26 @@ namespace JiongXiaGu.Unity.Resources
                 await Program.Initialize();
 
                 progress.Report(new ProgressInfo(0.2f, "模组排序"));
-                ILoadOrder order = await InternalGetOrder();
+                Mods = InternalGetMods();
+                SharedContent = new SharedContent(Mods);
 
                 progress.Report(new ProgressInfo(0.3f, "模组初始化"));
                 var basicResourceProgress = new LocalProgress(progress, 0.3f, 0.5f);
-                await BasicResourceInitializer.Initialize(order, basicResourceProgress, token);
+                await BasicResourceInitializer.Initialize(Mods, basicResourceProgress, token);
                 basicInitializationTask.SetResult(null);
 
                 progress.Report(new ProgressInfo(0.5f, "模组数据初始化"));
                 var resourceProgress = new LocalProgress(progress, 0.5f, 1f);
                 await ResourceInitializer.Initialize(resourceProgress, token);
 
+                progress.Report(new ProgressInfo(1f, "初始化完毕"));
+
                 IsComplete = true;
             }
             catch (Exception ex)
             {
-                basicInitializationTask.SetException(ex);
+                basicInitializationTask.TrySetException(ex);
+                progress.Report(new ProgressInfo(-1f, ex.Message));
                 throw ex;
             }
             finally
@@ -150,16 +170,104 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private static Task<ILoadOrder> InternalGetOrder()
+        /// <summary>
+        /// 获取到模组内容读取顺序;
+        /// </summary>
+        private static List<ModificationContent> InternalGetMods()
         {
             if (Order == null)
             {
-                throw new NotImplementedException();
+                ModificationOrder order;
+                ModificationOrderSerializer serializer = new ModificationOrderSerializer();
+
+                if (serializer.TryDeserialize(Resource.UserConfigContent, out order))
+                {
+                    return InternalGetMods_Auto(order);
+                }
+
+                if (serializer.TryDeserialize(Resource.ConfigContent, out order))
+                {
+                    return InternalGetMods_Auto(order);
+                }
+
+                order = new ModificationOrder();
+                return InternalGetMods_Auto(order);
             }
             else
             {
-                return Task.FromResult(Order);
+                var mod = InternalGetMods_Auto(Order);
+                return mod;
             }
+        }
+
+        private static List<ModificationContent> InternalGetMods_Auto(ModificationOrder order)
+        {
+            if (Mods == null)
+            {
+                return InternalGetMods(order);
+            }
+            else
+            {
+                return InternalGetMods(Mods, order);
+            }
+        }
+
+        /// <summary>
+        /// 获取到模组内容读取顺序;
+        /// </summary>
+        private static List<ModificationContent> InternalGetMods(ModificationOrder order)
+        {
+            List<ModificationContent> newList = new List<ModificationContent>();
+            newList.Add(Core);
+
+            ModificationFactory factory = new ModificationFactory();
+
+            foreach (var info in order)
+            {
+                ModificationContent content = factory.Read(info);
+                newList.Add(content);
+            }
+
+            return newList;
+        }
+
+        /// <summary>
+        /// 获取到模组内容读取顺序;
+        /// </summary>
+        private static List<ModificationContent> InternalGetMods(List<ModificationContent> old, ModificationOrder order)
+        {
+            List<ModificationContent> newList = new List<ModificationContent>();
+            newList.Add(Core);
+
+            ModificationFactory factory = new ModificationFactory();
+
+            foreach (var info in order)
+            {
+                ModificationContent content;
+                int index = old.FindIndex(oldContent => oldContent.Description.ID == info);
+                if (index >= 0)
+                {
+                    content = old[index];
+                    old[index] = null;
+                }
+                else
+                {
+                    content = factory.Read(info);
+                }
+
+                newList.Add(content);
+            }
+
+            foreach (var mod in old)
+            {
+                if (mod != null)
+                {
+                    mod.UnloadAssetBundlesAll(true);
+                    mod.Dispose();
+                }
+            }
+
+            return newList;
         }
 
         public struct InitializationStage

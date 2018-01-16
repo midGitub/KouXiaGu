@@ -94,7 +94,6 @@ namespace JiongXiaGu.Unity.Resources
                     assetBundle.Stream.Dispose();
                 }
                 assetBundles.Value.Clear();
-
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using JiongXiaGu.Unity.UI;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -19,10 +19,6 @@ namespace JiongXiaGu.Unity.Resources
         private IResourceIntegrateHandle[] integrateHandlers;
         private ResourceLoadHandler loadHandler;
 
-        /// <summary>
-        /// 当前资源读取顺序;
-        /// </summary>
-        public ModificationOrder Order => loadHandler.Order;
 
         private void Awake()
         {
@@ -48,7 +44,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 按照指定顺序读取资源,若已经读取完毕则或正在读取重新读取;
         /// </summary>
-        public Task Load(ModificationOrder order)
+        public Task Load(IReadOnlyList<ModificationContent> order)
         {
             return loadHandler.LoadAsync(order, integrateHandlers);
         }
@@ -70,22 +66,22 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-        /// <summary>
-        /// 读取到定义的资源读取顺序,若不存在则返回null;
-        /// </summary>
-        private static ModificationOrder ReadLoadOrderFromFile()
-        {
-            LoadOrderDefinitionSerializer definitionSerializer = new LoadOrderDefinitionSerializer();
-            try
-            {
-                var definitions = definitionSerializer.Deserialize(Resource.ConfigContent);
-                var order = new ModificationOrder(LoadableResource.All, definitions);
-                return order;
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-        }
+        ///// <summary>
+        ///// 读取到定义的资源读取顺序,若不存在则返回null;
+        ///// </summary>
+        //private static ModificationOrder ReadLoadOrderFromFile()
+        //{
+        //    LoadOrderDefinitionSerializer definitionSerializer = new LoadOrderDefinitionSerializer();
+        //    try
+        //    {
+        //        var definitions = definitionSerializer.Deserialize(Resource.ConfigContent);
+        //        var order = new ModificationOrder(LoadableResource.All, definitions);
+        //        return order;
+        //    }
+        //    catch (FileNotFoundException)
+        //    {
+        //        return null;
+        //    }
+        //}
     }
 }

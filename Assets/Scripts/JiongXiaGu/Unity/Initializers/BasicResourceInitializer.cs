@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.Initializers
 
     public interface IBasicResourceInitializeHandle
     {
-        void Initialize(ILoadOrder order, CancellationToken token);
+        void Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token);
     }
 
     /// <summary>
@@ -39,12 +39,12 @@ namespace JiongXiaGu.Unity.Initializers
             singleton.RemoveInstance(this);
         }
 
-        public static Task Initialize(ILoadOrder order, IProgress<ProgressInfo> progress, CancellationToken token)
+        public static Task Initialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)
         {
-            return singleton.GetInstance().InternalInitialize(order, progress, token);
+            return singleton.GetInstance().InternalInitialize(mods, progress, token);
         }
 
-        private Task InternalInitialize(ILoadOrder order, IProgress<ProgressInfo> progress, CancellationToken token)
+        private Task InternalInitialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
             if (initializeHandlers.Length == 0)
@@ -59,7 +59,7 @@ namespace JiongXiaGu.Unity.Initializers
                 foreach (var initializeHandler in initializeHandlers)
                 {
                     token.ThrowIfCancellationRequested();
-                    initializeHandler.Initialize(order, token);
+                    initializeHandler.Initialize(mods, token);
                     progressValue += progressIncrement;
                     progress.Report(new ProgressInfo(progressValue));
                 }

@@ -33,20 +33,21 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         internal static async Task SearcheAll()
         {
-            await Task.Run(delegate ()
-            {
-                ModificationSearcher contentSearcher = new ModificationSearcher();
-                Core = GetCore(contentSearcher.Factory);
-                all.Add(Core);
+            throw new NotImplementedException();
+            //await Task.Run(delegate ()
+            //{
+            //    ModificationSearcher contentSearcher = new ModificationSearcher();
+            //    Core = GetCore(contentSearcher.Factory);
+            //    all.Add(Core);
 
-                var mods = contentSearcher.Find(Resource.ModDirectory);
-                all.AddRange(mods);
+            //    var mods = contentSearcher.Find(Resource.ModDirectory);
+            //    all.AddRange(mods);
 
-                var userMods = contentSearcher.Find(Resource.UserModDirectory);
-                all.AddRange(userMods);
-            });
+            //    var userMods = contentSearcher.Find(Resource.UserModDirectory);
+            //    all.AddRange(userMods);
+            //});
 
-            await Core.LoadAllAssetBundlesAsync();
+            //await Core.LoadAllAssetBundlesAsync();
         }
 
         /// <summary>

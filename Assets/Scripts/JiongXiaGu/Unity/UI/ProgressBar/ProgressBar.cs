@@ -32,7 +32,10 @@ namespace JiongXiaGu.Unity.UI
         {
             if (scrollbar != null)
             {
-                scrollbar.size = progress.Progress;
+                if (progress.Progress >= 0)
+                {
+                    scrollbar.size = progress.Progress;
+                }
             }
             if (messageControl != null && progress.Message != null)
             {

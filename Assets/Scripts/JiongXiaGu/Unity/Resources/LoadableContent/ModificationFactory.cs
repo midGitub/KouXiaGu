@@ -43,7 +43,6 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-
         /// <summary>
         /// 读取内容,若目录不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
@@ -77,6 +76,43 @@ namespace JiongXiaGu.Unity.Resources
             ModificationContent loadableContent = new ModificationContent(content, description);
             return loadableContent;
         }
+
+        public ModificationContent Read(ModificationInfo info)
+        {
+            if (info.ContentInfo == null)
+                throw new ArgumentNullException(nameof(info.ContentInfo));
+
+            Content content = info.ContentInfo.GetContent();
+            return Read(content);
+        }
+
+
+
+        public ModificationInfo ReadInfo(string directory)
+        {
+            DirectoryContentInfo info = new DirectoryContentInfo(directory);
+            return ReadInfo(info);
+        }
+
+        public ModificationInfo ReadZipInfo(string file)
+        {
+            ZipContentInfo info = new ZipContentInfo(file);
+            return ReadInfo(info);
+        }
+
+        public ModificationInfo ReadInfo(IContentInfo contentInfo)
+        {
+            if (contentInfo == null)
+                throw new ArgumentNullException(nameof(contentInfo));
+
+            using (var content = contentInfo.GetContent())
+            {
+                ModificationDescription description = ReadDescription(content);
+                ModificationInfo info = new ModificationInfo(contentInfo, description);
+                return info;
+            }
+        }
+
 
 
         /// <summary>
