@@ -19,14 +19,15 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 游戏可配置模组化资源初始化;
     /// </summary>
-    internal class BasicResourceInitializer : MonoBehaviour
+    internal class BasicResourceInitializer : InitializerBase
     {
         private BasicResourceInitializer()
         {
         }
 
-        private IBasicResourceInitializeHandle[] initializeHandlers;
         private static readonly GlobalSingleton<BasicResourceInitializer> singleton = new GlobalSingleton<BasicResourceInitializer>();
+        public static BasicResourceInitializer Instance => singleton.GetInstance();
+        private IBasicResourceInitializeHandle[] initializeHandlers;
 
         private void Awake()
         {
@@ -34,36 +35,28 @@ namespace JiongXiaGu.Unity.Initializers
             initializeHandlers = GetComponentsInChildren<IBasicResourceInitializeHandle>();
         }
 
-        private void OnDestroy()
+        public static Task StartInitialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)
         {
-            singleton.RemoveInstance(this);
+            return Instance.Initialize(mods, progress, token);
         }
 
-        public static Task Initialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)
+        protected override List<Func<CancellationToken, string>> EnumerateHandler(object state)
         {
-            return singleton.GetInstance().InternalInitialize(mods, progress, token);
-        }
+            var handlers = new List<Func<CancellationToken, string>>();
+            var mods = state as IReadOnlyList<ModificationContent>;
 
-        private Task InternalInitialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            if (initializeHandlers.Length == 0)
-                return Task.CompletedTask;
-
-            return Task.Run(delegate ()
+            foreach (var handler in initializeHandlers)
             {
-                token.ThrowIfCancellationRequested();
-
-                float progressValue = 0;
-                float progressIncrement = 1 / initializeHandlers.Length;
-                foreach (var initializeHandler in initializeHandlers)
+                handlers.Add(delegate (CancellationToken token)
                 {
                     token.ThrowIfCancellationRequested();
-                    initializeHandler.Initialize(mods, token);
-                    progressValue += progressIncrement;
-                    progress.Report(new ProgressInfo(progressValue));
-                }
-            }, token);
+
+                    handler.Initialize(mods, token);
+                    return null;
+                });
+            }
+
+            return handlers;
         }
     }
 }

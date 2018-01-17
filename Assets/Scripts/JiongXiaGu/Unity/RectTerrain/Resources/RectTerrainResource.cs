@@ -35,46 +35,51 @@ namespace JiongXiaGu.Unity.RectTerrain
             landformResCreater = new LandformResCreater();
         }
 
-        void IResourceIntegrateHandle.Read(ModificationContent content, ITypeDictionary data, CancellationToken token)
+        void IResourceIntegrateHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
-            RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content);
-            data.Add(description);
+            Debug.Log("RectTerrainResource");
         }
 
-        /// <summary>
-        /// 输出指定资源到目录;
-        /// </summary>
-        /// <exception cref="InvalidOperationException">未找到指定资源</exception>
-        void IResourceIntegrateHandle.Write(ModificationContent content, ITypeDictionary data, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
+        //void IResourceIntegrateHandle.Read(ModificationContent content, ITypeDictionary data, CancellationToken token)
+        //{
+        //    token.ThrowIfCancellationRequested();
 
-            RectTerrainResourceDescription description;
-            if (data.TryGetValue(out description))
-            {
-                bindingSerializer.Serialize(content, description);
-            }
-            else
-            {
-                throw new InvalidOperationException("未找到对应");
-            }
-        }
+        //    RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content);
+        //    data.Add(description);
+        //}
 
-        void IResourceIntegrateHandle.SetNew(LoadableData[] collection, CancellationToken token)
-        {
-            foreach (var data in collection)
-            {
-                var rectTerrainResource = data.Data.Get<RectTerrainResourceDescription>();
+        ///// <summary>
+        ///// 输出指定资源到目录;
+        ///// </summary>
+        ///// <exception cref="InvalidOperationException">未找到指定资源</exception>
+        //void IResourceIntegrateHandle.Write(ModificationContent content, ITypeDictionary data, CancellationToken token)
+        //{
+        //    token.ThrowIfCancellationRequested();
 
-                landformResCreater.Add(data.Content, rectTerrainResource.Landform);
-            }
-        }
+        //    RectTerrainResourceDescription description;
+        //    if (data.TryGetValue(out description))
+        //    {
+        //        bindingSerializer.Serialize(content, description);
+        //    }
+        //    else
+        //    {
+        //        throw new InvalidOperationException("未找到对应");
+        //    }
+        //}
 
-        void IResourceIntegrateHandle.Clear()
-        {
-            landformResCreater.Clear();
-        }
+        //void IResourceIntegrateHandle.SetNew(LoadableData[] collection, CancellationToken token)
+        //{
+        //    foreach (var data in collection)
+        //    {
+        //        var rectTerrainResource = data.Data.Get<RectTerrainResourceDescription>();
+
+        //        landformResCreater.Add(data.Content, rectTerrainResource.Landform);
+        //    }
+        //}
+
+        //void IResourceIntegrateHandle.Clear()
+        //{
+        //    landformResCreater.Clear();
+        //}
     }
 }

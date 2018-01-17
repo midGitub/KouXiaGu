@@ -18,19 +18,15 @@ namespace JiongXiaGu.Unity.Initializers
     /// 游戏底层组件初始化器;
     /// </summary>
     [DisallowMultipleComponent]
-    internal sealed class ComponentInitializer : MonoBehaviour
+    internal sealed class ComponentInitializer : InitializerBase
     {
         private ComponentInitializer()
         {
         }
 
         private static readonly GlobalSingleton<ComponentInitializer> singleton = new GlobalSingleton<ComponentInitializer>();
+        public static ComponentInitializer Instance => singleton.GetInstance();
         private IComponentInitializeHandle[] initializeHandlers;
-
-        public static ComponentInitializer Instance
-        {
-            get { return singleton.GetInstance(); }
-        }
 
         private void Awake()
         {
@@ -38,25 +34,27 @@ namespace JiongXiaGu.Unity.Initializers
             initializeHandlers = GetComponentsInChildren<IComponentInitializeHandle>();
         }
 
-        private void OnDestroy()
+        public static Task StartInitialize()
         {
-            singleton.RemoveInstance(this);
+            return Instance.Initialize();
         }
 
-        public static Task Initialize()
+        protected override List<Func<CancellationToken, string>> EnumerateHandler(object state)
         {
-            return singleton.GetInstance().InternalInitialize();
-        }
+            var handlers = new List<Func<CancellationToken, string>>();
 
-        private Task InternalInitialize()
-        {
-            return Task.Run(delegate ()
+            foreach (var handler in initializeHandlers)
             {
-                foreach (var initializeHandler in initializeHandlers)
+                handlers.Add(delegate (CancellationToken token)
                 {
-                    initializeHandler.Initialize();
-                }
-            });
+                    token.ThrowIfCancellationRequested();
+
+                    handler.Initialize();
+                    return null;
+                });
+            }
+
+            return handlers;
         }
     }
 }

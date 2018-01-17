@@ -144,12 +144,12 @@ namespace JiongXiaGu.Unity.Resources
 
                 progress.Report(new ProgressInfo(0.3f, "模组初始化"));
                 var basicResourceProgress = new LocalProgress(progress, 0.3f, 0.5f);
-                await BasicResourceInitializer.Initialize(Mods, basicResourceProgress, token);
+                await BasicResourceInitializer.StartInitialize(Mods, basicResourceProgress, token);
                 basicInitializationTask.SetResult(null);
 
                 progress.Report(new ProgressInfo(0.5f, "模组数据初始化"));
                 var resourceProgress = new LocalProgress(progress, 0.5f, 1f);
-                await ResourceInitializer.Initialize(resourceProgress, token);
+                await ResourceInitializer.StartInitialize(Mods, resourceProgress, token);
 
                 progress.Report(new ProgressInfo(1f, "初始化完毕"));
 
