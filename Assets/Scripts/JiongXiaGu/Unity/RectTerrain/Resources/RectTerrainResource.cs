@@ -17,8 +17,6 @@ namespace JiongXiaGu.Unity.RectTerrain
     {
         [XmlAsset(@"Terrain\Landform", "地形资源定义")]
         public DescriptionCollection<LandformDescription> Landform { get; set; }
-
-
     }
 
     [DisallowMultipleComponent]
@@ -37,49 +35,30 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         void IResourceIntegrateHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
-            Debug.Log("RectTerrainResource");
+            token.ThrowIfCancellationRequested();
+
+            foreach (var mod in mods)
+            {
+                var description = Read(mod);
+
+                landformResCreater.Add(mod, description.Landform);
+            }
         }
 
-        //void IResourceIntegrateHandle.Read(ModificationContent content, ITypeDictionary data, CancellationToken token)
-        //{
-        //    token.ThrowIfCancellationRequested();
+        private RectTerrainResourceDescription Read(ModificationContent content)
+        {
+            RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content);
+            return description;
+        }
 
-        //    RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content);
-        //    data.Add(description);
-        //}
+        private void Write(ModificationContent content, RectTerrainResourceDescription description)
+        {
+            bindingSerializer.Serialize(content, description);
+        }
 
-        ///// <summary>
-        ///// 输出指定资源到目录;
-        ///// </summary>
-        ///// <exception cref="InvalidOperationException">未找到指定资源</exception>
-        //void IResourceIntegrateHandle.Write(ModificationContent content, ITypeDictionary data, CancellationToken token)
-        //{
-        //    token.ThrowIfCancellationRequested();
-
-        //    RectTerrainResourceDescription description;
-        //    if (data.TryGetValue(out description))
-        //    {
-        //        bindingSerializer.Serialize(content, description);
-        //    }
-        //    else
-        //    {
-        //        throw new InvalidOperationException("未找到对应");
-        //    }
-        //}
-
-        //void IResourceIntegrateHandle.SetNew(LoadableData[] collection, CancellationToken token)
-        //{
-        //    foreach (var data in collection)
-        //    {
-        //        var rectTerrainResource = data.Data.Get<RectTerrainResourceDescription>();
-
-        //        landformResCreater.Add(data.Content, rectTerrainResource.Landform);
-        //    }
-        //}
-
-        //void IResourceIntegrateHandle.Clear()
-        //{
-        //    landformResCreater.Clear();
-        //}
+        private void Clear()
+        {
+            landformResCreater.Clear();
+        }
     }
 }
