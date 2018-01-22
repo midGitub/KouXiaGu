@@ -10,12 +10,6 @@ namespace JiongXiaGu.Unity.KeyInputs
     [XmlRoot("KeyInfo")]
     public struct KeyInfo : IEquatable<KeyInfo>
     {
-        public KeyInfo(string name, CombinationKey key)
-        {
-            Name = name;
-            Key = key;
-        }
-
         /// <summary>
         /// 功能名称;
         /// </summary>
@@ -27,6 +21,12 @@ namespace JiongXiaGu.Unity.KeyInputs
         /// </summary>
         [XmlElement]
         public CombinationKey Key { get; set; }
+
+        public KeyInfo(string name, CombinationKey key)
+        {
+            Name = name;
+            Key = key;
+        }
 
         public override int GetHashCode()
         {

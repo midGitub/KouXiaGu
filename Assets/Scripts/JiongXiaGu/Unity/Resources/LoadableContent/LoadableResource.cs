@@ -11,6 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 可读资源配置;(线程安全)
     /// </summary>
+    [Obsolete]
     public static class LoadableResource
     {
         /// <summary>

@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.KeyInputs
         void IComponentInitializeHandle.Initialize()
         {
             KeyMapReader keyMapReader = new KeyMapReader();
-            KeyInput.CurrentKeyMap = keyMapReader.Read();
+            KeyInput.GlobalKeyMap = keyMapReader.Read();
             OnInitializeCompleted();
         }
 
@@ -32,7 +32,7 @@ namespace JiongXiaGu.Unity.KeyInputs
 
         private string GetInfoLog()
         {
-            string log = "定义按键总数:" + KeyInput.CurrentKeyMap.Count;
+            string log = "定义按键总数:" + KeyInput.GlobalKeyMap.Count;
             return log;
         }
 
@@ -42,18 +42,18 @@ namespace JiongXiaGu.Unity.KeyInputs
             Debug.Log(GetInfoLog());
         }
 
-        [ContextMenu("输出默认按键模版")]
-        void WriteTemplateDefaultKeyMap()
-        {
-            KeyMap keyMap = new KeyMap()
-            {
-                { "Up", new CombinationKey(KeyCode.UpArrow)},
-                { "Down", new CombinationKey(KeyCode.DownArrow)},
-                { "Save", new CombinationKey(KeyCode.LeftControl, KeyCode.S)}
-            };
+        //[ContextMenu("输出默认按键模版")]
+        //void WriteTemplateDefaultKeyMap()
+        //{
+        //    KeyMap keyMap = new KeyMap()
+        //    {
+        //        { "Up", new CombinationKey(KeyCode.UpArrow)},
+        //        { "Down", new CombinationKey(KeyCode.DownArrow)},
+        //        { "Save", new CombinationKey(KeyCode.LeftControl, KeyCode.S)}
+        //    };
 
-            DefaultKeyConfigReader reader = new DefaultKeyConfigReader();
-            reader.Write(keyMap.ToArray(), true);
-        }
+        //    DefaultKeyConfigReader reader = new DefaultKeyConfigReader();
+        //    reader.Write(keyMap.ToArray(), true);
+        //}
     }
 }

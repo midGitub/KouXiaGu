@@ -20,12 +20,21 @@ namespace JiongXiaGu.Unity.Initializers
 
         [SerializeField]
         private ProgressBar progressBar;
+        [SerializeField]
+        private DisplaySwitcher progressBarDisplaySwitcher;
+        [SerializeField]
+        private DisplaySwitcher menuDisplaySwitcher;
 
         public bool AutoGoMainMenuScene { get; private set; } = false;
 
         private async void Start()
         {
             await Modification.Initialize(progressBar.Progress).BasicInitializationTask;
+
+            menuDisplaySwitcher.Display();
+
+            await Task.Delay(3000);
+            progressBarDisplaySwitcher.Hide();
         }
 
         Task ISceneController.QuitScene()

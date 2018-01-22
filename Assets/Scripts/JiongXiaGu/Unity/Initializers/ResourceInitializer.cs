@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Unity.Initializers;
+using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.UI;
 using System;
 using System.Collections.Generic;
@@ -6,8 +7,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace JiongXiaGu.Unity.Resources
+namespace JiongXiaGu.Unity.Initializers
 {
+
+    /// <summary>
+    /// 数据整合处理接口;
+    /// </summary>
+    public interface IResourceInitializeHandle
+    {
+        void Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token);
+    }
 
     /// <summary>
     /// 游戏数据初始化器(在游戏开始前进行初始化,若初始化失败意味着游戏无法开始);
@@ -21,12 +30,12 @@ namespace JiongXiaGu.Unity.Resources
 
         private static readonly GlobalSingleton<ResourceInitializer> singleton = new GlobalSingleton<ResourceInitializer>();
         public static ResourceInitializer Instance => singleton.GetInstance();
-        private IResourceIntegrateHandle[] integrateHandlers;
+        private IResourceInitializeHandle[] integrateHandlers;
 
         private void Awake()
         {
             singleton.SetInstance(this);
-            integrateHandlers = GetComponentsInChildren<IResourceIntegrateHandle>();
+            integrateHandlers = GetComponentsInChildren<IResourceInitializeHandle>();
         }
 
         public static Task StartInitialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)

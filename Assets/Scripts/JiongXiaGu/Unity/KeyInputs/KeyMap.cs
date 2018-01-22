@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using JiongXiaGu.Collections;
@@ -12,26 +13,47 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// <summary>
     /// 按键映射;
     /// </summary>
-    public class KeyMap : Dictionary<string, CombinationKey>, IDictionary<string, CombinationKey>
+    [XmlRoot("KeyMap")]
+    public class KeyMap : IEnumerable<KeyInfo>
     {
-        public KeyMap()
+        public IDictionary<string, CombinationKey> Dictionary { get; private set; }
+
+        public CombinationKey this[string keyName]
         {
+            get { return Dictionary[keyName]; }
+            set { Dictionary[keyName] = value; }
         }
 
-        public KeyMap(IDictionary<string, CombinationKey> dictionary) : base(dictionary)
+        public int Count
         {
+            get { return Dictionary.Count; }
+        }
+
+        public KeyMap()
+        {
+            Dictionary = new Dictionary<string, CombinationKey>();
+        }
+
+        public KeyMap(IDictionary<string, CombinationKey> dictionary)
+        {
+            Dictionary = new Dictionary<string, CombinationKey>(dictionary);
+        }
+
+        public void Add(string keyName, CombinationKey key)
+        {
+            Dictionary.Add(keyName, key);
         }
 
         public void Add(KeyInfo info)
         {
-            Add(info.Name, info.Key);
+            Dictionary.Add(info.Name, info.Key);
         }
 
         public AddOrUpdateStatus AddOrUpdate(KeyInfo info)
         {
-            if (ContainsKey(info.Name))
+            if (Dictionary.ContainsKey(info.Name))
             {
-                this[info.Name] = info.Key;
+                Dictionary[info.Name] = info.Key;
                 return AddOrUpdateStatus.Updated;
             }
             else
@@ -49,9 +71,14 @@ namespace JiongXiaGu.Unity.KeyInputs
             }
         }
 
-        public KeyInfo[] ToArray()
+        IEnumerator<KeyInfo> IEnumerable<KeyInfo>.GetEnumerator()
         {
-            return this.ToArray(pair => new KeyInfo(pair.Key, pair.Value));
+            return Dictionary.Select(item => new KeyInfo(item.Key, item.Value)).GetEnumerator();
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

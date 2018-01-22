@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Linq;
-using JiongXiaGu.Collections;
 using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources

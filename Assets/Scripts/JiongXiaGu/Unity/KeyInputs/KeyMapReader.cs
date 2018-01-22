@@ -50,12 +50,12 @@ namespace JiongXiaGu.Unity.KeyInputs
 
             foreach (var info in defaultKeys)
             {
-                dictionary.AddOrUpdate(info.Name, info.Key);
+                dictionary.AddOrUpdate(info);
             }
 
             foreach (var info in userKeys)
             {
-                dictionary.AddOrUpdate(info.Name, info.Key);
+                dictionary.AddOrUpdate(info);
             }
 
             return dictionary;
@@ -66,7 +66,7 @@ namespace JiongXiaGu.Unity.KeyInputs
         /// </summary>
         public void Write(KeyMap keyMap)
         {
-            var keyInfos = keyMap.ToArray(pair => new KeyInfo(pair.Key, pair.Value));
+            var keyInfos = keyMap.ToArray();
             UserKeyConfigReader.Write(keyInfos);
         }
     }

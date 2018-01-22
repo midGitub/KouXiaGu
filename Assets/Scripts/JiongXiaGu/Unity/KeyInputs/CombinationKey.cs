@@ -23,6 +23,11 @@ namespace JiongXiaGu.Unity.KeyInputs
         [SerializeField]
         private List<KeyCode> keys;
 
+        public bool IsEmpty
+        {
+            get { return !(keys != null && keys.Count > 0); }
+        }
+
         public IEnumerable<KeyCode> Keys
         {
             get { return keys ?? (IEnumerable<KeyCode>)EmptyCollection<KeyCode>.Default; }

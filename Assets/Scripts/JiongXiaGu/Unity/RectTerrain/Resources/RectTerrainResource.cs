@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     }
 
     [DisallowMultipleComponent]
-    public class RectTerrainResource : MonoBehaviour, IResourceIntegrateHandle
+    public class RectTerrainResource : MonoBehaviour, IResourceInitializeHandle
     {
         [SerializeField]
         private LandformResCreater landformResCreater;
@@ -33,7 +33,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             landformResCreater = new LandformResCreater();
         }
 
-        void IResourceIntegrateHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 

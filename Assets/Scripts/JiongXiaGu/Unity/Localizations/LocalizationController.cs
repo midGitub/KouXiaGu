@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// 提供在Unity编辑器内调整具体参数;
     /// </summary>
     [DisallowMultipleComponent]
-    internal class LocalizationController : MonoBehaviour, IComponentInitializeHandle
+    internal class LocalizationController : MonoBehaviour, IBasicResourceInitializeHandle
     {
         private const string InitializerName = "本地化组件初始化";
 
@@ -45,13 +45,15 @@ namespace JiongXiaGu.Unity.Localizations
             SystemLanguage = Application.systemLanguage;
         }
 
-        void IComponentInitializeHandle.Initialize()
+        void IBasicResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             packSearcher = new LanguagePackSearcher();
             packSerializer = new LanguagePackSerializer();
             configFileReader = new LocalizationConfigFileReader();
 
-            availableLanguagePacks = packSearcher.FindPacks(LoadableResource.All);
+            availableLanguagePacks = packSearcher.FindPacks(mods);
             if (availableLanguagePacks.Count == 0)
             {
                 throw new FileNotFoundException("未找到合适的语言包文件");

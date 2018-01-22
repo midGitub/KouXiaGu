@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JiongXiaGu.Unity.UI;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles.UI
@@ -12,66 +8,32 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
     /// 负责对控制台显示隐藏按键响应;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class UIGameConsole : MonoBehaviour
+    public sealed class UIGameConsole : AnimatorDisplaySwitcher
     {
-        private UIGameConsole()
-        {
-        }
+        [SerializeField]
+        private KeyCode displaySwitcherKey = KeyCode.BackQuote;
 
         [SerializeField]
-        private RectTransform gameConsoleWindow;
-
-        [SerializeField]
-        private UIGameConsoleInput uIGameConsoleInput;
-
-        /// <summary>
-        /// 是否显示中?
-        /// </summary>
-        private bool IsDisplay
-        {
-            get { return gameConsoleWindow.gameObject.activeSelf; }
-        }
+        private UIGameConsoleInput uiGameConsoleInput;
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.BackQuote))
+            if (Input.GetKeyDown(displaySwitcherKey))
             {
-                SwitchDisplayConsoleWindow();
+                SwitchDisplay();
             }
         }
 
-        /// <summary>
-        /// 切换显示控制台窗口;
-        /// </summary>
-        [ContextMenu("SwitchDisplay")]
-        private void SwitchDisplayConsoleWindow()
+        public override void Display()
         {
-            if (IsDisplay)
-            {
-                HideConsoleWindow();
-            }
-            else
-            {
-                DisplayConsoleWindow();
-            }
+            base.Display();
+            uiGameConsoleInput.ActivateInputField();
         }
 
-        /// <summary>
-        /// 显示控制台窗口;
-        /// </summary>
-        private void DisplayConsoleWindow()
+        public override void Hide()
         {
-            gameConsoleWindow.gameObject.SetActive(true);
-            uIGameConsoleInput.ActivateInputField();
-        }
-
-        /// <summary>
-        /// 隐藏控制台窗口;
-        /// </summary>
-        private void HideConsoleWindow()
-        {
-            gameConsoleWindow.gameObject.SetActive(false);
-            uIGameConsoleInput.ClearInputField();
+            base.Hide();
+            uiGameConsoleInput.ClearInputField();
         }
     }
 }
