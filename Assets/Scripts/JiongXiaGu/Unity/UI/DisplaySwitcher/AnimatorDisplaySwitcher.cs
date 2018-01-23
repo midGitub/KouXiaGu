@@ -29,16 +29,20 @@ namespace JiongXiaGu.Unity.UI
             return animator.GetBool(DisplayBoolParameter);
         }
 
-        [ContextMenu(nameof(Display))]
-        public override void Display()
+        protected override void InternalDisplay()
         {
-            animator.SetBool(DisplayBoolParameter, true);
+            if (animator != null)
+            {
+                animator.SetBool(DisplayBoolParameter, true);
+            }
         }
 
-        [ContextMenu(nameof(Hide))]
-        public override void Hide()
+        protected override void InternalHide()
         {
-            animator.SetBool(DisplayBoolParameter, false);
+            if (animator != null)
+            {
+                animator.SetBool(DisplayBoolParameter, false);
+            }
         }
     }
 }

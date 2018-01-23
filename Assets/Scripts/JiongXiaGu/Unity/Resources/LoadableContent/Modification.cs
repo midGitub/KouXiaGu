@@ -156,7 +156,6 @@ namespace JiongXiaGu.Unity.Resources
             catch (Exception ex)
             {
                 basicInitializationTask.TrySetException(ex);
-                progress.Report(new ProgressInfo(-1f, ex.Message));
                 throw ex;
             }
             finally

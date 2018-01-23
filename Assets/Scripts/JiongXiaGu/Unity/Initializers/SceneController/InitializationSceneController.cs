@@ -25,16 +25,25 @@ namespace JiongXiaGu.Unity.Initializers
         [SerializeField]
         private DisplaySwitcher menuDisplaySwitcher;
 
-        public bool AutoGoMainMenuScene { get; private set; } = false;
-
         private async void Start()
         {
-            await Modification.Initialize(progressBar.Progress).BasicInitializationTask;
+            IProgress<ProgressInfo> progress = progressBar.Progress;
+            try
+            {
+                var waiter = Modification.Initialize(progress);
 
-            menuDisplaySwitcher.Display();
+                await waiter.BasicInitializationTask;
 
-            await Task.Delay(3000);
-            progressBarDisplaySwitcher.Hide();
+                menuDisplaySwitcher.Display();
+
+                await waiter.InitializationTask;
+                await Task.Delay(3000);
+                progressBarDisplaySwitcher.Hide();
+            }
+            catch (Exception ex)
+            {
+                progress.Report(new ProgressInfo(-1f, ex.Message));
+            }
         }
 
         Task ISceneController.QuitScene()
@@ -42,17 +51,20 @@ namespace JiongXiaGu.Unity.Initializers
             return Task.CompletedTask;
         }
 
-        private void Test()
+        /// <summary>
+        /// 继续游戏;
+        /// </summary>
+        public async void ContinueGame()
         {
-            Task.Run(delegate ()
-            {
-                int count = 100;
-                for (int i = 0; i <= count; i++)
-                {
-                    Thread.Sleep(100);
-                    progressBar.Progress.Report(new ProgressInfo(i / (float)count));
-                }
-            });
+            await Stage.GoGameScene();
+        }
+
+        /// <summary>
+        /// 开始新游戏;
+        /// </summary>
+        public async void StartNewGame()
+        {
+            await Stage.GoGameScene();
         }
     }
 }

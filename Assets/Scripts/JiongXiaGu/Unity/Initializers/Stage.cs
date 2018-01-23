@@ -55,23 +55,6 @@ namespace JiongXiaGu.Unity.Initializers
         }
 
         /// <summary>
-        /// 转到游戏初始化场景;
-        /// </summary>
-        [Obsolete]
-        public static async Task GoInitializationScene()
-        {
-            UnityThread.ThrowIfNotUnityThread();
-
-            using (StartRun())
-            {
-                await QuitCurrentScene();
-                SceneType = SceneType.InitializationScene;
-                await LoadSceneAsync(StageDefinition.InitializationSceneName, LoadSceneMode.Single);
-                CurrentController = GetSceneController();
-            }
-        }
-
-        /// <summary>
         /// 转到主菜单场景;
         /// </summary>
         public static async Task GoMainMenuScene()

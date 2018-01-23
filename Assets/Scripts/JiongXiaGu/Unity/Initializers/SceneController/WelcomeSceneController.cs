@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Initializers
     {
         private async void Start()
         {
-            await Stage.GoInitializationScene();
+            await Stage.GoMainMenuScene();
         }
     }
 }

@@ -8,7 +8,8 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
     /// 负责对控制台显示隐藏按键响应;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class UIGameConsole : AnimatorDisplaySwitcher
+    [RequireComponent(typeof(DisplaySwitcher))]
+    public sealed class UIGameConsole : MonoBehaviour
     {
         [SerializeField]
         private KeyCode displaySwitcherKey = KeyCode.BackQuote;
@@ -16,24 +17,22 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         [SerializeField]
         private UIGameConsoleInput uiGameConsoleInput;
 
+        private DisplaySwitcher displaySwitcher;
+
+        private void Awake()
+        {
+            displaySwitcher = GetComponent<DisplaySwitcher>();
+
+            displaySwitcher.OnDisplay += uiGameConsoleInput.ClearInputField;
+            displaySwitcher.OnHide += uiGameConsoleInput.ClearInputField;
+        }
+
         private void Update()
         {
             if (Input.GetKeyDown(displaySwitcherKey))
             {
-                SwitchDisplay();
+                displaySwitcher.SwitchDisplay();
             }
-        }
-
-        public override void Display()
-        {
-            base.Display();
-            uiGameConsoleInput.ActivateInputField();
-        }
-
-        public override void Hide()
-        {
-            base.Hide();
-            uiGameConsoleInput.ClearInputField();
         }
     }
 }
