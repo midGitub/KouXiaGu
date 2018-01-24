@@ -8,12 +8,14 @@ using UnityEngine.UI;
 namespace JiongXiaGu.Unity.UI
 {
 
+
+
     /// <summary>
     /// 预制物体脚本 消息窗口;
     /// </summary>
-    public sealed class MessageWindow : Panel
+    public class MessageWindow : Panel
     {
-        private MessageWindow()
+        protected MessageWindow()
         {
         }
 
@@ -44,7 +46,7 @@ namespace JiongXiaGu.Unity.UI
         public Text MessageText => messageText;
 
         [SerializeField]
-        private LayoutGroup multipleChoices;
+        private HorizontalLayoutGroup multipleChoices;
         public MultipleLayoutGroup MultipleChoices => new MultipleLayoutGroup(multipleChoices);
 
         public bool IsRaycastBlock
@@ -58,7 +60,7 @@ namespace JiongXiaGu.Unity.UI
             IsRaycastBlock = isRaycastBlock;
         }
 
-        protected override void InternalOnActivate()
+        public override void OnActivate()
         {
             if (isRaycastBlock)
             {
@@ -66,7 +68,7 @@ namespace JiongXiaGu.Unity.UI
             }
         }
 
-        protected override void InternalOnUnactivate()
+        public override void OnUnactivate()
         {
             IsRaycastBlock = false;
         }

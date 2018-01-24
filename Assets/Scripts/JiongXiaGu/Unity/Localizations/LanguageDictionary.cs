@@ -1,7 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.Localizations
@@ -10,74 +8,45 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 文本字典;
     /// </summary>
-    [XmlRoot("LanguageDictionary")]
-    public class LanguageDictionary : Dictionary<string, string>, IXmlSerializable
+    [XmlRoot(LanguageKeyValueCollection.XmlRootName)]
+    public class LanguageDictionary : LanguageKeyValueCollection, ILanguageDictionary
     {
+        private Dictionary<string, string> dictionary;
+        public int Count => dictionary.Count;
+
         public LanguageDictionary()
         {
+            dictionary = new Dictionary<string, string>();
         }
 
-        public LanguageDictionary(IDictionary<string, string> dictionary) : base(dictionary)
+        public override void Add(string key, string value)
         {
-        }
-
-        public void AddOrUpdate(string key, string value)
-        {
-            if (ContainsKey(key))
+            if (dictionary.ContainsKey(key))
             {
-                base[key] = value;
+                dictionary[key] = value;
             }
             else
             {
-                Add(key, value);
+                dictionary.Add(key, value);
             }
         }
 
-        /// <summary>
-        /// 添加字典内容;
-        /// </summary>
-        public void AddOrUpdate(LanguageDictionary languageDictionary)
+        public void Add(IEnumerable<KeyValuePair<string, string>> value)
         {
-            if (languageDictionary == this)
-                return;
-
-            foreach (var pair in this)
+            foreach (var item in value)
             {
-                AddOrUpdate(pair.Key, pair.Value);
+                Add(item.Key, item.Value);
             }
         }
 
-        XmlSchema IXmlSerializable.GetSchema()
+        public bool TryGetValue(string key, out string value)
         {
-            return null;
+            return dictionary.TryGetValue(key, out value);
         }
 
-        internal const string TextItemElementName = "Text";
-        internal const string TextItemKeyAttributeName = "key";
-
-        void IXmlSerializable.ReadXml(XmlReader reader)
+        public override IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            if (reader.ReadToDescendant(TextItemElementName))
-            {
-                do
-                {
-                    string key = reader.GetAttribute(TextItemKeyAttributeName);
-                    string value = reader.ReadElementContentAsString();
-                    AddOrUpdate(key, value);
-                }
-                while (reader.IsStartElement());
-            }
-        }
-
-        void IXmlSerializable.WriteXml(XmlWriter writer)
-        {
-            foreach (var pair in this)
-            {
-                writer.WriteStartElement(TextItemElementName);
-                writer.WriteAttributeString(TextItemKeyAttributeName, pair.Key);
-                writer.WriteValue(pair.Value);
-                writer.WriteEndElement();
-            }
+            return dictionary.GetEnumerator();
         }
     }
 }

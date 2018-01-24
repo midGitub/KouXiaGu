@@ -63,7 +63,7 @@ namespace JiongXiaGu.Unity.Localizations
                 {
                     using (var stream = contentConstruct.GetInputStream(entry))
                     {
-                        var description = packSerializer.DeserializeDesc(stream);
+                        var description = packSerializer.Deserialize(stream);
                         languagePack = new LanguagePackInfo(description, contentConstruct, entry);
                     }
                 }

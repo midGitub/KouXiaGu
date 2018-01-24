@@ -37,12 +37,6 @@ namespace JiongXiaGu.Unity.Localizations
         [XmlElement("Message")]
         public string Message { get; set; }
 
-        public LanguagePackDescription(string name, string language) : this()
-        {
-            Name = name;
-            Language = language;
-        }
-
         public override string ToString()
         {
             return string.Format("[Name:{0}, Language:{1}, Version:{2}, Message:{3}]", Name, Language, Version, Message);

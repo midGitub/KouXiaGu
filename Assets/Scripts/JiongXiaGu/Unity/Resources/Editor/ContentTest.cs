@@ -18,8 +18,8 @@ namespace JiongXiaGu.Unity.Resources
             if (Directory.Exists(rootDirectory))
             {
                 Directory.Delete(rootDirectory, true);
-                Directory.CreateDirectory(rootDirectory);
             }
+            Directory.CreateDirectory(rootDirectory);
         }
 
         [Test]

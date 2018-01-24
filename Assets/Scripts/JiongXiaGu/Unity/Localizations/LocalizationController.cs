@@ -66,10 +66,10 @@ namespace JiongXiaGu.Unity.Localizations
             {
                 try
                 {
-                    ModificationContent content = packInfo.ContentConstruct;
+                    Content content = packInfo.ContentConstruct;
                     using (var stream = content.GetInputStream(packInfo.LoadableEntry))
                     {
-                        languagePack = packSerializer.Deserialize(stream);
+                        languagePack = packSerializer.DeserializePack(stream);
                         break;
                     }
                 }
