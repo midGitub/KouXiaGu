@@ -6,7 +6,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 语言包;
     /// </summary>
-    public class LanguagePack : IReadOnlyLanguageDictionary
+    public class LanguagePack : IReadOnlyPack
     {
         /// <summary>
         /// 描述;

@@ -9,7 +9,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 一个相同语言的包组成的合集,包含一个主语言字典和多个补充语言字典;
     /// </summary>
-    public class LanguageGroup : IReadOnlyCollection<LanguagePack>, IReadOnlyLanguageDictionary
+    public class LanguageGroup : IReadOnlyCollection<LanguagePack>, IReadOnlyPack
     {
         /// <summary>
         /// 主要语言字典;

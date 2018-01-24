@@ -5,6 +5,7 @@ using System.Linq;
 namespace JiongXiaGu.Unity.Localizations
 {
 
+
     /// <summary>
     /// 本地化信息(部分方法线程安全);
     /// </summary>
@@ -15,7 +16,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 当前使用的语言包;(若不存在则为Null)
         /// </summary>
-        internal static LanguageGroup language;
+        internal static LanguagePack language;
 
         /// <summary>
         /// 所有可用的语言包(在进行初始化之后,仅提供Unity线程对此内容进行变更);
@@ -27,41 +28,41 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         private static readonly ObserverCollection<LanguageChangedEvent> observers = new ObserverLinkedList<LanguageChangedEvent>();
 
-        /// <summary>
-        /// 主要语言字典;
-        /// </summary>
-        public static LanguagePack MainPack
-        {
-            get
-            {
-                lock (asyncLock)
-                {
-                    return language.MainPack;
-                }
-            }
-        }
+        ///// <summary>
+        ///// 主要语言字典;
+        ///// </summary>
+        //public static LanguagePack MainPack
+        //{
+        //    get
+        //    {
+        //        lock (asyncLock)
+        //        {
+        //            return language.MainPack;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 当前使用的语言字典;(若不存在则为Null)
         /// </summary>
-        public static IReadOnlyLanguageDictionary Language
+        public static IReadOnlyPack Language
         {
             get { return language; }
         }
 
-        /// <summary>
-        /// 补充语言字典合集快照;
-        /// </summary>
-        public static LanguagePack[] SupplementPacks
-        {
-            get
-            {
-                lock (asyncLock)
-                {
-                    return language.SupplementPacks.ToArray();
-                }
-            }
-        }
+        ///// <summary>
+        ///// 补充语言字典合集快照;
+        ///// </summary>
+        //public static LanguagePack[] SupplementPacks
+        //{
+        //    get
+        //    {
+        //        lock (asyncLock)
+        //        {
+        //            return language.SupplementPacks.ToArray();
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 设置新的语言(此方法不会通知观察者);
@@ -70,31 +71,31 @@ namespace JiongXiaGu.Unity.Localizations
         {
             lock (asyncLock)
             {
-                language = new LanguageGroup(pack);
+                language = pack;
             }
         }
 
-        /// <summary>
-        /// 设置新的语言(此方法不会通知观察者);
-        /// </summary>
-        public static void SetLanguage(LanguageGroup group)
-        {
-            lock (asyncLock)
-            {
-                language = group;
-            }
-        }
+        ///// <summary>
+        ///// 设置新的语言(此方法不会通知观察者);
+        ///// </summary>
+        //public static void SetLanguage(LanguageGroup group)
+        //{
+        //    lock (asyncLock)
+        //    {
+        //        language = group;
+        //    }
+        //}
 
-        /// <summary>
-        /// 添加补充的语言包(此方法不会通知观察者);
-        /// </summary>
-        public static void AddSupplementPack(LanguagePack pack)
-        {
-            lock (asyncLock)
-            {
-                language.Add(pack);
-            }
-        }
+        ///// <summary>
+        ///// 添加补充的语言包(此方法不会通知观察者);
+        ///// </summary>
+        //public static void AddSupplementPack(LanguagePack pack)
+        //{
+        //    lock (asyncLock)
+        //    {
+        //        language.Add(pack);
+        //    }
+        //}
 
         /// <summary>
         /// 尝试获取到对应文本,若未能获取到则返回 false;

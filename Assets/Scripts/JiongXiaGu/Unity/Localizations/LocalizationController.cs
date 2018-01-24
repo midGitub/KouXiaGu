@@ -173,10 +173,8 @@ namespace JiongXiaGu.Unity.Localizations
             string log = 
                 "当前语言 : " + Localization.Language.Language
                 + ", 系统语言 : " + SystemLanguage.ToString()
-                + ", 可读语言总数 : " + Localization.AvailableLanguagePacks.Count
                 + ", 可读语言 : " + string.Join(", ", Localization.AvailableLanguagePacks.Select(item => string.Format("[Language : {0}, Name : {1}]", item.Description.Language, item.Description.Name)))
-                + ", 语言组内容总数 : " + Localization.language.Count
-                + ", 语言组条目总数 : " + Localization.language.TextItemCount()
+                + ", 语言组内容总数 : " + Localization.language.LanguageDictionary.Count
                 ;
             return log;
         }

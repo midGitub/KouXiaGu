@@ -4,7 +4,7 @@
     /// <summary>
     /// 只读的语言文本字典;
     /// </summary>
-    public interface IReadOnlyLanguageDictionary
+    public interface IReadOnlyPack
     {
         /// <summary>
         /// 语言类型;

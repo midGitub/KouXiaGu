@@ -113,23 +113,6 @@ namespace JiongXiaGu.Unity.Localizations
             CheckIsSame(pack1.LanguageDictionary, pack2.LanguageDictionary);
         }
 
-        private void CheckIsSame(LanguagePack pack1, LanguagePack pack2)
-        {
-            CheckIsSame(pack1.Description, pack1.Description);
-            CheckIsSame(pack1.LanguageDictionary, pack1.LanguageDictionary);
-        }
-
-        private void CheckIsSame(LanguagePackDescription desc1, LanguagePackDescription desc2)
-        {
-            Assert.AreEqual(desc1.Name, desc2.Name);
-            Assert.AreEqual(desc1.Language, desc2.Language);
-        }
-
-        private void CheckIsSame(ILanguageDictionary dictionary1, ILanguageDictionary dictionary2)
-        {
-            Assert.IsTrue(dictionary1.IsSame(dictionary2));
-        }
-
 
         [Test]
         public void TestReadInMemory()
@@ -160,72 +143,21 @@ namespace JiongXiaGu.Unity.Localizations
         }
 
 
+        private void CheckIsSame(LanguagePack pack1, LanguagePack pack2)
+        {
+            CheckIsSame(pack1.Description, pack1.Description);
+            CheckIsSame(pack1.LanguageDictionary, pack1.LanguageDictionary);
+        }
 
-        //public void SerializeInMemory()
-        //{
-        //    var reader = new LanguagePackSerializer();
-        //    LanguagePack pack1 = CreatePack();
-        //    Stream stream = new MemoryStream();
-        //    reader.Serialize(stream, pack1);
-        //    stream.Seek(0, SeekOrigin.Begin);
-        //    var pack2 = reader.DeserializePack(stream);
+        private void CheckIsSame(LanguagePackDescription desc1, LanguagePackDescription desc2)
+        {
+            Assert.AreEqual(desc1.Name, desc2.Name);
+            Assert.AreEqual(desc1.Language, desc2.Language);
+        }
 
-        //    CheckIsSame(pack1.Description, pack2.Description);
-        //    CheckIsSame(pack1.LanguageDictionary, pack2.LanguageDictionary);
-        //}
-
-        //public void SerializeInFile()
-        //{
-        //    var reader = new LanguagePackSerializer();
-        //    LanguagePack pack1 = CreatePack();
-        //    LanguagePack pack2;
-        //    string filePath = Path.Combine(GetTempDirectory(), "ReadWritTest.zip");
-
-        //    using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-        //    {
-        //        reader.Serialize(stream, pack1);
-        //    }
-
-        //    using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-        //    {
-        //        pack2 = reader.DeserializePack(stream);
-        //    }
-
-        //    CheckIsSame(pack1.Description, pack2.Description);
-        //    CheckIsSame(pack1.LanguageDictionary, pack2.LanguageDictionary);
-        //}
-
-        //public void SerializeDescInFile()
-        //{
-        //    LanguagePackDescription desc;
-        //    var reader = new LanguagePackSerializer();
-        //    var pack1 = CreatePack();
-        //    string filePath = Path.Combine(GetTempDirectory(), "ReadDescriptionTest.zip");
-
-        //    using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-        //    {
-        //        reader.Serialize(stream, pack1);
-        //    }
-
-        //    using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-        //    {
-        //        desc = reader.Deserialize(stream);
-        //    }
-
-        //    CheckIsSame(pack1.Description, desc);
-        //}
-
-        //private string GetTempDirectory()
-        //{
-        //    string directory = Path.Combine(NUnit.TempDirectory, "Localizations");
-        //    Directory.CreateDirectory(directory);
-        //    return directory;
-        //}
-
-        //private LanguagePack CreatePack()
-        //{
-        //    var languagePack = new LanguagePack(description, languageDictionary);
-        //    return languagePack;
-        //}
+        private void CheckIsSame(ILanguageDictionary dictionary1, ILanguageDictionary dictionary2)
+        {
+            Assert.IsTrue(dictionary1.IsSame(dictionary2));
+        }
     }
 }
