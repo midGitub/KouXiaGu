@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.Localizations
 {
-    [XmlRoot(LanguageKeyValueCollection.XmlRootName)]
+    [XmlRoot(XmlRootName)]
     public class LanguageKeyValueList : LanguageKeyValueCollection
     {
         private readonly List<KeyValuePair<string, string>> list;

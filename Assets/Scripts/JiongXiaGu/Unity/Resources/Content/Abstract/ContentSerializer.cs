@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到对应资源,若未能获取到则返回异常;
         /// </summary>
-        public virtual T TryDeserialize(Content content)
+        public virtual T Deserialize(Content content)
         {
             using (var stream = content.GetInputStream(RelativePath))
             {

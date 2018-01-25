@@ -26,6 +26,18 @@ namespace JiongXiaGu.Unity.Localizations
         public string Language { get; set; }
 
         /// <summary>
+        /// 是否为默认的语言包?
+        /// </summary>
+        [XmlElement("IsDefault")]
+        public bool IsDefault { get; set; }
+
+        /// <summary>
+        /// 是否为补充包?
+        /// </summary>
+        [XmlElement("IsSupplementary")]
+        public bool IsSupplementary { get; set; }
+
+        /// <summary>
         /// 版本;
         /// </summary>
         [XmlElement("Version")]

@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// <summary>
     /// 文本字典;
     /// </summary>
-    [XmlRoot(LanguageKeyValueCollection.XmlRootName)]
+    [XmlRoot(XmlRootName)]
     public class LanguageDictionary : LanguageKeyValueCollection, ILanguageDictionary
     {
         private Dictionary<string, string> dictionary;

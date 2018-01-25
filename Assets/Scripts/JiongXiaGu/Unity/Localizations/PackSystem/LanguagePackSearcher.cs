@@ -10,7 +10,10 @@ namespace JiongXiaGu.Unity.Localizations
     public static class PackSearcher
     {
         [PathDefinition(PathDefinitionType.DataDirectory, "本地化资源目录;")]
-        internal const string LocalizationDirectoryName = "Localization";
+        internal const string MainPackDirectoryName = @"Localization";
+
+        [PathDefinition(PathDefinitionType.DataDirectory, "本地化模组补充资源目录;")]
+        internal const string SupplementaryPackDirectoryName = @"Localization/Supplementary";
 
         internal const string packFileExtension = ".zip";
 
@@ -22,15 +25,26 @@ namespace JiongXiaGu.Unity.Localizations
             get { return "*" + packFileExtension; }
         }
 
+        /// <summary>
+        /// 枚举所有语言包;
+        /// </summary>
         public static IEnumerable<LanguagePackInfo> EnumeratePack(this LanguagePackSerializer packSerializer, Content content, SearchOption searchOption)
         {
-            return EnumeratePack(packSerializer, content, LocalizationDirectoryName, searchOption);
+            return Enumerate(packSerializer, content, MainPackDirectoryName, searchOption);
+        }
+
+        /// <summary>
+        /// 枚举所有语言补充包;
+        /// </summary>
+        public static IEnumerable<LanguagePackInfo> EnumerateSupplementaryPack(this LanguagePackSerializer packSerializer, Content content, SearchOption searchOption)
+        {
+            return Enumerate(packSerializer, content, SupplementaryPackDirectoryName, searchOption);
         }
 
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        public static IEnumerable<LanguagePackInfo> EnumeratePack(this LanguagePackSerializer packSerializer, Content content, string rootDirectory, SearchOption searchOption)
+        public static IEnumerable<LanguagePackInfo> Enumerate(this LanguagePackSerializer packSerializer, Content content, string rootDirectory, SearchOption searchOption)
         {
             if (packSerializer == null)
                 throw new ArgumentNullException(nameof(packSerializer));
