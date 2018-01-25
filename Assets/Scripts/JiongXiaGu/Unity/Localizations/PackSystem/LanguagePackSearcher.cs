@@ -6,6 +6,63 @@ using System.IO;
 namespace JiongXiaGu.Unity.Localizations
 {
 
+
+    public static class PackSearcher
+    {
+        [PathDefinition(PathDefinitionType.DataDirectory, "本地化资源目录;")]
+        internal const string LocalizationDirectoryName = "Localization";
+
+        internal const string packFileExtension = ".zip";
+
+        /// <summary>
+        /// 语言包搜索模式;
+        /// </summary>
+        private static string LanguagePackFileSearchPattern
+        {
+            get { return "*" + packFileExtension; }
+        }
+
+        public static IEnumerable<LanguagePackInfo> EnumeratePack(this LanguagePackSerializer packSerializer, Content content, SearchOption searchOption)
+        {
+            return EnumeratePack(packSerializer, content, LocalizationDirectoryName, searchOption);
+        }
+
+        /// <summary>
+        /// 枚举所有可用的语言文件;文件命名需要符合要求;
+        /// </summary>
+        public static IEnumerable<LanguagePackInfo> EnumeratePack(this LanguagePackSerializer packSerializer, Content content, string rootDirectory, SearchOption searchOption)
+        {
+            if (packSerializer == null)
+                throw new ArgumentNullException(nameof(packSerializer));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            foreach (string entry in content.EnumerateFiles(rootDirectory, LanguagePackFileSearchPattern, searchOption))
+            {
+                LanguagePackInfo languagePack;
+                try
+                {
+                    using (var stream = content.GetInputStream(entry))
+                    {
+                        var description = packSerializer.Deserialize(stream);
+                        languagePack = new LanguagePackInfo(description, content, entry);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    UnityEngine.Debug.Log(ex);
+                    languagePack = null;
+                }
+
+                if (languagePack != null)
+                {
+                    yield return languagePack;
+                }
+            }
+        }
+    }
+
+
     /// <summary>
     /// 搜索可使用的语言文件;
     /// </summary>
@@ -30,7 +87,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;
         /// </summary>
-        public List<LanguagePackInfo> FindPacks(IEnumerable<ModificationContent> loadableContents)
+        public List<LanguagePackInfo> FindPacks(IEnumerable<Content> loadableContents)
         {
             List<LanguagePackInfo> languagePacks = new List<LanguagePackInfo>();
 
@@ -46,7 +103,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;
         /// </summary>
-        public IEnumerable<LanguagePackInfo> EnumeratePack(ModificationContent loadableContentInfo)
+        public IEnumerable<LanguagePackInfo> EnumeratePack(Content loadableContentInfo)
         {
             return EnumeratePack(loadableContentInfo, SearchOption.TopDirectoryOnly);
         }
@@ -54,7 +111,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 枚举所有可用的语言文件;文件命名需要符合要求;
         /// </summary>
-        public IEnumerable<LanguagePackInfo> EnumeratePack(ModificationContent contentConstruct, SearchOption searchOption)
+        public IEnumerable<LanguagePackInfo> EnumeratePack(Content contentConstruct, SearchOption searchOption)
         {
             foreach (string entry in contentConstruct.EnumerateFiles(LocalizationDirectoryName, LanguagePackFileSearchPattern, searchOption))
             {

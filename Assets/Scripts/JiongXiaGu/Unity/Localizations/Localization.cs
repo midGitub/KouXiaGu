@@ -5,14 +5,11 @@ using System.Linq;
 namespace JiongXiaGu.Unity.Localizations
 {
 
-
     /// <summary>
-    /// 本地化信息(部分方法线程安全);
+    /// 本地化信息(仅Unity线程调用);
     /// </summary>
     public static class Localization
     {
-        private static readonly object asyncLock = new object();
-
         /// <summary>
         /// 当前使用的语言包;(若不存在则为Null)
         /// </summary>
@@ -28,20 +25,6 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         private static readonly ObserverCollection<LanguageChangedEvent> observers = new ObserverLinkedList<LanguageChangedEvent>();
 
-        ///// <summary>
-        ///// 主要语言字典;
-        ///// </summary>
-        //public static LanguagePack MainPack
-        //{
-        //    get
-        //    {
-        //        lock (asyncLock)
-        //        {
-        //            return language.MainPack;
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// 当前使用的语言字典;(若不存在则为Null)
         /// </summary>
@@ -50,52 +33,13 @@ namespace JiongXiaGu.Unity.Localizations
             get { return language; }
         }
 
-        ///// <summary>
-        ///// 补充语言字典合集快照;
-        ///// </summary>
-        //public static LanguagePack[] SupplementPacks
-        //{
-        //    get
-        //    {
-        //        lock (asyncLock)
-        //        {
-        //            return language.SupplementPacks.ToArray();
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// 设置新的语言(此方法不会通知观察者);
         /// </summary>
         public static void SetLanguage(LanguagePack pack)
         {
-            lock (asyncLock)
-            {
-                language = pack;
-            }
+            language = pack;
         }
-
-        ///// <summary>
-        ///// 设置新的语言(此方法不会通知观察者);
-        ///// </summary>
-        //public static void SetLanguage(LanguageGroup group)
-        //{
-        //    lock (asyncLock)
-        //    {
-        //        language = group;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 添加补充的语言包(此方法不会通知观察者);
-        ///// </summary>
-        //public static void AddSupplementPack(LanguagePack pack)
-        //{
-        //    lock (asyncLock)
-        //    {
-        //        language.Add(pack);
-        //    }
-        //}
 
         /// <summary>
         /// 尝试获取到对应文本,若未能获取到则返回 false;
@@ -115,14 +59,11 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public static IDisposable Subscribe(IObserver<LanguageChangedEvent> observer)
         {
-            lock (asyncLock)
+            if (!observers.Contains(observer))
             {
-                if (!observers.Contains(observer))
-                {
-                    return observers.Add(observer);
-                }
-                return null;
+                return observers.Add(observer);
             }
+            return null;
         }
 
         /// <summary>
@@ -130,10 +71,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public static bool Unsubscribe(IObserver<LanguageChangedEvent> observer)
         {
-            lock (asyncLock)
-            {
-                return observers.Remove(observer);
-            }
+            return observers.Remove(observer);
         }
 
         /// <summary>
@@ -141,14 +79,11 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         public static void NotifyLanguageChanged()
         {
-            lock (asyncLock)
+            LanguageChangedEvent changedEvent = new LanguageChangedEvent()
             {
-                LanguageChangedEvent changedEvent = new LanguageChangedEvent()
-                {
-                    LanguageDictionary = language,
-                };
-                observers.NotifyNext(changedEvent);
-            }
+                LanguageDictionary = language,
+            };
+            observers.NotifyNext(changedEvent);
         }
     }
 }

@@ -12,10 +12,10 @@ namespace JiongXiaGu.Unity.Localizations
 {
 
     /// <summary>
-    /// 提供在Unity编辑器内调整具体参数;
+    /// 搜索模组语言资源,加载合适的语言资源,加载合适的模组语言资源;
     /// </summary>
     [DisallowMultipleComponent]
-    internal class LocalizationController : MonoBehaviour, IBasicResourceInitializeHandle
+    internal class ModificationResourceInitializer : MonoBehaviour, IBasicResourceInitializeHandle
     {
         private const string InitializerName = "本地化组件初始化";
 
@@ -66,8 +66,8 @@ namespace JiongXiaGu.Unity.Localizations
             {
                 try
                 {
-                    Content content = packInfo.ContentConstruct;
-                    using (var stream = content.GetInputStream(packInfo.LoadableEntry))
+                    Content content = packInfo.Content;
+                    using (var stream = content.GetInputStream(packInfo.RelativePath))
                     {
                         languagePack = packSerializer.DeserializePack(stream);
                         break;

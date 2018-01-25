@@ -5,34 +5,41 @@ using System.Xml.Serialization;
 namespace JiongXiaGu.Unity.Localizations
 {
 
+
+    public interface ILanguagePackInfo
+    {
+        LanguagePackDescription Description { get; }
+        Stream GetInputStream();
+        Stream GetOutputStream();
+    }
+
     /// <summary>
     /// 指语言包信息,但是不保证文件可以正常读取;
     /// </summary>
-    public class LanguagePackInfo
+    public class LanguagePackInfo : ILanguagePackInfo
     {
-        /// <summary>
-        /// 描述;
-        /// </summary>
         public LanguagePackDescription Description { get; private set; }
-
-        /// <summary>
-        /// 资源;
-        /// </summary>
-        public Content ContentConstruct { get; private set; }
-
-        /// <summary>
-        /// 资源入口;
-        /// </summary>
-        public string LoadableEntry { get; private set; }
+        public Content Content { get; private set; }
+        public string RelativePath { get; private set; }
 
         /// <summary>
         /// 指定语言包文件信息;
         /// </summary>
-        public LanguagePackInfo(LanguagePackDescription description, Content contentConstruct, string loadableEntry)
+        public LanguagePackInfo(LanguagePackDescription description, Content content, string relativePath)
         {
             Description = description;
-            ContentConstruct = contentConstruct;
-            LoadableEntry = loadableEntry;
+            Content = content;
+            RelativePath = relativePath;
+        }
+
+        public Stream GetInputStream()
+        {
+            return Content.GetInputStream(RelativePath);
+        }
+
+        public Stream GetOutputStream()
+        {
+            return Content.GetOutputStream(RelativePath);
         }
     }
 }
