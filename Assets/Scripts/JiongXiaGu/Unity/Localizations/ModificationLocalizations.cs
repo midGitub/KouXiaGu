@@ -93,7 +93,7 @@ namespace JiongXiaGu.Unity.Localizations
                 DeserializeConfig(configSerializer, languagePack.Description);
             }
 
-            Localization.SetLanguage(languagePack);
+            Localization.LanguagePack = languagePack;
             Localization.NotifyLanguageChanged();
             UnityDebugHelper.SuccessfulReport(InitializerName, () => GetInfoLog());
         }
@@ -206,6 +206,9 @@ namespace JiongXiaGu.Unity.Localizations
             }
         }
 
+        [SerializeField]
+        private bool IsReadAsSplitPack;
+
         /// <summary>
         /// 尝试读取到语言包,不返回异常;
         /// </summary>
@@ -215,7 +218,14 @@ namespace JiongXiaGu.Unity.Localizations
             {
                 try
                 {
-                    languagePack = packSerializer.DeserializePack(stream);
+                    if (IsReadAsSplitPack)
+                    {
+                        languagePack = packSerializer.DeserializeSplit(stream);
+                    }
+                    else
+                    {
+                        languagePack = packSerializer.DeserializePack(stream);
+                    }
                     return true;
                 }
                 catch (Exception ex)
@@ -332,10 +342,10 @@ namespace JiongXiaGu.Unity.Localizations
         private string GetInfoLog()
         {
             string log = 
-                "当前语言 : " + Localization.Language.Language
+                "当前语言 : " + Localization.LanguagePack.Description.Language
                 + ", 系统语言 : " + SystemLanguage.ToString()
                 + ", 可读语言 : " + string.Join(", ", Localization.AvailableLanguagePacks.Select(item => string.Format("[Language : {0}, Name : {1}]", item.Description.Language, item.Description.Name)))
-                + ", 语言组内容总数 : " + Localization.language.LanguageDictionary.Count
+                + ", 语言组内容总数 : " + Localization.LanguagePack.LanguageDictionary.Count
                 ;
             return log;
         }

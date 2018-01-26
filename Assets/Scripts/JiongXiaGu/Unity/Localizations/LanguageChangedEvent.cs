@@ -8,6 +8,6 @@
         /// <summary>
         /// 文本字典;
         /// </summary>
-        public IReadOnlyPack LanguageDictionary { get; set; }
+        public IReadOnlyPack LanguagePack { get; set; }
     }
 }

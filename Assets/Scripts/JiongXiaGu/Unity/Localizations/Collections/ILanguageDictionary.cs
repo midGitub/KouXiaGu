@@ -2,10 +2,15 @@
 
 namespace JiongXiaGu.Unity.Localizations
 {
-    public interface ILanguageDictionary : IEnumerable<KeyValuePair<string, string>>
+
+    public interface IReadOnlyLanguageDictionary : IEnumerable<KeyValuePair<string, string>>
     {
         int Count { get; }
-        void Add(string key, string value);
         bool TryGetValue(string key, out string value);
+    }
+
+    public interface ILanguageDictionary : IReadOnlyLanguageDictionary, IEnumerable<KeyValuePair<string, string>>
+    {
+        void Add(string key, string value);
     }
 }

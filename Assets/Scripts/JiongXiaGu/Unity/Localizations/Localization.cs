@@ -13,46 +13,18 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 当前使用的语言包;(若不存在则为Null)
         /// </summary>
-        internal static LanguagePack language;
+        public static LanguagePack LanguagePack { get; internal set; }
+        public static ILanguageDictionary LanguageDictionary => LanguagePack != null ? LanguagePack.LanguageDictionary : null;
 
         /// <summary>
         /// 所有可用的语言包(在进行初始化之后,仅提供Unity线程对此内容进行变更);
         /// </summary>
-        internal static List<LanguagePackInfo> AvailableLanguagePacks { get; set; }
+        public static List<LanguagePackInfo> AvailableLanguagePacks { get; set; }
 
         /// <summary>
         /// 观察者合集;
         /// </summary>
         private static readonly ObserverCollection<LanguageChangedEvent> observers = new ObserverLinkedList<LanguageChangedEvent>();
-
-        /// <summary>
-        /// 当前使用的语言字典;(若不存在则为Null)
-        /// </summary>
-        public static IReadOnlyPack Language
-        {
-            get { return language; }
-        }
-
-        /// <summary>
-        /// 设置新的语言(此方法不会通知观察者);
-        /// </summary>
-        public static void SetLanguage(LanguagePack pack)
-        {
-            language = pack;
-        }
-
-        /// <summary>
-        /// 尝试获取到对应文本,若未能获取到则返回 false;
-        /// </summary>
-        public static bool TryTranslate(string key, out string value)
-        {
-            if (language != null)
-            {
-                return language.TryTranslate(key, out value);
-            }
-            value = default(string);
-            return false;
-        }
 
         /// <summary>
         /// 观察者订阅,并返回取消处置器;若已经加入了观察者合集,则返回Null;
@@ -81,7 +53,7 @@ namespace JiongXiaGu.Unity.Localizations
         {
             LanguageChangedEvent changedEvent = new LanguageChangedEvent()
             {
-                LanguageDictionary = language,
+                LanguagePack = LanguagePack,
             };
             observers.NotifyNext(changedEvent);
         }

@@ -11,6 +11,7 @@ namespace JiongXiaGu.Unity.Localizations
     {
         private Dictionary<string, LanguageValue> dictionary;
         public int Count => dictionary.Count;
+        public IDictionary<string, LanguageValue> Dictionary => dictionary;
 
         public LanguageSplitDictionary()
         {
@@ -51,20 +52,7 @@ namespace JiongXiaGu.Unity.Localizations
             }
         }
 
-        public SplitLanguageCollection Split()
-        {
-            SplitLanguageCollection collection = new SplitLanguageCollection();
-
-            foreach (var item in dictionary)
-            {
-                LanguageValue languageValue = item.Value;
-                collection.Add(languageValue.Tag, item.Key, languageValue.Value);
-            }
-
-            return collection;
-        }
-
-        bool ILanguageDictionary.TryGetValue(string key, out string value)
+        public bool TryGetValue(string key, out string value)
         {
             LanguageValue languageValue;
             if (dictionary.TryGetValue(key, out languageValue))
@@ -109,30 +97,6 @@ namespace JiongXiaGu.Unity.Localizations
                 string str = string.Format("[Tag:{0}, Value:{1}]", Tag, Value);
                 return str;
             }
-        }
-    }
-
-    public class SplitLanguageCollection
-    {
-        private readonly List<KeyValuePair<string, LanguageKeyValueList>> list;
-        public IEnumerable<KeyValuePair<string, LanguageKeyValueList>> List => list;
-
-        public SplitLanguageCollection()
-        {
-            list = new List<KeyValuePair<string, LanguageKeyValueList>>();
-        }
-
-        public void Add(string tag, string key, string value)
-        {
-            var languageKeyValueList = list.Find(item => item.Key == tag);
-
-            if (languageKeyValueList.Value == null)
-            {
-                languageKeyValueList = new KeyValuePair<string, LanguageKeyValueList>(tag, new LanguageKeyValueList());
-                list.Add(languageKeyValueList);
-            }
-
-            languageKeyValueList.Value.Add(key, value);
         }
     }
 }

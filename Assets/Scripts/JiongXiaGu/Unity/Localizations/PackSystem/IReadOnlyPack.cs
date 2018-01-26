@@ -6,14 +6,7 @@
     /// </summary>
     public interface IReadOnlyPack
     {
-        /// <summary>
-        /// 语言类型;
-        /// </summary>
-        string Language { get; }
-
-        /// <summary>
-        /// 尝试获取到翻译文本,若未能获取到返回false;
-        /// </summary>
-        bool TryTranslate(string key, out string value);
+        LanguagePackDescription Description { get; }
+        IReadOnlyLanguageDictionary LanguageDictionary { get; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
 using JiongXiaGu.Unity.Resources;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace JiongXiaGu.Unity.Localizations
@@ -250,7 +251,7 @@ namespace JiongXiaGu.Unity.Localizations
                 zipOutputStream.PutNextEntry(descZipEntry);
                 descriptionSerializer.Value.Serialize(zipOutputStream, description);
 
-                SplitLanguageCollection collection = dictionary.Split();
+                SplitLanguageCollection collection = Split(dictionary);
 
                 foreach (var value in collection.List)
                 {
@@ -264,74 +265,44 @@ namespace JiongXiaGu.Unity.Localizations
             }
         }
 
+        public SplitLanguageCollection Split(LanguageSplitDictionary dictionary)
+        {
+            SplitLanguageCollection collection = new SplitLanguageCollection();
 
+            foreach (var item in dictionary.Dictionary)
+            {
+                LanguageSplitDictionary.LanguageValue languageValue = item.Value;
+                collection.Add(languageValue.Tag, item.Key, languageValue.Value);
+            }
 
+            return collection;
+        }
 
+        public class SplitLanguageCollection
+        {
+            private readonly List<KeyValuePair<string, LanguageKeyValueList>> list;
+            public IEnumerable<KeyValuePair<string, LanguageKeyValueList>> List => list;
 
-        ///// <summary>
-        ///// 读取语言包;
-        ///// </summary>
-        //[Obsolete]
-        //public LanguagePack DeserializePack(Stream stream)
-        //{
-        //    LanguagePackDescription? description = null;
-        //    LanguageDictionary dictionary = null;
+            public SplitLanguageCollection()
+            {
+                list = new List<KeyValuePair<string, LanguageKeyValueList>>();
+            }
 
-        //    using (ZipInputStream zipInputStream = new ZipInputStream(stream))
-        //    {
-        //        zipInputStream.IsStreamOwner = false;
+            public void Add(string tag, string key, string value)
+            {
+                if (string.IsNullOrWhiteSpace(tag))
+                    tag = "Main";
 
-        //        ZipEntry entry;
-        //        while ((entry = zipInputStream.GetNextEntry()) != null)
-        //        {
-        //            if (entry.IsFile)
-        //            {
-        //                if (!description.HasValue && entry.Name == descriptionFileName)
-        //                {
-        //                    description = descriptionSerializer.Value.Deserialize(zipInputStream);
-        //                }
-        //                else if (entry.Name.EndsWith(dictionaryFileExtension))
-        //                {
-        //                    var value = languageSerializer.Value.Deserialize(zipInputStream);
+                var languageKeyValueList = list.Find(item => item.Key == tag);
 
-        //                    if (dictionary == null)
-        //                    {
-        //                        dictionary = new LanguageDictionary();
-        //                    }
+                if (languageKeyValueList.Value == null)
+                {
+                    languageKeyValueList = new KeyValuePair<string, LanguageKeyValueList>(tag, new LanguageKeyValueList());
+                    list.Add(languageKeyValueList);
+                }
 
-        //                    dictionary.Add(value.EnumerateKeyValue());
-        //                }
-        //                else
-        //                {
-        //                    continue;
-        //                }
-        //            }
-        //        }
-
-        //        if (description.HasValue && dictionary != null)
-        //            return new LanguagePack(description.Value, dictionary);
-        //        else
-        //            throw new FileNotFoundException();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 输出语言包;
-        ///// </summary>
-        //public void SerializePack(Stream stream, LanguagePack pack)
-        //{
-        //    using (ZipOutputStream zipOutputStream = new ZipOutputStream(stream))
-        //    {
-        //        zipOutputStream.IsStreamOwner = false;
-
-        //        ZipEntry descZipEntry = new ZipEntry(descriptionFileName);
-        //        zipOutputStream.PutNextEntry(descZipEntry);
-        //        descriptionSerializer.Value.Serialize(zipOutputStream, pack.Description);
-
-        //        ZipEntry dictionaryZipEntry = new ZipEntry(dictionaryFileExtension);
-        //        zipOutputStream.PutNextEntry(dictionaryZipEntry);
-        //        dictionarySerializer.Serialize(zipOutputStream, pack.LanguageDictionary);
-        //    }
-        //}
+                languageKeyValueList.Value.Add(key, value);
+            }
+        }
     }
 }

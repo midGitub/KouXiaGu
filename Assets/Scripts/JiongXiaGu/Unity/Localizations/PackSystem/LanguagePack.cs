@@ -11,17 +11,14 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 描述;
         /// </summary>
-        public LanguagePackDescription Description { get; set; }
+        public LanguagePackDescription Description { get; private set; }
 
         /// <summary>
         /// 文本字典;
         /// </summary>
-        public ILanguageDictionary LanguageDictionary { get; set; }
+        public ILanguageDictionary LanguageDictionary { get; private set; }
 
-        /// <summary>
-        /// 语言名;
-        /// </summary>
-        public string Language => Description.Language;
+        IReadOnlyLanguageDictionary IReadOnlyPack.LanguageDictionary => LanguageDictionary;
 
         public LanguagePack(LanguagePackDescription description) : this(description, null)
         {
@@ -31,11 +28,6 @@ namespace JiongXiaGu.Unity.Localizations
         {
             Description = description;
             LanguageDictionary = languageDictionary;
-        }
-
-        public bool TryTranslate(string key, out string value)
-        {
-            return LanguageDictionary.TryGetValue(key, out value);
         }
     }
 }
