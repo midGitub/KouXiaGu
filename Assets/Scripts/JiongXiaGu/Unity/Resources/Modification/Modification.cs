@@ -65,6 +65,28 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
+
+        /// <summary>
+        /// 尝试获取到对应模组信息;
+        /// </summary>
+        public static bool TryGetInfo(string id, out ModificationInfo info)
+        {
+            int index = All.FindIndex(item => item.Description.ID == id);
+            if (index >= 0)
+            {
+                info = All[index];
+                return true;
+            }
+            else
+            {
+                info = default(ModificationInfo);
+                return false;
+            }
+        }
+
+
+
+
         /// <summary>
         /// 设置读取顺序;
         /// </summary>

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Unity.Resources
 {
 
-
     public struct ModificationInfo
     {
         public IContentInfo ContentInfo { get; private set; }
