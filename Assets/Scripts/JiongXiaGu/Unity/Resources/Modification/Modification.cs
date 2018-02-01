@@ -22,17 +22,17 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 所有模组信息,不包括核心资源;
         /// </summary>
-        public static List<ModificationInfo> All { get; private set; }
+        public static List<ModificationInfo> ModificationInfos { get; private set; }
 
         /// <summary>
         /// 需要读取的模组资源,包括核心资源;
         /// </summary>
-        internal static List<ModificationContent> Mods { get; private set; }
+        internal static List<ModificationContent> ModificationContents { get; private set; }
 
         /// <summary>
         /// 默认的读取顺序,若为Null,则从配置获取;
         /// </summary>
-        public static ModificationOrder Order { get; private set; }
+        public static ActiveModification? DefaultActiveModification { get; private set; }
 
         /// <summary>
         /// 资源合集;
@@ -52,29 +52,27 @@ namespace JiongXiaGu.Unity.Resources
         internal static void SearcheAll()
         {
             ModificationSearcher contentSearcher = new ModificationSearcher();
-            All = new List<ModificationInfo>();
+            ModificationInfos = new List<ModificationInfo>();
 
             string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
             Core = contentSearcher.Factory.Read(directory);
 
             var mods = contentSearcher.Searche(Resource.ModDirectory);
-            All.AddRange(mods);
+            ModificationInfos.AddRange(mods);
 
             var userMods = contentSearcher.Searche(Resource.UserModDirectory);
-            All.AddRange(userMods);
+            ModificationInfos.AddRange(userMods);
         }
-
-
 
         /// <summary>
         /// 尝试获取到对应模组信息;
         /// </summary>
         public static bool TryGetInfo(string id, out ModificationInfo info)
         {
-            int index = All.FindIndex(item => item.Description.ID == id);
+            int index = ModificationInfos.FindIndex(item => item.Description.ID == id);
             if (index >= 0)
             {
-                info = All[index];
+                info = ModificationInfos[index];
                 return true;
             }
             else
@@ -90,13 +88,13 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 设置读取顺序;
         /// </summary>
-        public static void SetOrder(ModificationOrder order)
+        public static void SetOrder(ActiveModification order)
         {
             UnityThread.ThrowIfNotUnityThread();
             if (IsInitializing)
                 throw new InvalidOperationException("正在初始化,无法变更!");
 
-            Order = order;
+            DefaultActiveModification = order;
         }
 
         /// <summary>
@@ -159,17 +157,17 @@ namespace JiongXiaGu.Unity.Resources
                 await Program.Initialize();
 
                 progress.Report(new ProgressInfo(0.2f, "模组排序"));
-                Mods = InternalGetMods();
-                SharedContent = new SharedContent(Mods);
+                ModificationContents = GetModificationContent();
+                SharedContent = new SharedContent(ModificationContents);
 
                 progress.Report(new ProgressInfo(0.3f, "模组初始化"));
                 var basicResourceProgress = new LocalProgress(progress, 0.3f, 0.5f);
-                await BasicResourceInitializer.StartInitialize(Mods, basicResourceProgress, token);
+                await BasicResourceInitializer.StartInitialize(ModificationContents, basicResourceProgress, token);
                 basicInitializationTask.SetResult(null);
 
                 progress.Report(new ProgressInfo(0.5f, "模组数据初始化"));
                 var resourceProgress = new LocalProgress(progress, 0.5f, 1f);
-                await ResourceInitializer.StartInitialize(Mods, resourceProgress, token);
+                await ResourceInitializer.StartInitialize(ModificationContents, resourceProgress, token);
 
                 progress.Report(new ProgressInfo(1f, "初始化完毕"));
 
@@ -190,105 +188,125 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到模组内容读取顺序;
+        /// 根据预先定义的模组顺序获取到激活的模组(按先后读取顺序);
         /// </summary>
-        private static List<ModificationContent> InternalGetMods()
+        public static List<ModificationInfo> GetActiveModificationInfos()
         {
-            if (Order == null)
+            try
             {
-                ModificationOrder order;
-                ModificationOrderSerializer serializer = new ModificationOrderSerializer();
+                ActiveModification order;
+                ActiveModificationSerializer serializer = new ActiveModificationSerializer();
 
-                if (serializer.TryDeserialize(Resource.UserConfigContent, out order))
+                order = serializer.Deserialize();
+                return GetActiveModificationInfos(order);
+            }
+            catch
+            {
+                List<ModificationInfo> newList = new List<ModificationInfo>();
+                return newList;
+            }
+        }
+
+        /// <summary>
+        /// 根据模组顺序获取到激活的模组(按先后读取顺序);
+        /// </summary>
+        public static List<ModificationInfo> GetActiveModificationInfos(ActiveModification activeModification)
+        {
+            List<ModificationInfo> newList = new List<ModificationInfo>();
+
+            foreach (var id in activeModification.IDList)
+            {
+                int index = ModificationInfos.FindIndex(info => info.Description.ID == id);
+                if (index >= 0)
                 {
-                    return InternalGetMods_Auto(order);
+                    ModificationInfo info = ModificationInfos[index];
+                    newList.Add(info);
                 }
+            }
 
-                if (serializer.TryDeserialize(Resource.ConfigContent, out order))
+            return newList;
+        }
+
+        /// <summary>
+        /// 根据预先定义的模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;
+        /// </summary>
+        private static List<ModificationContent> GetModificationContent()
+        {
+            if (DefaultActiveModification == null)
+            {
+                try
                 {
-                    return InternalGetMods_Auto(order);
-                }
+                    ActiveModification order;
+                    ActiveModificationSerializer serializer = new ActiveModificationSerializer();
 
-                order = new ModificationOrder();
-                return InternalGetMods_Auto(order);
+                    order = serializer.Deserialize();
+                    return GetModificationContent(order);
+                }
+                catch
+                {
+                    List<ModificationContent> newList = new List<ModificationContent>();
+                    newList.Add(Core);
+                    return newList;
+                }
             }
             else
             {
-                var mod = InternalGetMods_Auto(Order);
+                var mod = GetModificationContent(DefaultActiveModification.Value);
                 return mod;
             }
         }
 
-        private static List<ModificationContent> InternalGetMods_Auto(ModificationOrder order)
+        /// <summary>
+        /// 根据模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;
+        /// </summary>
+        private static List<ModificationContent> GetModificationContent(ActiveModification activeModification)
         {
-            if (Mods == null)
+            List<ModificationContent> newList = new List<ModificationContent>();
+            newList.Add(Core);
+            ModificationFactory factory = new ModificationFactory();
+
+            if (ModificationContents == null)
             {
-                return InternalGetMods(order);
+                foreach (var info in activeModification.IDList)
+                {
+                    ModificationContent content = factory.Read(info);
+                    newList.Add(content);
+                }
             }
             else
             {
-                return InternalGetMods(Mods, order);
-            }
-        }
+                List<ModificationContent> old = ModificationContents;
 
-        /// <summary>
-        /// 获取到模组内容读取顺序;
-        /// </summary>
-        private static List<ModificationContent> InternalGetMods(ModificationOrder order)
-        {
-            List<ModificationContent> newList = new List<ModificationContent>();
-            newList.Add(Core);
-
-            ModificationFactory factory = new ModificationFactory();
-
-            foreach (var info in order)
-            {
-                ModificationContent content = factory.Read(info);
-                newList.Add(content);
-            }
-
-            return newList;
-        }
-
-        /// <summary>
-        /// 获取到模组内容读取顺序;
-        /// </summary>
-        private static List<ModificationContent> InternalGetMods(List<ModificationContent> old, ModificationOrder order)
-        {
-            List<ModificationContent> newList = new List<ModificationContent>();
-            newList.Add(Core);
-
-            ModificationFactory factory = new ModificationFactory();
-
-            foreach (var info in order)
-            {
-                ModificationContent content;
-                int index = old.FindIndex(oldContent => oldContent.Description.ID == info);
-                if (index >= 0)
+                foreach (var info in activeModification.IDList)
                 {
-                    content = old[index];
-                    old[index] = null;
-                }
-                else
-                {
-                    content = factory.Read(info);
+                    ModificationContent content;
+                    int index = old.FindIndex(oldContent => oldContent.Description.ID == info);
+                    if (index >= 0)
+                    {
+                        content = old[index];
+                        old[index] = null;
+                    }
+                    else
+                    {
+                        content = factory.Read(info);
+                    }
+
+                    newList.Add(content);
                 }
 
-                newList.Add(content);
-            }
-
-            foreach (var mod in old)
-            {
-                if (mod != null)
+                foreach (var mod in old)
                 {
-                    mod.UnloadAssetBundlesAll(true);
-                    mod.Dispose();
+                    if (mod != null)
+                    {
+                        mod.UnloadAssetBundlesAll(true);
+                        mod.Dispose();
+                    }
                 }
             }
 
             return newList;
         }
-
+        
         public struct InitializationStage
         {
             public Task BasicInitializationTask { get; private set; }

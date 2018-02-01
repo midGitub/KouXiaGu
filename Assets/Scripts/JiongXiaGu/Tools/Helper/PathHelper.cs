@@ -143,9 +143,9 @@ namespace JiongXiaGu
         }
 
         /// <summary>
-        /// 确认是否仅为文件名,不表示一条路径;
+        /// 确认不表示一条路径;
         /// </summary>
-        public static bool IsFileName(string fileName)
+        public static bool NonPath(string fileName)
         {
             int index = fileName.IndexOfAny(DirectorySeparatorChars);
             if (index >= 0)

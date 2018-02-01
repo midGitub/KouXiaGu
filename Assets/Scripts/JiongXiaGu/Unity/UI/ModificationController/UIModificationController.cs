@@ -30,6 +30,11 @@ namespace JiongXiaGu.Unity.UI
 
         public UIModificationItem SelectTarget { get; private set; }
 
+        private void Start()
+        {
+            Refresh();
+        }
+
         public void SetTargetActive()
         {
             if (activeModificationContent == null)
@@ -108,9 +113,39 @@ namespace JiongXiaGu.Unity.UI
         /// </summary>
         public void Refresh()
         {
-            throw new NotImplementedException();
+            var activeModificationInfos = Modification.GetActiveModificationInfos();
+            var activeDescriptions = activeModificationInfos.Select(item => item.Description);
+            SetActiveModificationList(activeDescriptions);
+
+            var idleModificationInfos = new List<ModificationInfo>();
+            foreach (var modificationInfo in Modification.ModificationInfos)
+            {
+                if (!activeModificationInfos.Contains(modificationInfo))
+                {
+                    idleModificationInfos.Add(modificationInfo);
+                }
+            }
+            var idleDescriptions = idleModificationInfos.Select(item => item.Description);
+            SetIdleModificationList(idleDescriptions);
         }
 
+        public void WriteConfig()
+        {
+            var activeModificationID = EnumerateActiveModificationInfo().Select(item => item.ID);
+            var activeModification = new ActiveModification(activeModificationID);
+
+            ActiveModificationSerializer activeModificationSerializer = new ActiveModificationSerializer();
+
+            using (Resource.UserConfigContent.BeginUpdate())
+            {
+                activeModificationSerializer.Serialize(Resource.UserConfigContent, activeModification);
+            }
+        }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
 
         public void SetActiveModificationList(IEnumerable<ModificationDescription> descriptions)
         {
@@ -159,6 +194,7 @@ namespace JiongXiaGu.Unity.UI
         private void CreateAt(Transform parent, ModificationDescription description)
         {
             var item = Instantiate(uIModificationItemPrefab, parent);
+            item.Controller = this;
             item.SetDescription(description);
             item.ToggleObject.group = toggleGroupObject;
         }

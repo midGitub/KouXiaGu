@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -50,7 +51,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory, "*", searchOption))
             {
-                string directoryName = Path.GetDirectoryName(directory);
+                string directoryName = Path.GetFileName(directory);
                 if (!Ignore(directoryName))
                 {
                     ModificationInfo info;
@@ -77,16 +78,17 @@ namespace JiongXiaGu.Unity.Resources
             foreach (var filePath in Directory.EnumerateFiles(modsDirectory, "*.zmod", searchOption))
             {
                 string fileName = Path.GetFileName(filePath);
-                if (Ignore(fileName))
+                if (!Ignore(fileName))
                 {
                     ModificationInfo info;
 
                     try
                     {
-                        info = Factory.ReadZipInfo(fileName);
+                        info = Factory.ReadZipInfo(filePath);
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Debug.LogWarning(string.Format("[读取模组失败]Path : {0}, Exception : {1}", filePath, ex));
                         continue;
                     }
 

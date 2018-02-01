@@ -336,5 +336,36 @@ namespace JiongXiaGu.Helper
             bool _isMatch = PathHelper.IsMatch(input, pattern);
             Assert.AreEqual(isMatch, _isMatch);
         }
+
+
+        [Test]
+        public void GetFileName_Test1()
+        {
+            string path = @"C:/jjj/iqwe";
+            string name = "iqwe";
+
+            string _name = Path.GetFileName(path);
+            Assert.AreEqual(name, _name);
+        }
+
+        [Test]
+        public void GetFileName_Test2()
+        {
+            string path = @"C:/jjj/iqwe/";
+            string name = "";
+
+            string _name = Path.GetFileName(path);
+            Assert.AreEqual(name, _name);
+        }
+
+        [Test]
+        public void GetFileName_Test3()
+        {
+            string path = @"C:/jjj/iqwe//////\/\";
+            string name = "";
+
+            string _name = Path.GetFileName(path);
+            Assert.AreEqual(name, _name);
+        }
     }
 }

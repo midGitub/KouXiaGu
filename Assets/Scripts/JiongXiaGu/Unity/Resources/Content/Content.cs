@@ -84,7 +84,7 @@ namespace JiongXiaGu.Unity.Resources
                 case SearchOption.TopDirectoryOnly:
                     foreach (string entry in fileNames)
                     {
-                        if (PathHelper.IsFileName(entry))
+                        if (PathHelper.NonPath(entry))
                         {
                             string fileName = PathHelper.GetFileName(entry);
                             if (PathHelper.IsMatch(fileName, searchPattern))
