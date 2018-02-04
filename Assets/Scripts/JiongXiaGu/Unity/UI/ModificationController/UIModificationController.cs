@@ -117,14 +117,7 @@ namespace JiongXiaGu.Unity.UI
             var activeDescriptions = activeModificationInfos.Select(item => item.Description);
             SetActiveModificationList(activeDescriptions);
 
-            var idleModificationInfos = new List<ModificationInfo>();
-            foreach (var modificationInfo in Modification.ModificationInfos)
-            {
-                if (!activeModificationInfos.Contains(modificationInfo))
-                {
-                    idleModificationInfos.Add(modificationInfo);
-                }
-            }
+            var idleModificationInfos = Modification.GetIdleModificationInfos(activeModificationInfos);
             var idleDescriptions = idleModificationInfos.Select(item => item.Description);
             SetIdleModificationList(idleDescriptions);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,12 +9,11 @@ using UnityEngine.UI;
 namespace JiongXiaGu.Unity.UI
 {
 
-
-
     /// <summary>
-    /// 预制物体脚本 消息窗口;
+    /// 消息窗口基类;
     /// </summary>
-    public class MessageWindow : Panel
+    [DisallowMultipleComponent]
+    public abstract class MessageWindow : MonoBehaviour, IPanel
     {
         protected MessageWindow()
         {
@@ -42,11 +42,7 @@ namespace JiongXiaGu.Unity.UI
         public Image BackgroupImage => backgroupImage;
 
         [SerializeField]
-        private Text messageText;
-        public Text MessageText => messageText;
-
-        [SerializeField]
-        private HorizontalLayoutGroup multipleChoices;
+        private LayoutGroup multipleChoices;
         public MultipleLayoutGroup MultipleChoices => new MultipleLayoutGroup(multipleChoices);
 
         public bool IsRaycastBlock
@@ -60,7 +56,7 @@ namespace JiongXiaGu.Unity.UI
             IsRaycastBlock = isRaycastBlock;
         }
 
-        public override void OnActivate()
+        public virtual void OnActivate()
         {
             if (isRaycastBlock)
             {
@@ -68,7 +64,7 @@ namespace JiongXiaGu.Unity.UI
             }
         }
 
-        public override void OnUnactivate()
+        public virtual void OnUnactivate()
         {
             IsRaycastBlock = false;
         }

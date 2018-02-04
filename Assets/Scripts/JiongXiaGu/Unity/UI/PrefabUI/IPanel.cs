@@ -3,22 +3,18 @@
 namespace JiongXiaGu.Unity.UI
 {
 
-
-    [DisallowMultipleComponent]
-    public abstract class Panel : MonoBehaviour
+    public interface IPanel
     {
-        protected Panel()
-        {
-        }
+        bool enabled { get; }
 
         /// <summary>
         /// 当激活时调用;
         /// </summary>
-        public abstract void OnActivate();
+        void OnActivate();
 
         /// <summary>
         /// 当取消激活时调用;
         /// </summary>
-        public abstract void OnUnactivate();
+        void OnUnactivate();
     }
 }

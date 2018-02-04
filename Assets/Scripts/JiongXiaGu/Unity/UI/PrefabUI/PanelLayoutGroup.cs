@@ -69,7 +69,7 @@ namespace JiongXiaGu.Unity.UI
         /// </summary>
         public void UpdateChildrenLayout()
         {
-            IEnumerator<Panel> panels = EnumerateReverse(transform).GetEnumerator();
+            IEnumerator<IPanel> panels = EnumerateReverse(transform).GetEnumerator();
 
             if (panels.MoveNext())
             {
@@ -84,14 +84,14 @@ namespace JiongXiaGu.Unity.UI
             }
         }
 
-        private IEnumerable<Panel> EnumerateReverse(Transform parent)
+        private IEnumerable<IPanel> EnumerateReverse(Transform parent)
         {
             for (int index = parent.childCount - 1; index >= 0; index--)
             {
                 var child = parent.GetChild(index);
                 if (child.gameObject.activeSelf)
                 {
-                    var panel = child.GetComponent<Panel>();
+                    var panel = child.GetComponent<IPanel>();
                     if (panel != null && panel.enabled)
                     {
                         yield return panel;

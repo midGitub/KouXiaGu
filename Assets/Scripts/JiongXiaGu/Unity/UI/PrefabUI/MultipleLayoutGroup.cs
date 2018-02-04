@@ -11,6 +11,8 @@ namespace JiongXiaGu.Unity.UI
         [SerializeField]
         private LayoutGroup choices;
 
+        public Transform Transform => choices != null ? choices.transform : null;
+
         public MultipleLayoutGroup(LayoutGroup choices)
         {
             this.choices = choices;
@@ -30,6 +32,9 @@ namespace JiongXiaGu.Unity.UI
             return item;
         }
 
+        /// <summary>
+        /// 移除指定名称的元素;
+        /// </summary>
         public bool Remove(string name)
         {
             if (choices == null)
@@ -44,6 +49,17 @@ namespace JiongXiaGu.Unity.UI
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// 清除所有元素;
+        /// </summary>
+        public void Clear()
+        {
+            foreach (Transform child in choices.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
         }
 
         public IEnumerable<RectTransform> Enumerate()

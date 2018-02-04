@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -81,9 +82,6 @@ namespace JiongXiaGu.Unity.Resources
                 return false;
             }
         }
-
-
-
 
         /// <summary>
         /// 设置读取顺序;
@@ -214,17 +212,41 @@ namespace JiongXiaGu.Unity.Resources
         {
             List<ModificationInfo> newList = new List<ModificationInfo>();
 
-            foreach (var id in activeModification.IDList)
+            if (ModificationInfos != null)
             {
-                int index = ModificationInfos.FindIndex(info => info.Description.ID == id);
-                if (index >= 0)
+                foreach (var id in activeModification.IDList)
                 {
-                    ModificationInfo info = ModificationInfos[index];
-                    newList.Add(info);
+                    int index = ModificationInfos.FindIndex(info => info.Description.ID == id);
+                    if (index >= 0)
+                    {
+                        ModificationInfo info = ModificationInfos[index];
+                        newList.Add(info);
+                    }
                 }
             }
 
             return newList;
+        }
+
+        /// <summary>
+        /// 筛选模组;
+        /// </summary>
+        public static List<ModificationInfo> GetIdleModificationInfos(IList<ModificationInfo> activeModificationInfos)
+        {
+            var idleModificationInfos = new List<ModificationInfo>();
+
+            if (ModificationInfos != null)
+            {
+                foreach (var modificationInfo in ModificationInfos)
+                {
+                    if (!activeModificationInfos.Contains(modificationInfo))
+                    {
+                        idleModificationInfos.Add(modificationInfo);
+                    }
+                }
+            }
+
+            return idleModificationInfos;
         }
 
         /// <summary>
@@ -242,7 +264,7 @@ namespace JiongXiaGu.Unity.Resources
                     order = serializer.Deserialize();
                     return GetModificationContent(order);
                 }
-                catch
+                catch(FileNotFoundException)
                 {
                     List<ModificationContent> newList = new List<ModificationContent>();
                     newList.Add(Core);
@@ -267,10 +289,19 @@ namespace JiongXiaGu.Unity.Resources
 
             if (ModificationContents == null)
             {
-                foreach (var info in activeModification.IDList)
+                foreach (var id in activeModification.IDList)
                 {
-                    ModificationContent content = factory.Read(info);
-                    newList.Add(content);
+                    int index = ModificationInfos.FindIndex(_info => _info.Description.ID == id);
+                    if (index >= 0)
+                    {
+                        var info = ModificationInfos[index];
+                        ModificationContent content = factory.Read(info);
+                        newList.Add(content);
+                    }
+                    else
+                    {
+                        Debug.LogWarning(string.Format("未找到ID为[{0}]的模组;", id));
+                    }
                 }
             }
             else

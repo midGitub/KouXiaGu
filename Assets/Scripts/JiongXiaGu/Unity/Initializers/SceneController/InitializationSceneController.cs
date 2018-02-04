@@ -24,6 +24,9 @@ namespace JiongXiaGu.Unity.Initializers
         private DisplaySwitcher progressBarDisplaySwitcher;
         [SerializeField]
         private DisplaySwitcher menuDisplaySwitcher;
+        [SerializeField]
+        private Canvas defaultCanvas;
+        public Canvas DefaultCanvas => defaultCanvas;
 
         private async void Start()
         {
@@ -42,7 +45,7 @@ namespace JiongXiaGu.Unity.Initializers
             }
             catch (Exception ex)
             {
-                progress.Report(new ProgressInfo(-1f, ex.Message));
+                OnInitializeError(ex);
             }
         }
 
@@ -65,6 +68,26 @@ namespace JiongXiaGu.Unity.Initializers
         public async void StartNewGame()
         {
             await Stage.GoGameScene();
+        }
+
+        private void OnInitializeError(Exception ex)
+        {
+            progressBar.Progress.Report(new ProgressInfo(-1f, ex.Message));
+            PrefabUI.Instance.CreateErrorInfoWindow(defaultCanvas.transform, ex, Application.Quit);
+        }
+
+        /// <summary>
+        /// 创建模组控制窗口;
+        /// </summary>
+        public void CreateModificationControllerWindow()
+        {
+            var prefab = PrefabUI.Instance.UIModificationControllerPrefab;
+            Instantiate(prefab, defaultCanvas.transform);
+        }
+
+        public void Quit()
+        {
+            Application.Quit();
         }
     }
 }

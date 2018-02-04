@@ -10,9 +10,9 @@ namespace JiongXiaGu.Unity.UI
 {
 
 
-    public class ProgressWindow : MessageWindow
+    public class PrefabProgressWindow : PrefabMessageWindow
     {
-        private ProgressWindow()
+        private PrefabProgressWindow()
         {
         }
 
