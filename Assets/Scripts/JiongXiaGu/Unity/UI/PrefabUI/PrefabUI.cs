@@ -64,6 +64,46 @@ namespace JiongXiaGu.Unity.UI
             return instance;
         }
 
+        /// <summary>
+        /// 创建一个消息窗口;
+        /// </summary>
+        /// <param name="onConfirm">当点击确认时的操作,若为Null则无操作</param>
+        public PrefabMessageWindow CreateInfoWindow(Transform parent, string titleMessage, string message, params ButtonInfo[] buttonInfos)
+        {
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent));
+
+            PrefabMessageWindow prefab = uiMessageWindowPrefab;
+            var instance = GameObject.Instantiate(prefab, parent);
+
+            instance.TitleMessageText.text = titleMessage;
+            instance.MessageText.text = message;
+
+            instance.MultipleChoices.Clear();
+            CreateButtons(instance.MultipleChoices.Transform, buttonInfos);
+
+            return instance;
+        }
+
+        /// <summary>
+        /// 创建多个按钮;
+        /// </summary>
+        public void CreateButtons(Transform parent, ButtonInfo[] buttonInfos)
+        {
+            if (buttonInfos != null || buttonInfos.Length != 0)
+            {
+                foreach (var buttonInfo in buttonInfos)
+                {
+                    var button = GameObject.Instantiate(buttonPrefab, parent);
+                    button.TextObject.text = buttonInfo.Name;
+                    if (buttonInfo.Action != null)
+                    {
+                        button.ButtonObject.onClick.AddListener(buttonInfo.Action);
+                    }
+                }
+            }
+        }
+
 
 
         [SerializeField]

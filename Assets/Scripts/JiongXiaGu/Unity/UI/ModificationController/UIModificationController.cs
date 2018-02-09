@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.UI
 {
 
     [DisallowMultipleComponent]
-    public class UIModificationController : MonoBehaviour
+    public class UIModificationController : MessageWindow
     {
         private UIModificationController()
         {

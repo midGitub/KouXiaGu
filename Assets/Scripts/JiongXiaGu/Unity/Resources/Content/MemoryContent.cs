@@ -17,6 +17,7 @@ namespace JiongXiaGu.Unity.Resources
         public override bool CanRead => !isDisposed;
         public override bool CanWrite => !isDisposed;
         public override bool IsDisposed => isDisposed;
+        public override bool IsCompress => false;
 
         public MemoryContent()
         {
@@ -37,6 +38,13 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
+        #region Read
+
+        public override IEnumerable<IContentEntry> EnumerateEntries()
+        {
+            throw new NotImplementedException();
+        }
+
         public override IEnumerable<string> EnumerateFiles()
         {
             ThrowIfObjectDisposed();
@@ -49,6 +57,11 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectDisposed();
 
             return contents.ContainsKey(relativePath);
+        }
+
+        public override IContentEntry GetEntry(string name)
+        {
+            throw new NotImplementedException();
         }
 
         public override Stream GetInputStream(string relativePath)
@@ -67,6 +80,13 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
+        public override Stream GetInputStream(IContentEntry entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         public override IDisposable BeginUpdate()
         {
             ThrowIfObjectDisposed();
@@ -82,18 +102,36 @@ namespace JiongXiaGu.Unity.Resources
             isUpdating = false;
         }
 
-        public override Stream GetOutputStream(string relativePath)
+        public override Stream GetOutputStream(string name, out IContentEntry entry)
         {
-            ThrowIfObjectDisposed();
+            throw new NotImplementedException();
 
-            ExclusiveStream stream;
-            if (!contents.TryGetValue(relativePath, out stream))
-            {
-                stream = new ExclusiveStream();
-                contents.Add(relativePath, stream);
-            }
-            var outputStream = stream.GetOutputStream();
-            return outputStream;
+            //ThrowIfObjectDisposed();
+
+            //ExclusiveStream stream;
+            //if (!contents.TryGetValue(name, out stream))
+            //{
+            //    stream = new ExclusiveStream();
+            //    contents.Add(name, stream);
+            //}
+            //var outputStream = stream.GetOutputStream();
+            //entry = stream;
+            //return outputStream;
+        }
+
+        public override Stream GetOutputStream(IContentEntry entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IContentEntry AddOrUpdate(string name, Stream source, bool isCloseStream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Remove(IContentEntry entry)
+        {
+            throw new NotImplementedException();
         }
 
         public override bool Remove(string relativePath)
@@ -301,6 +339,15 @@ namespace JiongXiaGu.Unity.Resources
                     stream.Write(buffer, offset, count);
                 }
             }
+        }
+    }
+
+
+    public class MemoryContentEntry
+    {
+        public Stream GetInputStream()
+        {
+            throw new NotImplementedException();
         }
     }
 }

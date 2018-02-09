@@ -10,7 +10,6 @@ namespace JiongXiaGu.Unity.Localizations
     {
         LanguagePackDescription Description { get; }
         Stream GetInputStream();
-        Stream GetOutputStream();
     }
 
     /// <summary>
@@ -35,11 +34,6 @@ namespace JiongXiaGu.Unity.Localizations
         public Stream GetInputStream()
         {
             return Content.GetInputStream(RelativePath);
-        }
-
-        public Stream GetOutputStream()
-        {
-            return Content.GetOutputStream(RelativePath);
         }
     }
 }

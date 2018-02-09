@@ -71,7 +71,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             if (ZipFileInfo.Exists)
             {
-                return new ZipContent(ZipFileInfo.FullName);
+                return new SharpZipLibContent(ZipFileInfo.FullName);
             }
             else
             {

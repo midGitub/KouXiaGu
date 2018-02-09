@@ -28,7 +28,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             Stream stream = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite);
             ZipFile zipFile = ZipFile.Create(stream);
-            ZipContent contentZip = new ZipContent(file, stream, zipFile);
+            SharpZipLibContent contentZip = new SharpZipLibContent(stream, zipFile);
             return CreateNew(contentZip, description);
         }
 
@@ -60,7 +60,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public ModificationContent ReadZip(string file)
         {
-            Content content = new ZipContent(file);
+            Content content = new SharpZipLibContent(file);
             return Read(content);
         }
 

@@ -16,8 +16,9 @@ namespace JiongXiaGu.Unity.Resources
         public DirectoryInfo DirectoryInfo { get; private set; }
         public override bool IsUpdating => isUpdating;
         public override bool IsDisposed => isDisposed;
-        public override bool CanRead => !isDisposed;
-        public override bool CanWrite => !isDisposed;
+        public override bool CanRead => !isDisposed && DirectoryInfo.Exists;
+        public override bool CanWrite => !isDisposed && DirectoryInfo.Exists;
+        public override bool IsCompress => false;
 
         /// <summary>
         /// 创建目录或者指定目录;
@@ -29,53 +30,75 @@ namespace JiongXiaGu.Unity.Resources
             DirectoryInfo.Create();
         }
 
-        public override IEnumerable<string> EnumerateFiles()
+        private IContentEntry CreateEntryFromFilePath(string filePath)
         {
-            ThrowIfObjectDisposed();
-
-            return Directory.EnumerateFiles(DirectoryInfo.FullName, "*", SearchOption.AllDirectories).Select(delegate (string filePath)
-            {
-                string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
-                return relativePath;
-            });
+            string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
+            DirectoryContentEntry entry = new DirectoryContentEntry(this, relativePath);
+            return entry;
         }
 
-        public override IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
+        private IContentEntry CreateEntry(string filePath, string name)
         {
-            ThrowIfObjectDisposed();
-
-            return Directory.EnumerateFiles(DirectoryInfo.FullName, searchPattern, searchOption).Select(delegate (string filePath)
-            {
-                string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
-                return relativePath;
-            });
+            DirectoryContentEntry entry = new DirectoryContentEntry(this, name);
+            return entry;
         }
 
-        public override IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        public override void Dispose()
+        {
+            isDisposed = true;
+        }
+
+        #region Read
+
+        public override IEnumerable<IContentEntry> EnumerateEntries()
         {
             ThrowIfObjectDisposed();
 
-            string directory = Path.Combine(DirectoryInfo.FullName, directoryName);
-            if (DirectoryInfo.Exists)
+            return Directory.EnumerateFiles(DirectoryInfo.FullName, "*", SearchOption.AllDirectories).Select(CreateEntryFromFilePath);
+        }
+
+        public override IEnumerable<IContentEntry> EnumerateEntries(string searchPattern, SearchOption searchOption)
+        {
+            ThrowIfObjectDisposed();
+
+            return Directory.EnumerateFiles(DirectoryInfo.FullName, searchPattern, searchOption).Select(CreateEntryFromFilePath);
+        }
+
+        public override IEnumerable<IContentEntry> EnumerateEntries(string directoryName, string searchPattern, SearchOption searchOption)
+        {
+            ThrowIfObjectDisposed();
+
+            string targetDirectory = Path.Combine(DirectoryInfo.FullName, directoryName);
+            return Directory.EnumerateFiles(targetDirectory, searchPattern, searchOption).Select(CreateEntryFromFilePath);
+        }
+
+        public override IContentEntry GetEntry(string name)
+        {
+            ThrowIfObjectDisposed();
+
+            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            if (File.Exists(filePath))
             {
-                return Directory.EnumerateFiles(directory, searchPattern, searchOption).Select(delegate (string filePath)
-                {
-                    string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
-                    return relativePath;
-                });
+                var entry = CreateEntry(filePath, name);
+                return entry;
             }
-            else
-            {
-                return new string[0];
-            }
+            return null;
         }
 
-        public override bool Contains(string relativePath)
+        public override bool Contains(string name)
         {
             ThrowIfObjectDisposed();
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
+            string filePath = Path.Combine(DirectoryInfo.FullName, name);
             return File.Exists(filePath);
+        }
+
+        public override Stream GetInputStream(IContentEntry entry)
+        {
+            ThrowIfObjectDisposed();
+
+            var directoryContentEntry = (DirectoryContentEntry)entry;
+            return new FileStream(directoryContentEntry.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
         public override Stream GetInputStream(string relativePath)
@@ -83,16 +106,12 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectDisposed();
 
             string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
-            if (File.Exists(filePath))
-            {
-                return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            }
-            else
-            {
-                throw new FileNotFoundException(filePath);
-            }
+            return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
+        #endregion
+
+        #region Write
 
         public override IDisposable BeginUpdate()
         {
@@ -105,26 +124,44 @@ namespace JiongXiaGu.Unity.Resources
         public override void CommitUpdate()
         {
             ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
 
             isUpdating = false;
         }
 
-        public override Stream GetOutputStream(string relativePath)
+        public override IContentEntry AddOrUpdate(string name, Stream source, bool isCloseStream)
         {
             ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
+            string filePath = Path.Combine(DirectoryInfo.FullName, name);
             string directory = Path.GetDirectoryName(filePath);
             Directory.CreateDirectory(directory);
-            return new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            {
+                source.CopyTo(stream);
+            }
+
+            var entry = CreateEntry(filePath, name);
+            return entry;
         }
 
-        public override bool Remove(string relativePath)
+        public override void Remove(IContentEntry entry)
+        {
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+
+            var directoryContentEntry = (DirectoryContentEntry)entry;
+            File.Delete(directoryContentEntry.FilePath);
+        }
+
+        public override bool Remove(string name)
         {
             ThrowIfObjectDisposed();
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, relativePath);
-            if (File.Exists(relativePath))
+            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            if (File.Exists(filePath))
             {
                 File.Delete(filePath);
                 return true;
@@ -135,9 +172,51 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override void Dispose()
+        public override Stream GetOutputStream(IContentEntry entry)
         {
-            isDisposed = true;
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+
+            var directoryContentEntry = (DirectoryContentEntry)entry;
+            return new FileStream(directoryContentEntry.FilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+        }
+
+        public override Stream GetOutputStream(string name, out IContentEntry entry)
+        {
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+
+            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            string directory = Path.GetDirectoryName(filePath);
+            Directory.CreateDirectory(directory);
+            entry = CreateEntry(filePath, name);
+            return new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+        }
+
+        #endregion
+    }
+
+    internal class DirectoryContentEntry : IContentEntry
+    {
+        public DirectoryContent Parent { get; private set; }
+        public string Name { get; private set; }
+        public string FilePath => Path.Combine(Parent.DirectoryInfo.FullName, Name);
+        public DateTime LastWriteTime => File.GetLastWriteTime(FilePath);
+
+        public DirectoryContentEntry(DirectoryContent parent, string name)
+        {
+            Parent = parent;
+            Name = name;
+        }
+
+        public Stream OpenRead()
+        {
+            return new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        }
+
+        public Stream OpenWrite()
+        {
+            return new FileStream(FilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
         }
     }
 }
