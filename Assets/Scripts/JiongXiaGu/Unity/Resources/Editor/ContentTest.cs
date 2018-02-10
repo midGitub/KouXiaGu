@@ -118,6 +118,7 @@ namespace JiongXiaGu.Unity.Resources
             Assert.AreEqual(2, content.EnumerateEntries("d*", SearchOption.TopDirectoryOnly).Count());
             Assert.AreEqual(1, content.EnumerateEntries("D3", "d*", SearchOption.TopDirectoryOnly).Count());
             Assert.AreEqual(1, content.EnumerateEntries(@"D3\D4", "*", SearchOption.TopDirectoryOnly).Count());
+            Assert.AreEqual(0, content.EnumerateEntries(@"D4", "*", SearchOption.TopDirectoryOnly).Count());
 
             Assert.True(content.Contains(description1Path));
 

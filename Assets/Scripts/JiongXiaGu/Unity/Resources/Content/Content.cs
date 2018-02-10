@@ -166,6 +166,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="ObjectDisposedException"></exception>
         public virtual IContentEntry GetEntry(string name)
         {
+            ThrowIfObjectDisposed();
+            name = Normalize(name);
+
             foreach (var entry in EnumerateEntries())
             {
                 if (entry.Name == name)
@@ -183,7 +186,21 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="IOException">文件被占用</exception>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidCastException">入口类型错误</exception>
-        public abstract Stream GetInputStream(IContentEntry entry);
+        public virtual Stream GetInputStream(IContentEntry entry)
+        {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
+            return GetInputStream(entry.Name);
+        }
+
+        /// <summary>
+        /// 获取到对应数据的流,在使用完毕之后需要手动释放;(推荐在using语法内使用)
+        /// </summary>
+        /// <exception cref="FileNotFoundException">未找到指定路径的流</exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        public abstract Stream GetInputStream(string name);
 
         /// <summary>
         /// 确定是否存在该路径;
@@ -191,6 +208,9 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="ObjectDisposedException"></exception>
         public virtual bool Contains(string name)
         {
+            ThrowIfObjectDisposed();
+            name = Normalize(name);
+
             return GetEntry(name) != null;
         }
 
@@ -212,25 +232,6 @@ namespace JiongXiaGu.Unity.Resources
                 }
             }
             return null;
-        }
-
-        /// <summary>
-        /// 获取到对应数据的流,在使用完毕之后需要手动释放;(推荐在using语法内使用)
-        /// </summary>
-        /// <exception cref="FileNotFoundException">未找到指定路径的流</exception>
-        /// <exception cref="IOException">文件被占用</exception>
-        /// <exception cref="ObjectDisposedException"></exception>
-        public virtual Stream GetInputStream(string name)
-        {
-            var entry = GetEntry(name);
-            if (entry != null)
-            {
-                return GetInputStream(entry);
-            }
-            else
-            {
-                throw new FileNotFoundException(name);
-            }
         }
 
         /// <summary>
@@ -286,20 +287,45 @@ namespace JiongXiaGu.Unity.Resources
         public abstract void CommitUpdate();
 
         /// <summary>
-        /// 添加或替换资源;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
+        /// 添加或替换资源;在使用该方法之前需要调用 BeginUpdate();
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="IOException">文件被占用</exception>
-        public abstract IContentEntry AddOrUpdate(string name, Stream source, bool closeStream);
+        public IContentEntry AddOrUpdate(string name, Stream source, bool isCloseStream = true)
+        {
+            return AddOrUpdate(name, source, DateTime.Now, isCloseStream);
+        }
 
         /// <summary>
-        /// 移除指定资源;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
+        /// 添加或替换资源;在使用该方法之前需要调用 BeginUpdate();
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="IOException">文件被占用</exception>
-        public abstract void Remove(IContentEntry entry);
+        public abstract IContentEntry AddOrUpdate(string name, Stream source, DateTime lastWriteTime, bool isCloseStream = true);
+
+        /// <summary>
+        /// 移除指定资源;在使用该方法之前需要调用 BeginUpdate();
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        public virtual bool Remove(IContentEntry entry)
+        {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
+            return Remove(entry.Name);
+        }
+
+        /// <summary>
+        /// 移除指定资源;在使用该方法之前需要调用 BeginUpdate();
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        public abstract bool Remove(string name);
 
         /// <summary>
         /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流,该方法可能使用 MemoryStream 作为缓存,在 CommitUpdate() 之后才进行变换;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
@@ -308,10 +334,16 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="IOException">文件被占用</exception>
-        public abstract Stream GetOutputStream(IContentEntry entry);
+        public virtual Stream GetOutputStream(IContentEntry entry)
+        {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
+            return GetOutputStream(entry.Name);
+        }
 
         /// <summary>
-        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(返回值推荐在using语法内使用)
+        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流,该方法可能使用 MemoryStream 作为缓存,在 CommitUpdate() 之后才进行变换;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
@@ -324,34 +356,13 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;在使用该方法之前需要调用 BeginUpdate();(返回值推荐在using语法内使用)
+        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流,该方法可能使用 MemoryStream 作为缓存,在 CommitUpdate() 之后才进行变换;在使用该方法之前需要调用 BeginUpdate();(推荐在using语法内使用)
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="IOException">文件被占用</exception>
         public abstract Stream GetOutputStream(string name, out IContentEntry entry);
-
-        /// <summary>
-        /// 移除指定资源;在使用该方法之前需要调用 BeginUpdate();
-        /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
-        /// <exception cref="IOException">文件被占用</exception>
-        public virtual bool Remove(string name)
-        {
-            var entry = GetEntry(name);
-            if (entry != null)
-            {
-                Remove(entry);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
 
         /// <summary>
         /// 提供调用 CommitUpdate() 方法的处置接口;
@@ -374,7 +385,6 @@ namespace JiongXiaGu.Unity.Resources
                 }
             }
         }
-
 
         #endregion
 
@@ -408,14 +418,5 @@ namespace JiongXiaGu.Unity.Resources
             relativePath = relativePath.Replace('\\', '/');
             return relativePath;
         }
-    }
-
-
-    public interface IContentEntry
-    {
-        string Name { get; }
-        DateTime LastWriteTime { get; }
-
-        Stream OpenRead();
     }
 }

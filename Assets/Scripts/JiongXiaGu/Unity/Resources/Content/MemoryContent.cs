@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
@@ -12,7 +13,7 @@ namespace JiongXiaGu.Unity.Resources
     {
         private bool isDisposed = false;
         private bool isUpdating = false;
-        private Dictionary<string, ExclusiveStream> contents;
+        private List<MemoryEntry> entries;
         public override bool IsUpdating => isUpdating;
         public override bool CanRead => !isDisposed;
         public override bool CanWrite => !isDisposed;
@@ -21,71 +22,63 @@ namespace JiongXiaGu.Unity.Resources
 
         public MemoryContent()
         {
-            contents = new Dictionary<string, ExclusiveStream>();
+            entries = new List<MemoryEntry>();
         }
 
         public override void Dispose()
         {
             if (!isDisposed)
             {
-                foreach (var content in contents.Values)
+                foreach (var entry in entries)
                 {
-                    content.Dispose();
+                    entry.Dispose();
                 }
-                contents = null;
+                entries = null;
 
                 isDisposed = true;
             }
         }
 
-        #region Read
-
         public override IEnumerable<IContentEntry> EnumerateEntries()
         {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<string> EnumerateFiles()
-        {
             ThrowIfObjectDisposed();
 
-            return contents.Keys;
-        }
-
-        public override bool Contains(string relativePath)
-        {
-            ThrowIfObjectDisposed();
-
-            return contents.ContainsKey(relativePath);
+            return entries.Cast<IContentEntry>();
         }
 
         public override IContentEntry GetEntry(string name)
         {
-            throw new NotImplementedException();
-        }
-
-        public override Stream GetInputStream(string relativePath)
-        {
             ThrowIfObjectDisposed();
+            name = Normalize(name);
 
-            ExclusiveStream stream;
-            if (contents.TryGetValue(relativePath, out stream))
+            var index = FindIndex(name);
+            if (index >= 0)
             {
-                var inputStream = stream.GetInputStream();
-                return inputStream;
+                var entry = entries[index];
+                return entry;
             }
             else
             {
-                throw new FileNotFoundException(relativePath);
+                return null;
             }
         }
 
-        public override Stream GetInputStream(IContentEntry entry)
+        public override Stream GetInputStream(string name)
         {
-            throw new NotImplementedException();
-        }
+            ThrowIfObjectDisposed();
+            name = Normalize(name);
 
-        #endregion
+            var index = FindIndex(name);
+            if (index >= 0)
+            {
+                var entry = entries[index];
+                return entry.OpenRead();
+            }
+            else
+            {
+                throw new FileNotFoundException(name);
+            }
+        }
 
         public override IDisposable BeginUpdate()
         {
@@ -98,256 +91,122 @@ namespace JiongXiaGu.Unity.Resources
         public override void CommitUpdate()
         {
             ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
 
             isUpdating = false;
         }
 
-        public override Stream GetOutputStream(string name, out IContentEntry entry)
-        {
-            throw new NotImplementedException();
-
-            //ThrowIfObjectDisposed();
-
-            //ExclusiveStream stream;
-            //if (!contents.TryGetValue(name, out stream))
-            //{
-            //    stream = new ExclusiveStream();
-            //    contents.Add(name, stream);
-            //}
-            //var outputStream = stream.GetOutputStream();
-            //entry = stream;
-            //return outputStream;
-        }
-
-        public override Stream GetOutputStream(IContentEntry entry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IContentEntry AddOrUpdate(string name, Stream source, bool isCloseStream)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Remove(IContentEntry entry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Remove(string relativePath)
+        public override IContentEntry AddOrUpdate(string name, Stream source, DateTime lastWriteTime, bool closeStream)
         {
             ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+            name = Normalize(name);
 
-            ExclusiveStream exclusiveStream;
-            if (contents.TryGetValue(relativePath, out exclusiveStream))
+            var index = FindIndex(name);
+            if (index >= 0)
             {
-                exclusiveStream.Dispose();
-                return contents.Remove(relativePath);
+                var oldEntry = entries[index];
+                oldEntry.Dispose();
+                var entry = entries[index] = new MemoryEntry(name, lastWriteTime, source, closeStream);
+                return entry;
             }
-            return false;
+            else
+            {
+                var entry = new MemoryEntry(name, lastWriteTime, source, closeStream);
+                entries.Add(entry);
+                return entry;
+            }
+        }
+
+        public override bool Remove(string name)
+        {
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+            name = Normalize(name);
+
+            var index = FindIndex(name);
+            if (index >= 0)
+            {
+                var oldEntry = entries[index];
+                oldEntry.Dispose();
+                entries.RemoveAt(index);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override Stream GetOutputStream(string name, out IContentEntry entry)
+        {
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+            name = Normalize(name);
+
+            var index = FindIndex(name);
+            if (index >= 0)
+            {
+                var oldEntry = entries[index];
+                oldEntry.Dispose();
+
+                var source = new MemoryStream();
+                var memoryEntry = new MemoryEntry(name, DateTime.Now, source, true);
+                entry = entries[index] = memoryEntry;
+                return memoryEntry.Stream.GetOutputStream();
+            }
+            else
+            {
+                var source = new MemoryStream();
+                var memoryEntry = new MemoryEntry(name, DateTime.Now, source, true);
+                entry = memoryEntry;
+                entries.Add(memoryEntry);
+                return memoryEntry.Stream.GetOutputStream();
+            }
+        }
+
+        private int FindIndex(string name)
+        {
+            var index = entries.FindIndex(entry => entry.Name == name);
+            return index;
         }
 
 
-        private class ExclusiveStream : IDisposable
+        private class MemoryEntry : IContentEntry, IDisposable
         {
-            private bool isDisposed = false;
-            private MemoryStream stream;
-            private volatile int readerCount = 0;
-            private volatile bool isWrite = false;
+            public ExclusiveStream Stream { get; private set; }
+            public string Name { get; private set; }
+            public DateTime LastWriteTime { get; private set; }
+            public bool IsCloseStream { get; private set; }
 
-            public ExclusiveStream()
+            public MemoryEntry(string name) : this(name, DateTime.Now, new MemoryStream(), true)
             {
-                stream = new MemoryStream();
             }
 
-            public ExclusiveStream(Stream stream)
+            public MemoryEntry(string name, DateTime lastWriteTime, Stream stream, bool closeStream)
             {
-                this.stream = new MemoryStream();
-                stream.Seek(0, SeekOrigin.Begin);
-                stream.CopyTo(this.stream);
-            }
-
-            public Stream GetInputStream()
-            {
-                if(isWrite)
-                    throw new IOException("Stream已经被占用");
-
-                readerCount++;
-                var synchronizedStream = Stream.Synchronized(stream);
-                var inputeStream = new InputStream(synchronizedStream, delegate()
-                {
-                    readerCount--;
-                    if (isDisposed && readerCount == 0)
-                    {
-                        stream.Dispose();
-                    }
-                });
-                inputeStream.Seek(0, SeekOrigin.Begin);
-                return inputeStream;
-            }
-
-            public Stream GetOutputStream()
-            {
-                if (readerCount > 0 || isWrite)
-                    throw new IOException("Stream已经被占用");
-
-                isWrite = true;
-                var outputStream = new OutputStream(stream, delegate ()
-                {
-                    isWrite = false;
-                    if (isDisposed)
-                    {
-                        stream.Dispose();
-                    }
-                });
-                outputStream.Seek(0, SeekOrigin.Begin);
-                return outputStream;
+                Stream = new ExclusiveStream(stream);
+                Name = name;
+                LastWriteTime = lastWriteTime;
+                IsCloseStream = closeStream;
             }
 
             public void Dispose()
             {
-                if (!isDisposed)
+                if (Stream != null)
                 {
-                    if (!isWrite || readerCount == 0)
+                    if (IsCloseStream)
                     {
-                        stream.Dispose();
-                        stream = null;
+                        Stream.Dispose();
                     }
-
-                    isDisposed = true;
+                    Stream = null;
                 }
             }
 
-            /// <summary>
-            /// 提供读使用的流;
-            /// </summary>
-            private class InputStream : Stream
+            public Stream OpenRead()
             {
-                private bool isDisposed = false;
-                private Stream stream;
-                private Action onDispose;
-                public override bool CanRead => stream.CanRead;
-                public override bool CanSeek => stream.CanSeek;
-                public override bool CanWrite => false;
-                public override long Length => stream.Length;
-
-                public override long Position
-                {
-                    get { return stream.Position; }
-                    set { stream.Position = value; }
-                }
-
-                public InputStream(Stream stream, Action onDispose)
-                {
-                    this.stream = stream;
-                    this.onDispose = onDispose;
-                }
-
-                protected override void Dispose(bool disposing)
-                {
-                    base.Dispose(disposing);
-                    if (!isDisposed)
-                    {
-                        onDispose.Invoke();
-                        isDisposed = true;
-                    }
-                }
-
-                public override void Flush()
-                {
-                    stream.Flush();
-                }
-
-                public override int Read(byte[] buffer, int offset, int count)
-                {
-                    return stream.Read(buffer, offset, count);
-                }
-
-                public override long Seek(long offset, SeekOrigin origin)
-                {
-                    return stream.Seek(offset, origin);
-                }
-
-                public override void SetLength(long value)
-                {
-                    stream.SetLength(value);
-                }
-
-                public override void Write(byte[] buffer, int offset, int count)
-                {
-                    throw new NotSupportedException();
-                }
+                return Stream.GetInputStream();
             }
-
-            /// <summary>
-            /// 提供写入使用的流;
-            /// </summary>
-            private class OutputStream : Stream
-            {
-                private bool isDisposed = false;
-                private Stream stream;
-                private Action onDispose;
-                public override bool CanRead => stream.CanRead;
-                public override bool CanSeek => stream.CanSeek;
-                public override bool CanWrite => stream.CanWrite;
-                public override long Length => stream.Length;
-
-                public override long Position
-                {
-                    get { return stream.Position; }
-                    set { stream.Position = value; }
-                }
-
-                public OutputStream(Stream stream, Action onDispose)
-                {
-                    this.stream = stream;
-                    this.onDispose = onDispose;
-                }
-
-                protected override void Dispose(bool disposing)
-                {
-                    base.Dispose(disposing);
-                    if (!isDisposed)
-                    {
-                        onDispose.Invoke();
-                        isDisposed = true;
-                    }
-                }
-
-                public override void Flush()
-                {
-                    stream.Flush();
-                }
-
-                public override int Read(byte[] buffer, int offset, int count)
-                {
-                    return stream.Read(buffer, offset, count);
-                }
-
-                public override long Seek(long offset, SeekOrigin origin)
-                {
-                    return stream.Seek(offset, origin);
-                }
-
-                public override void SetLength(long value)
-                {
-                    stream.SetLength(value);
-                }
-
-                public override void Write(byte[] buffer, int offset, int count)
-                {
-                    stream.Write(buffer, offset, count);
-                }
-            }
-        }
-    }
-
-
-    public class MemoryContentEntry
-    {
-        public Stream GetInputStream()
-        {
-            throw new NotImplementedException();
         }
     }
 }

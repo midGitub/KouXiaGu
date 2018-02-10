@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ICSharpCode.SharpZipLib.Zip;
+using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -10,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 资源Zip文件;
     /// </summary>
-    public class SharpZipLibContent : CompressContent<SharpZipLibContent.ZipContentEntry>
+    public class SharpZipLibContent : Content
     {
         /// <summary>
         /// 压缩文件;
@@ -21,6 +22,11 @@ namespace JiongXiaGu.Unity.Resources
         /// 压缩文件流;
         /// </summary>
         private Stream stream;
+
+        /// <summary>
+        /// 资源入口合集;
+        /// </summary>
+        private List<IContentEntry> entries = new List<IContentEntry>();
 
         private bool isDisposed;
         public override bool IsUpdating => zipFile.IsUpdating;
@@ -85,84 +91,320 @@ namespace JiongXiaGu.Unity.Resources
                 stream.Dispose();
                 stream = null;
 
+                entries = null;
+
                 isDisposed = true;
             }
         }
 
-        public override IEnumerable<IContentEntry> EnumerateCompressedEntries()
+        public void RebuildEntriesCollection()
         {
-            return zipFile.Cast<ZipEntry>().Where(entry => entry.IsFile).Select(CreateEntry);
+            int index;
+            for (index = 0; index < zipFile.Count; index++)
+            {
+                ZipEntry zipEntry = zipFile[index];
+                if (entries.Count > index)
+                {
+                    var oldEntry = entries[index];
+                    if (oldEntry is IDisposable)
+                    {
+                        (oldEntry as IDisposable).Dispose();
+                    }
+                    entries[index] = new Entry(zipEntry);
+                }
+                else
+                {
+                    var entry = new Entry(zipEntry);
+                    entries.Add(entry);
+                }
+            }
+
+            if (index < entries.Count)
+            {
+                var start = index;
+                for (; index < entries.Count; index++)
+                {
+                    var oldEntry = entries[index];
+                    if (oldEntry is IDisposable)
+                    {
+                        (oldEntry as IDisposable).Dispose();
+                    }
+                }
+                entries.RemoveRange(start, entries.Count - start);
+            }
         }
 
-        protected override Stream GetInputStreamInCompression(ZipContentEntry entry)
+        /// <summary>
+        /// 枚举压缩完毕的资源入口;
+        /// </summary>
+        private IEnumerable<Entry> EnumerateCompressedEntries()
+        {
+            return zipFile.Cast<ZipEntry>().Where(entry => entry.IsFile).Select(entry => new Entry(entry));
+        }
+        
+        public override IEnumerable<IContentEntry> EnumerateEntries()
         {
             ThrowIfObjectDisposed();
 
-            return zipFile.GetInputStream(entry.ZipEntry);
+            return entries.Where(delegate (IContentEntry entry)
+            {
+                var updateEntry = entry as UpdateEntry;
+                if (updateEntry != null)
+                {
+                    return updateEntry.Operation != EntryOperation.Remove;
+                }
+                else
+                {
+                    return true;
+                }
+            });
         }
 
-        private IContentEntry CreateEntry(ZipEntry zipEntry)
+        public override IContentEntry GetEntry(string name)
         {
-            ZipContentEntry entry = new ZipContentEntry(this, zipEntry);
-            return entry;
+            ThrowIfObjectDisposed();
+            name = Normalize(name);
+
+            int index = FindIndex(name);
+            if (index >= 0)
+            {
+                return entries[index];
+            }
+            else
+            {
+                return null;
+            }
         }
+
+        public override Stream GetInputStream(string name)
+        {
+            ThrowIfObjectDisposed();
+            name = Normalize(name);
+
+            int index = FindIndex(name);
+            if (index >= 0)
+            {
+                var entry = entries[index];
+                return GetInputStream(entry);
+            }
+            else
+            {
+                throw new FileNotFoundException(name);
+            }
+        }
+
+        public override Stream GetInputStream(IContentEntry entry)
+        {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+            ThrowIfObjectDisposed();
+
+            Entry zipContentEntry = entry as Entry;
+            if (zipContentEntry != null)
+            {
+                return zipFile.GetInputStream(zipContentEntry.ZipEntry);
+            }
+            else
+            {
+                return GetInputStream(entry.Name);
+            }
+        }
+
+        private int FindIndex(string name)
+        {
+            return entries.FindIndex(entry => entry.Name == name);
+        }
+
 
         public override IDisposable BeginUpdate()
         {
-            IDisposable disposable = base.BeginUpdate();
+            ThrowIfObjectDisposed();
+
             zipFile.BeginUpdate();
-            return disposable;
+            return new ContentCommitUpdateDisposer(this);
         }
 
         public override void CommitUpdate()
         {
-            base.CommitUpdate();
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+
+            foreach (var entry in entries)
+            {
+                var updateEntry = entry as UpdateEntry;
+                if (updateEntry != null)
+                {
+                    switch (updateEntry.Operation)
+                    {
+                        case EntryOperation.AddOrUpdate:
+                            zipFile.Add(updateEntry, updateEntry.Name);
+                            break;
+
+                        case EntryOperation.Remove:
+                            zipFile.Delete(updateEntry.Name);
+                            break;
+
+                        default:
+                            throw new IndexOutOfRangeException(updateEntry.Operation.ToString());
+                    }
+                }
+            }
+
             zipFile.CommitUpdate();
             RebuildEntriesCollection();
         }
 
-        protected override void AddEntry(string name, Stream source)
+        public override IContentEntry AddOrUpdate(string name, Stream source, DateTime lastWriteTime, bool isCloseStream = true)
         {
-            IStaticDataSource staticDataSource = new ZipUpdate(source);
-            zipFile.Add(staticDataSource, name);
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+            name = Normalize(name);
+
+            int index = FindIndex(name);
+            if (index >= 0)
+            {
+                var oldEntry = entries[index];
+
+                if (oldEntry is IDisposable)
+                {
+                    (oldEntry as IDisposable).Dispose();
+                }
+
+                var updateEntry = new UpdateEntry(name, source, lastWriteTime, isCloseStream, EntryOperation.AddOrUpdate);
+                entries[index] = updateEntry;
+                return updateEntry;
+            }
+            else
+            {
+                var updateEntry = new UpdateEntry(name, source, lastWriteTime, isCloseStream, EntryOperation.AddOrUpdate);
+                entries.Add(updateEntry);
+                return updateEntry;
+            }
         }
 
-        protected override void RemoveEntry(string name)
+        public override bool Remove(string name)
         {
-            zipFile.Delete(name);
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+            name = Normalize(name);
+
+            int index = FindIndex(name);
+            if (index >= 0)
+            {
+                var entry = entries[index];
+
+                var updateEntry = entry as UpdateEntry;
+                if (updateEntry != null)
+                {
+                    updateEntry.Dispose();
+
+                    switch (updateEntry.Operation)
+                    {
+                        case EntryOperation.AddOrUpdate:
+                            entries.RemoveAt(index);
+                            return true;
+
+                        case EntryOperation.Remove:
+                            return true;
+
+                        default:
+                            throw new IndexOutOfRangeException(updateEntry.Operation.ToString());
+                    }
+                }
+                else
+                {
+                    updateEntry = new UpdateEntry(name, EntryOperation.Remove);
+                    entries[index] = updateEntry;
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public struct ZipContentEntry : IContentEntry
+        public override Stream GetOutputStream(string name, out IContentEntry entry)
         {
-            public SharpZipLibContent Parent { get; private set; }
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
+            name = Normalize(name);
+
+            var index = FindIndex(name);
+            if (index >= 0)
+            {
+                var oldEntry = entries[index];
+
+                if (oldEntry is IDisposable)
+                {
+                    (oldEntry as IDisposable).Dispose();
+                }
+
+                var source = new MemoryStream();
+                var updateEntry = new UpdateEntry(name, source, DateTime.Now, true, EntryOperation.AddOrUpdate);
+                entry = entries[index] = updateEntry;
+                return updateEntry.Source.GetOutputStream();
+            }
+            else
+            {
+                var source = new MemoryStream();
+                var updateEntry = new UpdateEntry(name, source, DateTime.Now, true, EntryOperation.AddOrUpdate);
+                entry = updateEntry;
+                entries.Add(updateEntry);
+                return updateEntry.Source.GetOutputStream();
+            }
+        }
+
+        private class Entry : IContentEntry
+        {
             public ZipEntry ZipEntry { get; private set; }
             public string Name => ZipEntry.Name;
             public DateTime LastWriteTime => ZipEntry.DateTime;
 
-            public ZipContentEntry(SharpZipLibContent parent, ZipEntry zipEntry)
+            public Entry(ZipEntry zipEntry)
             {
-                Parent = parent;
                 ZipEntry = zipEntry;
-            }
-
-            public Stream OpenRead()
-            {
-                return Parent.zipFile.GetInputStream(ZipEntry);
             }
         }
 
-        private struct ZipUpdate : IStaticDataSource
+        private class UpdateEntry : IContentEntry, IStaticDataSource, IDisposable
         {
-            public Stream Stream { get; private set; }
+            public string Name { get; private set; }
+            public DateTime LastWriteTime { get; private set; }
+            public ExclusiveStream Source { get; private set; }
+            public bool IsCloseStream { get; private set; }
+            public EntryOperation Operation { get; private set; }
+            public bool IsDisposed { get; private set; }
 
-            public ZipUpdate(Stream stream)
+            public UpdateEntry(string name, EntryOperation operation)
             {
-                Stream = stream;
+                Name = name;
+                Operation = operation;
+            }
+
+            public UpdateEntry(string name, Stream source, DateTime lastWriteTime, bool isCloseStream, EntryOperation operation)
+            {
+                Name = name;
+                LastWriteTime = lastWriteTime;
+                Source = new ExclusiveStream(source);
+                IsCloseStream = isCloseStream;
+                Operation = operation;
+            }
+
+            public void Dispose()
+            {
+                if (!IsDisposed)
+                {
+                    Source?.Dispose();
+                    Source = null;
+
+                    IsDisposed = true;
+                }
             }
 
             public Stream GetSource()
             {
-                return Stream;
+                return Source.GetInputStream();
             }
         }
     }

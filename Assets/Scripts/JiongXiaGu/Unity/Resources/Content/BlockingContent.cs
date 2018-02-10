@@ -186,6 +186,7 @@ namespace JiongXiaGu.Unity.Resources
         public override Stream GetOutputStream(string name, out IContentEntry entry)
         {
             ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
 
             if (Monitor.IsEntered(asyncLock))
             {
@@ -197,19 +198,19 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override Stream GetOutputStream(IContentEntry entry)
+        public override IContentEntry AddOrUpdate(string name, Stream source, DateTime lastWriteTime, bool isCloseStream = true)
         {
-            throw new NotImplementedException();
-        }
+            ThrowIfObjectDisposed();
+            ThrowIfObjectNotUpdating();
 
-        public override IContentEntry AddOrUpdate(string name, Stream source, bool isCloseStream)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Remove(IContentEntry entry)
-        {
-            throw new NotImplementedException();
+            if (Monitor.IsEntered(asyncLock))
+            {
+                return Content.AddOrUpdate(name, source, lastWriteTime, isCloseStream);
+            }
+            else
+            {
+                throw new SynchronizationLockException("当前线程没有写入权限;");
+            }
         }
 
         /// <summary>
