@@ -25,6 +25,22 @@ namespace JiongXiaGu.Unity.Resources
             Directory.CreateDirectory(rootDirectory);
         }
 
+        //[Test]
+        //public void Test()
+        //{
+        //    var stream = new MemoryStream();
+        //    stream.Position = 3;
+
+        //    var synchronizedStream1 = Stream.Synchronized(stream);
+        //    synchronizedStream1.Position = 4;
+
+
+        //    var synchronizedStream2 = Stream.Synchronized(stream);
+        //    synchronizedStream2.Position = 5;
+
+        //    synchronizedStream1.Dispose();
+        //}
+
         [Test]
         public void TestMemoryContent()
         {

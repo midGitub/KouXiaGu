@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ICSharpCode.SharpZipLib.Zip;
-using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -372,7 +371,6 @@ namespace JiongXiaGu.Unity.Resources
             public string Name { get; private set; }
             public DateTime LastWriteTime { get; private set; }
             public ExclusiveStream Source { get; private set; }
-            public bool IsCloseStream { get; private set; }
             public EntryOperation Operation { get; private set; }
             public bool IsDisposed { get; private set; }
 
@@ -386,8 +384,7 @@ namespace JiongXiaGu.Unity.Resources
             {
                 Name = name;
                 LastWriteTime = lastWriteTime;
-                Source = new ExclusiveStream(source);
-                IsCloseStream = isCloseStream;
+                Source = new ExclusiveStream(source, isCloseStream);
                 Operation = operation;
             }
 

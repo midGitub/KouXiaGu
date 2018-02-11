@@ -107,12 +107,12 @@ namespace JiongXiaGu.Unity.Resources
             {
                 var oldEntry = entries[index];
                 oldEntry.Dispose();
-                var entry = entries[index] = new MemoryEntry(name, lastWriteTime, source, closeStream);
+                var entry = entries[index] = new MemoryEntry(name, source, lastWriteTime, closeStream);
                 return entry;
             }
             else
             {
-                var entry = new MemoryEntry(name, lastWriteTime, source, closeStream);
+                var entry = new MemoryEntry(name, source, lastWriteTime, closeStream);
                 entries.Add(entry);
                 return entry;
             }
@@ -151,17 +151,17 @@ namespace JiongXiaGu.Unity.Resources
                 oldEntry.Dispose();
 
                 var source = new MemoryStream();
-                var memoryEntry = new MemoryEntry(name, DateTime.Now, source, true);
+                var memoryEntry = new MemoryEntry(name, source, DateTime.Now, true);
                 entry = entries[index] = memoryEntry;
-                return memoryEntry.Stream.GetOutputStream();
+                return memoryEntry.Source.GetOutputStream();
             }
             else
             {
                 var source = new MemoryStream();
-                var memoryEntry = new MemoryEntry(name, DateTime.Now, source, true);
+                var memoryEntry = new MemoryEntry(name, source, DateTime.Now, true);
                 entry = memoryEntry;
                 entries.Add(memoryEntry);
-                return memoryEntry.Stream.GetOutputStream();
+                return memoryEntry.Source.GetOutputStream();
             }
         }
 
@@ -174,38 +174,29 @@ namespace JiongXiaGu.Unity.Resources
 
         private class MemoryEntry : IContentEntry, IDisposable
         {
-            public ExclusiveStream Stream { get; private set; }
+            public ExclusiveStream Source { get; private set; }
             public string Name { get; private set; }
             public DateTime LastWriteTime { get; private set; }
-            public bool IsCloseStream { get; private set; }
 
-            public MemoryEntry(string name) : this(name, DateTime.Now, new MemoryStream(), true)
+            public MemoryEntry(string name, Stream source, DateTime lastWriteTime, bool isCloseStream)
             {
-            }
-
-            public MemoryEntry(string name, DateTime lastWriteTime, Stream stream, bool closeStream)
-            {
-                Stream = new ExclusiveStream(stream);
+                Source = new ExclusiveStream(source, isCloseStream);
                 Name = name;
                 LastWriteTime = lastWriteTime;
-                IsCloseStream = closeStream;
             }
 
             public void Dispose()
             {
-                if (Stream != null)
+                if (Source != null)
                 {
-                    if (IsCloseStream)
-                    {
-                        Stream.Dispose();
-                    }
-                    Stream = null;
+                    Source.Dispose();
+                    Source = null;
                 }
             }
 
             public Stream OpenRead()
             {
-                return Stream.GetInputStream();
+                return Source.GetInputStream();
             }
         }
     }

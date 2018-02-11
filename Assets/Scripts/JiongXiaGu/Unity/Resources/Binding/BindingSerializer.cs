@@ -35,12 +35,16 @@ namespace JiongXiaGu.Unity.Resources.Binding
                 throw new ArgumentException(nameof(instance));
 
             var members = GetMembersInternal();
-            foreach (var member in members)
+
+            using (content.BeginUpdate())
             {
-                using (var stream = content.GetOutputStream(member.RelativePath))
+                foreach (var member in members)
                 {
-                    var value = member.GetValue(instance);
-                    member.Serializer.Serialize(stream, value);
+                    using (var stream = content.GetOutputStream(member.RelativePath))
+                    {
+                        var value = member.GetValue(instance);
+                        member.Serializer.Serialize(stream, value);
+                    }
                 }
             }
         }

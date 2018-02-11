@@ -16,14 +16,33 @@ namespace JiongXiaGu.Unity.Resources
         private bool isDisposed = false;
         private volatile int readerCount = 0;
         private volatile bool isWrite = false;
-        public Stream Main { get; private set; }
 
-        public ExclusiveStream(Stream soure)
+        public Stream SynchronizedSource { get; private set; }
+        public bool IsCloseStream { get; private set; }
+
+        public ExclusiveStream(Stream soure, bool isCloseStream)
         {
             if (soure == null)
                 throw new ArgumentNullException(nameof(soure));
+            if (!soure.CanRead || !soure.CanWrite || !soure.CanSeek)
+                throw new ArgumentException(nameof(soure));
 
-            Main = soure;
+            SynchronizedSource = Stream.Synchronized(soure);
+            IsCloseStream = isCloseStream;
+        }
+
+        public void Dispose()
+        {
+            if (!isDisposed)
+            {
+                if (IsCloseStream)
+                {
+                    SynchronizedSource.Dispose();
+                    SynchronizedSource = null;
+                }
+
+                isDisposed = true;
+            }
         }
 
         public Stream GetInputStream()
@@ -32,16 +51,10 @@ namespace JiongXiaGu.Unity.Resources
                 throw new IOException("Stream已经被占用");
 
             readerCount++;
-            var synchronizedStream = Stream.Synchronized(Main);
-            var inputeStream = new ReadOnlyStream(synchronizedStream, delegate ()
+            var inputeStream = new InputStream(SynchronizedSource, delegate()
             {
                 readerCount--;
-                if (isDisposed && readerCount == 0)
-                {
-                    Main.Dispose();
-                }
             });
-            inputeStream.Seek(0, SeekOrigin.Begin);
             return inputeStream;
         }
 
@@ -51,80 +64,112 @@ namespace JiongXiaGu.Unity.Resources
                 throw new IOException("Stream已经被占用");
 
             isWrite = true;
-            var synchronizedStream = Stream.Synchronized(Main);
-            var outputStream = new EditOnlyStream(synchronizedStream, delegate ()
+            SynchronizedSource.Position = 0;
+            var outputStream = new OuputStream(SynchronizedSource, delegate()
             {
                 isWrite = false;
-                if (isDisposed)
-                {
-                    Main.Dispose();
-                }
-                else
-                {
-                    Main.Position = 0;
-                }
             });
-            outputStream.Seek(0, SeekOrigin.Begin);
             return outputStream;
         }
 
-        public void Dispose()
+
+        private class InputStream : Stream, IDisposable
         {
-            if (!isDisposed)
-            {
-                if (!isWrite || readerCount == 0)
-                {
-                    Main.Dispose();
-                    Main = null;
-                }
-
-                isDisposed = true;
-            }
-        }
-
-
-        /// <summary>
-        /// 用于提供只读的流,在 Dispose() 之后重置内部流的位置到起点;
-        /// </summary>
-        internal class ReadOnlyStream : Stream
-        {
-            private bool isDisposed = false;
-            private Stream stream;
+            private bool isDisposed;
+            private Stream baseStream;
+            private long readPos;
             private Action onDispose;
-            public override bool CanRead => stream.CanRead;
-            public override bool CanSeek => stream.CanSeek;
-            public override bool CanWrite => false;
-            public override long Length => stream.Length;
+
+            public override bool CanRead => baseStream.CanRead && !isDisposed;
+            public override bool CanWrite => baseStream.CanWrite && !isDisposed;
+            public override bool CanSeek => baseStream.CanSeek && !isDisposed;
+
+            public override long Length
+            {
+                get
+                {
+                    ThrowIfObjectDisposed();
+
+                    return baseStream.Length;
+                }
+            }
 
             public override long Position
             {
                 get
                 {
                     ThrowIfObjectDisposed();
-
-                    return stream.Position;
+                    return readPos;
                 }
                 set
                 {
                     ThrowIfObjectDisposed();
-
-                    stream.Position = value;
+                    readPos = value;
                 }
             }
 
-            public ReadOnlyStream(Stream stream, Action onDispose)
+            public InputStream(Stream baseStream, Action onDispose)
             {
-                this.stream = stream;
+                if (baseStream == null)
+                    throw new ArgumentNullException(nameof(baseStream));
+
+                this.baseStream = baseStream;
                 this.onDispose = onDispose;
+                readPos = 0;
             }
 
             protected override void Dispose(bool disposing)
             {
-                base.Dispose(disposing);
                 if (!isDisposed)
                 {
-                    onDispose.Invoke();
+                    onDispose?.Invoke();
+                    onDispose = null;
+
                     isDisposed = true;
+                }
+            }
+
+            public override int ReadByte()
+            {
+                ThrowIfObjectDisposed();
+
+                baseStream.Seek(readPos++, SeekOrigin.Begin);
+                return baseStream.ReadByte();
+            }
+
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                ThrowIfObjectDisposed();
+
+                baseStream.Seek(readPos, SeekOrigin.Begin);
+                int readCount = baseStream.Read(buffer, offset, count);
+                if (readCount > 0)
+                {
+                    readPos += readCount;
+                }
+                return readCount;
+            }
+            
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                ThrowIfObjectDisposed();
+
+                switch (origin)
+                {
+                    case SeekOrigin.Begin:
+                        readPos = offset;
+                        return readPos;
+
+                    case SeekOrigin.Current:
+                        readPos += offset;
+                        return readPos;
+
+                    case SeekOrigin.End:
+                        readPos = baseStream.Length + offset;
+                        return readPos;
+
+                    default:
+                        throw new IndexOutOfRangeException();
                 }
             }
 
@@ -132,28 +177,7 @@ namespace JiongXiaGu.Unity.Resources
             {
                 ThrowIfObjectDisposed();
 
-                stream.Flush();
-            }
-
-            public override int Read(byte[] buffer, int offset, int count)
-            {
-                ThrowIfObjectDisposed();
-
-                return stream.Read(buffer, offset, count);
-            }
-
-            public override long Seek(long offset, SeekOrigin origin)
-            {
-                ThrowIfObjectDisposed();
-
-                return stream.Seek(offset, origin);
-            }
-
-            public override void SetLength(long value)
-            {
-                ThrowIfObjectDisposed();
-
-                stream.SetLength(value);
+                baseStream.Flush();
             }
 
             public override void Write(byte[] buffer, int offset, int count)
@@ -161,10 +185,15 @@ namespace JiongXiaGu.Unity.Resources
                 throw new NotSupportedException();
             }
 
+            public override void SetLength(long value)
+            {
+                throw new NotSupportedException();
+            }
+
             /// <summary>
             /// 若该实例已经被销毁,则返回异常;
             /// </summary>
-            protected void ThrowIfObjectDisposed()
+            private void ThrowIfObjectDisposed()
             {
                 if (isDisposed)
                 {
@@ -173,18 +202,25 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        /// <summary>
-        /// 提供写入使用的流;
-        /// </summary>
-        private class EditOnlyStream : Stream
+        private class OuputStream : Stream
         {
             private bool isDisposed = false;
-            private Stream stream;
+            private Stream baseStream;
             private Action onDispose;
-            public override bool CanRead => stream.CanRead;
-            public override bool CanSeek => stream.CanSeek;
-            public override bool CanWrite => stream.CanWrite;
-            public override long Length => stream.Length;
+
+            public override bool CanRead => baseStream.CanRead;
+            public override bool CanSeek => baseStream.CanSeek;
+            public override bool CanWrite => baseStream.CanWrite;
+
+            public override long Length
+            {
+                get
+                {
+                    ThrowIfObjectDisposed();
+
+                    return baseStream.Length;
+                }
+            }
 
             public override long Position
             {
@@ -192,28 +228,32 @@ namespace JiongXiaGu.Unity.Resources
                 {
                     ThrowIfObjectDisposed();
 
-                    return stream.Position;
+                    return baseStream.Position;
                 }
                 set
                 {
                     ThrowIfObjectDisposed();
 
-                    stream.Position = value;
+                    baseStream.Position = value;
                 }
             }
 
-            public EditOnlyStream(Stream stream, Action onDispose)
+            public OuputStream(Stream source, Action onDispose)
             {
-                this.stream = stream;
+                if (source == null)
+                    throw new ArgumentNullException(nameof(source));
+
+                baseStream = source;
                 this.onDispose = onDispose;
             }
 
             protected override void Dispose(bool disposing)
             {
-                base.Dispose(disposing);
                 if (!isDisposed)
                 {
-                    onDispose.Invoke();
+                    onDispose?.Invoke();
+                    onDispose = null;
+
                     isDisposed = true;
                 }
             }
@@ -222,35 +262,35 @@ namespace JiongXiaGu.Unity.Resources
             {
                 ThrowIfObjectDisposed();
 
-                stream.Flush();
+                baseStream.Flush();
             }
 
             public override int Read(byte[] buffer, int offset, int count)
             {
                 ThrowIfObjectDisposed();
 
-                return stream.Read(buffer, offset, count);
+                return baseStream.Read(buffer, offset, count);
             }
 
             public override long Seek(long offset, SeekOrigin origin)
             {
                 ThrowIfObjectDisposed();
 
-                return stream.Seek(offset, origin);
+                return baseStream.Seek(offset, origin);
             }
 
             public override void SetLength(long value)
             {
                 ThrowIfObjectDisposed();
 
-                stream.SetLength(value);
+                baseStream.SetLength(value);
             }
 
             public override void Write(byte[] buffer, int offset, int count)
             {
                 ThrowIfObjectDisposed();
 
-                stream.Write(buffer, offset, count);
+                baseStream.Write(buffer, offset, count);
             }
 
             /// <summary>
