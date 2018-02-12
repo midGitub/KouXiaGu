@@ -11,14 +11,10 @@ namespace JiongXiaGu.Unity.Resources
     /// 表示可读写游戏资源;
     /// 关于 AssetBundle 读取方式,推荐在加载游戏时异步加载所有 AssetBundle,在游戏运行中,若在游戏允许中还需要加载 AssetBundle,则使用 GetOrLoad 进行同步加载;
     /// </summary>
-    public class ModificationContent : BlockingContent, IDisposable
+    public partial class ModificationContent : IDisposable
     {
-        /// <summary>
-        /// 仅提供工厂类使用!用于指定最新描述使用;
-        /// </summary>
-        internal readonly object AsyncLock = new object();
-
         private bool isDisposed = false;
+        public Content BaseContent { get; private set; }
         private Lazy<List<AssetBundlePack>> assetBundles = new Lazy<List<AssetBundlePack>>();
 
         /// <summary>
@@ -36,9 +32,34 @@ namespace JiongXiaGu.Unity.Resources
             internal set { newDescription = value; }
         }
 
-        public ModificationContent(Content content, ModificationDescription description) : base(content)
+        public ModificationContent(Content content, ModificationDescription description)
         {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            BaseContent = content;
             OriginalDescription = description;
+        }
+
+        public void Dispose()
+        {
+            if (!isDisposed)
+            {
+                BaseContent.Dispose();
+                BaseContent = null;
+
+                UnloadAssetBundlesAll(true);
+
+                isDisposed = true;
+            }
+        }
+
+        private void ThrowIfObjectDisposed()
+        {
+            if (isDisposed)
+            {
+                throw new ObjectDisposedException(ToString());
+            }
         }
 
         /// <summary>
@@ -205,7 +226,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="ArgumentException"></exception>
         private AssetBundlePack InternalLoadAssetBundle(AssetBundleDescription description)
         {
-            var stream = GetInputStream(description.RelativePath);
+            var stream = BaseContent.GetInputStream(description.RelativePath);
             {
                 AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
                 if (assetBundle != null)
@@ -229,7 +250,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="FileNotFoundException"></exception>
         private Task<AssetBundlePack> InternalLoadAssetBundleAsync(AssetBundleDescription description)
         {
-            var stream = GetInputStream(description.RelativePath);
+            var stream = BaseContent.GetInputStream(description.RelativePath);
             {
                 var taskCompletionSource = new TaskCompletionSource<AssetBundlePack>();
 
@@ -269,14 +290,6 @@ namespace JiongXiaGu.Unity.Resources
                 AssetBundle = assetBundle;
                 Stream = stream;
             }
-        }
-
-        [Flags]
-        public enum AssetBundleLoadOption
-        {
-            None = 0,
-            Main = 1 << 0,
-            Secondary = 1 << 1,
         }
     }
 }

@@ -47,13 +47,13 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         private RectTerrainResourceDescription Read(ModificationContent content)
         {
-            RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content);
+            RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content.BaseContent);
             return description;
         }
 
         private void Write(ModificationContent content, RectTerrainResourceDescription description)
         {
-            bindingSerializer.Serialize(content, description);
+            bindingSerializer.Serialize(content.BaseContent, description);
         }
 
         private void Clear()

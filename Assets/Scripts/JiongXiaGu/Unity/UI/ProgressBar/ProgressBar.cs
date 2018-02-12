@@ -17,7 +17,7 @@ namespace JiongXiaGu.Unity.UI
         [SerializeField]
         private Scrollbar scrollbar;
         [SerializeField]
-        private Text messageControl;
+        private Text messageText;
         public IProgress<ProgressInfo> Progress { get; private set; }
 
         private void Awake()
@@ -37,9 +37,9 @@ namespace JiongXiaGu.Unity.UI
                     scrollbar.size = progress.Progress;
                 }
             }
-            if (messageControl != null && progress.Message != null)
+            if (messageText != null && progress.Message != null)
             {
-                messageControl.text = progress.Message;
+                messageText.text = progress.Message;
             }
         }
     }

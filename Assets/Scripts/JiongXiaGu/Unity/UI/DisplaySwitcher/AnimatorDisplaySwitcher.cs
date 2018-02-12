@@ -33,7 +33,7 @@ namespace JiongXiaGu.Unity.UI
         {
             if (animator != null)
             {
-                animator.SetBool(DisplayBoolParameter, true);
+                animator.Play("Display");
             }
         }
 
@@ -41,7 +41,7 @@ namespace JiongXiaGu.Unity.UI
         {
             if (animator != null)
             {
-                animator.SetBool(DisplayBoolParameter, false);
+                animator.Play("Hide");
             }
         }
     }

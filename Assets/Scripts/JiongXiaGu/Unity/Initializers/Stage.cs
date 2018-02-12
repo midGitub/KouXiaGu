@@ -15,7 +15,6 @@ namespace JiongXiaGu.Unity.Initializers
     {
         None,
         WelcomeScene,
-        InitializationScene,
         MainMenuScene,
         GameScene,
     }
@@ -25,11 +24,6 @@ namespace JiongXiaGu.Unity.Initializers
     /// </summary>
     public interface ISceneController
     {
-        ///// <summary>
-        ///// 场景开始;
-        ///// </summary>
-        //void StartScene();
-
         /// <summary>
         /// 退出当前场景,并返回等待程序;
         /// </summary>

@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.RectMaps
 {
 
     [DisallowMultipleComponent]
-    public class RectMapController : MonoBehaviour, IBasicResourceInitializeHandle
+    public class RectMapController : MonoBehaviour, IResourceInitializeHandle
     {
         private const string InitializerName = "地图数据初始化";
 
@@ -25,11 +25,11 @@ namespace JiongXiaGu.Unity.RectMaps
             set { RectMap.AvailableMaps = value; }
         }
 
-        void IBasicResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
             mapSearcher = new MapSearcher();
 
-            availableMaps = mapSearcher.Find(mods);
+            availableMaps = mapSearcher.Find(mods.Select(item => item.BaseContent));
             if (availableMaps.Count == 0)
             {
                 throw new FileNotFoundException("未找到可用的文件");

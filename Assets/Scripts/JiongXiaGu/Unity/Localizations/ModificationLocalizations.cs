@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// 搜索模组语言资源,加载合适的语言资源,加载合适的模组语言资源;
     /// </summary>
     [DisallowMultipleComponent]
-    internal class ModificationLocalizations : MonoBehaviour, IBasicResourceInitializeHandle
+    internal class ModificationLocalizations : MonoBehaviour, IResourceInitializeHandle
     {
         private const string InitializerName = "本地化组件初始化";
 
@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 搜索模组语言资源,加载合适的语言资源,加载合适的模组语言资源;
         /// </summary>
-        void IBasicResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
             LocalizationConfigSerializer configSerializer = new LocalizationConfigSerializer();
             LanguagePackSerializer packSerializer = new LanguagePackSerializer();
@@ -142,7 +142,7 @@ namespace JiongXiaGu.Unity.Localizations
 
             foreach (var mod in mods)
             {
-                var packs = packSerializer.EnumeratePack(mod, SearchOption.TopDirectoryOnly);
+                var packs = packSerializer.EnumeratePack(mod.BaseContent, SearchOption.TopDirectoryOnly);
                 packInfos.AddRange(packs);
             }
 
@@ -242,7 +242,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// </summary>
         private LanguagePackInfo FindSupplementaryPack(LanguagePackSerializer packSerializer, ModificationContent mod, LanguagePackDescription target)
         {
-            var supplementaryPackInfo = packSerializer.EnumerateSupplementaryPack(mod, SearchOption.TopDirectoryOnly);
+            var supplementaryPackInfo = packSerializer.EnumerateSupplementaryPack(mod.BaseContent, SearchOption.TopDirectoryOnly);
             LanguagePackInfo defaultInfo = null;
 
             foreach (var packInfo in supplementaryPackInfo)

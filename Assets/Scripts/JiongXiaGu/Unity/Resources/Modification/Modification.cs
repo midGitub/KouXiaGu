@@ -31,11 +31,6 @@ namespace JiongXiaGu.Unity.Resources
         internal static List<ModificationContent> ModificationContents { get; private set; }
 
         /// <summary>
-        /// 默认的读取顺序,若为Null,则从配置获取;
-        /// </summary>
-        public static ActiveModification? DefaultActiveModification { get; private set; }
-
-        /// <summary>
         /// 资源合集;
         /// </summary>
         public static SharedContent SharedContent { get; private set; }
@@ -44,7 +39,6 @@ namespace JiongXiaGu.Unity.Resources
         public static bool IsComplete { get; private set; } = false;
 
         private static Task initializeTask;
-        private static TaskCompletionSource<object> basicInitializationTask;
         private static CancellationTokenSource cancellationTokenSource;
 
         /// <summary>
@@ -66,39 +60,9 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         /// <summary>
-        /// 尝试获取到对应模组信息;
-        /// </summary>
-        public static bool TryGetInfo(string id, out ModificationInfo info)
-        {
-            int index = ModificationInfos.FindIndex(item => item.Description.ID == id);
-            if (index >= 0)
-            {
-                info = ModificationInfos[index];
-                return true;
-            }
-            else
-            {
-                info = default(ModificationInfo);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 设置读取顺序;
-        /// </summary>
-        public static void SetOrder(ActiveModification order)
-        {
-            UnityThread.ThrowIfNotUnityThread();
-            if (IsInitializing)
-                throw new InvalidOperationException("正在初始化,无法变更!");
-
-            DefaultActiveModification = order;
-        }
-
-        /// <summary>
         /// 进行初始化,若已经初始化,初始化中则无任何操作;
         /// </summary>
-        public static InitializationStage Initialize(IProgress<ProgressInfo> progress)
+        public static Task Initialize(IProgress<ProgressInfo> progress)
         {
             UnityThread.ThrowIfNotUnityThread();
             if (progress == null)
@@ -110,14 +74,41 @@ namespace JiongXiaGu.Unity.Resources
                 IsComplete = false;
                 cancellationTokenSource = new CancellationTokenSource();
                 initializeTask = InternalInitialize(progress, cancellationTokenSource.Token);
-                basicInitializationTask = new TaskCompletionSource<object>();
             }
             else if (cancellationTokenSource.IsCancellationRequested)
             {
                 throw new InvalidOperationException("初始化正在被取消!");
             }
 
-            return new InitializationStage(basicInitializationTask.Task, initializeTask);
+            return initializeTask;
+        }
+
+
+        private static async Task InternalInitialize(IProgress<ProgressInfo> progress, CancellationToken token)
+        {
+            try
+            {
+                progress?.Report(new ProgressInfo(0.1f, "程序初始化"));
+                await Program.Initialize();
+
+                progress?.Report(new ProgressInfo(0.2f, "模组排序"));
+                ModificationContents = GetModificationContent();
+                SharedContent = new SharedContent(ModificationContents);
+
+                progress?.Report(new ProgressInfo(0.3f, "模组初始化"));
+                var resourceProgress = new LocalProgress(progress, 0.3f, 1f);
+                await ResourceInitializer.StartInitialize(ModificationContents, resourceProgress, token);
+
+                progress?.Report(new ProgressInfo(1f, "初始化完毕"));
+
+                IsComplete = true;
+            }
+            finally
+            {
+                IsInitializing = false;
+                cancellationTokenSource = null;
+                initializeTask = null;
+            }
         }
 
         /// <summary>
@@ -138,7 +129,6 @@ namespace JiongXiaGu.Unity.Resources
                     IsComplete = false;
                     cancellationTokenSource = null;
                     initializeTask = null;
-                    basicInitializationTask = null;
                 });
             }
             else
@@ -147,41 +137,26 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private static async Task InternalInitialize(IProgress<ProgressInfo> progress, CancellationToken token)
+
+
+
+
+
+        /// <summary>
+        /// 尝试获取到对应模组信息;
+        /// </summary>
+        public static bool TryGetInfo(string id, out ModificationInfo info)
         {
-            try
+            int index = ModificationInfos.FindIndex(item => item.Description.ID == id);
+            if (index >= 0)
             {
-                progress.Report(new ProgressInfo(0.1f, "程序初始化"));
-                await Program.Initialize();
-
-                progress.Report(new ProgressInfo(0.2f, "模组排序"));
-                ModificationContents = GetModificationContent();
-                SharedContent = new SharedContent(ModificationContents);
-
-                progress.Report(new ProgressInfo(0.3f, "模组初始化"));
-                var basicResourceProgress = new LocalProgress(progress, 0.3f, 0.5f);
-                await BasicResourceInitializer.StartInitialize(ModificationContents, basicResourceProgress, token);
-                basicInitializationTask.SetResult(null);
-
-                progress.Report(new ProgressInfo(0.5f, "模组数据初始化"));
-                var resourceProgress = new LocalProgress(progress, 0.5f, 1f);
-                await ResourceInitializer.StartInitialize(ModificationContents, resourceProgress, token);
-
-                progress.Report(new ProgressInfo(1f, "初始化完毕"));
-
-                IsComplete = true;
+                info = ModificationInfos[index];
+                return true;
             }
-            catch (Exception ex)
+            else
             {
-                basicInitializationTask.TrySetException(ex);
-                throw ex;
-            }
-            finally
-            {
-                IsInitializing = false;
-                cancellationTokenSource = null;
-                initializeTask = null;
-                basicInitializationTask = null;
+                info = default(ModificationInfo);
+                return false;
             }
         }
 
@@ -254,27 +229,19 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         private static List<ModificationContent> GetModificationContent()
         {
-            if (DefaultActiveModification == null)
+            try
             {
-                try
-                {
-                    ActiveModification order;
-                    ActiveModificationSerializer serializer = new ActiveModificationSerializer();
+                ActiveModification order;
+                ActiveModificationSerializer serializer = new ActiveModificationSerializer();
 
-                    order = serializer.Deserialize();
-                    return GetModificationContent(order);
-                }
-                catch(FileNotFoundException)
-                {
-                    List<ModificationContent> newList = new List<ModificationContent>();
-                    newList.Add(Core);
-                    return newList;
-                }
+                order = serializer.Deserialize();
+                return GetModificationContent(order);
             }
-            else
+            catch (FileNotFoundException)
             {
-                var mod = GetModificationContent(DefaultActiveModification.Value);
-                return mod;
+                List<ModificationContent> newList = new List<ModificationContent>();
+                newList.Add(Core);
+                return newList;
             }
         }
 
@@ -330,24 +297,12 @@ namespace JiongXiaGu.Unity.Resources
                     if (mod != null)
                     {
                         mod.UnloadAssetBundlesAll(true);
-                        mod.Dispose();
+                        mod.BaseContent.Dispose();
                     }
                 }
             }
 
             return newList;
-        }
-        
-        public struct InitializationStage
-        {
-            public Task BasicInitializationTask { get; private set; }
-            public Task InitializationTask { get; private set; }
-
-            public InitializationStage(Task basicInitializationTask, Task initializationTask)
-            {
-                BasicInitializationTask = basicInitializationTask;
-                InitializationTask = initializationTask;
-            }
         }
     }
 }

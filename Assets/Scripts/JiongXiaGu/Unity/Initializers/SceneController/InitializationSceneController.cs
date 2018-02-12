@@ -33,15 +33,10 @@ namespace JiongXiaGu.Unity.Initializers
             IProgress<ProgressInfo> progress = progressBar.Progress;
             try
             {
-                var waiter = Modification.Initialize(progress);
-
-                await waiter.BasicInitializationTask;
+                await Modification.Initialize(progress);
 
                 menuDisplaySwitcher.Display();
-
-                await waiter.InitializationTask;
-                await Task.Delay(3000);
-                progressBarDisplaySwitcher.Hide();
+                progressBarDisplaySwitcher.Hide(3);
             }
             catch (Exception ex)
             {

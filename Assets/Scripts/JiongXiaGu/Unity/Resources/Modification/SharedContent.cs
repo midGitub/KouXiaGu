@@ -81,12 +81,12 @@ namespace JiongXiaGu.Unity.Resources
 
             if (path.GetRelativePath(out contentID, out relativePath))
             {
-                return main.GetInputStream(relativePath);
+                return main.BaseContent.GetInputStream(relativePath);
             }
             else
             {
                 var sharedContent = Find(contentID);
-                return sharedContent.GetInputStream(relativePath);
+                return sharedContent.BaseContent.GetInputStream(relativePath);
             }
         }
 

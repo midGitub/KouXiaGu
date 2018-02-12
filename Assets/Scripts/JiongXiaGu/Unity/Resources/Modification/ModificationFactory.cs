@@ -118,25 +118,19 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从内容读取到描述,并且更新实例;
         /// </summary>
-        public void UpdateDescription(ModificationContent loadableContent)
+        public void UpdateDescription(ModificationContent content)
         {
-            lock (loadableContent.AsyncLock)
-            {
-                ModificationDescription description = ReadDescription(loadableContent);
-                loadableContent.Description = description;
-            }
+            ModificationDescription description = ReadDescription(content.BaseContent);
+            content.Description = description;
         }
 
         /// <summary>
         /// 写入资源描述;
         /// </summary>
-        public void UpdateDescription(ModificationContent loadableContent, ModificationDescription description)
+        public void UpdateDescription(ModificationContent content, ModificationDescription description)
         {
-            lock (loadableContent.AsyncLock)
-            {
-                WriteDescription(loadableContent, description);
-                loadableContent.Description = description;
-            }
+            WriteDescription(content.BaseContent, description);
+            content.Description = description;
         }
 
 
