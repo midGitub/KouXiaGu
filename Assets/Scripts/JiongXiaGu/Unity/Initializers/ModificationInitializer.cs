@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// <summary>
     /// 数据整合处理接口;
     /// </summary>
-    public interface IResourceInitializeHandle
+    public interface IModificationInitializeHandle
     {
         void Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token);
     }
@@ -22,20 +22,20 @@ namespace JiongXiaGu.Unity.Initializers
     /// 游戏数据初始化器(在游戏开始前进行初始化,若初始化失败意味着游戏无法开始);
     /// </summary>
     [DisallowMultipleComponent]
-    internal class ResourceInitializer : InitializerBase
+    internal class ModificationInitializer : InitializerBase
     {
-        private ResourceInitializer()
+        private ModificationInitializer()
         {
         }
 
-        private static readonly GlobalSingleton<ResourceInitializer> singleton = new GlobalSingleton<ResourceInitializer>();
-        public static ResourceInitializer Instance => singleton.GetInstance();
-        private IResourceInitializeHandle[] integrateHandlers;
+        private static readonly GlobalSingleton<ModificationInitializer> singleton = new GlobalSingleton<ModificationInitializer>();
+        public static ModificationInitializer Instance => singleton.GetInstance();
+        private IModificationInitializeHandle[] integrateHandlers;
 
         private void Awake()
         {
             singleton.SetInstance(this);
-            integrateHandlers = GetComponentsInChildren<IResourceInitializeHandle>();
+            integrateHandlers = GetComponentsInChildren<IModificationInitializeHandle>();
         }
 
         public static Task StartInitialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)

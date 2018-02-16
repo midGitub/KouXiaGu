@@ -16,30 +16,9 @@ namespace JiongXiaGu.Unity.Resources
     public static class Modification
     {
         /// <summary>
-        /// 核心资源;
-        /// </summary>
-        public static ModificationContent Core { get; private set; }
-
-        /// <summary>
         /// 所有模组信息,不包括核心资源;
         /// </summary>
         public static List<ModificationInfo> ModificationInfos { get; private set; }
-
-        /// <summary>
-        /// 需要读取的模组资源,包括核心资源;
-        /// </summary>
-        internal static List<ModificationContent> ModificationContents { get; private set; }
-
-        /// <summary>
-        /// 资源合集;
-        /// </summary>
-        public static SharedContent SharedContent { get; private set; }
-
-        public static bool IsInitializing { get; private set; } = false;
-        public static bool IsComplete { get; private set; } = false;
-
-        private static Task initializeTask;
-        private static CancellationTokenSource cancellationTokenSource;
 
         /// <summary>
         /// 寻找所有模组;
@@ -57,107 +36,6 @@ namespace JiongXiaGu.Unity.Resources
 
             var userMods = contentSearcher.Searche(Resource.UserModDirectory);
             ModificationInfos.AddRange(userMods);
-        }
-
-        /// <summary>
-        /// 进行初始化,若已经初始化,初始化中则无任何操作;
-        /// </summary>
-        public static Task Initialize(IProgress<ProgressInfo> progress)
-        {
-            UnityThread.ThrowIfNotUnityThread();
-            if (progress == null)
-                throw new ArgumentNullException(nameof(progress));
-
-            if (!IsInitializing)
-            {
-                IsInitializing = true;
-                IsComplete = false;
-                cancellationTokenSource = new CancellationTokenSource();
-                initializeTask = InternalInitialize(progress, cancellationTokenSource.Token);
-            }
-            else if (cancellationTokenSource.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("初始化正在被取消!");
-            }
-
-            return initializeTask;
-        }
-
-
-        private static async Task InternalInitialize(IProgress<ProgressInfo> progress, CancellationToken token)
-        {
-            try
-            {
-                progress?.Report(new ProgressInfo(0.1f, "程序初始化"));
-                await Program.Initialize();
-
-                progress?.Report(new ProgressInfo(0.2f, "模组排序"));
-                ModificationContents = GetModificationContent();
-                SharedContent = new SharedContent(ModificationContents);
-
-                progress?.Report(new ProgressInfo(0.3f, "模组初始化"));
-                var resourceProgress = new LocalProgress(progress, 0.3f, 1f);
-                await ResourceInitializer.StartInitialize(ModificationContents, resourceProgress, token);
-
-                progress?.Report(new ProgressInfo(1f, "初始化完毕"));
-
-                IsComplete = true;
-            }
-            finally
-            {
-                IsInitializing = false;
-                cancellationTokenSource = null;
-                initializeTask = null;
-            }
-        }
-
-        /// <summary>
-        /// 取消初始化;
-        /// </summary>
-        public static Task Cancel(IProgress<ProgressInfo> progress)
-        {
-            UnityThread.ThrowIfNotUnityThread();
-            if (progress == null)
-                throw new ArgumentNullException(nameof(progress));
-
-            if (initializeTask != null)
-            {
-                cancellationTokenSource.Cancel();
-                return initializeTask.ContinueWith(delegate (Task task)
-                {
-                    IsInitializing = false;
-                    IsComplete = false;
-                    cancellationTokenSource = null;
-                    initializeTask = null;
-                });
-            }
-            else
-            {
-                return Task.CompletedTask;
-            }
-        }
-
-
-
-
-
-
-        /// <summary>
-        /// 尝试获取到对应模组信息;
-        /// </summary>
-        public static bool TryGetInfo(string id, out ModificationInfo info)
-        {
-            int index = ModificationInfos.FindIndex(item => item.Description.ID == id);
-            if (index >= 0)
-            {
-                info = ModificationInfos[index];
-                return true;
-            }
-            else
-            {
-                info = default(ModificationInfo);
-                return false;
-            }
         }
 
         /// <summary>
@@ -223,6 +101,107 @@ namespace JiongXiaGu.Unity.Resources
 
             return idleModificationInfos;
         }
+
+        /// <summary>
+        /// 尝试获取到对应模组信息;
+        /// </summary>
+        public static bool TryGetInfo(string id, out ModificationInfo info)
+        {
+            int index = ModificationInfos.FindIndex(item => item.Description.ID == id);
+            if (index >= 0)
+            {
+                info = ModificationInfos[index];
+                return true;
+            }
+            else
+            {
+                info = default(ModificationInfo);
+                return false;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// 核心资源;
+        /// </summary>
+        public static ModificationContent Core { get; private set; }
+
+        /// <summary>
+        /// 需要读取的模组资源,包括核心资源;
+        /// </summary>
+        internal static List<ModificationContent> ModificationContents { get; private set; }
+
+        /// <summary>
+        /// 资源合集;
+        /// </summary>
+        public static SharedContent SharedContent { get; private set; }
+
+        private static Task initializeTask;
+        private static CancellationTokenSource cancellationTokenSource;
+        public static TaskStatus InitializeTaskStatus => initializeTask != null ? initializeTask.Status : TaskStatus.WaitingToRun;
+
+        /// <summary>
+        /// 进行初始化,若已经初始化,初始化中则无任何操作;
+        /// </summary>
+        public static Task Initialize(IProgress<ProgressInfo> progress)
+        {
+            UnityThread.ThrowIfNotUnityThread();
+
+            if (initializeTask == null || initializeTask.IsCompleted)
+            {
+                cancellationTokenSource = new CancellationTokenSource();
+                initializeTask = InternalInitialize(progress, cancellationTokenSource.Token);
+            }
+            else if (cancellationTokenSource.IsCancellationRequested)
+            {
+                throw new InvalidOperationException("初始化正在被取消!");
+            }
+
+            return initializeTask;
+        }
+
+        private static async Task InternalInitialize(IProgress<ProgressInfo> progress, CancellationToken token)
+        {
+            progress?.Report(new ProgressInfo(0.1f, "程序初始化"));
+            await Program.Initialize();
+
+            progress?.Report(new ProgressInfo(0.2f, "模组排序"));
+            ModificationContents = GetModificationContent();
+            SharedContent = new SharedContent(ModificationContents);
+
+            progress?.Report(new ProgressInfo(0.3f, "模组初始化"));
+            var resourceProgress = new LocalProgress(progress, 0.3f, 1f);
+            await ModificationInitializer.StartInitialize(ModificationContents, resourceProgress, token);
+
+            progress?.Report(new ProgressInfo(1f, "初始化完毕"));
+        }
+
+        /// <summary>
+        /// 取消初始化;
+        /// </summary>
+        public static Task Cancel(IProgress<ProgressInfo> progress)
+        {
+            UnityThread.ThrowIfNotUnityThread();
+            if (progress == null)
+                throw new ArgumentNullException(nameof(progress));
+
+            if (initializeTask != null)
+            {
+                cancellationTokenSource.Cancel();
+                return initializeTask.ContinueWith(delegate (Task task)
+                {
+                    cancellationTokenSource = null;
+                    initializeTask = null;
+                });
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
+
 
         /// <summary>
         /// 根据预先定义的模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;

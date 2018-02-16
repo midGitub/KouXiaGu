@@ -86,15 +86,17 @@ namespace JiongXiaGu.Unity.Archives
         /// </summary>
         IEnumerable<ArchiveInfo> EnumerateAutoArchives()
         {
-            const int maxArchiveCount = 3;
-            for (int i = 1; i <= maxArchiveCount; i++)
-            {
-                string archiveName = "AutoSave" + i;
-                string archivePath = Path.Combine(Resource.ArchiveDirectory, archiveName);
-                ArchiveDescription description = new ArchiveDescription(archiveName, true);
-                ArchiveInfo archive = new ArchiveInfo(description, archivePath);
-                yield return archive;
-            }
+            throw new System.NotImplementedException();
+
+            //const int maxArchiveCount = 3;
+            //for (int i = 1; i <= maxArchiveCount; i++)
+            //{
+            //    string archiveName = "AutoSave" + i;
+            //    string archivePath = Path.Combine(Resource.ArchiveDirectory, archiveName);
+            //    ArchiveDescription description = new ArchiveDescription(archiveName, true);
+            //    ArchiveInfo archive = new ArchiveInfo(description, archivePath);
+            //    yield return archive;
+            //}
         }
 
         //void ISceneCompletedHandle.OnSceneCompleted()

@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.RectMaps
 {
 
     [DisallowMultipleComponent]
-    public class RectMapController : MonoBehaviour, IResourceInitializeHandle
+    public class RectMapController : MonoBehaviour, IModificationInitializeHandle
     {
         private const string InitializerName = "地图数据初始化";
 
@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.RectMaps
             set { RectMap.AvailableMaps = value; }
         }
 
-        void IResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IModificationInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
             mapSearcher = new MapSearcher();
 

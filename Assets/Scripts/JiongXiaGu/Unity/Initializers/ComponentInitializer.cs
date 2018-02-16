@@ -7,7 +7,7 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.Initializers
 {
     /// <summary>
-    /// 游戏组件初始化接口;如 按键配置,基础语言包
+    /// 游戏组件初始化接口;如 按键配置,游戏控制台
     /// </summary>
     public interface IComponentInitializeHandle
     {
@@ -18,7 +18,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// 游戏底层组件初始化器;
     /// </summary>
     [DisallowMultipleComponent]
-    internal sealed class ComponentInitializer : InitializerBase
+    internal sealed class ComponentInitializer : MonoBehaviour
     {
         private ComponentInitializer()
         {
@@ -34,27 +34,12 @@ namespace JiongXiaGu.Unity.Initializers
             initializeHandlers = GetComponentsInChildren<IComponentInitializeHandle>();
         }
 
-        public static Task StartInitialize()
+        public void Initialize()
         {
-            return Instance.Initialize();
-        }
-
-        protected override List<Func<CancellationToken, string>> EnumerateHandler(object state)
-        {
-            var handlers = new List<Func<CancellationToken, string>>();
-
             foreach (var handler in initializeHandlers)
             {
-                handlers.Add(delegate (CancellationToken token)
-                {
-                    token.ThrowIfCancellationRequested();
-
-                    handler.Initialize();
-                    return null;
-                });
+                handler.Initialize();
             }
-
-            return handlers;
         }
     }
 }

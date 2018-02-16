@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Localizations
     /// 搜索模组语言资源,加载合适的语言资源,加载合适的模组语言资源;
     /// </summary>
     [DisallowMultipleComponent]
-    internal class ModificationLocalizations : MonoBehaviour, IResourceInitializeHandle
+    internal class ModificationLocalizations : MonoBehaviour, IModificationInitializeHandle
     {
         private const string InitializerName = "本地化组件初始化";
 
@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 搜索模组语言资源,加载合适的语言资源,加载合适的模组语言资源;
         /// </summary>
-        void IResourceInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IModificationInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
             LocalizationConfigSerializer configSerializer = new LocalizationConfigSerializer();
             LanguagePackSerializer packSerializer = new LanguagePackSerializer();

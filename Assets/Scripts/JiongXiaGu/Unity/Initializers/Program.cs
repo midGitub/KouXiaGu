@@ -13,38 +13,30 @@ namespace JiongXiaGu.Unity.Initializers
     /// </summary>
     public static class Program
     {
-        private static TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
-        public static Task WorkTask => taskCompletionSource.Task;
-        public static bool IsInitialized { get; private set; } = false;
+        internal static Task WorkTask { get; private set; }
+        public static TaskStatus WorkTaskStatus => WorkTask != null ? WorkTask.Status : TaskStatus.WaitingToRun;
 
         /// <summary>
         /// 进行初始化,若已经初始化,初始化中则无任何操作;
         /// </summary>
         public static Task Initialize()
         {
-            if (IsInitialized)
+            UnityThread.ThrowIfNotUnityThread();
+
+            if (WorkTask != null)
             {
                 return WorkTask;
             }
             else
             {
-                return InternalInitialize();
+                return WorkTask = InternalInitialize();
             }
         }
 
         private static async Task InternalInitialize()
         {
-            try
-            {
-                IsInitialized = true;
-                Modification.SearcheAll();
-                await ComponentInitializer.StartInitialize();
-                taskCompletionSource.SetResult(null);
-            }
-            catch (Exception ex)
-            {
-                taskCompletionSource.SetException(ex);
-            }
+            Modification.SearcheAll();
+            await Task.Run((Action)ComponentInitializer.Instance.Initialize);
         }
     }
 }

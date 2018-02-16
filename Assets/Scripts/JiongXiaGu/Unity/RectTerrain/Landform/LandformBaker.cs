@@ -62,6 +62,11 @@ namespace JiongXiaGu.Unity.RectTerrain
             LandformChunkRenderer.SetDisplacement(displacement);
         }
 
+        public Task<LandformBakeResult> BakeAsync(LandformBakeRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 对地图进行烘培,仅在Unity线程调用;
         /// </summary>
