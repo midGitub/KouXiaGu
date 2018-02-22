@@ -34,12 +34,6 @@ namespace JiongXiaGu.Unity.Resources
         public string Version { get; set; }
 
         /// <summary>
-        /// 标签分隔符;
-        /// </summary>
-        public const char TagSeparatorChar = ',';
-        internal static readonly char[] TagSeparatorCharArray = new char[] { TagSeparatorChar };
-
-        /// <summary>
         /// 标签;
         /// </summary>
         public string Tags { get; set; }
@@ -63,23 +57,6 @@ namespace JiongXiaGu.Unity.Resources
         {
             ID = id;
             Name = name;
-        }
-
-        /// <summary>
-        /// 获取到所有标签;
-        /// </summary>
-        public string[] GetTags()
-        {
-            return Tags.Split(TagSeparatorCharArray, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        /// <summary>
-        /// 设置到所有标签;
-        /// </summary>
-        public static string JoinTags(params string[] tag)
-        {
-            string tags = string.Join(TagSeparatorChar.ToString(), tag);
-            return tags;
         }
 
         public override bool Equals(object obj)

@@ -17,7 +17,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             ID = "000",
             Name = "Test",
-            Tags = ModificationDescription.JoinTags("map", "terrain"),
+            Tags = TagHelper.Combine("map", "terrain"),
             Author = "One",
             Version = "1.22",
             Message = "...",
@@ -97,7 +97,7 @@ namespace JiongXiaGu.Unity.Resources
         private readonly ModificationDescription description1 = new ModificationDescription()
         {
             ID = "001",
-            Tags = ModificationDescription.JoinTags("map", "terrain"),
+            Tags = TagHelper.Combine("map", "terrain"),
         };
 
         private readonly string description2Path = "d2.xml";

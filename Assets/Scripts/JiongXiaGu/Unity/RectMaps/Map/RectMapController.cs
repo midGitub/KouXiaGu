@@ -19,18 +19,17 @@ namespace JiongXiaGu.Unity.RectMaps
 
         private MapSearcher mapSearcher;
 
-        private List<MapFileInfo> availableMaps
-        {
-            get { return RectMap.AvailableMaps; }
-            set { RectMap.AvailableMaps = value; }
-        }
+        /// <summary>
+        /// 所有可用的地图(在进行初始化之后,仅提供Unity线程对此内容进行变更);
+        /// </summary>
+        internal static List<MapFileInfo> AvailableMaps { get; set; }
 
         void IModificationInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
         {
             mapSearcher = new MapSearcher();
 
-            availableMaps = mapSearcher.Find(mods.Select(item => item.BaseContent));
-            if (availableMaps.Count == 0)
+            AvailableMaps = mapSearcher.Find(mods.Select(item => item.BaseContent));
+            if (AvailableMaps.Count == 0)
             {
                 throw new FileNotFoundException("未找到可用的文件");
             }
@@ -46,8 +45,8 @@ namespace JiongXiaGu.Unity.RectMaps
 
         private string GetInfoLog()
         {
-            string log = "可使用地图总数 : " + RectMap.AvailableMaps.Count
-                + ", 可使用地图 : " + string.Join(", ", RectMap.AvailableMaps.Select(map => string.Format("[Name : {0}]", map.Description.Name)))
+            string log = "可使用地图总数 : " + AvailableMaps.Count
+                + ", 可使用地图 : " + string.Join(", ", AvailableMaps.Select(map => string.Format("[Name : {0}]", map.Description.Name)))
                 ;
             return log;
         }

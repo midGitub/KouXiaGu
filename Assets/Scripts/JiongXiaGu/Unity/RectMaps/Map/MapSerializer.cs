@@ -12,9 +12,11 @@ namespace JiongXiaGu.Unity.RectMaps
     public class MapSerializer
     {
         private const string descriptionFileName = "Description" + XmlSerializer<MapDescription>.fileExtension;
-        private const string mapFileName = "Map" + ProtoSerializer<MapData>.fileExtension;
+        private const string mapFileName = "Map.xml";
         private readonly XmlSerializer<MapDescription> descriptionSerializer = new XmlSerializer<MapDescription>();
-        private readonly ProtoSerializer<MapData> mapDataSerializer = new ProtoSerializer<MapData>();
+        private readonly XmlSerializer<MapData> mapDataSerializer = new XmlSerializer<MapData>();
+
+
 
         /// <summary>
         /// 获取到地图;

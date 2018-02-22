@@ -64,19 +64,6 @@ namespace JiongXiaGu.Unity.RectMaps
             map.Subscribe(MapChangedRecorder);
         }
 
-        //public WorldMap(Map data, Map archive)
-        //{
-        //    if (data == null)
-        //        throw new ArgumentNullException(nameof(data));
-        //    if (archive == null)
-        //        throw new ArgumentNullException(nameof(archive));
-
-        //    data.AddArchive(archive);
-        //    Map = new ObservableDictionary<RectCoord, MapNode>(MapData.Data);
-        //    MapChangedRecorder = new MapChangedRecorder(archive.Data.Keys);
-        //    Map.Subscribe(MapChangedRecorder);
-        //}
-
         /// <summary>
         /// 获取到用于存档的地图数据,若不存在需要存档的内容,则返回null;
         /// </summary>
