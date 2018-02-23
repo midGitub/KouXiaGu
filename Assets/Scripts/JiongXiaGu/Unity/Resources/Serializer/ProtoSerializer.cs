@@ -1,32 +1,47 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using ProtoBuf;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
-    [Obsolete("似乎非线程安全")]
+    public class ProtoSerializer : ISerializer
+    {
+        private MethodInfo deserialize;
+        private MethodInfo serialize;
+
+        public ProtoSerializer(Type type)
+        {
+            var protoSerializerType = typeof(Serializer);
+
+            deserialize = protoSerializerType.GetMethod(nameof(Serializer.Deserialize), BindingFlags.Static | BindingFlags.Public).MakeGenericMethod(type);
+            serialize = protoSerializerType.GetMethod(nameof(Serializer.Serialize), BindingFlags.Static | BindingFlags.Public).MakeGenericMethod(type);
+        }
+
+        public object Deserialize(Stream stream)
+        {
+            return deserialize.Invoke(null, new object[] { stream });
+        }
+
+        public void Serialize(Stream stream, object item)
+        {
+            serialize.Invoke(null, new object[] { stream, item });
+        }
+    }
+
     public sealed class ProtoSerializer<T> : ISerializer<T>
     {
-        internal const string fileExtension = ".data";
         public static readonly ProtoSerializer<T> Default = new ProtoSerializer<T>();
-
-        public ProtoSerializer()
-        {
-        }
-
-        public string FileExtension
-        {
-            get { return fileExtension; }
-        }
 
         public T Deserialize(Stream stream)
         {
-            return ProtoBuf.Serializer.Deserialize<T>(stream);
+            return Serializer.Deserialize<T>(stream);
         }
 
         public void Serialize(Stream stream, T item)
         {
-            ProtoBuf.Serializer.Serialize(stream, item);
+            Serializer.Serialize(stream, item);
         }
     }
 }

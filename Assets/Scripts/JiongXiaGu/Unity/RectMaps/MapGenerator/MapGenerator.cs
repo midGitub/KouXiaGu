@@ -27,9 +27,9 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 生成地图;
         /// </summary>
-        public virtual Map Generate()
+        public virtual OMap Generate()
         {
-            Map map = new Map(description);
+            OMap map = new OMap(description);
             GenerateData(map.MapData.Data);
             return map;
         }

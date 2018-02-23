@@ -57,7 +57,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             },
         };
         
-        private readonly BindingSerializer bindingSerializer = new BindingSerializer(typeof(RectTerrainResourceDescription));
+        private readonly BindingSerializer<RectTerrainResourceDescription> bindingSerializer = new BindingSerializer<RectTerrainResourceDescription>();
 
         [Test]
         public void ReadWriteTest()

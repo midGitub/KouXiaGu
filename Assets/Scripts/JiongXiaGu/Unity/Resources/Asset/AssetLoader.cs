@@ -50,18 +50,18 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到资源;
         /// </summary>
-        public abstract T Load(ModificationContent content, AssetInfo assetInfo);
+        public abstract T Load(Modification content, AssetInfo assetInfo);
 
         /// <summary>
         /// 异步读取到资源;
         /// </summary>
-        public abstract Task<T> LoadAsync(ModificationContent content, AssetInfo assetInfo, CancellationToken token);
+        public abstract Task<T> LoadAsync(Modification content, AssetInfo assetInfo, CancellationToken token);
 
 
         /// <summary>
         /// 从 AssetBundle 读取到资源;(仅Unity线程执行)
         /// </summary>
-        protected TU LoadFromAssetBundle<TU>(ModificationContent content, AssetInfo assetInfo)
+        protected TU LoadFromAssetBundle<TU>(Modification content, AssetInfo assetInfo)
             where TU : UnityEngine.Object
         {
             AssetBundle assetBundle = LoadableResource.SharedContent.GetAssetBundle(content, assetInfo.From);

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JiongXiaGu.Unity.Resources;
+using JiongXiaGu.Unity.RectMaps;
+using JiongXiaGu.Unity.Resources.Binding;
 
 namespace JiongXiaGu.Unity.ScenarioController
 {
@@ -11,14 +12,11 @@ namespace JiongXiaGu.Unity.ScenarioController
     /// <summary>
     /// 游戏剧情;
     /// </summary>
-    public class Scenario
+    public struct Scenario
     {
-        public ScenarioDescription Description { get; private set; }
-        public Content Resources { get; private set; }
-
-        public Scenario(ScenarioDescription description)
-        {
-            Description = description;
-        }
+        [XmlAsset(ScenarioFactory.ScenarioDescriptionName)]
+        public ScenarioDescription Description { get; set; }
+        [ProtoAsset(@"Map", true)]
+        public RectMap Map { get; set; }
     }
 }

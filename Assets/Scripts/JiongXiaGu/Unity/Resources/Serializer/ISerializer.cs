@@ -9,11 +9,6 @@ namespace JiongXiaGu.Unity.Resources
     public interface ISerializer
     {
         /// <summary>
-        /// 拓展名;
-        /// </summary>
-        string FileExtension { get; }
-
-        /// <summary>
         /// 序列化;
         /// </summary>
         void Serialize(Stream stream, object item);
@@ -29,11 +24,6 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public interface ISerializer<T>
     {
-        /// <summary>
-        /// 拓展名;
-        /// </summary>
-        string FileExtension { get; }
-
         void Serialize(Stream stream, T item);
         T Deserialize(Stream stream);
     }

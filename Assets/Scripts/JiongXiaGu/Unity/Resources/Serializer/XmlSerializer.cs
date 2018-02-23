@@ -11,7 +11,6 @@ namespace JiongXiaGu.Unity.Resources
     public class XmlSerializer : ISerializer
     {
         public System.Xml.Serialization.XmlSerializer Serializer { get; private set; }
-        public string FileExtension => ".xml";
 
         public XmlSerializer(Type type)
         {
@@ -34,17 +33,11 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public sealed class XmlSerializer<T> : ISerializer<T>
     {
-        internal const string fileExtension = ".xml";
         public System.Xml.Serialization.XmlSerializer Serializer { get; private set; }
 
         public XmlSerializer()
         {
             Serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
-        }
-
-        public string FileExtension
-        {
-            get { return fileExtension; }
         }
 
         public T Deserialize(Stream stream)

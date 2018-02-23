@@ -98,7 +98,7 @@ namespace JiongXiaGu.Unity.UI
             SelectTarget = uiItem;
             string modificationName = uiItem.Description.ID;
             ModificationInfo info;
-            if (Modification.TryGetInfo(modificationName, out info))
+            if (ModificationResource.TryGetInfo(modificationName, out info))
             {
                 uIModificationInfo.SetDescription(info.Description);
             }
@@ -113,11 +113,11 @@ namespace JiongXiaGu.Unity.UI
         /// </summary>
         public void Refresh()
         {
-            var activeModificationInfos = Modification.GetActiveModificationInfos();
+            var activeModificationInfos = ModificationResource.GetActiveModificationInfos();
             var activeDescriptions = activeModificationInfos.Select(item => item.Description);
             SetActiveModificationList(activeDescriptions);
 
-            var idleModificationInfos = Modification.GetIdleModificationInfos(activeModificationInfos);
+            var idleModificationInfos = ModificationResource.GetIdleModificationInfos(activeModificationInfos);
             var idleDescriptions = idleModificationInfos.Select(item => item.Description);
             SetIdleModificationList(idleDescriptions);
         }

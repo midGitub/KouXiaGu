@@ -1,9 +1,6 @@
-﻿using JiongXiaGu.Unity.Initializers;
-using JiongXiaGu.Unity.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,277 +8,300 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 模组;(仅Unity线程操作)
+    /// 表示可读写游戏资源;
+    /// 关于 AssetBundle 读取方式,推荐在加载游戏时异步加载所有 AssetBundle,在游戏运行中,若在游戏允许中还需要加载 AssetBundle,则使用 GetOrLoad 进行同步加载;
     /// </summary>
-    public static class Modification
+    public partial class Modification : IDisposable
     {
-        /// <summary>
-        /// 所有模组信息,不包括核心资源;
-        /// </summary>
-        public static List<ModificationInfo> ModificationInfos { get; private set; }
+        private bool isDisposed = false;
+        public ModificationFactory Factory { get; private set; }
+        public DirectoryContent BaseContent { get; private set; }
+        public string Directory => BaseContent.DirectoryInfo.FullName;
+        private Lazy<List<AssetBundlePack>> assetBundles = new Lazy<List<AssetBundlePack>>();
 
         /// <summary>
-        /// 寻找所有模组;
+        /// 在创建时使用的描述;
         /// </summary>
-        internal static void SearcheAll()
+        public ModificationDescription OriginalDescription { get; private set; }
+        private ModificationDescription? newDescription;
+
+        /// <summary>
+        /// 最新的描述;
+        /// </summary>
+        public ModificationDescription Description
         {
-            ModificationSearcher contentSearcher = new ModificationSearcher();
-            ModificationInfos = new List<ModificationInfo>();
+            get { return newDescription.HasValue ? newDescription.Value : OriginalDescription; }
+            internal set { newDescription = value; }
+        }
 
-            string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
-            Core = contentSearcher.Factory.Read(directory);
+        internal Modification(ModificationFactory factory, string directory, ModificationDescription description)
+        {
+            Factory = factory;
+            BaseContent = new DirectoryContent(directory);
+            OriginalDescription = description;
+        }
 
-            var mods = contentSearcher.Searche(Resource.ModDirectory);
-            ModificationInfos.AddRange(mods);
+        internal Modification(ModificationFactory factory, DirectoryContent content, ModificationDescription description)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
 
-            var userMods = contentSearcher.Searche(Resource.UserModDirectory);
-            ModificationInfos.AddRange(userMods);
+            Factory = factory;
+            BaseContent = content;
+            OriginalDescription = description;
+        }
+
+        public void Dispose()
+        {
+            if (!isDisposed)
+            {
+                BaseContent.Dispose();
+                BaseContent = null;
+
+                UnloadAssetBundlesAll(true);
+
+                Factory.OnDispose(this);
+
+                isDisposed = true;
+            }
+        }
+
+        private void ThrowIfObjectDisposed()
+        {
+            if (isDisposed)
+            {
+                throw new ObjectDisposedException(ToString());
+            }
         }
 
         /// <summary>
-        /// 根据预先定义的模组顺序获取到激活的模组(按先后读取顺序);
+        /// 读取所有AssetBundle,在读取过程中会锁本实例;(仅Unity线程调用)
         /// </summary>
-        public static List<ModificationInfo> GetActiveModificationInfos()
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="IOException"></exception>
+        public void LoadAllAssetBundles(AssetBundleLoadOption options = AssetBundleLoadOption.Main)
         {
-            try
-            {
-                ActiveModification order;
-                ActiveModificationSerializer serializer = new ActiveModificationSerializer();
+            ThrowIfObjectDisposed();
+            UnityThread.ThrowIfNotUnityThread();
 
-                order = serializer.Deserialize();
-                return GetActiveModificationInfos(order);
-            }
-            catch
+            foreach (var descr in GetAssetBundleDescription(Description, options))
             {
-                List<ModificationInfo> newList = new List<ModificationInfo>();
-                return newList;
+                var pack = InternalLoadAssetBundle(descr);
+                assetBundles.Value.Add(pack);
             }
         }
 
         /// <summary>
-        /// 根据模组顺序获取到激活的模组(按先后读取顺序);
+        /// 异步读取所有AssetBundle,在读取过程中会锁本实例;(仅Unity线程调用)
         /// </summary>
-        public static List<ModificationInfo> GetActiveModificationInfos(ActiveModification activeModification)
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="IOException"></exception>
+        public async Task LoadAllAssetBundlesAsync(AssetBundleLoadOption options = AssetBundleLoadOption.Main)
         {
-            List<ModificationInfo> newList = new List<ModificationInfo>();
+            ThrowIfObjectDisposed();
+            UnityThread.ThrowIfNotUnityThread();
 
-            if (ModificationInfos != null)
+            foreach (var descr in GetAssetBundleDescription(Description, options))
             {
-                foreach (var id in activeModification.IDList)
+                var task = InternalLoadAssetBundleAsync(descr);
+                await task;
+                assetBundles.Value.Add(task.Result);
+            }
+        }
+
+        /// <summary>
+        /// 卸载所有 AssetBundles;(仅Unity线程调用)
+        /// </summary>
+        public void UnloadAssetBundlesAll(bool unloadAllLoadedObjects)
+        {
+            ThrowIfObjectDisposed();
+            UnityThread.ThrowIfNotUnityThread();
+
+            if (assetBundles.IsValueCreated)
+            {
+                foreach (var assetBundle in assetBundles.Value)
                 {
-                    int index = ModificationInfos.FindIndex(info => info.Description.ID == id);
-                    if (index >= 0)
-                    {
-                        ModificationInfo info = ModificationInfos[index];
-                        newList.Add(info);
-                    }
+                    assetBundle.AssetBundle.Unload(unloadAllLoadedObjects);
+                    assetBundle.Stream.Dispose();
+                }
+                assetBundles.Value.Clear();
+            }
+        }
+
+        private IEnumerable<AssetBundleDescription> GetAssetBundleDescription(ModificationDescription description, AssetBundleLoadOption options)
+        {
+            if ((options & AssetBundleLoadOption.Main) > 0 && description.MainAssetBundles != null)
+            {
+                foreach (var item in description.MainAssetBundles)
+                {
+                    yield return item;
                 }
             }
-
-            return newList;
-        }
-
-        /// <summary>
-        /// 筛选模组;
-        /// </summary>
-        public static List<ModificationInfo> GetIdleModificationInfos(IList<ModificationInfo> activeModificationInfos)
-        {
-            var idleModificationInfos = new List<ModificationInfo>();
-
-            if (ModificationInfos != null)
+            if ((options & AssetBundleLoadOption.Secondary) > 0 && description.SecondaryAssetBundles != null)
             {
-                foreach (var modificationInfo in ModificationInfos)
+                foreach (var item in description.SecondaryAssetBundles)
                 {
-                    if (!activeModificationInfos.Contains(modificationInfo))
-                    {
-                        idleModificationInfos.Add(modificationInfo);
-                    }
+                    yield return item;
                 }
             }
-
-            return idleModificationInfos;
         }
 
         /// <summary>
-        /// 尝试获取到对应模组信息;
+        /// 获取到对应的 AssetBundle;(仅Unity线程调用)
         /// </summary>
-        public static bool TryGetInfo(string id, out ModificationInfo info)
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public AssetBundle GetAssetBundle(string assetBundleName, bool waitComplete = false)
         {
-            int index = ModificationInfos.FindIndex(item => item.Description.ID == id);
-            if (index >= 0)
+            ThrowIfObjectDisposed();
+
+            AssetBundlePack assetBundlePack;
+            if (InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
             {
-                info = ModificationInfos[index];
-                return true;
+                return assetBundlePack.AssetBundle;
             }
             else
             {
-                info = default(ModificationInfo);
-                return false;
+                throw new FileNotFoundException(string.Format("未找到AssetBundle[Name : {0}]", assetBundleName));
             }
         }
 
-
-
-
         /// <summary>
-        /// 核心资源;
+        /// 获取到指定 AssetBundle,若还未读取则异步读取到;(仅Unity线程调用)
         /// </summary>
-        public static ModificationContent Core { get; private set; }
-
-        /// <summary>
-        /// 需要读取的模组资源,包括核心资源;
-        /// </summary>
-        internal static List<ModificationContent> ModificationContents { get; private set; }
-
-        /// <summary>
-        /// 资源合集;
-        /// </summary>
-        public static SharedContent SharedContent { get; private set; }
-
-        private static Task initializeTask;
-        private static CancellationTokenSource cancellationTokenSource;
-        public static TaskStatus InitializeTaskStatus => initializeTask != null ? initializeTask.Status : TaskStatus.WaitingToRun;
-
-        /// <summary>
-        /// 进行初始化,若已经初始化,初始化中则无任何操作;
-        /// </summary>
-        public static Task Initialize(IProgress<ProgressInfo> progress)
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        public AssetBundle GetOrLoadAssetBundle(string assetBundleName)
         {
-            UnityThread.ThrowIfNotUnityThread();
+            ThrowIfObjectDisposed();
 
-            if (initializeTask == null || initializeTask.IsCompleted)
+            AssetBundlePack assetBundlePack;
+            if (!InternalTryGetAssetBundle(assetBundleName, out assetBundlePack))
             {
-                cancellationTokenSource = new CancellationTokenSource();
-                initializeTask = InternalInitialize(progress, cancellationTokenSource.Token);
+                var description = InternalFindAssetBundleDescription(assetBundleName);
+                assetBundlePack = InternalLoadAssetBundle(description);
+                assetBundles.Value.Add(assetBundlePack);
             }
-            else if (cancellationTokenSource.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("初始化正在被取消!");
-            }
-
-            return initializeTask;
-        }
-
-        private static async Task InternalInitialize(IProgress<ProgressInfo> progress, CancellationToken token)
-        {
-            progress?.Report(new ProgressInfo(0.1f, "程序初始化"));
-            await Program.Initialize();
-
-            progress?.Report(new ProgressInfo(0.2f, "模组排序"));
-            ModificationContents = GetModificationContent();
-            SharedContent = new SharedContent(ModificationContents);
-
-            progress?.Report(new ProgressInfo(0.3f, "模组初始化"));
-            var resourceProgress = new LocalProgress(progress, 0.3f, 1f);
-            await ModificationInitializer.StartInitialize(ModificationContents, resourceProgress, token);
-
-            progress?.Report(new ProgressInfo(1f, "初始化完毕"));
+            return assetBundlePack.AssetBundle;
         }
 
         /// <summary>
-        /// 取消初始化;
+        /// 尝试获取到 AssetBundle ,若不存在则返回false,否则返回true;
         /// </summary>
-        public static Task Cancel(IProgress<ProgressInfo> progress)
+        private bool InternalTryGetAssetBundle(string assetBundleName, out AssetBundlePack assetBundle)
         {
-            UnityThread.ThrowIfNotUnityThread();
-            if (progress == null)
-                throw new ArgumentNullException(nameof(progress));
-
-            if (initializeTask != null)
+            if (assetBundles != null)
             {
-                cancellationTokenSource.Cancel();
-                return initializeTask.ContinueWith(delegate (Task task)
+                int index = assetBundles.Value.FindIndex(item => item.Name == assetBundleName);
+                if (index >= 0)
                 {
-                    cancellationTokenSource = null;
-                    initializeTask = null;
+                    assetBundle = assetBundles.Value[index];
+                    return true;
+                }
+            }
+            assetBundle = default(AssetBundlePack);
+            return false;
+        }
+
+        /// <summary>
+        /// 读取到 AssetBundle;
+        /// </summary>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        private AssetBundleDescription InternalFindAssetBundleDescription(string name)
+        {
+            var assetBundleDescrs = Description.MainAssetBundles;
+            if (assetBundleDescrs != null)
+            {
+                foreach (var descr in assetBundleDescrs)
+                {
+                    if (descr.Name == name)
+                    {
+                        return descr;
+                    }
+                }
+            }
+            throw new ArgumentException(string.Format("未找到 AssetBundle[Name:{0}]的定义信息", name));
+        }
+
+        /// <summary>
+        /// 读取到 AssetBundle;
+        /// </summary>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        private AssetBundlePack InternalLoadAssetBundle(AssetBundleDescription description)
+        {
+            var stream = BaseContent.GetInputStream(description.RelativePath);
+            {
+                AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
+                if (assetBundle != null)
+                {
+                    var pack = new AssetBundlePack(description.Name, assetBundle, stream);
+                    return pack;
+                }
+                else
+                {
+                    stream.Dispose();
+                    throw new IOException(string.Format("无法加载 AssetBundle[Name:{0}]", description.Name));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 异步读取到 AssetBundle;
+        /// </summary>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        private Task<AssetBundlePack> InternalLoadAssetBundleAsync(AssetBundleDescription description)
+        {
+            var stream = BaseContent.GetInputStream(description.RelativePath);
+            {
+                var taskCompletionSource = new TaskCompletionSource<AssetBundlePack>();
+
+                //Unity线程执行;
+                UnityThread.RunInUnityThread(delegate ()
+                {
+                    AssetBundleCreateRequest request = AssetBundle.LoadFromStreamAsync(stream);
+                    request.completed += delegate (AsyncOperation asyncOperation)
+                    {
+                        var assetBundle = request.assetBundle;
+                        if (assetBundle == null)
+                        {
+                            stream.Dispose();
+                            taskCompletionSource.SetException(new IOException("无法读取到 AssetBundle;"));
+                        }
+                        else
+                        {
+                            taskCompletionSource.SetResult(new AssetBundlePack(description.Name, assetBundle, stream));
+                        }
+                    };
+
                 });
-            }
-            else
-            {
-                return Task.CompletedTask;
+
+                return taskCompletionSource.Task;
             }
         }
 
-
-        /// <summary>
-        /// 根据预先定义的模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;
-        /// </summary>
-        private static List<ModificationContent> GetModificationContent()
+        private struct AssetBundlePack
         {
-            try
+            public string Name { get; private set; }
+            public AssetBundle AssetBundle { get; private set; }
+            public Stream Stream { get; private set; }
+
+            public AssetBundlePack(string name, AssetBundle assetBundle, Stream stream)
             {
-                ActiveModification order;
-                ActiveModificationSerializer serializer = new ActiveModificationSerializer();
-
-                order = serializer.Deserialize();
-                return GetModificationContent(order);
+                Name = name;
+                AssetBundle = assetBundle;
+                Stream = stream;
             }
-            catch (FileNotFoundException)
-            {
-                List<ModificationContent> newList = new List<ModificationContent>();
-                newList.Add(Core);
-                return newList;
-            }
-        }
-
-        /// <summary>
-        /// 根据模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;
-        /// </summary>
-        private static List<ModificationContent> GetModificationContent(ActiveModification activeModification)
-        {
-            List<ModificationContent> newList = new List<ModificationContent>();
-            newList.Add(Core);
-            ModificationFactory factory = new ModificationFactory();
-
-            if (ModificationContents == null)
-            {
-                foreach (var id in activeModification.IDList)
-                {
-                    int index = ModificationInfos.FindIndex(_info => _info.Description.ID == id);
-                    if (index >= 0)
-                    {
-                        var info = ModificationInfos[index];
-                        ModificationContent content = factory.Read(info);
-                        newList.Add(content);
-                    }
-                    else
-                    {
-                        Debug.LogWarning(string.Format("未找到ID为[{0}]的模组;", id));
-                    }
-                }
-            }
-            else
-            {
-                List<ModificationContent> old = ModificationContents;
-
-                foreach (var info in activeModification.IDList)
-                {
-                    ModificationContent content;
-                    int index = old.FindIndex(oldContent => oldContent.Description.ID == info);
-                    if (index >= 0)
-                    {
-                        content = old[index];
-                        old[index] = null;
-                    }
-                    else
-                    {
-                        content = factory.Read(info);
-                    }
-
-                    newList.Add(content);
-                }
-
-                foreach (var mod in old)
-                {
-                    if (mod != null)
-                    {
-                        mod.UnloadAssetBundlesAll(true);
-                        mod.BaseContent.Dispose();
-                    }
-                }
-            }
-
-            return newList;
         }
     }
 }

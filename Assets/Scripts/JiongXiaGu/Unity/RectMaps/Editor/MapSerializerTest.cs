@@ -33,9 +33,9 @@ namespace JiongXiaGu.Unity.RectMaps
             return directory;
         }
 
-        private Map CreateMap()
+        private OMap CreateMap()
         {
-            Map map = new Map(description, mapData);
+            OMap map = new OMap(description, mapData);
             return map;
         }
 
@@ -53,13 +53,13 @@ namespace JiongXiaGu.Unity.RectMaps
         [Test]
         public void SerializeInMemory()
         {
-            Map map0 = CreateMap();
+            OMap map0 = CreateMap();
             MapSerializer mapSerializer = new MapSerializer();
             Stream stream = new MemoryStream();
 
             mapSerializer.Serialize(stream, map0);
             stream.Seek(0, SeekOrigin.Begin);
-            Map map1 = mapSerializer.Deserialize(stream);
+            OMap map1 = mapSerializer.Deserialize(stream);
 
             CheckIsSame(map0.Description, map1.Description);
             CheckIsSame(map0.MapData, map1.MapData);
@@ -69,8 +69,8 @@ namespace JiongXiaGu.Unity.RectMaps
         public void SerializeInFile()
         {
             MapSerializer mapSerializer = new MapSerializer();
-            Map map0 = CreateMap();
-            Map map1;
+            OMap map0 = CreateMap();
+            OMap map1;
             string filePath = Path.Combine(GetTempDirectory(), "ReadWritTest.zip");
 
             using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
@@ -92,7 +92,7 @@ namespace JiongXiaGu.Unity.RectMaps
         {
             MapDescription desc;
             MapSerializer mapSerializer = new MapSerializer();
-            Map map0 = CreateMap();
+            OMap map0 = CreateMap();
             string filePath = Path.Combine(GetTempDirectory(), "ReadDescriptionTest.zip");
 
             using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))

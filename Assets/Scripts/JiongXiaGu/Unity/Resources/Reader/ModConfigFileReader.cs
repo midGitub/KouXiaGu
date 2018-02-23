@@ -31,7 +31,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         string FileExtension
         {
-            get { return Serializer.FileExtension; }
+            get { return ".xml"; }
         }
 
         /// <summary>

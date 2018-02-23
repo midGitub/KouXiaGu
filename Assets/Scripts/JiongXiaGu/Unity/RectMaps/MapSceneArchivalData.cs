@@ -32,9 +32,9 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 用于存档的地图,若不存在则为Null;
         /// </summary>
-        public Map ArchiveMap { get; private set; }
+        public OMap ArchiveMap { get; private set; }
 
-        public MapSceneArchivalData(MapFileInfo mainMapFileInfo, Map archiveMap)
+        public MapSceneArchivalData(MapFileInfo mainMapFileInfo, OMap archiveMap)
         {
             if (mainMapFileInfo == null)
                 throw new ArgumentNullException(nameof(mainMapFileInfo));
@@ -79,7 +79,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public WorldMap CreateMap()
         {
-            Map mainMap = mapReader.Read(MainMapFileInfo);
+            OMap mainMap = mapReader.Read(MainMapFileInfo);
             if (ArchiveMap != null)
             {
                 //return new WorldMap(mainMap, ArchiveMap);

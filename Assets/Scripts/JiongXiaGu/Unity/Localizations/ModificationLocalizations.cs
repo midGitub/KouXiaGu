@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 搜索模组语言资源,加载合适的语言资源,加载合适的模组语言资源;
         /// </summary>
-        void IModificationInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IModificationInitializeHandle.Initialize(IReadOnlyList<Modification> mods, CancellationToken token)
         {
             LocalizationConfigSerializer configSerializer = new LocalizationConfigSerializer();
             LanguagePackSerializer packSerializer = new LanguagePackSerializer();
@@ -136,7 +136,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 搜索所有可用的语言包;
         /// </summary>
-        private List<LanguagePackInfo> SearchLanguagePack(LanguagePackSerializer packSerializer, IEnumerable<ModificationContent> mods)
+        private List<LanguagePackInfo> SearchLanguagePack(LanguagePackSerializer packSerializer, IEnumerable<Modification> mods)
         {
             List<LanguagePackInfo> packInfos = new List<LanguagePackInfo>();
 
@@ -240,7 +240,7 @@ namespace JiongXiaGu.Unity.Localizations
         /// <summary>
         /// 获取到该模组合适的语言补充包,若不存在则返回null;
         /// </summary>
-        private LanguagePackInfo FindSupplementaryPack(LanguagePackSerializer packSerializer, ModificationContent mod, LanguagePackDescription target)
+        private LanguagePackInfo FindSupplementaryPack(LanguagePackSerializer packSerializer, Modification mod, LanguagePackDescription target)
         {
             var supplementaryPackInfo = packSerializer.EnumerateSupplementaryPack(mod.BaseContent, SearchOption.TopDirectoryOnly);
             LanguagePackInfo defaultInfo = null;

@@ -1,193 +1,285 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace JiongXiaGu.Unity.Resources.Binding
 {
 
     /// <summary>
-    /// 使用特性,将类型从资源合集中读取读取;
+    /// 通过特性定义序列化方式,统一进行序列化操作;
     /// </summary>
-    public sealed class BindingSerializer
+    public sealed class BindingSerializer<T>
+        where T : new()
     {
         private readonly Type type;
-        private List<IMember> members;
+        private Lazy<List<IMember>> members;
 
-        public BindingSerializer(Type type)
+        public BindingSerializer()
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
-            this.type = type;
+            type = typeof(T);
+            members = new Lazy<List<IMember>>(() => BuildMembers(type));
         }
 
         /// <summary>
         /// 序列化;
         /// </summary>
-        public void Serialize(Content content, object instance)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void Serialize(Content writableContent, T instance)
         {
-            if (content == null)
-                throw new ArgumentNullException(nameof(content));
+            if (writableContent == null)
+                throw new ArgumentNullException(nameof(writableContent));
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            if (!type.Equals(instance.GetType()))
-                throw new ArgumentException(nameof(instance));
 
-            var members = GetMembersInternal();
-
-            using (content.BeginUpdate())
+            var members = GetMembers();
+            foreach (var member in members)
             {
-                foreach (var member in members)
-                {
-                    using (var stream = content.GetOutputStream(member.RelativePath))
-                    {
-                        var value = member.GetValue(instance);
-                        member.Serializer.Serialize(stream, value);
-                    }
-                }
+                Serialize(writableContent, instance, member);
+            }
+        }
+
+        /// <summary>
+        /// 仅序列化指定变量;
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public void Serialize(Content writableContent, T instance, string name)
+        {
+            if (writableContent == null)
+                throw new ArgumentNullException(nameof(writableContent));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+            if(string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
+            var member = GetMember(name);
+            if (member != null)
+            {
+                Serialize(writableContent, instance, member);
+            }
+            else
+            {
+                throw new KeyNotFoundException(name);
+            }
+        }
+
+        /// <summary>
+        /// 仅序列化指定变量;
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public void Serialize(Content writableContent, T instance, IEnumerable<string> names)
+        {
+            if (writableContent == null)
+                throw new ArgumentNullException(nameof(writableContent));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+            if (names == null)
+                throw new ArgumentNullException(nameof(names));
+
+            var members = GetMembers(names);
+            foreach (var member in members)
+            {
+                Serialize(writableContent, instance, member);
+            }
+        }
+
+        /// <summary>
+        /// 仅序列化指定变量;
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public void Serialize(Content writableContent, T instance, params string[] names)
+        {
+            Serialize(writableContent, instance, names);
+        }
+
+        /// <summary>
+        /// 序列化指定成员;
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        private void Serialize(Content writableContent, T instance, IMember member)
+        {
+            using (var stream = writableContent.GetOutputStream(member.Info.RelativePath))
+            {
+                var value = member.GetValue(instance);
+                member.Serializer.Serialize(stream, value);
             }
         }
 
         /// <summary>
         /// 反序列化;
         /// </summary>
-        public object Deserialize(Content content)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        public T Deserialize(Content content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
-            var instance = Activator.CreateInstance(type);
-            var members = GetMembersInternal();
+            var instance = (T)Activator.CreateInstance(type);
+            var members = GetMembers();
+
             foreach (var member in members)
             {
-                try
-                {
-                    using (var stream = content.GetInputStream(member.RelativePath))
-                    {
-                        var value = member.Serializer.Deserialize(stream);
-                        member.SetValue(instance, value);
-                    }
-                }
-                catch(FileNotFoundException)
-                {
-                    continue;
-                }
+                Deserialize(content, instance, member);
             }
+
             return instance;
+        }
+
+        /// <summary>
+        /// 反序列化;
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public T Deserialize(Content content, string name)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
+            var instance = (T)Activator.CreateInstance(type);
+            var member = GetMember(name);
+
+            Deserialize(content, instance, member);
+
+            return instance;
+        }
+
+        /// <summary>
+        /// 反序列化;
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public T Deserialize(Content content, IEnumerable<string> names)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+            if (names == null)
+                throw new ArgumentNullException(nameof(names));
+
+            var instance = (T)Activator.CreateInstance(type);
+            var members = GetMembers(names);
+
+            foreach (var member in members)
+            {
+                Deserialize(content, instance, member);
+            }
+
+            return instance;
+        }
+
+        /// <summary>
+        /// 反序列化;
+        /// </summary>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        private void Deserialize(Content content, T instance, IMember member)
+        {
+            using (var stream = content.GetInputStream(member.Info.RelativePath))
+            {
+                var value = member.Serializer.Deserialize(stream);
+                member.SetValue(instance, value);
+            }
+        }
+
+
+        /// <summary>
+        /// 获取到需要进行操作的成员;
+        /// </summary>
+        private IEnumerable<IMember> GetMembers()
+        {
+            return members.Value;
+        }
+
+        /// <summary>
+        /// 获取到需要进行操作的成员;
+        /// </summary>
+        /// <exception cref="KeyNotFoundException"></exception>
+        private IEnumerable<IMember> GetMembers(IEnumerable<string> names)
+        {
+            return names.Select(name => GetMember(members.Value, name));
+        }
+
+        /// <summary>
+        /// 获取到对应成员,若不存在则返回异常;
+        /// </summary>
+        /// <exception cref="KeyNotFoundException"></exception>
+        private IMember GetMember(string name)
+        {
+            return GetMember(members.Value, name);
+        }
+
+        /// <summary>
+        /// 获取到对应成员,若不存在则返回异常;
+        /// </summary>
+        /// <exception cref="KeyNotFoundException"></exception>
+        private IMember GetMember(List<IMember> members, string name)
+        {
+            var member = members.Find(item => item.Name.Equals(name, StringComparison.Ordinal));
+            if (member != null)
+            {
+                return member;
+            }
+            else
+            {
+                throw new KeyNotFoundException(name);
+            }
         }
 
         public const BindingFlags FieldBindingFlags = BindingFlags.Instance | BindingFlags.Public;
         public const BindingFlags PropertyBindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
         /// <summary>
-        /// 获取到需要进行操作的成员;
+        /// 获取该类型成员信息;
         /// </summary>
-        private List<IMember> GetMembersInternal()
+        public static List<IMember> BuildMembers(Type type)
         {
-            if (members == null)
-            {
-                members = new List<IMember>();
+            var members = new List<IMember>();
 
-                var fields = type.GetFields(FieldBindingFlags);
-                foreach (var field in fields)
+            var fields = type.GetFields(FieldBindingFlags);
+            foreach (var field in fields)
+            {
+                var attribute = field.GetCustomAttribute<AssetAttribute>();
+                if (attribute != null)
                 {
-                    var attribute = field.GetCustomAttribute<AssetAttribute>();
+                    var member = new Field(attribute, field);
+                    members.Add(member);
+                }
+            }
+
+            var properties = type.GetProperties(PropertyBindingFlags);
+            foreach (var property in properties)
+            {
+                if (property.CanRead && property.CanWrite)
+                {
+                    var attribute = property.GetCustomAttribute<AssetAttribute>();
                     if (attribute != null)
                     {
-                        var serializer = attribute.GetSerializer(field.FieldType);
-                        var member = new Field(attribute.RelativePath, serializer, field);
+                        var member = new Property(attribute, property);
                         members.Add(member);
                     }
                 }
-
-                var properties = type.GetProperties(PropertyBindingFlags);
-                foreach (var property in properties)
-                {
-                    if (property.CanRead && property.CanWrite)
-                    {
-                        var attribute = property.GetCustomAttribute<AssetAttribute>();
-                        if (attribute != null)
-                        {
-                            var serializer = attribute.GetSerializer(property.PropertyType);
-                            var member = new Property(attribute.RelativePath, serializer, property);
-                            members.Add(member);
-                        }
-                    }
-                }
             }
+
             return members;
-        }
-
-        private interface IMember
-        {
-            /// <summary>
-            /// 相对路径;
-            /// </summary>
-            string RelativePath { get; }
-
-            /// <summary>
-            /// 序列化接口;
-            /// </summary>
-            ISerializer Serializer { get; }
-
-            /// <summary>
-            /// 获取到值;
-            /// </summary>
-            object GetValue(object instance);
-
-            /// <summary>
-            /// 设置到值;
-            /// </summary>
-            void SetValue(object instance, object value);
-        }
-
-        private struct Field : IMember
-        {
-            public string RelativePath { get; private set; }
-            public ISerializer Serializer { get; private set; }
-            public FieldInfo FieldInfo { get; private set; }
-
-            public Field(string relativePath, ISerializer serializer, FieldInfo fieldInfo)
-            {
-                RelativePath = relativePath;
-                Serializer = serializer;
-                FieldInfo = fieldInfo;
-            }
-
-            public object GetValue(object instance)
-            {
-                return FieldInfo.GetValue(instance);
-            }
-
-            public void SetValue(object instance, object value)
-            {
-                FieldInfo.SetValue(instance, value);
-            }
-        }
-
-        private struct Property : IMember
-        {
-            public string RelativePath { get; private set; }
-            public ISerializer Serializer { get; private set; }
-            public PropertyInfo PropertyInfo { get; private set; }
-
-            public Property(string relativePath, ISerializer serializer, PropertyInfo propertyInfo)
-            {
-                RelativePath = relativePath;
-                Serializer = serializer;
-                PropertyInfo = propertyInfo;
-            }
-
-            public object GetValue(object instance)
-            {
-                return PropertyInfo.GetValue(instance);
-            }
-
-            public void SetValue(object instance, object value)
-            {
-                PropertyInfo.SetValue(instance, value);
-            }
         }
     }
 }

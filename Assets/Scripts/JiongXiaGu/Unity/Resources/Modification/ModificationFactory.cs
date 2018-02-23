@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -12,113 +9,67 @@ namespace JiongXiaGu.Unity.Resources
 
     public class ModificationFactory
     {
-        /// <summary>
-        /// 创建可读内容,若目录已经存在则返回异常;
-        /// </summary>
-        public ModificationContent CreateNew(string directory, ModificationDescription description)
-        {
-            Content content = new DirectoryContent(directory);
-            return CreateNew(content, description);
-        }
+        private readonly List<Modification> modifications = new List<Modification>();
 
-        /// <summary>
-        /// 创建可读内容,若文件已经存在则返回异常;
-        /// </summary>
-        public ModificationContent CreateNewZip(string file, ModificationDescription description)
+        internal void OnDispose(Modification modification)
         {
-            Stream stream = new FileStream(file, FileMode.CreateNew, FileAccess.ReadWrite);
-            ZipFile zipFile = ZipFile.Create(stream);
-            SharpZipLibContent contentZip = new SharpZipLibContent(stream, zipFile);
-            return CreateNew(contentZip, description);
+            modifications.Remove(modification);
         }
-
-        /// <summary>
-        /// 创建一个新的可读内容类型;
-        /// </summary>
-        public ModificationContent CreateNew(Content content, ModificationDescription description)
-        {
-            WriteDescription(content, description);
-            ModificationContent loadableDirectory = new ModificationContent(content, description);
-            return loadableDirectory;
-        }
-
 
         /// <summary>
         /// 读取内容,若目录不存在,或者不是定义的可读内容则返回异常;
         /// </summary>
-        public ModificationContent Read(string directory)
+        public Modification Read(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
 
-            Content content = new DirectoryContent(directory);
-            return Read(content);
+            Modification modification;
+            if (!TryGet(directory, out modification))
+            {
+                ModificationDescription description = ReadDescription(directory);
+                modification = new Modification(this, directory, description);
+                modifications.Add(modification);
+            }
+            return modification;
         }
 
         /// <summary>
-        /// 读取内容,若文件不存在,或者不是定义的可读内容则返回异常;
+        /// 创建可读内容,若目录已经存在则返回异常;
         /// </summary>
-        public ModificationContent ReadZip(string file)
+        public Modification Create(string directory, ModificationDescription description)
         {
-            Content content = new SharpZipLibContent(file);
-            return Read(content);
+            Modification modification;
+            if (!TryGet(directory, out modification))
+            {
+                Directory.CreateDirectory(directory);
+                WriteDescription(directory, description);
+                modification = new Modification(this, directory, description);
+                modifications.Add(modification);
+            }
+            return modification;
         }
 
         /// <summary>
-        /// 创建为可读内容,若未能创建则返回异常;
+        /// 尝试获取到该目录的模组实例;
         /// </summary>
-        public ModificationContent Read(Content content)
+        public bool TryGet(string directory, out Modification modification)
         {
-            if (content == null)
-                throw new ArgumentNullException(nameof(content));
-
-            ModificationDescription description = ReadDescription(content);
-            ModificationContent loadableContent = new ModificationContent(content, description);
-            return loadableContent;
+            modification = modifications.Find(item => item.Directory == directory);
+            return modification != null;
         }
-
-        public ModificationContent Read(ModificationInfo info)
-        {
-            if (info.ContentInfo == null)
-                throw new ArgumentNullException(nameof(info.ContentInfo));
-
-            Content content = info.ContentInfo.GetContent();
-            return Read(content);
-        }
-
-
 
         public ModificationInfo ReadInfo(string directory)
         {
-            DirectoryContentInfo info = new DirectoryContentInfo(directory);
-            return ReadInfo(info);
+            ModificationDescription description = ReadDescription(directory);
+            return new ModificationInfo(directory, description);
         }
-
-        public ModificationInfo ReadZipInfo(string file)
-        {
-            ZipContentInfo info = new ZipContentInfo(file);
-            return ReadInfo(info);
-        }
-
-        public ModificationInfo ReadInfo(IContentInfo contentInfo)
-        {
-            if (contentInfo == null)
-                throw new ArgumentNullException(nameof(contentInfo));
-
-            using (var content = contentInfo.GetContent())
-            {
-                ModificationDescription description = ReadDescription(content);
-                ModificationInfo info = new ModificationInfo(contentInfo, description);
-                return info;
-            }
-        }
-
 
 
         /// <summary>
         /// 从内容读取到描述,并且更新实例;
         /// </summary>
-        public void UpdateDescription(ModificationContent content)
+        public void UpdateDescription(Modification content)
         {
             ModificationDescription description = ReadDescription(content.BaseContent);
             content.Description = description;
@@ -127,7 +78,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 写入资源描述;
         /// </summary>
-        public void UpdateDescription(ModificationContent content, ModificationDescription description)
+        public void UpdateDescription(Modification content, ModificationDescription description)
         {
             WriteDescription(content.BaseContent, description);
             content.Description = description;
@@ -135,14 +86,8 @@ namespace JiongXiaGu.Unity.Resources
 
 
 
-        private const string DescriptionFileName = "ModDescription";
+        private const string DescriptionFileName = "ModDescription.xml";
         private readonly XmlSerializer<ModificationDescription> descriptionSerializer = new XmlSerializer<ModificationDescription>();
-        private string descriptionPath;
-
-        private string DescriptionPath
-        {
-            get { return descriptionPath ?? (descriptionPath = DescriptionFileName + descriptionSerializer.FileExtension); }
-        }
 
         /// <summary>
         /// 输出新的描述到;
@@ -151,19 +96,35 @@ namespace JiongXiaGu.Unity.Resources
         {
             using (content.BeginUpdate())
             {
-                using (var stream = content.GetOutputStream(DescriptionPath))
+                using (var stream = content.GetOutputStream(DescriptionFileName))
                 {
                     descriptionSerializer.Serialize(stream, description);
                 }
             }
         }
 
-        /// <summary>
-        /// 读取到描述;
-        /// </summary>
         private ModificationDescription ReadDescription(Content content)
         {
-            using (var stream = content.GetInputStream(DescriptionPath))
+            using (var stream = content.GetInputStream(DescriptionFileName))
+            {
+                var descr = descriptionSerializer.Deserialize(stream);
+                return descr;
+            }
+        }
+
+        private void WriteDescription(string directory, ModificationDescription description)
+        {
+            string filePath = Path.Combine(directory, DescriptionFileName);
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            {
+                descriptionSerializer.Serialize(stream, description);
+            }
+        }
+
+        private ModificationDescription ReadDescription(string directory)
+        {
+            string filePath = Path.Combine(directory, DescriptionFileName);
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 var descr = descriptionSerializer.Deserialize(stream);
                 return descr;

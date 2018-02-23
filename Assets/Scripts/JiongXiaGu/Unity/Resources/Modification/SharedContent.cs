@@ -12,22 +12,22 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class SharedContent
     {
-        private List<ModificationContent> contents;
+        private List<Modification> contents;
         private ReaderWriterLockSlim readerWriterLock;
 
         public SharedContent()
         {
-            contents = new List<ModificationContent>();
+            contents = new List<Modification>();
             readerWriterLock = new ReaderWriterLockSlim();
         }
 
-        public SharedContent(IEnumerable<ModificationContent> contents)
+        public SharedContent(IEnumerable<Modification> contents)
         {
-            contents = new List<ModificationContent>(contents);
+            contents = new List<Modification>(contents);
             readerWriterLock = new ReaderWriterLockSlim();
         }
 
-        public void Add(ModificationContent content)
+        public void Add(Modification content)
         {
             using (readerWriterLock.UpgradeableReadLock())
             {
@@ -41,7 +41,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public bool Remove(ModificationContent content)
+        public bool Remove(Modification content)
         {
             using (readerWriterLock.UpgradeableReadLock())
             {
@@ -58,7 +58,7 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public ModificationContent Find(string contentID)
+        public Modification Find(string contentID)
         {
             using (readerWriterLock.ReadLock())
             {
@@ -74,7 +74,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到读取流;
         /// </summary>
-        public Stream GetInputStream(ModificationContent main, AssetPath path)
+        public Stream GetInputStream(Modification main, AssetPath path)
         {
             string contentID;
             string relativePath;
@@ -93,7 +93,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到对应的 AssetBundle,若还未读取则返回异常;
         /// </summary>
-        public AssetBundle GetAssetBundle(ModificationContent main, AssetPath path)
+        public AssetBundle GetAssetBundle(Modification main, AssetPath path)
         {
             string contentID;
             string assetBundleName;
@@ -112,7 +112,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 读取到指定的 AssetBundle,若未找到则返回异常;
         /// </summary>
-        public AssetBundle GetOrLoadAssetBundle(ModificationContent main, AssetPath path)
+        public AssetBundle GetOrLoadAssetBundle(Modification main, AssetPath path)
         {
             string contentID;
             string assetBundleName;

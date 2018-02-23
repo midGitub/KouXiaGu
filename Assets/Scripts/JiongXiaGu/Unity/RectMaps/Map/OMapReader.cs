@@ -33,7 +33,7 @@ namespace JiongXiaGu.Unity.RectMaps
 
         public OMapReader()
         {
-            mapSerializer = new System.Xml.Serialization.XmlSerializer(typeof(Map));
+            mapSerializer = new System.Xml.Serialization.XmlSerializer(typeof(OMap));
             mapsDirectory = GetMapsDirectory();
         }
 
@@ -54,7 +54,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 读取到地图;
         /// </summary>
-        public Map Read(MapFileInfo mapFileInfo)
+        public OMap Read(MapFileInfo mapFileInfo)
         {
             //return Read(mapFileInfo.FileInfo);
             throw new NotImplementedException();
@@ -63,7 +63,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 读取到地图;
         /// </summary>
-        public Map Read(FileInfo fileInfo)
+        public OMap Read(FileInfo fileInfo)
         {
             return Read(fileInfo.FullName);
         }
@@ -72,7 +72,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// 读取到地图;
         /// </summary>
         /// <param name="fullPath">完整的文件路径</param>
-        public Map Read(string fullPath)
+        public OMap Read(string fullPath)
         {
             using (Stream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
             {
@@ -83,9 +83,9 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 读取到地图;
         /// </summary>
-        public Map Read(Stream stream)
+        public OMap Read(Stream stream)
         {
-            return (Map)mapSerializer.Deserialize(stream);
+            return (OMap)mapSerializer.Deserialize(stream);
         }
 
         internal const bool DefaultIsKeepBackup = false;
@@ -93,7 +93,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 输出地图到文件路径,覆盖原有;
         /// </summary>
-        public MapFileInfo WriteToFile(string filePath, Map map, bool isKeepBackup = DefaultIsKeepBackup)
+        public MapFileInfo WriteToFile(string filePath, OMap map, bool isKeepBackup = DefaultIsKeepBackup)
         {
             filePath = Path.ChangeExtension(filePath, MapFileExtension);
             FileInfo fileInfo = new FileInfo(filePath);
@@ -105,7 +105,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 输出地图到目录下,覆盖原有;
         /// </summary>
-        public MapFileInfo WriteToDirectory(string directory, Map map, bool isKeepBackup = DefaultIsKeepBackup)
+        public MapFileInfo WriteToDirectory(string directory, OMap map, bool isKeepBackup = DefaultIsKeepBackup)
         {
             string fileName = GetStandardMapFileName(map);
             string filePath = Path.Combine(directory, fileName);
@@ -118,7 +118,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 获取到地图名;
         /// </summary>
-        string GetStandardMapFileName(Map map)
+        string GetStandardMapFileName(OMap map)
         {
             string fileName = MapFilePrefix + map.Description.Name + MapFileExtension;
             return fileName;
@@ -130,7 +130,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <param name="mapFileInfo">地图文件信息</param>
         /// <param name="map">需要输出的地图</param>
         /// <param name="isKeepBackup">是否保留备份文件?</param>
-        public void Write(MapFileInfo mapFileInfo, Map map, bool isKeepBackup = DefaultIsKeepBackup)
+        public void Write(MapFileInfo mapFileInfo, OMap map, bool isKeepBackup = DefaultIsKeepBackup)
         {
             //Write(mapFileInfo.FileInfo, map, isKeepBackup);
             //mapFileInfo.Description = map.Description;
@@ -143,7 +143,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <param name="file">地图文件信息</param>
         /// <param name="map">需要输出的地图</param>
         /// <param name="isKeepBackup">是否保留备份文件?</param>
-        public void Write(FileInfo file, Map map, bool isKeepBackup = DefaultIsKeepBackup)
+        public void Write(FileInfo file, OMap map, bool isKeepBackup = DefaultIsKeepBackup)
         {
             FileInfo backupFileInfo = null;
             if (file.Exists)
@@ -172,7 +172,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 输出地图到;
         /// </summary>
-        public void Write(Stream stream, Map map)
+        public void Write(Stream stream, OMap map)
         {
             mapSerializer.SerializeXiaGu(stream, map);
         }

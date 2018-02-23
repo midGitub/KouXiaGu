@@ -25,15 +25,15 @@ namespace JiongXiaGu.Unity.RectTerrain
         [SerializeField]
         private LandformResCreater landformResCreater;
         public LandformResCreater LandformResCreater => landformResCreater;
-        private BindingSerializer bindingSerializer;
+        private BindingSerializer<RectTerrainResourceDescription> bindingSerializer;
 
         private void Awake()
         {
-            bindingSerializer = new BindingSerializer(typeof(RectTerrainResourceDescription));
+            bindingSerializer = new BindingSerializer<RectTerrainResourceDescription>();
             landformResCreater = new LandformResCreater();
         }
 
-        void IModificationInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IModificationInitializeHandle.Initialize(IReadOnlyList<Modification> mods, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
@@ -45,13 +45,13 @@ namespace JiongXiaGu.Unity.RectTerrain
             }
         }
 
-        private RectTerrainResourceDescription Read(ModificationContent content)
+        private RectTerrainResourceDescription Read(Modification content)
         {
             RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content.BaseContent);
             return description;
         }
 
-        private void Write(ModificationContent content, RectTerrainResourceDescription description)
+        private void Write(Modification content, RectTerrainResourceDescription description)
         {
             bindingSerializer.Serialize(content.BaseContent, description);
         }

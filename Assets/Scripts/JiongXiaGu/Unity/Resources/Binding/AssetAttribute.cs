@@ -7,8 +7,11 @@ namespace JiongXiaGu.Unity.Resources.Binding
     /// <summary>
     /// 资源定义特性;需要挂载到公共的变量或者属性上;
     /// </summary>
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public abstract class AssetAttribute : Attribute
     {
+        internal const bool defaultUseDefaultExtension = false;
+
         /// <summary>
         /// 相对路径;
         /// </summary>
@@ -20,43 +23,51 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public string Message { get; private set; }
 
         /// <summary>
-        /// 文件后缀;
+        /// 类型默认的文件后缀;
         /// </summary>
-        public abstract string FileExtension { get; }
+        protected abstract string defaultFileExtension { get; }
 
         /// <summary>
-        /// 传入路径会自动更改为对应路径;
+        /// 构造函数;
         /// </summary>
-        public AssetAttribute(string relativePath) : this(relativePath, null, true)
+        /// <param name="relativePath">相对路径</param>
+        public AssetAttribute(string relativePath) : this(relativePath, null, defaultUseDefaultExtension)
         {
         }
 
         /// <summary>
-        /// 传入路径会自动更改为对应路径,除非 modifyExtension 则为false;
+        /// 构造函数;
         /// </summary>
-        public AssetAttribute(string relativePath, bool modifyExtension) : this (relativePath, null, modifyExtension)
+        /// <param name="relativePath">相对路径</param>
+        /// <param name="useDefaultExtension">是否使用格式默认的后缀?</param>
+        public AssetAttribute(string relativePath, bool useDefaultExtension) : this (relativePath, null, useDefaultExtension)
         {
         }
 
         /// <summary>
-        /// 传入路径会自动更改为对应路径;
+        /// 构造函数;
         /// </summary>
-        public AssetAttribute(string relativePath, string message) : this(relativePath, message, true)
+        /// <param name="relativePath">相对路径</param>
+        /// <param name="message">预留消息</param>
+        public AssetAttribute(string relativePath, string message) : this(relativePath, message, defaultUseDefaultExtension)
         {
         }
 
         /// <summary>
-        /// 传入路径会自动更改为对应路径,除非 modifyExtension 则为false;
+        /// 构造函数;
         /// </summary>
-        public AssetAttribute(string relativePath, string message, bool modifyExtension)
+        /// <param name="relativePath">相对路径</param>
+        /// <param name="message">预留消息</param>
+        /// <param name="useDefaultExtension">是否使用格式默认的后缀?</param>
+        public AssetAttribute(string relativePath, string message, bool useDefaultExtension)
         {
-            RelativePath = modifyExtension ? Path.ChangeExtension(relativePath, FileExtension) : relativePath;
+            RelativePath = useDefaultExtension ? Path.ChangeExtension(relativePath, defaultFileExtension) : relativePath;
             Message = message;
         }
 
         /// <summary>
-        /// 获取到对应序列化器;
+        /// 创建到对应序列化器(保证线程安全);
         /// </summary>
-        public abstract ISerializer GetSerializer(Type type);
+        public abstract ISerializer CreateSerializer(Type type);
     }
 }

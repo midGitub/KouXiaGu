@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 当前地图数据;
         /// </summary>
-        public Map MapData { get; private set; }
+        public OMap MapData { get; private set; }
 
         /// <summary>
         /// 地图字典结构;
@@ -53,7 +53,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         public bool IsReadOnly { get; internal set; }
 
-        public WorldMap(Map data)
+        public WorldMap(OMap data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
@@ -67,7 +67,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 获取到用于存档的地图数据,若不存在需要存档的内容,则返回null;
         /// </summary>
-        public Map GetArchiveMap()
+        public OMap GetArchiveMap()
         {
             //if (MapChangedRecorder.ChangedPositions.Count == 0)
             //{

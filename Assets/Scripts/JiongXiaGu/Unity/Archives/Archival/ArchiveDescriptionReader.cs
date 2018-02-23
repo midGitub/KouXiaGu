@@ -39,7 +39,7 @@ namespace JiongXiaGu.Unity.Archives
 
         public string GetArchiveInfoPath(string archiveDirectory)
         {
-            return Path.Combine(archiveDirectory, Name + Serializer.FileExtension);
+            return Path.Combine(archiveDirectory, Name + ".xml");
         }
     }
 }

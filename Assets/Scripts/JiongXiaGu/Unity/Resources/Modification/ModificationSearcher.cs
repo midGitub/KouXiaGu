@@ -11,10 +11,6 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class ModificationSearcher
     {
-        /// <summary>
-        /// 忽略符,置于名称前缀,用于忽略某文件/文件夹;
-        /// </summary>
-        private const string IgnoreSymbol = "#ignore_";
         public ModificationFactory Factory { get; private set; }
 
         public ModificationSearcher()
@@ -42,6 +38,11 @@ namespace JiongXiaGu.Unity.Resources
             return list;
         }
 
+        public IEnumerable<ModificationInfo> Enumerate(string modsDirectory)
+        {
+            return EnumerateDirectory(modsDirectory);
+        }
+
         /// <summary>
         /// 枚举目录下所有 目录 类型的资源;
         /// </summary>
@@ -50,7 +51,7 @@ namespace JiongXiaGu.Unity.Resources
             foreach (var directory in Directory.EnumerateDirectories(modsDirectory, "*", searchOption))
             {
                 string directoryName = Path.GetFileName(directory);
-                if (!Ignore(directoryName))
+                if (!SearcheHelper.IsIgnore(directoryName))
                 {
                     ModificationInfo info;
 
@@ -95,10 +96,5 @@ namespace JiongXiaGu.Unity.Resources
         //        }
         //    }
         //}
-
-        private bool Ignore(string name)
-        {
-            return name.StartsWith(IgnoreSymbol, StringComparison.OrdinalIgnoreCase);
-        }
     }
 }

@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.RectMaps
     /// </summary>
     public class MapSerializer
     {
-        private const string descriptionFileName = "Description" + XmlSerializer<MapDescription>.fileExtension;
+        private const string descriptionFileName = "Description.xml";
         private const string mapFileName = "Map.xml";
         private readonly XmlSerializer<MapDescription> descriptionSerializer = new XmlSerializer<MapDescription>();
         private readonly XmlSerializer<MapData> mapDataSerializer = new XmlSerializer<MapData>();
@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 获取到地图;
         /// </summary>
-        public Map Deserialize(Stream stream)
+        public OMap Deserialize(Stream stream)
         {
             MapDescription? description = null;
             MapData mapData = null;
@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity.RectMaps
                 }
 
                 if (description != null && mapData != null)
-                    return new Map(description.Value, mapData);
+                    return new OMap(description.Value, mapData);
                 else
                     throw new FileNotFoundException();
             }
@@ -75,7 +75,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// <summary>
         /// 输出地图到流;
         /// </summary>
-        public void Serialize(Stream stream, Map map)
+        public void Serialize(Stream stream, OMap map)
         {
             using (ZipOutputStream zipOutputStream = new ZipOutputStream(stream))
             {

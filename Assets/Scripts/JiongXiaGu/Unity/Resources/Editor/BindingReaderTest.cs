@@ -1,11 +1,7 @@
-﻿using UnityEngine;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
 
 namespace JiongXiaGu.Unity.Resources.Binding
 {
@@ -16,15 +12,19 @@ namespace JiongXiaGu.Unity.Resources.Binding
         [Test]
         public void ReadWriteTest()
         {
-            BindingSerializer reader = new BindingSerializer(typeof(File));
+            BindingSerializer<File> serializer = new BindingSerializer<File>();
             MemoryContent content = new MemoryContent();
 
-            reader.Serialize(content, DefalutFile);
-            Assert.True(content.Contains("v0"));
-            Assert.True(content.Contains("v1"));
-            Assert.True(content.Contains("v2"));
+            using (content.BeginUpdate())
+            {
+                serializer.Serialize(content, DefalutFile);
+            }
 
-            var value = reader.Deserialize(content) as File;
+            Assert.True(content.Contains(nameof(File.XmlTest)));
+            Assert.True(content.Contains(nameof(File.ProtoTest)));
+            Assert.IsFalse(content.Contains(nameof(File.IgnoreField)));
+
+            var value = serializer.Deserialize(content) as File;
             Assert.AreEqual(DefalutFile, value);
         }
 
@@ -32,39 +32,30 @@ namespace JiongXiaGu.Unity.Resources.Binding
 
         public class File : IEquatable<File>
         {
-            [XmlAsset("v0", false)]
-            public Description v0;
+            [XmlAsset(nameof(XmlTest))]
+            public Description XmlTest { get; set; }
 
-            [XmlAsset("v1", false)]
-            public Description v1 { get; set; }
+            [ProtoAsset(nameof(ProtoTest))]
+            public Description ProtoTest { get; set; }
 
-            [XmlAsset("v2", false)]
-            public Description v2 { get; private set; }
-
-            [XmlAsset("v3", false)]
-            private Description v3;
+            [ProtoAsset(nameof(IgnoreField))]
+            internal Description IgnoreField;
 
             public static File Defalut => new File()
             {
-                v0 = new Description()
-                {
-                    ID = "0",
-                    Name = "v0",
-                },
-
-                v1 = new Description()
+                XmlTest = new Description()
                 {
                     ID = "1",
                     Name = "v1",
                 },
 
-                v2 = new Description()
+                ProtoTest = new Description()
                 {
                     ID = "2",
                     Name = "v2",
                 },
 
-                v3 = new Description()
+                IgnoreField = new Description()
                 {
                     ID = "3",
                     Name = "v3",
@@ -79,19 +70,17 @@ namespace JiongXiaGu.Unity.Resources.Binding
             public bool Equals(File other)
             {
                 return other != null &&
-                       v0.Equals(other.v0) &&
-                       v1.Equals(other.v1) &&
-                       v2.Equals(other.v2) &&
-                       v3.Equals(other.v3);
+                       XmlTest.Equals(other.XmlTest) &&
+                       ProtoTest.Equals(other.ProtoTest) &&
+                       IgnoreField.Equals(other.IgnoreField);
             }
 
             public override int GetHashCode()
             {
                 var hashCode = -318127454;
-                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v0);
-                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v1);
-                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v2);
-                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(v3);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(XmlTest);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(ProtoTest);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Description>.Default.GetHashCode(IgnoreField);
                 return hashCode;
             }
 
@@ -106,10 +95,14 @@ namespace JiongXiaGu.Unity.Resources.Binding
             }
         }
 
+        [ProtoContract]
         public struct Description : IEquatable<Description>
         {
+            [ProtoMember(1)]
             public string ID { get; set; }
+            [ProtoMember(2)]
             public string Name { get; set; }
+            [ProtoMember(3)]
             public string Tags { get; set; }
 
             public override bool Equals(object obj)

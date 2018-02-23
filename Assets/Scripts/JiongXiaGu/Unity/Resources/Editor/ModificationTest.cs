@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     [TestFixture]
-    public class LoadableContentTest
+    public class ModificationTest
     {
         private readonly ModificationFactory factory = new ModificationFactory();
 
@@ -31,10 +31,10 @@ namespace JiongXiaGu.Unity.Resources
         public void TestDirectory()
         {
             ModificationDescription descr;
-            string directory = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Directory0");
+            string directory = Path.Combine(NUnit.TempDirectory, nameof(ModificationTest), "Directory0");
             TryDeleteDirectory(directory);
 
-            using (var v1 = factory.CreateNew(directory, description0))
+            using (var v1 = factory.Create(directory, description0))
             {
                 descr = v1.OriginalDescription;
                 ContentReadWriteTest(v1.BaseContent);
@@ -59,24 +59,24 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        [Test]
-        public void TestZip()
-        {
-            ModificationDescription descr;
-            string file = Path.Combine(NUnit.TempDirectory, nameof(LoadableContentTest), "Zip0.zip");
-            TryDeleteFile(file);
+        //[Test]
+        //public void TestZip()
+        //{
+        //    ModificationDescription descr;
+        //    string file = Path.Combine(NUnit.TempDirectory, nameof(ModificationTest), "Zip0.zip");
+        //    TryDeleteFile(file);
 
-            using (var v1 = factory.CreateNewZip(file, description0))
-            {
-                descr = v1.OriginalDescription;
-                ContentReadWriteTest(v1.BaseContent);
-            }
+        //    using (var v1 = factory.CreateNewZip(file, description0))
+        //    {
+        //        descr = v1.OriginalDescription;
+        //        ContentReadWriteTest(v1.BaseContent);
+        //    }
 
-            using (var v2 = factory.ReadZip(file))
-            {
-                Assert.AreEqual(descr, v2.OriginalDescription);
-            }
-        }
+        //    using (var v2 = factory.ReadZip(file))
+        //    {
+        //        Assert.AreEqual(descr, v2.OriginalDescription);
+        //    }
+        //}
 
         private bool TryDeleteFile(string file)
         {

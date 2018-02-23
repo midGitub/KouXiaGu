@@ -17,17 +17,17 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 核心资源;
         /// </summary>
-        public static ModificationContent Core { get; private set; }
+        public static Modification Core { get; private set; }
 
         /// <summary>
         /// 所有资源;
         /// </summary>
-        private static readonly List<ModificationContent> all = new List<ModificationContent>();
+        private static readonly List<Modification> all = new List<Modification>();
 
         /// <summary>
         /// 所有资源;
         /// </summary>
-        public static IReadOnlyCollection<ModificationContent> All => all;
+        public static IReadOnlyCollection<Modification> All => all;
 
         /// <summary>
         /// 获取到所有可读取的资源;
@@ -54,7 +54,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到核心资源;
         /// </summary>
-        private static ModificationContent GetCore(ModificationFactory factory)
+        private static Modification GetCore(ModificationFactory factory)
         {
             string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
             var core = factory.Read(directory);

@@ -19,7 +19,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public override IReadOnlyList<AssetLoadModes> SupportedLoadModes => supportedLoadModes;
 
-        public override Task<Texture2D> LoadAsync(ModificationContent content, AssetInfo assetInfo, CancellationToken token)
+        public override Task<Texture2D> LoadAsync(Modification content, AssetInfo assetInfo, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +27,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从 AssetBundle 读取 Texture2D;
         /// </summary>
-        public override Texture2D Load(ModificationContent content, AssetInfo assetInfo)
+        public override Texture2D Load(Modification content, AssetInfo assetInfo)
         {
             AssetBundle assetBundle = LoadableResource.SharedContent.GetAssetBundle(content, assetInfo.From);
             var texture = assetBundle.LoadAsset<Texture2D>(assetInfo.Name);
@@ -51,7 +51,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 从 文件 读取 Texture2D;
         /// </summary>
-        private static Texture2D FromFileLoadTexture2D(ModificationContent content, AssetInfo assetInfo)
+        private static Texture2D FromFileLoadTexture2D(Modification content, AssetInfo assetInfo)
         {
             var stream = LoadableResource.SharedContent.GetInputStream(content, assetInfo.Name);
             byte[] imageData = new byte[stream.Length];

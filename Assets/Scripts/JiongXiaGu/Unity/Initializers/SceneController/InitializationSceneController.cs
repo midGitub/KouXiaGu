@@ -33,7 +33,7 @@ namespace JiongXiaGu.Unity.Initializers
             IProgress<ProgressInfo> progress = progressBar.Progress;
             try
             {
-                await Modification.Initialize(progress);
+                await ModificationResource.Initialize(progress);
 
                 menuDisplaySwitcher.Display();
                 progressBarDisplaySwitcher.Hide(3);

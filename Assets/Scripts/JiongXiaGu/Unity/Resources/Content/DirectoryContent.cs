@@ -21,13 +21,35 @@ namespace JiongXiaGu.Unity.Resources
         public override bool IsCompress => false;
 
         /// <summary>
+        /// 指定目录;若目录不存在则返回异常;
+        /// </summary>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        public DirectoryContent(string directory)
+        {
+            if (!Directory.Exists(directory))
+                throw new DirectoryNotFoundException(directory);
+
+            DirectoryInfo = new DirectoryInfo(directory);
+        }
+
+        /// <summary>
+        /// 指定目录;若目录不存在则返回异常;
+        /// </summary>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        private DirectoryContent(DirectoryInfo directoryInfo)
+        {
+            DirectoryInfo = directoryInfo;
+        }
+
+        /// <summary>
         /// 创建目录或者指定目录;
         /// </summary>
         /// <param name="directory">若目录不存在则创建</param>
-        public DirectoryContent(string directory)
+        public static DirectoryContent Create(string directory)
         {
-            DirectoryInfo = new DirectoryInfo(directory);
-            DirectoryInfo.Create();
+            var directoryInfo = Directory.CreateDirectory(directory);
+            var content = new DirectoryContent(directoryInfo);
+            return content;
         }
 
         private IContentEntry CreateEntryFromFilePath(string filePath)
@@ -47,6 +69,33 @@ namespace JiongXiaGu.Unity.Resources
         {
             isDisposed = true;
         }
+
+        #region Static
+
+        /// <summary>
+        /// 获取到对应数据的流,在使用完毕之后需要手动释放;(推荐在using语法内使用)
+        /// </summary>
+        /// <exception cref="FileNotFoundException">未找到指定路径的流</exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        public static Stream GetInputStream(string directory, string name)
+        {
+            string filePath = Path.Combine(directory, name);
+            return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        }
+
+        /// <summary>
+        /// 获取到输出流,不管是否已经存在,都返回一个空的用于写的流;(推荐在using语法内使用)
+        /// </summary>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        public static Stream GetOutputStream(string directory, string name)
+        {
+            string filePath = Path.Combine(directory, name);
+            return new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+        }
+
+        #endregion
+
 
         #region Read
 

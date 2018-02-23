@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.Initializers
     /// </summary>
     public interface IModificationInitializeHandle
     {
-        void Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token);
+        void Initialize(IReadOnlyList<Modification> mods, CancellationToken token);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace JiongXiaGu.Unity.Initializers
             integrateHandlers = GetComponentsInChildren<IModificationInitializeHandle>();
         }
 
-        public static Task StartInitialize(IReadOnlyList<ModificationContent> mods, IProgress<ProgressInfo> progress, CancellationToken token)
+        public static Task StartInitialize(IReadOnlyList<Modification> mods, IProgress<ProgressInfo> progress, CancellationToken token)
         {
             return Instance.Initialize(mods, progress, token);
         }
@@ -46,7 +46,7 @@ namespace JiongXiaGu.Unity.Initializers
         protected override List<Func<CancellationToken, string>> EnumerateHandler(object state)
         {
             var handlers = new List<Func<CancellationToken, string>>();
-            var mods = state as IReadOnlyList<ModificationContent>;
+            var mods = state as IReadOnlyList<Modification>;
 
             foreach (var handler in integrateHandlers)
             {

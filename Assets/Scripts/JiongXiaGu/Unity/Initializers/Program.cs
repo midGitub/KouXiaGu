@@ -35,7 +35,7 @@ namespace JiongXiaGu.Unity.Initializers
 
         private static async Task InternalInitialize()
         {
-            Modification.SearcheAll();
+            ModificationResource.SearcheAll();
             await Task.Run((Action)ComponentInitializer.Instance.Initialize);
         }
     }

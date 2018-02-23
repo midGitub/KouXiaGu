@@ -3,20 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace JiongXiaGu.Unity.Resources
 {
 
     public struct ModificationInfo
     {
-        public IContentInfo ContentInfo { get; private set; }
+        public string ModificationDirectory { get; private set; }
         public ModificationDescription Description { get; private set; }
-        public bool Exists => ContentInfo != null && ContentInfo.Exists;
 
-        public ModificationInfo(IContentInfo contentInfo, ModificationDescription description)
+        public ModificationInfo(string modificationDirectory, ModificationDescription description)
         {
-            ContentInfo = contentInfo;
+            ModificationDirectory = modificationDirectory;
             Description = description;
+        }
+
+        public static implicit operator string(ModificationInfo info)
+        {
+            return info.ModificationDirectory;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace JiongXiaGu.Unity.RectMaps
         /// </summary>
         internal static List<MapFileInfo> AvailableMaps { get; set; }
 
-        void IModificationInitializeHandle.Initialize(IReadOnlyList<ModificationContent> mods, CancellationToken token)
+        void IModificationInitializeHandle.Initialize(IReadOnlyList<Modification> mods, CancellationToken token)
         {
             mapSearcher = new MapSearcher();
 

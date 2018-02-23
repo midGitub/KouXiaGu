@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             string directory = Path.Combine(rootDirectory, "Directory");
 
-            using (DirectoryContent content = new DirectoryContent(directory))
+            using (DirectoryContent content = DirectoryContent.Create(directory))
             {
                 ContentReadWriteTest(content);
             }

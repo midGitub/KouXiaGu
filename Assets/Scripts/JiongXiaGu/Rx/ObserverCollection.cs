@@ -238,7 +238,7 @@ namespace JiongXiaGu
         /// <summary>
         /// 安全的枚举所有观察者;
         /// </summary>
-        private IEnumerable<IObserver<T>> EnumerateObserver()
+        protected virtual IEnumerable<IObserver<T>> EnumerateObserver()
         {
             return Observers.ToList();
         }
@@ -284,7 +284,7 @@ namespace JiongXiaGu
     }
 
     /// <summary>
-    /// 观察者合集;加入O(1)或O(n),移除O(n), 迭代O(n);
+    /// 观察者合集;加入O(n),移除O(n), 迭代O(n);
     /// </summary>
     public class ObserverList<T> : ObserverCollection<T>
     {
@@ -294,7 +294,7 @@ namespace JiongXiaGu
     }
 
     /// <summary>
-    /// 使用双向链表存储观察者,添加O(1), 通过IDisposable接口移除O(1),Remove方法, 迭代O(n);
+    /// 使用双向链表存储观察者,添加O(n), 通过IDisposable接口移除O(1),Remove方法O(n), 迭代O(n);
     /// </summary>
     public class ObserverLinkedList<T> : ObserverCollection<T>
     {
