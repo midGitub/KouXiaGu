@@ -1,6 +1,7 @@
 ﻿using JiongXiaGu.Grids;
 using JiongXiaGu.Unity.RectMaps;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,52 +16,34 @@ namespace JiongXiaGu.Unity.RectTerrain
     [Serializable]
     public sealed class LandformBaker : MonoBehaviour
     {
-        [SerializeField, Range(0, 64)]
-        float tessellation = 48f;
-        [SerializeField, Range(0, 5)]
-        float displacement = 1.5f;
         [SerializeField]
-        LandformBakeCamera bakeCamera;
+        private Camera bakeCamera;
         [SerializeField]
-        LandformBakeDrawingBoardCollection landformBoardCollection;
+        private LandformQuality quality;
+        [SerializeField]
+        private LandformBakeDrawingBoardCollection landformBoardCollection;
 
-        public LandformBakeCamera BakeCamera
-        {
-            get { return bakeCamera; }
-        }
-
-        public LandformQuality Quality
-        {
-            get { return bakeCamera.Quality; }
-        }
-
-        /// <summary>
-        /// 地形细分程度;
-        /// </summary>
-        public float Tessellation
-        {
-            get { return tessellation; }
-        }
-
-        /// <summary>
-        /// 地形高度缩放;
-        /// </summary>
-        public float Displacement
-        {
-            get { return displacement; }
-        }
+        public Camera BakeCamera => bakeCamera;
+        public LandformQuality Quality => quality;
 
         private void Awake()
         {
-            landformBoardCollection.Initialize();
-            OnValidate();
+            InitBakingCamera();
         }
 
-        private void OnValidate()
+        /// <summary>
+        /// 初始化烘焙相机参数;
+        /// </summary>
+        [ContextMenu("初始化")]
+        private void InitBakingCamera()
         {
-            LandformChunkRenderer.SetTessellation(tessellation);
-            LandformChunkRenderer.SetDisplacement(displacement);
+            bakeCamera.aspect = LandformQuality.CameraAspect;
+            bakeCamera.orthographicSize = LandformQuality.CameraSize;
+            bakeCamera.transform.rotation = LandformQuality.CameraRotation;
+            bakeCamera.clearFlags = CameraClearFlags.SolidColor;  //必须设置为纯色,否则摄像机渲染贴图会有(残图?);
+            bakeCamera.backgroundColor = Color.black;
         }
+
 
         public Task<LandformBakeResult> BakeAsync(LandformBakeRequest request)
         {
@@ -68,7 +51,15 @@ namespace JiongXiaGu.Unity.RectTerrain
         }
 
         /// <summary>
-        /// 对地图进行烘培,仅在Unity线程调用;
+        /// 烘培,仅在Unity线程调用;
+        /// </summary>
+        public IEnumerator BakeCoroutine()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 烘培,仅在Unity线程调用;
         /// </summary>
         public LandformBakeResult Bake(LandformBakeRequest request)
         {
@@ -92,6 +83,24 @@ namespace JiongXiaGu.Unity.RectTerrain
             RenderTexture.ReleaseTemporary(diffuseRT);
             RenderTexture.ReleaseTemporary(heightRT);
             return result;
+        }
+
+        /// <summary>
+        /// 获取到临时烘焙漫反射贴图的 "RenderTexture";
+        /// </summary>
+        public RenderTexture GetDiffuseTemporaryRender()
+        {
+            BakeTextureInfo texInfo = quality.LandformDiffuseMap;
+            return RenderTexture.GetTemporary(texInfo.BakeWidth, texInfo.BakeHeight);
+        }
+
+        /// <summary>
+        /// 获取到临时烘焙高度贴图的 "RenderTexture";
+        /// </summary>
+        public RenderTexture GetHeightTemporaryRender()
+        {
+            BakeTextureInfo texInfo = quality.LandformHeightMap;
+            return RenderTexture.GetTemporary(texInfo.BakeWidth, texInfo.BakeHeight);
         }
 
         /// <summary>
@@ -126,7 +135,10 @@ namespace JiongXiaGu.Unity.RectTerrain
         private void CameraRender(RectCoord chunkPos, RenderTexture rt)
         {
             Vector3 cameraPos = landformBoardCollection.Center.ChangedY(5);
-            bakeCamera.CameraRender(cameraPos, rt);
+            bakeCamera.transform.position = cameraPos;
+            bakeCamera.targetTexture = rt;
+            bakeCamera.Render();
+            bakeCamera.targetTexture = null;
         }
 
         private Texture2D GetDiffuseMap(RenderTexture rt, TextureFormat format = TextureFormat.RGB24, bool mipmap = false)
@@ -183,7 +195,8 @@ namespace JiongXiaGu.Unity.RectTerrain
             [SerializeField]
             private Vector3 center;
 
-            public List<LandformBakeDrawingBoardRenderer> DrawingBoardList { get; private set; }
+            private Lazy<List<LandformBakeDrawingBoardRenderer>> drawingBoardList;
+            public List<LandformBakeDrawingBoardRenderer> DrawingBoardList => drawingBoardList.Value;
 
             /// <summary>
             /// 将显示的坐标转换到的中心点;
@@ -198,18 +211,19 @@ namespace JiongXiaGu.Unity.RectTerrain
                 get { return landformBakeRange.NodeCount; }
             }
 
-            /// <summary>
-            /// 初始化合集内容;
-            /// </summary>
-            public virtual void Initialize()
+            public LandformBakeDrawingBoardCollection()
             {
-                int bakeDrawingBoardCount = BakeDrawingBoardCount;
-                DrawingBoardList = new List<LandformBakeDrawingBoardRenderer>(bakeDrawingBoardCount);
-                for (int i = 0; i < bakeDrawingBoardCount; i++)
+                drawingBoardList = new Lazy<List<LandformBakeDrawingBoardRenderer>>(delegate ()
                 {
-                    var board = Instantiate();
-                    DrawingBoardList.Add(board);
-                }
+                    int bakeDrawingBoardCount = BakeDrawingBoardCount;
+                    var list = new List<LandformBakeDrawingBoardRenderer>(bakeDrawingBoardCount);
+                    for (int i = 0; i < bakeDrawingBoardCount; i++)
+                    {
+                        var board = Instantiate();
+                        list.Add(board);
+                    }
+                    return list;
+                });
             }
 
             /// <summary>

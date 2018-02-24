@@ -16,7 +16,7 @@ namespace JiongXiaGu.Unity.Resources
         private bool isDisposed = false;
         public ModificationFactory Factory { get; private set; }
         public DirectoryContent BaseContent { get; private set; }
-        public string Directory => BaseContent.DirectoryInfo.FullName;
+        public string DirectoryPath => BaseContent.DirectoryPath;
         private Lazy<List<AssetBundlePack>> assetBundles = new Lazy<List<AssetBundlePack>>();
 
         /// <summary>

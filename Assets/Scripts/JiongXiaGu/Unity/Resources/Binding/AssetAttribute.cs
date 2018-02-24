@@ -23,6 +23,11 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public string Message { get; private set; }
 
         /// <summary>
+        /// 标签;
+        /// </summary>
+        public string Tags { get; set; }
+
+        /// <summary>
         /// 类型默认的文件后缀;
         /// </summary>
         protected abstract string defaultFileExtension { get; }

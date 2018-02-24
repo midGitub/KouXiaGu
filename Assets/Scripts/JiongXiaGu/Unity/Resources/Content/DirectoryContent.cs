@@ -13,32 +13,23 @@ namespace JiongXiaGu.Unity.Resources
     {
         private bool isUpdating;
         private bool isDisposed;
-        public DirectoryInfo DirectoryInfo { get; private set; }
+        public string DirectoryPath { get; private set; }
         public override bool IsUpdating => isUpdating;
         public override bool IsDisposed => isDisposed;
-        public override bool CanRead => !isDisposed && DirectoryInfo.Exists;
-        public override bool CanWrite => !isDisposed && DirectoryInfo.Exists;
+        public override bool CanRead => !isDisposed && Directory.Exists(DirectoryPath);
+        public override bool CanWrite => !isDisposed && Directory.Exists(DirectoryPath);
         public override bool IsCompress => false;
 
         /// <summary>
         /// 指定目录;若目录不存在则返回异常;
         /// </summary>
-        /// <exception cref="DirectoryNotFoundException"></exception>
+        /// <exception cref="DirectoryNotFoundException">目录不存在,或则路径无效</exception>
         public DirectoryContent(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(directory);
 
-            DirectoryInfo = new DirectoryInfo(directory);
-        }
-
-        /// <summary>
-        /// 指定目录;若目录不存在则返回异常;
-        /// </summary>
-        /// <exception cref="DirectoryNotFoundException"></exception>
-        private DirectoryContent(DirectoryInfo directoryInfo)
-        {
-            DirectoryInfo = directoryInfo;
+            DirectoryPath = directory;
         }
 
         /// <summary>
@@ -47,14 +38,14 @@ namespace JiongXiaGu.Unity.Resources
         /// <param name="directory">若目录不存在则创建</param>
         public static DirectoryContent Create(string directory)
         {
-            var directoryInfo = Directory.CreateDirectory(directory);
-            var content = new DirectoryContent(directoryInfo);
+            Directory.CreateDirectory(directory);
+            var content = new DirectoryContent(directory);
             return content;
         }
 
         private IContentEntry CreateEntryFromFilePath(string filePath)
         {
-            string relativePath = PathHelper.GetRelativePath(DirectoryInfo.FullName, filePath);
+            string relativePath = PathHelper.GetRelativePath(DirectoryPath, filePath);
             DirectoryContentEntry entry = new DirectoryContentEntry(this, relativePath);
             return entry;
         }
@@ -103,21 +94,21 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            return Directory.EnumerateFiles(DirectoryInfo.FullName, "*", SearchOption.AllDirectories).Select(CreateEntryFromFilePath);
+            return Directory.EnumerateFiles(DirectoryPath, "*", SearchOption.AllDirectories).Select(CreateEntryFromFilePath);
         }
 
         public override IEnumerable<IContentEntry> EnumerateEntries(string searchPattern, SearchOption searchOption)
         {
             ThrowIfObjectDisposed();
 
-            return Directory.EnumerateFiles(DirectoryInfo.FullName, searchPattern, searchOption).Select(CreateEntryFromFilePath);
+            return Directory.EnumerateFiles(DirectoryPath, searchPattern, searchOption).Select(CreateEntryFromFilePath);
         }
 
         public override IEnumerable<IContentEntry> EnumerateEntries(string directoryName, string searchPattern, SearchOption searchOption)
         {
             ThrowIfObjectDisposed();
 
-            string targetDirectory = Path.Combine(DirectoryInfo.FullName, directoryName);
+            string targetDirectory = Path.Combine(DirectoryPath, directoryName);
             if (Directory.Exists(targetDirectory))
             {
                 return Directory.EnumerateFiles(targetDirectory, searchPattern, searchOption).Select(CreateEntryFromFilePath);
@@ -133,7 +124,7 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectDisposed();
             name = Normalize(name);
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            string filePath = Path.Combine(DirectoryPath, name);
             if (File.Exists(filePath))
             {
                 var entry = CreateEntry(filePath, name);
@@ -147,7 +138,7 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectDisposed();
             name = Normalize(name);
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            string filePath = Path.Combine(DirectoryPath, name);
             return File.Exists(filePath);
         }
 
@@ -171,7 +162,7 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectDisposed();
             name = Normalize(name);
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            string filePath = Path.Combine(DirectoryPath, name);
             if (File.Exists(filePath))
             {
                 return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -208,7 +199,7 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectNotUpdating();
             name = Normalize(name);
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            string filePath = Path.Combine(DirectoryPath, name);
             string directory = Path.GetDirectoryName(filePath);
             Directory.CreateDirectory(directory);
 
@@ -227,7 +218,7 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectNotUpdating();
             name = Normalize(name);
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            string filePath = Path.Combine(DirectoryPath, name);
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
@@ -245,7 +236,7 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectNotUpdating();
             name = Normalize(name);
 
-            string filePath = Path.Combine(DirectoryInfo.FullName, name);
+            string filePath = Path.Combine(DirectoryPath, name);
             string directory = Path.GetDirectoryName(filePath);
             Directory.CreateDirectory(directory);
             entry = CreateEntry(filePath, name);
@@ -258,7 +249,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             public DirectoryContent Parent { get; private set; }
             public string Name { get; private set; }
-            public string FilePath => Path.Combine(Parent.DirectoryInfo.FullName, Name);
+            public string FilePath => Path.Combine(Parent.DirectoryPath, Name);
             public DateTime LastWriteTime => File.GetLastWriteTime(FilePath);
 
             public DirectoryContentEntry(DirectoryContent parent, string name)

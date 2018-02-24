@@ -11,17 +11,17 @@ namespace JiongXiaGu.Unity
     /// 在Unity线程内根据运行时间调度执行;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class UnityTaskScheduler : MonoBehaviour
+    public sealed class UnityUpdateTaskScheduler : MonoBehaviour
     {
-        private UnityTaskScheduler()
+        private UnityUpdateTaskScheduler()
         {
         }
 
         private static readonly _TaskScheduler taskScheduler = new _TaskScheduler();
-        private static readonly GlobalSingleton<UnityTaskScheduler> singleton = new GlobalSingleton<UnityTaskScheduler>();
+        private static readonly GlobalSingleton<UnityUpdateTaskScheduler> singleton = new GlobalSingleton<UnityUpdateTaskScheduler>();
 
         [SerializeField]
-        private Stopwatch runtimeStopwatch = new Stopwatch(0.1f);
+        private Stopwatch runtimeStopwatch = new Stopwatch(0.05f);
 
         public static TaskScheduler TaskScheduler
         {

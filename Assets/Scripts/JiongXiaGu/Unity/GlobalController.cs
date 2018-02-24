@@ -70,7 +70,7 @@ namespace JiongXiaGu.Unity
                 {
                     Debug.Log(temp);
                     Thread.Sleep(100);
-                }, source.Token, UnityTaskScheduler.TaskScheduler).ContinueWith(task => Debug.Log(temp + "ContinueWith"), source.Token);
+                }, source.Token, UnityUpdateTaskScheduler.TaskScheduler).ContinueWith(task => Debug.Log(temp + "ContinueWith"), source.Token);
 #pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
             }
             await Task.Delay(1000);

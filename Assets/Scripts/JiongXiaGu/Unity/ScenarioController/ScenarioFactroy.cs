@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.ScenarioController
@@ -32,9 +30,9 @@ namespace JiongXiaGu.Unity.ScenarioController
 
         public ScenarioInfo ReadInfo(string directory)
         {
-            using (var stream = DirectoryContent.GetInputStream(directory, ScenarioDescriptionName))
+            using (var content = new DirectoryContent(directory))
             {
-                var description = descriptionSerializer.Value.Deserialize(stream);
+                var description = ReadDescription(content);
                 var contentInfo = new DirectoryContentInfo(directory);
                 return new ScenarioInfo(contentInfo, description);
             }
@@ -42,7 +40,21 @@ namespace JiongXiaGu.Unity.ScenarioController
 
         public ScenarioInfo ReadZipInfo(string file)
         {
-            throw new NotImplementedException();
+            using (var content = new SharpZipLibContent(file))
+            {
+                var description = ReadDescription(content);
+                var contentInfo = new ZipContentInfo(file);
+                return new ScenarioInfo(contentInfo, description);
+            }
+        }
+
+        public ScenarioDescription ReadDescription(Content content)
+        {
+            using (var stream = content.GetInputStream(ScenarioDescriptionName))
+            {
+                var description = descriptionSerializer.Value.Deserialize(stream);
+                return description;
+            }
         }
 
 

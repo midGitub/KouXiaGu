@@ -253,6 +253,7 @@ namespace JiongXiaGu
                     Dictionary = this,
                     EventType = DictionaryEventType.Clear,
                 };
+                observer.OnNext(dictionaryEvent);
             }
         }
     }

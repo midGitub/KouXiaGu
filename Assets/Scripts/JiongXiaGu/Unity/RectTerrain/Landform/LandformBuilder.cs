@@ -139,7 +139,7 @@ namespace JiongXiaGu.Unity.RectTerrain
                     }
                 }
 
-            }, token, UnityTaskScheduler.TaskScheduler);
+            }, token, UnityUpdateTaskScheduler.TaskScheduler);
         }
 
         private void Update(RectCoord chunkCoord, ChunkInfo chunkInfo)

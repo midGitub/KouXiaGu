@@ -15,7 +15,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 烘焙时的边框比例(需要裁剪的部分比例);
         /// </summary>
-        static readonly float OutlineScale = 1f / 24f;
+        private static readonly float OutlineScale = 1f / 24f;
 
         /// <summary>
         /// 完整预览整个地图块的摄像机旋转角度;
@@ -35,6 +35,10 @@ namespace JiongXiaGu.Unity.RectTerrain
             (LandformChunkInfo.ChunkWidth + LandformChunkInfo.ChunkWidth * OutlineScale) /
             (LandformChunkInfo.ChunkHeight + LandformChunkInfo.ChunkHeight * OutlineScale);
 
+        public LandformQuality()
+        {
+            Updata();
+        }
 
         public LandformQuality(float textureSize, float diffuseMapRatios, float heightMapRatios)
         {
@@ -46,13 +50,13 @@ namespace JiongXiaGu.Unity.RectTerrain
 
 
         [XmlIgnore, SerializeField, Range(1, 300)]
-        float textureSize = 120;
+        private float textureSize = 120;
 
         [XmlIgnore, SerializeField, Range(0.1f, 1)]
-        float diffuseMapRatios = 1;
+        private float diffuseMapRatios = 1;
 
         [XmlIgnore, SerializeField, Range(0.1f, 1)]
-        float heightMapRatios = 1;
+        private float heightMapRatios = 1;
 
         public BakeTextureInfo LandformDiffuseMap { get; private set; }
         public BakeTextureInfo LandformHeightMap { get; private set; }
@@ -68,7 +72,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         }
 
         /// <summary>
-        /// 贴图比例;
+        /// DiffuseMap比例;
         /// </summary>
         [XmlElement("DiffuseMapRatios")]
         public float LandformDiffuseMapRatios
@@ -78,7 +82,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         }
 
         /// <summary>
-        /// 贴图比例;
+        /// HeightMap比例;
         /// </summary>
         [XmlElement("HeightMapRatios")]
         public float LandformHeightMapRatios

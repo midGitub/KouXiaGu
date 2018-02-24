@@ -49,7 +49,7 @@ namespace JiongXiaGu.Unity.Archives
         /// <summary>
         /// 计时器运行的协程;
         /// </summary>
-        Coroutine autoArchiveCoroutine;
+        UnityEngine.Coroutine autoArchiveCoroutine;
 
         /// <summary>
         /// 是否启用自动存档?

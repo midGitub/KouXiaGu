@@ -55,7 +55,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public bool TryGet(string directory, out Modification modification)
         {
-            modification = modifications.Find(item => item.Directory == directory);
+            modification = modifications.Find(item => item.DirectoryPath == directory);
             return modification != null;
         }
 

@@ -279,6 +279,7 @@ namespace JiongXiaGu.Unity.RectMaps
                     Dictionary = this,
                     EventType = DictionaryEventType.Clear,
                 };
+                observer.OnNext(dictionaryEvent);
             }
         }
     }

@@ -10,29 +10,12 @@ namespace JiongXiaGu.Unity.Resources.Binding
 
     public interface IMember
     {
-        /// <summary>
-        /// 信息;
-        /// </summary>
-        AssetAttribute Info { get; }
-
-        /// <summary>
-        /// 成员名称;
-        /// </summary>
         string Name { get; }
-
-        /// <summary>
-        /// 序列化接口;
-        /// </summary>
+        string RelativePath { get; }
+        string Message { get; }
+        string Tags { get; }
         ISerializer Serializer { get; }
-
-        /// <summary>
-        /// 获取到值;
-        /// </summary>
         object GetValue(object instance);
-
-        /// <summary>
-        /// 设置到值;
-        /// </summary>
         void SetValue(object instance, object value);
     }
 
@@ -42,6 +25,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public PropertyInfo PropertyInfo { get; private set; }
         public ISerializer Serializer { get; private set; }
         public string Name => PropertyInfo.Name;
+        public string RelativePath => Info.RelativePath;
+        public string Message => Info.Message;
+        public string Tags => Info.Tags;
 
         public Property(AssetAttribute info, PropertyInfo propertyInfo)
         {
@@ -67,6 +53,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public FieldInfo FieldInfo { get; private set; }
         public ISerializer Serializer { get; private set; }
         public string Name => FieldInfo.Name;
+        public string RelativePath => Info.RelativePath;
+        public string Message => Info.Message;
+        public string Tags => Info.Tags;
 
         public Field(AssetAttribute assetAttribute, FieldInfo fieldInfo)
         {

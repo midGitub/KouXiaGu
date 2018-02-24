@@ -47,7 +47,7 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         private RectTerrainResourceDescription Read(Modification content)
         {
-            RectTerrainResourceDescription description = (RectTerrainResourceDescription)bindingSerializer.Deserialize(content.BaseContent);
+            RectTerrainResourceDescription description = bindingSerializer.Deserialize(content.BaseContent);
             return description;
         }
 

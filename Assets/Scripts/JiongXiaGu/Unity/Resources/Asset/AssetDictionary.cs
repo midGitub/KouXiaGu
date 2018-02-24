@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.Resources
     public class AssetDictionary : WeakReferenceObjectDictionary
     {
         internal static AssetDictionary Default { get; private set; } = new AssetDictionary();
-        internal static TaskScheduler DefalutTaskScheduler => UnityTaskScheduler.TaskScheduler;
+        internal static TaskScheduler DefalutTaskScheduler => UnityUpdateTaskScheduler.TaskScheduler;
 
         /// <summary>
         /// 读取资源;
