@@ -171,8 +171,8 @@ namespace JiongXiaGu.Unity.Resources
             ModificationContents = GetModificationContent();
             SharedContent = new SharedContent(ModificationContents);
 
-            progress?.Report(new ProgressInfo(0.3f, "模组初始化"));
-            var resourceProgress = new LocalProgress(progress, 0.3f, 1f);
+            progress?.Report(new ProgressInfo(0.5f, "模组初始化"));
+            var resourceProgress = new LocalProgress(progress, 0.5f, 1f);
             await ModificationInitializer.StartInitialize(ModificationContents, resourceProgress, token);
 
             progress?.Report(new ProgressInfo(1f, "初始化完毕"));

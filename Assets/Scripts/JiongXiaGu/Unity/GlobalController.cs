@@ -9,6 +9,10 @@ using System.Threading;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using JiongXiaGu.Unity.RectTerrain;
+using System.Xml.Serialization;
+using JiongXiaGu.Unity.Maps;
+using JiongXiaGu.Grids;
+using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity
 {
@@ -17,7 +21,7 @@ namespace JiongXiaGu.Unity
     /// 在程序一开始就存在的物体,保持该物体不随场景切换销毁;
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GlobalController :MonoBehaviour
+    public sealed class GlobalController : MonoBehaviour
     {
         private static readonly GlobalSingleton<GlobalController> singleton = new GlobalSingleton<GlobalController>();
         public static GlobalController Instance => singleton.GetInstance();
@@ -30,15 +34,29 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test0")]
         private void Test0()
         {
-            //var v1 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
-            //var v2 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo("terrain", "HeightMap_85"));
-            //Debug.Log(v1 != null);
-            //Debug.Log(v1 == v2);
+            XmlSerializer<SerializableDictionary<RectCoord, ArchiveMapNode>> xmlSerializer = new XmlSerializer<SerializableDictionary<RectCoord, ArchiveMapNode>>();
+            SerializableDictionary<RectCoord, ArchiveMapNode> value = new SerializableDictionary<RectCoord, ArchiveMapNode>()
+            {
+                { new RectCoord(0, 0), new ArchiveMapNode() },
+                { new RectCoord(0, 1), new ArchiveMapNode() },
+                {
+                    new RectCoord(0, 2), new ArchiveMapNode(new MapNode()
+                        {
+                            Landform = new NodeLandformInfo()
+                            {
+                                Angle = 11,
+                                TypeID = "123123",
+                            },
+                        })
+                },
+            };
 
-            //v1 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
-            //v2 = Texture2DLoader.Default.Load(LoadableResource.Core, new AssetInfo((@"Terrain\Landforms\SoilCracked2.jpg")));
-            //Debug.Log(v1 != null);
-            //Debug.Log(v1 == v2);
+            using (var stream = new FileStream(@"123.xml", FileMode.Create, FileAccess.ReadWrite))
+            {
+                xmlSerializer.Serialize(stream, value);
+            }
+
+            Debug.Log("OK!");
         }
 
         public MeshRenderer meshRenderer;

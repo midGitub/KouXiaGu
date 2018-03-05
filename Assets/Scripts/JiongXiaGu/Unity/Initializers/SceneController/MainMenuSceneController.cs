@@ -15,6 +15,9 @@ namespace JiongXiaGu.Unity.Initializers
         {
         }
 
-
+        private void FixedUpdate()
+        {
+            
+        }
     }
 }

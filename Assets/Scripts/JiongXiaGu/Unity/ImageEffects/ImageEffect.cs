@@ -12,7 +12,7 @@ namespace JiongXiaGu.ImageEffects
     /// 图片特效静态方法类;
     /// </summary>
     [ExecuteInEditMode, DisallowMultipleComponent]
-    public sealed partial class ImageEffect : UnitySington<ImageEffect>
+    public sealed partial class ImageEffect : MonoBehaviour
     {
         ImageEffect()
         {
@@ -24,15 +24,15 @@ namespace JiongXiaGu.ImageEffects
         [SerializeField]
         GaussianBlur gaussianBlur;
 
-        public static BlurOptimized BlurOptimized
-        {
-            get { return Instance.blurOptimized; }
-        }
+        //public static BlurOptimized BlurOptimized
+        //{
+        //    get { return Instance.blurOptimized; }
+        //}
 
-        public static GaussianBlur GaussianBlur
-        {
-            get { return Instance.gaussianBlur; }
-        }
+        //public static GaussianBlur GaussianBlur
+        //{
+        //    get { return Instance.gaussianBlur; }
+        //}
 
     }
 

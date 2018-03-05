@@ -1,5 +1,5 @@
 ﻿using JiongXiaGu.Grids;
-using JiongXiaGu.Unity.RectMaps;
+using JiongXiaGu.Unity.Maps;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -179,7 +179,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             }
         }
 
-        public static LandformBakeRequest CreateRequest(RectCoord chunkCoord, WorldMap map, LandformResCreater resPool)
+        public static LandformBakeRequest CreateRequest(RectCoord chunkCoord, Map<RectCoord> map, LandformResCreater resPool)
         {
             throw new NotImplementedException();
         }

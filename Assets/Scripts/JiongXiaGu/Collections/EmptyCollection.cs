@@ -2,60 +2,99 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace JiongXiaGu
+namespace JiongXiaGu.Collections
 {
 
     /// <summary>
     /// 空的迭代结构;
     /// </summary>
-    public struct EmptyCollection<T> : IReadOnlyCollection<T>, IReadOnlyList<T>, IEnumerator<T>, IEnumerable<T>
+    public struct EmptyCollection<T> : ICollection<T>, IReadOnlyCollection<T>, IReadOnlyList<T>, IEnumerable<T>, IEnumerable
     {
-        public static EmptyCollection<T> Default
-        {
-            get { return new EmptyCollection<T>(); }
-        }
+        public static EmptyCollection<T> Default => new EmptyCollection<T>();
 
-        T IEnumerator<T>.Current
-        {
-            get { return default(T); }
-        }
-
-        object IEnumerator.Current
-        {
-            get { return default(T); }
-        }
-
-        int IReadOnlyCollection<T>.Count
-        {
-            get { return 0; }
-        }
+        int IReadOnlyCollection<T>.Count => 0;
+        int ICollection<T>.Count => 0;
+        bool ICollection<T>.IsReadOnly => true;
 
         T IReadOnlyList<T>.this[int index]
         {
-            get { throw new ArgumentOutOfRangeException("index"); }
+            get { throw new NotSupportedException(); }
+        }
+
+        /// <summary>
+        /// 只返回 NotSupportedException;
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 只返回 NotSupportedException;
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        bool ICollection<T>.Remove(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 只返回 NotSupportedException;
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        bool ICollection<T>.Contains(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 只返回 NotSupportedException;
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 只返回 NotSupportedException;
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        {
+            throw new NotSupportedException();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this;
+            return new Enumerator();
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return this;
+            return new Enumerator();
         }
 
-        bool IEnumerator.MoveNext()
+        private struct Enumerator : IEnumerator<T>
         {
-            return false;
-        }
+            public T Current => default(T);
+            object IEnumerator.Current => default(T);
 
-        void IEnumerator.Reset()
-        {
-        }
+            public void Dispose()
+            {
+                return;
+            }
 
-        void IDisposable.Dispose()
-        {
+            public bool MoveNext()
+            {
+                return false;
+            }
+
+            public void Reset()
+            {
+                return;
+            }
         }
     }
 }

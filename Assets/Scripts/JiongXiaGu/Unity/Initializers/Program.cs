@@ -33,10 +33,11 @@ namespace JiongXiaGu.Unity.Initializers
             }
         }
 
-        private static async Task InternalInitialize()
+        private static Task InternalInitialize()
         {
             ModificationResource.SearcheAll();
-            await Task.Run((Action)ComponentInitializer.Instance.Initialize);
+            ComponentInitializer.Instance.Initialize();
+            return Task.CompletedTask;
         }
     }
 }

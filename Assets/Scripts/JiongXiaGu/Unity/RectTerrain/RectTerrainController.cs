@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Threading;
-using JiongXiaGu.Unity.RectMaps;
+using JiongXiaGu.Unity.Maps;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {

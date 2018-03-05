@@ -23,8 +23,10 @@ namespace JiongXiaGu.Unity
         private static readonly object asyncLock = new object();
 
         /// <summary>
-        /// 获取到单例;
+        /// 获取到单例,若无法获取到则返回异常;
         /// </summary>
+        /// <exception cref="GameObjectNotFoundException"></exception>
+        /// <exception cref="ComponentNotFoundException"></exception>
         public T GetInstance()
         {
             if (instance != null)
@@ -58,22 +60,39 @@ namespace JiongXiaGu.Unity
         }
 
         /// <summary>
-        /// 获取到单例;
+        /// 搜索获取到单例;
         /// </summary>
-        private T Find()
+        /// <exception cref="GameObjectNotFoundException"></exception>
+        /// <exception cref="ComponentNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException">当非Unity线程调用时</exception>
+        public T Find()
         {
+            UnityThread.ThrowIfNotUnityThread();
+
             GameObject sceneController = GameObject.FindWithTag(ControllerTagName);
             if (sceneController != null)
             {
                 var instance = sceneController.GetComponentInChildren<T>();
-                return instance;
+                if (instance == null)
+                {
+                    throw new ComponentNotFoundException(string.Format("未找到类型[{0}]", typeof(T).FullName));
+                }
+                else
+                {
+                    return instance;
+                }
             }
-            return null;
+            else
+            {
+                throw new GameObjectNotFoundException(string.Format("未找到标签[{0}]", ControllerTagName));
+            }
         }
 
         /// <summary>
         /// 设置到单例;
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException">当传入实例与当前实例不同</exception>
         public void SetInstance(T newInstance)
         {
             lock (asyncLock)
@@ -85,7 +104,7 @@ namespace JiongXiaGu.Unity
                 else if (instance != null && instance != newInstance)
                 {
                     string message = string.Format("重复设置单例{0},当前:{1},传入:{2}", nameof(T), instance, newInstance);
-                    throw new InvalidOperationException(message);
+                    throw new ArgumentException(message);
                 }
                 else
                 {
@@ -97,6 +116,8 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 当单例销毁时调用;
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException">当传入实例与当前实例不同</exception>
         public void RemoveInstance(T newInstance)
         {
             lock (asyncLock)
@@ -108,7 +129,7 @@ namespace JiongXiaGu.Unity
                 if (instance != null && instance != newInstance)
                 {
                     string message = string.Format("当前单例 {0} 不等于传入的 {1};", instance, newInstance);
-                    throw new InvalidOperationException(message);
+                    throw new ArgumentException(message);
                 }
                 else
                 {

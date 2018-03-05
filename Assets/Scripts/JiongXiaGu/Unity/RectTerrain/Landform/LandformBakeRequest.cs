@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JiongXiaGu.Unity.RectMaps;
+using JiongXiaGu.Unity.Maps;
 using System.Threading.Tasks;
 using UnityEngine;
 
