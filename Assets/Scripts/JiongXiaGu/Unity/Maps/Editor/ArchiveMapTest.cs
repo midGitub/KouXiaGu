@@ -48,7 +48,7 @@ namespace JiongXiaGu.Unity.Maps
             Map<RectCoord> map2 = CreateMap();
             archiveMap.Update(map2);
 
-            Contrast.AreEqual(map, map2);
+            Contrast.AreSame<RectCoord, MapNode>(map, map2);
         }
 
         private Map<RectCoord> CreateMap()
