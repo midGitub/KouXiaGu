@@ -54,7 +54,7 @@ namespace JiongXiaGu.Unity.Maps
         public override int GetHashCode()
         {
             var hashCode = -654319184;
-            hashCode = hashCode * -1521134295 + (string.IsNullOrWhiteSpace(TypeID) ? 0 : TypeID.GetHashCode());
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(TypeID);
             hashCode = hashCode * -1521134295 + Angle.GetHashCode();
             return hashCode;
         }

@@ -2,17 +2,17 @@
 {
     public struct ArchiveMapNode
     {
-        public MapNode? Value { get; set; }
-        public bool IsRemove => !Value.HasValue;
+        public MapNode? Node { get; set; }
+        public bool IsRemove => !Node.HasValue;
 
         public ArchiveMapNode(MapNode value)
         {
-            Value = value;
+            Node = value;
         }
 
         public bool ShouldSerializeValue()
         {
-            return Value != null;
+            return Node != null;
         }
     }
 }

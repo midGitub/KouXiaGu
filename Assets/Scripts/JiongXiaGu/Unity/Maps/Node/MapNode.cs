@@ -14,7 +14,7 @@ namespace JiongXiaGu.Unity.Maps
     /// </summary>
     [ProtoContract]
     [XmlRoot("Node")]
-    public struct MapNode
+    public struct MapNode : IEquatable<MapNode>
     {
         [ProtoMember(1)]
         [XmlElement("Landform")]
@@ -33,7 +33,51 @@ namespace JiongXiaGu.Unity.Maps
         /// </summary>
         public static MapNodeChangeContents GetNodeChangeElements(MapNode originalValue, MapNode newValue)
         {
-            throw new NotImplementedException();
+            MapNodeChangeContents changeContents = 0;
+
+            if (originalValue.Landform != newValue.Landform)
+            {
+                changeContents |= MapNodeChangeContents.Landform;
+            }
+            if (originalValue.Building != newValue.Building)
+            {
+                changeContents |= MapNodeChangeContents.Building;
+            }
+
+
+            return changeContents;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is MapNode && Equals((MapNode)obj);
+        }
+
+        public bool Equals(MapNode other)
+        {
+            return Landform.Equals(other.Landform) &&
+                   Building.Equals(other.Building) &&
+                   Road.Equals(other.Road);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -801783822;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<NodeLandformInfo>.Default.GetHashCode(Landform);
+            hashCode = hashCode * -1521134295 + EqualityComparer<NodeBuildingInfo>.Default.GetHashCode(Building);
+            hashCode = hashCode * -1521134295 + EqualityComparer<NodeRoadInfo>.Default.GetHashCode(Road);
+            return hashCode;
+        }
+
+        public static bool operator ==(MapNode node1, MapNode node2)
+        {
+            return node1.Equals(node2);
+        }
+
+        public static bool operator !=(MapNode node1, MapNode node2)
+        {
+            return !(node1 == node2);
         }
     }
 }

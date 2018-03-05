@@ -63,14 +63,14 @@ namespace JiongXiaGu.Unity.Maps
 
         public void Add(TKey key, MapNode value)
         {
-            if (dictionary.ContainsKey(key))
+            if (!dictionary.ContainsKey(key))
             {
                 NotifyAdd(key, value);
                 dictionary.Add(key, value);
             }
             else
             {
-                throw new KeyNotFoundException();
+                throw new ArgumentException(key.ToString());
             }
         }
 
