@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Resources
     public enum AssetBundleLoadOption
     {
         None = 0,
-        Main = 1 << 0,
-        Secondary = 1 << 1,
+        Important = 1 << 0,
+        NotImportant = 1 << 1,
     }
 }

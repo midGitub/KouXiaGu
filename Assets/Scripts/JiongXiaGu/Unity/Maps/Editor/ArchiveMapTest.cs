@@ -1,11 +1,6 @@
-﻿using NUnit.Framework;
+﻿using JiongXiaGu.Collections;
 using JiongXiaGu.Grids;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using JiongXiaGu.Collections;
+using NUnit.Framework;
 
 namespace JiongXiaGu.Unity.Maps
 {

@@ -1,12 +1,5 @@
-﻿using JiongXiaGu.Grids;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.Maps
 {
@@ -16,11 +9,11 @@ namespace JiongXiaGu.Unity.Maps
     /// </summary>
     public class MapChangeRecorder<TKey> : IObserver<MapEvent<TKey>>
     {
-        public Dictionary<TKey, MapNodeChangeType> ChangedDictionary { get; private set; }
+        public Dictionary<TKey, MapChangeType> ChangedDictionary { get; private set; }
 
         public MapChangeRecorder()
         {
-            ChangedDictionary = new Dictionary<TKey, MapNodeChangeType>();
+            ChangedDictionary = new Dictionary<TKey, MapChangeType>();
         }
 
 
@@ -52,13 +45,13 @@ namespace JiongXiaGu.Unity.Maps
 
         public void OnAdd(TKey key)
         {
-            MapNodeChangeType original;
+            MapChangeType original;
             if (ChangedDictionary.TryGetValue(key, out original))
             {
                 switch (original)
                 {
-                    case MapNodeChangeType.Remove:
-                        ChangedDictionary[key] = MapNodeChangeType.Update;
+                    case MapChangeType.Remove:
+                        ChangedDictionary[key] = MapChangeType.Update;
                         break;
 
                     default:
@@ -67,23 +60,23 @@ namespace JiongXiaGu.Unity.Maps
             }
             else
             {
-                ChangedDictionary.Add(key, MapNodeChangeType.Add);
+                ChangedDictionary.Add(key, MapChangeType.Add);
             }
         }
 
         private void OnRemove(TKey key)
         {
-            MapNodeChangeType original;
+            MapChangeType original;
             if (ChangedDictionary.TryGetValue(key, out original))
             {
                 switch (original)
                 {
-                    case MapNodeChangeType.Add:
+                    case MapChangeType.Add:
                         ChangedDictionary.Remove(key);
                         break;
 
-                    case MapNodeChangeType.Update:
-                        ChangedDictionary[key] = MapNodeChangeType.Remove;
+                    case MapChangeType.Update:
+                        ChangedDictionary[key] = MapChangeType.Remove;
                         break;
 
                     default:
@@ -92,21 +85,21 @@ namespace JiongXiaGu.Unity.Maps
             }
             else
             {
-                ChangedDictionary.Add(key, MapNodeChangeType.Remove);
+                ChangedDictionary.Add(key, MapChangeType.Remove);
             }
         }
 
         private void OnUpdate(TKey key)
         {
-            MapNodeChangeType original;
+            MapChangeType original;
             if (ChangedDictionary.TryGetValue(key, out original))
             {
                 switch (original)
                 {
-                    case MapNodeChangeType.Add:
+                    case MapChangeType.Add:
                         break;
 
-                    case MapNodeChangeType.Update:
+                    case MapChangeType.Update:
                         break;
 
                     default:
@@ -115,7 +108,7 @@ namespace JiongXiaGu.Unity.Maps
             }
             else
             {
-                ChangedDictionary.Add(key, MapNodeChangeType.Update);
+                ChangedDictionary.Add(key, MapChangeType.Update);
             }
         }
     }

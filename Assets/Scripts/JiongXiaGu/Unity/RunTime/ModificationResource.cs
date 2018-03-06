@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Unity.Initializers;
+using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.UI;
 using System;
 using System.Collections.Generic;
@@ -7,11 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace JiongXiaGu.Unity.Resources
+namespace JiongXiaGu.Unity.RunTime
 {
 
     /// <summary>
-    /// 模组;(仅Unity线程操作)
+    /// 模组管理;(仅Unity线程操作)
     /// </summary>
     public static class ModificationResource
     {
@@ -275,7 +276,7 @@ namespace JiongXiaGu.Unity.Resources
                 {
                     if (mod != null)
                     {
-                        mod.UnloadAssetBundlesAll(true);
+                        mod.UnloadAllAssetBundles(true);
                         mod.BaseContent.Dispose();
                     }
                 }

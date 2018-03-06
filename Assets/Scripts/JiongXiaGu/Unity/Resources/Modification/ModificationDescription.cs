@@ -46,12 +46,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 主要的 AssetBundle 描述;
         /// </summary>
-        public AssetBundleDescription[] MainAssetBundles { get; set; }
-
-        /// <summary>
-        /// 次要的 AssetBundle 描述;
-        /// </summary>
-        public AssetBundleDescription[] SecondaryAssetBundles { get; set; }
+        public AssetBundleDescription[] AssetBundles { get; set; }
 
         internal ModificationDescription(string id, string name) : this()
         {

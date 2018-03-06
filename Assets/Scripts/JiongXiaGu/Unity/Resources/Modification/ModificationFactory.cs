@@ -7,6 +7,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
 
+
     public class ModificationFactory
     {
         private readonly List<Modification> modifications = new List<Modification>();

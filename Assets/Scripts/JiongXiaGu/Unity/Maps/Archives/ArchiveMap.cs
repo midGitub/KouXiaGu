@@ -9,19 +9,19 @@ namespace JiongXiaGu.Unity.Maps
     /// </summary>
     public class ArchiveMap<TKey> : SerializableDictionary<TKey, ArchiveMapNode>
     {
-        public ArchiveMap(IReadOnlyDictionary<TKey, MapNode> map, IEnumerable<KeyValuePair<TKey, MapNodeChangeType>> change)
+        public ArchiveMap(IReadOnlyDictionary<TKey, MapNode> map, IEnumerable<KeyValuePair<TKey, MapChangeType>> change)
         {
             foreach (var item in change)
             {
                 switch (item.Value)
                 {
-                    case MapNodeChangeType.Add:
-                    case MapNodeChangeType.Update:
+                    case MapChangeType.Add:
+                    case MapChangeType.Update:
                         var value = map[item.Key];
                         Dictionary.Add(item.Key, new ArchiveMapNode(value));
                         break;
 
-                    case MapNodeChangeType.Remove:
+                    case MapChangeType.Remove:
                         Dictionary.Add(item.Key, new ArchiveMapNode());
                         break;
                 }

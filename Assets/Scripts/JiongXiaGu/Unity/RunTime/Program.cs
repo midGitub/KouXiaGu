@@ -1,18 +1,21 @@
-﻿using JiongXiaGu.Unity.Resources;
-using System;
+﻿using JiongXiaGu.Unity.Initializers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace JiongXiaGu.Unity.Initializers
+namespace JiongXiaGu.Unity.RunTime
 {
 
     /// <summary>
-    /// 程序初始化;
+    /// 程序管理;
     /// </summary>
     public static class Program
     {
+        public static bool IsComponentInitialized { get; private set; } = false;
+        private static List<IComponentInitializeHandle> componentInitializeHandlers = new List<IComponentInitializeHandle>();
+
+
+
+
         internal static Task WorkTask { get; private set; }
         public static TaskStatus WorkTaskStatus => WorkTask != null ? WorkTask.Status : TaskStatus.WaitingToRun;
 

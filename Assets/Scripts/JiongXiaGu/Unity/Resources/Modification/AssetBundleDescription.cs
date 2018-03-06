@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
@@ -10,25 +11,25 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// AssetBundle 描述;
     /// </summary>
-    public struct AssetBundleDescription : IXmlSerializable
+    public struct AssetBundleDescription : IXmlSerializable, IEquatable<AssetBundleDescription>
     {
-        internal const string NameAttribute = "name";
-
-        private string name;
+        private const string IsMainAttribute = "isImportant";
+        private const string NameAttribute = "name";
 
         /// <summary>
-        /// 指定的唯一名;
+        /// 是否为主要的 AssetBundle?
         /// </summary>
-        public string Name
-        {
-            get { return name; }
-            private set { name = value.ToLower(); }
-        }
+        public bool IsImportant { get; set; }
+
+        /// <summary>
+        /// 唯一名;
+        /// </summary>
+        public string Name { get; set; }
 
         /// <summary>
         /// 相对路径;
         /// </summary>
-        public string RelativePath { get; private set; }
+        public string RelativePath { get; set; }
 
         public AssetBundleDescription(string name) : this()
         {
@@ -44,7 +45,7 @@ namespace JiongXiaGu.Unity.Resources
 
         private static string GetDefalutRelativePath(string name)
         {
-            return Path.Combine("AssetBundle", name.ToLower());
+            return Path.Combine("AssetBundles", name.ToLower());
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -54,34 +55,54 @@ namespace JiongXiaGu.Unity.Resources
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            name = reader.GetAttribute(NameAttribute);
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                throw new XmlException(reader.ToString());
-            }
-            else
-            {
-                Name = name;
-            }
-
+            IsImportant = Convert.ToBoolean(reader.GetAttribute(IsMainAttribute));
+            Name = reader.GetAttribute(NameAttribute);
             RelativePath = reader.ReadElementContentAsString();
-            if (string.IsNullOrWhiteSpace(RelativePath))
-            {
-                RelativePath = GetDefalutRelativePath(Name);
-            }
-
             reader.ReadEndElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
             if (string.IsNullOrWhiteSpace(Name))
-            {
                 throw new ArgumentNullException(nameof(Name));
-            }
+            if (string.IsNullOrWhiteSpace(RelativePath))
+                throw new ArgumentNullException(nameof(RelativePath));
 
+            writer.WriteAttributeString(IsMainAttribute, Convert.ToString(IsImportant));
             writer.WriteAttributeString(NameAttribute, Name);
             writer.WriteValue(RelativePath);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is AssetBundleDescription && Equals((AssetBundleDescription)obj);
+        }
+
+        public bool Equals(AssetBundleDescription other)
+        {
+            return IsImportant == other.IsImportant &&
+                   Name == other.Name &&
+                   RelativePath == other.RelativePath;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 2099663225;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + IsImportant.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(RelativePath);
+            return hashCode;
+        }
+
+        public static bool operator ==(AssetBundleDescription description1, AssetBundleDescription description2)
+        {
+            return description1.Equals(description2);
+        }
+
+        public static bool operator !=(AssetBundleDescription description1, AssetBundleDescription description2)
+        {
+            return !(description1 == description2);
         }
     }
 }

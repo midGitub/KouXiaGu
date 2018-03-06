@@ -21,7 +21,7 @@ namespace JiongXiaGu.Unity.Resources
             Author = "One",
             Version = "1.22",
             Message = "...",
-            MainAssetBundles = new AssetBundleDescription[] 
+            AssetBundles = new AssetBundleDescription[] 
             {
                 new AssetBundleDescription("terrain", @"AssetBundles\terrain")
             },

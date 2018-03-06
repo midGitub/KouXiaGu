@@ -1,6 +1,6 @@
 ﻿namespace JiongXiaGu.Unity.Maps
 {
-    public enum MapNodeChangeType
+    public enum MapChangeType
     {
         None,
         Add,

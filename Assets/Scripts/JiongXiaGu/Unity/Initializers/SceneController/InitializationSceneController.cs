@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Unity.Resources;
+using JiongXiaGu.Unity.RunTime;
 using JiongXiaGu.Unity.UI;
 using System;
 using System.Threading;
@@ -33,7 +34,7 @@ namespace JiongXiaGu.Unity.Initializers
             IProgress<ProgressInfo> progress = progressBar.Progress;
             try
             {
-                await ModificationResource.Initialize(progress);
+                await RunTime.ModificationResource.Initialize(progress);
 
                 menuDisplaySwitcher.Display();
                 progressBarDisplaySwitcher.Hide(3);

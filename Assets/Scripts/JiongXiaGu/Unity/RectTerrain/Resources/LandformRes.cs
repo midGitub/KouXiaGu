@@ -22,25 +22,25 @@ namespace JiongXiaGu.Unity.RectTerrain
         public Texture2D HeightTex
         {
             get { return heightTex; }
-            internal set { heightTex = value; }
+            set { heightTex = value; }
         }
 
         public Texture2D HeightBlendTex
         {
             get { return heightBlendTex; }
-            internal set { heightBlendTex = value; }
+            set { heightBlendTex = value; }
         }
 
         public Texture2D DiffuseTex
         {
             get { return diffuseTex; }
-            internal set { diffuseTex = value; }
+            set { diffuseTex = value; }
         }
 
         public Texture2D DiffuseBlendTex
         {
             get { return diffuseBlendTex; }
-            internal set { diffuseBlendTex = value; }
+            set { diffuseBlendTex = value; }
         }
     }
 }

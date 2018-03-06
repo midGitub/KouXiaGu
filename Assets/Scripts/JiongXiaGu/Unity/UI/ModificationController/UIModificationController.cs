@@ -1,4 +1,5 @@
 ﻿using JiongXiaGu.Unity.Resources;
+using JiongXiaGu.Unity.RunTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,7 +99,7 @@ namespace JiongXiaGu.Unity.UI
             SelectTarget = uiItem;
             string modificationName = uiItem.Description.ID;
             ModificationInfo info;
-            if (ModificationResource.TryGetInfo(modificationName, out info))
+            if (RunTime.ModificationResource.TryGetInfo(modificationName, out info))
             {
                 uIModificationInfo.SetDescription(info.Description);
             }
@@ -113,11 +114,11 @@ namespace JiongXiaGu.Unity.UI
         /// </summary>
         public void Refresh()
         {
-            var activeModificationInfos = ModificationResource.GetActiveModificationInfos();
+            var activeModificationInfos = RunTime.ModificationResource.GetActiveModificationInfos();
             var activeDescriptions = activeModificationInfos.Select(item => item.Description);
             SetActiveModificationList(activeDescriptions);
 
-            var idleModificationInfos = ModificationResource.GetIdleModificationInfos(activeModificationInfos);
+            var idleModificationInfos = RunTime.ModificationResource.GetIdleModificationInfos(activeModificationInfos);
             var idleDescriptions = idleModificationInfos.Select(item => item.Description);
             SetIdleModificationList(idleDescriptions);
         }

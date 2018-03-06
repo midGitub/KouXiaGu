@@ -8,6 +8,8 @@ using System.IO;
 namespace JiongXiaGu.Unity.Resources
 {
 
+
+
     public struct ModificationInfo
     {
         public string ModificationDirectory { get; private set; }
