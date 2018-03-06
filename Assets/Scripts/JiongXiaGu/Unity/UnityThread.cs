@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -123,6 +124,31 @@ namespace JiongXiaGu.Unity
                     taskCompletionSource.SetException(new NotImplementedException());
                 }
             };
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// 转换成 Task 格式;
+        /// </summary>
+        public static Task<AssetBundle> AsTask(this AssetBundleCreateRequest asyncOperation)
+        {
+            if (asyncOperation == null)
+                throw new ArgumentNullException(nameof(asyncOperation));
+
+            var taskCompletionSource = new TaskCompletionSource<AssetBundle>();
+            asyncOperation.completed += delegate (AsyncOperation operation)
+            {
+                var assetBundle = asyncOperation.assetBundle;
+                if (assetBundle == null)
+                {
+                    taskCompletionSource.SetException(new IOException("无法读取到 AssetBundle;"));
+                }
+                else
+                {
+                    taskCompletionSource.SetResult(assetBundle);
+                }
+            };
+
             return taskCompletionSource.Task;
         }
     }

@@ -109,23 +109,23 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        /// <summary>
-        /// 读取到指定的 AssetBundle,若未找到则返回异常;
-        /// </summary>
-        public AssetBundle GetOrLoadAssetBundle(Modification main, AssetPath path)
-        {
-            string contentID;
-            string assetBundleName;
+        ///// <summary>
+        ///// 读取到指定的 AssetBundle,若未找到则返回异常;
+        ///// </summary>
+        //public AssetBundle GetOrLoadAssetBundle(Modification main, AssetPath path)
+        //{
+        //    string contentID;
+        //    string assetBundleName;
 
-            if (path.GetRelativePath(out contentID, out assetBundleName))
-            {
-                return main.GetOrLoadAssetBundle(assetBundleName);
-            }
-            else
-            {
-                var sharedContent = Find(contentID);
-                return sharedContent.GetOrLoadAssetBundle(assetBundleName);
-            }
-        }
+        //    if (path.GetRelativePath(out contentID, out assetBundleName))
+        //    {
+        //        return main.GetOrLoadAssetBundle(assetBundleName);
+        //    }
+        //    else
+        //    {
+        //        var sharedContent = Find(contentID);
+        //        return sharedContent.GetOrLoadAssetBundle(assetBundleName);
+        //    }
+        //}
     }
 }

@@ -13,13 +13,7 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public struct AssetBundleDescription : IXmlSerializable, IEquatable<AssetBundleDescription>
     {
-        private const string IsMainAttribute = "isImportant";
         private const string NameAttribute = "name";
-
-        /// <summary>
-        /// 是否为主要的 AssetBundle?
-        /// </summary>
-        public bool IsImportant { get; set; }
 
         /// <summary>
         /// 唯一名;
@@ -55,7 +49,6 @@ namespace JiongXiaGu.Unity.Resources
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            IsImportant = Convert.ToBoolean(reader.GetAttribute(IsMainAttribute));
             Name = reader.GetAttribute(NameAttribute);
             RelativePath = reader.ReadElementContentAsString();
             reader.ReadEndElement();
@@ -68,7 +61,6 @@ namespace JiongXiaGu.Unity.Resources
             if (string.IsNullOrWhiteSpace(RelativePath))
                 throw new ArgumentNullException(nameof(RelativePath));
 
-            writer.WriteAttributeString(IsMainAttribute, Convert.ToString(IsImportant));
             writer.WriteAttributeString(NameAttribute, Name);
             writer.WriteValue(RelativePath);
         }
@@ -80,16 +72,14 @@ namespace JiongXiaGu.Unity.Resources
 
         public bool Equals(AssetBundleDescription other)
         {
-            return IsImportant == other.IsImportant &&
-                   Name == other.Name &&
-                   RelativePath == other.RelativePath;
+            return Name == other.Name &&
+              RelativePath == other.RelativePath;
         }
 
         public override int GetHashCode()
         {
             var hashCode = 2099663225;
             hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + IsImportant.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(RelativePath);
             return hashCode;

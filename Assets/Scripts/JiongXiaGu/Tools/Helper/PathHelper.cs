@@ -230,5 +230,8 @@ namespace JiongXiaGu
 
             return patternIndex >= pattern.Length ? true : false;
         }
+
+
+
     }
 }
