@@ -28,7 +28,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 存放配置文件的文件夹;
         /// </summary>
-        public static BlockingContent ConfigContent => configContent.Value;
+        public static DirectoryContent ConfigContent => configContent.Value;
 
         private static readonly Lazy<string> configDirectory = new Lazy<string>(delegate ()
         {
@@ -40,12 +40,7 @@ namespace JiongXiaGu.Unity.Resources
             return directory;
         }, true);
 
-        private static readonly Lazy<BlockingContent> configContent = new Lazy<BlockingContent>(delegate ()
-        {
-            var content = new DirectoryContent(ConfigDirectory);
-            var blockingContent = new BlockingContent(content);
-            return blockingContent;
-        }, true);
+        private static readonly Lazy<DirectoryContent> configContent = new Lazy<DirectoryContent>(() => new DirectoryContent(ConfigDirectory), true);
 
 
 
@@ -57,7 +52,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 存放用户配置的文件夹;
         /// </summary>
-        public static BlockingContent UserConfigContent => userConfigContent.Value;
+        public static DirectoryContent UserConfigContent => userConfigContent.Value;
 
         private static readonly Lazy<string> userConfigDirectory = new Lazy<string>(delegate ()
         {
@@ -66,12 +61,7 @@ namespace JiongXiaGu.Unity.Resources
             return directory;
         }, true);
 
-        private static readonly Lazy<BlockingContent> userConfigContent = new Lazy<BlockingContent>(delegate()
-        {
-            var content = new DirectoryContent(UserConfigDirectory);
-            var blockingContent = new BlockingContent(content);
-            return blockingContent;
-        }, true);
+        private static readonly Lazy<DirectoryContent> userConfigContent = new Lazy<DirectoryContent>(() => new DirectoryContent(UserConfigDirectory), true);
 
 
 
@@ -123,12 +113,12 @@ namespace JiongXiaGu.Unity.Resources
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeOnLoad()
         {
-            streamingAssetsPath.Initialization();
-            configContent.Initialization();
-            userConfigContent.Initialization();
-            archiveDirectory.Initialization();
-            userModDirectory.Initialization();
-            modDirectory.Initialization();
+            streamingAssetsPath.Create();
+            configContent.Create();
+            userConfigContent.Create();
+            archiveDirectory.Create();
+            userModDirectory.Create();
+            modDirectory.Create();
         }
     }
 }

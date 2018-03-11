@@ -179,7 +179,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             }
         }
 
-        public static LandformBakeRequest CreateRequest(RectCoord chunkCoord, Map<RectCoord> map, LandformResCreater resPool)
+        public static LandformBakeRequest CreateRequest(RectCoord chunkCoord, Map<RectCoord> map)
         {
             throw new NotImplementedException();
         }

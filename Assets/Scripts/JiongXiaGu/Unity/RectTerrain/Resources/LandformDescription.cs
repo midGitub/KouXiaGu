@@ -15,8 +15,8 @@ namespace JiongXiaGu.Unity.RectTerrain
         [XmlAttribute("id")]
         public string ID { get; set; }
 
-        [XmlAttribute("name")]
-        public string Name { get; set; }
+        [XmlAttribute("locName")]
+        public string LocName { get; set; }
 
         /// <summary>
         /// 高度调整贴图;
@@ -50,7 +50,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         public bool Equals(LandformDescription other)
         {
             return ID == other.ID &&
-                   Name == other.Name &&
+                   LocName == other.LocName &&
                    EqualityComparer<AssetInfo>.Default.Equals(HeightTex, other.HeightTex) &&
                    EqualityComparer<AssetInfo>.Default.Equals(HeightBlendTex, other.HeightBlendTex) &&
                    EqualityComparer<AssetInfo>.Default.Equals(DiffuseTex, other.DiffuseTex) &&
@@ -61,7 +61,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
             var hashCode = 765293214;
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(ID);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(LocName);
             hashCode = hashCode * -1521134295 + EqualityComparer<AssetInfo>.Default.GetHashCode(HeightTex);
             hashCode = hashCode * -1521134295 + EqualityComparer<AssetInfo>.Default.GetHashCode(HeightBlendTex);
             hashCode = hashCode * -1521134295 + EqualityComparer<AssetInfo>.Default.GetHashCode(DiffuseTex);

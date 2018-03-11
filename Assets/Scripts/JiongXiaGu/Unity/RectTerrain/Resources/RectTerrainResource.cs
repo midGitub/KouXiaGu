@@ -22,15 +22,11 @@ namespace JiongXiaGu.Unity.RectTerrain
     [DisallowMultipleComponent]
     public class RectTerrainResource : MonoBehaviour, IModificationInitializeHandle
     {
-        [SerializeField]
-        private LandformResCreater landformResCreater;
-        public LandformResCreater LandformResCreater => landformResCreater;
         private BindingSerializer<RectTerrainResourceDescription> bindingSerializer;
 
         private void Awake()
         {
             bindingSerializer = new BindingSerializer<RectTerrainResourceDescription>();
-            landformResCreater = new LandformResCreater();
         }
 
         void IModificationInitializeHandle.Initialize(IReadOnlyList<Modification> mods, CancellationToken token)
@@ -40,8 +36,6 @@ namespace JiongXiaGu.Unity.RectTerrain
             foreach (var mod in mods)
             {
                 var description = Read(mod);
-
-                landformResCreater.Add(mod, description.Landform);
             }
         }
 
@@ -58,7 +52,7 @@ namespace JiongXiaGu.Unity.RectTerrain
 
         private void Clear()
         {
-            landformResCreater.Clear();
+            //landformResCreater.Clear();
         }
     }
 }

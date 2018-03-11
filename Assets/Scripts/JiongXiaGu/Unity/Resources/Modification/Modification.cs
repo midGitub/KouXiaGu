@@ -135,7 +135,7 @@ namespace JiongXiaGu.Unity.Resources
             if (string.IsNullOrWhiteSpace(assetBundleName))
                 throw new ArgumentException(assetBundleName);
 
-            int index = FindIndex(assetBundleName);
+            int index = FindAssetBundleIndex(assetBundleName);
             if (index >= 0)
             {
                 AssetBundleInfo info = lazyAssetBundles.Value[index];
@@ -173,7 +173,7 @@ namespace JiongXiaGu.Unity.Resources
             if (string.IsNullOrWhiteSpace(assetBundleName))
                 throw new ArgumentException(assetBundleName);
 
-            int index = FindIndex(assetBundleName);
+            int index = FindAssetBundleIndex(assetBundleName);
             if (index >= 0)
             {
                 AssetBundleInfo info = lazyAssetBundles.Value[index];
@@ -205,7 +205,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             UnityThread.ThrowIfNotUnityThread();
-            if (Description.AssetBundles == null || Description.AssetBundles.Length == 0)
+            if (Description.AssetBundles == null || Description.AssetBundles.Count == 0)
                 return;
 
             foreach (var descr in descriptions)
@@ -230,7 +230,7 @@ namespace JiongXiaGu.Unity.Resources
                 throw new ArgumentException(nameof(description.Name));
 
             AssetBundleInfo assetBundlePack;
-            int index = FindIndex(description.Name);
+            int index = FindAssetBundleIndex(description.Name);
             if (index >= 0)
             {
                 throw new ArgumentException(string.Format("已经存在相同的名称的资源:{0}", description.Name));
@@ -278,7 +278,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             UnityThread.ThrowIfNotUnityThread();
-            if (Description.AssetBundles == null || Description.AssetBundles.Length == 0)
+            if (Description.AssetBundles == null || Description.AssetBundles.Count == 0)
                 return Task.CompletedTask;
 
             var tasks = new List<Task>();
@@ -312,7 +312,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 尝试获取到对应 AssetBundle 信息 的下标,若不存在则返回 -1;
         /// </summary>
-        private int FindIndex(string assetBundleName)
+        private int FindAssetBundleIndex(string assetBundleName)
         {
             if (lazyAssetBundles.IsValueCreated)
             {
@@ -394,5 +394,32 @@ namespace JiongXiaGu.Unity.Resources
                 LoadTask = assetBundle;
             }
         }
+
+
+        #region 资源获取
+
+        /// <summary>
+        /// 获取到资产;
+        /// </summary>
+        public T GetAsset<T>(AssetInfo info)
+            where T : UnityEngine.Object
+        {
+            switch (info.From)
+            {
+                case AssetFrom.AssetBundle:
+                    AssetBundle assetBundle = GetAssetBundle(info.Name);
+                    return AssetFatroy.Default.Load<T>(assetBundle);
+
+                case AssetFrom.Stream:
+                    Stream stream = BaseContent.GetInputStream(info.Name);
+                    return AssetFatroy.Default.Load<T>(stream);
+
+                default:
+                    throw new IndexOutOfRangeException();
+            }
+        }
+
+        #endregion
+
     }
 }

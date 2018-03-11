@@ -64,16 +64,16 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test1")]
         private async void Test1()
         {
-            LandformDescription description = new LandformDescription()
-            {
-                HeightTex = new AssetInfo("terrain", "HeightMap_85"),
-                HeightBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
-                DiffuseTex = new AssetInfo("terrain", "SoilCracked2"),
-                DiffuseBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
-            };
+            //LandformDescription description = new LandformDescription()
+            //{
+            //    HeightTex = new AssetInfo("terrain", "HeightMap_85"),
+            //    HeightBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
+            //    DiffuseTex = new AssetInfo("terrain", "SoilCracked2"),
+            //    DiffuseBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
+            //};
 
-            LandformRes res = await LandformResCreater.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
-            meshRenderer.material.mainTexture = res.DiffuseTex;
+            //LandformRes res = await LandformResCreater.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
+            //meshRenderer.material.mainTexture = res.DiffuseTex;
         }
 
         [ContextMenu("Test2")]

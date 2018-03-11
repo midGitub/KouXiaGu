@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 资源目录;
+    /// 资源目录,线程安全;
     /// </summary>
     public class DirectoryContent : Content
     {

@@ -134,11 +134,6 @@ namespace JiongXiaGu.Unity.RunTime
         /// </summary>
         internal static List<Modification> ModificationContents { get; private set; }
 
-        /// <summary>
-        /// 资源合集;
-        /// </summary>
-        public static SharedContent SharedContent { get; private set; }
-
         private static Task initializeTask;
         private static CancellationTokenSource cancellationTokenSource;
         public static TaskStatus InitializeTaskStatus => initializeTask != null ? initializeTask.Status : TaskStatus.WaitingToRun;
@@ -170,7 +165,6 @@ namespace JiongXiaGu.Unity.RunTime
 
             progress?.Report(new ProgressInfo(0.2f, "模组排序"));
             ModificationContents = GetModificationContent();
-            SharedContent = new SharedContent(ModificationContents);
 
             progress?.Report(new ProgressInfo(0.5f, "模组初始化"));
             var resourceProgress = new LocalProgress(progress, 0.5f, 1f);

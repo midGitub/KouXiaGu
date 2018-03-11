@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using JiongXiaGu.Collections;
+using NUnit.Framework;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace JiongXiaGu.Unity.Resources
             Author = "One",
             Version = "1.22",
             Message = "...",
-            AssetBundles = new AssetBundleDescription[] 
+            AssetBundles = new Set<AssetBundleDescription>
             {
                 new AssetBundleDescription("terrain", @"AssetBundles\terrain")
             },

@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -44,9 +45,9 @@ namespace JiongXiaGu.Unity.Resources
         public string Message { get; set; }
 
         /// <summary>
-        /// 主要的 AssetBundle 描述;
+        /// 所有 AssetBundle 描述;
         /// </summary>
-        public AssetBundleDescription[] AssetBundles { get; set; }
+        public Set<AssetBundleDescription> AssetBundles { get; set; }
 
         internal ModificationDescription(string id, string name) : this()
         {

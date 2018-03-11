@@ -38,7 +38,7 @@ namespace JiongXiaGu.Unity.RectTerrain
                     new LandformDescription()
                     {
                         ID = "1",
-                        Name = "Unknow1",
+                        LocName = "Unknow1",
                         DiffuseTex = new AssetInfo(assetBundleName, "DiffuseTex1"),
                         DiffuseBlendTex = new AssetInfo(assetBundleName, "DiffuseBlendTex1"),
                         HeightTex = new AssetInfo(assetBundleName, "HeightTex1"),
@@ -47,8 +47,8 @@ namespace JiongXiaGu.Unity.RectTerrain
                     new LandformDescription()
                     {
                         ID = "2",
-                        Name = "Unknow2",
-                        DiffuseTex = new AssetInfo(new AssetPath("000", "assetBundleName"), "DiffuseTex2"),
+                        LocName = "Unknow2",
+                        DiffuseTex = new AssetInfo(assetBundleName, "DiffuseTex2"),
                         DiffuseBlendTex = new AssetInfo(assetBundleName, "DiffuseBlendTex2"),
                         HeightTex = new AssetInfo(assetBundleName, "HeightTex2"),
                         HeightBlendTex = new AssetInfo(assetBundleName, "HeightBlendTex2"),

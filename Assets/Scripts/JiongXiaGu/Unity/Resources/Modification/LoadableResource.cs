@@ -61,13 +61,6 @@ namespace JiongXiaGu.Unity.Resources
             return core;
         }
 
-
-
-        /// <summary>
-        /// 资源共享合集;
-        /// </summary>
-        public static SharedContent SharedContent { get; private set; }
-
         /// <summary>
         /// 资源读取顺序,由 阶段控制器控制;
         /// </summary>

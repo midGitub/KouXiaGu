@@ -27,7 +27,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public BindingSerializer(IEnumerable<IMember> members)
         {
             this.members = new Lazy<List<IMember>>(() => new List<IMember>(members));
-            this.members.Initialization();
+            this.members.Create();
         }
 
         #region Static

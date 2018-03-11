@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.KeyInputs
     /// 输入组件控制;
     /// </summary>
     [DisallowMultipleComponent]
-    class KeyInputController : MonoBehaviour, IComponentInitializeHandle
+    internal class KeyInputController : MonoBehaviour, IComponentInitializeHandle
     {
         KeyInputController()
         {

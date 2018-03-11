@@ -7,29 +7,49 @@ using System.Xml.Serialization;
 namespace JiongXiaGu.Unity.Resources
 {
 
+    public enum AssetFrom
+    {
+        Stream,
+        AssetBundle,
+    }
+
     /// <summary>
     /// 表示Unity资源;
     /// </summary>
     public struct AssetInfo : IXmlSerializable, IEquatable<AssetInfo>
     {
-        internal const string AssetFromAttribute = "from";
-
         /// <summary>
         /// 来自的文件;
         /// </summary>
-        public AssetPath From { get; private set; }
+        public AssetFrom From { get; set; }
+
+        /// <summary>
+        /// 资源包名称;
+        /// </summary>
+        public string BundleName { get; set; }
 
         /// <summary>
         /// 若从 AssetBundle 读取,则为文件名,忽略拓展名;
         /// 若从 File 读取,则为相对路径;
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
-        public AssetInfo(AssetPath assteBundleName, string name) : this()
+        public AssetInfo(string name) : this()
         {
-            From = assteBundleName;
+            From = AssetFrom.Stream;
+            BundleName = null;
             Name = name;
         }
+
+        public AssetInfo(string bundleName, string name) : this()
+        {
+            From = AssetFrom.AssetBundle;
+            BundleName = bundleName;
+            Name = name;
+        }
+
+        internal const string AssetFromAttribute = "from";
+        internal const string BundleNameAttribute = "bundleName";
 
         XmlSchema IXmlSerializable.GetSchema()
         {
@@ -38,31 +58,20 @@ namespace JiongXiaGu.Unity.Resources
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            string from = reader.GetAttribute(AssetFromAttribute);
-            if (string.IsNullOrWhiteSpace(from))
-            {
-                throw new ArgumentNullException(nameof(from));
-            }
-            else
-            {
-                From = from;
-            }
-
-            string name = reader.ReadElementContentAsString();
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            else
-            {
-                Name = name;
-            }
+            string fromStr = reader.GetAttribute(AssetFromAttribute);
+            From = (AssetFrom)Enum.Parse(typeof(AssetFrom), fromStr, true);
+            BundleName = reader.GetAttribute(BundleNameAttribute);
+            Name = reader.ReadElementContentAsString();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString(AssetFromAttribute, From.Name);
-            writer.WriteValue(Name.ToString());
+            writer.WriteAttributeString(AssetFromAttribute, From.ToString());
+
+            if (!string.IsNullOrWhiteSpace(BundleName))
+                writer.WriteAttributeString(AssetFromAttribute, BundleName);
+
+            writer.WriteValue(Name);
         }
 
         public override bool Equals(object obj)
@@ -79,8 +88,8 @@ namespace JiongXiaGu.Unity.Resources
         public override int GetHashCode()
         {
             var hashCode = -167635157;
-            hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(From);
-            hashCode = hashCode * -1521134295 + EqualityComparer<AssetPath>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<AssetFrom>.Default.GetHashCode(From);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             return hashCode;
         }
 

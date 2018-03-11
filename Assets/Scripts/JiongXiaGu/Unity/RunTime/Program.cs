@@ -1,6 +1,9 @@
-﻿using JiongXiaGu.Unity.Initializers;
+﻿using System;
+using JiongXiaGu.Unity.Initializers;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.RunTime
 {
@@ -10,17 +13,11 @@ namespace JiongXiaGu.Unity.RunTime
     /// </summary>
     public static class Program
     {
-        public static bool IsComponentInitialized { get; private set; } = false;
-        private static List<IComponentInitializeHandle> componentInitializeHandlers = new List<IComponentInitializeHandle>();
-
-
-
-
         internal static Task WorkTask { get; private set; }
         public static TaskStatus WorkTaskStatus => WorkTask != null ? WorkTask.Status : TaskStatus.WaitingToRun;
 
         /// <summary>
-        /// 进行初始化,若已经初始化,初始化中则无任何操作;
+        /// 程序组件初始化,在Unity线程调用;
         /// </summary>
         public static Task Initialize()
         {
@@ -36,11 +33,45 @@ namespace JiongXiaGu.Unity.RunTime
             }
         }
 
-        private static Task InternalInitialize()
+        private static async Task InternalInitialize()
         {
-            ModificationResource.SearcheAll();
-            ComponentInitializer.Instance.Initialize();
-            return Task.CompletedTask;
+            await Task.Run(() => ParallelInitialize());
+            SynchronizedInitialize();
+        }
+
+        /// <summary>
+        /// 并行初始化;
+        /// </summary>
+        private static void ParallelInitialize(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Action[] words = CreateParallelWordsArray(cancellationToken);
+            ParallelOptions options = new ParallelOptions()
+            {
+                CancellationToken = cancellationToken,
+            };
+
+            Parallel.Invoke(options, words);
+        }
+
+
+        /// <summary>
+        /// 创建并行工作方法;
+        /// </summary>
+        private static Action[] CreateParallelWordsArray(CancellationToken cancellationToken)
+        {
+            Action[] words = new Action[]
+            {
+                ModificationResource.SearcheAll,
+            };
+            return words;
+        }
+
+        /// <summary>
+        /// 同步初始化;
+        /// </summary>
+        private static void SynchronizedInitialize()
+        {
+            return;
         }
     }
 }
