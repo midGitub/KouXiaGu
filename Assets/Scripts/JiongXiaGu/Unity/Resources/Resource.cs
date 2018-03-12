@@ -110,8 +110,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 初始化路径信息(仅在Unity线程调用);
         /// </summary>
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void InitializeOnLoad()
+        internal static void Initialize()
         {
             streamingAssetsPath.Create();
             configContent.Create();

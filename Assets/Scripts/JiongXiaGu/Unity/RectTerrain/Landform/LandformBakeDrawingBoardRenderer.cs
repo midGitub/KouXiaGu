@@ -39,13 +39,13 @@ namespace JiongXiaGu.Unity.RectTerrain
             transform.rotation = rotation;
         }
 
-        public void DisplayDiffuse(LandformRes landformResource)
+        public void DisplayDiffuse(LandformTextures landformResource)
         {
             meterial.SetTexture("_MainTex", landformResource.DiffuseTex);
             meterial.SetTexture("_BlendTex", landformResource.DiffuseBlendTex);
         }
 
-        public void DisplayHeight(LandformRes landformResource)
+        public void DisplayHeight(LandformTextures landformResource)
         {
             meterial.SetTexture("_MainTex", landformResource.HeightTex);
             meterial.SetTexture("_BlendTex", landformResource.HeightBlendTex);

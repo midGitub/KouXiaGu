@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using JiongXiaGu.Unity.Resources;
 
 namespace JiongXiaGu.Unity.RunTime
 {
@@ -19,7 +20,8 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 程序组件初始化,在Unity线程调用;
         /// </summary>
-        public static Task Initialize()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static Task Initialize()
         {
             UnityThread.ThrowIfNotUnityThread();
 
@@ -35,8 +37,17 @@ namespace JiongXiaGu.Unity.RunTime
 
         private static async Task InternalInitialize()
         {
-            await Task.Run(() => ParallelInitialize());
             SynchronizedInitialize();
+            await Task.Run(() => ParallelInitialize());
+            AfterSynchronizedInitialize();
+        }
+
+        /// <summary>
+        /// 同步初始化;
+        /// </summary>
+        private static void SynchronizedInitialize()
+        {
+            Resource.Initialize();
         }
 
         /// <summary>
@@ -69,7 +80,7 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 同步初始化;
         /// </summary>
-        private static void SynchronizedInitialize()
+        private static void AfterSynchronizedInitialize()
         {
             return;
         }

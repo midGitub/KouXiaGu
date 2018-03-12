@@ -161,7 +161,7 @@ namespace JiongXiaGu.Unity.RunTime
         private static async Task InternalInitialize(IProgress<ProgressInfo> progress, CancellationToken token)
         {
             progress?.Report(new ProgressInfo(0.1f, "程序初始化"));
-            await Program.Initialize();
+            await Program.WorkTask;
 
             progress?.Report(new ProgressInfo(0.2f, "模组排序"));
             ModificationContents = GetModificationContent();

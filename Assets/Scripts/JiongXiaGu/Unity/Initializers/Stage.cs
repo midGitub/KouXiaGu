@@ -42,14 +42,6 @@ namespace JiongXiaGu.Unity.Initializers
         private static StageUnityController StageDefinition => StageUnityController.Instance;
 
         /// <summary>
-        /// 在游戏启动时由阶段控制器自动调用;
-        /// </summary>
-        internal static Task OnProgramStart()
-        {
-            return Program.Initialize();
-        }
-
-        /// <summary>
         /// 转到主菜单场景;
         /// </summary>
         public static async Task GoMainMenuScene()

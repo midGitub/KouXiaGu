@@ -30,10 +30,5 @@ namespace JiongXiaGu.Unity.Initializers
         {
             singleton.SetInstance(this);
         }
-
-        private Task Start()
-        {
-            return Stage.OnProgramStart();
-        }
     }
 }

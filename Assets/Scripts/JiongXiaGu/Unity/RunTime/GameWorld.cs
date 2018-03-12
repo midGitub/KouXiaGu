@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.RunTime
 {
 
 
-    public class Game
+    public class GameWorld
     {
 
 

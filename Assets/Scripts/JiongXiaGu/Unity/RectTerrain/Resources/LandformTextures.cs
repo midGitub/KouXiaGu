@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.RectTerrain
     /// 地形资源;
     /// </summary>
     [Serializable]
-    public struct LandformRes
+    public struct LandformTextures
     {
         [SerializeField]
         private Texture2D heightTex;

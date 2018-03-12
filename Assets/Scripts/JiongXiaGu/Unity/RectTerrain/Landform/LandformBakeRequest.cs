@@ -34,6 +34,6 @@ namespace JiongXiaGu.Unity.RectTerrain
     {
         public RectCoord Position { get; internal set; }
         public NodeLandformInfo Node { get; internal set; }
-        public LandformRes Res { get; internal set; }
+        public LandformTextures Res { get; internal set; }
     }
 }
