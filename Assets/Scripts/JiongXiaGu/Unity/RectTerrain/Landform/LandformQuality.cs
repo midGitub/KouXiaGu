@@ -11,7 +11,6 @@ namespace JiongXiaGu.Unity.RectTerrain
     [XmlType("LandformQuality"), Serializable]
     public sealed class LandformQuality
     {
-
         /// <summary>
         /// 烘焙时的边框比例(需要裁剪的部分比例);
         /// </summary>
@@ -21,6 +20,11 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// 完整预览整个地图块的摄像机旋转角度;
         /// </summary>
         public static readonly Quaternion CameraRotation = Quaternion.Euler(90, 0, 0);
+
+        /// <summary>
+        /// 相机高度;
+        /// </summary>
+        public static readonly float CameraHight = 5;
 
         /// <summary>
         /// 完整预览整个地图块的摄像机大小;
@@ -34,20 +38,6 @@ namespace JiongXiaGu.Unity.RectTerrain
         public static readonly float CameraAspect =
             (LandformChunkInfo.ChunkWidth + LandformChunkInfo.ChunkWidth * OutlineScale) /
             (LandformChunkInfo.ChunkHeight + LandformChunkInfo.ChunkHeight * OutlineScale);
-
-        public LandformQuality()
-        {
-            Updata();
-        }
-
-        public LandformQuality(float textureSize, float diffuseMapRatios, float heightMapRatios)
-        {
-            this.textureSize = textureSize;
-            this.diffuseMapRatios = diffuseMapRatios;
-            this.heightMapRatios = heightMapRatios;
-            Updata();
-        }
-
 
         [XmlIgnore, SerializeField, Range(1, 300)]
         private float textureSize = 120;
@@ -89,6 +79,19 @@ namespace JiongXiaGu.Unity.RectTerrain
         {
             get { return heightMapRatios; }
             set { heightMapRatios = value; }
+        }
+
+        public LandformQuality()
+        {
+            Updata();
+        }
+
+        public LandformQuality(float textureSize, float diffuseMapRatios, float heightMapRatios)
+        {
+            this.textureSize = textureSize;
+            this.diffuseMapRatios = diffuseMapRatios;
+            this.heightMapRatios = heightMapRatios;
+            Updata();
         }
 
         /// <summary>

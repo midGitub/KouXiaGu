@@ -23,7 +23,6 @@ namespace JiongXiaGu.Unity.RectTerrain
         [SerializeField]
         private LandformBakeDrawingBoardCollection landformBoardCollection;
 
-        public Camera BakeCamera => bakeCamera;
         public LandformQuality Quality => quality;
 
         private void Awake()
