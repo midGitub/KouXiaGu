@@ -32,7 +32,6 @@ namespace JiongXiaGu.Unity.Schedulers
         /// </summary>
         internal void FirstUpdate()
         {
-            Debug.Log("1FirstUpdate");
         }
 
         /// <summary>
@@ -40,7 +39,6 @@ namespace JiongXiaGu.Unity.Schedulers
         /// </summary>
         internal void FinalUpdate()
         {
-            Debug.Log("2FinalUpdate");
         }
     }
 }

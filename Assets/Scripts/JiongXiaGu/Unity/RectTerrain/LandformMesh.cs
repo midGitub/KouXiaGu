@@ -6,8 +6,8 @@ namespace JiongXiaGu.Unity.RectTerrain
     public class LandformMesh
     {
         public const string MeshName = "Landform Mesh";
-        private static readonly float chunkHalfWidth = LandformNodeInfo.Height + 0.001f;
-        private static readonly float chunkHalfHeight = LandformNodeInfo.Width + 0.001f;
+        private static readonly float chunkHalfWidth = ChunkInfo.Height + 0.001f;
+        private static readonly float chunkHalfHeight = ChunkInfo.Width + 0.001f;
 
         /// <summary>
         /// 网格生成的高度;

@@ -3,10 +3,11 @@ using UnityEngine;
 
 namespace JiongXiaGu.Unity.RectTerrain
 {
+
     /// <summary>
     /// 地形块信息;
     /// </summary>
-    public static class LandformNodeInfo
+    public static class ChunkInfo
     {
         /// <summary>
         /// 地图节点宽度;
