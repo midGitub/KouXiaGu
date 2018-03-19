@@ -72,7 +72,7 @@ namespace JiongXiaGu.Unity.RunTime
         {
             Action[] words = new Action[]
             {
-                ModificationResource.SearcheAll,
+                ModificationController.SearcheAll,
             };
             return words;
         }

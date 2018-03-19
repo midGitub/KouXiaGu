@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JiongXiaGu.Collections;
+using System;
 using System.Collections.Generic;
 
 namespace JiongXiaGu.Unity.Maps
@@ -16,6 +17,99 @@ namespace JiongXiaGu.Unity.Maps
             ChangedDictionary = new Dictionary<TKey, MapChangeType>();
         }
 
+        /// <summary>
+        /// 根据存档内容更新地图;
+        /// </summary>
+        public MapChangeRecorder(IDictionary<TKey, MapNode> map, IReadOnlyDictionary<TKey, ArchiveMapNode> archived)
+        {
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
+            if (archived == null)
+                throw new ArgumentNullException(nameof(archived));
+
+            ChangedDictionary = new Dictionary<TKey, MapChangeType>();
+
+            foreach (var item in archived)
+            {
+                if (item.Value.IsRemove)
+                {
+                    ChangedDictionary.Add(item.Key, MapChangeType.Remove);
+                    map.Remove(item.Key);
+                }
+                else
+                {
+                    if (map.ContainsKey(item.Key))
+                    {
+                        map[item.Key] = item.Value.Node.Value;
+                        ChangedDictionary.Add(item.Key, MapChangeType.Update);
+                    }
+                    else
+                    {
+                        map.Add(item.Key, item.Value.Node.Value);
+                        ChangedDictionary.Add(item.Key, MapChangeType.Add);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将存档信息加入到地图;
+        /// </summary>
+        public static void AddArchived(IDictionary<TKey, MapNode> map, IReadOnlyDictionary<TKey, ArchiveMapNode> archived)
+        {
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
+            if (archived == null)
+                throw new ArgumentNullException(nameof(archived));
+
+            foreach (var item in archived)
+            {
+                if (item.Value.IsRemove)
+                {
+                    map.Remove(item.Key);
+                }
+                else
+                {
+                    if (map.ContainsKey(item.Key))
+                    {
+                        map[item.Key] = item.Value.Node.Value;
+                    }
+                    else
+                    {
+                        map.Add(item.Key, item.Value.Node.Value);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到用于存档的合集;
+        /// </summary>
+        public Dictionary<TKey, ArchiveMapNode> GetArchiveMap(IReadOnlyDictionary<TKey, MapNode> map)
+        {
+            if (map == null)
+                throw new ArgumentNullException(nameof(map));
+
+            Dictionary<TKey, ArchiveMapNode> dictionary = new Dictionary<TKey, ArchiveMapNode>();
+
+            foreach (var item in ChangedDictionary)
+            {
+                switch (item.Value)
+                {
+                    case MapChangeType.Add:
+                    case MapChangeType.Update:
+                        var value = map[item.Key];
+                        dictionary.Add(item.Key, new ArchiveMapNode(value));
+                        break;
+
+                    case MapChangeType.Remove:
+                        dictionary.Add(item.Key, new ArchiveMapNode());
+                        break;
+                }
+            }
+
+            return dictionary;
+        }
 
         void IObserver<MapEvent<TKey>>.OnNext(MapEvent<TKey> value)
         {

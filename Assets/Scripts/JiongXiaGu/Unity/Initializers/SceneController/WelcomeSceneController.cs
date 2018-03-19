@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.RunTime;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,9 +14,9 @@ namespace JiongXiaGu.Unity.Initializers
     /// </summary>
     public class WelcomeSceneController : MonoBehaviour
     {
-        private async void Start()
+        private void Start()
         {
-            await Stage.GoMainMenuScene();
+            Stage.LoadMainMenuScene();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
     /// 资源定义特性;需要挂载到公共的变量或者属性上;
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public abstract class AssetAttribute : Attribute
+    public abstract class AssetAttribute : ModificationSubpathInfoAttribute
     {
         internal const bool defaultUseDefaultExtension = false;
 
@@ -16,11 +16,6 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// 相对路径;
         /// </summary>
         public string RelativePath { get; private set; }
-
-        /// <summary>
-        /// 预留消息;
-        /// </summary>
-        public string Message { get; private set; }
 
         /// <summary>
         /// 标签;
@@ -36,7 +31,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// 构造函数;
         /// </summary>
         /// <param name="relativePath">相对路径</param>
-        public AssetAttribute(string relativePath) : this(relativePath, null, defaultUseDefaultExtension)
+        public AssetAttribute(string relativePath) : this(relativePath, null, null, defaultUseDefaultExtension)
         {
         }
 
@@ -45,7 +40,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// </summary>
         /// <param name="relativePath">相对路径</param>
         /// <param name="useDefaultExtension">是否使用格式默认的后缀?</param>
-        public AssetAttribute(string relativePath, bool useDefaultExtension) : this (relativePath, null, useDefaultExtension)
+        public AssetAttribute(string relativePath, bool useDefaultExtension) : this (relativePath, null, null, useDefaultExtension)
         {
         }
 
@@ -54,7 +49,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// </summary>
         /// <param name="relativePath">相对路径</param>
         /// <param name="message">预留消息</param>
-        public AssetAttribute(string relativePath, string message) : this(relativePath, message, defaultUseDefaultExtension)
+        public AssetAttribute(string relativePath, string name, string message) : this(relativePath, name, message, defaultUseDefaultExtension)
         {
         }
 
@@ -64,10 +59,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <param name="relativePath">相对路径</param>
         /// <param name="message">预留消息</param>
         /// <param name="useDefaultExtension">是否使用格式默认的后缀?</param>
-        public AssetAttribute(string relativePath, string message, bool useDefaultExtension)
+        public AssetAttribute(string relativePath, string name, string message, bool useDefaultExtension) : base(name, message)
         {
             RelativePath = useDefaultExtension ? Path.ChangeExtension(relativePath, defaultFileExtension) : relativePath;
-            Message = message;
         }
 
         /// <summary>

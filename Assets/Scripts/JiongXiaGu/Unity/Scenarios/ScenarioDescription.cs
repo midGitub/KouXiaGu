@@ -13,10 +13,10 @@ namespace JiongXiaGu.Unity.Scenarios
     public struct ScenarioDescription
     {
         public string ID { get; set; }
-        public string Name { get; set; }
+        public string LocName { get; set; }
         public string Author { get; set; }
         public string Version { get; set; }
         public string Tags { get; set; }
-        public string Message { get; set; }
+        public string LocMessage { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace JiongXiaGu.Unity.UI
 {
+
     public struct ProgressInfo
     {
         public string Message { get; private set; }

@@ -22,8 +22,6 @@ namespace JiongXiaGu.Unity.Resources
         public string DirectoryPath => BaseContent.DirectoryPath;
         private Lazy<List<AssetBundleInfo>> lazyAssetBundles = new Lazy<List<AssetBundleInfo>>();
 
-        private Lazy<List<ModificationSubresource>> subresource = new Lazy<List<ModificationSubresource>>();
-
         /// <summary>
         /// 在创建时使用的描述;
         /// </summary>
@@ -210,7 +208,7 @@ namespace JiongXiaGu.Unity.Resources
 
             foreach (var descr in descriptions)
             {
-                var info = LoadAssetBundle(descr);
+                LoadAssetBundle(descr);
             }
         }
 

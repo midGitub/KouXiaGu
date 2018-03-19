@@ -12,16 +12,16 @@ namespace JiongXiaGu.Unity.Scenarios
 
     public class ScenarioFactory
     {
-        private Lazy<BindingSerializer<Scenario>> scenarioSerializer = new Lazy<BindingSerializer<Scenario>>();
+        private Lazy<BindingSerializer<ScenarioResource>> scenarioSerializer = new Lazy<BindingSerializer<ScenarioResource>>();
 
-        public Scenario Read(Content content)
+        public ScenarioResource Read(Content content)
         {
             return scenarioSerializer.Value.Deserialize(content);
         }
 
-        public void Write(Content content, Scenario scenario)
+        public void Write(Content content, ScenarioResource scenario)
         {
-            scenarioSerializer.Value.Serialize(content, scenario);
+            scenarioSerializer.Value.Serialize(content, ref scenario);
         }
 
 

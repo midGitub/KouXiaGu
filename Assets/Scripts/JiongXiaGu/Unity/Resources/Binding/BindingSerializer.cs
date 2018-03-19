@@ -38,7 +38,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static void Serialize(Content writableContent, T instance, IEnumerable<IMember> members)
+        public static void Serialize(Content writableContent, ref T instance, IEnumerable<IMember> members)
         {
             if (writableContent == null)
                 throw new ArgumentNullException(nameof(writableContent));
@@ -53,7 +53,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
 
             foreach (var member in members)
             {
-                Serialize(writableContent, instance, member);
+                Serialize(writableContent, ref instance, member);
             }
         }
 
@@ -62,7 +62,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static void Serialize(Content writableContent, T instance, IMember member)
+        public static void Serialize(Content writableContent, ref T instance, IMember member)
         {
             using (var stream = writableContent.GetOutputStream(member.RelativePath))
             {
@@ -166,9 +166,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Serialize(Content writableContent, T instance)
+        public void Serialize(Content writableContent, ref T instance)
         {
-            Serialize(writableContent, instance, members.Value);
+            Serialize(writableContent, ref instance, members.Value);
         }
 
         /// <summary>
@@ -177,9 +177,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Serialize(Content writableContent, T instance, Func<IMember, bool> filter)
+        public void Serialize(Content writableContent, ref T instance, Func<IMember, bool> filter)
         {
-            Serialize(writableContent, instance, members.Value.Where(filter));
+            Serialize(writableContent, ref instance, members.Value.Where(filter));
         }
 
         /// <summary>
@@ -189,9 +189,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="KeyNotFoundException"></exception>
-        public void Serialize(Content writableContent, T instance, string name)
+        public void Serialize(Content writableContent, ref T instance, string name)
         {
-            Serialize(writableContent, instance, GetMember(name));
+            Serialize(writableContent, ref instance, GetMember(name));
         }
 
         /// <summary>
@@ -201,9 +201,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="KeyNotFoundException"></exception>
-        public void Serialize(Content writableContent, T instance, IEnumerable<string> names)
+        public void Serialize(Content writableContent, ref T instance, IEnumerable<string> names)
         {
-            Serialize(writableContent, instance, GetMembers(names));
+            Serialize(writableContent, ref instance, GetMembers(names));
         }
 
         /// <summary>
@@ -213,9 +213,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="KeyNotFoundException"></exception>
-        public void Serialize(Content writableContent, T instance, params string[] names)
+        public void Serialize(Content writableContent, ref T instance, params string[] names)
         {
-            Serialize(writableContent, instance, names as IEnumerable<string>);
+            Serialize(writableContent, ref instance, names as IEnumerable<string>);
         }
 
 

@@ -34,7 +34,7 @@ namespace JiongXiaGu.Unity.Initializers
             IProgress<ProgressInfo> progress = progressBar.Progress;
             try
             {
-                await RunTime.ModificationResource.Initialize(progress);
+                await RunTime.ModificationController.Initialize(progress);
 
                 menuDisplaySwitcher.Display();
                 progressBarDisplaySwitcher.Hide(3);
@@ -53,17 +53,17 @@ namespace JiongXiaGu.Unity.Initializers
         /// <summary>
         /// 继续游戏;
         /// </summary>
-        public async void ContinueGame()
+        public void ContinueGame()
         {
-            await Stage.GoGameScene();
+            Stage.LoadGameScene();
         }
 
         /// <summary>
         /// 开始新游戏;
         /// </summary>
-        public async void StartNewGame()
+        public void StartNewGame()
         {
-            await Stage.GoGameScene();
+            Stage.LoadGameScene();
         }
 
         private void OnInitializeError(Exception ex)

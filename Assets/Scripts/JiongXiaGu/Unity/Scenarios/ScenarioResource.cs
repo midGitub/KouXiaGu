@@ -1,26 +1,31 @@
-﻿using JiongXiaGu.Unity.Initializers;
-using JiongXiaGu.Unity.Resources;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
+using JiongXiaGu.Unity.Maps;
+using JiongXiaGu.Unity.Resources.Binding;
+using JiongXiaGu.Grids;
+using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.Scenarios
 {
 
-    [DisallowMultipleComponent]
-    internal class ScenarioResource : MonoBehaviour, IModificationInitializeHandle
+    /// <summary>
+    /// 游戏剧情资源;
+    /// </summary>
+    public struct ScenarioResource
     {
-        private ScenarioResource()
-        {
-        }
+        /// <summary>
+        /// 描述;
+        /// </summary>
+        [XmlAsset(ScenarioFactory.ScenarioDescriptionName)]
+        public ScenarioDescription Description { get; set; }
 
-        void IModificationInitializeHandle.Initialize(IReadOnlyList<Modification> mods, CancellationToken token)
-        {
-            
-        }
+        /// <summary>
+        /// 地图;
+        /// </summary>
+        [ProtoAsset(@"Map", true)]
+        public SerializableDictionary<RectCoord, MapNode> Map { get; set; }
     }
 }

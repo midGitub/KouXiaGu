@@ -9,6 +9,9 @@ namespace JiongXiaGu.Unity.Resources.Binding
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public class XmlAssetAttribute : AssetAttribute
     {
+
+        public const string DefaultFileExtension = ".xml";
+
         public XmlAssetAttribute(string relativePath) : base(relativePath)
         {
         }
@@ -17,15 +20,14 @@ namespace JiongXiaGu.Unity.Resources.Binding
         {
         }
 
-        public XmlAssetAttribute(string relativePath, string message) : base(relativePath, message)
+        public XmlAssetAttribute(string relativePath, string name, string message) : base(relativePath, name, message)
         {
         }
 
-        public XmlAssetAttribute(string relativePath, string message, bool useDefaultExtension) : base(relativePath, message, useDefaultExtension)
+        public XmlAssetAttribute(string relativePath, string name, string message, bool useDefaultExtension) : base(relativePath, name, message, useDefaultExtension)
         {
         }
 
-        public const string DefaultFileExtension = ".xml";
         protected override string defaultFileExtension => DefaultFileExtension;
 
         public override ISerializer CreateSerializer(Type type)

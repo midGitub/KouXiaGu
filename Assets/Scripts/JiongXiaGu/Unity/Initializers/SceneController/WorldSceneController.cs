@@ -8,13 +8,14 @@ using UnityEngine;
 using System.Threading.Tasks;
 using JiongXiaGu.Unity.Scenarios;
 using JiongXiaGu.Unity.Archives;
+using JiongXiaGu.Unity.RunTime;
 
 namespace JiongXiaGu.Unity
 {
 
     public interface IWorldSceneInitializeHandle
     {
-        void Initialize(Scenario scenario, Archive archive);
+        void Initialize(ScenarioResource scenario, Archive archive);
     }
 
     public class WorldSceneController : MonoBehaviour, ISceneController

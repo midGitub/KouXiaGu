@@ -32,7 +32,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 获取到所有可读取的资源;
         /// </summary>
-        internal static async Task SearcheAll()
+        internal static Task SearcheAll()
         {
             throw new NotImplementedException();
             //await Task.Run(delegate ()

@@ -15,6 +15,8 @@ namespace JiongXiaGu.Unity.Resources.Binding
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public class ProtoAssetAttribute : AssetAttribute
     {
+        public const string DefaultFileExtension = ".proto";
+
         public ProtoAssetAttribute(string relativePath) : base(relativePath)
         {
         }
@@ -23,15 +25,14 @@ namespace JiongXiaGu.Unity.Resources.Binding
         {
         }
 
-        public ProtoAssetAttribute(string relativePath, string message) : base(relativePath, message)
+        public ProtoAssetAttribute(string relativePath, string name, string message) : base(relativePath, name, message)
         {
         }
 
-        public ProtoAssetAttribute(string relativePath, string message, bool useDefaultExtension) : base(relativePath, message, useDefaultExtension)
+        public ProtoAssetAttribute(string relativePath, string name, string message, bool useDefaultExtension) : base(relativePath, name, message, useDefaultExtension)
         {
         }
 
-        public const string DefaultFileExtension = ".proto";
         protected override string defaultFileExtension => DefaultFileExtension;
 
         public override ISerializer CreateSerializer(Type type)

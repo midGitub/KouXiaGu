@@ -6,9 +6,12 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.RectTerrain
 {
 
+
     public class LandformResource
     {
         private readonly Dictionary<string, ModificationLandformInfo> descriptionDictionary;
+
+        internal IDictionary<string, ModificationLandformInfo> Descriptions => descriptionDictionary;
 
         public LandformResource()
         {
@@ -18,7 +21,7 @@ namespace JiongXiaGu.Unity.RectTerrain
         /// <summary>
         /// 添加描述信息;
         /// </summary>
-        public void Add(Modification content, IEnumerable<LandformDescription> descriptions)
+        public void Add(Modification content, IEnumerable<LandformDescription> descriptions, AddMode addMode)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -28,16 +31,8 @@ namespace JiongXiaGu.Unity.RectTerrain
             foreach (var description in descriptions)
             {
                 string key = description.ID;
-                ModificationLandformInfo info;
-                if (descriptionDictionary.TryGetValue(key, out info))
-                {
-                    descriptionDictionary[key] = new ModificationLandformInfo(content, description);
-                }
-                else
-                {
-                    info = new ModificationLandformInfo(content, description);
-                    descriptionDictionary.Add(key, info);
-                }
+                ModificationLandformInfo info = new ModificationLandformInfo(content, description);
+                descriptionDictionary.Add(key, info, addMode);
             }
         }
 
@@ -77,7 +72,7 @@ namespace JiongXiaGu.Unity.RectTerrain
             descriptionDictionary.Clear();
         }
 
-        private struct ModificationLandformInfo
+        internal struct ModificationLandformInfo
         {
             public Modification Modification { get; private set; }
             public LandformDescription Description { get; private set; }

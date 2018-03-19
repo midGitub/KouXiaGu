@@ -14,10 +14,11 @@ namespace JiongXiaGu.Unity.Resources.Binding
         {
             BindingSerializer<File> serializer = new BindingSerializer<File>();
             MemoryContent content = new MemoryContent();
+            var file = DefalutFile;
 
             using (content.BeginUpdate())
             {
-                serializer.Serialize(content, DefalutFile);
+                serializer.Serialize(content, ref file);
             }
 
             Assert.True(content.Contains(nameof(File.XmlTest)));
@@ -25,7 +26,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
             Assert.IsFalse(content.Contains(nameof(File.IgnoreField)));
 
             var value = serializer.Deserialize(content) as File;
-            Assert.AreEqual(DefalutFile, value);
+            Assert.AreEqual(file, value);
         }
 
         private File DefalutFile => new File();

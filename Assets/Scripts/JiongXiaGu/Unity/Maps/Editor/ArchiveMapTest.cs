@@ -38,10 +38,10 @@ namespace JiongXiaGu.Unity.Maps
                 },
             };
 
-            ArchiveMap<RectCoord> archiveMap = new ArchiveMap<RectCoord>(map, mapChangeRecorder.ChangedDictionary);
+            var archiveMap = mapChangeRecorder.GetArchiveMap(map);
 
             Map<RectCoord> map2 = CreateMap();
-            archiveMap.Update(map2);
+            MapChangeRecorder<RectCoord>.AddArchived(map2, archiveMap);
 
             Contrast.AreSame<RectCoord, MapNode>(map, map2);
         }
