@@ -46,6 +46,7 @@ namespace JiongXiaGu.Unity.Resources
                 var modification = modifications[startIndex];
                 if (Equals(modification, info))
                 {
+                    modifications[startIndex] = null;
                     newModifications.Add(modification);
                 }
                 else

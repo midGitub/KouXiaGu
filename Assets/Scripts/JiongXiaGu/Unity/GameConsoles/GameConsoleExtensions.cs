@@ -19,10 +19,10 @@ namespace JiongXiaGu.Unity.GameConsoles
         public static void ShowMethods()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.ConsoleMethods.Count);
+            stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.Methods.Count);
             stringBuilder.AppendLine();
 
-            foreach (var consoleMethod in GameConsole.MethodSchema.ConsoleMethods)
+            foreach (var consoleMethod in GameConsole.MethodSchema.Methods)
             {
                 AddMethodString(stringBuilder, consoleMethod);
                 stringBuilder.AppendLine();
@@ -47,16 +47,13 @@ namespace JiongXiaGu.Unity.GameConsoles
             else
             {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.ConsoleMethods.Count);
+                stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.Methods.Count);
                 stringBuilder.AppendLine();
 
-                foreach (var consoleMethod in GameConsole.MethodSchema.ConsoleMethods)
+                foreach (var consoleMethod in GameConsole.MethodSchema.Methods)
                 {
-                    if (consoleMethod.Prerequisite())
-                    {
-                        AddMethodString(stringBuilder, consoleMethod);
-                        stringBuilder.AppendLine();
-                    }
+                    AddMethodString(stringBuilder, consoleMethod);
+                    stringBuilder.AppendLine();
                 }
 
                 string message = stringBuilder.ToString();
@@ -64,9 +61,9 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
         }
 
-        private static void AddMethodString(StringBuilder stringBuilder, IConsoleMethod consoleMethod)
+        private static void AddMethodString(StringBuilder stringBuilder, IMethod consoleMethod)
         {
-            ConsoleMethodDesc description = consoleMethod.Description;
+            MethodDescription description = consoleMethod.Description;
             if (description.Parameters.Count > 0)
             {
                 stringBuilder.AppendFormat("MethodName : {0}", description.Name);

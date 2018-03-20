@@ -91,7 +91,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
                 try
                 {
                     GameConsole.WriteMethod(method);
-                    GameConsole.Do(method);
+                    GameConsole.Run(method);
                 }
                 catch (Exception ex)
                 {

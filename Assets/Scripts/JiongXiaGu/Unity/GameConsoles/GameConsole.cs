@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
@@ -22,7 +23,22 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 控制台方法合集;
         /// </summary>
-        public static ConsoleMethodSchema MethodSchema { get; private set; } = new ConsoleMethodSchema();
+        public static MethodSchema MethodSchema { get; private set; } = new MethodSchema();
+
+
+        /// <summary>
+        /// 初始化控制台;
+        /// </summary>
+        internal static void Initialize()
+        {
+            foreach (var method in ConsoleMethodReflector.EnumerateMethods(typeof(GameConsole).Assembly))
+            {
+                if (!MethodSchema.TryAdd(method))
+                {
+                    Debug.LogError(string.Format("重复的控制台方法名[{0}]", method.Description.Name));
+                }
+            }
+        }
 
         /// <summary>
         /// 订阅控制台事件;
@@ -216,7 +232,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 执行指定控制台方法;
         /// </summary>
-        public static void Do(string message)
+        public static void Run(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -232,7 +248,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
             else if (valueArray.Length == 1)
             {
-                IConsoleMethod consoleMethod;
+                IMethod consoleMethod;
                 if (MethodSchema.TryGetMethod(methodName, 0, out consoleMethod))
                 {
                     consoleMethod.Invoke(null);
@@ -245,7 +261,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             else if (valueArray.Length > 1)
             {
                 int parameterCount = valueArray.Length - 1;
-                IConsoleMethod consoleMethod;
+                IMethod consoleMethod;
 
                 if (MethodSchema.TryGetMethod(methodName, parameterCount, out consoleMethod))
                 {

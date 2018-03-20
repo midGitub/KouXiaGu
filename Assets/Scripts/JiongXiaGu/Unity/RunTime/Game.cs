@@ -13,26 +13,55 @@ namespace JiongXiaGu.Unity.RunTime
 {
 
     /// <summary>
+    /// 表示游戏生命周期中的当前阶段;
+    /// </summary>
+    public enum GameStates
+    {
+        /// <summary>
+        /// 等待模块初始化;
+        /// </summary>
+        WaitingForModule,
+
+        /// <summary>
+        /// 等待世界创建;
+        /// </summary>
+        WaitingCreateWorld,
+
+        /// <summary>
+        /// 世界正在运行;
+        /// </summary>
+        Running,
+    }
+
+    /// <summary>
     /// 游戏管理;
     /// </summary>
     public static class Game
     {
+        public static GameStates State { get; private set; } = GameStates.WaitingForModule;
+
+        private static List<ModificationInfo> modificationLoadOrder;
+        public static IReadOnlyList<ModificationInfo> ModificationLoadOrder => modificationLoadOrder;
+
         /// <summary>
         /// 模组资源;
         /// </summary>
-        public static ActivatedModification ActivatedModification { get; private set; } = new ActivatedModification();
+        public static ActivatedModification ActivatedModification { get; private set; }
 
         /// <summary>
         /// 游戏使用资源;
         /// </summary>
         public static GameResource Resource { get; private set; }
 
+        /// <summary>
+        /// 世界资源提供者;
+        /// </summary>
         public static IWroldResourceProvider WroldResourceProvider { get; private set; }
 
         /// <summary>
         /// 当前游戏世界;
         /// </summary>
-        public static Wrold Wrold { get; private set; }
+        public static World Wrold { get; private set; }
 
         /// <summary>
         /// 从 欢迎场景 转到 主菜单场景;
@@ -62,22 +91,43 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 设置模组加载顺序;
         /// </summary>
-        public static void SetModifications(IEnumerable<ModificationInfo> infos)
+        public static void SetModificationLoadOrder(IEnumerable<ModificationInfo> infos)
         {
             if (infos == null)
                 throw new ArgumentNullException(nameof(infos));
+            if (State == GameStates.Running)
+                throw new InvalidOperationException();
 
-            ActivatedModification.Activate(infos);
+            if (modificationLoadOrder == null)
+            {
+                modificationLoadOrder = new List<ModificationInfo>(infos);
+            }
+            else
+            {
+                modificationLoadOrder.Clear();
+                modificationLoadOrder.AddRange(infos);
+            }
         }
 
         /// <summary>
-        /// 加载资源,若资源已经加载则无操作;
+        /// 加载资源,若资源未发生变化则无操作;
         /// </summary>
         public static void LoadResource(IProgress<string> progress = null)
         {
-            if (Resource == null)
+            if(State == GameStates.Running)
+                throw new InvalidOperationException();
+
+            if (ActivatedModification == null)
             {
+                ActivatedModification = new ActivatedModification(ModificationLoadOrder);
                 ReloadResource(progress);
+            }
+            else
+            {
+                if (ActivatedModification.Activate(ModificationLoadOrder))
+                {
+                    ReloadResource(progress);
+                }
             }
         }
 

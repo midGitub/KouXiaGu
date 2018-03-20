@@ -5,9 +5,9 @@ namespace JiongXiaGu.Unity.GameConsoles
 {
 
     /// <summary>
-    /// 控制台方法描述;
+    /// 方法描述;
     /// </summary>
-    public class ConsoleMethodDesc
+    public class MethodDescription
     {
         /// <summary>
         /// 完全名,如 ConsoleMethod.Info.Run ;
@@ -129,12 +129,6 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// </summary>
     public struct ParameterDesc
     {
-        public ParameterDesc(string type, string message)
-        {
-            Type = type;
-            Message = message;
-        }
-
         /// <summary>
         /// 参数类型文本表示;
         /// </summary>
@@ -144,6 +138,12 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// 预留消息;
         /// </summary>
         public string Message { get; set; }
+
+        public ParameterDesc(string type, string message)
+        {
+            Type = type;
+            Message = message;
+        }
 
         public override string ToString()
         {

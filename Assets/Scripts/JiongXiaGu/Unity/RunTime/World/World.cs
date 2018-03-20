@@ -11,14 +11,14 @@ namespace JiongXiaGu.Unity.RunTime
     /// <summary>
     /// 游戏世界,在游戏场景创建;负责对时间进行更新;
     /// </summary>
-    public class Wrold
+    public class World
     {
         /// <summary>
         /// 世界资源;
         /// </summary>
-        public WroldResource Resource { get; private set; }
+        public WorldResource Resource { get; private set; }
 
-        public Wrold(WroldResource resource)
+        public World(WorldResource resource)
         {
         }
 

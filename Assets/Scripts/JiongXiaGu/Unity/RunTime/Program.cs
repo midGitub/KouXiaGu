@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using JiongXiaGu.Unity.Resources;
+using JiongXiaGu.Unity.GameConsoles;
 
 namespace JiongXiaGu.Unity.RunTime
 {
@@ -73,6 +74,8 @@ namespace JiongXiaGu.Unity.RunTime
             Action[] words = new Action[]
             {
                 ModificationController.SearcheAll,
+                GameConsole.Initialize,
+
             };
             return words;
         }

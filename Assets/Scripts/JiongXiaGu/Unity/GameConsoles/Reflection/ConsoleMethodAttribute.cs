@@ -9,22 +9,22 @@ namespace JiongXiaGu.Unity.GameConsoles
     public sealed class ConsoleMethodAttribute : Attribute
     {
         /// <summary>
-        /// 前提方法名;
-        /// </summary>
-        public string PrerequisiteName { get; set; }
-
-        /// <summary>
-        /// 完整的方法名;
+        /// 名称;
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// 方法描述;
+        /// 描述;
         /// </summary>
         public string Message { get; set; }
 
         /// <summary>
-        /// 参数描述:[方法1类型, 方法1描述, 方法2类型, 方法2描述, ....]
+        /// 前提方法名,若不存在则为Null;
+        /// </summary>
+        public string PrerequisiteName { get; set; }
+
+        /// <summary>
+        /// 参数描述:[参数1类型, 参数1描述, 参数2类型, 参数2描述, ....]
         /// </summary>
         public string[] ParameterDes { get; set; }
 
@@ -36,9 +36,9 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 获取到
         /// </summary>
-        public ConsoleMethodDesc GetDescription()
+        public MethodDescription GetDescription()
         {
-            return new ConsoleMethodDesc()
+            return new MethodDescription()
             {
                 Name = Name,
                 Message = Message,

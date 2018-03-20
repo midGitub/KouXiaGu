@@ -15,6 +15,6 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 获取到世界资源;
         /// </summary>
-        WroldResource GetWroldResource();
+        WorldResource GetWroldResource();
     }
 }

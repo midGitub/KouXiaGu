@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JiongXiaGu.Collections;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,39 +8,39 @@ namespace JiongXiaGu.Unity.GameConsoles
 {
 
     /// <summary>
-    /// 控制台方法合集(线程安全);
+    /// 控制台方法合集;
     /// </summary>
-    public class ConsoleMethodSchema
+    public class MethodSchema
     {
         /// <summary>
         /// 方法字典;
         /// </summary>
-        private readonly ConcurrentDictionary<string, IConsoleMethod> consoleMethods;
+        private readonly Dictionary<string, IMethod> methods;
 
         /// <summary>
         /// 方法数目;
         /// </summary>
         public int Count
         {
-            get { return consoleMethods.Count; }
+            get { return methods.Count; }
         }
 
-        public ICollection<IConsoleMethod> ConsoleMethods
+        public ICollection<IMethod> Methods
         {
-            get { return consoleMethods.Values; }
+            get { return methods.Values; }
         }
 
-        public ConsoleMethodSchema()
+        public MethodSchema()
         {
-            consoleMethods = new ConcurrentDictionary<string, IConsoleMethod>();
+            methods = new Dictionary<string, IMethod>();
         }
 
         /// <summary>
         /// 获取到用于保存到字典的关键词;
         /// </summary>
-        private string GetKey(ConsoleMethod method)
+        private string GetKey(IMethod method)
         {
-            return GetKey(method.Name, method.ParameterCount);
+            return GetKey(method.Description.Name, method.ParameterCount);
         }
 
         /// <summary>
@@ -53,22 +54,31 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 尝试添加控制台方法;
         /// </summary>
-        public bool TryAdd(ConsoleMethod consoleMethod)
+        public void Add(IMethod method)
         {
-            if (consoleMethod == null)
-                throw new ArgumentNullException(nameof(consoleMethod));
+            if (method == null)
+                throw new ArgumentNullException(nameof(method));
 
-            string key = GetKey(consoleMethod);
-            return consoleMethods.TryAdd(key, consoleMethod);
+            string key = GetKey(method);
+            methods.Add(key, method);
+        }
+
+        public bool TryAdd(IMethod method)
+        {
+            if (method == null)
+                throw new ArgumentNullException(nameof(method));
+
+            string key = GetKey(method);
+            return methods.TryAdd(key, method);
         }
 
         /// <summary>
         /// 尝试从和合集中移除指定方法,移除成功返回 true;
         /// </summary>
-        public bool TryRemove(string methodName, int parameterCount, out IConsoleMethod consoleMethod)
+        public bool Remove(string methodName, int parameterCount)
         {
             string key = GetKey(methodName, parameterCount);
-            return consoleMethods.TryRemove(key, out consoleMethod);
+            return methods.Remove(key);
         }
 
         /// <summary>
@@ -77,16 +87,16 @@ namespace JiongXiaGu.Unity.GameConsoles
         public bool Contains(string methodName, int parameterCount)
         {
             string key = GetKey(methodName, parameterCount);
-            return consoleMethods.ContainsKey(key);
+            return methods.ContainsKey(key);
         }
 
         /// <summary>
         /// 尝试获取到指定方法,若未能找到则返回false;
         /// </summary>
-        public bool TryGetMethod(string methodName, int parameterCount, out IConsoleMethod consoleMethod)
+        public bool TryGetMethod(string methodName, int parameterCount, out IMethod method)
         {
             string key = GetKey(methodName, parameterCount);
-            return consoleMethods.TryGetValue(key, out consoleMethod);
+            return methods.TryGetValue(key, out method);
         }
 
         /// <summary>
@@ -94,7 +104,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         public void Clear()
         {
-            consoleMethods.Clear();
+            methods.Clear();
         }
     }
 }

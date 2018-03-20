@@ -121,143 +121,7 @@ namespace JiongXiaGu.Collections
             }
         }
 
-#endregion
-
-
-        /// <summary>
-        /// 确认合集内是否存在符合条件的元素;
-        /// </summary>
-        /// <param name="collection"></param>
-        /// <param name="match">若存在则返回true</param>
-        public static bool Contains<T>(this IEnumerable<T> collection, Func<T, bool> match)
-        {
-            if (collection == null)
-                throw new ArgumentNullException("collection");
-            if (match == null)
-                throw new ArgumentNullException("comparer");
-
-            foreach (var item in collection)
-            {
-                if (match(item))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-        /// <summary>
-        /// 移除符合要求的第一个元素;
-        /// </summary>
-        public static bool Remove<T>(this IList<T> list, Predicate<T> predicate)
-        {
-            if (list == null)
-                throw new ArgumentNullException("collection");
-            if (predicate == null)
-                throw new ArgumentNullException("comparer");
-
-            int index = list.FindIndex(predicate);
-            if (index >= 0)
-            {
-                list.RemoveAt(index);
-                return true;
-            }
-            return false;
-        }
-
-        ///// <summary>
-        ///// 移除元素;
-        ///// </summary>
-        ///// <param name="item">要在序列中定位的值</param>
-        ///// <param name="comparer">一个对值进行比较的相等比较器;</param>
-        //public static bool Remove<T>(IList<T> collection, T item, IEqualityComparer<T> comparer)
-        //{
-        //    if (collection == null)
-        //        throw new ArgumentNullException("collection");
-        //    if (comparer == null)
-        //        throw new ArgumentNullException("comparer");
-
-        //    int index = FindIndex(collection, item, comparer);
-        //    if (index >= 0)
-        //    {
-        //        collection.RemoveAt(index);
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-
-
-        /// <summary>
-        /// 移除指定下标的元素,同 List 的 RemoveAt();
-        /// </summary>
-        public static void RemoveAt<T>(ref T[] array, int index)
-        {
-            if (array == null)
-                throw new ArgumentNullException("array");
-
-            Array.Copy(array, index + 1, array, index, array.Length - index - 1);
-            Array.Resize(ref array, array.Length - 1);
-        }
-
-
-
-        /// <summary>
-        /// 移除范围内条件相匹配的所有元素;
-        /// </summary>
-        /// <param name="startIndex">包含此下标的开始下标</param>
-        /// <param name="match">返回ture则移除</param>
-        public static void RemoveAll<T>(this IList<T> list, int startIndex, Func<T, bool> match)
-        {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
-            if (match == null)
-                throw new ArgumentNullException(nameof(match));
-            if (startIndex < 0 || startIndex >= list.Count)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-
-            int index = startIndex;
-            while (index < list.Count)
-            {
-                T item = list[index];
-                if (match(item))
-                {
-                    list.RemoveAt(index);
-                }
-                else
-                {
-                    index++;
-                }
-            }
-        }
-
-
-
-        /// <summary>
-        /// 移除合集内相同的元素;
-        /// 若存在相同的元素,则保留第一个元素,其余的都移除;
-        /// </summary>
-        public static void RemoveSame<T>(this IList<T> list)
-        {
-            if (list == null)
-                throw new ArgumentNullException("list");
-
-            int i = 0;
-            while (true)
-            {
-                T item = list[i];
-                i++;
-                if (i < list.Count)
-                {
-                    list.RemoveAll(i, other => item.Equals(other));
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
+        #endregion
 
 
         #region FindIndex
@@ -437,6 +301,163 @@ namespace JiongXiaGu.Collections
 
 
         #endregion
+
+
+        #region TryAdd
+
+        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary == null)
+                throw new ArgumentNullException(nameof(dictionary));
+
+            if (dictionary.ContainsKey(key))
+            {
+                return false;
+            }
+            else
+            {
+                dictionary.Add(key, value);
+                return true;
+            }
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// 确认合集内是否存在符合条件的元素;
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="match">若存在则返回true</param>
+        public static bool Contains<T>(this IEnumerable<T> collection, Func<T, bool> match)
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+            if (match == null)
+                throw new ArgumentNullException("comparer");
+
+            foreach (var item in collection)
+            {
+                if (match(item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 移除符合要求的第一个元素;
+        /// </summary>
+        public static bool Remove<T>(this IList<T> list, Predicate<T> predicate)
+        {
+            if (list == null)
+                throw new ArgumentNullException("collection");
+            if (predicate == null)
+                throw new ArgumentNullException("comparer");
+
+            int index = list.FindIndex(predicate);
+            if (index >= 0)
+            {
+                list.RemoveAt(index);
+                return true;
+            }
+            return false;
+        }
+
+        ///// <summary>
+        ///// 移除元素;
+        ///// </summary>
+        ///// <param name="item">要在序列中定位的值</param>
+        ///// <param name="comparer">一个对值进行比较的相等比较器;</param>
+        //public static bool Remove<T>(IList<T> collection, T item, IEqualityComparer<T> comparer)
+        //{
+        //    if (collection == null)
+        //        throw new ArgumentNullException("collection");
+        //    if (comparer == null)
+        //        throw new ArgumentNullException("comparer");
+
+        //    int index = FindIndex(collection, item, comparer);
+        //    if (index >= 0)
+        //    {
+        //        collection.RemoveAt(index);
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+
+
+        /// <summary>
+        /// 移除指定下标的元素,同 List 的 RemoveAt();
+        /// </summary>
+        public static void RemoveAt<T>(ref T[] array, int index)
+        {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
+            Array.Copy(array, index + 1, array, index, array.Length - index - 1);
+            Array.Resize(ref array, array.Length - 1);
+        }
+
+
+
+        /// <summary>
+        /// 移除范围内条件相匹配的所有元素;
+        /// </summary>
+        /// <param name="startIndex">包含此下标的开始下标</param>
+        /// <param name="match">返回ture则移除</param>
+        public static void RemoveAll<T>(this IList<T> list, int startIndex, Func<T, bool> match)
+        {
+            if (list == null)
+                throw new ArgumentNullException(nameof(list));
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+            if (startIndex < 0 || startIndex >= list.Count)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            int index = startIndex;
+            while (index < list.Count)
+            {
+                T item = list[index];
+                if (match(item))
+                {
+                    list.RemoveAt(index);
+                }
+                else
+                {
+                    index++;
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// 移除合集内相同的元素;
+        /// 若存在相同的元素,则保留第一个元素,其余的都移除;
+        /// </summary>
+        public static void RemoveSame<T>(this IList<T> list)
+        {
+            if (list == null)
+                throw new ArgumentNullException("list");
+
+            int i = 0;
+            while (true)
+            {
+                T item = list[i];
+                i++;
+                if (i < list.Count)
+                {
+                    list.RemoveAll(i, other => item.Equals(other));
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
 
 
 

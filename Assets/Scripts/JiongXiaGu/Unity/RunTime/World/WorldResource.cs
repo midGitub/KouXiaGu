@@ -9,7 +9,7 @@ namespace JiongXiaGu.Unity.RunTime
     /// <summary>
     /// 游戏世界资源;
     /// </summary>
-    public class WroldResource
+    public class WorldResource
     {
         /// <summary>
         /// 游戏剧情信息;
@@ -21,13 +21,13 @@ namespace JiongXiaGu.Unity.RunTime
         /// </summary>
         public WorldMap<RectCoord> Map { get; set; }
 
-        public WroldResource(ScenarioResource resource)
+        public WorldResource(ScenarioResource resource)
         {
             ScenarioDescription = resource.Description;
             Map = new WorldMap<RectCoord>(resource.Map.Dictionary);
         }
 
-        public WroldResource(ScenarioResource resource, ArchivedResource archived)
+        public WorldResource(ScenarioResource resource, ArchivedResource archived)
         {
             ScenarioDescription = resource.Description;
             Map = new WorldMap<RectCoord>(resource.Map.Dictionary, archived.Map.Dictionary);
