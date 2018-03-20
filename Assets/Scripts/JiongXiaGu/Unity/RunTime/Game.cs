@@ -34,7 +34,7 @@ namespace JiongXiaGu.Unity.RunTime
     }
 
     /// <summary>
-    /// 游戏管理;
+    /// 游戏世界管理;
     /// </summary>
     public static class Game
     {
@@ -61,32 +61,7 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 当前游戏世界;
         /// </summary>
-        public static World Wrold { get; private set; }
-
-        /// <summary>
-        /// 从 欢迎场景 转到 主菜单场景;
-        /// </summary>
-        public static void GoMainMenuScene()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 从 主菜单场景 转到 游戏场景;
-        /// </summary>
-        public static void GoGameScene()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 从 游戏场景 转到 主菜单场景;
-        /// </summary>
-        public static void BackMainMenuScene()
-        {
-            throw new NotImplementedException();
-        }
-
+        public static World World { get; private set; }
 
         /// <summary>
         /// 设置模组加载顺序;
@@ -107,6 +82,14 @@ namespace JiongXiaGu.Unity.RunTime
                 modificationLoadOrder.Clear();
                 modificationLoadOrder.AddRange(infos);
             }
+        }
+
+        /// <summary>
+        /// 创建世界;
+        /// </summary>
+        public static void CreateWorld(IProgress<string> progress = null)
+        {
+            LoadResource(progress);
         }
 
         /// <summary>

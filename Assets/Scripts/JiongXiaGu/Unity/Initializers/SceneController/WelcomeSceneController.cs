@@ -10,13 +10,16 @@ namespace JiongXiaGu.Unity.Initializers
 {
 
     /// <summary>
-    /// 欢迎界面
+    /// 欢迎界面;
     /// </summary>
-    public class WelcomeSceneController : MonoBehaviour
+    public sealed class WelcomeSceneController : MonoBehaviour
     {
+        private WelcomeSceneController()
+        {
+        }
+
         private void Start()
         {
-            Stage.LoadMainMenuScene();
         }
     }
 }

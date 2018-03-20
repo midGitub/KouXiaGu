@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using JiongXiaGu.Unity.Resources;
 using JiongXiaGu.Unity.GameConsoles;
+using JiongXiaGu.Unity.KeyInputs;
 
 namespace JiongXiaGu.Unity.RunTime
 {
@@ -38,9 +39,16 @@ namespace JiongXiaGu.Unity.RunTime
 
         private static async Task InternalInitialize()
         {
-            SynchronizedInitialize();
-            await Task.Run(() => ParallelInitialize());
-            AfterSynchronizedInitialize();
+            try
+            {
+                SynchronizedInitialize();
+                await Task.Run(() => ParallelInitialize());
+                AfterSynchronizedInitialize();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex);
+            }
         }
 
         /// <summary>
@@ -75,7 +83,7 @@ namespace JiongXiaGu.Unity.RunTime
             {
                 ModificationController.SearcheAll,
                 GameConsole.Initialize,
-
+                KeyInput.Initialize,
             };
             return words;
         }
@@ -85,6 +93,7 @@ namespace JiongXiaGu.Unity.RunTime
         /// </summary>
         private static void AfterSynchronizedInitialize()
         {
+            Debug.Log("初始化完成!");
             return;
         }
     }

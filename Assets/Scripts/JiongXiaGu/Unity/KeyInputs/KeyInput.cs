@@ -20,54 +20,37 @@ namespace JiongXiaGu.Unity.KeyInputs
         /// <summary>
         /// 当前使用的按键映射(若未定义则返回null);
         /// </summary>
-        public static KeyMap GlobalKeyMap { get; set; }
+        public static IDictionary<string, KeyCode> CurrentKeyMap { get; internal set; }
 
 
-
-        public static bool IsKeyDown(string name)
+        internal static void Initialize()
         {
-            CombinationKey combinationKey;
-            if (GlobalKeyMap != null && GlobalKeyMap.Dictionary.TryGetValue(name, out combinationKey))
-            {
-                return IsKeyDown(combinationKey);
-            }
-            else
-            {
-                throw new KeyNotFoundException(string.Format("未找到对应按键映射[{0}]", name));
-            }
+            KeyMapFactroy factroy = new KeyMapFactroy();
+            CurrentKeyMap = factroy.ReadKeyMap();
         }
 
-        public static bool IsKeyUp(string name)
+        public static bool GetKeyDown(string name)
         {
-            CombinationKey combinationKey;
-            if (GlobalKeyMap != null && GlobalKeyMap.Dictionary.TryGetValue(name, out combinationKey))
-            {
-                return IsKeyUp(combinationKey);
-            }
-            else
-            {
-                throw new KeyNotFoundException(string.Format("未找到对应按键映射[{0}]", name));
-            }
+            KeyCode key = CurrentKeyMap[name];
+            return Input.GetKeyDown(key);
         }
 
-        public static bool IsKeyHold(string name)
+        public static bool GetKeyUp(string name)
         {
-            CombinationKey combinationKey;
-            if (GlobalKeyMap != null && GlobalKeyMap.Dictionary.TryGetValue(name, out combinationKey))
-            {
-                return IsKeyHold(combinationKey);
-            }
-            else
-            {
-                throw new KeyNotFoundException(string.Format("未找到对应按键映射[{0}]", name));
-            }
+            KeyCode key = CurrentKeyMap[name];
+            return Input.GetKeyUp(key);
         }
 
+        public static bool GetKey(string name)
+        {
+            KeyCode key = CurrentKeyMap[name];
+            return Input.GetKey(key);
+        }
 
         /// <summary>
         /// 这个组合按键当前是否启用了?
         /// </summary>
-        public static bool IsKeyDown(CombinationKey combinationKey)
+        public static bool GetKeyDown(CombinationKey combinationKey)
         {
             if (combinationKey.IsEmpty)
                 return false;
@@ -136,69 +119,21 @@ namespace JiongXiaGu.Unity.KeyInputs
             return true;
         }
 
+        /// <summary>
+        /// 枚举所有按着的按键;
+        /// </summary>
+        public static IEnumerable<KeyCode> EnumerateHoldKeys()
+        {
+            if (!Input.anyKey)
+                yield break;
 
-        ///// <summary>
-        ///// 获取到按着的按键;若不存在则返回空合集;
-        ///// </summary>
-        //public static List<KeyCode> GetHoldKeys(int maxKey)
-        //{
-        //    if (maxKey <= 0)
-        //        throw new ArgumentOutOfRangeException(nameof(maxKey));
-        //    if (!Input.anyKey)
-        //        return new List<KeyCode>();
-
-        //    List<KeyCode> holdKeys = new List<KeyCode>();
-
-        //    foreach (var keyCode in EnumerateKeyCode)
-        //    {
-        //        if (Input.GetKey(keyCode))
-        //        {
-        //            holdKeys.Add(keyCode);
-        //            if (holdKeys.Count >= maxKey)
-        //            {
-        //                break;
-        //            }
-        //        }
-        //    }
-
-        //    return holdKeys;
-        //}
-
-        ///// <summary>
-        ///// 将所有按着的按键加入到 holdKeys 合集;
-        ///// </summary>
-        ///// <param name="maxKey">指定获取到的最大按键数;</param>
-        //public static void GetHoldKeys(ICollection<KeyCode> holdKeys, int maxKey = int.MaxValue)
-        //{
-        //    if (holdKeys == null)
-        //        throw new ArgumentNullException("holdKeys");
-        //    if (maxKey <= 0)
-        //        throw new ArgumentOutOfRangeException("maxKey");
-        //    if (holdKeys.Count >= maxKey)
-        //        throw new ArgumentOutOfRangeException("holdKeys合集已经为最大值");
-        //    if (!Input.anyKey)
-        //        return;
-
-        //    GetHoldKeys_internal(holdKeys, maxKey);
-        //}
-
-        ///// <summary>
-        ///// 将所有按着的按键加入到 holdKeys 合集;
-        ///// </summary>
-        ///// <param name="maxKey">指定获取到的最大按键数;</param>
-        //private static void GetHoldKeys_internal(ICollection<KeyCode> holdKeys, int maxKey)
-        //{
-        //    foreach (var keyCode in EnumerateKeyCode)
-        //    {
-        //        if (Input.GetKey(keyCode) && !holdKeys.Contains(keyCode))
-        //        {
-        //            holdKeys.Add(keyCode);
-        //            if (holdKeys.Count >= maxKey)
-        //            {
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
+            foreach (var keyCode in EnumerateKeyCode)
+            {
+                if (Input.GetKey(keyCode))
+                {
+                    yield return keyCode;
+                }
+            }
+        }
     }
 }
