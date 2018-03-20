@@ -31,6 +31,11 @@ namespace JiongXiaGu.Unity.Archives
         /// </summary>
         public DateTime Time { get; set; }
 
+        /// <summary>
+        /// 预留消息;
+        /// </summary>
+        public string Message { get; set; }
+
         public override string ToString()
         {
             return base.ToString() + "[Name:" + Name + ",Time:" + Time.ToShortTimeString() + "]";

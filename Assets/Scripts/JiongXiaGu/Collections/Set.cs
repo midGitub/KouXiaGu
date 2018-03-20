@@ -83,7 +83,7 @@ namespace JiongXiaGu.Collections
 
         public int FindIndex(T item)
         {
-            return list.FindIndex(item, Comparer);
+            return list.FindIndex(value => Comparer.Equals(item, value));
         }
 
         public void CopyTo(T[] array, int arrayIndex)

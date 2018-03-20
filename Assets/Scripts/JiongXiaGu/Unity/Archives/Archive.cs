@@ -13,14 +13,13 @@ namespace JiongXiaGu.Unity.Archives
     /// </summary>
     public class Archive
     {
-        public Content Content { get; private set; }
+        public Content BaseContent { get; private set; }
         public ArchiveDescription Description { get; private set; }
 
         public Archive(Content content, ArchiveDescription description)
         {
-            Content = content;
+            BaseContent = content;
             Description = description;
         }
     }
-
 }

@@ -83,7 +83,7 @@ namespace JiongXiaGu.Unity.Maps
         }
 
         /// <summary>
-        /// 获取到用于存档的合集;
+        /// 获取到用于存档的合集,若无变化则返回null;
         /// </summary>
         public Dictionary<TKey, ArchiveMapNode> GetArchiveMap(IReadOnlyDictionary<TKey, MapNode> map)
         {
@@ -108,7 +108,14 @@ namespace JiongXiaGu.Unity.Maps
                 }
             }
 
-            return dictionary;
+            if (dictionary.Count > 0)
+            {
+                return dictionary;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         void IObserver<MapEvent<TKey>>.OnNext(MapEvent<TKey> value)

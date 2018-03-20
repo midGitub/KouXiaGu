@@ -1,8 +1,6 @@
-﻿using JiongXiaGu.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -15,33 +13,18 @@ namespace JiongXiaGu.Unity.Resources
     /// </summary>
     public class Modification : IDisposable
     {
-        private const AssetBundleLoadOption defaultLoadOption = AssetBundleLoadOption.Important;
         private bool isDisposed = false;
         public ModificationFactory Factory { get; private set; }
         public DirectoryContent BaseContent { get; private set; }
         public string DirectoryPath => BaseContent.DirectoryPath;
+        public ModificationDescription Description { get; private set; }
         private Lazy<List<AssetBundleInfo>> lazyAssetBundles = new Lazy<List<AssetBundleInfo>>();
-
-        /// <summary>
-        /// 在创建时使用的描述;
-        /// </summary>
-        public ModificationDescription OriginalDescription { get; private set; }
-        private ModificationDescription? newDescription;
-
-        /// <summary>
-        /// 最新的描述;
-        /// </summary>
-        public ModificationDescription Description
-        {
-            get { return newDescription.HasValue ? newDescription.Value : OriginalDescription; }
-            internal set { newDescription = value; }
-        }
 
         internal Modification(ModificationFactory factory, string directory, ModificationDescription description)
         {
             Factory = factory;
             BaseContent = new DirectoryContent(directory);
-            OriginalDescription = description;
+            Description = description;
         }
 
         internal Modification(ModificationFactory factory, DirectoryContent content, ModificationDescription description)
@@ -51,7 +34,7 @@ namespace JiongXiaGu.Unity.Resources
 
             Factory = factory;
             BaseContent = content;
-            OriginalDescription = description;
+            Description = description;
         }
 
         public void Dispose()
@@ -99,7 +82,6 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 卸载 AssetBundle 资源;
         /// </summary>
-        /// <param name="info"></param>
         private void Unload(AssetBundleInfo info)
         {
             if (info.LoadTask.Status == TaskStatus.RanToCompletion)
@@ -319,57 +301,6 @@ namespace JiongXiaGu.Unity.Resources
             }
             return -1;
         }
-
-        ///// <summary>
-        ///// 筛选对应资源包描述;
-        ///// </summary>
-        //private IEnumerable<AssetBundleDescription> SelectAssetBundleDescription(AssetBundleDescription[] assetBundleDescriptions, AssetBundleLoadOption options)
-        //{
-        //    if (assetBundleDescriptions == null)
-        //    {
-        //        return EmptyCollection<AssetBundleDescription>.Default;
-        //    }
-        //    else
-        //    {
-        //        bool includeImportant = (options & AssetBundleLoadOption.Important) > 0;
-        //        bool includeNotImportant = (options & AssetBundleLoadOption.NotImportant) > 0;
-
-        //        if (includeImportant || includeNotImportant)
-        //        {
-        //            return assetBundleDescriptions.Where(delegate (AssetBundleDescription description)
-        //            {
-        //                return !string.IsNullOrWhiteSpace(description.Name) &&
-        //                !string.IsNullOrWhiteSpace(description.RelativePath) &&
-        //                (includeNotImportant ||
-        //                description.IsImportant);
-        //            });
-        //        }
-        //        else
-        //        {
-        //            return EmptyCollection<AssetBundleDescription>.Default;
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 读取到 AssetBundle;
-        ///// </summary>
-        ///// <exception cref="ArgumentException">未找到指定 AssetBundle 描述</exception>
-        //private AssetBundleDescription FindAssetBundleDescription(string name)
-        //{
-        //    var assetBundleDescrs = Description.AssetBundles;
-        //    if (assetBundleDescrs != null)
-        //    {
-        //        foreach (var descr in assetBundleDescrs)
-        //        {
-        //            if (descr.Name == name)
-        //            {
-        //                return descr;
-        //            }
-        //        }
-        //    }
-        //    throw new ArgumentException(string.Format("未找到 AssetBundle[Name:{0}]的定义信息", name));
-        //}
 
         /// <summary>
         /// 资源包读取状态信息;

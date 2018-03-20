@@ -18,14 +18,16 @@ namespace JiongXiaGu.Unity.RunTime
     public static class Game
     {
         /// <summary>
-        /// 游戏模组加载顺序;
+        /// 模组资源;
         /// </summary>
-        public static IReadOnlyList<Modification> Modifications { get; private set; }
+        public static ActivatedModification ActivatedModification { get; private set; } = new ActivatedModification();
 
         /// <summary>
         /// 游戏使用资源;
         /// </summary>
         public static GameResource Resource { get; private set; }
+
+        public static IWroldResourceProvider WroldResourceProvider { get; private set; }
 
         /// <summary>
         /// 当前游戏世界;
@@ -60,12 +62,12 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 设置模组加载顺序;
         /// </summary>
-        public static void SetModifications(IEnumerable<Modification> modifications)
+        public static void SetModifications(IEnumerable<ModificationInfo> infos)
         {
-            if (modifications == null)
-                throw new ArgumentNullException(nameof(modifications));
+            if (infos == null)
+                throw new ArgumentNullException(nameof(infos));
 
-            Modifications = new List<Modification>(modifications);
+            ActivatedModification.Activate(infos);
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace JiongXiaGu.Unity.RunTime
         public static void ReloadResource(IProgress<string> progress = null)
         {
             GameResourceFactroy resourceFactroy = new GameResourceFactroy();
-            Resource = resourceFactroy.Read(Modifications, progress);
+            Resource = resourceFactroy.Read(ActivatedModification.Modifications, progress);
         }
 
         /// <summary>

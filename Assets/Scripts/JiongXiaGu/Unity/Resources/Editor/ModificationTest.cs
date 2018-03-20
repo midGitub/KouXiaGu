@@ -37,13 +37,13 @@ namespace JiongXiaGu.Unity.Resources
 
             using (var v1 = factory.Create(directory, description0))
             {
-                descr = v1.OriginalDescription;
+                descr = v1.Description;
                 ContentReadWriteTest(v1.BaseContent);
             }
 
             using (var v2 = factory.Read(directory))
             {
-                Assert.AreEqual(descr, v2.OriginalDescription);
+                Assert.AreEqual(descr, v2.Description);
             }
         }
 

@@ -9,7 +9,9 @@ namespace JiongXiaGu.Unity.Resources
 {
 
 
-
+    /// <summary>
+    /// 模组信息;
+    /// </summary>
     public struct ModificationInfo
     {
         public string ModificationDirectory { get; private set; }

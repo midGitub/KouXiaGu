@@ -126,9 +126,9 @@ namespace JiongXiaGu.Unity.UI
         public void WriteConfig()
         {
             var activeModificationID = EnumerateActiveModificationInfo().Select(item => item.ID);
-            var activeModification = new ActiveModification(activeModificationID);
+            var activeModification = new ModificationLoadOrder(activeModificationID);
 
-            ActiveModificationSerializer activeModificationSerializer = new ActiveModificationSerializer();
+            ModificationLoadOrderSerializer activeModificationSerializer = new ModificationLoadOrderSerializer();
 
             using (Resource.UserConfigContent.BeginUpdate())
             {

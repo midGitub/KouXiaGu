@@ -6,8 +6,6 @@ using System.IO;
 namespace JiongXiaGu.Unity.Resources
 {
 
-
-
     public class ModificationFactory
     {
         private readonly List<Modification> modifications = new List<Modification>();
@@ -64,25 +62,6 @@ namespace JiongXiaGu.Unity.Resources
         {
             ModificationDescription description = ReadDescription(directory);
             return new ModificationInfo(directory, description);
-        }
-
-
-        /// <summary>
-        /// 从内容读取到描述,并且更新实例;
-        /// </summary>
-        public void UpdateDescription(Modification content)
-        {
-            ModificationDescription description = ReadDescription(content.BaseContent);
-            content.Description = description;
-        }
-
-        /// <summary>
-        /// 写入资源描述;
-        /// </summary>
-        public void UpdateDescription(Modification content, ModificationDescription description)
-        {
-            WriteDescription(content.BaseContent, description);
-            content.Description = description;
         }
 
 

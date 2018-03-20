@@ -150,14 +150,14 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 移除符合要求的第一个元素;
         /// </summary>
-        public static bool Remove<T>(this IList<T> list, Func<T, bool> func)
+        public static bool Remove<T>(this IList<T> list, Predicate<T> predicate)
         {
             if (list == null)
                 throw new ArgumentNullException("collection");
-            if (func == null)
+            if (predicate == null)
                 throw new ArgumentNullException("comparer");
 
-            int index = list.FindIndex(func);
+            int index = list.FindIndex(predicate);
             if (index >= 0)
             {
                 list.RemoveAt(index);
@@ -166,26 +166,26 @@ namespace JiongXiaGu.Collections
             return false;
         }
 
-        /// <summary>
-        /// 移除元素;
-        /// </summary>
-        /// <param name="item">要在序列中定位的值</param>
-        /// <param name="comparer">一个对值进行比较的相等比较器;</param>
-        public static bool Remove<T>(IList<T> collection, T item, IEqualityComparer<T> comparer)
-        {
-            if (collection == null)
-                throw new ArgumentNullException("collection");
-            if (comparer == null)
-                throw new ArgumentNullException("comparer");
+        ///// <summary>
+        ///// 移除元素;
+        ///// </summary>
+        ///// <param name="item">要在序列中定位的值</param>
+        ///// <param name="comparer">一个对值进行比较的相等比较器;</param>
+        //public static bool Remove<T>(IList<T> collection, T item, IEqualityComparer<T> comparer)
+        //{
+        //    if (collection == null)
+        //        throw new ArgumentNullException("collection");
+        //    if (comparer == null)
+        //        throw new ArgumentNullException("comparer");
 
-            int index = FindIndex(collection, item, comparer);
-            if (index >= 0)
-            {
-                collection.RemoveAt(index);
-                return true;
-            }
-            return false;
-        }
+        //    int index = FindIndex(collection, item, comparer);
+        //    if (index >= 0)
+        //    {
+        //        collection.RemoveAt(index);
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
 
 
@@ -260,31 +260,31 @@ namespace JiongXiaGu.Collections
         }
 
 
+        #region FindIndex
 
         /// <summary>
         /// 获取到对应元素下标,若不存在则返回-1;
         /// </summary>
         public static int FindIndex<T>(this IList<T> collection, T item)
         {
-            return FindIndex(collection, item, EqualityComparer<T>.Default);
+            return FindIndex(collection, value => EqualityComparer<T>.Default.Equals(value, item));
         }
 
         /// <summary>
         /// 获取到对应元素下标,若不存在则返回-1;
         /// </summary>
-        /// <param name="item">要在序列中定位的值</param>
-        /// <param name="comparer">一个对值进行比较的相等比较器;</param>
-        public static int FindIndex<T>(this IList<T> collection, T item, IEqualityComparer<T> comparer)
+        /// <exception cref="ArgumentNullException"></exception>
+        public static int FindIndex<T>(this IList<T> collection, Predicate<T> match)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
-            if (comparer == null)
-                throw new ArgumentNullException(nameof(comparer));
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
 
             for (int i = 0; i < collection.Count; i++)
             {
                 T original = collection[i];
-                if (comparer.Equals(original, item))
+                if (match.Invoke(original))
                 {
                     return i;
                 }
@@ -295,23 +295,150 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 获取到对应元素下标,若不存在则返回-1;
         /// </summary>
-        public static int FindIndex<T>(this IList<T> collection, Func<T, bool> func)
+        /// <param name="startIndex">从零开始的搜索的起始索引</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public static int FindIndex<T>(this IList<T> collection, int startIndex, Predicate<T> match)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
-            if (func == null)
-                throw new ArgumentNullException(nameof(func));
+            if (startIndex > collection.Count)
+                throw new IndexOutOfRangeException(nameof(startIndex));
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
 
-            for (int i = 0; i < collection.Count; i++)
+            for (int i = startIndex; i < collection.Count; i++)
             {
                 T original = collection[i];
-                if (func(original))
+                if (match.Invoke(original))
                 {
                     return i;
                 }
             }
             return -1;
         }
+
+        /// <summary>
+        /// 获取到对应元素下标,若不存在则返回-1;
+        /// </summary>
+        /// <param name="startIndex">从零开始的搜索的起始索引</param>
+        /// <param name="count">要搜索的部分中的元素数</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public static int FindIndex<T>(this IList<T> collection, int startIndex, int count, Predicate<T> match)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (startIndex > collection.Count)
+                throw new IndexOutOfRangeException(nameof(startIndex));
+            if (count < 0 || startIndex > collection.Count - count)
+                throw new IndexOutOfRangeException(nameof(count));
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+
+            int endIndex = startIndex + count;
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                T original = collection[i];
+                if (match.Invoke(original))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+
+        /// <summary>
+        /// 获取到对应元素下标,若不存在则返回-1;
+        /// </summary>
+        public static int FindIndex<T>(this IReadOnlyList<T> collection, T item)
+        {
+            return FindIndex(collection, value => EqualityComparer<T>.Default.Equals(value, item));
+        }
+
+        /// <summary>
+        /// 获取到对应元素下标,若不存在则返回-1;
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static int FindIndex<T>(this IReadOnlyList<T> collection, Predicate<T> match)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+
+            for (int i = 0; i < collection.Count; i++)
+            {
+                T original = collection[i];
+                if (match.Invoke(original))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 获取到对应元素下标,若不存在则返回-1;
+        /// </summary>
+        /// <param name="startIndex">从零开始的搜索的起始索引</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public static int FindIndex<T>(this IReadOnlyList<T> collection, int startIndex, Predicate<T> match)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (startIndex > collection.Count)
+                throw new IndexOutOfRangeException(nameof(startIndex));
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+
+            for (int i = startIndex; i < collection.Count; i++)
+            {
+                T original = collection[i];
+                if (match.Invoke(original))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 获取到对应元素下标,若不存在则返回-1;
+        /// </summary>
+        /// <param name="startIndex">从零开始的搜索的起始索引</param>
+        /// <param name="count">要搜索的部分中的元素数</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public static int FindIndex<T>(this IReadOnlyList<T> collection, int startIndex, int count, Predicate<T> match)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (startIndex > collection.Count)
+                throw new IndexOutOfRangeException(nameof(startIndex));
+            if (count < 0 || startIndex > collection.Count - count)
+                throw new IndexOutOfRangeException(nameof(count));
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+
+            int endIndex = startIndex + count;
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                T original = collection[i];
+                if (match.Invoke(original))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+
+        #endregion
+
+
 
 
         /// <summary>

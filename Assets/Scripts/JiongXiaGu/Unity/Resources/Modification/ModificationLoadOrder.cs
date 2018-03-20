@@ -13,18 +13,18 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 资源读取顺序(不包括核心资源);
     /// </summary>
-    public struct ActiveModification
+    public struct ModificationLoadOrder
     {
         [XmlArrayItem("ID")]
         public List<string> IDList { get; set; }
 
-        public ActiveModification(IEnumerable<string> contents)
+        public ModificationLoadOrder(IEnumerable<string> contents)
         {
             IDList = new List<string>(contents);
         }
     }
 
-    public class ActiveModificationSerializer : ContentSerializer<ActiveModification>
+    public class ModificationLoadOrderSerializer : ContentSerializer<ModificationLoadOrder>
     {
         [PathDefinition(PathDefinitionType.Config, "资源读取顺序定义")]
         public override string RelativePath
@@ -32,9 +32,9 @@ namespace JiongXiaGu.Unity.Resources
             get { return "ActiveModification.xml"; }
         }
 
-        private readonly XmlSerializer<ActiveModification> xmlSerializer = new XmlSerializer<ActiveModification>();
+        private readonly XmlSerializer<ModificationLoadOrder> xmlSerializer = new XmlSerializer<ModificationLoadOrder>();
 
-        public override ISerializer<ActiveModification> Serializer
+        public override ISerializer<ModificationLoadOrder> Serializer
         {
             get { return xmlSerializer; }
         }
@@ -43,9 +43,9 @@ namespace JiongXiaGu.Unity.Resources
         /// 分别从用户配置和数据配置获取到模组读取顺序;
         /// </summary>
         /// <exception cref="FileNotFoundException">未找到对应文件</exception>
-        public ActiveModification Deserialize()
+        public ModificationLoadOrder Deserialize()
         {
-            ActiveModification activeModification;
+            ModificationLoadOrder activeModification;
             if (TryDeserialize(Resource.UserConfigContent, out activeModification))
             {
                 return activeModification;

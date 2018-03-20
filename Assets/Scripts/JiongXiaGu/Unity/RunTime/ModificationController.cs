@@ -12,12 +12,12 @@ namespace JiongXiaGu.Unity.RunTime
 {
 
     /// <summary>
-    /// 模组管理;(仅Unity线程操作)
+    /// 模组管理;
     /// </summary>
     public static class ModificationController
     {
         /// <summary>
-        /// 所有模组信息,不包括核心资源;
+        /// 所有模组信息,包括核心资源;
         /// </summary>
         public static List<ModificationInfo> ModificationInfos { get; private set; }
 
@@ -46,8 +46,8 @@ namespace JiongXiaGu.Unity.RunTime
         {
             try
             {
-                ActiveModification order;
-                ActiveModificationSerializer serializer = new ActiveModificationSerializer();
+                ModificationLoadOrder order;
+                ModificationLoadOrderSerializer serializer = new ModificationLoadOrderSerializer();
 
                 order = serializer.Deserialize();
                 return GetActiveModificationInfos(order);
@@ -62,7 +62,7 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 根据模组顺序获取到激活的模组(按先后读取顺序);
         /// </summary>
-        public static List<ModificationInfo> GetActiveModificationInfos(ActiveModification activeModification)
+        public static List<ModificationInfo> GetActiveModificationInfos(ModificationLoadOrder activeModification)
         {
             List<ModificationInfo> newList = new List<ModificationInfo>();
 
@@ -205,8 +205,8 @@ namespace JiongXiaGu.Unity.RunTime
         {
             try
             {
-                ActiveModification order;
-                ActiveModificationSerializer serializer = new ActiveModificationSerializer();
+                ModificationLoadOrder order;
+                ModificationLoadOrderSerializer serializer = new ModificationLoadOrderSerializer();
 
                 order = serializer.Deserialize();
                 return GetModificationContent(order);
@@ -222,7 +222,7 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 根据模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;
         /// </summary>
-        private static List<Modification> GetModificationContent(ActiveModification activeModification)
+        private static List<Modification> GetModificationContent(ModificationLoadOrder activeModification)
         {
             List<Modification> newList = new List<Modification>();
             newList.Add(Core);

@@ -79,7 +79,6 @@ namespace JiongXiaGu.Unity.Resources
         public override int GetHashCode()
         {
             var hashCode = 2099663225;
-            hashCode = hashCode * -1521134295 + base.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(RelativePath);
             return hashCode;

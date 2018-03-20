@@ -1,9 +1,7 @@
-﻿using System.IO;
-using UnityEngine;
+﻿using JiongXiaGu.Collections;
 using System;
-using System.Xml.Serialization;
 using System.Collections.Generic;
-using JiongXiaGu.Collections;
+using System.Xml.Serialization;
 
 namespace JiongXiaGu.Unity.Resources
 {
@@ -12,7 +10,7 @@ namespace JiongXiaGu.Unity.Resources
     /// 模组描述信息;
     /// </summary>
     [XmlRoot("Modification")]
-    public struct ModificationDescription : IEquatable<ModificationDescription>
+    public struct ModificationDescription
     {
         /// <summary>
         /// 唯一标识,只允许数字,字母,下划线组成;
@@ -48,48 +46,5 @@ namespace JiongXiaGu.Unity.Resources
         /// 所有 AssetBundle 描述;
         /// </summary>
         public Set<AssetBundleDescription> AssetBundles { get; set; }
-
-        internal ModificationDescription(string id, string name) : this()
-        {
-            ID = id;
-            Name = name;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is ModificationDescription && Equals((ModificationDescription)obj);
-        }
-
-        public bool Equals(ModificationDescription other)
-        {
-            return ID == other.ID &&
-                   Name == other.Name &&
-                   Author == other.Author &&
-                   Version == other.Version &&
-                   Tags == other.Tags &&
-                   Message == other.Message;
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = 101501911;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(ID);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Author);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Version);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Tags);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Message);
-            return hashCode;
-        }
-
-        public static bool operator ==(ModificationDescription description1, ModificationDescription description2)
-        {
-            return description1.Equals(description2);
-        }
-
-        public static bool operator !=(ModificationDescription description1, ModificationDescription description2)
-        {
-            return !(description1 == description2);
-        }
     }
 }
