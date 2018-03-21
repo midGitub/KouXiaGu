@@ -35,9 +35,14 @@ namespace JiongXiaGu.Unity
         public static SynchronizationContext SynchronizationContext { get; private set; }
 
         /// <summary>
-        /// Unity线程的TaskScheduler;
+        /// Unity线程的 TaskScheduler;
         /// </summary>
         public static TaskScheduler TaskScheduler { get; private set; }
+
+        /// <summary>
+        /// 提供 Unity线程的 TaskFactory;
+        /// </summary>
+        public static TaskFactory TaskFactory { get; private set; }
 
         /// <summary>
         /// 是否不在编辑器内运行;
@@ -50,6 +55,7 @@ namespace JiongXiaGu.Unity
             ThreadId = Thread.CurrentThread.ManagedThreadId;
             SynchronizationContext = SynchronizationContext.Current;
             TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            TaskFactory = new TaskFactory(TaskScheduler);
             IsPlaying = true;
         }
 
@@ -66,39 +72,35 @@ namespace JiongXiaGu.Unity
         }
 
         /// <summary>
-        /// 在Unity内执行,若在Unity线程调用,则为同步执行;
+        /// 在Unity线程内执行;
         /// </summary>
-        public static Task RunInUnityThread(Action action, CancellationToken token = default(CancellationToken))
+        public static Task Run(Action action)
         {
-            token.ThrowIfCancellationRequested();
-
-            if (IsUnityThread)
-            {
-                action.Invoke();
-                return Task.CompletedTask;
-            }
-            else
-            {
-                return TaskHelper.Run(action, token, TaskScheduler);
-            }
+            return TaskFactory.StartNew(action);
         }
 
         /// <summary>
-        /// 在Unity内执行,若在Unity线程调用,则为同步执行;
+        /// 在Unity线程内执行;
         /// </summary>
-        public static Task<T> RunInUnityThread<T>(Func<T> func, CancellationToken token = default(CancellationToken))
+        public static Task Run(Action action, CancellationToken cancellationToken)
         {
-            token.ThrowIfCancellationRequested();
+            return TaskFactory.StartNew(action, cancellationToken);
+        }
 
-            if (IsUnityThread)
-            {
-                T item = func.Invoke();
-                return Task.FromResult(item);
-            }
-            else
-            {
-                return TaskHelper.Run(func, token, TaskScheduler);
-            }
+        /// <summary>
+        /// 在Unity线程内执行;
+        /// </summary>
+        public static Task<T> Run<T>(Func<T> function)
+        {
+            return TaskFactory.StartNew(function);
+        }
+
+        /// <summary>
+        /// 在Unity线程内执行;
+        /// </summary>
+        public static Task<T> Run<T>(Func<T> function, CancellationToken cancellationToken)
+        {
+            return TaskFactory.StartNew(function, cancellationToken);
         }
 
 

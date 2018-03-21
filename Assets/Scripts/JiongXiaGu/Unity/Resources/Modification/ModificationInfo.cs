@@ -22,10 +22,5 @@ namespace JiongXiaGu.Unity.Resources
             ModificationDirectory = modificationDirectory;
             Description = description;
         }
-
-        public static implicit operator string(ModificationInfo info)
-        {
-            return info.ModificationDirectory;
-        }
     }
 }

@@ -8,32 +8,33 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 表示可读写游戏资源;
-    /// 关于 AssetBundle 读取方式,推荐在加载游戏时异步加载所有 AssetBundle;
+    /// 表示可读写游戏资源,包括 AssetBundle 资源;
     /// </summary>
     public class Modification : IDisposable
     {
         private bool isDisposed = false;
-        public ModificationFactory Factory { get; private set; }
         public DirectoryContent BaseContent { get; private set; }
         public string DirectoryPath => BaseContent.DirectoryPath;
         public ModificationDescription Description { get; private set; }
-        private Lazy<List<AssetBundleInfo>> lazyAssetBundles = new Lazy<List<AssetBundleInfo>>();
 
-        internal Modification(ModificationFactory factory, string directory, ModificationDescription description)
+        //internal static Modification Read(string directory, ModificationDescription description)
+        //{
+        //    Modification modification = new Modification(directory, description);
+        //    modification.LoadAssetBundles();
+        //    return modification;
+        //}
+
+        //internal static async Task<Modification> ReadAsync(string directory, ModificationDescription description)
+        //{
+        //    Modification modification = new Modification(directory, description);
+        //    var assetBundleLoadWorkTask = await UnityThread.Run(modification.LoadAssetBundlesAsync);
+        //    await assetBundleLoadWorkTask;
+        //    return modification;
+        //}
+
+        internal Modification(string directory, ModificationDescription description)
         {
-            Factory = factory;
             BaseContent = new DirectoryContent(directory);
-            Description = description;
-        }
-
-        internal Modification(ModificationFactory factory, DirectoryContent content, ModificationDescription description)
-        {
-            if (content == null)
-                throw new ArgumentNullException(nameof(content));
-
-            Factory = factory;
-            BaseContent = content;
             Description = description;
         }
 
@@ -44,9 +45,7 @@ namespace JiongXiaGu.Unity.Resources
                 BaseContent.Dispose();
                 BaseContent = null;
 
-                UnloadAllAssetBundles(true);
-
-                Factory.OnDispose(this);
+                UnloadAll();
 
                 isDisposed = true;
             }
@@ -60,167 +59,165 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        /// <summary>
-        /// 卸载所有 AssetBundles;(仅Unity线程调用)
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        public void UnloadAllAssetBundles(bool unloadAllLoadedObjects)
-        {
-            ThrowIfObjectDisposed();
-            UnityThread.ThrowIfNotUnityThread();
+        #region AssetBundle
 
-            if (lazyAssetBundles.IsValueCreated)
-            {
-                foreach (var info in lazyAssetBundles.Value)
-                {
-                    Unload(info);
-                }
-                lazyAssetBundles.Value.Clear();
-            }
-        }
+        private List<AssetBundleInfo> assetBundles;
 
         /// <summary>
-        /// 卸载 AssetBundle 资源;
+        /// 获取到指定AssetBundle;
         /// </summary>
-        private void Unload(AssetBundleInfo info)
+        /// <exception cref="KeyNotFoundException"></exception>
+        public AssetBundle GetAssetBundle(string name)
         {
-            if (info.LoadTask.Status == TaskStatus.RanToCompletion)
-            {
-                info.LoadTask.Result.Unload(true);
-            }
-            else
-            {
-                info.LoadTask.ContinueWith(delegate (Task<AssetBundle> task)
-                {
-                    if (task.Status == TaskStatus.RanToCompletion)
-                    {
-                        task.Result.Unload(true);
-                    }
-                });
-            }
-        }
-
-        /// <summary>
-        /// 获取到已经读取完毕的 AssetBundle;(仅Unity线程调用)
-        /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="KeyNotFoundException">未找到对应的已读 AssetBundle</exception>
-        /// <exception cref="InvalidOperationException">AssetBundle 正在异步读取中,还未读取完毕</exception>
-        /// <exception cref="IOException"></exception>
-        public AssetBundle GetAssetBundle(string assetBundleName)
-        {
-            ThrowIfObjectDisposed();
-            UnityThread.ThrowIfNotUnityThread();
-            if (string.IsNullOrWhiteSpace(assetBundleName))
-                throw new ArgumentException(assetBundleName);
-
-            int index = FindAssetBundleIndex(assetBundleName);
+            int index = FindAssetBundleInfoIndex(name);
             if (index >= 0)
             {
-                AssetBundleInfo info = lazyAssetBundles.Value[index];
-                if (info.LoadTask.Status == TaskStatus.RanToCompletion)
-                {
-                    return info.LoadTask.Result;
-                }
-                else if (info.LoadTask.Status == TaskStatus.Faulted)
-                {
-                    lazyAssetBundles.Value.RemoveAt(index);
-                    throw new KeyNotFoundException(assetBundleName);
-                }
-                else
-                {
-                    throw new InvalidOperationException("AssetBundle 正在异步读取中;");
-                }
+                var info = assetBundles[index];
+                return info.AssetBundle;
             }
             else
             {
-                throw new KeyNotFoundException(assetBundleName);
+                throw new KeyNotFoundException(name);
             }
         }
 
         /// <summary>
-        /// 获取到读取完毕或正在读取的 AssetBundle;(仅Unity线程调用)
+        /// 尝试获取到指定AssetBundle;
         /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="KeyNotFoundException">未找到对应的 AssetBundle</exception>
-        /// <exception cref="IOException"></exception>
-        public Task<AssetBundle> GetAssetBundleAsync(string assetBundleName)
+        public bool TryGetAssetBundle(string name, out AssetBundle assetBundle)
         {
-            ThrowIfObjectDisposed();
-            UnityThread.ThrowIfNotUnityThread();
-            if (string.IsNullOrWhiteSpace(assetBundleName))
-                throw new ArgumentException(assetBundleName);
-
-            int index = FindAssetBundleIndex(assetBundleName);
+            int index = FindAssetBundleInfoIndex(name);
             if (index >= 0)
             {
-                AssetBundleInfo info = lazyAssetBundles.Value[index];
-                if (info.LoadTask.Status == TaskStatus.Faulted)
+                var info = assetBundles[index];
+                assetBundle = info.AssetBundle;
+                return true;
+            }
+            else
+            {
+                assetBundle = default(AssetBundle);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 尝试获取到对应 AssetBundle 信息 的下标,若不存在则返回 -1;
+        /// </summary>
+        private int FindAssetBundleInfoIndex(string name)
+        {
+            return assetBundles.FindIndex(item => item.Description.Name == name);
+        }
+
+        /// <summary>
+        /// 读取所有 AssetBundle;
+        /// </summary>
+        /// <exception cref="AggregateException">当读取某个或多个 AssetBundle 失败时返回</exception>
+        internal void LoadAssetBundles()
+        {
+            var assetBundleDescriptions = Description.AssetBundles;
+
+            if (assetBundleDescriptions != null)
+            {
+                assetBundles = new List<AssetBundleInfo>(assetBundleDescriptions.Count);
+                foreach (var description in assetBundleDescriptions)
                 {
-                    lazyAssetBundles.Value.RemoveAt(index);
-                    throw new KeyNotFoundException(assetBundleName);
-                }
-                else
-                {
-                    return info.LoadTask;
+                    LoadAssetBundle(description);
                 }
             }
             else
             {
-                throw new KeyNotFoundException(assetBundleName);
+                assetBundles = new List<AssetBundleInfo>(0);
             }
         }
 
-
         /// <summary>
-        /// 读取指定AssetBundle;(仅Unity线程调用)
+        /// 异步读取所有 AssetBundle;
         /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="IOException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
-        public void LoadAllAssetBundles(IEnumerable<AssetBundleDescription> descriptions)
+        /// <exception cref="AggregateException">当读取某个或多个 AssetBundle 失败时返回</exception>
+        internal Task LoadAssetBundlesAsync()
         {
-            ThrowIfObjectDisposed();
-            UnityThread.ThrowIfNotUnityThread();
-            if (Description.AssetBundles == null || Description.AssetBundles.Count == 0)
-                return;
-
-            foreach (var descr in descriptions)
+            var assetBundleDescriptions = Description.AssetBundles;
+            if (assetBundleDescriptions != null)
             {
-                LoadAssetBundle(descr);
+                assetBundles = new List<AssetBundleInfo>(assetBundleDescriptions.Count);
+                List<Task> tasks = new List<Task>(assetBundleDescriptions.Count);
+
+                foreach (var description in assetBundleDescriptions)
+                {
+                    var result = LoadAssetBundleAsync(description);
+                    tasks.Add(result);
+                }
+
+                return Task.WhenAll(tasks);
+            }
+            else
+            {
+                assetBundles = new List<AssetBundleInfo>(0);
+                return Task.CompletedTask;
             }
         }
 
         /// <summary>
-        /// 读取到指定 AssetBundle;(仅Unity线程调用)
+        /// 卸载所有 AssetBundle;
         /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="IOException"></exception>
-        /// <exception cref="ArgumentException">传入描述格式错误 或 已经存在相同的名称的资源</exception>
-        /// <exception cref="InvalidOperationException"></exception>
-        /// <exception cref="FileNotFoundException"></exception>
-        public AssetBundle LoadAssetBundle(AssetBundleDescription description)
+        private void UnloadAll(bool unloadAllLoadedObjects = true)
         {
-            ThrowIfObjectDisposed();
-            UnityThread.ThrowIfNotUnityThread();
+            foreach (var assetBundleInfo in assetBundles)
+            {
+                assetBundleInfo.AssetBundle.Unload(unloadAllLoadedObjects);
+            }
+        }
+
+        /// <summary>
+        /// 添加 AssetBundle 到合集;
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        private AssetBundleInfo LoadAssetBundle(AssetBundleDescription description)
+        {
             if (string.IsNullOrWhiteSpace(description.Name))
                 throw new ArgumentException(nameof(description.Name));
 
-            AssetBundleInfo assetBundlePack;
-            int index = FindAssetBundleIndex(description.Name);
+            AssetBundleInfo assetBundleInfo;
+            int index = FindAssetBundleInfoIndex(description.Name);
             if (index >= 0)
             {
                 throw new ArgumentException(string.Format("已经存在相同的名称的资源:{0}", description.Name));
             }
             else
             {
-                AssetBundle assetBundle = InternalLoadAssetBundle(description);
-                assetBundlePack = new AssetBundleInfo(description, assetBundle);
-                lazyAssetBundles.Value.Add(assetBundlePack);
-                return assetBundlePack.LoadTask.Result;
+                AssetBundle assetBundle = LoadAssetBundle(description.RelativePath);
+                assetBundleInfo = new AssetBundleInfo(description, assetBundle);
+                assetBundles.Add(assetBundleInfo);
+                return assetBundleInfo;
+            }
+        }
+
+        /// <summary>
+        /// 异步添加 AssetBundle 到合集;
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        private Task<AssetBundleInfo> LoadAssetBundleAsync(AssetBundleDescription description)
+        {
+            if (string.IsNullOrWhiteSpace(description.Name))
+                throw new ArgumentException(nameof(description.Name));
+
+            int index = FindAssetBundleInfoIndex(description.Name);
+            if (index >= 0)
+            {
+                throw new ArgumentException(string.Format("已经存在相同的名称的资源:{0}", description.Name));
+            }
+            else
+            {
+                return LoadAssetBundleAsync(description.RelativePath).ContinueWith(delegate(Task<AssetBundle> task)
+                {
+                    AssetBundleInfo assetBundleInfo = new AssetBundleInfo(description, task.Result);
+                    assetBundles.Add(assetBundleInfo);
+                    return assetBundleInfo;
+                });
             }
         }
 
@@ -229,9 +226,9 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         /// <exception cref="IOException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
-        private AssetBundle InternalLoadAssetBundle(AssetBundleDescription description)
+        private AssetBundle LoadAssetBundle(string relativePath)
         {
-            string filePath = Path.Combine(DirectoryPath, description.RelativePath);
+            string filePath = Path.Combine(DirectoryPath, relativePath);
             if (!File.Exists(filePath))
                 throw new FileNotFoundException(filePath);
 
@@ -242,88 +239,38 @@ namespace JiongXiaGu.Unity.Resources
             }
             else
             {
-                throw new IOException(string.Format("无法加载 AssetBundle[Name:{0}, Path:{1}]", description.Name, description.RelativePath));
+                throw new IOException(string.Format("无法加载 AssetBundle[Path:{0}]", relativePath));
             }
         }
 
-
-
         /// <summary>
-        /// 异步读取所有AssetBundle;(仅Unity线程调用)
-        /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="IOException"></exception>
-        public Task LoadAllAssetBundlesAsync(IEnumerable<AssetBundleDescription> descriptions)
-        {
-            ThrowIfObjectDisposed();
-            UnityThread.ThrowIfNotUnityThread();
-            if (Description.AssetBundles == null || Description.AssetBundles.Count == 0)
-                return Task.CompletedTask;
-
-            var tasks = new List<Task>();
-
-            foreach (var descr in descriptions)
-            {
-                var loadTask = LoadAssetBundleAsync(descr);
-                var assetBundleInfo = new AssetBundleInfo(descr, loadTask);
-                lazyAssetBundles.Value.Add(assetBundleInfo);
-                tasks.Add(loadTask);
-            }
-
-            return Task.WhenAll(tasks);
-        }
-
-        /// <summary>
-        /// 异步读取到 AssetBundle;
+        /// 异步读取 AssetBundle,在Unity线程执行,并且在Unity线程回调;
         /// </summary>
         /// <exception cref="IOException"></exception>
-        /// <exception cref="ArgumentException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
-        private Task<AssetBundle> LoadAssetBundleAsync(AssetBundleDescription description)
+        private Task<AssetBundle> LoadAssetBundleAsync(string relativePath)
         {
-            string filePath = Path.Combine(DirectoryPath, description.RelativePath);
+            string filePath = Path.Combine(DirectoryPath, relativePath);
             if (!File.Exists(filePath))
                 throw new FileNotFoundException(filePath);
 
-            return AssetBundle.LoadFromFileAsync(filePath).AsTask();
+            var request = AssetBundle.LoadFromFileAsync(filePath);
+            return request.AsTask();
         }
 
-        /// <summary>
-        /// 尝试获取到对应 AssetBundle 信息 的下标,若不存在则返回 -1;
-        /// </summary>
-        private int FindAssetBundleIndex(string assetBundleName)
-        {
-            if (lazyAssetBundles.IsValueCreated)
-            {
-                int index = lazyAssetBundles.Value.FindIndex(item => item.Name == assetBundleName);
-                return index;
-            }
-            return -1;
-        }
-
-        /// <summary>
-        /// 资源包读取状态信息;
-        /// </summary>
         private struct AssetBundleInfo
         {
-            public AssetBundleDescription Description { get; set; }
-            public Task<AssetBundle> LoadTask { get; set; }
-            public string Name => Description.Name;
+            public AssetBundleDescription Description { get; private set; }
+            public AssetBundle AssetBundle { get; private set; }
 
             public AssetBundleInfo(AssetBundleDescription description, AssetBundle assetBundle)
             {
                 Description = description;
-                LoadTask = Task.FromResult(assetBundle);
-            }
-
-            public AssetBundleInfo(AssetBundleDescription description, Task<AssetBundle> assetBundle)
-            {
-                Description = description;
-                LoadTask = assetBundle;
+                AssetBundle = assetBundle;
             }
         }
 
+        #endregion
 
         #region 资源获取
 

@@ -26,16 +26,16 @@ namespace JiongXiaGu.Unity.RunTime
         /// </summary>
         internal static void SearcheAll()
         {
-            ModificationSearcher contentSearcher = new ModificationSearcher();
+            ModificationFactory contentSearcher = new ModificationFactory();
             ModificationInfos = new List<ModificationInfo>();
 
             string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
-            Core = contentSearcher.Factory.Read(directory);
+            Core = contentSearcher.Read(directory);
 
-            var mods = contentSearcher.Searche(Resource.ModDirectory);
+            var mods = contentSearcher.EnumerateModifications(Resource.ModDirectory);
             ModificationInfos.AddRange(mods);
 
-            var userMods = contentSearcher.Searche(Resource.UserModDirectory);
+            var userMods = contentSearcher.EnumerateModifications(Resource.UserModDirectory);
             ModificationInfos.AddRange(userMods);
         }
 
@@ -236,7 +236,7 @@ namespace JiongXiaGu.Unity.RunTime
                     if (index >= 0)
                     {
                         var info = ModificationInfos[index];
-                        Modification content = factory.Read(info);
+                        Modification content = factory.Read(info.ModificationDirectory);
                         newList.Add(content);
                     }
                     else
@@ -270,8 +270,7 @@ namespace JiongXiaGu.Unity.RunTime
                 {
                     if (mod != null)
                     {
-                        mod.UnloadAllAssetBundles(true);
-                        mod.BaseContent.Dispose();
+                        mod.Dispose();
                     }
                 }
             }

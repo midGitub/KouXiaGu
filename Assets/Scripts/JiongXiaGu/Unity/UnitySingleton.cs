@@ -51,10 +51,10 @@ namespace JiongXiaGu.Unity
                     if (!UnityThread.IsPlaying)
                     {
                         Debug.LogWarning("在编辑模式下进行了单例访问;");
-                        return UnityThread.RunInUnityThread(Find).Result;
+                        return UnityThread.Run(Find).Result;
                     }
 #endif
-                    return instance ?? (instance = UnityThread.RunInUnityThread(Find).Result);
+                    return instance ?? (instance = UnityThread.Run(Find).Result);
                 }
             }
         }

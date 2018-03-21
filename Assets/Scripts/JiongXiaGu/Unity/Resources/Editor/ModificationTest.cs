@@ -28,24 +28,24 @@ namespace JiongXiaGu.Unity.Resources
             },
         };
 
-        [Test]
-        public void TestDirectory()
-        {
-            ModificationDescription descr;
-            string directory = Path.Combine(NUnit.TempDirectory, nameof(ModificationTest), "Directory0");
-            TryDeleteDirectory(directory);
+        //[Test]
+        //public void TestDirectory()
+        //{
+        //    ModificationDescription descr;
+        //    string directory = Path.Combine(NUnit.TempDirectory, nameof(ModificationTest), "Directory0");
+        //    TryDeleteDirectory(directory);
 
-            using (var v1 = factory.Create(directory, description0))
-            {
-                descr = v1.Description;
-                ContentReadWriteTest(v1.BaseContent);
-            }
+        //    using (var v1 = factory.Create(directory, description0))
+        //    {
+        //        descr = v1.Description;
+        //        ContentReadWriteTest(v1.BaseContent);
+        //    }
 
-            using (var v2 = factory.Read(directory))
-            {
-                Assert.AreEqual(descr, v2.Description);
-            }
-        }
+        //    using (var v2 = factory.Read(directory))
+        //    {
+        //        Assert.AreEqual(descr, v2.Description);
+        //    }
+        //}
 
         private bool TryDeleteDirectory(string directory)
         {
