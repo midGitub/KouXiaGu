@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity.Resources
             ModificationDescription description = ReadDescription(directory);
 
             Modification modification = new Modification(directory, description);
-            modification.LoadAssetBundles();
+            modification.LoadAllAssetBundles();
 
             return modification;
         }
@@ -45,7 +45,7 @@ namespace JiongXiaGu.Unity.Resources
             ModificationDescription description = ReadDescription(directory);
 
             Modification modification = new Modification(directory, description);
-            var assetBundleLoadWorkTask = await UnityThread.Run(modification.LoadAssetBundlesAsync);
+            var assetBundleLoadWorkTask = await UnityThread.Run(modification.LoadAllAssetBundlesAsync);
             await assetBundleLoadWorkTask;
 
             return modification;

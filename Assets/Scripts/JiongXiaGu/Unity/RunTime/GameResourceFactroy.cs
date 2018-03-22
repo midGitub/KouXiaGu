@@ -20,7 +20,7 @@ namespace JiongXiaGu.Unity.RunTime
         /// <summary>
         /// 读取游戏资源;
         /// </summary>
-        public GameResource Read(IEnumerable<Modification> modifications, IProgress<string> progress)
+        public GameResource Read(IEnumerable<Modification> modifications, IProgress<string> progress = null)
         {
             if (modifications == null)
                 throw new ArgumentNullException(nameof(modifications));

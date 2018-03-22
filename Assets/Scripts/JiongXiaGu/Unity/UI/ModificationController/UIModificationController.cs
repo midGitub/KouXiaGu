@@ -97,16 +97,8 @@ namespace JiongXiaGu.Unity.UI
                 throw new ArgumentNullException(nameof(uiItem));
 
             SelectTarget = uiItem;
-            string modificationName = uiItem.Description.ID;
-            ModificationInfo info;
-            if (RunTime.ModificationController.TryGetInfo(modificationName, out info))
-            {
-                uIModificationInfo.SetDescription(info.Description);
-            }
-            else
-            {
-                uIModificationInfo.Clear();
-            }
+            ModificationInfo info = uiItem.ModificationInfo;
+            uIModificationInfo.SetDescription(info);
         }
 
         /// <summary>
@@ -114,18 +106,16 @@ namespace JiongXiaGu.Unity.UI
         /// </summary>
         public void Refresh()
         {
-            var activeModificationInfos = RunTime.ModificationController.GetActiveModificationInfos();
-            var activeDescriptions = activeModificationInfos.Select(item => item.Description);
-            SetActiveModificationList(activeDescriptions);
+            SetActiveModificationList(ModificationController.ActivatedModificationInfos);
 
-            var idleModificationInfos = RunTime.ModificationController.GetIdleModificationInfos(activeModificationInfos);
-            var idleDescriptions = idleModificationInfos.Select(item => item.Description);
-            SetIdleModificationList(idleDescriptions);
+            var idleModificationInfos = new List<ModificationInfo>();
+            ModificationController.GetIdleModificationInfos(idleModificationInfos);
+            SetIdleModificationList(idleModificationInfos);
         }
 
         public void WriteConfig()
         {
-            var activeModificationID = EnumerateActiveModificationInfo().Select(item => item.ID);
+            var activeModificationID = EnumerateActiveModificationInfo().Select(item => item.Description.ID);
             var activeModification = new ModificationLoadOrder(activeModificationID);
 
             ModificationLoadOrderSerializer activeModificationSerializer = new ModificationLoadOrderSerializer();
@@ -141,17 +131,17 @@ namespace JiongXiaGu.Unity.UI
             Destroy(gameObject);
         }
 
-        public void SetActiveModificationList(IEnumerable<ModificationDescription> descriptions)
+        public void SetActiveModificationList(IEnumerable<ModificationInfo> descriptions)
         {
             SetModificationList(activeModificationContent, descriptions);
         }
 
-        public void SetIdleModificationList(IEnumerable<ModificationDescription> descriptions)
+        public void SetIdleModificationList(IEnumerable<ModificationInfo> descriptions)
         {
             SetModificationList(idleModificationContent, descriptions);
         }
 
-        private void SetModificationList(Transform parent, IEnumerable<ModificationDescription> descriptions)
+        private void SetModificationList(Transform parent, IEnumerable<ModificationInfo> descriptions)
         {
             if (parent.childCount > 0)
             {
@@ -171,25 +161,25 @@ namespace JiongXiaGu.Unity.UI
         /// <summary>
         /// 创建一个条目到激活列表;
         /// </summary>
-        public void CreateAsActive(ModificationDescription description)
+        public void CreateAsActive(ModificationInfo info)
         {
-            CreateAt(activeModificationContent, description);
+            CreateAt(activeModificationContent, info);
         }
 
         /// <summary>
         /// 创建一个条目到失效列表;
         /// </summary>
         /// <param name="info"></param>
-        public void CreateAsIdle(ModificationDescription description)
+        public void CreateAsIdle(ModificationInfo info)
         {
-            CreateAt(idleModificationContent, description);
+            CreateAt(idleModificationContent, info);
         }
 
-        private void CreateAt(Transform parent, ModificationDescription description)
+        private void CreateAt(Transform parent, ModificationInfo info)
         {
             var item = Instantiate(uIModificationItemPrefab, parent);
             item.Controller = this;
-            item.SetDescription(description);
+            item.SetDescription(info);
             item.ToggleObject.group = toggleGroupObject;
         }
 
@@ -197,7 +187,7 @@ namespace JiongXiaGu.Unity.UI
         /// <summary>
         /// 按排列顺序枚举所有选中列表中的模组名;
         /// </summary>
-        public IEnumerable<ModificationDescription> EnumerateActiveModificationInfo()
+        public IEnumerable<ModificationInfo> EnumerateActiveModificationInfo()
         {
             return EnumerateModificationInfo(activeModificationContent);
         }
@@ -205,7 +195,7 @@ namespace JiongXiaGu.Unity.UI
         /// <summary>
         /// 按排列顺序枚举所以未选中列表中的模组名;
         /// </summary>
-        public IEnumerable<ModificationDescription> EnumerateIdleModificationInfo()
+        public IEnumerable<ModificationInfo> EnumerateIdleModificationInfo()
         {
             return EnumerateModificationInfo(idleModificationContent);
         }
@@ -213,14 +203,14 @@ namespace JiongXiaGu.Unity.UI
         /// <summary>
         /// 按排列顺序枚举所有模组名;
         /// </summary>
-        private IEnumerable<ModificationDescription> EnumerateModificationInfo(Transform parent)
+        private IEnumerable<ModificationInfo> EnumerateModificationInfo(Transform parent)
         {
             foreach (Transform child in parent)
             {
                 var modItem = child.GetComponent<UIModificationItem>();
                 if (modItem != null)
                 {
-                    yield return modItem.Description;
+                    yield return modItem.ModificationInfo;
                 }
             }
         }

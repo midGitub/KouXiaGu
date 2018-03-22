@@ -25,8 +25,6 @@ namespace JiongXiaGu.Unity.RunTime
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static Task Initialize()
         {
-            UnityThread.ThrowIfNotUnityThread();
-
             if (WorkTask != null)
             {
                 return WorkTask;
@@ -81,7 +79,7 @@ namespace JiongXiaGu.Unity.RunTime
         {
             Action[] words = new Action[]
             {
-                ModificationController.SearcheAll,
+                ModificationController.Initialize,
                 GameConsole.Initialize,
                 KeyInput.Initialize,
             };

@@ -29,13 +29,11 @@ namespace JiongXiaGu.Unity.Initializers
         private Canvas defaultCanvas;
         public Canvas DefaultCanvas => defaultCanvas;
 
-        private async void Start()
+        private void Start()
         {
             IProgress<ProgressInfo> progress = progressBar.Progress;
             try
             {
-                await RunTime.ModificationController.Initialize(progress);
-
                 menuDisplaySwitcher.Display();
                 progressBarDisplaySwitcher.Hide(3);
             }

@@ -14,7 +14,11 @@ namespace JiongXiaGu.Unity.RunTime
     /// </summary>
     public class GameResource
     {
+        /// <summary>
+        /// 来自的模组;按模组读取顺序排序;
+        /// </summary>
         public IReadOnlyList<Modification> Modifications { get; internal set; }
+
         public LandformResource LandformResource { get; internal set; }
     }
 }

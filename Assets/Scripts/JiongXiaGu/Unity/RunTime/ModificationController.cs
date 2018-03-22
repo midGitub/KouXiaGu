@@ -1,95 +1,171 @@
-﻿using JiongXiaGu.Unity.Initializers;
-using JiongXiaGu.Unity.Resources;
-using JiongXiaGu.Unity.UI;
+﻿using JiongXiaGu.Unity.Resources;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using UnityEngine;
+using System.Linq;
 
 namespace JiongXiaGu.Unity.RunTime
 {
 
-    /// <summary>
-    /// 模组管理;
-    /// </summary>
-    public static class ModificationController
+
+    public sealed class ModificationController : IGameResourceProvider
     {
+        private static readonly ModificationController _default = new ModificationController();
+        public static ModificationController Default => _default;
+
+        private static readonly List<ModificationInfo> modificationInfos = new List<ModificationInfo>();
+        private static readonly List<ModificationInfo> activatedModificationInfos = new List<ModificationInfo>();
+        private static readonly List<Modification> loadedModifications = new List<Modification>();
+        private static readonly ModificationFactory modificationFactory = new ModificationFactory();
+
         /// <summary>
-        /// 所有模组信息,包括核心资源;
+        /// 核心资源;
         /// </summary>
-        public static List<ModificationInfo> ModificationInfos { get; private set; }
+        public static ModificationInfo Core { get; private set; }
+
+        /// <summary>
+        /// 所有模组信息,不包括核心资源;
+        /// </summary>
+        public static IReadOnlyList<ModificationInfo> ModificationInfos => modificationInfos;
+
+        /// <summary>
+        /// 所有激活模组信息,不包括核心资源;
+        /// </summary>
+        public static IReadOnlyList<ModificationInfo> ActivatedModificationInfos => activatedModificationInfos;
+
+        /// <summary>
+        /// 已读取的模组,包括核心资源;
+        /// </summary>
+        public static IReadOnlyList<Modification> Modifications => loadedModifications;
+
+        /// <summary>
+        /// 模组数据;
+        /// </summary>
+        public static GameResource GameResource { get; private set; }
+
+        /// <summary>
+        /// 初始化;
+        /// </summary>
+        internal static void Initialize()
+        {
+            SearcheAll();
+            ReadDefaultLoadOrder();
+        }
 
         /// <summary>
         /// 寻找所有模组;
         /// </summary>
-        internal static void SearcheAll()
+        private static void SearcheAll()
         {
-            ModificationFactory contentSearcher = new ModificationFactory();
-            ModificationInfos = new List<ModificationInfo>();
+            ModificationFactory factory = new ModificationFactory();
 
             string directory = Path.Combine(Resource.StreamingAssetsPath, "Data");
-            Core = contentSearcher.Read(directory);
+            Core = factory.ReadInfo(directory);
 
-            var mods = contentSearcher.EnumerateModifications(Resource.ModDirectory);
-            ModificationInfos.AddRange(mods);
+            var mods = factory.EnumerateModifications(Resource.ModDirectory);
+            modificationInfos.AddRange(mods);
 
-            var userMods = contentSearcher.EnumerateModifications(Resource.UserModDirectory);
-            ModificationInfos.AddRange(userMods);
+            var userMods = factory.EnumerateModifications(Resource.UserModDirectory);
+            modificationInfos.AddRange(userMods);
         }
 
         /// <summary>
-        /// 根据预先定义的模组顺序获取到激活的模组(按先后读取顺序);
+        /// 读取到默认的模组读取顺序;
         /// </summary>
-        public static List<ModificationInfo> GetActiveModificationInfos()
+        private static void ReadDefaultLoadOrder()
         {
             try
             {
-                ModificationLoadOrder order;
                 ModificationLoadOrderSerializer serializer = new ModificationLoadOrderSerializer();
 
-                order = serializer.Deserialize();
-                return GetActiveModificationInfos(order);
-            }
-            catch
-            {
-                List<ModificationInfo> newList = new List<ModificationInfo>();
-                return newList;
-            }
-        }
-
-        /// <summary>
-        /// 根据模组顺序获取到激活的模组(按先后读取顺序);
-        /// </summary>
-        public static List<ModificationInfo> GetActiveModificationInfos(ModificationLoadOrder activeModification)
-        {
-            List<ModificationInfo> newList = new List<ModificationInfo>();
-
-            if (ModificationInfos != null)
-            {
-                foreach (var id in activeModification.IDList)
+                ModificationLoadOrder order = serializer.Deserialize();
+                if (order.IDList != null)
                 {
-                    int index = ModificationInfos.FindIndex(info => info.Description.ID == id);
-                    if (index >= 0)
-                    {
-                        ModificationInfo info = ModificationInfos[index];
-                        newList.Add(info);
-                    }
+                    SetLoadOrder(order.IDList);
                 }
             }
-
-            return newList;
+            catch (FileNotFoundException)
+            {
+            }
         }
 
         /// <summary>
-        /// 筛选模组;
+        /// 设置为默认的模组读取顺序;
         /// </summary>
-        public static List<ModificationInfo> GetIdleModificationInfos(IList<ModificationInfo> activeModificationInfos)
+        public static void SetDefaultLoadOrder()
         {
-            var idleModificationInfos = new List<ModificationInfo>();
+            try
+            {
+                ModificationLoadOrderSerializer serializer = new ModificationLoadOrderSerializer();
 
-            if (ModificationInfos != null)
+                ModificationLoadOrder order = serializer.Deserialize();
+                if (order.IDList != null)
+                {
+                    SetLoadOrder(order.IDList);
+                }
+                else
+                {
+                    SetLoadCoreOnly();
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                SetLoadCoreOnly();
+            }
+        }
+
+        /// <summary>
+        /// 设置只读核心资源;
+        /// </summary>
+        public static void SetLoadCoreOnly()
+        {
+            activatedModificationInfos.Clear();
+        }
+
+        /// <summary>
+        /// 设置模组读取顺序(仅Unity线程调用);
+        /// </summary>
+        public static void SetLoadOrder(IEnumerable<string> modificationIDs)
+        {
+            if (modificationIDs == null)
+                throw new ArgumentNullException(nameof(modificationIDs));
+
+            activatedModificationInfos.Clear();
+
+            foreach (var id in modificationIDs.Distinct())
+            {
+                int index = modificationInfos.FindIndex(info => info.Description.ID == id);
+                if (index >= 0)
+                {
+                    ModificationInfo info = ModificationInfos[index];
+                    activatedModificationInfos.Add(info);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取到未启用的模组;
+        /// </summary>
+        public static void GetIdleModificationInfos(List<ModificationInfo> idleModificationInfos)
+        {
+            GetIdleModificationInfos(idleModificationInfos, activatedModificationInfos);
+        }
+
+        /// <summary>
+        /// 获取到未启用的模组;
+        /// </summary>
+        public static void GetIdleModificationInfos(List<ModificationInfo> idleModificationInfos, IReadOnlyList<ModificationInfo> activeModificationInfos)
+        {
+            if (idleModificationInfos == null)
+                throw new ArgumentNullException(nameof(idleModificationInfos));
+            if (activeModificationInfos == null)
+                throw new ArgumentNullException(nameof(activeModificationInfos));
+
+            if (activeModificationInfos.Count == 0)
+            {
+                idleModificationInfos.AddRange(modificationInfos);
+            }
+            else
             {
                 foreach (var modificationInfo in ModificationInfos)
                 {
@@ -99,183 +175,102 @@ namespace JiongXiaGu.Unity.RunTime
                     }
                 }
             }
-
-            return idleModificationInfos;
         }
 
         /// <summary>
-        /// 尝试获取到对应模组信息;
+        /// 所有激活模组信息,包括核心资源;
         /// </summary>
-        public static bool TryGetInfo(string id, out ModificationInfo info)
+        public static IEnumerable<ModificationInfo> GetActivatedModificationInfos()
         {
-            int index = ModificationInfos.FindIndex(item => item.Description.ID == id);
-            if (index >= 0)
+            return new ModificationInfo[] { Core }.Concat(activatedModificationInfos);
+        }
+
+
+
+        GameResource IGameResourceProvider.GetResource()
+        {
+            if (LoadModification())
             {
-                info = ModificationInfos[index];
+                GameResourceFactroy factroy = new GameResourceFactroy();
+                GameResource = factroy.Read(loadedModifications);
+                return GameResource;
+            }
+            else
+            {
+                return GameResource;
+            }
+        }
+
+        /// <summary>
+        /// 激活指定的模组,若未变化则返回false,模组发生变化则返回true;
+        /// </summary>
+        private static bool LoadModification()
+        {
+            IEnumerable<ModificationInfo> infos = GetActivatedModificationInfos();
+
+            if (loadedModifications == null)
+            {
+                foreach (var info in infos)
+                {
+                    var modification = modificationFactory.Read(info.ModificationDirectory);
+                    loadedModifications.Add(modification);
+                }
+
                 return true;
             }
             else
             {
-                info = default(ModificationInfo);
-                return false;
-            }
-        }
+                bool isChanged = false;
+                List<Modification> newModifications = new List<Modification>();
+                int startIndex = 0;
 
-
-
-
-        /// <summary>
-        /// 核心资源;
-        /// </summary>
-        public static Modification Core { get; private set; }
-
-        /// <summary>
-        /// 需要读取的模组资源,包括核心资源;
-        /// </summary>
-        internal static List<Modification> ModificationContents { get; private set; }
-
-        private static Task initializeTask;
-        private static CancellationTokenSource cancellationTokenSource;
-        public static TaskStatus InitializeTaskStatus => initializeTask != null ? initializeTask.Status : TaskStatus.WaitingToRun;
-
-        /// <summary>
-        /// 进行初始化,若已经初始化,初始化中则无任何操作;
-        /// </summary>
-        public static Task Initialize(IProgress<ProgressInfo> progress)
-        {
-            UnityThread.ThrowIfNotUnityThread();
-
-            if (initializeTask == null || initializeTask.IsCompleted)
-            {
-                cancellationTokenSource = new CancellationTokenSource();
-                initializeTask = InternalInitialize(progress, cancellationTokenSource.Token);
-            }
-            else if (cancellationTokenSource.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("初始化正在被取消!");
-            }
-
-            return initializeTask;
-        }
-
-        private static async Task InternalInitialize(IProgress<ProgressInfo> progress, CancellationToken token)
-        {
-            progress?.Report(new ProgressInfo(0.1f, "程序初始化"));
-            await Program.WorkTask;
-
-            progress?.Report(new ProgressInfo(0.2f, "模组排序"));
-            ModificationContents = GetModificationContent();
-
-            progress?.Report(new ProgressInfo(0.5f, "模组初始化"));
-            var resourceProgress = new LocalProgress(progress, 0.5f, 1f);
-            await ModificationInitializer.StartInitialize(ModificationContents, resourceProgress, token);
-
-            progress?.Report(new ProgressInfo(1f, "初始化完毕"));
-        }
-
-        /// <summary>
-        /// 取消初始化;
-        /// </summary>
-        public static Task Cancel(IProgress<ProgressInfo> progress)
-        {
-            UnityThread.ThrowIfNotUnityThread();
-            if (progress == null)
-                throw new ArgumentNullException(nameof(progress));
-
-            if (initializeTask != null)
-            {
-                cancellationTokenSource.Cancel();
-                return initializeTask.ContinueWith(delegate (Task task)
+                foreach (var info in infos)
                 {
-                    cancellationTokenSource = null;
-                    initializeTask = null;
-                });
-            }
-            else
-            {
-                return Task.CompletedTask;
-            }
-        }
-
-
-        /// <summary>
-        /// 根据预先定义的模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;
-        /// </summary>
-        private static List<Modification> GetModificationContent()
-        {
-            try
-            {
-                ModificationLoadOrder order;
-                ModificationLoadOrderSerializer serializer = new ModificationLoadOrderSerializer();
-
-                order = serializer.Deserialize();
-                return GetModificationContent(order);
-            }
-            catch (FileNotFoundException)
-            {
-                List<Modification> newList = new List<Modification>();
-                newList.Add(Core);
-                return newList;
-            }
-        }
-
-        /// <summary>
-        /// 根据模组顺序获取到激活的模组(按先后读取顺序),包含核心模组;
-        /// </summary>
-        private static List<Modification> GetModificationContent(ModificationLoadOrder activeModification)
-        {
-            List<Modification> newList = new List<Modification>();
-            newList.Add(Core);
-            ModificationFactory factory = new ModificationFactory();
-
-            if (ModificationContents == null)
-            {
-                foreach (var id in activeModification.IDList)
-                {
-                    int index = ModificationInfos.FindIndex(_info => _info.Description.ID == id);
-                    if (index >= 0)
+                    var modification = loadedModifications[startIndex];
+                    if (Equals(modification, info))
                     {
-                        var info = ModificationInfos[index];
-                        Modification content = factory.Read(info.ModificationDirectory);
-                        newList.Add(content);
+                        loadedModifications[startIndex] = null;
+                        newModifications.Add(modification);
                     }
                     else
                     {
-                        Debug.LogWarning(string.Format("未找到ID为[{0}]的模组;", id));
+                        isChanged = true;
+
+                        var targetIndex = loadedModifications.FindIndex(startIndex, delegate (Modification value)
+                        {
+                            if (value == null)
+                                return false;
+
+                            return value.Description.ID == info.Description.ID;
+                        });
+
+                        if (targetIndex >= 0)
+                        {
+                            modification = loadedModifications[targetIndex];
+                            loadedModifications[targetIndex] = null;
+                            newModifications.Add(modification);
+                        }
+                        else
+                        {
+                            modification = modificationFactory.Read(info.ModificationDirectory);
+                            newModifications.Add(modification);
+                        }
                     }
                 }
-            }
-            else
-            {
-                List<Modification> old = ModificationContents;
 
-                foreach (var info in activeModification.IDList)
+                foreach (var old in loadedModifications)
                 {
-                    Modification content;
-                    int index = old.FindIndex(oldContent => oldContent.Description.ID == info);
-                    if (index >= 0)
+                    if (old != null)
                     {
-                        content = old[index];
-                        old[index] = null;
-                    }
-                    else
-                    {
-                        content = factory.Read(info);
-                    }
-
-                    newList.Add(content);
-                }
-
-                foreach (var mod in old)
-                {
-                    if (mod != null)
-                    {
-                        mod.Dispose();
+                        old.Dispose();
                     }
                 }
+
+                loadedModifications.Clear();
+                loadedModifications.AddRange(newModifications);
+
+                return isChanged;
             }
-
-            return newList;
         }
     }
 }

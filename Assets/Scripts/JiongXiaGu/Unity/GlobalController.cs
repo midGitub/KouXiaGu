@@ -62,7 +62,7 @@ namespace JiongXiaGu.Unity
         public MeshRenderer meshRenderer;
 
         [ContextMenu("Test1")]
-        private async void Test1()
+        private void Test1()
         {
             //LandformDescription description = new LandformDescription()
             //{

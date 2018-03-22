@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity.UI
         private Text modificationNameTextObject;
         private Toggle toggleObject;
 
-        public ModificationDescription Description { get; private set; }
+        public ModificationInfo ModificationInfo { get; private set; }
         public Toggle ToggleObject => toggleObject;
 
         public UIModificationController Controller
@@ -49,10 +49,10 @@ namespace JiongXiaGu.Unity.UI
             }
         }
 
-        public void SetDescription(ModificationDescription description)
+        public void SetDescription(ModificationInfo modificationInfo)
         {
-            Description = description;
-            modificationNameTextObject.text = description.Name;
+            ModificationInfo = modificationInfo;
+            modificationNameTextObject.text = modificationInfo.Description.Name;
         }
     }
 }

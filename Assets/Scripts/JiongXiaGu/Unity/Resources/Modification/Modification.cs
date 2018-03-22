@@ -17,21 +17,6 @@ namespace JiongXiaGu.Unity.Resources
         public string DirectoryPath => BaseContent.DirectoryPath;
         public ModificationDescription Description { get; private set; }
 
-        //internal static Modification Read(string directory, ModificationDescription description)
-        //{
-        //    Modification modification = new Modification(directory, description);
-        //    modification.LoadAssetBundles();
-        //    return modification;
-        //}
-
-        //internal static async Task<Modification> ReadAsync(string directory, ModificationDescription description)
-        //{
-        //    Modification modification = new Modification(directory, description);
-        //    var assetBundleLoadWorkTask = await UnityThread.Run(modification.LoadAssetBundlesAsync);
-        //    await assetBundleLoadWorkTask;
-        //    return modification;
-        //}
-
         internal Modification(string directory, ModificationDescription description)
         {
             BaseContent = new DirectoryContent(directory);
@@ -69,6 +54,10 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="KeyNotFoundException"></exception>
         public AssetBundle GetAssetBundle(string name)
         {
+            ThrowIfObjectDisposed();
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
             int index = FindAssetBundleInfoIndex(name);
             if (index >= 0)
             {
@@ -86,6 +75,10 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         public bool TryGetAssetBundle(string name, out AssetBundle assetBundle)
         {
+            ThrowIfObjectDisposed();
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
             int index = FindAssetBundleInfoIndex(name);
             if (index >= 0)
             {
@@ -112,7 +105,7 @@ namespace JiongXiaGu.Unity.Resources
         /// 读取所有 AssetBundle;
         /// </summary>
         /// <exception cref="AggregateException">当读取某个或多个 AssetBundle 失败时返回</exception>
-        internal void LoadAssetBundles()
+        internal void LoadAllAssetBundles()
         {
             var assetBundleDescriptions = Description.AssetBundles;
 
@@ -134,7 +127,7 @@ namespace JiongXiaGu.Unity.Resources
         /// 异步读取所有 AssetBundle;
         /// </summary>
         /// <exception cref="AggregateException">当读取某个或多个 AssetBundle 失败时返回</exception>
-        internal Task LoadAssetBundlesAsync()
+        internal Task LoadAllAssetBundlesAsync()
         {
             var assetBundleDescriptions = Description.AssetBundles;
             if (assetBundleDescriptions != null)
@@ -271,6 +264,7 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         #endregion
+
 
         #region 资源获取
 

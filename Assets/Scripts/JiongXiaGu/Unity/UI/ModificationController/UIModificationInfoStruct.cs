@@ -13,8 +13,9 @@ namespace JiongXiaGu.Unity.UI
         public InputField VersionLabel;
         public InputField MessageLabel;
 
-        public void SetDescription(ModificationDescription description)
+        public void SetDescription(ModificationInfo info)
         {
+            ModificationDescription description = info.Description;
             IDLabel.text = description.ID;
             NameLabel.text = description.Name;
             AuthorLabel.text = description.Author;

@@ -29,7 +29,7 @@ namespace JiongXiaGu.Unity.Resources
         [PathDefinition(PathDefinitionType.Config, "资源读取顺序定义")]
         public override string RelativePath
         {
-            get { return "ActiveModification.xml"; }
+            get { return "ActiveModifications.xml"; }
         }
 
         private readonly XmlSerializer<ModificationLoadOrder> xmlSerializer = new XmlSerializer<ModificationLoadOrder>();

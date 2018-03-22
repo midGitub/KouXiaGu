@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -9,6 +8,8 @@ namespace JiongXiaGu.Unity
 
     public static class UnityThread
     {
+        public static bool IsInitialized { get; private set; } = false;
+
         /// <summary>
         /// Unity线程ID;
         /// </summary>
@@ -17,17 +18,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 是否在Unity主线程?
         /// </summary>
-        public static bool IsUnityThread
-        {
-            get
-            {
-#if UNITY_EDITOR
-                return !IsPlaying || Thread.CurrentThread.ManagedThreadId == ThreadId;
-#else
-                return Thread.CurrentThread.ManagedThreadId == ThreadId;
-#endif
-            }
-        }
+        public static bool IsUnityThread => Thread.CurrentThread.ManagedThreadId == ThreadId;
 
         /// <summary>
         /// Unity线程的SynchronizationContext;
@@ -49,14 +40,21 @@ namespace JiongXiaGu.Unity
         /// </summary>
         public static bool IsPlaying { get; private set; } = false;
 
+        /// <summary>
+        /// 初始化,在Unity线程调用!
+        /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
-            ThreadId = Thread.CurrentThread.ManagedThreadId;
-            SynchronizationContext = SynchronizationContext.Current;
-            TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            TaskFactory = new TaskFactory(TaskScheduler);
-            IsPlaying = true;
+            if (!IsInitialized)
+            {
+                IsInitialized = true;
+                ThreadId = Thread.CurrentThread.ManagedThreadId;
+                SynchronizationContext = SynchronizationContext.Current;
+                TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+                TaskFactory = new TaskFactory(TaskScheduler);
+                IsPlaying = Application.isPlaying;
+            }
         }
 
         /// <summary>
@@ -101,57 +99,6 @@ namespace JiongXiaGu.Unity
         public static Task<T> Run<T>(Func<T> function, CancellationToken cancellationToken)
         {
             return TaskFactory.StartNew(function, cancellationToken);
-        }
-
-
-        /// <summary>
-        /// 转换成 Task 格式;
-        /// </summary>
-        public static Task AsTask(this AsyncOperation asyncOperation)
-        {
-            if (asyncOperation == null)
-                throw new ArgumentNullException(nameof(asyncOperation));
-            if (asyncOperation.isDone)
-                return Task.CompletedTask;
-
-            var taskCompletionSource = new TaskCompletionSource<object>();
-            asyncOperation.completed += delegate (AsyncOperation operation)
-            {
-                if (operation.isDone)
-                {
-                    taskCompletionSource.SetResult(null);
-                }
-                else
-                {
-                    taskCompletionSource.SetException(new NotImplementedException());
-                }
-            };
-            return taskCompletionSource.Task;
-        }
-
-        /// <summary>
-        /// 转换成 Task 格式;
-        /// </summary>
-        public static Task<AssetBundle> AsTask(this AssetBundleCreateRequest asyncOperation)
-        {
-            if (asyncOperation == null)
-                throw new ArgumentNullException(nameof(asyncOperation));
-
-            var taskCompletionSource = new TaskCompletionSource<AssetBundle>();
-            asyncOperation.completed += delegate (AsyncOperation operation)
-            {
-                var assetBundle = asyncOperation.assetBundle;
-                if (assetBundle == null)
-                {
-                    taskCompletionSource.SetException(new IOException("无法读取到 AssetBundle;"));
-                }
-                else
-                {
-                    taskCompletionSource.SetResult(assetBundle);
-                }
-            };
-
-            return taskCompletionSource.Task;
         }
     }
 }
