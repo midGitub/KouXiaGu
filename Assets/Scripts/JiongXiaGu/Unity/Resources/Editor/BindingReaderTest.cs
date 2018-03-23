@@ -2,6 +2,8 @@
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.Resources.Binding
 {
@@ -9,6 +11,17 @@ namespace JiongXiaGu.Unity.Resources.Binding
     [TestFixture]
     public class BindingReaderTest
     {
+        [Test]
+        public void Test()
+        {
+            var members = typeof(File).GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.PutDispProperty | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.InvokeMethod);
+            foreach (var member in members)
+            {
+                Debug.Log(member.Name + "  " + (member is PropertyInfo));
+                //Debug.Log(member.GetCustomAttributes().ToText());
+            }
+        }
+
         [Test]
         public void ReadWriteTest()
         {

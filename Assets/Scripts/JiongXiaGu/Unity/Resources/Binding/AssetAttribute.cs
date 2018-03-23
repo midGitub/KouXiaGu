@@ -15,12 +15,17 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <summary>
         /// 相对路径;
         /// </summary>
-        public string RelativePath { get; private set; }
+        public string RelativePath { get; set; }
 
         /// <summary>
         /// 标签;
         /// </summary>
         public string Tags { get; set; }
+
+        /// <summary>
+        /// 是否为必要的资源;
+        /// </summary>
+        public bool IsNecessaryAsset { get; set; } = false;
 
         /// <summary>
         /// 类型默认的文件后缀;

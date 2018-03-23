@@ -37,7 +37,7 @@ namespace JiongXiaGu.Unity
                 if (UnityThread.IsUnityThread)
                 {
 #if UNITY_EDITOR
-                    if (!UnityThread.IsPlaying)
+                    if (!UnityThread.NotEditMode)
                     {
                         Debug.LogWarning("在编辑模式下进行了单例访问;");
                         return Find();
@@ -48,7 +48,7 @@ namespace JiongXiaGu.Unity
                 else
                 {
 #if UNITY_EDITOR
-                    if (!UnityThread.IsPlaying)
+                    if (!UnityThread.NotEditMode)
                     {
                         Debug.LogWarning("在编辑模式下进行了单例访问;");
                         return UnityThread.Run(Find).Result;

@@ -8,8 +8,6 @@ namespace JiongXiaGu.Unity
 
     public static class UnityThread
     {
-        public static bool IsInitialized { get; private set; } = false;
-
         /// <summary>
         /// Unity线程ID;
         /// </summary>
@@ -38,7 +36,14 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 是否不在编辑器内运行;
         /// </summary>
-        public static bool IsPlaying { get; private set; } = false;
+        public static bool NotEditMode { get; private set; } = false;
+
+        private static readonly CancellationTokenSource unityThreadCancellationTokenSource = new CancellationTokenSource();
+
+        /// <summary>
+        /// Unity线程结束时进行取消;
+        /// </summary>
+        public static CancellationToken UnityCancellationToken => unityThreadCancellationTokenSource.Token;
 
         /// <summary>
         /// 初始化,在Unity线程调用!
@@ -46,15 +51,17 @@ namespace JiongXiaGu.Unity
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
-            if (!IsInitialized)
-            {
-                IsInitialized = true;
-                ThreadId = Thread.CurrentThread.ManagedThreadId;
-                SynchronizationContext = SynchronizationContext.Current;
-                TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                TaskFactory = new TaskFactory(TaskScheduler);
-                IsPlaying = Application.isPlaying;
-            }
+            ThreadId = Thread.CurrentThread.ManagedThreadId;
+            SynchronizationContext = SynchronizationContext.Current;
+            TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            TaskFactory = new TaskFactory(TaskScheduler);
+            NotEditMode = true;
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Initialize2()
+        {
+            new GameObject("UnityThreadDispatcher", typeof(UnityThreadDispatcher));
         }
 
         /// <summary>
@@ -67,6 +74,14 @@ namespace JiongXiaGu.Unity
             {
                 throw new InvalidOperationException("仅允许在Unity线程调用!");
             }
+        }
+
+        /// <summary>
+        /// 创建一个关联Unity线程的取消信号;(解决在Unity编辑器内运行多线程无法中断)
+        /// </summary>
+        public static CancellationTokenSource CreateLinkedTokenSource()
+        {
+            return CancellationTokenSource.CreateLinkedTokenSource(UnityCancellationToken);
         }
 
         /// <summary>
@@ -99,6 +114,20 @@ namespace JiongXiaGu.Unity
         public static Task<T> Run<T>(Func<T> function, CancellationToken cancellationToken)
         {
             return TaskFactory.StartNew(function, cancellationToken);
+        }
+
+        [DisallowMultipleComponent]
+        private sealed class UnityThreadDispatcher : MonoBehaviour
+        {
+            private void Awake()
+            {
+                DontDestroyOnLoad(this);
+            }
+
+            private void OnDestroy()
+            {
+                unityThreadCancellationTokenSource.Cancel();
+            }
         }
     }
 }
