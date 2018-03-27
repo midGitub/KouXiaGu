@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace JiongXiaGu.Unity.Resources.Binding
+namespace JiongXiaGu.Unity.Resources.BindingSerialization
 {
 
     /// <summary>
@@ -17,21 +17,19 @@ namespace JiongXiaGu.Unity.Resources.Binding
 
         public BindingSerializer()
         {
-            var type = typeof(T);
             lazySerializableMember = new Lazy<List<SerializableMember>>(delegate ()
             {
-                var members = ReflectionImporter.BuildMembers(type).Select(member => new SerializableMember(member));
-                return new List<SerializableMember>(members);
+                var serializableMembers = ReflectionImporter.EnumerateMembers(typeof(T)).Select(member => new SerializableMember(member));
+                return new List<SerializableMember>(serializableMembers);
             });
         }
 
-        public BindingSerializer(IEnumerable<IMember> members)
+        public BindingSerializer(IEnumerable<ISerializedMember> members)
         {            
-            var type = typeof(T);
-            this.lazySerializableMember = new Lazy<List<SerializableMember>>(delegate ()
+            lazySerializableMember = new Lazy<List<SerializableMember>>(delegate ()
             {
-                var serializableMember = members.Select(member => new SerializableMember(member));
-                return new List<SerializableMember>(serializableMember);
+                var serializableMembers = members.Select(member => new SerializableMember(member));
+                return new List<SerializableMember>(serializableMembers);
             });
         }
 
@@ -52,7 +50,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Serialize(Content writableContent, ref T instance, Func<IMember, bool> filter)
+        public void Serialize(Content writableContent, ref T instance, Func<ISerializedMember, bool> filter)
         {
             Serialize(writableContent, ref instance, serializableMembers.Where(member => filter.Invoke(member.MemberInfo)));
         }
@@ -122,7 +120,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
-        public T Deserialize(Content content, T instance, Func<IMember, bool> filter)
+        public T Deserialize(Content content, T instance, Func<ISerializedMember, bool> filter)
         {
             return Deserialize(content, instance, serializableMembers.Where(member => filter.Invoke(member.MemberInfo)));
         }
@@ -178,10 +176,10 @@ namespace JiongXiaGu.Unity.Resources.Binding
         private struct SerializableMember
         {
             private ISerializer serializer;
-            public IMember MemberInfo { get; private set; }
+            public ISerializedMember MemberInfo { get; private set; }
             public ISerializer Serializer => serializer ?? (serializer = MemberInfo.CreateSerializer());
 
-            public SerializableMember(IMember member)
+            public SerializableMember(ISerializedMember member)
             {
                 if (member == null)
                     throw new ArgumentNullException(nameof(member));

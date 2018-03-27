@@ -1,5 +1,5 @@
 ﻿using JiongXiaGu.Unity.Resources;
-using JiongXiaGu.Unity.Resources.Binding;
+using JiongXiaGu.Unity.Resources.BindingSerialization;
 using System;
 using System.Collections.Generic;
 using System.IO;

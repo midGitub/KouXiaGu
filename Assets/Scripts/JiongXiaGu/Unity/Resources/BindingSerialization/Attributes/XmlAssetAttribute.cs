@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JiongXiaGu.Unity.Resources.Binding
+namespace JiongXiaGu.Unity.Resources.BindingSerialization
 {
 
     /// <summary>
@@ -10,7 +10,8 @@ namespace JiongXiaGu.Unity.Resources.Binding
     public class XmlAssetAttribute : AssetAttribute
     {
 
-        public const string DefaultFileExtension = ".xml";
+        public const string defaultFileExtension = ".xml";
+        public override string DefaultFileExtension => defaultFileExtension;
 
         public XmlAssetAttribute(string relativePath) : base(relativePath)
         {
@@ -27,8 +28,6 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public XmlAssetAttribute(string relativePath, string name, string message, bool useDefaultExtension) : base(relativePath, name, message, useDefaultExtension)
         {
         }
-
-        protected override string defaultFileExtension => DefaultFileExtension;
 
         public override ISerializer CreateSerializer(Type type)
         {

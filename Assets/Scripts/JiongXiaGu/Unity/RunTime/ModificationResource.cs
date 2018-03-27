@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JiongXiaGu.Unity.RectTerrain;
 using JiongXiaGu.Unity.Resources;
-using JiongXiaGu.Unity.Resources.Binding;
+using JiongXiaGu.Unity.Resources.BindingSerialization;
 
 namespace JiongXiaGu.Unity.RunTime
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JiongXiaGu.Unity.Maps;
-using JiongXiaGu.Unity.Resources.Binding;
+using JiongXiaGu.Unity.Resources.BindingSerialization;
 using JiongXiaGu.Grids;
 using JiongXiaGu.Collections;
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ProtoBuf;
 
-namespace JiongXiaGu.Unity.Resources.Binding
+namespace JiongXiaGu.Unity.Resources.BindingSerialization
 {
 
     /// <summary>
@@ -15,7 +15,8 @@ namespace JiongXiaGu.Unity.Resources.Binding
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public class ProtoAssetAttribute : AssetAttribute
     {
-        public const string DefaultFileExtension = ".proto";
+        public const string defaultFileExtension = ".proto";
+        public override string DefaultFileExtension => DefaultFileExtension;
 
         public ProtoAssetAttribute(string relativePath) : base(relativePath)
         {
@@ -32,8 +33,6 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public ProtoAssetAttribute(string relativePath, string name, string message, bool useDefaultExtension) : base(relativePath, name, message, useDefaultExtension)
         {
         }
-
-        protected override string defaultFileExtension => DefaultFileExtension;
 
         public override ISerializer CreateSerializer(Type type)
         {

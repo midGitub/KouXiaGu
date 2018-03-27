@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace JiongXiaGu.Unity.Resources.Binding
+namespace JiongXiaGu.Unity.Resources.BindingSerialization
 {
 
     /// <summary>
@@ -11,6 +11,7 @@ namespace JiongXiaGu.Unity.Resources.Binding
     public abstract class AssetAttribute : ModificationSubpathInfoAttribute
     {
         internal const bool defaultUseDefaultExtension = false;
+        internal const bool defaultIsNecessaryAsset = true;
 
         /// <summary>
         /// 相对路径;
@@ -23,14 +24,14 @@ namespace JiongXiaGu.Unity.Resources.Binding
         public string Tags { get; set; }
 
         /// <summary>
-        /// 是否为必要的资源;
+        /// 是否为必要的资源,若未false,在序列化时若未找到此资源,则不返回异常;
         /// </summary>
-        public bool IsNecessaryAsset { get; set; } = false;
+        public bool IsNecessaryAsset { get; set; } = defaultIsNecessaryAsset;
 
         /// <summary>
         /// 类型默认的文件后缀;
         /// </summary>
-        protected abstract string defaultFileExtension { get; }
+        public abstract string DefaultFileExtension { get; }
 
         /// <summary>
         /// 构造函数;
@@ -66,11 +67,11 @@ namespace JiongXiaGu.Unity.Resources.Binding
         /// <param name="useDefaultExtension">是否使用格式默认的后缀?</param>
         public AssetAttribute(string relativePath, string name, string message, bool useDefaultExtension) : base(name, message)
         {
-            RelativePath = useDefaultExtension ? Path.ChangeExtension(relativePath, defaultFileExtension) : relativePath;
+            RelativePath = useDefaultExtension ? Path.ChangeExtension(relativePath, DefaultFileExtension) : relativePath;
         }
 
         /// <summary>
-        /// 创建到对应序列化器(保证线程安全);
+        /// 创建到对应序列化器(线程安全);
         /// </summary>
         public abstract ISerializer CreateSerializer(Type type);
     }
