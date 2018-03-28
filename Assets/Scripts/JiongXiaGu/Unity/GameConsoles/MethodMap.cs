@@ -1,7 +1,5 @@
 ﻿using JiongXiaGu.Collections;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace JiongXiaGu.Unity.GameConsoles
@@ -10,7 +8,7 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// <summary>
     /// 控制台方法合集;
     /// </summary>
-    public class MethodSchema
+    public class MethodMap
     {
         /// <summary>
         /// 方法字典;
@@ -30,7 +28,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             get { return methods.Values; }
         }
 
-        public MethodSchema()
+        public MethodMap()
         {
             methods = new Dictionary<string, IMethod>();
         }
@@ -105,6 +103,54 @@ namespace JiongXiaGu.Unity.GameConsoles
         public void Clear()
         {
             methods.Clear();
+        }
+
+        /// <summary>
+        /// 输入的方法命令间隔符;
+        /// </summary>
+        private static readonly char[] methodSeparator = new char[] { ' ' };
+
+        /// <summary>
+        /// 执行对应方法;
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public void Run(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException(nameof(message));
+
+            string[] valueArray = message.Split(methodSeparator, StringSplitOptions.RemoveEmptyEntries);
+            var methodName = valueArray[0];
+
+            if (valueArray.Length == 1)
+            {
+                IMethod consoleMethod;
+                if (TryGetMethod(methodName, 0, out consoleMethod))
+                {
+                    consoleMethod.Invoke(null);
+                }
+                else
+                {
+                    throw new KeyNotFoundException(string.Format("未找到参数个数为[0],方法名为:[{0}]的方法", methodName));
+                }
+            }
+            else if (valueArray.Length > 1)
+            {
+                int parameterCount = valueArray.Length - 1;
+                IMethod consoleMethod;
+
+                if (TryGetMethod(methodName, parameterCount, out consoleMethod))
+                {
+                    string[] parameters = new string[parameterCount];
+                    Array.Copy(valueArray, 1, parameters, 0, parameterCount);
+                    consoleMethod.Invoke(parameters);
+                }
+                else
+                {
+                    throw new KeyNotFoundException(string.Format("未找到参数个数为[{0}],方法名为:[{1}]的方法", parameterCount, methodName));
+                }
+            }
         }
     }
 }

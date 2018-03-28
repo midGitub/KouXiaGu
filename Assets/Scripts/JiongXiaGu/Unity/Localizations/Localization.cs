@@ -27,23 +27,11 @@ namespace JiongXiaGu.Unity.Localizations
         private static readonly ObserverCollection<LanguageChangedEvent> observers = new ObserverLinkedList<LanguageChangedEvent>();
 
         /// <summary>
-        /// 观察者订阅,并返回取消处置器;若已经加入了观察者合集,则返回Null;
+        /// 观察者订阅,并返回取消处置器;若已经加入了观察者合集,则返回异常;
         /// </summary>
         public static IDisposable Subscribe(IObserver<LanguageChangedEvent> observer)
         {
-            if (!observers.Contains(observer))
-            {
-                return observers.Add(observer);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 移除订阅者;此方法不会调用观察者的 OnCompleted() 方法;
-        /// </summary>
-        public static bool Unsubscribe(IObserver<LanguageChangedEvent> observer)
-        {
-            return observers.Remove(observer);
+            return observers.Subscribe(observer);
         }
 
         /// <summary>

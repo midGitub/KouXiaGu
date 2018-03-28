@@ -17,6 +17,7 @@ namespace JiongXiaGu.Unity.Localizations.UI
         }
 
         private Text textObject;
+        private IDisposable unsubscriber;
         public string Key { get; private set; }
 
         private void Awake()
@@ -27,13 +28,13 @@ namespace JiongXiaGu.Unity.Localizations.UI
 
         private void OnEnable()
         {
-            Localization.Subscribe(this);
+            unsubscriber = Localization.Subscribe(this);
             Translate();
         }
 
         private void OnDisable()
         {
-            Localization.Unsubscribe(this);
+            unsubscriber.Dispose();
         }
 
         void IObserver<LanguageChangedEvent>.OnNext(LanguageChangedEvent value)

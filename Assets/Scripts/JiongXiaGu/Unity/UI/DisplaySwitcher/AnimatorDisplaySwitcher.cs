@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 namespace JiongXiaGu.Unity.UI
 {
 
-
+    /// <summary>
+    /// 控制动画切换显示和隐藏状态;
+    /// </summary>
     [RequireComponent(typeof(Animator))]
     public class AnimatorDisplaySwitcher : DisplaySwitcher
     {
@@ -34,6 +36,7 @@ namespace JiongXiaGu.Unity.UI
             if (animator != null)
             {
                 animator.Play("Display");
+                animator.SetBool(DisplayBoolParameter, true);
             }
         }
 
@@ -42,6 +45,7 @@ namespace JiongXiaGu.Unity.UI
             if (animator != null)
             {
                 animator.Play("Hide");
+                animator.SetBool(DisplayBoolParameter, false);
             }
         }
     }

@@ -8,41 +8,16 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// <summary>
     /// 反射控制台方法反射器;
     /// </summary>
-    public static class ConsoleMethodReflector
+    public static class ReflectionImporter
     {
         /// <summary>
         /// 发射的方法类型;
         /// </summary>
         private const BindingFlags DefaultMethodBindingAttrs = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.InvokeMethod;
 
-        public static IEnumerable<IMethod> EnumerateMethods(IEnumerable<Assembly> assemblys, BindingFlags bindingFlags = DefaultMethodBindingAttrs)
-        {
-            if (assemblys == null)
-                throw new ArgumentNullException(nameof(assemblys));
-
-            foreach (var assembly in assemblys)
-            {
-                var types = assembly.GetTypes();
-                foreach (var type in types)
-                {
-                    if (IsEffective(type))
-                    {
-                        var methodInfos = type.GetMethods(bindingFlags | BindingFlags.Static);
-
-                        foreach (var methodInfo in methodInfos)
-                        {
-                            IMethod method = GetMethod(methodInfo);
-                            if (method != null)
-                            {
-                                yield return method;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
+        /// <summary>
+        /// 枚举所有方法;
+        /// </summary>
         public static IEnumerable<IMethod> EnumerateMethods(Assembly assembly, BindingFlags bindingFlags = DefaultMethodBindingAttrs)
         {
             if (assembly == null)

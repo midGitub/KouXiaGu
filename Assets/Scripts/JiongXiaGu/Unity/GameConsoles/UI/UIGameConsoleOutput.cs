@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
             StringBuilder stringBuilder = new StringBuilder(maxCapacity, maxCapacity);
             stringBuilder.Append(output.text);
             consoleStringBuilder = new ConsoleStringBuilder(stringBuilder, format);
-            GameConsole.Subscribe(consoleStringBuilder);
+            GameConsole.ObserverCollection.Subscribe(consoleStringBuilder);
             IsDisplayUnityDebugLog(displayUnityDebugLog);
         }
 

@@ -91,7 +91,7 @@ namespace JiongXiaGu
 
         public IDisposable Subscribe(IObserver<DictionaryEvent<TKey, TValue>> observer)
         {
-            return observers.Add(observer);
+            return observers.Subscribe(observer);
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -191,17 +191,14 @@ namespace JiongXiaGu
         /// </summary>
         private void NotifyAdd(TKey key, TValue newValue)
         {
-            foreach (var observer in observers)
+            DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
             {
-                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
-                {
-                    Dictionary = this,
-                    EventType = DictionaryEventType.Add,
-                    Key = key,
-                    NewValue = newValue,
-                };
-                observer.OnNext(dictionaryEvent);
-            }
+                Dictionary = this,
+                EventType = DictionaryEventType.Add,
+                Key = key,
+                NewValue = newValue,
+            };
+            observers.NotifyNext(dictionaryEvent);
         }
 
         /// <summary>
@@ -209,17 +206,14 @@ namespace JiongXiaGu
         /// </summary>
         private void NotifyRemove(TKey key, TValue originalValue)
         {
-            foreach (var observer in observers)
+            DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
             {
-                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
-                {
-                    Dictionary = this,
-                    EventType = DictionaryEventType.Remove,
-                    Key = key,
-                    OriginalValue = originalValue,
-                };
-                observer.OnNext(dictionaryEvent);
-            }
+                Dictionary = this,
+                EventType = DictionaryEventType.Remove,
+                Key = key,
+                OriginalValue = originalValue,
+            };
+            observers.NotifyNext(dictionaryEvent);
         }
 
         /// <summary>
@@ -227,18 +221,15 @@ namespace JiongXiaGu
         /// </summary>
         private void NotifyUpdate(TKey key, TValue originalValue, TValue newValue)
         {
-            foreach (var observer in observers)
+            DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
             {
-                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
-                {
-                    Dictionary = this,
-                    EventType = DictionaryEventType.Update,
-                    Key = key,
-                    OriginalValue = originalValue,
-                    NewValue = newValue,
-                };
-                observer.OnNext(dictionaryEvent);
-            }
+                Dictionary = this,
+                EventType = DictionaryEventType.Update,
+                Key = key,
+                OriginalValue = originalValue,
+                NewValue = newValue,
+            };
+            observers.NotifyNext(dictionaryEvent);
         }
 
         /// <summary>
@@ -246,15 +237,12 @@ namespace JiongXiaGu
         /// </summary>
         private void NotifyClear()
         {
-            foreach (var observer in observers)
+            DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
             {
-                DictionaryEvent<TKey, TValue> dictionaryEvent = new DictionaryEvent<TKey, TValue>()
-                {
-                    Dictionary = this,
-                    EventType = DictionaryEventType.Clear,
-                };
-                observer.OnNext(dictionaryEvent);
-            }
+                Dictionary = this,
+                EventType = DictionaryEventType.Clear,
+            };
+            observers.NotifyNext(dictionaryEvent);
         }
     }
 }

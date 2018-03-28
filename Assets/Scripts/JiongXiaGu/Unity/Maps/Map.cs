@@ -154,12 +154,7 @@ namespace JiongXiaGu.Unity.Maps
 
         public IDisposable Subscribe(IObserver<MapEvent<TKey>> observer)
         {
-            return observers.Add(observer);
-        }
-
-        public bool Unsubscribe(IObserver<MapEvent<TKey>> observer)
-        {
-            return observers.Remove(observer);
+            return observers.Subscribe(observer);
         }
 
         /// <summary>

@@ -19,10 +19,10 @@ namespace JiongXiaGu.Unity.GameConsoles
         public static void ShowMethods()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.Methods.Count);
+            stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodMap.Methods.Count);
             stringBuilder.AppendLine();
 
-            foreach (var consoleMethod in GameConsole.MethodSchema.Methods)
+            foreach (var consoleMethod in GameConsole.MethodMap.Methods)
             {
                 AddMethodString(stringBuilder, consoleMethod);
                 stringBuilder.AppendLine();
@@ -47,10 +47,10 @@ namespace JiongXiaGu.Unity.GameConsoles
             else
             {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodSchema.Methods.Count);
+                stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodMap.Methods.Count);
                 stringBuilder.AppendLine();
 
-                foreach (var consoleMethod in GameConsole.MethodSchema.Methods)
+                foreach (var consoleMethod in GameConsole.MethodMap.Methods)
                 {
                     AddMethodString(stringBuilder, consoleMethod);
                     stringBuilder.AppendLine();

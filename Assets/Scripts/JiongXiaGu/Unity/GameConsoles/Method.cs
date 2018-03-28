@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
 
     /// <summary>
-    /// 控制台方法抽象类;
+    /// 方法抽象类;
     /// </summary>
     public abstract class Method : IMethod
     {
@@ -32,38 +29,13 @@ namespace JiongXiaGu.Unity.GameConsoles
             Description = description;
         }
 
-        public override string ToString()
-        {
-            return Description.ToString();
-        }
-
         /// <summary>
         /// 调用当前方法,若不存在参数,则传入null;(参考 System.Reflection.MethodBase.Invoke 方法)
         /// </summary>
         public abstract void Invoke(string[] parameters);
 
-        /// <summary>
-        /// 当传入参数不正确时返回异常(仅限零参数);
-        /// </summary>
-        protected void ThrowIfParametersIsNotNull(string[] parameters)
-        {
-            if (parameters != null)
-            {
-                throw new TargetParameterCountException(string.Format("该控制台方法不存在参数,[{0}]应该为 null;", nameof(parameters)));
-            }
-        }
 
-        /// <summary>
-        /// 当传入参数不正确时返回异常(不包括0个参数);
-        /// </summary>
-        protected void ThrowIfParametersIsNotRight(string[] parameters)
-        {
-            if (parameters == null || parameters.Length != ParameterCount)
-            {
-                throw new TargetParameterCountException(string.Format("[{0}]数组长度 {1},不符合方法参数数目 {2};", nameof(parameters), parameters.Length, ParameterCount));
-            }
-        }
-
+        #region Delegate
 
         public delegate void Action1(string v1);
         public delegate void Action2(string v1, string v2);
@@ -126,6 +98,28 @@ namespace JiongXiaGu.Unity.GameConsoles
         public static Method Create(Action6 method, MethodDescription description)
         {
             return new ConsoleMethod_Action6(method, description);
+        }
+
+        /// <summary>
+        /// 当传入参数不正确时返回异常(仅限零参数);
+        /// </summary>
+        protected void ThrowIfParametersIsNotNull(string[] parameters)
+        {
+            if (parameters != null)
+            {
+                throw new TargetParameterCountException(string.Format("该控制台方法不存在参数,[{0}]应该为 null;", nameof(parameters)));
+            }
+        }
+
+        /// <summary>
+        /// 当传入参数不正确时返回异常(不包括0个参数);
+        /// </summary>
+        protected void ThrowIfParametersIsNotRight(string[] parameters)
+        {
+            if (parameters == null || parameters.Length != ParameterCount)
+            {
+                throw new TargetParameterCountException(string.Format("[{0}]数组长度 {1},不符合方法参数数目 {2};", nameof(parameters), parameters.Length, ParameterCount));
+            }
         }
 
         /// <summary>
@@ -317,6 +311,10 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
         }
 
+        #endregion
+
+
+        #region Reflection
 
         /// <summary>
         /// 创建一个新的控制台方法;
@@ -384,5 +382,7 @@ namespace JiongXiaGu.Unity.GameConsoles
                 return methodInfo.CreateDelegate(typeof(T), target) as T;
             }
         }
+
+        #endregion
     }
 }

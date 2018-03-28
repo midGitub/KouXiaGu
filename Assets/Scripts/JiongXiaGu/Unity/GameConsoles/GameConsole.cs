@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
 
     /// <summary>
-    /// 游戏控制台(方法线程安全);
+    /// 游戏控制台(仅主线程调用);
     /// </summary>
     public static class GameConsole
     {
-        /// <summary>
-        /// 异步锁;
-        /// </summary>
-        private static readonly object asyncLock = new object();
-
         /// <summary>
         /// 控制台事件观察者合集;
         /// </summary>
@@ -23,42 +17,24 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 控制台方法合集;
         /// </summary>
-        public static MethodSchema MethodSchema { get; private set; } = new MethodSchema();
+        public static MethodMap MethodMap { get; private set; } = new MethodMap();
 
+        /// <summary>
+        /// 观察者结构;
+        /// </summary>
+        public static IObservable<ConsoleEvent> ObserverCollection => observerCollection;
 
         /// <summary>
         /// 初始化控制台;
         /// </summary>
         internal static void Initialize()
         {
-            foreach (var method in ConsoleMethodReflector.EnumerateMethods(typeof(GameConsole).Assembly))
+            foreach (var method in ReflectionImporter.EnumerateMethods(typeof(GameConsole).Assembly))
             {
-                if (!MethodSchema.TryAdd(method))
+                if (!MethodMap.TryAdd(method))
                 {
-                    Debug.LogError(string.Format("重复的控制台方法名[{0}]", method.Description.Name));
+                    Debug.LogError(string.Format("重复的控制台方法[{0}]", method.Description.ToString()));
                 }
-            }
-        }
-
-        /// <summary>
-        /// 订阅控制台事件;
-        /// </summary>
-        public static IDisposable Subscribe(IObserver<ConsoleEvent> observer)
-        {
-            lock (asyncLock)
-            {
-                return observerCollection.Add(observer);
-            }
-        }
-
-        /// <summary>
-        /// 取消订阅;
-        /// </summary>
-        public static bool Unsubscribe(IObserver<ConsoleEvent> observer)
-        {
-            lock (asyncLock)
-            {
-                return observerCollection.Remove(observer);
             }
         }
 
@@ -67,10 +43,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         private static void NotifyNext(ConsoleEvent consoleEvent)
         {
-            lock (asyncLock)
-            {
-                observerCollection.NotifyNext(consoleEvent);
-            }
+            observerCollection.NotifyNext(consoleEvent);
         }
 
         /// <summary>
@@ -223,71 +196,12 @@ namespace JiongXiaGu.Unity.GameConsoles
             WriteMethod(message);
         }
 
-
-        /// <summary>
-        /// 输入的方法命令间隔符;
-        /// </summary>
-        private static readonly char[] methodSeparator = new char[] { ' ' };
-
         /// <summary>
         /// 执行指定控制台方法;
         /// </summary>
         public static void Run(string message)
         {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                ThrowMethodStringIncorrect(message);
-            }
-
-            string[] valueArray = message.Split(methodSeparator, StringSplitOptions.RemoveEmptyEntries);
-            var methodName = valueArray[0];
-
-            if (valueArray.Length == 0)
-            {
-                ThrowMethodStringIncorrect(message);
-            }
-            else if (valueArray.Length == 1)
-            {
-                IMethod consoleMethod;
-                if (MethodSchema.TryGetMethod(methodName, 0, out consoleMethod))
-                {
-                    consoleMethod.Invoke(null);
-                }
-                else
-                {
-                    ThrowMethodNotFound(methodName, 0);
-                }
-            }
-            else if (valueArray.Length > 1)
-            {
-                int parameterCount = valueArray.Length - 1;
-                IMethod consoleMethod;
-
-                if (MethodSchema.TryGetMethod(methodName, parameterCount, out consoleMethod))
-                {
-                    string[] parameters = new string[parameterCount];
-                    Array.Copy(valueArray, 1, parameters, 0, parameterCount);
-
-                    consoleMethod.Invoke(parameters);
-                }
-                else
-                {
-                    ThrowMethodNotFound(methodName, parameterCount);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 抛出传入方法命令不正确异常;
-        /// </summary>
-        private static void ThrowMethodStringIncorrect(string methodName)
-        {
-            throw new ArgumentException(string.Format("不合法的命令[{0}];", methodName));
-        }
-
-        private static void ThrowMethodNotFound(string methodName, int parameterCount)
-        {
-            throw new KeyNotFoundException(string.Format("未找到参数为[{1}],方法名为:[{0}]的方法", methodName, parameterCount));
+            MethodMap.Run(message);
         }
     }
 }
