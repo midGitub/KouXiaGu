@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace JiongXiaGu.UI
+﻿namespace JiongXiaGu.Unity.UI.Cursors
 {
-
     /// <summary>
-    /// 鼠标样式;
+    /// 预定义的鼠标样式;
     /// </summary>
-    public enum CursorType
+    public enum CursorStyleType
     {
         /// <summary>
         /// 默认;

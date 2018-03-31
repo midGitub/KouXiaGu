@@ -29,14 +29,14 @@ namespace JiongXiaGu.Unity
         public static TaskScheduler TaskScheduler { get; private set; }
 
         /// <summary>
-        /// 提供 Unity线程的 TaskFactory;
+        /// 提供 Unity线程 FixedUpdate() 执行的 TaskFactory;
         /// </summary>
-        public static TaskFactory TaskFactory { get; private set; }
+        public static TaskFactory UnityFixedUpdateTaskFactory { get; private set; }
 
         /// <summary>
         /// 是否不在编辑器内运行;
         /// </summary>
-        public static bool NotEditMode { get; private set; } = false;
+        public static bool IsEditMode { get; private set; } = true;
 
         private static readonly CancellationTokenSource unityThreadCancellationTokenSource = new CancellationTokenSource();
 
@@ -54,8 +54,8 @@ namespace JiongXiaGu.Unity
             ThreadId = Thread.CurrentThread.ManagedThreadId;
             SynchronizationContext = SynchronizationContext.Current;
             TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            TaskFactory = new TaskFactory(TaskScheduler);
-            NotEditMode = true;
+            UnityFixedUpdateTaskFactory = new TaskFactory(TaskScheduler);
+            IsEditMode = false;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -89,7 +89,7 @@ namespace JiongXiaGu.Unity
         /// </summary>
         public static Task Run(Action action)
         {
-            return TaskFactory.StartNew(action);
+            return UnityFixedUpdateTaskFactory.StartNew(action);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace JiongXiaGu.Unity
         /// </summary>
         public static Task Run(Action action, CancellationToken cancellationToken)
         {
-            return TaskFactory.StartNew(action, cancellationToken);
+            return UnityFixedUpdateTaskFactory.StartNew(action, cancellationToken);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace JiongXiaGu.Unity
         /// </summary>
         public static Task<T> Run<T>(Func<T> function)
         {
-            return TaskFactory.StartNew(function);
+            return UnityFixedUpdateTaskFactory.StartNew(function);
         }
 
         /// <summary>
@@ -113,8 +113,9 @@ namespace JiongXiaGu.Unity
         /// </summary>
         public static Task<T> Run<T>(Func<T> function, CancellationToken cancellationToken)
         {
-            return TaskFactory.StartNew(function, cancellationToken);
+            return UnityFixedUpdateTaskFactory.StartNew(function, cancellationToken);
         }
+
 
         [DisallowMultipleComponent]
         private sealed class UnityThreadDispatcher : MonoBehaviour

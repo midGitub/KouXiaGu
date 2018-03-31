@@ -26,7 +26,7 @@ namespace JiongXiaGu.Unity
             get
             {
 #if UNITY_EDITOR
-                if (!UnityThread.NotEditMode)
+                if (UnityThread.IsEditMode)
                 {
                     Debug.LogWarning("在编辑模式下进行了单例访问;");
                     return Find_safe();

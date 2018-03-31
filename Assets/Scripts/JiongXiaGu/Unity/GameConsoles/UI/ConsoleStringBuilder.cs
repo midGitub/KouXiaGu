@@ -18,7 +18,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 格式控制;
         /// </summary>
-        public ConsoleStringBuilderFormat Format { get; private set; }
+        public ConsoleStringFormat Format { get; private set; }
 
         /// <summary>
         /// 可变字符字符串;
@@ -35,7 +35,11 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         private bool hasChanged;
 
-        public ConsoleStringBuilder(StringBuilder stringBuilder) : this(stringBuilder, new ConsoleStringBuilderFormat())
+        public ConsoleStringBuilder(StringBuilder stringBuilder) : this(stringBuilder, new ConsoleStringFormat())
+        {
+        }
+
+        public ConsoleStringBuilder(ConsoleStringFormat format) : this(new StringBuilder(), format)
         {
         }
 
@@ -44,7 +48,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// </summary>
         /// <param name="stringBuilder">指定 StringBuilder,当超出最大容量后删除顶部文本</param>
         /// <param name="format">写入 StringBuilder 的格式定义</param>
-        public ConsoleStringBuilder(StringBuilder stringBuilder, ConsoleStringBuilderFormat format)
+        public ConsoleStringBuilder(StringBuilder stringBuilder, ConsoleStringFormat format)
         {
             if (stringBuilder.MaxCapacity < MessageTooLongErrorString.Length)
                 throw new ArgumentException("StringBuilder 最大容量过小;");
@@ -58,7 +62,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             {
                 eventLengthList.AddLast(stringBuilder.ToString());
             }
-            AppendLine();
+            TryAppendLine();
         }
 
         void IObserver<ConsoleEvent>.OnNext(ConsoleEvent value)
@@ -191,14 +195,14 @@ namespace JiongXiaGu.Unity.GameConsoles
                 eventLengthList.AddLast(message);
                 hasChanged = true;
 
-                AppendLine();
+                TryAppendLine();
             }
         }
 
         /// <summary>
         /// 若最后一个条目结尾不存在换行,则添加换行符;
         /// </summary>
-        private void AppendLine()
+        private void TryAppendLine()
         {
             var lastNode = eventLengthList.Last;
             if (lastNode != null && !lastNode.Value.EndsWith(Environment.NewLine))

@@ -8,7 +8,7 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// 使用"RichText(富文本)"控制输出格式;
     /// </summary>
     [Serializable]
-    public class ConsoleStringBuilderRichTextFormat : ConsoleStringBuilderFormat
+    public class ConsoleStringRichTextFormat : ConsoleStringFormat
     {
         public Color NormalColor = ColorHelper.HexToColor("#FFFFFFFF");
         public Color SuccessfulColor = ColorHelper.HexToColor("#74FF00FF");

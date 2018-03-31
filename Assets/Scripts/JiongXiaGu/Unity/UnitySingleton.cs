@@ -5,6 +5,26 @@ namespace JiongXiaGu.Unity
 {
 
     /// <summary>
+    /// 继承形式的Unity单例(线程安全);
+    /// </summary>
+    [DisallowMultipleComponent]
+    public abstract class UnitySingletonInherit<T> : MonoBehaviour
+            where T : UnitySingletonInherit<T>
+    {
+        private static readonly UnitySingleton<T> unitySingleton;
+
+        protected virtual void Awake()
+        {
+            unitySingleton.SetInstance(this as T);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            unitySingleton.RemoveInstance(this as T);
+        }
+    }
+
+    /// <summary>
     /// 非继承形式的Unity单例(线程安全);
     /// </summary>
     public abstract class UnitySingleton<T>
@@ -13,7 +33,7 @@ namespace JiongXiaGu.Unity
         /// <summary>
         /// 静态单例;
         /// </summary>
-        private volatile static T instance;
+        private static T instance;
 
         /// <summary>
         /// 控制器标签;
@@ -29,15 +49,15 @@ namespace JiongXiaGu.Unity
         /// <exception cref="ComponentNotFoundException"></exception>
         public T GetInstance()
         {
-            if (instance != null)
-                return instance;
-
             lock (asyncLock)
             {
+                if (instance != null)
+                    return instance;
+
                 if (UnityThread.IsUnityThread)
                 {
 #if UNITY_EDITOR
-                    if (!UnityThread.NotEditMode)
+                    if (UnityThread.IsEditMode)
                     {
                         Debug.LogWarning("在编辑模式下进行了单例访问;");
                         return Find();
@@ -48,7 +68,7 @@ namespace JiongXiaGu.Unity
                 else
                 {
 #if UNITY_EDITOR
-                    if (!UnityThread.NotEditMode)
+                    if (UnityThread.IsEditMode)
                     {
                         Debug.LogWarning("在编辑模式下进行了单例访问;");
                         return UnityThread.Run(Find).Result;
@@ -89,7 +109,7 @@ namespace JiongXiaGu.Unity
         }
 
         /// <summary>
-        /// 设置到单例;
+        /// 设置到单例,提供实例在 Awake() 内赋值;
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException">当传入实例与当前实例不同</exception>
@@ -114,7 +134,7 @@ namespace JiongXiaGu.Unity
         }
 
         /// <summary>
-        /// 当单例销毁时调用;
+        /// 当单例销毁时调用,提供实例在 OnDestroy() 调用;
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException">当传入实例与当前实例不同</exception>

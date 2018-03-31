@@ -81,22 +81,13 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         /// <summary>
         /// 执行对应方法;
         /// </summary>
-        public void DoMethod(string method)
+        public void DoMethod(string message)
         {
-            if (!string.IsNullOrWhiteSpace(method))
+            if (!string.IsNullOrWhiteSpace(message))
             {
-                AddImportRecord(method);
+                AddImportRecord(message);
                 ClearInputField();
-
-                try
-                {
-                    GameConsole.WriteMethod(method);
-                    GameConsole.Run(method);
-                }
-                catch (Exception ex)
-                {
-                    GameConsole.WriteError(string.Format("执行失败:{0}", ex.Message));
-                }
+                GameConsole.DoMethod(message);
             }
         }
 

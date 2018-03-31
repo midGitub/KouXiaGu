@@ -27,7 +27,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         private int maxCapacity = 5000;
 
         [SerializeField]
-        private ConsoleStringBuilderRichTextFormat format;
+        private ConsoleStringRichTextFormat format;
 
         [SerializeField]
         private Text output;
@@ -35,7 +35,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         [SerializeField]
         private Scrollbar scrollbarVertical;
 
-        private bool setScrollbarVerticalValue;
+        private bool updateScrollbarVerticalValue;
         private ConsoleStringBuilder consoleStringBuilder;
         private IDisposable unityDebugLogEventUnsubscriber;
 
@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
             StringBuilder stringBuilder = new StringBuilder(maxCapacity, maxCapacity);
             stringBuilder.Append(output.text);
             consoleStringBuilder = new ConsoleStringBuilder(stringBuilder, format);
-            GameConsole.ObserverCollection.Subscribe(consoleStringBuilder);
+            GameConsole.Subscribe(consoleStringBuilder);
             IsDisplayUnityDebugLog(displayUnityDebugLog);
         }
 
@@ -53,12 +53,12 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
             string nowText;
             if (consoleStringBuilder.TryGetText(out nowText))
             {
-                setScrollbarVerticalValue = true;
+                updateScrollbarVerticalValue = true;
                 output.text = nowText;
             }
-            else if(setScrollbarVerticalValue)
+            else if(updateScrollbarVerticalValue)
             {
-                setScrollbarVerticalValue = false;
+                updateScrollbarVerticalValue = false;
                 scrollbarVertical.value = 0;
             }
         }
@@ -77,7 +77,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
             {
                 if (unityDebugLogEventUnsubscriber == null)
                 {
-                    unityDebugLogEventUnsubscriber = UnityDebugLogHandler.Subscribe(consoleStringBuilder);
+                    unityDebugLogEventUnsubscriber = UnityDebug.Subscribe(consoleStringBuilder);
                 }
             }
             else

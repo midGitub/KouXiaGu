@@ -111,45 +111,54 @@ namespace JiongXiaGu.Unity.GameConsoles
         private static readonly char[] methodSeparator = new char[] { ' ' };
 
         /// <summary>
-        /// 执行对应方法;
+        /// 尝试获取到指定方法;
         /// </summary>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="KeyNotFoundException"></exception>
-        public void Run(string message)
+        public bool TryGetMethod(string message, out IMethod method, out string[] parameters)
         {
             if (string.IsNullOrWhiteSpace(message))
-                throw new ArgumentException(nameof(message));
+            {
+                method = default(IMethod);
+                parameters = default(string[]);
+                return false;
+            }
 
             string[] valueArray = message.Split(methodSeparator, StringSplitOptions.RemoveEmptyEntries);
             var methodName = valueArray[0];
 
             if (valueArray.Length == 1)
             {
-                IMethod consoleMethod;
-                if (TryGetMethod(methodName, 0, out consoleMethod))
-                {
-                    consoleMethod.Invoke(null);
-                }
-                else
-                {
-                    throw new KeyNotFoundException(string.Format("未找到参数个数为[0],方法名为:[{0}]的方法", methodName));
-                }
+                parameters = null;
+                return TryGetMethod(methodName, 0, out method);
             }
-            else if (valueArray.Length > 1)
+            else
             {
                 int parameterCount = valueArray.Length - 1;
-                IMethod consoleMethod;
+                parameters = new string[parameterCount];
+                Array.Copy(valueArray, 1, parameters, 0, parameterCount);
+                return TryGetMethod(methodName, parameterCount, out method);
+            }
+        }
 
-                if (TryGetMethod(methodName, parameterCount, out consoleMethod))
-                {
-                    string[] parameters = new string[parameterCount];
-                    Array.Copy(valueArray, 1, parameters, 0, parameterCount);
-                    consoleMethod.Invoke(parameters);
-                }
-                else
-                {
-                    throw new KeyNotFoundException(string.Format("未找到参数个数为[{0}],方法名为:[{1}]的方法", parameterCount, methodName));
-                }
+        /// <summary>
+        /// 执行对应方法;
+        /// </summary>
+        /// <exception cref="ArgumentException">传入参数不符合要求</exception>
+        /// <exception cref="KeyNotFoundException">未找到可执行的方法</exception>
+        public void Run(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException(nameof(message));
+
+            IMethod method;
+            string[] parameters;
+
+            if (TryGetMethod(message, out method, out parameters))
+            {
+                method.Invoke(parameters);
+            }
+            else
+            {
+                throw new KeyNotFoundException(string.Format("未找到可执行的方法[{0}]", message));
             }
         }
     }

@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.GameConsoles
 {
-
     /// <summary>
-    /// 游戏控制台(仅主线程调用);
+    /// 游戏控制台;(线程安全)
     /// </summary>
     public static class GameConsole
     {
+        private static readonly object asyncLock = new object();
+
         /// <summary>
         /// 控制台事件观察者合集;
         /// </summary>
@@ -18,11 +20,6 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// 控制台方法合集;
         /// </summary>
         public static MethodMap MethodMap { get; private set; } = new MethodMap();
-
-        /// <summary>
-        /// 观察者结构;
-        /// </summary>
-        public static IObservable<ConsoleEvent> ObserverCollection => observerCollection;
 
         /// <summary>
         /// 初始化控制台;
@@ -39,11 +36,25 @@ namespace JiongXiaGu.Unity.GameConsoles
         }
 
         /// <summary>
+        /// 订阅控制台消息;
+        /// </summary>
+        public static IDisposable Subscribe(IObserver<ConsoleEvent> observer)
+        {
+            lock (asyncLock)
+            {
+                return observerCollection.Subscribe(observer);
+            }
+        }
+
+        /// <summary>
         /// 通知观察者;
         /// </summary>
         private static void NotifyNext(ConsoleEvent consoleEvent)
         {
-            observerCollection.NotifyNext(consoleEvent);
+            lock (asyncLock)
+            {
+                observerCollection.NotifyNextSafe(consoleEvent);
+            }
         }
 
         /// <summary>
@@ -197,7 +208,33 @@ namespace JiongXiaGu.Unity.GameConsoles
         }
 
         /// <summary>
-        /// 执行指定控制台方法;
+        /// 执行指定方法,不返回异常;
+        /// </summary>
+        public static void DoMethod(string message)
+        {
+            WriteMethod(message);
+
+            IMethod method;
+            string[] parameters;
+            if (MethodMap.TryGetMethod(message, out method, out parameters))
+            {
+                try
+                {
+                    method.Invoke(parameters);
+                }
+                catch (Exception ex)
+                {
+                    WriteError("执行失败:" + ex.Message);
+                }
+            }
+            else
+            {
+                WriteError(string.Format("未找到可执行的方法[{0}]", message));
+            }
+        }
+
+        /// <summary>
+        /// 执行指定方法,该方法不执行 WriteMethod();
         /// </summary>
         public static void Run(string message)
         {

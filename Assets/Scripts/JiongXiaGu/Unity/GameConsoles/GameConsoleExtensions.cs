@@ -66,24 +66,26 @@ namespace JiongXiaGu.Unity.GameConsoles
             MethodDescription description = consoleMethod.Description;
             if (description.Parameters.Count > 0)
             {
-                stringBuilder.AppendFormat("MethodName : {0}", description.Name);
+                stringBuilder.AppendFormat("Name : {0}", description.Name);
                 foreach (var parameter in description.Parameters)
                 {
                     stringBuilder.Append(string.Format(" [{0}]", parameter.Type));
                 }
 
-                stringBuilder.AppendFormat(", Message : {0}, ParamCount : {1}", description.Message, description.Parameters.Count);
+                stringBuilder.AppendFormat(", Message : {0} ;", description.Message);
 
-                stringBuilder.Append(", ParamDesc : ");
+                stringBuilder.Append(", Parameters :");
                 for (int index = 0; index < description.Parameters.Count; index++)
                 {
                     var parameter = description.Parameters[index];
                     stringBuilder.AppendFormat("[{0}]({1}){2} ", index, parameter.Type, parameter.Message);
                 }
+
+                stringBuilder.Append(';');
             }
             else
             {
-                stringBuilder.AppendFormat("MethodName : {0}, Message : {1}, ParamCount : {2}", description.Name, description.Message, description.Parameters.Count);
+                stringBuilder.AppendFormat("Name : {0}, Message : {1} ;", description.Name, description.Message);
             }
         }
     }

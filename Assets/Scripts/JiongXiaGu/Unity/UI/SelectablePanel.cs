@@ -10,7 +10,7 @@ namespace JiongXiaGu.UI
 {
 
     /// <summary>
-    /// 可进行选择的面板;
+    /// 带有展示优先级的面板;
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JiongXiaGu.Unity.UI.Cursors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace JiongXiaGu.UI
         {
             if (cursorDefaultStyleDisposer == null)
             {
-                cursorDefaultStyleDisposer = CustomCursor.Instance.SetCursor(CursorType.Default);
+                cursorDefaultStyleDisposer = CustomCursor.SetCursor(CursorStyleType.Default);
             }
         }
 

@@ -5,7 +5,7 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// <summary>
     /// 格式输出控制;
     /// </summary>
-    public class ConsoleStringBuilderFormat
+    public class ConsoleStringFormat
     {
         public virtual string GetNormalFormat(string message)
         {
