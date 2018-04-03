@@ -116,6 +116,9 @@ namespace JiongXiaGu.Unity.GameConsoles
         public bool TryGetMethod(string message, out IMethod method, out string[] parameters)
         {
             if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException(nameof(message));
+
+            if (string.IsNullOrWhiteSpace(message))
             {
                 method = default(IMethod);
                 parameters = default(string[]);
@@ -136,29 +139,6 @@ namespace JiongXiaGu.Unity.GameConsoles
                 parameters = new string[parameterCount];
                 Array.Copy(valueArray, 1, parameters, 0, parameterCount);
                 return TryGetMethod(methodName, parameterCount, out method);
-            }
-        }
-
-        /// <summary>
-        /// 执行对应方法;
-        /// </summary>
-        /// <exception cref="ArgumentException">传入参数不符合要求</exception>
-        /// <exception cref="KeyNotFoundException">未找到可执行的方法</exception>
-        public void Run(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-                throw new ArgumentException(nameof(message));
-
-            IMethod method;
-            string[] parameters;
-
-            if (TryGetMethod(message, out method, out parameters))
-            {
-                method.Invoke(parameters);
-            }
-            else
-            {
-                throw new KeyNotFoundException(string.Format("未找到可执行的方法[{0}]", message));
             }
         }
     }

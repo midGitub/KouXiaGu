@@ -14,6 +14,11 @@ namespace JiongXiaGu.Unity.GameConsoles
         public string Name { get; set; }
 
         /// <summary>
+        /// 方法标签,默认为开发者标签;
+        /// </summary>
+        public string Tag { get; set; }
+
+        /// <summary>
         /// 描述;
         /// </summary>
         public string Message { get; set; }
@@ -31,6 +36,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         public ConsoleMethodAttribute(string name)
         {
             Name = name;
+            Tag = GameConsole.DeveloperModeTag;
         }
 
         /// <summary>
@@ -41,6 +47,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             return new MethodDescription()
             {
                 Name = Name,
+                Tag = Tag,
                 Message = Message,
                 ParameterDescs = ParametersDesc.Convert(ParameterDes),
             };

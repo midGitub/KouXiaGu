@@ -70,7 +70,7 @@ namespace JiongXiaGu.Unity.GameConsoles
         /// <summary>
         /// 枚举所有控制台方法;
         /// </summary>
-        public static IEnumerable<IMethod> EnumerateMethods(Type type, BindingFlags bindingFlags = DefaultMethodBindingAttrs)
+        public static IEnumerable<IMethod> EnumerateMethods(Type type, string tag, BindingFlags bindingFlags = DefaultMethodBindingAttrs)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));

@@ -14,55 +14,53 @@ namespace JiongXiaGu.Unity.GameConsoles
     [ConsoleMethodClass]
     public class GameConsoleMethodExtensions
     {
+        private const string DefaultMethodTag = "GameConsole";
 
-        [ConsoleMethod(nameof(ShowMethods), Message = "展示所有方法")]
+        [ConsoleMethod(nameof(ShowMethods), Tag = DefaultMethodTag, Message = "展示所有方法")]
         public static void ShowMethods()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodMap.Methods.Count);
-            stringBuilder.AppendLine();
 
-            foreach (var consoleMethod in GameConsole.MethodMap.Methods)
-            {
-                AddMethodString(stringBuilder, consoleMethod);
-                stringBuilder.AppendLine();
-            }
+            AddString(stringBuilder, GameConsole.MethodMap.Methods);
 
             string message = stringBuilder.ToString();
             GameConsole.Write(message);
         }
 
-        [ConsoleMethod(nameof(ShowMethods), Message = "按条件展示方法", ParameterDes = new string[]
+        [ConsoleMethod(nameof(ShowMethods), Tag = DefaultMethodTag, Message = "展示所有方法", ParameterDes = new string[]
             {
-                "bool", "是否仅展示可执行的方法?"
+                "string", "按标签筛选,仅允许单个标签"
             })]
-        public static void ShowMethods(string onlyActivated)
+        public static void ShowMethods(string tag)
         {
-            bool _onlyActivated = Convert.ToBoolean(onlyActivated);
+            StringBuilder stringBuilder = new StringBuilder();
 
-            if (!_onlyActivated)
-            {
-                ShowMethods();
-            }
-            else
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.AppendFormat("方法总数 : {0}", GameConsole.MethodMap.Methods.Count);
-                stringBuilder.AppendLine();
+            AddString(stringBuilder, GameConsole.MethodMap.Methods.Where(item => string.Equals(item.Description.Tag, tag, StringComparison.OrdinalIgnoreCase)));
 
-                foreach (var consoleMethod in GameConsole.MethodMap.Methods)
-                {
-                    AddMethodString(stringBuilder, consoleMethod);
-                    stringBuilder.AppendLine();
-                }
-
-                string message = stringBuilder.ToString();
-                GameConsole.Write(message);
-            }
+            string message = stringBuilder.ToString();
+            GameConsole.Write(message);
         }
 
-        private static void AddMethodString(StringBuilder stringBuilder, IMethod consoleMethod)
+        /// <summary>
+        /// 将方法描述转为文本;
+        /// </summary>
+        private static void AddString(StringBuilder stringBuilder, IEnumerable<IMethod> methods)
         {
+            int count = 0;
+            foreach (var method in methods)
+            {
+                AddString(stringBuilder, method);
+                stringBuilder.AppendLine();
+                count++;
+            }
+
+            stringBuilder.AppendFormat("方法总数 : {0}", count);
+        }
+
+        private static void AddString(StringBuilder stringBuilder, IMethod consoleMethod)
+        {
+            const string NullStr = "Null";
+
             MethodDescription description = consoleMethod.Description;
             if (description.Parameters.Count > 0)
             {
@@ -72,9 +70,9 @@ namespace JiongXiaGu.Unity.GameConsoles
                     stringBuilder.Append(string.Format(" [{0}]", parameter.Type));
                 }
 
-                stringBuilder.AppendFormat(", Message : {0} ;", description.Message);
+                stringBuilder.AppendFormat("; Tag : {0}; Message : {1} ;", description.Tag ?? NullStr, description.Message ?? NullStr);
 
-                stringBuilder.Append(", Parameters :");
+                stringBuilder.Append(" Parameters : ");
                 for (int index = 0; index < description.Parameters.Count; index++)
                 {
                     var parameter = description.Parameters[index];
@@ -85,7 +83,7 @@ namespace JiongXiaGu.Unity.GameConsoles
             }
             else
             {
-                stringBuilder.AppendFormat("Name : {0}, Message : {1} ;", description.Name, description.Message);
+                stringBuilder.AppendFormat("Name : {0}; Tag : {1}; Message : {2} ;", description.Name, description.Tag ?? NullStr, description.Message ?? NullStr);
             }
         }
     }

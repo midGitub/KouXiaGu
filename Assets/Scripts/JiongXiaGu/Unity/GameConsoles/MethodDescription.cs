@@ -10,6 +10,11 @@ namespace JiongXiaGu.Unity.GameConsoles
     public class MethodDescription
     {
         /// <summary>
+        /// 方法标签;
+        /// </summary>
+        public string Tag { get; set; }
+
+        /// <summary>
         /// 完全名,如 ConsoleMethod.Info.Run ;
         /// </summary>
         public string Name { get; set; }

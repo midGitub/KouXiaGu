@@ -9,6 +9,9 @@ namespace JiongXiaGu.Unity.GameConsoles
     /// </summary>
     public static class GameConsole
     {
+        internal const string DeveloperModeTag = "Developer";
+
+
         private static readonly object asyncLock = new object();
 
         /// <summary>
@@ -234,11 +237,21 @@ namespace JiongXiaGu.Unity.GameConsoles
         }
 
         /// <summary>
-        /// 执行指定方法,该方法不执行 WriteMethod();
+        /// 执行指定方法,该方法不执行 WriteMethod(),出现异常则返回异常;
         /// </summary>
         public static void Run(string message)
         {
-            MethodMap.Run(message);
+            IMethod method;
+            string[] parameters;
+
+            if (MethodMap.TryGetMethod(message, out method, out parameters))
+            {
+                method.Invoke(parameters);
+            }
+            else
+            {
+                throw new KeyNotFoundException(string.Format("未找到可执行的方法[{0}]", message));
+            }
         }
     }
 }
