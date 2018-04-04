@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using JiongXiaGu.Collections;
 
 namespace JiongXiaGu.Unity.GameConsoles.UI
 {
@@ -31,12 +27,12 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         /// <summary>
         /// 输入记录;
         /// </summary>
-        private Collections.DoublyLinkedList<string> importRecords;
+        private DoublyLinkedList<string> importRecords;
 
         /// <summary>
         /// 当前指向的记录;
         /// </summary>
-        private Collections.LinkedListNode<string> current;
+        private DoublyLinkedListNode<string> current;
 
         /// <summary>
         /// 输入控件是否为焦点?
@@ -45,7 +41,7 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
 
         private void Awake()
         {
-            importRecords = new Collections.DoublyLinkedList<string>();
+            importRecords = new DoublyLinkedList<string>();
         }
 
         private void Update()

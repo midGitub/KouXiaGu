@@ -12,8 +12,8 @@ namespace JiongXiaGu.Collections
     {
         private int version;
         public int Count { get; private set; }
-        public LinkedListNode<T> First { get; private set; }
-        public LinkedListNode<T> Last { get; private set; }
+        public DoublyLinkedListNode<T> First { get; private set; }
+        public DoublyLinkedListNode<T> Last { get; private set; }
 
         bool ICollection<T>.IsReadOnly
         {
@@ -46,10 +46,10 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在指定的现有节点后添加包含指定值的新节点;
         /// </summary>
-        public LinkedListNode<T> AddAfter(LinkedListNode<T> node, T value)
+        public DoublyLinkedListNode<T> AddAfter(DoublyLinkedListNode<T> node, T value)
         {
             ValidateNode(node);
-            LinkedListNode<T> result = new LinkedListNode<T>(this, value);
+            DoublyLinkedListNode<T> result = new DoublyLinkedListNode<T>(this, value);
             InternalInsertNodeAfter(node, result);
             return result;
         }
@@ -57,7 +57,7 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在指定的现有节点后添加包含指定值的新节点;
         /// </summary>
-        public void AddAfter(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        public void AddAfter(DoublyLinkedListNode<T> node, DoublyLinkedListNode<T> newNode)
         {
             ValidateNode(node);
             ValidateNewNode(newNode);
@@ -68,10 +68,10 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在指定的现有节点前添加指定的新节点;
         /// </summary>
-        public LinkedListNode<T> AddBefore(LinkedListNode<T> node, T value)
+        public DoublyLinkedListNode<T> AddBefore(DoublyLinkedListNode<T> node, T value)
         {
             ValidateNode(node);
-            LinkedListNode<T> result = new LinkedListNode<T>(this, value);
+            DoublyLinkedListNode<T> result = new DoublyLinkedListNode<T>(this, value);
             InternalInsertNodeBefore(node, result);
             return result;
         }
@@ -79,7 +79,7 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在指定的现有节点前添加指定的新节点;
         /// </summary>
-        public void AddBefore(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        public void AddBefore(DoublyLinkedListNode<T> node, DoublyLinkedListNode<T> newNode)
         {
             ValidateNode(node);
             ValidateNewNode(newNode);
@@ -90,9 +90,9 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在开头处添加包含指定值的新节点;
         /// </summary>
-        public LinkedListNode<T> AddFirst(T value)
+        public DoublyLinkedListNode<T> AddFirst(T value)
         {
-            LinkedListNode<T> result = new LinkedListNode<T>(this, value);
+            DoublyLinkedListNode<T> result = new DoublyLinkedListNode<T>(this, value);
             if (First == null)
             {
                 InternalInsertNodeToEmptyList(result);
@@ -107,7 +107,7 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在开头处添加包含指定值的新节点;
         /// </summary>
-        public void AddFirst(LinkedListNode<T> node)
+        public void AddFirst(DoublyLinkedListNode<T> node)
         {
             ValidateNewNode(node);
             node.List = this;
@@ -124,9 +124,9 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在结尾处添加包含指定值的新节点。
         /// </summary>
-        public LinkedListNode<T> AddLast(T value)
+        public DoublyLinkedListNode<T> AddLast(T value)
         {
-            LinkedListNode<T> result = new LinkedListNode<T>(this, value);
+            DoublyLinkedListNode<T> result = new DoublyLinkedListNode<T>(this, value);
             if (Last == null)
             {
                 InternalInsertNodeToEmptyList(result);
@@ -141,7 +141,7 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在结尾处添加包含指定值的新节点。
         /// </summary>
-        public void AddLast(LinkedListNode<T> node)
+        public void AddLast(DoublyLinkedListNode<T> node)
         {
             ValidateNewNode(node);
             node.List = this;
@@ -160,7 +160,7 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public bool Remove(T value)
         {
-            LinkedListNode<T> node = Find(value);
+            DoublyLinkedListNode<T> node = Find(value);
             if (node != null)
             {
                 InternalRemoveNode(node);
@@ -172,7 +172,7 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 移除指定的节点;
         /// </summary>
-        public void Remove(LinkedListNode<T> node)
+        public void Remove(DoublyLinkedListNode<T> node)
         {
             ValidateNode(node);
             InternalRemoveNode(node);
@@ -201,13 +201,13 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 移除这个节点之后的所有节点;
         /// </summary>
-        public void RemoveAfterNodes(LinkedListNode<T> node)
+        public void RemoveAfterNodes(DoublyLinkedListNode<T> node)
         {
             ValidateNode(node);
-            LinkedListNode<T> current = node.Next;
+            DoublyLinkedListNode<T> current = node.Next;
             while (current != null)
             {
-                LinkedListNode<T> temp = current;
+                DoublyLinkedListNode<T> temp = current;
                 current = current.Next;
                 temp.Invalidate();
                 Count--;
@@ -219,13 +219,13 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 移除这个节点之前的所有节点;
         /// </summary>
-        public void RemoveBeforNodes(LinkedListNode<T> node)
+        public void RemoveBeforNodes(DoublyLinkedListNode<T> node)
         {
             ValidateNode(node);
-            LinkedListNode<T> current = node.Previous;
+            DoublyLinkedListNode<T> current = node.Previous;
             while (current != null)
             {
-                LinkedListNode<T> temp = current;
+                DoublyLinkedListNode<T> temp = current;
                 current = current.Previous;
                 temp.Invalidate();
                 Count--;
@@ -245,9 +245,9 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 查找包含指定值的第一个节点;
         /// </summary>
-        public LinkedListNode<T> Find(T value)
+        public DoublyLinkedListNode<T> Find(T value)
         {
-            LinkedListNode<T> current = First;
+            DoublyLinkedListNode<T> current = First;
             if (current != null)
             {
                 if (value != null)
@@ -280,9 +280,9 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 查找包含指定值的最后一个节点;
         /// </summary>
-        public LinkedListNode<T> FindLast(T value)
+        public DoublyLinkedListNode<T> FindLast(T value)
         {
-            LinkedListNode<T> current = Last;
+            DoublyLinkedListNode<T> current = Last;
             if (current != null)
             {
                 if (value != null)
@@ -332,7 +332,7 @@ namespace JiongXiaGu.Collections
                 throw new ArgumentException();
             }
 
-            LinkedListNode<T> node = First;
+            DoublyLinkedListNode<T> node = First;
             while (node != null)
             {
                 array[index++] = node.Value;
@@ -345,10 +345,10 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public void Clear()
         {
-            LinkedListNode<T> current = First;
+            DoublyLinkedListNode<T> current = First;
             while (current != null)
             {
-                LinkedListNode<T> temp = current;
+                DoublyLinkedListNode<T> temp = current;
                 current = current.Next;
                 temp.Invalidate();
             }
@@ -370,7 +370,7 @@ namespace JiongXiaGu.Collections
         /// <summary>
         /// 在次节点之后插入节点;
         /// </summary>
-        private void InternalInsertNodeAfter(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        private void InternalInsertNodeAfter(DoublyLinkedListNode<T> node, DoublyLinkedListNode<T> newNode)
         {
             if (node.Next == null)
             {
@@ -387,7 +387,7 @@ namespace JiongXiaGu.Collections
             version++;
         }
 
-        private void InternalInsertNodeBefore(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        private void InternalInsertNodeBefore(DoublyLinkedListNode<T> node, DoublyLinkedListNode<T> newNode)
         {
             if (node.Previous == null)
             {
@@ -404,7 +404,7 @@ namespace JiongXiaGu.Collections
             version++;
         }
 
-        private void InternalInsertNodeToEmptyList(LinkedListNode<T> newNode)
+        private void InternalInsertNodeToEmptyList(DoublyLinkedListNode<T> newNode)
         {
             First = newNode;
             Last = newNode;
@@ -412,7 +412,7 @@ namespace JiongXiaGu.Collections
             version++;
         }
 
-        private void InternalRemoveNode(LinkedListNode<T> node)
+        private void InternalRemoveNode(DoublyLinkedListNode<T> node)
         {
             if (node.Next == null)
             {
@@ -437,7 +437,7 @@ namespace JiongXiaGu.Collections
             version++;
         }
 
-        private void ValidateNode(LinkedListNode<T> node)
+        private void ValidateNode(DoublyLinkedListNode<T> node)
         {
             if (node == null)
             {
@@ -449,7 +449,7 @@ namespace JiongXiaGu.Collections
             }
         }
 
-        private void ValidateNewNode(LinkedListNode<T> node)
+        private void ValidateNewNode(DoublyLinkedListNode<T> node)
         {
             if (node == null)
             {
@@ -464,7 +464,7 @@ namespace JiongXiaGu.Collections
         public struct Enumerator : IEnumerator<T>
         {
             private DoublyLinkedList<T> list;
-            private LinkedListNode<T> node;
+            private DoublyLinkedListNode<T> node;
             private int version;
             private T current;
 
@@ -526,14 +526,14 @@ namespace JiongXiaGu.Collections
         }
     }
 
-    public sealed class LinkedListNode<T>
+    public sealed class DoublyLinkedListNode<T>
     {
         public DoublyLinkedList<T> List { get; internal set; }
-        public LinkedListNode<T> Next { get; internal set; }
-        public LinkedListNode<T> Previous { get; internal set; }
+        public DoublyLinkedListNode<T> Next { get; internal set; }
+        public DoublyLinkedListNode<T> Previous { get; internal set; }
         public T Value { get; internal set; }
 
-        internal LinkedListNode(DoublyLinkedList<T> list, T value)
+        internal DoublyLinkedListNode(DoublyLinkedList<T> list, T value)
         {
             List = list;
             Value = value;

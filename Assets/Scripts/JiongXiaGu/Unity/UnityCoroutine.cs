@@ -6,7 +6,7 @@ namespace JiongXiaGu.Unity
 {
 
     /// <summary>
-    /// Unity协程;
+    /// 提供Unity协程执行方法;
     /// </summary>
     public class UnityCoroutine
     {

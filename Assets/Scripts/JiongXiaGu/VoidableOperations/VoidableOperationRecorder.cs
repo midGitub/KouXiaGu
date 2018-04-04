@@ -48,7 +48,7 @@ namespace JiongXiaGu.VoidableOperations
         /// <summary>
         /// 最后执行的操作;
         /// </summary>
-        Collections.LinkedListNode<T> current;
+        Collections.DoublyLinkedListNode<T> current;
 
         /// <summary>
         /// 最大记录数目;
