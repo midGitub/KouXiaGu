@@ -3,7 +3,7 @@
     /// <summary>
     /// 预定义的鼠标样式;
     /// </summary>
-    public enum CursorStyleType
+    public enum CursorType
     {
         /// <summary>
         /// 默认;

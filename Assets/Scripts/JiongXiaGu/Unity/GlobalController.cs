@@ -13,6 +13,7 @@ using System.Xml.Serialization;
 using JiongXiaGu.Unity.Maps;
 using JiongXiaGu.Grids;
 using JiongXiaGu.Collections;
+using JiongXiaGu.Unity.UI.Cursors;
 
 namespace JiongXiaGu.Unity
 {
@@ -31,49 +32,19 @@ namespace JiongXiaGu.Unity
             DontDestroyOnLoad(gameObject);
         }
 
+        [SerializeField]
+        private CursorInfo cursorInfo;
+
         [ContextMenu("Test0")]
         private void Test0()
         {
-            XmlSerializer<SerializableDictionary<RectCoord, ArchiveMapNode>> xmlSerializer = new XmlSerializer<SerializableDictionary<RectCoord, ArchiveMapNode>>();
-            SerializableDictionary<RectCoord, ArchiveMapNode> value = new SerializableDictionary<RectCoord, ArchiveMapNode>()
-            {
-                { new RectCoord(0, 0), new ArchiveMapNode() },
-                { new RectCoord(0, 1), new ArchiveMapNode() },
-                {
-                    new RectCoord(0, 2), new ArchiveMapNode(new MapNode()
-                        {
-                            Landform = new NodeLandformInfo()
-                            {
-                                Angle = 11,
-                                TypeID = "123123",
-                            },
-                        })
-                },
-            };
-
-            using (var stream = new FileStream(@"123.xml", FileMode.Create, FileAccess.ReadWrite))
-            {
-                xmlSerializer.Serialize(stream, value);
-            }
-
-            Debug.Log("OK!");
+            Cursor.SetCursor(null, default(Vector2), CursorMode.Auto);
         }
-
-        public MeshRenderer meshRenderer;
 
         [ContextMenu("Test1")]
         private void Test1()
         {
-            //LandformDescription description = new LandformDescription()
-            //{
-            //    HeightTex = new AssetInfo("terrain", "HeightMap_85"),
-            //    HeightBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
-            //    DiffuseTex = new AssetInfo("terrain", "SoilCracked2"),
-            //    DiffuseBlendTex = new AssetInfo("terrain", "HeightMap_Blend"),
-            //};
-
-            //LandformRes res = await LandformResCreater.CreateAsync(LoadableResource.Core, description, default(CancellationToken));
-            //meshRenderer.material.mainTexture = res.DiffuseTex;
+            CustomCursor.SetCursor(cursorInfo);
         }
 
         [ContextMenu("Test2")]

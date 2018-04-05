@@ -14,86 +14,118 @@ namespace JiongXiaGu.Unity.UI.Cursors
     public static class CustomCursor
     {
         /// <summary>
-        /// 当前鼠标样式;
+        /// 自定义鼠标样式映射表;
         /// </summary>
-        private static IDisposable currentCursorStyle;
+        public static IDictionary<string, ICustomCursor> Map { get; internal set; }
 
         /// <summary>
         /// 设置当前鼠标样式;
         /// </summary>
-        public static IDisposable SetCursor(CursorStyleType cursorStyle)
+        /// <exception cref="KeyNotFoundException"></exception>
+        public static IDisposable SetCursor(CursorType type)
         {
-            throw new NotImplementedException();
+            return SetCursor(type.ToString());
         }
-
+        
         /// <summary>
         /// 设置当前鼠标样式;
         /// </summary>
-        public static IDisposable SetCursor(string cursorStyle)
+        /// <exception cref="KeyNotFoundException"></exception>
+        public static IDisposable SetCursor(string name)
         {
-            throw new NotImplementedException();
+            ICustomCursor cursor = Map[name];
+            return SetCursor(cursor);
         }
 
 
         /// <summary>
         /// 鼠标样式栈,顶部为当前鼠标样式;
         /// </summary>
-        private static readonly Stack<ICursorStyle> cursorStyleStack;
+        private static readonly LinkedList<ICustomCursor> customCursorStack = new LinkedList<ICustomCursor>();
+
+        /// <summary>
+        /// 当前鼠标样式;
+        /// </summary>
+        private static IDisposable currentCursor;
 
         /// <summary>
         /// 设置当前鼠标样式,并返回取消方法;
         /// </summary>
-        public static IDisposable SetCursor(IDynamicCursorStyle cursorStyle)
+        public static IDisposable SetCursor(ICustomCursor cursor)
         {
-            if (cursorStyle == null)
-                throw new ArgumentNullException(nameof(cursorStyle));
+            if (cursor == null)
+                throw new ArgumentNullException(nameof(cursor));
 
-            throw new NotImplementedException();
+            var node = Add(cursor);
+            return new Canceler(node);
         }
+
+        private static LinkedListNode<ICustomCursor> Add(ICustomCursor cursor)
+        {
+            currentCursor?.Dispose();
+            currentCursor = cursor.Play();
+            var node = customCursorStack.AddLast(cursor);
+            return node;
+        }
+
+        private static void Remove(LinkedListNode<ICustomCursor> node)
+        {
+            if (customCursorStack.Last == node)
+            {
+                currentCursor.Dispose();
+                customCursorStack.Remove(node);
+                var last = customCursorStack.Last;
+                if (last != null)
+                {
+                    currentCursor = last.Value.Play();
+                }
+                else
+                {
+                    currentCursor = null;
+                    ResetCursor();
+                }
+            }
+            else
+            {
+                customCursorStack.Remove(node);
+            }
+        }
+
+        /// <summary>
+        /// 重置鼠标样式;
+        /// </summary>
+        private static void ResetCursor()
+        {
+            Cursor.SetCursor(null, default(Vector2), CursorMode.Auto);
+        }
+
+        private struct Canceler : IDisposable
+        {
+            private LinkedListNode<ICustomCursor> node;
+
+            public Canceler(LinkedListNode<ICustomCursor> node)
+            {
+                this.node = node;
+            }
+
+            public void Dispose()
+            {
+                if (node != null)
+                {
+                    Remove(node);
+                    node = null;
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// 设置当前鼠标样式,并返回取消方法;
         /// </summary>
-        public static void SetCursor(CursorStyle cursorStyle)
+        public static void SetCursor(CursorInfo cursor)
         {
-            throw new NotImplementedException();
-        }
-
-        private interface ICursorStyle
-        {
-            void Replay();
-            void Stop();
-        }
-
-        public struct DynamicCursorStyle : ICursorStyle
-        {
-            public DynamicCursorStyle(IDynamicCursorStyle cursorStyle)
-            {
-
-            }
-
-            public void Replay()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Stop()
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public struct StaticCursorStyle : ICursorStyle
-        {
-            public void Replay()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Stop()
-            {
-                throw new NotImplementedException();
-            }
+            Cursor.SetCursor(cursor.Texture, cursor.Hotspot, cursor.CursorMode);
         }
     }
 }

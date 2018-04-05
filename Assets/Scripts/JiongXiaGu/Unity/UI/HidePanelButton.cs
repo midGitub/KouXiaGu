@@ -35,7 +35,7 @@ namespace JiongXiaGu.UI
         {
             if (cursorDefaultStyleDisposer == null)
             {
-                cursorDefaultStyleDisposer = CustomCursor.SetCursor(CursorStyleType.Default);
+                cursorDefaultStyleDisposer = CustomCursor.SetCursor(CursorType.Default);
             }
         }
 
