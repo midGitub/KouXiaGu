@@ -2,18 +2,18 @@
 
 namespace JiongXiaGu.Unity.UI.Cursors
 {
-    public struct StaticCursor : ICustomCursor, IDisposable
+    public class StaticCursor : ICustomCursor, IDisposable
     {
         public CursorInfo Cursor { get; private set; }
 
         public StaticCursor(CursorInfo cursor)
         {
-            this.Cursor = cursor;
+            Cursor = cursor;
         }
 
         public IDisposable Play()
         {
-            CustomCursor.SetCursor(Cursor);
+            CursorController.SetCursor(Cursor);
             return this;
         }
 

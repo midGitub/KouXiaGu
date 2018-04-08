@@ -11,7 +11,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
     /// <summary>
     /// 鼠标样式控制;(仅Unity线程安全)
     /// </summary>
-    public static class CustomCursor
+    public static class CursorController
     {
         /// <summary>
         /// 自定义鼠标样式映射表;

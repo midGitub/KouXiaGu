@@ -215,12 +215,11 @@ namespace JiongXiaGu.Unity.Resources
         }
 
 
-        public override IDisposable BeginUpdate()
+        public override void BeginUpdate()
         {
             ThrowIfObjectDisposed();
 
             zipFile.BeginUpdate();
-            return new ContentCommitUpdateDisposer(this);
         }
 
         public override void CommitUpdate()

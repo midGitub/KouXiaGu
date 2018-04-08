@@ -18,7 +18,7 @@ namespace JiongXiaGu.Unity.Resources.BindingSerialization
             MemoryContent content = new MemoryContent();
             var file = DefalutFile;
 
-            using (content.BeginUpdate())
+            using (content.BeginUpdateAuto())
             {
                 serializer.Serialize(content, ref file);
             }

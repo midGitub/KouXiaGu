@@ -119,7 +119,7 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         private void ContentReadWriteTest(Content content)
         {
-            using (var dis = content.BeginUpdate())
+            using (var dis = content.BeginUpdateAuto())
             {
                 using (Stream stream1 = content.GetOutputStream(description1Path),
                     stream2 = content.GetOutputStream(description2Path),

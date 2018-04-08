@@ -120,7 +120,7 @@ namespace JiongXiaGu.Unity.UI
 
             ModificationLoadOrderSerializer activeModificationSerializer = new ModificationLoadOrderSerializer();
 
-            using (Resource.UserConfigContent.BeginUpdate())
+            using (Resource.UserConfigContent.BeginUpdateAuto())
             {
                 activeModificationSerializer.Serialize(Resource.UserConfigContent, activeModification);
             }

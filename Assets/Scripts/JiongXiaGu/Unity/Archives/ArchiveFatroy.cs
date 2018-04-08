@@ -48,7 +48,7 @@ namespace JiongXiaGu.Unity.Archives
         /// </summary>
         private void WriteDescription(Content content, ArchiveDescription description)
         {
-            using (content.BeginUpdate())
+            using (content.BeginUpdateAuto())
             {
                 using (var stream = content.GetOutputStream(DescriptionFileName))
                 {

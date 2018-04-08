@@ -80,12 +80,11 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        public override IDisposable BeginUpdate()
+        public override void BeginUpdate()
         {
             ThrowIfObjectDisposed();
 
             isUpdating = true;
-            return new ContentCommitUpdateDisposer(this);
         }
 
         public override void CommitUpdate()

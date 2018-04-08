@@ -86,7 +86,7 @@ namespace JiongXiaGu.Unity.Resources
 
         public void WriteDescription(Content content, ModificationDescription description)
         {
-            using (content.BeginUpdate())
+            using (content.BeginUpdateAuto())
             {
                 using (var stream = content.GetOutputStream(DescriptionFileName))
                 {

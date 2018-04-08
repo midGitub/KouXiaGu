@@ -157,13 +157,12 @@ namespace JiongXiaGu.Unity.Resources
         /// 独占的写入,当进行写入时,或阻塞其它线程对此类进行的所有操作;
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
-        public override IDisposable BeginUpdate()
+        public override void BeginUpdate()
         {
             ThrowIfObjectDisposed();
 
             Monitor.Enter(asyncLock);
             Content.BeginUpdate();
-            return new ContentCommitUpdateDisposer(this);
         }
 
         /// <summary>

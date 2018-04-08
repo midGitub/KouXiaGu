@@ -122,7 +122,7 @@ namespace JiongXiaGu.Unity.Localizations
                     Language = description.Language,
                 };
 
-                using (Resource.ConfigContent.BeginUpdate())
+                using (Resource.ConfigContent.BeginUpdateAuto())
                 {
                     configSerializer.Serialize(Resource.ConfigContent, config);
                 }

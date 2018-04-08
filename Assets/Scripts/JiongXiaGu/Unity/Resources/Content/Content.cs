@@ -9,7 +9,7 @@ namespace JiongXiaGu.Unity.Resources
     /// <summary>
     /// 抽象的资源合集;
     /// </summary>
-    public abstract class Content : IDisposable
+    public abstract class Content : IContent, IReadOnlyContent, IDisposable
     {
         /// <summary>
         /// 是否正在更新改内容?
@@ -45,8 +45,6 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
         public virtual IEnumerable<IContentEntry> EnumerateEntries(string searchPattern, SearchOption searchOption)
         {
-            ThrowIfObjectDisposed();
-
             return EnumerateEntries(EnumerateEntries(), searchPattern, searchOption);
         }
 
@@ -56,9 +54,8 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
-        protected virtual IEnumerable<IContentEntry> EnumerateEntries(IEnumerable<IContentEntry> entries, string searchPattern, SearchOption searchOption)
+        protected IEnumerable<IContentEntry> EnumerateEntries(IEnumerable<IContentEntry> entries, string searchPattern, SearchOption searchOption)
         {
-            ThrowIfObjectDisposed();
             if (searchPattern == null)
                 throw new ArgumentNullException(nameof(searchPattern));
 
@@ -102,8 +99,6 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
         public virtual IEnumerable<IContentEntry> EnumerateEntries(string directoryName, string searchPattern, SearchOption searchOption)
         {
-            ThrowIfObjectDisposed();
-
             return EnumerateEntries(EnumerateEntries(), directoryName, searchPattern, searchOption);
         }
 
@@ -113,9 +108,8 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
-        protected virtual IEnumerable<IContentEntry> EnumerateEntries(IEnumerable<IContentEntry> entries, string directoryName, string searchPattern, SearchOption searchOption)
+        protected IEnumerable<IContentEntry> EnumerateEntries(IEnumerable<IContentEntry> entries, string directoryName, string searchPattern, SearchOption searchOption)
         {
-            ThrowIfObjectDisposed();
             if (directoryName == null)
                 throw new ArgumentNullException(nameof(directoryName));
             if (searchPattern == null)
@@ -158,6 +152,37 @@ namespace JiongXiaGu.Unity.Resources
                 default:
                     throw new IndexOutOfRangeException(string.Format("未知的{0}[{1}]", nameof(SearchOption), nameof(searchOption)));
             }
+        }
+
+        /// <summary>
+        /// 获取到所有文件相对路径;
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        public virtual IEnumerable<string> EnumerateFiles()
+        {
+            return EnumerateEntries().Select(entry => entry.Name);
+        }
+
+        /// <summary>
+        /// 获取到所有文件相对路径;
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
+        public virtual IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
+        {
+            return EnumerateEntries(searchPattern, searchOption).Select(entry => entry.Name);
+        }
+
+        /// <summary>
+        /// 获取到所有文件相对路径;
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
+        public virtual IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        {
+            return EnumerateEntries(directoryName, searchPattern, searchOption).Select(entry => entry.Name);
         }
 
         /// <summary>
@@ -234,41 +259,6 @@ namespace JiongXiaGu.Unity.Resources
             return null;
         }
 
-        /// <summary>
-        /// 获取到所有文件相对路径;
-        /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        public virtual IEnumerable<string> EnumerateFiles()
-        {
-            return EnumerateEntries().Select(entry => entry.Name);
-        }
-
-        /// <summary>
-        /// 获取到所有文件相对路径;
-        /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
-        public virtual IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
-        {
-            ThrowIfObjectDisposed();
-
-            return EnumerateEntries(searchPattern, searchOption).Select(entry => entry.Name);
-        }
-
-        /// <summary>
-        /// 获取到所有文件相对路径;
-        /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="IndexOutOfRangeException">未知的 SearchOption</exception>
-        public virtual IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
-        {
-            ThrowIfObjectDisposed();
-
-            return EnumerateEntries(directoryName, searchPattern, searchOption).Select(entry => entry.Name);
-        }
-
         #endregion
 
         #region Write
@@ -277,7 +267,7 @@ namespace JiongXiaGu.Unity.Resources
         /// 在更改内容之前需要先调用,直到调用 CommitUpdate() 进行修改操作;(推荐在Using语句内使用该方法,在using语句内使用,则无需手动调用 CommitUpdate() 结束更改,否则在调用 CommitUpdate() 时可能返回异常)
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
-        public abstract IDisposable BeginUpdate();
+        public abstract void BeginUpdate();
 
         /// <summary>
         /// 在更改内容之后,需要调用此方法来完成内容更新;在使用该方法之前需要调用 BeginUpdate();
@@ -292,7 +282,18 @@ namespace JiongXiaGu.Unity.Resources
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="IOException">文件被占用</exception>
-        public IContentEntry AddOrUpdate(string name, Stream source, bool isCloseStream = true)
+        public IContentEntry AddOrUpdate(string name, Stream source)
+        {
+            return AddOrUpdate(name, source, DateTime.Now, true);
+        }
+
+        /// <summary>
+        /// 添加或替换资源;在使用该方法之前需要调用 BeginUpdate();
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="IOException">文件被占用</exception>
+        public IContentEntry AddOrUpdate(string name, Stream source, bool isCloseStream)
         {
             return AddOrUpdate(name, source, DateTime.Now, isCloseStream);
         }

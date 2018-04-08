@@ -107,7 +107,7 @@ namespace JiongXiaGu.Unity.Resources
         private void ContentReadWriteTest(Content content)
         {
             IContentEntry entry1;
-            using (var dis = content.BeginUpdate())
+            using (var dis = content.BeginUpdateAuto())
             {
                 using (Stream stream1 = content.GetOutputStream(description1Path, out entry1))
                 {
@@ -158,7 +158,7 @@ namespace JiongXiaGu.Unity.Resources
                 AreEqual(d3_1, description3);
             }
 
-            using (var dis = content.BeginUpdate())
+            using (var dis = content.BeginUpdateAuto())
             {
                 Assert.IsTrue(content.Remove(description1Path));
                 Assert.IsFalse(content.Remove("123.ddd"));

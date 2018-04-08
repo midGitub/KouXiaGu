@@ -9,58 +9,10 @@ namespace JiongXiaGu.Unity.UI.Cursors
 {
 
     /// <summary>
-    /// 动画鼠标的参数;
-    /// </summary>
-    [Serializable]
-    public struct AnimatedCursorOptions
-    {
-        [SerializeField]
-        private float switchInterval;
-        [SerializeField]
-        private bool isLoop;
-        [SerializeField]
-        private float loopInterval;
-
-        /// <summary>
-        /// 切换间隔,单位秒;
-        /// </summary>
-        public float SwitchInterval
-        {
-            get { return switchInterval; }
-            set { switchInterval = value; }
-        }
-
-        /// <summary>
-        /// 是否循环播放;
-        /// </summary>
-        public bool IsLoop
-        {
-            get { return isLoop; }
-            set { isLoop = value; }
-        }
-
-        /// <summary>
-        /// 循环间隔时间,单位秒;
-        /// </summary>
-        public float LoopInterval
-        {
-            get { return loopInterval; }
-            set { loopInterval = value; }
-        }
-
-        public AnimatedCursorOptions(float switchInterval, bool isLoop, float loopInterval)
-        {
-            this.switchInterval = switchInterval;
-            this.isLoop = isLoop;
-            this.loopInterval = loopInterval;
-        }
-    }
-
-    /// <summary>
     /// 动画鼠标样式;
     /// </summary>
     [Serializable]
-    public class AnimatedCursor : IDynamicCursor
+    public class AnimatedCursor : ICustomCursor
     {
         [SerializeField]
         private CursorInfo[] animation;
@@ -79,9 +31,11 @@ namespace JiongXiaGu.Unity.UI.Cursors
             this.options = options;
         }
 
-        public IEnumerator GetCoroutine()
+        public IDisposable Play()
         {
-            return new Coroutine(this);
+            IEnumerator coroutine = new Coroutine(this);
+            var canceler = UnityCoroutine.Start(coroutine);
+            return canceler;
         }
 
         private struct Coroutine : IEnumerator
@@ -105,7 +59,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
                 if (index < animation.Count)
                 {
                     CursorInfo style = animation[index];
-                    CustomCursor.SetCursor(style);
+                    CursorController.SetCursor(style);
                     Current = new WaitForSecondsRealtime(options.SwitchInterval);
                     return true;
                 }
@@ -130,7 +84,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
                 index = 0;
                 Current = null;
                 CursorInfo style = Parent.animation[index];
-                CustomCursor.SetCursor(style);
+                CursorController.SetCursor(style);
             }
         }
     }

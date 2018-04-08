@@ -44,7 +44,7 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test1")]
         private void Test1()
         {
-            CustomCursor.SetCursor(cursorInfo);
+            CursorController.SetCursor(cursorInfo);
         }
 
         [ContextMenu("Test2")]

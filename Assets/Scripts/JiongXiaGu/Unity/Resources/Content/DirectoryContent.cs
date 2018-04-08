@@ -32,24 +32,6 @@ namespace JiongXiaGu.Unity.Resources
             DirectoryPath = directory;
         }
 
-        /// <summary>
-        /// 创建目录或者指定目录;
-        /// </summary>
-        /// <param name="directory">若目录不存在则创建</param>
-        public static DirectoryContent Create(string directory)
-        {
-            Directory.CreateDirectory(directory);
-            var content = new DirectoryContent(directory);
-            return content;
-        }
-
-        private IContentEntry CreateEntryFromFilePath(string filePath)
-        {
-            string relativePath = PathHelper.GetRelativePath(DirectoryPath, filePath);
-            DirectoryContentEntry entry = new DirectoryContentEntry(this, relativePath);
-            return entry;
-        }
-
         private IContentEntry CreateEntry(string filePath, string name)
         {
             DirectoryContentEntry entry = new DirectoryContentEntry(this, name);
@@ -62,6 +44,17 @@ namespace JiongXiaGu.Unity.Resources
         }
 
         #region Static
+
+        /// <summary>
+        /// 创建目录或者指定目录;
+        /// </summary>
+        /// <param name="directory">若目录不存在则创建</param>
+        public static DirectoryContent Create(string directory)
+        {
+            Directory.CreateDirectory(directory);
+            var content = new DirectoryContent(directory);
+            return content;
+        }
 
         /// <summary>
         /// 获取到对应数据的流,在使用完毕之后需要手动释放;(推荐在using语法内使用)
@@ -116,6 +109,42 @@ namespace JiongXiaGu.Unity.Resources
             else
             {
                 return new IContentEntry[0];
+            }
+        }
+
+        private IContentEntry CreateEntryFromFilePath(string filePath)
+        {
+            string relativePath = PathHelper.GetRelativePath(DirectoryPath, filePath);
+            DirectoryContentEntry entry = new DirectoryContentEntry(this, relativePath);
+            return entry;
+        }
+
+        public override IEnumerable<string> EnumerateFiles()
+        {
+            ThrowIfObjectDisposed();
+
+            return Directory.EnumerateFiles(DirectoryPath, "*", SearchOption.AllDirectories);
+        }
+
+        public override IEnumerable<string> EnumerateFiles(string searchPattern, SearchOption searchOption)
+        {
+            ThrowIfObjectDisposed();
+
+            return Directory.EnumerateFiles(DirectoryPath, searchPattern, SearchOption.AllDirectories);
+        }
+
+        public override IEnumerable<string> EnumerateFiles(string directoryName, string searchPattern, SearchOption searchOption)
+        {
+            ThrowIfObjectDisposed();
+
+            string targetDirectory = Path.Combine(DirectoryPath, directoryName);
+            if (Directory.Exists(targetDirectory))
+            {
+                return Directory.EnumerateFiles(targetDirectory, searchPattern, searchOption);
+            }
+            else
+            {
+                return new string[0];
             }
         }
 
@@ -177,12 +206,11 @@ namespace JiongXiaGu.Unity.Resources
 
         #region Write
 
-        public override IDisposable BeginUpdate()
+        public override void BeginUpdate()
         {
             ThrowIfObjectDisposed();
 
             isUpdating = true;
-            return new ContentCommitUpdateDisposer(this);
         }
 
         public override void CommitUpdate()
