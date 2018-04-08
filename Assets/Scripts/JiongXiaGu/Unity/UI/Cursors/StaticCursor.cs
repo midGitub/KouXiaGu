@@ -2,6 +2,7 @@
 
 namespace JiongXiaGu.Unity.UI.Cursors
 {
+
     public class StaticCursor : ICustomCursor, IDisposable
     {
         public CursorInfo Cursor { get; private set; }

@@ -15,20 +15,25 @@ namespace JiongXiaGu.Unity.UI.Cursors
     public class AnimatedCursor : ICustomCursor
     {
         [SerializeField]
-        private CursorInfo[] animation;
+        private CursorInfo[] cursorInfos;
         [SerializeField]
-        private AnimatedCursorOptions options;
+        private bool isLoop;
+        [SerializeField]
+        private AnimatedCursorTime[] animations;
 
-        public IReadOnlyList<CursorInfo> Animation => animation;
-        public AnimatedCursorOptions Options => options;
+        public IReadOnlyList<CursorInfo> CursorInfos => cursorInfos;
+        public bool IsLoop => isLoop;
+        public IReadOnlyList<AnimatedCursorTime> Animations => animations;
 
-        public AnimatedCursor(IEnumerable<CursorInfo> animation, AnimatedCursorOptions options)
+        public AnimatedCursor(IEnumerable<CursorInfo> cursorInfos, IEnumerable<AnimatedCursorTime> animations, bool isLoop)
         {
-            if (animation == null)
-                throw new ArgumentNullException(nameof(animation));
+            if (cursorInfos == null)
+                throw new ArgumentNullException(nameof(cursorInfos));
+            if (animations == null)
+                throw new ArgumentNullException(nameof(animations));
 
-            this.animation = animation.ToArray();
-            this.options = options;
+            this.cursorInfos = cursorInfos.ToArray();
+            this.animations = animations.ToArray();
         }
 
         public IDisposable Play()
@@ -42,49 +47,60 @@ namespace JiongXiaGu.Unity.UI.Cursors
         {
             public AnimatedCursor Parent { get; private set; }
             public object Current { get; private set; }
-            private int index;
 
-            private IReadOnlyList<CursorInfo> animation => Parent.animation;
-            private AnimatedCursorOptions options => Parent.options;
+            /// <summary>
+            /// 指向下一个播放的光标下标;
+            /// </summary>
+            private int animationIndex;
+
+            private IReadOnlyList<CursorInfo> cursorInfos => Parent.cursorInfos;
+            private bool isLoop => Parent.isLoop;
+            private IReadOnlyList<AnimatedCursorTime> animations => Parent.animations;
 
             public Coroutine(AnimatedCursor parent)
             {
                 Parent = parent;
                 Current = null;
-                index = 0;
+                animationIndex = 0;
             }
 
             public bool MoveNext()
             {
-                if (index < animation.Count)
+                if (animationIndex < 0)
                 {
-                    CursorInfo style = animation[index];
-                    CursorController.SetCursor(style);
-                    Current = new WaitForSecondsRealtime(options.SwitchInterval);
-                    return true;
+                    return false;
                 }
                 else
                 {
-                    if (options.IsLoop)
+                    var animation = animations[animationIndex];
+
+                    if (animation.Index < 0 || animation.Index > cursorInfos.Count)
                     {
-                        index = 0;
-                        Current = new WaitForSecondsRealtime(options.LoopInterval);
-                        return true;
+                        CursorController.ResetCursor();
                     }
                     else
                     {
-                        Current = null;
-                        return false;
+                        CursorInfo cursorInfo = cursorInfos[animation.Index];
+                        CursorController.SetCursor(cursorInfo);
                     }
+
+                    if (++animationIndex >= animations.Count)
+                    {
+                        if (isLoop)
+                            animationIndex = 0;
+                        else
+                            animationIndex = -1;
+                    }
+
+                    Current = new WaitForSecondsRealtime(animation.SecondsToWait);
+                    return true;
                 }
             }
 
             public void Reset()
             {
-                index = 0;
+                animationIndex = 0;
                 Current = null;
-                CursorInfo style = Parent.animation[index];
-                CursorController.SetCursor(style);
             }
         }
     }

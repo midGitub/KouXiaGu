@@ -4,17 +4,53 @@ using UnityEngine;
 
 namespace JiongXiaGu
 {
-
-
     /// <summary>
-    /// 对 Texture2D 保存的拓展方法;
+    /// Texture 拓展方法;
     /// </summary>
-    public static class Texture2D_IO_Extensions
+    public static class TextureFactroy
     {
 
-        const string ExtensionPNG = ".png";
-        const string ExtensionJPG = ".jpg";
+        #region Read
 
+        /// <summary>
+        /// 读取贴图;
+        /// </summary>
+        public static Texture2D Read(byte[] data, TextureFormat format, bool mipmap)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            Texture2D texture = new Texture2D(0, 0, format, mipmap);
+            if (ImageConversion.LoadImage(texture, data))
+            {
+                return texture;
+            }
+            else
+            {
+                GameObject.Destroy(texture);
+                throw new InvalidOperationException();
+            }
+        }
+
+        /// <summary>
+        /// 读取贴图为光标类型;
+        /// </summary>
+        public static Texture2D ReadAsCursor(byte[] data)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            var texture = Read(data, TextureFormat.ARGB32, false);
+            texture.alphaIsTransparency = true;
+            return texture;
+        }
+
+        #endregion
+
+        #region Write
+
+        public const string PNGExtension = ".png";
+        public const string JPGExtension = ".jpg";
 
         /// <summary>
         /// 保存为PNG格式,并指定 filePath 后缀为 .png
@@ -30,9 +66,9 @@ namespace JiongXiaGu
         /// </summary>
         public static void SavePNG(this Texture2D texture, string filePath, FileMode mode)
         {
-            filePath = Path.ChangeExtension(filePath, ExtensionPNG);
+            filePath = Path.ChangeExtension(filePath, PNGExtension);
             byte[] data = texture.EncodeToPNG();
-            SaveBinary(data, filePath, mode);
+            WriteBinary(data, filePath, mode);
         }
 
         /// <summary>
@@ -96,9 +132,9 @@ namespace JiongXiaGu
         /// </summary>
         public static void SaveJPG(this Texture2D texture, string filePath, FileMode mode)
         {
-            filePath = Path.ChangeExtension(filePath, ExtensionJPG);
+            filePath = Path.ChangeExtension(filePath, JPGExtension);
             byte[] data = texture.EncodeToJPG();
-            SaveBinary(data, filePath, mode);
+            WriteBinary(data, filePath, mode);
         }
 
         /// <summary>
@@ -138,17 +174,27 @@ namespace JiongXiaGu
         }
 
 
+        private static byte[] ReadBinary(string filePath, FileMode mode)
+        {
+            using (FileStream stream = File.Open(filePath, mode))
+            {
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    return reader.ReadBytes((int)stream.Length);
+                }
+            }
+        }
 
         /// <summary>
-        /// 以二进制形式保存到;
+        /// 以二进制形式输出到;
         /// </summary>
-        static void SaveBinary(byte[] data, string filePath, FileMode mode)
+        private static void WriteBinary(byte[] data, string filePath, FileMode mode)
         {
-            using (FileStream file = File.Open(filePath, mode))
+            using (FileStream stream = File.Open(filePath, mode))
             {
-                using (BinaryWriter binary = new BinaryWriter(file))
+                using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    binary.Write(data);
+                    writer.Write(data);
                 }
             }
         }
@@ -166,7 +212,6 @@ namespace JiongXiaGu
             return texture;
         }
 
-
+        #endregion
     }
-
 }

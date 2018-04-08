@@ -94,7 +94,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
         /// <summary>
         /// 重置鼠标样式;
         /// </summary>
-        private static void ResetCursor()
+        public static void ResetCursor()
         {
             Cursor.SetCursor(null, default(Vector2), CursorMode.Auto);
         }

@@ -18,9 +18,23 @@ namespace JiongXiaGu.Unity.UI.Cursors
         [SerializeField]
         private CursorMode cursorMode;
 
-        public Texture2D Texture => texture;
-        public Vector2 Hotspot => hotspot;
-        public CursorMode CursorMode => cursorMode;
+        public Texture2D Texture
+        {
+            get { return texture; }
+            set { texture = value; }
+        }
+
+        public Vector2 Hotspot
+        {
+            get { return hotspot; }
+            set { hotspot = value; }
+        }
+
+        public CursorMode CursorMode
+        {
+            get { return cursorMode; }
+            set { cursorMode = value; }
+        }
 
         public CursorInfo(Texture2D texture, Vector2 hotspot, CursorMode cursorMode)
         {

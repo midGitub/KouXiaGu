@@ -170,7 +170,6 @@ namespace JiongXiaGu.Unity.Resources
             return index;
         }
 
-
         private class MemoryEntry : IContentEntry, IDisposable
         {
             public ExclusiveStream Source { get; private set; }

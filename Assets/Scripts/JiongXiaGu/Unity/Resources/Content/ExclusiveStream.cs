@@ -47,7 +47,7 @@ namespace JiongXiaGu.Unity.Resources
                 throw new IOException("Stream已经被占用");
 
             readerCount++;
-            var inputeStream = new InputStream(SynchronizedSource, delegate()
+            var inputeStream = new InputStream(SynchronizedSource, delegate ()
             {
                 readerCount--;
             });
@@ -61,7 +61,7 @@ namespace JiongXiaGu.Unity.Resources
 
             isWrite = true;
             SynchronizedSource.Position = 0;
-            var outputStream = new OuputStream(SynchronizedSource, delegate()
+            var outputStream = new OuputStream(SynchronizedSource, delegate ()
             {
                 isWrite = false;
             });
@@ -145,7 +145,7 @@ namespace JiongXiaGu.Unity.Resources
                 }
                 return readCount;
             }
-            
+
             public override long Seek(long offset, SeekOrigin origin)
             {
                 ThrowIfObjectDisposed();

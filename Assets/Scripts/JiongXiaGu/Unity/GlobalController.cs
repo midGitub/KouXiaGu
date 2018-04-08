@@ -33,12 +33,12 @@ namespace JiongXiaGu.Unity
         }
 
         [SerializeField]
-        private CursorInfo cursorInfo;
+        private AnimatedCursor cursorInfo;
 
         [ContextMenu("Test0")]
         private void Test0()
         {
-            Cursor.SetCursor(null, default(Vector2), CursorMode.Auto);
+            CursorController.SetCursor(cursorInfo);
         }
 
         [ContextMenu("Test1")]
