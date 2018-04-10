@@ -76,6 +76,8 @@ namespace JiongXiaGu.Unity.Resources
         private readonly XmlSerializer<Description> xmlSerializer = new XmlSerializer<Description>();
 
         private readonly string description1Path = "d1.xml";
+        private readonly string description1PathA = "d1.Xml";
+        private readonly string description1PathB = "D1.xml";
         private readonly Description description1 = new Description()
         {
             ID = "001",
@@ -137,6 +139,8 @@ namespace JiongXiaGu.Unity.Resources
             Assert.AreEqual(0, content.EnumerateEntries(@"D4", "*", SearchOption.TopDirectoryOnly).Count());
 
             Assert.True(content.Contains(description1Path));
+            Assert.True(content.Contains(description1PathA));
+            Assert.True(content.Contains(description1PathB));
 
             using (Stream stream1 = content.GetInputStream(entry1),
                 stream2 = content.GetInputStream(description2Path),

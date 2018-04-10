@@ -7,7 +7,6 @@ namespace JiongXiaGu.Unity.UI.Cursors
     /// </summary>
     public interface ICursor
     {
-        void SetCursor(CursorInfo cursor);
         void SetCursor(Texture2D texture, Vector2 hotspot, CursorMode cursorMode);
         void ResetCursor();
     }

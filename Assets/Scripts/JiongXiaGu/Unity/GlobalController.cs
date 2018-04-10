@@ -40,14 +40,14 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test0")]
         private void Test0()
         {
-            CursorController.SetCursor(cursorInfo);
+            WindowCursor.SetCursor(cursorInfo);
         }
 
         [ContextMenu("Test1")]
         private void Test1()
         {
             var factroy = new AnimatedCursorFactroy();
-            CursorController.SetCursor(cursorInfo);
+            WindowCursor.SetCursor(cursorInfo);
         }
 
         [ContextMenu("Test2")]

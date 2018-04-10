@@ -115,6 +115,8 @@ namespace JiongXiaGu.Unity.Resources
             if (searchPattern == null)
                 throw new ArgumentNullException(nameof(searchPattern));
 
+            directoryName = NormalizePath(directoryName);
+
             switch (searchOption)
             {
                 case SearchOption.AllDirectories:
@@ -192,11 +194,11 @@ namespace JiongXiaGu.Unity.Resources
         public virtual IContentEntry GetEntry(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
+            name = NormalizePath(name);
 
             foreach (var entry in EnumerateEntries())
             {
-                if (entry.Name == name)
+                if (string.Equals(entry.Name, name, StringComparison.OrdinalIgnoreCase))
                 {
                     return entry;
                 }
@@ -234,7 +236,7 @@ namespace JiongXiaGu.Unity.Resources
         public virtual bool Contains(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
+            name = NormalizePath(name);
 
             return GetEntry(name) != null;
         }
@@ -411,10 +413,30 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 统一目录分隔符 为 "/";
         /// </summary>
-        public static string Normalize(string relativePath)
+        protected static string NormalizePath(string relativePath)
         {
             relativePath = relativePath.Replace('\\', '/');
             return relativePath;
+        }
+
+        /// <summary>
+        /// 路径对比方法;
+        /// </summary>
+        protected struct PathComparer : IEqualityComparer<string>
+        {
+            public bool Equals(string x, string y)
+            {
+                x = x.Replace('\\', '/');
+                y = y.Replace('\\', '/');
+                return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
+            }
+
+            public int GetHashCode(string str)
+            {
+                str = str.Replace('\\', '/');
+                str = str.ToLowerInvariant();
+                return str.GetHashCode();
+            }
         }
     }
 }

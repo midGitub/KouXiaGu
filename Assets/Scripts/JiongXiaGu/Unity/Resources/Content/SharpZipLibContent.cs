@@ -25,7 +25,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 资源入口合集;
         /// </summary>
-        private List<IContentEntry> entries = new List<IContentEntry>();
+        private IDictionary<string, IContentEntry> entries;
 
         private bool isDisposed;
         public override bool IsUpdating => zipFile.IsUpdating;
@@ -41,6 +41,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             stream = new FileStream(zipFilePath, FileMode.Open, FileAccess.ReadWrite);
             zipFile = new ZipFile(stream);
+            entries = new Dictionary<string, IContentEntry>(new PathComparer());
             RebuildEntriesCollection();
         }
 
@@ -51,6 +52,7 @@ namespace JiongXiaGu.Unity.Resources
 
             this.stream = stream;
             zipFile = new ZipFile(stream);
+            entries = new Dictionary<string, IContentEntry>(new PathComparer());
             RebuildEntriesCollection();
         }
 
@@ -66,6 +68,7 @@ namespace JiongXiaGu.Unity.Resources
 
             this.stream = stream;
             this.zipFile = zipFile;
+            entries = new Dictionary<string, IContentEntry>(new PathComparer());
             RebuildEntriesCollection();
         }
 
@@ -90,46 +93,48 @@ namespace JiongXiaGu.Unity.Resources
                 stream.Dispose();
                 stream = null;
 
+                foreach (var entry in entries.Values)
+                {
+                    var disposer = entry as IDisposable;
+                    if (disposer != null)
+                    {
+                        disposer.Dispose();
+                    }
+                }
+
                 entries = null;
 
                 isDisposed = true;
             }
         }
 
-        public void RebuildEntriesCollection()
+        private void ClearEntriesCollection()
         {
-            int index;
-            for (index = 0; index < zipFile.Count; index++)
+            foreach (var entry in entries.Values)
             {
-                ZipEntry zipEntry = zipFile[index];
-                if (entries.Count > index)
+                var disposer = entry as IDisposable;
+                if (disposer != null)
                 {
-                    var oldEntry = entries[index];
-                    if (oldEntry is IDisposable)
-                    {
-                        (oldEntry as IDisposable).Dispose();
-                    }
-                    entries[index] = new Entry(zipEntry);
-                }
-                else
-                {
-                    var entry = new Entry(zipEntry);
-                    entries.Add(entry);
+                    disposer.Dispose();
                 }
             }
+            entries.Clear();
+        }
 
-            if (index < entries.Count)
+        /// <summary>
+        /// 重构资源入口合集,将会清除未保存的资源;
+        /// </summary>
+        internal void RebuildEntriesCollection()
+        {
+            if (IsUpdating)
+                throw new InvalidOperationException("合集正在更新");
+
+            ClearEntriesCollection();
+
+            for (int index = 0; index < zipFile.Count; index++)
             {
-                var start = index;
-                for (; index < entries.Count; index++)
-                {
-                    var oldEntry = entries[index];
-                    if (oldEntry is IDisposable)
-                    {
-                        (oldEntry as IDisposable).Dispose();
-                    }
-                }
-                entries.RemoveRange(start, entries.Count - start);
+                ZipEntry zipEntry = zipFile[index];
+                entries.Add(zipEntry.Name, new Entry(zipEntry));
             }
         }
 
@@ -145,7 +150,7 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            return entries.Where(delegate (IContentEntry entry)
+            return entries.Values.Where(delegate (IContentEntry entry)
             {
                 var updateEntry = entry as UpdateEntry;
                 if (updateEntry != null)
@@ -162,28 +167,19 @@ namespace JiongXiaGu.Unity.Resources
         public override IContentEntry GetEntry(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
 
-            int index = FindIndex(name);
-            if (index >= 0)
-            {
-                return entries[index];
-            }
-            else
-            {
-                return null;
-            }
+            IContentEntry entry;
+            entries.TryGetValue(name, out entry);
+            return entry;
         }
 
         public override Stream GetInputStream(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
 
-            int index = FindIndex(name);
-            if (index >= 0)
+            IContentEntry entry;
+            if (entries.TryGetValue(name, out entry))
             {
-                var entry = entries[index];
                 return GetInputStream(entry);
             }
             else
@@ -209,11 +205,6 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
-        private int FindIndex(string name)
-        {
-            return entries.FindIndex(entry => entry.Name == name);
-        }
-
 
         public override void BeginUpdate()
         {
@@ -227,7 +218,7 @@ namespace JiongXiaGu.Unity.Resources
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
 
-            foreach (var entry in entries)
+            foreach (var entry in entries.Values)
             {
                 var updateEntry = entry as UpdateEntry;
                 if (updateEntry != null)
@@ -256,26 +247,24 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
+            name = NormalizePath(name);
 
-            int index = FindIndex(name);
-            if (index >= 0)
+            IContentEntry oldEntry;
+            if (entries.TryGetValue(name, out oldEntry))
             {
-                var oldEntry = entries[index];
-
                 if (oldEntry is IDisposable)
                 {
                     (oldEntry as IDisposable).Dispose();
                 }
 
                 var updateEntry = new UpdateEntry(name, source, lastWriteTime, isCloseStream, EntryOperation.AddOrUpdate);
-                entries[index] = updateEntry;
+                entries[name] = updateEntry;
                 return updateEntry;
             }
             else
             {
                 var updateEntry = new UpdateEntry(name, source, lastWriteTime, isCloseStream, EntryOperation.AddOrUpdate);
-                entries.Add(updateEntry);
+                entries.Add(name, updateEntry);
                 return updateEntry;
             }
         }
@@ -284,13 +273,11 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
+            name = NormalizePath(name);
 
-            int index = FindIndex(name);
-            if (index >= 0)
+            IContentEntry entry;
+            if (entries.TryGetValue(name, out entry))
             {
-                var entry = entries[index];
-
                 var updateEntry = entry as UpdateEntry;
                 if (updateEntry != null)
                 {
@@ -299,7 +286,7 @@ namespace JiongXiaGu.Unity.Resources
                     switch (updateEntry.Operation)
                     {
                         case EntryOperation.AddOrUpdate:
-                            entries.RemoveAt(index);
+                            entries.Remove(name);
                             return true;
 
                         case EntryOperation.Remove:
@@ -312,7 +299,7 @@ namespace JiongXiaGu.Unity.Resources
                 else
                 {
                     updateEntry = new UpdateEntry(name, EntryOperation.Remove);
-                    entries[index] = updateEntry;
+                    entries[name] = updateEntry;
                     return true;
                 }
             }
@@ -326,13 +313,11 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
+            name = NormalizePath(name);
 
-            var index = FindIndex(name);
-            if (index >= 0)
+            IContentEntry oldEntry;
+            if (entries.TryGetValue(name, out oldEntry))
             {
-                var oldEntry = entries[index];
-
                 if (oldEntry is IDisposable)
                 {
                     (oldEntry as IDisposable).Dispose();
@@ -340,7 +325,8 @@ namespace JiongXiaGu.Unity.Resources
 
                 var source = new MemoryStream();
                 var updateEntry = new UpdateEntry(name, source, DateTime.Now, true, EntryOperation.AddOrUpdate);
-                entry = entries[index] = updateEntry;
+                entries[name] = updateEntry;
+                entry = updateEntry;
                 return updateEntry.Source.GetOutputStream();
             }
             else
@@ -348,7 +334,7 @@ namespace JiongXiaGu.Unity.Resources
                 var source = new MemoryStream();
                 var updateEntry = new UpdateEntry(name, source, DateTime.Now, true, EntryOperation.AddOrUpdate);
                 entry = updateEntry;
-                entries.Add(updateEntry);
+                entries.Add(name, updateEntry);
                 return updateEntry.Source.GetOutputStream();
             }
         }

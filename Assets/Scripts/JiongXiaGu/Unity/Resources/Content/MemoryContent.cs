@@ -13,7 +13,7 @@ namespace JiongXiaGu.Unity.Resources
     {
         private bool isDisposed = false;
         private bool isUpdating = false;
-        private List<MemoryEntry> entries;
+        private IDictionary<string, MemoryEntry> entries;
         public override bool IsUpdating => isUpdating;
         public override bool CanRead => !isDisposed;
         public override bool CanWrite => !isDisposed;
@@ -22,14 +22,14 @@ namespace JiongXiaGu.Unity.Resources
 
         public MemoryContent()
         {
-            entries = new List<MemoryEntry>();
+            entries = new Dictionary<string, MemoryEntry>(new PathComparer());
         }
 
         public override void Dispose()
         {
             if (!isDisposed)
             {
-                foreach (var entry in entries)
+                foreach (var entry in entries.Values)
                 {
                     entry.Dispose();
                 }
@@ -43,35 +43,25 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
 
-            return entries.Cast<IContentEntry>();
+            return entries.Values.Cast<IContentEntry>();
         }
 
         public override IContentEntry GetEntry(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
 
-            var index = FindIndex(name);
-            if (index >= 0)
-            {
-                var entry = entries[index];
-                return entry;
-            }
-            else
-            {
-                return null;
-            }
+            MemoryEntry entry;
+            entries.TryGetValue(name, out entry);
+            return entry;
         }
 
         public override Stream GetInputStream(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
 
-            var index = FindIndex(name);
-            if (index >= 0)
+            MemoryEntry entry;
+            if (entries.TryGetValue(name, out entry))
             {
-                var entry = entries[index];
                 return entry.OpenRead();
             }
             else
@@ -99,20 +89,18 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
 
-            var index = FindIndex(name);
-            if (index >= 0)
+            MemoryEntry oldEntry;
+            if (entries.TryGetValue(name, out oldEntry))
             {
-                var oldEntry = entries[index];
                 oldEntry.Dispose();
-                var entry = entries[index] = new MemoryEntry(name, source, lastWriteTime, closeStream);
+                var entry = entries[name] = new MemoryEntry(name, source, lastWriteTime, closeStream);
                 return entry;
             }
             else
             {
                 var entry = new MemoryEntry(name, source, lastWriteTime, closeStream);
-                entries.Add(entry);
+                entries.Add(name, entry);
                 return entry;
             }
         }
@@ -121,14 +109,12 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
 
-            var index = FindIndex(name);
-            if (index >= 0)
+            MemoryEntry oldEntry;
+            if (entries.TryGetValue(name, out oldEntry))
             {
-                var oldEntry = entries[index];
                 oldEntry.Dispose();
-                entries.RemoveAt(index);
+                entries.Remove(name);
                 return true;
             }
             else
@@ -141,17 +127,16 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
 
-            var index = FindIndex(name);
-            if (index >= 0)
+            MemoryEntry oldEntry;
+            if (entries.TryGetValue(name, out oldEntry))
             {
-                var oldEntry = entries[index];
                 oldEntry.Dispose();
 
                 var source = new MemoryStream();
                 var memoryEntry = new MemoryEntry(name, source, DateTime.Now, true);
-                entry = entries[index] = memoryEntry;
+                entries[name] = memoryEntry;
+                entry = memoryEntry;
                 return memoryEntry.Source.GetOutputStream();
             }
             else
@@ -159,15 +144,9 @@ namespace JiongXiaGu.Unity.Resources
                 var source = new MemoryStream();
                 var memoryEntry = new MemoryEntry(name, source, DateTime.Now, true);
                 entry = memoryEntry;
-                entries.Add(memoryEntry);
+                entries.Add(name, memoryEntry);
                 return memoryEntry.Source.GetOutputStream();
             }
-        }
-
-        private int FindIndex(string name)
-        {
-            var index = entries.FindIndex(entry => entry.Name == name);
-            return index;
         }
 
         private class MemoryEntry : IContentEntry, IDisposable
@@ -178,8 +157,8 @@ namespace JiongXiaGu.Unity.Resources
 
             public MemoryEntry(string name, Stream source, DateTime lastWriteTime, bool isCloseStream)
             {
-                Source = new ExclusiveStream(source, isCloseStream);
                 Name = name;
+                Source = new ExclusiveStream(source, isCloseStream);
                 LastWriteTime = lastWriteTime;
             }
 

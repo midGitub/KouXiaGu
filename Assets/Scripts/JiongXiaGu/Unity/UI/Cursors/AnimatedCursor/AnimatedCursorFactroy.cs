@@ -12,7 +12,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
     {
         internal const string ConfigFileName = "AnimatedCursor.xml";
         internal const string TextureExtensionName = ".png";
-        private readonly XmlSerializer<AnimatedCursorConfig> xmlSerializer = new XmlSerializer<AnimatedCursorConfig>();
+        private readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(AnimatedCursorConfig));
         private readonly SortedList<int, Texture2D> sortedList = new SortedList<int, Texture2D>();
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
         {
             using (var stream = content.GetInputStream(ConfigFileName))
             {
-                var config = xmlSerializer.Deserialize(stream);
+                var config = (AnimatedCursorConfig)xmlSerializer.Deserialize(stream);
                 return config;
             }
         }

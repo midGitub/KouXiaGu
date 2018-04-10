@@ -151,7 +151,6 @@ namespace JiongXiaGu.Unity.Resources
         public override IContentEntry GetEntry(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
 
             string filePath = Path.Combine(DirectoryPath, name);
             if (File.Exists(filePath))
@@ -165,7 +164,6 @@ namespace JiongXiaGu.Unity.Resources
         public override bool Contains(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
 
             string filePath = Path.Combine(DirectoryPath, name);
             return File.Exists(filePath);
@@ -189,7 +187,6 @@ namespace JiongXiaGu.Unity.Resources
         public override Stream GetInputStream(string name)
         {
             ThrowIfObjectDisposed();
-            name = Normalize(name);
 
             string filePath = Path.Combine(DirectoryPath, name);
             if (File.Exists(filePath))
@@ -225,7 +222,6 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
 
             string filePath = Path.Combine(DirectoryPath, name);
             string directory = Path.GetDirectoryName(filePath);
@@ -244,7 +240,6 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
 
             string filePath = Path.Combine(DirectoryPath, name);
             if (File.Exists(filePath))
@@ -262,7 +257,6 @@ namespace JiongXiaGu.Unity.Resources
         {
             ThrowIfObjectDisposed();
             ThrowIfObjectNotUpdating();
-            name = Normalize(name);
 
             string filePath = Path.Combine(DirectoryPath, name);
             string directory = Path.GetDirectoryName(filePath);
@@ -283,7 +277,7 @@ namespace JiongXiaGu.Unity.Resources
             public DirectoryContentEntry(DirectoryContent parent, string name)
             {
                 Parent = parent;
-                Name = name;
+                Name = NormalizePath(name);
             }
 
             public Stream OpenRead()

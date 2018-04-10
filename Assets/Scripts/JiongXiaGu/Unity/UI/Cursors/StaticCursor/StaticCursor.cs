@@ -1,20 +1,32 @@
 ﻿using System;
+using UnityEngine;
 
 namespace JiongXiaGu.Unity.UI.Cursors
 {
 
     public class StaticCursor : ICustomCursor, IDisposable
     {
-        public CursorInfo Cursor { get; private set; }
+        [SerializeField]
+        private Texture2D texture;
+        [SerializeField]
+        private Vector2 hotspot;
+        [SerializeField]
+        private CursorMode cursorMode;
 
-        public StaticCursor(CursorInfo cursor)
+        public Texture2D Texture => texture;
+        public Vector2 Hotspot => hotspot;
+        public CursorMode CursorMode => cursorMode;
+
+        public StaticCursor(Texture2D texture, Vector2 hotspot, CursorMode cursorMode)
         {
-            Cursor = cursor;
+            this.texture = texture;
+            this.hotspot = hotspot;
+            this.cursorMode = cursorMode;
         }
 
         public IDisposable Play(ICursor cursor)
         {
-            cursor.SetCursor(Cursor);
+            cursor.SetCursor(texture, hotspot, cursorMode);
             return this;
         }
 
