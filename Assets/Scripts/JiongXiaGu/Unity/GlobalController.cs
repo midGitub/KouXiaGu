@@ -34,6 +34,8 @@ namespace JiongXiaGu.Unity
 
         [SerializeField]
         private AnimatedCursor cursorInfo;
+        [SerializeField]
+        private string filePath;
 
         [ContextMenu("Test0")]
         private void Test0()
@@ -44,6 +46,7 @@ namespace JiongXiaGu.Unity
         [ContextMenu("Test1")]
         private void Test1()
         {
+            var factroy = new AnimatedCursorFactroy();
             CursorController.SetCursor(cursorInfo);
         }
 

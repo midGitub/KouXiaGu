@@ -12,9 +12,9 @@ namespace JiongXiaGu.Unity.UI.Cursors
             Cursor = cursor;
         }
 
-        public IDisposable Play()
+        public IDisposable Play(ICursor cursor)
         {
-            CursorController.SetCursor(Cursor);
+            cursor.SetCursor(Cursor);
             return this;
         }
 

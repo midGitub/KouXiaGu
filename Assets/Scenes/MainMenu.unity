@@ -392,8 +392,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 691138217}
   m_HandleRect: {fileID: 691138216}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.9999998
+  m_Value: 0
+  m_Size: 0.99999964
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1083,7 +1083,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10, y: 0.000030517578}
+  m_AnchoredPosition: {x: 10, y: 0.00016784668}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &446382910
@@ -5483,19 +5483,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorInfo:
-    cursorInfos:
-    - texture: {fileID: 2800000, guid: b24644b1d705e124b8448cae370a5859, type: 3}
+    config:
+      IsLoop: 1
+      Speed: 1
       hotspot: {x: 0, y: 0}
       cursorMode: 0
-    - texture: {fileID: 2800000, guid: c8a15bf836ba87d44b21f444b9eff585, type: 3}
-      hotspot: {x: 0, y: 0}
-      cursorMode: 0
-    isLoop: 1
-    animations:
-    - Index: 0
-      SecondsToWait: 0.5
-    - Index: 1
-      SecondsToWait: 0.5
+    textures:
+    - {fileID: 2800000, guid: b24644b1d705e124b8448cae370a5859, type: 3}
+    - {fileID: 2800000, guid: 7e3d4536290a0b243b952f25164fbb62, type: 3}
+  filePath: 
 --- !u!4 &1956601758
 Transform:
   m_ObjectHideFlags: 0

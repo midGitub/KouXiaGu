@@ -1,4 +1,4 @@
-﻿namespace JiongXiaGu.Unity.UI.Cursors
+﻿namespace JiongXiaGu.Unity.RunTime
 {
     /// <summary>
     /// 预定义的鼠标样式;

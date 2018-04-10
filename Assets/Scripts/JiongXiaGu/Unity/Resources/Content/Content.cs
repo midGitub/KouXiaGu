@@ -333,7 +333,6 @@ namespace JiongXiaGu.Unity.Resources
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="IOException">文件被占用</exception>
         public virtual Stream GetOutputStream(IContentEntry entry)
         {

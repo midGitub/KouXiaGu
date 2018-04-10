@@ -19,20 +19,20 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public static void AreSame<T>(IEnumerable<T> source, IEnumerable<T> target)
         {
-            AreSame(source, target, EqualityComparer<T>.Default);
+            AreSame(source, target, EqualityComparer<T>.Default.Equals);
         }
 
         /// <summary>
         /// 判断两个合集内容和顺序是否相同,若不相同则返回对应异常;
         /// </summary>
-        public static void AreSame<T>(IEnumerable<T> source, IEnumerable<T> target, IEqualityComparer<T> comparer)
+        public static void AreSame<T>(IEnumerable<T> source, IEnumerable<T> target, Func<T, T, bool> equals)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
-            if (comparer == null)
-                throw new ArgumentNullException(nameof(comparer));
+            if (equals == null)
+                throw new ArgumentNullException(nameof(equals));
             if (source == target)
                 return;
 
@@ -50,7 +50,7 @@ namespace JiongXiaGu.Collections
                 {
                     var item2 = targetEnumerator.Current;
 
-                    if (!comparer.Equals(item1, item2))
+                    if (!equals.Invoke(item1, item2))
                     {
                         throw new ArgumentException(string.Format("下标[{0}]对应的值不相同;", i));
                     }
@@ -73,20 +73,20 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public static void AreSame<T>(ICollection<T> source, ICollection<T> target)
         {
-            AreSame(source, target, EqualityComparer<T>.Default);
+            AreSame(source, target, EqualityComparer<T>.Default.Equals);
         }
 
         /// <summary>
         /// 判断两个合集内容和顺序是否相同,若不相同则返回对应异常;
         /// </summary>
-        public static void AreSame<T>(ICollection<T> source, ICollection<T> target, IEqualityComparer<T> comparer)
+        public static void AreSame<T>(ICollection<T> source, ICollection<T> target, Func<T, T, bool> equals)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
-            if (comparer == null)
-                throw new ArgumentNullException(nameof(comparer));
+            if (equals == null)
+                throw new ArgumentNullException(nameof(equals));
             if (source == target)
                 return;
             if (source.Count != target.Count)
@@ -100,7 +100,7 @@ namespace JiongXiaGu.Collections
                 {
                     var item2 = targetEnumerator.Current;
 
-                    if (!comparer.Equals(item1, item2))
+                    if (!equals.Invoke(item1, item2))
                     {
                         throw new ArgumentException(string.Format("下标[{0}]对应的值不相同;", i));
                     }
@@ -120,20 +120,20 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public static void AreSame<T>(IList<T> source, IList<T> target)
         {
-            AreSame(source, target, EqualityComparer<T>.Default);
+            AreSame(source, target, EqualityComparer<T>.Default.Equals);
         }
 
         /// <summary>
         /// 判断两个合集内容和顺序是否相同,若不相同则返回对应异常;
         /// </summary>
-        public static void AreSame<T>(IList<T> source, IList<T> target, IEqualityComparer<T> comparer)
+        public static void AreSame<T>(IList<T> source, IList<T> target, Func<T, T, bool> equals)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
-            if (comparer == null)
-                throw new ArgumentNullException(nameof(comparer));
+            if (equals == null)
+                throw new ArgumentNullException(nameof(equals));
             if (source == target)
                 return;
             if (source.Count != target.Count)
@@ -144,7 +144,7 @@ namespace JiongXiaGu.Collections
                 var item1 = source[i];
                 var item2 = target[i];
 
-                if (!comparer.Equals(item1, item2))
+                if (!equals.Invoke(item1, item2))
                 {
                     throw new ArgumentException(string.Format("下标[{0}]对应的值不相同;", i));
                 }
@@ -157,20 +157,20 @@ namespace JiongXiaGu.Collections
         /// </summary>
         public static void AreSame<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> source, IReadOnlyDictionary<TKey, TValue> target)
         {
-            AreSame(source, target, EqualityComparer<TValue>.Default);
+            AreSame(source, target, EqualityComparer<TValue>.Default.Equals);
         }
 
         /// <summary>
         /// 判断两个字典结构内容是否相同,若不相同则返回对应异常;
         /// </summary>
-        public static void AreSame<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> source, IReadOnlyDictionary<TKey, TValue> target, IEqualityComparer<TValue> valueComparer)
+        public static void AreSame<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> source, IReadOnlyDictionary<TKey, TValue> target, Func<TValue, TValue, bool> equals)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
-            if (valueComparer == null)
-                throw new ArgumentNullException(nameof(valueComparer));
+            if (equals == null)
+                throw new ArgumentNullException(nameof(equals));
             if (source == target)
                 return;
             if (source.Count != target.Count)
@@ -181,7 +181,7 @@ namespace JiongXiaGu.Collections
                 TValue value2;
                 if (target.TryGetValue(item1.Key, out value2))
                 {
-                    if (!valueComparer.Equals(item1.Value, value2))
+                    if (!equals.Invoke(item1.Value, value2))
                     {
                         throw new ArgumentException(string.Format("[{0}]对应的值不相同;", item1.Key));
                     }

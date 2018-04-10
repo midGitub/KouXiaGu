@@ -10,6 +10,6 @@ namespace JiongXiaGu.Unity.UI.Cursors
         /// <summary>
         /// 设置鼠标样式,并返回取消器;
         /// </summary>
-        IDisposable Play();
+        IDisposable Play(ICursor cursor);
     }
 }

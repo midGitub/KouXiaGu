@@ -49,6 +49,22 @@ namespace JiongXiaGu
 
         #region Write
 
+        public static void WriteAsPNG(this Texture2D texture, Stream stream)
+        {
+            byte[] data = texture.EncodeToPNG();
+            stream.Write(data, 0, data.Length);
+        }
+
+        public static void WriteAsJPG(this Texture2D texture, Stream stream)
+        {
+            byte[] data = texture.EncodeToJPG();
+            stream.Write(data, 0, data.Length);
+        }
+
+
+
+
+
         public const string PNGExtension = ".png";
         public const string JPGExtension = ".jpg";
 
