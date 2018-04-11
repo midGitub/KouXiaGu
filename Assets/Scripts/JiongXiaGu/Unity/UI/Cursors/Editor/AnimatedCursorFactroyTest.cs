@@ -1,14 +1,10 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JiongXiaGu.Collections;
 using JiongXiaGu.Unity.Resources;
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
-using JiongXiaGu.Collections;
 
-namespace JiongXiaGu.Unity.UI.Cursors.Editor
+namespace JiongXiaGu.Unity.UI.Cursors
 {
 
     [TestFixture]

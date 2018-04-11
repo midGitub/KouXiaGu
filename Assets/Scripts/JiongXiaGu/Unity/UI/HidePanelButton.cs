@@ -36,7 +36,7 @@ namespace JiongXiaGu.UI
         {
             if (cursorDefaultStyleDisposer == null)
             {
-                cursorDefaultStyleDisposer = CursorController.SetCursor(CursorType.Default);
+                cursorDefaultStyleDisposer = GameCursor.SetCursor(CursorType.Default);
             }
         }
 

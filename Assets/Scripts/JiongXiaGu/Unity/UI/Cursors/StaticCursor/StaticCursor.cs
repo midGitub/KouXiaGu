@@ -9,24 +9,23 @@ namespace JiongXiaGu.Unity.UI.Cursors
         [SerializeField]
         private Texture2D texture;
         [SerializeField]
-        private Vector2 hotspot;
-        [SerializeField]
-        private CursorMode cursorMode;
+        private StaticCursorConfig config;
 
         public Texture2D Texture => texture;
-        public Vector2 Hotspot => hotspot;
-        public CursorMode CursorMode => cursorMode;
+        public StaticCursorConfig Config => config;
 
-        public StaticCursor(Texture2D texture, Vector2 hotspot, CursorMode cursorMode)
+        public StaticCursor(Texture2D texture, StaticCursorConfig config)
         {
+            if (texture == null)
+                throw new ArgumentNullException(nameof(texture));
+
             this.texture = texture;
-            this.hotspot = hotspot;
-            this.cursorMode = cursorMode;
+            this.config = config;
         }
 
         public IDisposable Play(ICursor cursor)
         {
-            cursor.SetCursor(texture, hotspot, cursorMode);
+            cursor.SetCursor(texture, config.Hotspot, config.CursorMode);
             return this;
         }
 

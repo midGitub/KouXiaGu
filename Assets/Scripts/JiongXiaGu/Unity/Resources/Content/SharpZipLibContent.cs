@@ -35,8 +35,12 @@ namespace JiongXiaGu.Unity.Resources
         public override bool IsCompress => true;
 
         /// <summary>
-        /// 指定压缩文件路径构建,若路径不存在则返回异常;
+        /// 指定压缩文件路径构建;
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="ZipException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
         public SharpZipLibContent(string zipFilePath)
         {
             stream = new FileStream(zipFilePath, FileMode.Open, FileAccess.ReadWrite);
@@ -45,6 +49,11 @@ namespace JiongXiaGu.Unity.Resources
             RebuildEntriesCollection();
         }
 
+        /// <summary>
+        /// 从指定流创建;
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ZipException"></exception>
         public SharpZipLibContent(Stream stream)
         {
             if (stream == null)
@@ -59,6 +68,7 @@ namespace JiongXiaGu.Unity.Resources
         /// <summary>
         /// 指定参数构建;
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public SharpZipLibContent(Stream stream, ZipFile zipFile)
         {
             if (stream == null)

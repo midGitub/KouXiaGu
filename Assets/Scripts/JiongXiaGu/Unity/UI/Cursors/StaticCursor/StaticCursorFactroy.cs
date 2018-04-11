@@ -1,5 +1,6 @@
 ﻿using JiongXiaGu.Unity.Resources;
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace JiongXiaGu.Unity.UI.Cursors
@@ -12,14 +13,18 @@ namespace JiongXiaGu.Unity.UI.Cursors
         internal const string TextureFileName = "Cursor.png";
         private readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(StaticCursorConfig));
 
+        /// <summary>
+        /// 读取到光标;
+        /// </summary>
+        /// <exception cref="FileNotFoundException"></exception>
         public StaticCursor Read(IReadOnlyContent content)
         {
             if (content == null)
-                throw new NotImplementedException();
+                throw new ArgumentNullException(nameof(content));
 
             var config = ReadConfig(content);
             var texture = ReadTexture(content);
-            return new StaticCursor(texture, config.Hotspot, config.CursorMode);
+            return new StaticCursor(texture, config);
         }
 
         private StaticCursorConfig ReadConfig(IReadOnlyContent content)
@@ -50,13 +55,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
             if (writable == null)
                 throw new NotImplementedException();
 
-            StaticCursorConfig config = new StaticCursorConfig()
-            {
-                Hotspot = staticCursor.Hotspot,
-                CursorMode = staticCursor.CursorMode,
-            };
-            WriteConfig(writable, config);
-
+            WriteConfig(writable, staticCursor.Config);
             WriteTexture(writable, staticCursor.Texture);
         }
 

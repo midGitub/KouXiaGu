@@ -6,7 +6,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
 {
 
     /// <summary>
-    /// 窗口光标;
+    /// 软件光标,光标样式管理器;
     /// </summary>
     public class WindowCursor : ICursor
     {
@@ -40,6 +40,7 @@ namespace JiongXiaGu.Unity.UI.Cursors
         /// <summary>
         /// 设置当前鼠标样式,并返回取消方法;
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public static IDisposable SetCursor(ICustomCursor cursor)
         {
             if (cursor == null)
