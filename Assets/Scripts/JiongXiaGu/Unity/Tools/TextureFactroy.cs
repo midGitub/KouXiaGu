@@ -37,9 +37,6 @@ namespace JiongXiaGu
         /// </summary>
         public static Texture2D ReadAsCursor(byte[] data)
         {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-
             var texture = Read(data, TextureFormat.ARGB32, false);
             texture.alphaIsTransparency = true;
             return texture;

@@ -5,6 +5,7 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.UI.Cursors
 {
 
+    [Serializable]
     public struct StaticCursorConfig : IEquatable<StaticCursorConfig>
     {
         public Vector2 Hotspot;

@@ -14,6 +14,11 @@ using JiongXiaGu.Unity.Maps;
 using JiongXiaGu.Grids;
 using JiongXiaGu.Collections;
 using JiongXiaGu.Unity.UI.Cursors;
+using JiongXiaGu.Unity.RunTime;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
+using SharpCompress.Writers;
+using System.Text;
 
 namespace JiongXiaGu.Unity
 {
@@ -33,40 +38,66 @@ namespace JiongXiaGu.Unity
         }
 
         [SerializeField]
-        private AnimatedCursor cursorInfo;
-        [SerializeField]
         private string filePath;
+        [SerializeField]
+        private AnimatedCursor animatedCursor;
+        [SerializeField]
+        private StaticCursor staticCursor;
 
         [ContextMenu("Test0")]
         private void Test0()
         {
-            WindowCursor.SetCursor(cursorInfo);
+            var animatedCursorFactroy = new AnimatedCursorFactroy();
+
+            using (var content = new SharpZipLibContent(Path.Combine(GameCursor.CursorsDirectory, "Wait.zip")))
+            {
+                animatedCursor = animatedCursorFactroy.Read(content);
+            }
+
+            WindowCursor.SetCursor(animatedCursor);
         }
 
         [ContextMenu("Test1")]
         private void Test1()
         {
-            var factroy = new AnimatedCursorFactroy();
-            WindowCursor.SetCursor(cursorInfo);
+            var animatedCursorFactroy = new AnimatedCursorFactroy();
+            var staticCursorFactroy = new StaticCursorFactroy();
+
+            using (var content = SharpZipLibContent.CreateNew(Path.Combine(GameCursor.CursorsDirectory, "AnimatedCursor.zip")))
+            {
+                using (content.BeginUpdateAuto())
+                {
+                    animatedCursorFactroy.Write(content, animatedCursor);
+                }
+            }
+
+            using (var content = SharpZipLibContent.CreateNew(Path.Combine(GameCursor.CursorsDirectory, "StaticCursor.zip")))
+            {
+                using (content.BeginUpdateAuto())
+                {
+                    staticCursorFactroy.Write(content, staticCursor);
+                }
+            }
         }
 
         [ContextMenu("Test2")]
-        private async void Test2()
+        private void Test2()
         {
-            CancellationTokenSource source = new CancellationTokenSource();
-            for (int i = 0; i < 50; i++)
+            string file = Path.Combine(Resource.ConfigDirectory, "1.zip");
+
+            using (ZipArchive zipArchive = ZipArchive.Create())
             {
-                int temp = i;
-#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-                TaskHelper.Run(delegate ()
+                zipArchive.AddEntry("11.txt", new MemoryStream(Encoding.UTF8.GetBytes("123123")));
+                using (var stream = new FileStream(file, FileMode.Create))
                 {
-                    Debug.Log(temp);
-                    Thread.Sleep(100);
-                }, source.Token, UnityUpdateTaskScheduler.TaskScheduler).ContinueWith(task => Debug.Log(temp + "ContinueWith"), source.Token);
-#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                    zipArchive.SaveTo(stream, CompressionType.Deflate);
+                }
             }
-            await Task.Delay(1000);
-            source.Cancel();
+
+            using (ZipArchive zipArchive = ZipArchive.Open(file))
+            {
+
+            }
         }
 
         [ContextMenu("Test3")]

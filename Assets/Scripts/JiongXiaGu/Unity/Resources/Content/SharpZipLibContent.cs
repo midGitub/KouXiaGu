@@ -207,7 +207,7 @@ namespace JiongXiaGu.Unity.Resources
             Entry zipContentEntry = entry as Entry;
             if (zipContentEntry != null)
             {
-                return zipFile.GetInputStream(zipContentEntry.ZipEntry);
+                return GetInputStream(zipContentEntry.ZipEntry);
             }
             else
             {
@@ -215,6 +215,11 @@ namespace JiongXiaGu.Unity.Resources
             }
         }
 
+        private Stream GetInputStream(ZipEntry zipEntry)
+        {
+            var stream = zipFile.GetInputStream(zipEntry);
+            return new InputStream(stream, zipEntry);
+        }
 
         public override void BeginUpdate()
         {
@@ -394,9 +399,67 @@ namespace JiongXiaGu.Unity.Resources
                 }
             }
 
-            public Stream GetSource()
+            Stream IStaticDataSource.GetSource()
             {
                 return Source.GetInputStream();
+            }
+        }
+
+        private class InputStream : Stream
+        {
+            private Stream baseStream;
+            private ZipEntry zipEntry;
+
+            public override bool CanRead => baseStream.CanRead;
+            public override bool CanSeek => baseStream.CanRead;
+            public override bool CanWrite => baseStream.CanRead;
+            public override long Length => zipEntry.Size;
+
+            public override long Position
+            {
+                get { return baseStream.Position; }
+                set { baseStream.Position = value; }
+            }
+
+            public InputStream(Stream stream, ZipEntry zipEntry)
+            {
+                baseStream = stream;
+                this.zipEntry = zipEntry;
+            }
+
+            public override void Flush()
+            {
+                baseStream.Flush();
+            }
+
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                return baseStream.Read(buffer, offset, count);
+            }
+
+            public override int ReadByte()
+            {
+                return baseStream.ReadByte();
+            }
+
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                return baseStream.Seek(offset, origin);
+            }
+
+            public override void SetLength(long value)
+            {
+                baseStream.SetLength(value);
+            }
+
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                baseStream.Write(buffer, offset, count);
+            }
+
+            public override void WriteByte(byte value)
+            {
+                baseStream.WriteByte(value);
             }
         }
     }

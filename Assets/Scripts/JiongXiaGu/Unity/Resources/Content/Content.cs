@@ -7,7 +7,7 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     /// <summary>
-    /// 抽象的资源合集;
+    /// 抽象的资源合集,统一文件系统和压缩文档内容的操作;
     /// </summary>
     public abstract class Content : IContent, IReadOnlyContent, IDisposable
     {

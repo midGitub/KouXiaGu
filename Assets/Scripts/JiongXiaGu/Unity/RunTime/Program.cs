@@ -72,6 +72,7 @@ namespace JiongXiaGu.Unity.RunTime
         private static void SynchronizedInitialize()
         {
             Resource.Initialize();
+            GameCursor.Initialize();
             Info = ReadProgramInfo();
         }
 

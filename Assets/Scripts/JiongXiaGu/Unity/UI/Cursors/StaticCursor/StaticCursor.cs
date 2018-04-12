@@ -4,6 +4,7 @@ using UnityEngine;
 namespace JiongXiaGu.Unity.UI.Cursors
 {
 
+    [Serializable]
     public class StaticCursor : ICustomCursor, IDisposable
     {
         [SerializeField]

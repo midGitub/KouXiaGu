@@ -11,35 +11,11 @@ namespace JiongXiaGu.Unity.Resources
 {
 
     [TestFixture]
-    public class ContentTest
+    public class ContentTest : NUnit
     {
-        private readonly string rootDirectory;
-
-        public ContentTest()
+        public ContentTest() : base(nameof(ContentTest))
         {
-            rootDirectory = Path.Combine(NUnit.TempDirectory, nameof(ContentTest));
-            if (Directory.Exists(rootDirectory))
-            {
-                Directory.Delete(rootDirectory, true);
-            }
-            Directory.CreateDirectory(rootDirectory);
         }
-
-        //[Test]
-        //public void Test()
-        //{
-        //    var stream = new MemoryStream();
-        //    stream.Position = 3;
-
-        //    var synchronizedStream1 = Stream.Synchronized(stream);
-        //    synchronizedStream1.Position = 4;
-
-
-        //    var synchronizedStream2 = Stream.Synchronized(stream);
-        //    synchronizedStream2.Position = 5;
-
-        //    synchronizedStream1.Dispose();
-        //}
 
         [Test]
         public void TestMemoryContent()
@@ -53,7 +29,7 @@ namespace JiongXiaGu.Unity.Resources
         [Test]
         public void TestDirectoryContent()
         {
-            string directory = Path.Combine(rootDirectory, "Directory");
+            string directory = Path.Combine(RootDirectory, "Directory");
 
             using (DirectoryContent content = DirectoryContent.Create(directory))
             {
@@ -64,7 +40,7 @@ namespace JiongXiaGu.Unity.Resources
         [Test]
         public void TestZipContent()
         {
-            string file = Path.Combine(rootDirectory, "Zip.zip");
+            string file = Path.Combine(RootDirectory, "Zip.zip");
 
             using (SharpZipLibContent content = SharpZipLibContent.CreateNew(file))
             {
