@@ -35,7 +35,7 @@ namespace JiongXiaGu.Unity.Initializers
             try
             {
                 menuDisplaySwitcher.Display();
-                progressBarDisplaySwitcher.Hide(3);
+                //progressBarDisplaySwitcher.Hide(3);
             }
             catch (Exception ex)
             {

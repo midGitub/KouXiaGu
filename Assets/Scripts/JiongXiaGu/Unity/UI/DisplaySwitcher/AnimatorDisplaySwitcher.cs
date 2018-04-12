@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using System.Threading.Tasks;
+﻿using UnityEngine;
 
 namespace JiongXiaGu.Unity.UI
 {
@@ -18,8 +13,9 @@ namespace JiongXiaGu.Unity.UI
         {
         }
 
-        private const string DisplayBoolParameter = "IsDisplay";
         private Animator animator;
+        [SerializeField]
+        private bool isDisplay;
 
         private void Awake()
         {
@@ -28,7 +24,7 @@ namespace JiongXiaGu.Unity.UI
 
         public override bool IsDisplay()
         {
-            return animator.GetBool(DisplayBoolParameter);
+            return isDisplay;
         }
 
         protected override void InternalDisplay()
@@ -36,7 +32,7 @@ namespace JiongXiaGu.Unity.UI
             if (animator != null)
             {
                 animator.Play("Display");
-                animator.SetBool(DisplayBoolParameter, true);
+                isDisplay = true;
             }
         }
 
@@ -45,7 +41,7 @@ namespace JiongXiaGu.Unity.UI
             if (animator != null)
             {
                 animator.Play("Hide");
-                animator.SetBool(DisplayBoolParameter, false);
+                isDisplay = false;
             }
         }
     }

@@ -34,24 +34,6 @@ namespace JiongXiaGu.Unity.UI
         protected abstract void InternalDisplay();
         protected abstract void InternalHide();
 
-        public virtual void Display(float seconds)
-        {
-            onDisplay.Invoke();
-            StartCoroutine(DeferredExecution(InternalDisplay, seconds));
-        }
-
-        public virtual void Hide(float seconds)
-        {
-            onHide.Invoke();
-            StartCoroutine(DeferredExecution(InternalHide, seconds));
-        }
-
-        private IEnumerator DeferredExecution(Action action, float seconds)
-        {
-            yield return new WaitForSeconds(seconds);
-            action.Invoke();
-        }
-
         [ContextMenu(nameof(Display))]
         public void Display()
         {
@@ -70,11 +52,11 @@ namespace JiongXiaGu.Unity.UI
         {
             if (IsDisplay())
             {
-                InternalHide();
+                Hide();
             }
             else
             {
-                InternalDisplay();
+                Display();
             }
         }
     }

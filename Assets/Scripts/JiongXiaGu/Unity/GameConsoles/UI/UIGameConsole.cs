@@ -1,5 +1,6 @@
 ﻿using JiongXiaGu.Unity.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace JiongXiaGu.Unity.GameConsoles.UI
 {
@@ -22,7 +23,6 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         private void Awake()
         {
             displaySwitcher = GetComponent<DisplaySwitcher>();
-
             displaySwitcher.OnDisplay += uiGameConsoleInput.ClearInputField;
             displaySwitcher.OnHide += uiGameConsoleInput.ClearInputField;
         }

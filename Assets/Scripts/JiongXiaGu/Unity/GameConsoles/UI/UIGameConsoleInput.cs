@@ -144,21 +144,30 @@ namespace JiongXiaGu.Unity.GameConsoles.UI
         /// <summary>
         /// 指定焦点在输入空间上;
         /// </summary>
+        [ContextMenu(nameof(ActivateInputField))]
         public void ActivateInputField()
         {
             input.ActivateInputField();
+            Debug.Log("ActivateInputField");
         }
 
-        public void SetInputField(string text)
+        [ContextMenu(nameof(DeactivateInputField))]
+        public void DeactivateInputField()
         {
-            input.text = current.Value;
-            input.MoveTextEnd(false);
+            input.DeactivateInputField();
+            Debug.Log("DeactivateInputField");
         }
 
         public void ClearInputField()
         {
             input.text = string.Empty;
             current = null;
+        }
+
+        public void SetInputField(string text)
+        {
+            input.text = current.Value;
+            input.MoveTextEnd(false);
         }
     }
 }
