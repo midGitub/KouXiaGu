@@ -38,7 +38,9 @@ namespace JiongXiaGu
         public static Texture2D ReadAsCursor(byte[] data)
         {
             var texture = Read(data, TextureFormat.ARGB32, false);
+#if UNITY_EDITOR
             texture.alphaIsTransparency = true;
+#endif
             return texture;
         }
 
