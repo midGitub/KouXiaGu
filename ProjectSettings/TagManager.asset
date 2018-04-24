@@ -20,9 +20,9 @@ TagManager:
   - LandformBake
   - Landform
   - Buiding
-  - 
-  - 
-  - 
+  - BoundaryCollider
+  - Bullet
+  - Aerobat
   - 
   - 
   - 
